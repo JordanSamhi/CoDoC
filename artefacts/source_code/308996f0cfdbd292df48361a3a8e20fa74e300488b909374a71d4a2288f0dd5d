@@ -1,0 +1,15 @@
+public Bundle call(@NonNull String authority, @NonNull String method, @Nullable String arg, @Nullable Bundle extras) throws RemoteException{
+    Objects.requireNonNull(authority, "authority");
+    Objects.requireNonNull(method, "method");
+    beforeRemote();
+    try {
+        return mContentProvider.call(mPackageName, mAttributionTag, authority, method, arg, extras);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

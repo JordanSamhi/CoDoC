@@ -1,0 +1,10 @@
+public void setOnDismissListener(@Nullable OnDismissListener listener){
+    if (mCancelAndDismissTaken != null) {
+        throw new IllegalStateException("OnDismissListener is already taken by " + mCancelAndDismissTaken + " and can not be replaced.");
+    }
+    if (listener != null) {
+        mDismissMessage = mListenersHandler.obtainMessage(DISMISS, listener);
+    } else {
+        mDismissMessage = null;
+    }
+}

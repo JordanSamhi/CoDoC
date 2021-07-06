@@ -1,0 +1,12 @@
+public Region getMagnificationRegion(){
+    final IAccessibilityServiceConnection connection = AccessibilityInteractionClient.getInstance().getConnection(mService.mConnectionId);
+    if (connection != null) {
+        try {
+            return connection.getMagnificationRegion(mDisplayId);
+        } catch (RemoteException re) {
+            Log.w(LOG_TAG, "Failed to obtain magnified region", re);
+            re.rethrowFromSystemServer();
+        }
+    }
+    return Region.obtain();
+}

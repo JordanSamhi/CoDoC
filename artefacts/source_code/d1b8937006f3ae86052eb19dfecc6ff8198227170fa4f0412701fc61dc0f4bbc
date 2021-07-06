@@ -1,0 +1,31 @@
+public boolean bind(Set<ImsFeatureConfiguration.FeatureSlotPair> imsFeatureSet){
+    synchronized (mLock) {
+        if (!mIsBound && !mIsBinding) {
+            mIsBinding = true;
+            sanitizeFeatureConfig(imsFeatureSet);
+            mImsFeatures = imsFeatureSet;
+            grantPermissionsToService();
+            Intent imsServiceIntent = new Intent(getServiceInterface()).setComponent(mComponentName);
+            mImsServiceConnection = new ImsServiceConnection();
+            int serviceFlags = Context.BIND_AUTO_CREATE | Context.BIND_FOREGROUND_SERVICE | Context.BIND_IMPORTANT;
+            mLocalLog.log("binding " + imsFeatureSet);
+            Log.i(LOG_TAG, "Binding ImsService:" + mComponentName);
+            try {
+                boolean bindSucceeded = mContext.bindService(imsServiceIntent, mImsServiceConnection, serviceFlags);
+                if (!bindSucceeded) {
+                    mLocalLog.log("    binding failed, retrying in " + mBackoff.getCurrentDelay() + " mS");
+                    mIsBinding = false;
+                    mBackoff.notifyFailed();
+                }
+                return bindSucceeded;
+            } catch (Exception e) {
+                mBackoff.notifyFailed();
+                mLocalLog.log("    binding exception=" + e.getMessage() + ", retrying in " + mBackoff.getCurrentDelay() + " mS");
+                Log.e(LOG_TAG, "Error binding (" + mComponentName + ") with exception: " + e.getMessage() + ", rebinding in " + mBackoff.getCurrentDelay() + " ms");
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+}

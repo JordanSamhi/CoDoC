@@ -1,0 +1,24 @@
+public static SimSlotState getCurrentState(){
+    int numActiveSlots = 0;
+    int numActiveSims = 0;
+    int numActiveEsims = 0;
+    UiccController uiccController = UiccController.getInstance();
+    for (int i = 0; i < uiccController.getUiccSlots().length; i++) {
+        UiccSlot slot = uiccController.getUiccSlot(i);
+        if (slot != null && slot.isActive()) {
+            numActiveSlots++;
+            if (slot.getCardState() == CardState.CARDSTATE_PRESENT) {
+                if (slot.isEuicc()) {
+                    UiccCard card = slot.getUiccCard();
+                    if (card != null && card.getNumApplications() > 0) {
+                        numActiveSims++;
+                        numActiveEsims++;
+                    }
+                } else {
+                    numActiveSims++;
+                }
+            }
+        }
+    }
+    return new SimSlotState(numActiveSlots, numActiveSims, numActiveEsims);
+}

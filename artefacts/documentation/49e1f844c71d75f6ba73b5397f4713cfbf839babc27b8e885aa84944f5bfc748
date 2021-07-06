@@ -1,0 +1,24 @@
+
+     * Perform an incremental update or command on the widget specified by appWidgetId.
+     * <p>
+     * This update  differs from {@link #updateAppWidget(int, RemoteViews)} in that the RemoteViews
+     * object which is passed is understood to be an incomplete representation of the widget, and
+     * hence is not cached by the AppWidgetService. Note that because these updates are not cached,
+     * any state that they modify that is not restored by restoreInstanceState will not persist in
+     * the case that the widgets are restored using the cached version in AppWidgetService.
+     *
+     * Use with {@link RemoteViews#showNext(int)}, {@link RemoteViews#showPrevious(int)},
+     * {@link RemoteViews#setScrollPosition(int, int)} and similar commands.
+     *
+     * <p>
+     * It is okay to call this method both inside an {@link #ACTION_APPWIDGET_UPDATE} broadcast,
+     * and outside of the handler.
+     * This method will only work when called from the uid that owns the AppWidget provider.
+     *
+     * <p>
+     * This method will be ignored if a widget has not received a full update via
+     * {@link #updateAppWidget(int[], RemoteViews)}.
+     *
+     * @param appWidgetId      The AppWidget instance for which to set the RemoteViews.
+     * @param views            The RemoteViews object containing the incremental update / command.
+     

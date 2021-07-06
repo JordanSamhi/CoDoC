@@ -1,0 +1,32 @@
+public boolean initialize(){
+    if (sVerboseLoggingEnabled)
+        Log.i(TAG, "Registering ISupplicant service ready callback.");
+    synchronized (mLock) {
+        if (mIServiceManager != null) {
+            Log.i(TAG, "Supplicant HAL already initialized.");
+            return true;
+        }
+        mISupplicant = null;
+        mISupplicantP2pIface = null;
+        try {
+            mIServiceManager = getServiceManagerMockable();
+            if (mIServiceManager == null) {
+                Log.e(TAG, "Failed to get HIDL Service Manager");
+                return false;
+            }
+            if (!linkToServiceManagerDeath()) {
+                return false;
+            }
+            if (!mIServiceManager.registerForNotifications(ISupplicant.kInterfaceName, "", mServiceNotificationCallback)) {
+                Log.e(TAG, "Failed to register for notifications to " + ISupplicant.kInterfaceName);
+                mIServiceManager = null;
+                return false;
+            }
+            return true;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Exception while trying to register a listener for ISupplicant service: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return false;
+    }
+}

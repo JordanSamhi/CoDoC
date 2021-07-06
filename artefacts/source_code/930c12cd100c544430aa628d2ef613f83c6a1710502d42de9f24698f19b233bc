@@ -1,0 +1,28 @@
+public synchronized boolean setCaptureResult(final RequestHolder request, final CameraMetadataNative result, final int captureError, final Object captureErrorArg){
+    if (mCurrentState != STATE_CAPTURING) {
+        Log.e(TAG, "Cannot receive result while in state: " + mCurrentState);
+        mCurrentError = CameraDeviceImpl.CameraDeviceCallbacks.ERROR_CAMERA_DEVICE;
+        doStateTransition(STATE_ERROR);
+        return mCurrentError == NO_CAPTURE_ERROR;
+    }
+    if (mCurrentHandler != null && mCurrentListener != null) {
+        if (captureError != NO_CAPTURE_ERROR) {
+            mCurrentHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    mCurrentListener.onError(captureError, captureErrorArg, request);
+                }
+            });
+        } else {
+            mCurrentHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    mCurrentListener.onCaptureResult(result, request);
+                }
+            });
+        }
+    }
+    return mCurrentError == NO_CAPTURE_ERROR;
+}

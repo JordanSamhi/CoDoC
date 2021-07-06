@@ -1,0 +1,9 @@
+public Builder putBitmap(@BitmapKey String key, Bitmap value){
+    if (METADATA_KEYS_TYPE.containsKey(key)) {
+        if (METADATA_KEYS_TYPE.get(key) != METADATA_TYPE_BITMAP) {
+            throw new IllegalArgumentException("The " + key + " key cannot be used to put a Bitmap");
+        }
+    }
+    mBundle.putParcelable(key, value);
+    return this;
+}

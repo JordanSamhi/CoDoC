@@ -1,0 +1,11 @@
+public String[] list(String prefix, int uid){
+    try {
+        return mBinder.list(prefix, uid);
+    } catch (RemoteException e) {
+        Log.w(TAG, "Cannot connect to keystore", e);
+        return null;
+    } catch (android.os.ServiceSpecificException e) {
+        Log.w(TAG, "KeyStore exception", e);
+        return null;
+    }
+}

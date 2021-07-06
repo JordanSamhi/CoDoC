@@ -1,0 +1,11 @@
+public IBinder createInputMethodWindowToken(int displayId){
+    IMultiClientInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return null;
+    }
+    try {
+        return ops.createInputMethodWindowToken(displayId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,13 @@
+public void dump(final PrintWriter pw, final String prefix){
+    pw.println(prefix + "mId=" + mId);
+    pw.println(prefix + "mSettingsActivityName=" + mSettingsActivityName);
+    pw.println(prefix + "Service:");
+    mService.dump(new PrintWriterPrinter(pw), prefix + "  ");
+    final int N = getSubtypeCount();
+    for (int i = 0; i < N; i++) {
+        final SpellCheckerSubtype st = getSubtypeAt(i);
+        pw.println(prefix + "  " + "Subtype #" + i + ":");
+        pw.println(prefix + "    " + "locale=" + st.getLocale() + " languageTag=" + st.getLanguageTag());
+        pw.println(prefix + "    " + "extraValue=" + st.getExtraValue());
+    }
+}

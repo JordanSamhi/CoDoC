@@ -1,0 +1,23 @@
+public boolean onNavigateUp(){
+    Intent upIntent = getParentActivityIntent();
+    if (upIntent != null) {
+        if (mActivityInfo.taskAffinity == null) {
+            finish();
+        } else if (shouldUpRecreateTask(upIntent)) {
+            TaskStackBuilder b = TaskStackBuilder.create(this);
+            onCreateNavigateUpTaskStack(b);
+            onPrepareNavigateUpTaskStack(b);
+            b.startActivities();
+            if (mResultCode != RESULT_CANCELED || mResultData != null) {
+                Log.i(TAG, "onNavigateUp only finishing topmost activity to return a result");
+                finish();
+            } else {
+                finishAffinity();
+            }
+        } else {
+            navigateUpTo(upIntent);
+        }
+        return true;
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public static void markAsReplaced(Spannable content, int start, int end, String original){
+    Replaced[] repl = content.getSpans(0, content.length(), Replaced.class);
+    for (int a = 0; a < repl.length; a++) {
+        content.removeSpan(repl[a]);
+    }
+    int len = original.length();
+    char[] orig = new char[len];
+    original.getChars(0, len, orig, 0);
+    content.setSpan(new Replaced(orig), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+}

@@ -1,0 +1,12 @@
+public void append(long key, E value){
+    if (mSize != 0 && key <= mKeys[mSize - 1]) {
+        put(key, value);
+        return;
+    }
+    if (mSize >= mKeys.length && (mGarbage || hasReclaimedRefs())) {
+        gc();
+    }
+    mKeys = GrowingArrayUtils.append(mKeys, mSize, key);
+    mValues = GrowingArrayUtils.append(mValues, mSize, new WeakReference(value));
+    mSize++;
+}

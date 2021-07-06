@@ -1,0 +1,31 @@
+public ArrayList<UiccCardInfo> getAllUiccCardInfos(){
+    ArrayList<UiccCardInfo> infos = new ArrayList<>();
+    for (int slotIndex = 0; slotIndex < mUiccSlots.length; slotIndex++) {
+        final UiccSlot slot = mUiccSlots[slotIndex];
+        if (slot == null)
+            continue;
+        boolean isEuicc = slot.isEuicc();
+        String eid = null;
+        UiccCard card = slot.getUiccCard();
+        String iccid = null;
+        int cardId = UNINITIALIZED_CARD_ID;
+        boolean isRemovable = slot.isRemovable();
+        if (card != null) {
+            iccid = card.getIccId();
+            if (isEuicc) {
+                eid = ((EuiccCard) card).getEid();
+                cardId = convertToPublicCardId(eid);
+            } else {
+                cardId = convertToPublicCardId(iccid);
+            }
+        } else {
+            iccid = slot.getIccId();
+            if (!isEuicc && !TextUtils.isEmpty(iccid)) {
+                cardId = convertToPublicCardId(iccid);
+            }
+        }
+        UiccCardInfo info = new UiccCardInfo(isEuicc, cardId, eid, IccUtils.stripTrailingFs(iccid), slotIndex, isRemovable);
+        infos.add(info);
+    }
+    return infos;
+}

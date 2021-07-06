@@ -1,0 +1,9 @@
+public void saveClirSetting(int commandInterfaceCLIRMode){
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+    SharedPreferences.Editor editor = sp.edit();
+    editor.putInt(CLIR_KEY + getSubId(), commandInterfaceCLIRMode);
+    Rlog.i(LOG_TAG, "saveClirSetting: " + CLIR_KEY + getSubId() + "=" + commandInterfaceCLIRMode);
+    if (!editor.commit()) {
+        Rlog.e(LOG_TAG, "Failed to commit CLIR preference");
+    }
+}

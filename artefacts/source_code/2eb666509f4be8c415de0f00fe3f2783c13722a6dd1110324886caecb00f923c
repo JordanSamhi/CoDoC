@@ -1,0 +1,25 @@
+public static String createSqlSortClause(Bundle queryArgs){
+    String[] columns = queryArgs.getStringArray(QUERY_ARG_SORT_COLUMNS);
+    if (columns == null || columns.length == 0) {
+        throw new IllegalArgumentException("Can't create sort clause without columns.");
+    }
+    String query = TextUtils.join(", ", columns);
+    int collation = queryArgs.getInt(ContentResolver.QUERY_ARG_SORT_COLLATION, java.text.Collator.IDENTICAL);
+    if (collation == java.text.Collator.PRIMARY || collation == java.text.Collator.SECONDARY) {
+        query += " COLLATE NOCASE";
+    }
+    int sortDir = queryArgs.getInt(QUERY_ARG_SORT_DIRECTION, Integer.MIN_VALUE);
+    if (sortDir != Integer.MIN_VALUE) {
+        switch(sortDir) {
+            case QUERY_SORT_DIRECTION_ASCENDING:
+                query += " ASC";
+                break;
+            case QUERY_SORT_DIRECTION_DESCENDING:
+                query += " DESC";
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported sort direction value." + " See ContentResolver documentation for details.");
+        }
+    }
+    return query;
+}

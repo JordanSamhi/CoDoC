@@ -1,0 +1,19 @@
+public ParceledListSlice<StatusBarNotification> getSnoozedNotificationsFromListener(INotificationListener token, int trim){
+    synchronized (mNotificationLock) {
+        final ManagedServiceInfo info = mListeners.checkServiceTokenLocked(token);
+        List<NotificationRecord> snoozedRecords = mSnoozeHelper.getSnoozed();
+        final int N = snoozedRecords.size();
+        final ArrayList<StatusBarNotification> list = new ArrayList<>(N);
+        for (int i = 0; i < N; i++) {
+            final NotificationRecord r = snoozedRecords.get(i);
+            if (r == null)
+                continue;
+            StatusBarNotification sbn = r.getSbn();
+            if (!isVisibleToListener(sbn, info))
+                continue;
+            StatusBarNotification sbnToSend = (trim == TRIM_FULL) ? sbn : sbn.cloneLight();
+            list.add(sbnToSend);
+        }
+        return new ParceledListSlice<>(list);
+    }
+}

@@ -1,0 +1,10 @@
+public void close() throws IOException{
+    if (DBG)
+        Log.d(TAG, "BluetoothServerSocket:close() called. mChannel=" + mChannel);
+    synchronized (this) {
+        if (mHandler != null) {
+            mHandler.obtainMessage(mMessage).sendToTarget();
+        }
+    }
+    mSocket.close();
+}

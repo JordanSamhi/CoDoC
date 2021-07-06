@@ -1,0 +1,16 @@
+public void updateFirmwareRoamingConfiguration(@NonNull String ssid){
+    if (!mConnectivityHelper.isFirmwareRoamingSupported()) {
+        return;
+    }
+    ArrayList<String> bssidBlocklist = updateAndGetBssidBlocklistInternal().filter(entry -> ssid.equals(entry.ssid)).sorted((o1, o2) -> (int) (o2.blocklistEndTimeMs - o1.blocklistEndTimeMs)).map(entry -> entry.bssid).collect(Collectors.toCollection(ArrayList::new));
+    int fwMaxBlocklistSize = mConnectivityHelper.getMaxNumBlacklistBssid();
+    if (fwMaxBlocklistSize <= 0) {
+        Log.e(TAG, "Invalid max BSSID blocklist size:  " + fwMaxBlocklistSize);
+        return;
+    }
+    if (bssidBlocklist.size() > fwMaxBlocklistSize) {
+        bssidBlocklist = new ArrayList<String>(bssidBlocklist.subList(0, fwMaxBlocklistSize));
+    }
+    if (!mConnectivityHelper.setFirmwareRoamingConfiguration(bssidBlocklist, new ArrayList<String>())) {
+    }
+}

@@ -1,0 +1,14 @@
+public void onInfoChanged(SoftApInfo softApInfo){
+    synchronized (mLock) {
+        mTetheredSoftApInfo = new SoftApInfo(softApInfo);
+    }
+    Iterator<ISoftApCallback> iterator = mRegisteredSoftApCallbacks.getCallbacks().iterator();
+    while (iterator.hasNext()) {
+        ISoftApCallback callback = iterator.next();
+        try {
+            callback.onInfoChanged(mTetheredSoftApInfo);
+        } catch (RemoteException e) {
+            Log.e(TAG, "onInfoChanged: remote exception -- " + e);
+        }
+    }
+}

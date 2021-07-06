@@ -1,0 +1,12 @@
+public void addPinnedShortcut(@NonNull String packageName, @UserIdInt int packageUserId, String id, boolean forPinRequest){
+    final ArraySet<String> pinnedSet = getPinnedShortcutIds(packageName, packageUserId);
+    final ArrayList<String> pinnedList;
+    if (pinnedSet != null) {
+        pinnedList = new ArrayList<>(pinnedSet.size() + 1);
+        pinnedList.addAll(pinnedSet);
+    } else {
+        pinnedList = new ArrayList<>(1);
+    }
+    pinnedList.add(id);
+    pinShortcuts(packageUserId, packageName, pinnedList, forPinRequest);
+}

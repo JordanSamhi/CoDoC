@@ -1,0 +1,15 @@
+public Element create(){
+    mRS.validate();
+    Element[] ein = new Element[mCount];
+    String[] sin = new String[mCount];
+    int[] asin = new int[mCount];
+    java.lang.System.arraycopy(mElements, 0, ein, 0, mCount);
+    java.lang.System.arraycopy(mElementNames, 0, sin, 0, mCount);
+    java.lang.System.arraycopy(mArraySizes, 0, asin, 0, mCount);
+    long[] ids = new long[ein.length];
+    for (int ct = 0; ct < ein.length; ct++) {
+        ids[ct] = ein[ct].getID(mRS);
+    }
+    long id = mRS.nElementCreate2(ids, sin, asin);
+    return new Element(id, mRS, ein, sin, asin);
+}

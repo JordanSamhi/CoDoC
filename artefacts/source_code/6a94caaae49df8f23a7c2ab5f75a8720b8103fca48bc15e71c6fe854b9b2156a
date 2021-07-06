@@ -1,0 +1,23 @@
+public static UsbDescriptor allocDescriptor(UsbDescriptorParser parser, ByteStream stream, int length, byte type, byte subtype, int subclass){
+    byte formatType = stream.getByte();
+    int acInterfaceSpec = parser.getACInterfaceSpec();
+    switch(formatType) {
+        case FORMAT_TYPE_I:
+            if (acInterfaceSpec == UsbDeviceDescriptor.USBSPEC_2_0) {
+                return new Usb20ASFormatI(length, type, subtype, formatType, subclass);
+            } else {
+                return new Usb10ASFormatI(length, type, subtype, formatType, subclass);
+            }
+        case FORMAT_TYPE_II:
+            if (acInterfaceSpec == UsbDeviceDescriptor.USBSPEC_2_0) {
+                return new Usb20ASFormatII(length, type, subtype, formatType, subclass);
+            } else {
+                return new Usb10ASFormatII(length, type, subtype, formatType, subclass);
+            }
+        case FORMAT_TYPE_III:
+            return new Usb20ASFormatIII(length, type, subtype, formatType, subclass);
+        case FORMAT_TYPE_IV:
+        default:
+            return new UsbASFormat(length, type, subtype, formatType, subclass);
+    }
+}

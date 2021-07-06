@@ -1,0 +1,25 @@
+public void getFeatureState(@NonNull @CallbackExecutor Executor executor, @NonNull @ImsFeature.ImsState Consumer<Integer> callback) throws ImsException{
+    if (executor == null) {
+        throw new IllegalArgumentException("Must include a non-null Executor.");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Must include a non-null Consumer.");
+    }
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new ImsException("Could not find Telephony Service.", ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+    try {
+        iTelephony.getImsMmTelFeatureState(mSubId, new IIntegerConsumer.Stub() {
+
+            @Override
+            public void accept(int result) {
+                executor.execute(() -> callback.accept(result));
+            }
+        });
+    } catch (ServiceSpecificException sse) {
+        throw new ImsException(sse.getMessage(), sse.errorCode);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+}

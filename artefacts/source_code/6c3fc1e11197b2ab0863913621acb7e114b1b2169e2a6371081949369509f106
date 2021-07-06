@@ -1,0 +1,23 @@
+public Messenger getMessenger(final IBinder binder){
+    enforceAccessPermission();
+    enforceChangePermission();
+    synchronized (mLock) {
+        final Messenger messenger = new Messenger(mClientHandler);
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "getMessenger: uid=" + getCallingUid() + ", binder=" + binder + ", messenger=" + messenger);
+        }
+        IBinder.DeathRecipient dr = () -> {
+            if (mVerboseLoggingEnabled)
+                Log.d(TAG, "binderDied: binder=" + binder);
+            close(binder);
+        };
+        try {
+            binder.linkToDeath(dr, 0);
+            mDeathDataByBinder.put(binder, new DeathHandlerData(dr, messenger));
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error on linkToDeath: e=" + e);
+        }
+        mP2pStateMachine.sendMessage(ENABLE_P2P);
+        return messenger;
+    }
+}

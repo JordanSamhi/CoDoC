@@ -1,0 +1,36 @@
+public float getContactAffinity(UserHandle userHandle, Bundle extras, int timeoutMs, float timeoutAffinity){
+    if (DEBUG)
+        Slog.d(TAG, "checking affinity for " + userHandle);
+    if (extras == null)
+        return NONE;
+    final String key = Long.toString(System.nanoTime());
+    final float[] affinityOut = new float[1];
+    Context context = getContextAsUser(userHandle);
+    if (context == null) {
+        return NONE;
+    }
+    final PeopleRankingReconsideration prr = validatePeople(context, key, extras, null, affinityOut);
+    float affinity = affinityOut[0];
+    if (prr != null) {
+        final Semaphore s = new Semaphore(0);
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                prr.work();
+                s.release();
+            }
+        });
+        try {
+            if (!s.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS)) {
+                Slog.w(TAG, "Timeout while waiting for affinity: " + key + ". " + "Returning timeoutAffinity=" + timeoutAffinity);
+                return timeoutAffinity;
+            }
+        } catch (InterruptedException e) {
+            Slog.w(TAG, "InterruptedException while waiting for affinity: " + key + ". " + "Returning affinity=" + affinity, e);
+            return affinity;
+        }
+        affinity = Math.max(prr.getContactAffinity(), affinity);
+    }
+    return affinity;
+}

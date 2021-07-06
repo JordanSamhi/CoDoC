@@ -1,0 +1,22 @@
+public void tune(@NonNull Uri channelUri, Bundle params){
+    Preconditions.checkNotNull(channelUri);
+    if (mToken == null) {
+        Log.w(TAG, "The session has been already released");
+        return;
+    }
+    synchronized (mMetadataLock) {
+        mAudioTracks.clear();
+        mVideoTracks.clear();
+        mSubtitleTracks.clear();
+        mSelectedAudioTrackId = null;
+        mSelectedVideoTrackId = null;
+        mSelectedSubtitleTrackId = null;
+        mVideoWidth = 0;
+        mVideoHeight = 0;
+    }
+    try {
+        mService.tune(mToken, channelUri, params, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

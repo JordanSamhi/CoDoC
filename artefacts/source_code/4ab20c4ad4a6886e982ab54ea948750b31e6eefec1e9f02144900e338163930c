@@ -1,0 +1,62 @@
+public void notifyDataConnectionForSubscriber(int phoneId, int subId, @ApnType int apnType, PreciseDataConnectionState preciseState){
+    if (!checkNotifyPermission("notifyDataConnection()")) {
+        return;
+    }
+    String apn = "";
+    int state = TelephonyManager.DATA_UNKNOWN;
+    int networkType = TelephonyManager.NETWORK_TYPE_UNKNOWN;
+    LinkProperties linkProps = null;
+    if (preciseState != null) {
+        apn = preciseState.getDataConnectionApn();
+        state = preciseState.getState();
+        networkType = preciseState.getNetworkType();
+        linkProps = preciseState.getDataConnectionLinkProperties();
+    }
+    if (VDBG) {
+        log("notifyDataConnectionForSubscriber: subId=" + subId + " state=" + state + "' apn='" + apn + "' apnType=" + apnType + " networkType=" + networkType + "' preciseState=" + preciseState);
+    }
+    synchronized (mRecords) {
+        if (validatePhoneId(phoneId)) {
+            if ((ApnSetting.TYPE_DEFAULT & apnType) != 0 && (mDataConnectionState[phoneId] != state || mDataConnectionNetworkType[phoneId] != networkType)) {
+                String str = "onDataConnectionStateChanged(" + dataStateToString(state) + ", " + getNetworkTypeName(networkType) + ") subId=" + subId + ", phoneId=" + phoneId;
+                log(str);
+                mLocalLog.log(str);
+                for (Record r : mRecords) {
+                    if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_DATA_CONNECTION_STATE) && idMatch(r.subId, subId, phoneId)) {
+                        try {
+                            if (DBG) {
+                                log("Notify data connection state changed on sub: " + subId);
+                            }
+                            r.callback.onDataConnectionStateChanged(state, networkType);
+                        } catch (RemoteException ex) {
+                            mRemoveList.add(r.binder);
+                        }
+                    }
+                }
+                handleRemoveListLocked();
+                mDataConnectionState[phoneId] = state;
+                mDataConnectionNetworkType[phoneId] = networkType;
+            }
+            boolean needsNotify = false;
+            if (preciseState == null) {
+                needsNotify = mPreciseDataConnectionStates.get(phoneId).remove(apnType) != null;
+            } else {
+                PreciseDataConnectionState oldPreciseState = mPreciseDataConnectionStates.get(phoneId).put(apnType, preciseState);
+                needsNotify = !preciseState.equals(oldPreciseState);
+            }
+            if (needsNotify) {
+                for (Record r : mRecords) {
+                    if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_PRECISE_DATA_CONNECTION_STATE) && idMatch(r.subId, subId, phoneId)) {
+                        try {
+                            r.callback.onPreciseDataConnectionStateChanged(preciseState);
+                        } catch (RemoteException ex) {
+                            mRemoveList.add(r.binder);
+                        }
+                    }
+                }
+            }
+        }
+        handleRemoveListLocked();
+    }
+    broadcastDataConnectionStateChanged(state, apn, apnType, subId);
+}

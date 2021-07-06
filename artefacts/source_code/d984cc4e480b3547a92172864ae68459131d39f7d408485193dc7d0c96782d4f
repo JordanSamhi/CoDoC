@@ -1,0 +1,39 @@
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+    Log.e(TAG, "upgrade from version " + oldVersion + " to version " + newVersion);
+    if (oldVersion == 1) {
+        oldVersion++;
+    }
+    if (oldVersion == 2) {
+        createGrantsTable(db);
+        db.execSQL("DROP TRIGGER " + TABLE_ACCOUNTS + "Delete");
+        createAccountsDeletionTrigger(db);
+        oldVersion++;
+    }
+    if (oldVersion == 3) {
+        db.execSQL("UPDATE " + TABLE_ACCOUNTS + " SET " + ACCOUNTS_TYPE + " = 'com.google' WHERE " + ACCOUNTS_TYPE + " == 'com.google.GAIA'");
+        oldVersion++;
+    }
+    if (oldVersion == 4) {
+        createSharedAccountsTable(db);
+        oldVersion++;
+    }
+    if (oldVersion == 5) {
+        addOldAccountNameColumn(db);
+        oldVersion++;
+    }
+    if (oldVersion == 6) {
+        addLastSuccessfullAuthenticatedTimeColumn(db);
+        oldVersion++;
+    }
+    if (oldVersion == 7) {
+        addDebugTable(db);
+        oldVersion++;
+    }
+    if (oldVersion == 8) {
+        populateMetaTableWithAuthTypeAndUID(db, AccountManagerService.getAuthenticatorTypeAndUIDForUser(mContext, mUserId));
+        oldVersion++;
+    }
+    if (oldVersion != newVersion) {
+        Log.e(TAG, "failed to upgrade version " + oldVersion + " to version " + newVersion);
+    }
+}

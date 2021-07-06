@@ -1,0 +1,10 @@
+public static Bitmap wrapHardwareBuffer(@NonNull HardwareBuffer hardwareBuffer, @Nullable ColorSpace colorSpace){
+    if ((hardwareBuffer.getUsage() & HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE) == 0) {
+        throw new IllegalArgumentException("usage flags must contain USAGE_GPU_SAMPLED_IMAGE.");
+    }
+    int format = hardwareBuffer.getFormat();
+    if (colorSpace == null) {
+        colorSpace = ColorSpace.get(ColorSpace.Named.SRGB);
+    }
+    return nativeWrapHardwareBufferBitmap(hardwareBuffer, colorSpace.getNativeInstance());
+}

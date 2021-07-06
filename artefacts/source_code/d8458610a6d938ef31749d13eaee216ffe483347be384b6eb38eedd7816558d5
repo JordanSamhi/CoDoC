@@ -1,0 +1,23 @@
+public static void onCleartextNetworkDetected(byte[] firstPacket){
+    byte[] rawAddr = null;
+    if (firstPacket != null) {
+        if (firstPacket.length >= 20 && (firstPacket[0] & 0xf0) == 0x40) {
+            rawAddr = new byte[4];
+            System.arraycopy(firstPacket, 16, rawAddr, 0, 4);
+        } else if (firstPacket.length >= 40 && (firstPacket[0] & 0xf0) == 0x60) {
+            rawAddr = new byte[16];
+            System.arraycopy(firstPacket, 24, rawAddr, 0, 16);
+        }
+    }
+    final int uid = android.os.Process.myUid();
+    String msg = "Detected cleartext network traffic from UID " + uid;
+    if (rawAddr != null) {
+        try {
+            msg += " to " + InetAddress.getByAddress(rawAddr);
+        } catch (UnknownHostException ignored) {
+        }
+    }
+    msg += HexDump.dumpHexString(firstPacket).trim() + " ";
+    final boolean forceDeath = (sVmPolicy.mask & PENALTY_DEATH_ON_CLEARTEXT_NETWORK) != 0;
+    onVmPolicyViolation(new CleartextNetworkViolation(msg), forceDeath);
+}

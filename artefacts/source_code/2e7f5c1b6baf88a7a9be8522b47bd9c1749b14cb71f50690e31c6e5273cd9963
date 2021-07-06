@@ -1,0 +1,11 @@
+public static void serialize(KeyChainSnapshot keyChainSnapshot, OutputStream outputStream) throws IOException, CertificateEncodingException{
+    XmlSerializer xmlSerializer = Xml.newSerializer();
+    xmlSerializer.setOutput(outputStream, OUTPUT_ENCODING);
+    xmlSerializer.startDocument(null, null);
+    xmlSerializer.startTag(NAMESPACE, TAG_KEY_CHAIN_SNAPSHOT);
+    writeKeyChainSnapshotProperties(xmlSerializer, keyChainSnapshot);
+    writeKeyChainProtectionParams(xmlSerializer, keyChainSnapshot.getKeyChainProtectionParams());
+    writeApplicationKeys(xmlSerializer, keyChainSnapshot.getWrappedApplicationKeys());
+    xmlSerializer.endTag(NAMESPACE, TAG_KEY_CHAIN_SNAPSHOT);
+    xmlSerializer.endDocument();
+}

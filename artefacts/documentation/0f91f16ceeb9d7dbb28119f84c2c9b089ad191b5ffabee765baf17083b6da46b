@@ -1,0 +1,39 @@
+
+         * Returns which fields in the selected datasets were changed by the user after the dataset
+         * was selected.
+         *
+         * <p>For example, server provides:
+         *
+         * <pre class="prettyprint">
+         *  FillResponse response = new FillResponse.Builder()
+         *      .addDataset(new Dataset.Builder(presentation1)
+         *          .setId("4815")
+         *          .setValue(usernameId, AutofillValue.forText("MrPlow"))
+         *          .build())
+         *      .addDataset(new Dataset.Builder(presentation2)
+         *          .setId("162342")
+         *          .setValue(passwordId, AutofillValue.forText("D'OH"))
+         *          .build())
+         *      .build();
+         * </pre>
+         *
+         * <p>User select both datasets (for username and password) but after the fields are
+         * autofilled, user changes them to:
+         *
+         * <pre class="prettyprint">
+         *   username = "ElBarto";
+         *   password = "AyCaramba";
+         * </pre>
+         *
+         * <p>Then the result is the following map:
+         *
+         * <pre class="prettyprint">
+         *   usernameId => "4815"
+         *   passwordId => "162342"
+         * </pre>
+         *
+         * <p><b>Note: </b>Only set on events of type {@link #TYPE_CONTEXT_COMMITTED}.
+         *
+         * @return map map whose key is the id of the change fields, and value is the id of
+         * dataset that has that field and was selected by the user.
+         

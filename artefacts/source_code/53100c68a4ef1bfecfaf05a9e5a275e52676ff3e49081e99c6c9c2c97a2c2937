@@ -1,0 +1,13 @@
+public void resumeVideo(int fromVideoState, int source){
+    if (mVideoPauseTracker.shouldResumeVideoFor(source)) {
+        VideoProfile fromProfile = new VideoProfile(fromVideoState);
+        VideoProfile toProfile = new VideoProfile(fromVideoState & ~VideoProfile.STATE_PAUSED);
+        try {
+            Log.i(LOG_TAG, String.format("resumeVideo: fromVideoState=%s, toVideoState=%s", VideoProfile.videoStateToString(fromProfile.getVideoState()), VideoProfile.videoStateToString(toProfile.getVideoState())));
+            mVideoCallProvider.sendSessionModifyRequest(fromProfile, toProfile);
+        } catch (RemoteException e) {
+        }
+    } else {
+        Log.i(LOG_TAG, "resumeVideo: remaining paused (paused from other sources)");
+    }
+}

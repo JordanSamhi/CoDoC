@@ -1,0 +1,22 @@
+public void updateLightsLocked(){
+    if (mBatteryLight == null) {
+        return;
+    }
+    final int level = mHealthInfo.batteryLevel;
+    final int status = mHealthInfo.batteryStatus;
+    if (level < mLowBatteryWarningLevel) {
+        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+            mBatteryLight.setColor(mBatteryLowARGB);
+        } else {
+            mBatteryLight.setFlashing(mBatteryLowARGB, LogicalLight.LIGHT_FLASH_TIMED, mBatteryLedOn, mBatteryLedOff);
+        }
+    } else if (status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL) {
+        if (status == BatteryManager.BATTERY_STATUS_FULL || level >= 90) {
+            mBatteryLight.setColor(mBatteryFullARGB);
+        } else {
+            mBatteryLight.setColor(mBatteryMediumARGB);
+        }
+    } else {
+        mBatteryLight.turnOff();
+    }
+}

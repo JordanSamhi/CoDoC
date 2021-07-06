@@ -1,0 +1,10 @@
+public Builder setUid(int uid){
+    Preconditions.checkArgument(uid == Process.INVALID_UID || uid >= 0, "uid must be " + Process.INVALID_UID + " or non negative");
+    mUid = uid;
+    if (uid == Process.INVALID_UID) {
+        mFilter &= ~FILTER_BY_UID;
+    } else {
+        mFilter |= FILTER_BY_UID;
+    }
+    return this;
+}

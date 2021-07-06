@@ -1,0 +1,20 @@
+public static MeasuredParagraph buildForMeasurement(@NonNull TextPaint paint, @NonNull CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, @NonNull TextDirectionHeuristic textDir, @Nullable MeasuredParagraph recycle){
+    final MeasuredParagraph mt = recycle == null ? obtain() : recycle;
+    mt.resetAndAnalyzeBidi(text, start, end, textDir);
+    mt.mWidths.resize(mt.mTextLength);
+    if (mt.mTextLength == 0) {
+        return mt;
+    }
+    if (mt.mSpanned == null) {
+        mt.applyMetricsAffectingSpan(paint, null, start, end, null);
+    } else {
+        int spanEnd;
+        for (int spanStart = start; spanStart < end; spanStart = spanEnd) {
+            spanEnd = mt.mSpanned.nextSpanTransition(spanStart, end, MetricAffectingSpan.class);
+            MetricAffectingSpan[] spans = mt.mSpanned.getSpans(spanStart, spanEnd, MetricAffectingSpan.class);
+            spans = TextUtils.removeEmptySpans(spans, mt.mSpanned, MetricAffectingSpan.class);
+            mt.applyMetricsAffectingSpan(paint, spans, spanStart, spanEnd, null);
+        }
+    }
+    return mt;
+}

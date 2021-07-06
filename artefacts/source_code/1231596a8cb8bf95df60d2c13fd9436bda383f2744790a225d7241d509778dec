@@ -1,0 +1,17 @@
+public WifiNetworkSpecifier build(){
+    if (!hasSetAnyPattern()) {
+        throw new IllegalStateException("one of setSsidPattern/setSsid/setBssidPattern/" + "setBssid should be invoked for specifier");
+    }
+    setMatchAnyPatternIfUnset();
+    if (hasSetMatchNonePattern()) {
+        throw new IllegalStateException("cannot set match-none pattern for specifier");
+    }
+    if (hasSetMatchAllPattern()) {
+        throw new IllegalStateException("cannot set match-all pattern for specifier");
+    }
+    if (mIsHiddenSSID && mSsidPatternMatcher.getType() != PatternMatcher.PATTERN_LITERAL) {
+        throw new IllegalStateException("setSsid should also be invoked when " + "setIsHiddenSsid is invoked for network specifier");
+    }
+    validateSecurityParams();
+    return new WifiNetworkSpecifier(mSsidPatternMatcher, mBssidPatternMatcher, buildWifiConfiguration());
+}

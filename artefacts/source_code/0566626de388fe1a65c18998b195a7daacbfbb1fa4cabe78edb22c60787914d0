@@ -1,0 +1,27 @@
+public static int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat){
+    int channelCount = 0;
+    switch(channelConfig) {
+        case AudioFormat.CHANNEL_IN_DEFAULT:
+        case AudioFormat.CHANNEL_IN_MONO:
+        case AudioFormat.CHANNEL_CONFIGURATION_MONO:
+            channelCount = 1;
+            break;
+        case AudioFormat.CHANNEL_IN_STEREO:
+        case AudioFormat.CHANNEL_CONFIGURATION_STEREO:
+        case (AudioFormat.CHANNEL_IN_FRONT | AudioFormat.CHANNEL_IN_BACK):
+            channelCount = 2;
+            break;
+        case AudioFormat.CHANNEL_INVALID:
+        default:
+            loge("getMinBufferSize(): Invalid channel configuration.");
+            return ERROR_BAD_VALUE;
+    }
+    int size = native_get_min_buff_size(sampleRateInHz, channelCount, audioFormat);
+    if (size == 0) {
+        return ERROR_BAD_VALUE;
+    } else if (size == -1) {
+        return ERROR;
+    } else {
+        return size;
+    }
+}

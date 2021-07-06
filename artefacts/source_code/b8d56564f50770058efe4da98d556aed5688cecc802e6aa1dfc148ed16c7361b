@@ -1,0 +1,10 @@
+public boolean setSynchronizationMode(int sync) throws IllegalArgumentException{
+    if ((sync != POSITION_SYNCHRONIZATION_NONE) && (sync != POSITION_SYNCHRONIZATION_CHECK)) {
+        throw new IllegalArgumentException("Unknown synchronization mode " + sync);
+    }
+    if (!mIsRegistered) {
+        Log.e(TAG, "Cannot set synchronization mode on an unregistered RemoteController");
+        return false;
+    }
+    return true;
+}

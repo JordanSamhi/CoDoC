@@ -1,0 +1,24 @@
+public boolean setMboCellularDataStatus(@NonNull String ifaceName, boolean available){
+    final String methodStr = "setMboCellularDataStatus";
+    if (isV1_3()) {
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null) {
+            return false;
+        }
+        android.hardware.wifi.supplicant.V1_3.ISupplicantStaIface staIfaceV13 = getStaIfaceMockableV1_3(iface);
+        if (staIfaceV13 == null) {
+            Log.e(TAG, methodStr + ": SupplicantStaIface is null, cannot update cell status");
+            return false;
+        }
+        try {
+            SupplicantStatus status = staIfaceV13.setMboCellularDataStatus(available);
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+        }
+    } else {
+        Log.e(TAG, "Method " + methodStr + " is not supported in existing HAL");
+        return false;
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public void kill(){
+    synchronized (mCallbacks) {
+        for (int cbi = mCallbacks.size() - 1; cbi >= 0; cbi--) {
+            Callback cb = mCallbacks.valueAt(cbi);
+            cb.mCallback.asBinder().unlinkToDeath(cb, 0);
+        }
+        mCallbacks.clear();
+        mKilled = true;
+    }
+}

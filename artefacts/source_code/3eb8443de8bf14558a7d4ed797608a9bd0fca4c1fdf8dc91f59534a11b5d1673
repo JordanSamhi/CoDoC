@@ -1,0 +1,13 @@
+public IBinder getBinder(@Nullable String key){
+    unparcel();
+    Object o = mMap.get(key);
+    if (o == null) {
+        return null;
+    }
+    try {
+        return (IBinder) o;
+    } catch (ClassCastException e) {
+        typeWarning(key, o, "IBinder", e);
+        return null;
+    }
+}

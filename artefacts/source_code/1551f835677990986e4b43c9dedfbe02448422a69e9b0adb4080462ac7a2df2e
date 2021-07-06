@@ -1,0 +1,13 @@
+public static CaptionStyle getCustomStyle(ContentResolver cr){
+    final CaptionStyle defStyle = CaptionStyle.DEFAULT_CUSTOM;
+    final int foregroundColor = Secure.getInt(cr, Secure.ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR, defStyle.foregroundColor);
+    final int backgroundColor = Secure.getInt(cr, Secure.ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR, defStyle.backgroundColor);
+    final int edgeType = Secure.getInt(cr, Secure.ACCESSIBILITY_CAPTIONING_EDGE_TYPE, defStyle.edgeType);
+    final int edgeColor = Secure.getInt(cr, Secure.ACCESSIBILITY_CAPTIONING_EDGE_COLOR, defStyle.edgeColor);
+    final int windowColor = Secure.getInt(cr, Secure.ACCESSIBILITY_CAPTIONING_WINDOW_COLOR, defStyle.windowColor);
+    String rawTypeface = Secure.getString(cr, Secure.ACCESSIBILITY_CAPTIONING_TYPEFACE);
+    if (rawTypeface == null) {
+        rawTypeface = defStyle.mRawTypeface;
+    }
+    return new CaptionStyle(foregroundColor, backgroundColor, edgeType, edgeColor, windowColor, rawTypeface);
+}

@@ -1,0 +1,12 @@
+public static IRemoteCallback wrapStartedListener(final Handler handler, final Runnable animationStartCallback){
+    if (animationStartCallback == null) {
+        return null;
+    }
+    return new IRemoteCallback.Stub() {
+
+        @Override
+        public void sendResult(Bundle data) throws RemoteException {
+            handler.post(animationStartCallback);
+        }
+    };
+}

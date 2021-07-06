@@ -1,0 +1,8 @@
+public void touchAutoDim(){
+    getBarTransitions().setAutoDim(false);
+    mHandler.removeCallbacks(mAutoDim);
+    int state = mStatusBarStateController.getState();
+    if (state != StatusBarState.KEYGUARD && state != StatusBarState.SHADE_LOCKED) {
+        mHandler.postDelayed(mAutoDim, AUTODIM_TIMEOUT_MS);
+    }
+}

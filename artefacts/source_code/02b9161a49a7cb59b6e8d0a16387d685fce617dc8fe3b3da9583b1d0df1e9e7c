@@ -1,0 +1,10 @@
+public WifiScanner.ScanData[] getBgScanResults(@NonNull String ifaceName){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return null;
+        if (mScan == null)
+            return null;
+        return mScan.latestScanResults;
+    }
+}

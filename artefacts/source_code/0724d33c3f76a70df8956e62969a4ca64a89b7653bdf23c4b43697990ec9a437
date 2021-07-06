@@ -1,0 +1,34 @@
+public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend){
+    onStart();
+    for (int i = 0; i < dstart; i++) {
+        char c = dest.charAt(i);
+        if (!isAllowed(c))
+            onInvalidCharacter(c);
+    }
+    SpannableStringBuilder modification = null;
+    int modoff = 0;
+    for (int i = start; i < end; i++) {
+        char c = source.charAt(i);
+        if (isAllowed(c)) {
+            modoff++;
+        } else {
+            if (mAppendInvalid) {
+                modoff++;
+            } else {
+                if (modification == null) {
+                    modification = new SpannableStringBuilder(source, start, end);
+                    modoff = i - start;
+                }
+                modification.delete(modoff, modoff + 1);
+            }
+            onInvalidCharacter(c);
+        }
+    }
+    for (int i = dend; i < dest.length(); i++) {
+        char c = dest.charAt(i);
+        if (!isAllowed(c))
+            onInvalidCharacter(c);
+    }
+    onStop();
+    return modification;
+}

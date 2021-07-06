@@ -1,0 +1,11 @@
+public void sendGamepadKeyUp(@NonNull IBinder token, int keyCode) throws RuntimeException{
+    Objects.requireNonNull(token);
+    if (DEBUG_KEYS) {
+        Log.d(TAG, "sendGamepadKeyUp() token: " + token);
+    }
+    try {
+        mRemoteServiceInput.sendGamepadKeyUp(token, keyCode);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

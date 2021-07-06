@@ -1,0 +1,13 @@
+public void setFace(Type.CubemapFace cf){
+    if (!mAdaptedAllocation.getType().hasFaces()) {
+        throw new RSInvalidStateException("Cannot set Face when the allocation type does not include faces.");
+    }
+    if (mWindow.hasFaces()) {
+        throw new RSInvalidStateException("Cannot set face when the adapter includes faces.");
+    }
+    if (cf == null) {
+        throw new RSIllegalArgumentException("Cannot set null face.");
+    }
+    mSelectedFace = cf;
+    updateOffsets();
+}

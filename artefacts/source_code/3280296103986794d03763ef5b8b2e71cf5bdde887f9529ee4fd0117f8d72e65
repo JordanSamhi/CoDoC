@@ -1,0 +1,27 @@
+public void scanDir(File partitionOverlayDir){
+    if (!partitionOverlayDir.exists() || !partitionOverlayDir.isDirectory()) {
+        return;
+    }
+    if (!partitionOverlayDir.canRead()) {
+        Log.w(TAG, "Directory " + partitionOverlayDir + " cannot be read");
+        return;
+    }
+    final File[] files = partitionOverlayDir.listFiles();
+    if (files == null) {
+        return;
+    }
+    for (int i = 0; i < files.length; i++) {
+        final File f = files[i];
+        if (f.isDirectory()) {
+            scanDir(f);
+        }
+        if (!f.isFile() || !f.getPath().endsWith(".apk")) {
+            continue;
+        }
+        final ParsedOverlayInfo info = parseOverlayManifest(f);
+        if (info == null) {
+            continue;
+        }
+        mParsedOverlayInfos.put(info.packageName, info);
+    }
+}

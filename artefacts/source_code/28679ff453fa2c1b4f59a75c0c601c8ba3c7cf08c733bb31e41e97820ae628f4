@@ -1,0 +1,16 @@
+public static InflatedSmartReplies inflate(Context context, Context packageContext, NotificationEntry entry, SmartReplyConstants smartReplyConstants, SmartReplyController smartReplyController, HeadsUpManager headsUpManager, SmartRepliesAndActions existingSmartRepliesAndActions){
+    SmartRepliesAndActions newSmartRepliesAndActions = chooseSmartRepliesAndActions(smartReplyConstants, entry);
+    if (!shouldShowSmartReplyView(entry, newSmartRepliesAndActions)) {
+        return new InflatedSmartReplies(null, null, newSmartRepliesAndActions);
+    }
+    boolean delayOnClickListener = !areSuggestionsSimilar(existingSmartRepliesAndActions, newSmartRepliesAndActions);
+    SmartReplyView smartReplyView = SmartReplyView.inflate(context);
+    List<Button> suggestionButtons = new ArrayList<>();
+    if (newSmartRepliesAndActions.smartReplies != null) {
+        suggestionButtons.addAll(smartReplyView.inflateRepliesFromRemoteInput(newSmartRepliesAndActions.smartReplies, smartReplyController, entry, delayOnClickListener));
+    }
+    if (newSmartRepliesAndActions.smartActions != null) {
+        suggestionButtons.addAll(smartReplyView.inflateSmartActions(packageContext, newSmartRepliesAndActions.smartActions, smartReplyController, entry, headsUpManager, delayOnClickListener));
+    }
+    return new InflatedSmartReplies(smartReplyView, suggestionButtons, newSmartRepliesAndActions);
+}

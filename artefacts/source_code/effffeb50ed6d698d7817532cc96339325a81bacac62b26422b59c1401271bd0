@@ -1,0 +1,27 @@
+public boolean requestPowerState(DisplayPowerRequest request, boolean waitForNegativeProximity){
+    if (DEBUG) {
+        Slog.d(TAG, "requestPowerState: " + request + ", waitForNegativeProximity=" + waitForNegativeProximity);
+    }
+    synchronized (mLock) {
+        boolean changed = false;
+        if (waitForNegativeProximity && !mPendingWaitForNegativeProximityLocked) {
+            mPendingWaitForNegativeProximityLocked = true;
+            changed = true;
+        }
+        if (mPendingRequestLocked == null) {
+            mPendingRequestLocked = new DisplayPowerRequest(request);
+            changed = true;
+        } else if (!mPendingRequestLocked.equals(request)) {
+            mPendingRequestLocked.copyFrom(request);
+            changed = true;
+        }
+        if (changed) {
+            mDisplayReadyLocked = false;
+        }
+        if (changed && !mPendingRequestChangedLocked) {
+            mPendingRequestChangedLocked = true;
+            sendUpdatePowerStateLocked();
+        }
+        return mDisplayReadyLocked;
+    }
+}

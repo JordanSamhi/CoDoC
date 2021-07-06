@@ -1,0 +1,23 @@
+public void addAnimation(Animation a){
+    mAnimations.add(a);
+    boolean noMatrix = (mFlags & PROPERTY_MORPH_MATRIX_MASK) == 0;
+    if (noMatrix && a.willChangeTransformationMatrix()) {
+        mFlags |= PROPERTY_MORPH_MATRIX_MASK;
+    }
+    boolean changeBounds = (mFlags & PROPERTY_CHANGE_BOUNDS_MASK) == 0;
+    if (changeBounds && a.willChangeBounds()) {
+        mFlags |= PROPERTY_CHANGE_BOUNDS_MASK;
+    }
+    if ((mFlags & PROPERTY_DURATION_MASK) == PROPERTY_DURATION_MASK) {
+        mLastEnd = mStartOffset + mDuration;
+    } else {
+        if (mAnimations.size() == 1) {
+            mDuration = a.getStartOffset() + a.getDuration();
+            mLastEnd = mStartOffset + mDuration;
+        } else {
+            mLastEnd = Math.max(mLastEnd, mStartOffset + a.getStartOffset() + a.getDuration());
+            mDuration = mLastEnd - mStartOffset;
+        }
+    }
+    mDirty = true;
+}

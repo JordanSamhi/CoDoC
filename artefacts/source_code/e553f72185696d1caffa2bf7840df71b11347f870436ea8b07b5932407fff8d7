@@ -1,0 +1,10 @@
+public void close(){
+    validateSessionInternalStates();
+    try {
+        MediaCasStateException.throwExceptionIfNeeded(mICas.closeSession(mSessionId));
+        mIsClosed = true;
+        removeSessionFromResourceMap(this);
+    } catch (RemoteException e) {
+        cleanupAndRethrowIllegalState();
+    }
+}

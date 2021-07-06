@@ -1,0 +1,16 @@
+public Bundle startUpdateCredentialsSession(final AccountAuthenticatorResponse response, final Account account, final String authTokenType, final Bundle options) throws NetworkErrorException{
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            Bundle sessionBundle = new Bundle();
+            sessionBundle.putString(KEY_AUTH_TOKEN_TYPE, authTokenType);
+            sessionBundle.putParcelable(KEY_ACCOUNT, account);
+            sessionBundle.putBundle(KEY_OPTIONS, options);
+            Bundle result = new Bundle();
+            result.putBundle(AccountManager.KEY_ACCOUNT_SESSION_BUNDLE, sessionBundle);
+            response.onResult(result);
+        }
+    }).start();
+    return null;
+}

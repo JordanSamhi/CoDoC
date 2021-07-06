@@ -1,0 +1,43 @@
+public void onControlsChanged(InsetsSourceControl[] activeControls){
+    if (activeControls != null) {
+        for (InsetsSourceControl activeControl : activeControls) {
+            if (activeControl != null) {
+                mTmpControlArray.put(activeControl.getType(), activeControl);
+            }
+        }
+    }
+    boolean requestedStateStale = false;
+    final int[] showTypes = new int[1];
+    final int[] hideTypes = new int[1];
+    for (int i = mSourceConsumers.size() - 1; i >= 0; i--) {
+        final InsetsSourceConsumer consumer = mSourceConsumers.valueAt(i);
+        final InsetsSourceControl control = mTmpControlArray.get(consumer.getType());
+        consumer.setControl(control, showTypes, hideTypes);
+    }
+    for (int i = mTmpControlArray.size() - 1; i >= 0; i--) {
+        final InsetsSourceControl control = mTmpControlArray.valueAt(i);
+        @InternalInsetsType
+        final int type = control.getType();
+        final InsetsSourceConsumer consumer = getSourceConsumer(type);
+        consumer.setControl(control, showTypes, hideTypes);
+        if (!requestedStateStale) {
+            final boolean requestedVisible = consumer.isRequestedVisible();
+            final boolean requestedVisibilityChanged = requestedVisible != mRequestedState.getSourceOrDefaultVisibility(type);
+            final boolean imeRequestedVisible = type == ITYPE_IME && requestedVisible;
+            requestedStateStale = requestedVisibilityChanged || imeRequestedVisible;
+        }
+    }
+    mTmpControlArray.clear();
+    int animatingTypes = invokeControllableInsetsChangedListeners();
+    showTypes[0] &= ~animatingTypes;
+    hideTypes[0] &= ~animatingTypes;
+    if (showTypes[0] != 0) {
+        applyAnimation(showTypes[0], true, false);
+    }
+    if (hideTypes[0] != 0) {
+        applyAnimation(hideTypes[0], false, false);
+    }
+    if (requestedStateStale) {
+        updateRequestedState();
+    }
+}

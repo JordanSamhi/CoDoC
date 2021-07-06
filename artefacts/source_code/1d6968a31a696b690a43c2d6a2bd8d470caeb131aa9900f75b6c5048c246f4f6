@@ -1,0 +1,6 @@
+public void requestSingleUpdate(@NonNull String provider, @NonNull PendingIntent pendingIntent){
+    Preconditions.checkArgument(provider != null, "invalid null provider");
+    LocationRequest request = LocationRequest.createFromDeprecatedProvider(provider, 0, 0, true);
+    request.setExpireIn(GET_CURRENT_LOCATION_MAX_TIMEOUT_MS);
+    requestLocationUpdates(request, pendingIntent);
+}

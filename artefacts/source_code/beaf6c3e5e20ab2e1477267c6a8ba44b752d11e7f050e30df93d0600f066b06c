@@ -1,0 +1,30 @@
+public static void main(String[] args){
+    boolean result = false;
+    boolean is64Bit = VMRuntime.getRuntime().is64Bit();
+    try {
+        if (args.length != 2 || args[0] == null || args[1] == null) {
+            Log.e(LOGTAG, "Invalid RelroFileCreator args: " + Arrays.toString(args));
+            return;
+        }
+        String packageName = args[0];
+        String libraryFileName = args[1];
+        Log.v(LOGTAG, "RelroFileCreator (64bit = " + is64Bit + "), package: " + packageName + " library: " + libraryFileName);
+        if (!sAddressSpaceReserved) {
+            Log.e(LOGTAG, "can't create relro file; address space not reserved");
+            return;
+        }
+        LoadedApk apk = ActivityThread.currentActivityThread().getPackageInfo(packageName, null, Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+        result = nativeCreateRelroFile(libraryFileName, is64Bit ? CHROMIUM_WEBVIEW_NATIVE_RELRO_64 : CHROMIUM_WEBVIEW_NATIVE_RELRO_32, apk.getClassLoader());
+        if (result && DEBUG)
+            Log.v(LOGTAG, "created relro file");
+    } finally {
+        try {
+            WebViewFactory.getUpdateServiceUnchecked().notifyRelroCreationCompleted();
+        } catch (RemoteException e) {
+            Log.e(LOGTAG, "error notifying update service", e);
+        }
+        if (!result)
+            Log.e(LOGTAG, "failed to create relro file");
+        System.exit(0);
+    }
+}

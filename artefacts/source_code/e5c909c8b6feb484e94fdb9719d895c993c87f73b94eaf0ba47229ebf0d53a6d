@@ -1,0 +1,12 @@
+public void binderDied(){
+    if (DEBUG)
+        Slog.w(TAG, "Native camera service has died");
+    synchronized (mLock) {
+        mCameraServiceRaw = null;
+        boolean wasEmpty = mActiveCameraUsage.isEmpty();
+        mActiveCameraUsage.clear();
+        if (mNotifyNfc && !wasEmpty) {
+            notifyNfcService(true);
+        }
+    }
+}

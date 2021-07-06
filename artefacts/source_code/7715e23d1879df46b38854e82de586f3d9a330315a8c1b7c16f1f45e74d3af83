@@ -1,0 +1,87 @@
+public final SelectionEvent toSelectionEvent(){
+    final int invocationMethod;
+    switch(getEventCategory()) {
+        case TextClassifierEvent.CATEGORY_SELECTION:
+            invocationMethod = SelectionEvent.INVOCATION_MANUAL;
+            break;
+        case TextClassifierEvent.CATEGORY_LINKIFY:
+            invocationMethod = SelectionEvent.INVOCATION_LINK;
+            break;
+        default:
+            return null;
+    }
+    final String entityType = getEntityTypes().length > 0 ? getEntityTypes()[0] : TextClassifier.TYPE_UNKNOWN;
+    final SelectionEvent out = new SelectionEvent(0, 0, 0, entityType, SelectionEvent.INVOCATION_UNKNOWN, SelectionEvent.NO_SIGNATURE);
+    out.setInvocationMethod(invocationMethod);
+    final TextClassificationContext eventContext = getEventContext();
+    if (eventContext != null) {
+        out.setTextClassificationSessionContext(getEventContext());
+    }
+    out.setSessionId(mHiddenTempSessionId);
+    final String resultId = getResultId();
+    out.setResultId(resultId == null ? SelectionEvent.NO_SIGNATURE : resultId);
+    out.setEventIndex(getEventIndex());
+    final int eventType;
+    switch(getEventType()) {
+        case TextClassifierEvent.TYPE_SELECTION_STARTED:
+            eventType = SelectionEvent.EVENT_SELECTION_STARTED;
+            break;
+        case TextClassifierEvent.TYPE_SELECTION_MODIFIED:
+            eventType = SelectionEvent.EVENT_SELECTION_MODIFIED;
+            break;
+        case TextClassifierEvent.TYPE_SMART_SELECTION_SINGLE:
+            eventType = SelectionEvent.EVENT_SMART_SELECTION_SINGLE;
+            break;
+        case TextClassifierEvent.TYPE_SMART_SELECTION_MULTI:
+            eventType = SelectionEvent.EVENT_SMART_SELECTION_MULTI;
+            break;
+        case TextClassifierEvent.TYPE_AUTO_SELECTION:
+            eventType = SelectionEvent.EVENT_AUTO_SELECTION;
+            break;
+        case TextClassifierEvent.TYPE_OVERTYPE:
+            eventType = SelectionEvent.ACTION_OVERTYPE;
+            break;
+        case TextClassifierEvent.TYPE_COPY_ACTION:
+            eventType = SelectionEvent.ACTION_COPY;
+            break;
+        case TextClassifierEvent.TYPE_PASTE_ACTION:
+            eventType = SelectionEvent.ACTION_PASTE;
+            break;
+        case TextClassifierEvent.TYPE_CUT_ACTION:
+            eventType = SelectionEvent.ACTION_CUT;
+            break;
+        case TextClassifierEvent.TYPE_SHARE_ACTION:
+            eventType = SelectionEvent.ACTION_SHARE;
+            break;
+        case TextClassifierEvent.TYPE_SMART_ACTION:
+            eventType = SelectionEvent.ACTION_SMART_SHARE;
+            break;
+        case TextClassifierEvent.TYPE_SELECTION_DRAG:
+            eventType = SelectionEvent.ACTION_DRAG;
+            break;
+        case TextClassifierEvent.TYPE_SELECTION_DESTROYED:
+            eventType = SelectionEvent.ACTION_ABANDON;
+            break;
+        case TextClassifierEvent.TYPE_OTHER_ACTION:
+            eventType = SelectionEvent.ACTION_OTHER;
+            break;
+        case TextClassifierEvent.TYPE_SELECT_ALL:
+            eventType = SelectionEvent.ACTION_SELECT_ALL;
+            break;
+        case TextClassifierEvent.TYPE_SELECTION_RESET:
+            eventType = SelectionEvent.ACTION_RESET;
+            break;
+        default:
+            eventType = 0;
+            break;
+    }
+    out.setEventType(eventType);
+    if (this instanceof TextClassifierEvent.TextSelectionEvent) {
+        final TextClassifierEvent.TextSelectionEvent selEvent = (TextClassifierEvent.TextSelectionEvent) this;
+        out.setStart(selEvent.getRelativeWordStartIndex());
+        out.setEnd(selEvent.getRelativeWordEndIndex());
+        out.setSmartStart(selEvent.getRelativeSuggestedWordStartIndex());
+        out.setSmartEnd(selEvent.getRelativeSuggestedWordEndIndex());
+    }
+    return out;
+}

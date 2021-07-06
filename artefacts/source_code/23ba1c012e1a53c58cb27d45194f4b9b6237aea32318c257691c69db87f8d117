@@ -1,0 +1,9 @@
+public static long createNativeInterpolator(TimeInterpolator interpolator, long duration){
+    if (interpolator == null) {
+        return createLinearInterpolator();
+    } else if (RenderNodeAnimator.isNativeInterpolator(interpolator)) {
+        return ((NativeInterpolator) interpolator).createNativeInterpolator();
+    } else {
+        return FallbackLUTInterpolator.createNativeInterpolator(interpolator, duration);
+    }
+}

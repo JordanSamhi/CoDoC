@@ -1,0 +1,11 @@
+public void sendActivitySnapshotLocked(@NonNull SnapshotData snapshotData){
+    final LocalLog logHistory = mService.getMaster().mRequestsHistory;
+    if (logHistory != null) {
+        logHistory.log("snapshot: id=" + mId);
+    }
+    if (mService.mRemoteService == null) {
+        Slog.w(TAG, "sendActivitySnapshotLocked(): no remote service");
+        return;
+    }
+    mService.mRemoteService.onActivitySnapshotRequest(mId, snapshotData);
+}

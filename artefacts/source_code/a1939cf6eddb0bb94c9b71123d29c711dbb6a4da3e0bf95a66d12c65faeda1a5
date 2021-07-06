@@ -1,0 +1,22 @@
+public static Set<X509Certificate> loadCertsFromDisk(String directory){
+    Set<X509Certificate> certs = new HashSet<>();
+    try {
+        File certDir = new File(directory);
+        File[] certFiles = certDir.listFiles();
+        if (certFiles == null || certFiles.length <= 0) {
+            return certs;
+        }
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+        for (File certFile : certFiles) {
+            FileInputStream fis = new FileInputStream(certFile);
+            Certificate cert = certFactory.generateCertificate(fis);
+            if (cert instanceof X509Certificate) {
+                certs.add((X509Certificate) cert);
+            }
+            fis.close();
+        }
+    } catch (CertificateException | IOException | SecurityException e) {
+        Log.e(TAG, "Unable to read cert " + e.getMessage());
+    }
+    return certs;
+}

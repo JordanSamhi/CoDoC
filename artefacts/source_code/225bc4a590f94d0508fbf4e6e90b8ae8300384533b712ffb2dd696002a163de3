@@ -1,0 +1,27 @@
+public void onSent(Context context){
+    boolean isSinglePartOrLastPart = true;
+    if (mUnsentPartCount != null) {
+        isSinglePartOrLastPart = mUnsentPartCount.decrementAndGet() == 0;
+    }
+    if (isSinglePartOrLastPart) {
+        int messageType = Sms.MESSAGE_TYPE_SENT;
+        if (mAnyPartFailed != null && mAnyPartFailed.get()) {
+            messageType = Sms.MESSAGE_TYPE_FAILED;
+        }
+        persistOrUpdateMessage(context, messageType, NO_ERROR_CODE);
+    }
+    if (mSentIntent != null) {
+        try {
+            Intent fillIn = new Intent();
+            if (mMessageUri != null) {
+                fillIn.putExtra("uri", mMessageUri.toString());
+            }
+            if (mUnsentPartCount != null && isSinglePartOrLastPart) {
+                fillIn.putExtra(SEND_NEXT_MSG_EXTRA, true);
+            }
+            mSentIntent.send(context, Activity.RESULT_OK, fillIn);
+        } catch (CanceledException ex) {
+            Rlog.e(TAG, "Failed to send result");
+        }
+    }
+}

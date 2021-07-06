@@ -1,0 +1,21 @@
+public void onActivityResult(int requestCode, int resultCode, Intent data){
+    if (requestCode == PROCESS_TEXT_REQUEST_CODE) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            CharSequence result = data.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
+            if (result != null) {
+                if (isTextEditable()) {
+                    replaceSelectionWithText(result);
+                    if (mEditor != null) {
+                        mEditor.refreshTextActionMode();
+                    }
+                } else {
+                    if (result.length() > 0) {
+                        Toast.makeText(getContext(), String.valueOf(result), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        } else if (mSpannable != null) {
+            Selection.setSelection(mSpannable, getSelectionEnd());
+        }
+    }
+}

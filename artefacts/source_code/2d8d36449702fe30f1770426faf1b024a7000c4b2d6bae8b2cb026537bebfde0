@@ -1,0 +1,15 @@
+public final void setTextOperationUser(@Nullable UserHandle user){
+    if (Objects.equals(mTextOperationUser, user)) {
+        return;
+    }
+    if (user != null && !Process.myUserHandle().equals(user)) {
+        if (getContext().checkSelfPermission(INTERACT_ACROSS_USERS_FULL) != PackageManager.PERMISSION_GRANTED) {
+            throw new SecurityException("INTERACT_ACROSS_USERS_FULL is required." + " userId=" + user.getIdentifier() + " callingUserId" + UserHandle.myUserId());
+        }
+    }
+    mTextOperationUser = user;
+    mCurrentSpellCheckerLocaleCache = null;
+    if (mEditor != null) {
+        mEditor.onTextOperationUserChanged();
+    }
+}

@@ -1,0 +1,7 @@
+public void setLegacyExtraInfo(@Nullable final String extraInfo){
+    if (mIsLegacy) {
+        throw new UnsupportedOperationException("Legacy agents can't call setLegacyExtraInfo.");
+    }
+    mNetworkInfo.setExtraInfo(extraInfo);
+    queueOrSendMessage(EVENT_NETWORK_INFO_CHANGED, mNetworkInfo);
+}

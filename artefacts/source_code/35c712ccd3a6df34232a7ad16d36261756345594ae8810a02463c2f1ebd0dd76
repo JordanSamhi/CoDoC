@@ -1,0 +1,14 @@
+public static void rotateRectForOrientation(final int orientation, final Rect fullRect, final Rect partialRect){
+    final Matrix matrix = new Matrix();
+    matrix.setRotate(-orientation);
+    final RectF fullRectF = new RectF(fullRect);
+    final RectF partialRectF = new RectF(partialRect);
+    matrix.mapRect(fullRectF);
+    matrix.mapRect(partialRectF);
+    matrix.reset();
+    matrix.setTranslate(-fullRectF.left, -fullRectF.top);
+    matrix.mapRect(fullRectF);
+    matrix.mapRect(partialRectF);
+    fullRect.set((int) fullRectF.left, (int) fullRectF.top, (int) fullRectF.right, (int) fullRectF.bottom);
+    partialRect.set((int) partialRectF.left, (int) partialRectF.top, (int) partialRectF.right, (int) partialRectF.bottom);
+}

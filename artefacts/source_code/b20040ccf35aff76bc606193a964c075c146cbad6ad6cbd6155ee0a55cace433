@@ -1,0 +1,21 @@
+public boolean onDraggedDown(View startingChild, int dragLengthY){
+    boolean canDragDown = hasActiveNotifications() || mKeyguardMediaController.getView().getVisibility() == VISIBLE;
+    if (mStatusBarState == StatusBarState.KEYGUARD && canDragDown) {
+        mLockscreenGestureLogger.write(MetricsEvent.ACTION_LS_SHADE, (int) (dragLengthY / mDisplayMetrics.density), 0);
+        mLockscreenGestureLogger.log(LockscreenUiEvent.LOCKSCREEN_PULL_SHADE_OPEN);
+        if (!mAmbientState.isDozing() || startingChild != null) {
+            Dependency.get(ShadeController.class).goToLockedShade(startingChild);
+            if (startingChild instanceof ExpandableNotificationRow) {
+                ExpandableNotificationRow row = (ExpandableNotificationRow) startingChild;
+                row.onExpandedByGesture(true);
+            }
+        }
+        return true;
+    } else if (mDynamicPrivacyController.isInLockedDownShade()) {
+        mStatusbarStateController.setLeaveOpenOnKeyguardHide(true);
+        mStatusBar.dismissKeyguardThenExecute(() -> false, null, false);
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -1,0 +1,11 @@
+public String get(Account account, String tokenType, String packageName, byte[] sigDigest){
+    Key k = new Key(account, tokenType, packageName, sigDigest);
+    Value v = mCachedTokens.get(k);
+    long currentTime = System.currentTimeMillis();
+    if (v != null && currentTime < v.expiryEpochMillis) {
+        return v.token;
+    } else if (v != null) {
+        remove(account.type, v.token);
+    }
+    return null;
+}

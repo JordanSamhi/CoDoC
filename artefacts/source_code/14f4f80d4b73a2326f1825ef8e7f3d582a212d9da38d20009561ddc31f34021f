@@ -1,0 +1,13 @@
+public void write(Consumer<FileOutputStream> writeContent){
+    FileOutputStream out = null;
+    try {
+        out = startWrite();
+        writeContent.accept(out);
+        finishWrite(out);
+    } catch (Throwable t) {
+        failWrite(out);
+        throw ExceptionUtils.propagate(t);
+    } finally {
+        IoUtils.closeQuietly(out);
+    }
+}

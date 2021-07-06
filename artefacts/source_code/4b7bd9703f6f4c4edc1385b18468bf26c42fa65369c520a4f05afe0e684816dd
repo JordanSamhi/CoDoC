@@ -1,0 +1,10 @@
+public T[] toProto(Class<T> protoClass, ProtobufConverter<T> converter){
+    @SuppressWarnings("unchecked")
+    T[] output = (T[]) Array.newInstance(protoClass, size());
+    int i = 0;
+    for (KeyCount kc : this) {
+        output[i] = converter.convert(kc.key, kc.count);
+        i++;
+    }
+    return output;
+}

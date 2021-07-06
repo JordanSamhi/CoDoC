@@ -1,0 +1,37 @@
+public synchronized int getAvailableRestoreSets(IRestoreObserver observer, IBackupManagerMonitor monitor){
+    mBackupManagerService.getContext().enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "getAvailableRestoreSets");
+    if (observer == null) {
+        throw new IllegalArgumentException("Observer must not be null");
+    }
+    if (mEnded) {
+        throw new IllegalStateException("Restore session already ended");
+    }
+    if (mTimedOut) {
+        Slog.i(TAG, "Session already timed out");
+        return -1;
+    }
+    long oldId = Binder.clearCallingIdentity();
+    try {
+        TransportClient transportClient = mTransportManager.getTransportClient(mTransportName, "RestoreSession.getAvailableRestoreSets()");
+        if (transportClient == null) {
+            Slog.w(TAG, "Null transport client getting restore sets");
+            return -1;
+        }
+        mBackupManagerService.getBackupHandler().removeMessages(MSG_RESTORE_SESSION_TIMEOUT);
+        UserBackupManagerService.BackupWakeLock wakelock = mBackupManagerService.getWakelock();
+        wakelock.acquire();
+        TransportManager transportManager = mTransportManager;
+        OnTaskFinishedListener listener = caller -> {
+            transportManager.disposeOfTransportClient(transportClient, caller);
+            wakelock.release();
+        };
+        Message msg = mBackupManagerService.getBackupHandler().obtainMessage(MSG_RUN_GET_RESTORE_SETS, new RestoreGetSetsParams(transportClient, this, observer, monitor, listener));
+        mBackupManagerService.getBackupHandler().sendMessage(msg);
+        return 0;
+    } catch (Exception e) {
+        Slog.e(TAG, "Error in getAvailableRestoreSets", e);
+        return -1;
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+}

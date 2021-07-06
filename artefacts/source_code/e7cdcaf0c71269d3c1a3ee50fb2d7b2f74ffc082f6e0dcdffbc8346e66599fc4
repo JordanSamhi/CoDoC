@@ -1,0 +1,27 @@
+public PrinterCapabilitiesInfo build(){
+    if (mPrototype.mMediaSizes == null || mPrototype.mMediaSizes.isEmpty()) {
+        throw new IllegalStateException("No media size specified.");
+    }
+    if (mPrototype.mDefaults[PROPERTY_MEDIA_SIZE] == DEFAULT_UNDEFINED) {
+        throw new IllegalStateException("No default media size specified.");
+    }
+    if (mPrototype.mResolutions == null || mPrototype.mResolutions.isEmpty()) {
+        throw new IllegalStateException("No resolution specified.");
+    }
+    if (mPrototype.mDefaults[PROPERTY_RESOLUTION] == DEFAULT_UNDEFINED) {
+        throw new IllegalStateException("No default resolution specified.");
+    }
+    if (mPrototype.mColorModes == 0) {
+        throw new IllegalStateException("No color mode specified.");
+    }
+    if (mPrototype.mDefaults[PROPERTY_COLOR_MODE] == DEFAULT_UNDEFINED) {
+        throw new IllegalStateException("No default color mode specified.");
+    }
+    if (mPrototype.mDuplexModes == 0) {
+        setDuplexModes(PrintAttributes.DUPLEX_MODE_NONE, PrintAttributes.DUPLEX_MODE_NONE);
+    }
+    if (mPrototype.mMinMargins == null) {
+        throw new IllegalArgumentException("margins cannot be null");
+    }
+    return mPrototype;
+}

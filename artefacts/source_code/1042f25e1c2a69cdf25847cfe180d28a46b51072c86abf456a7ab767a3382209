@@ -1,0 +1,49 @@
+public final boolean isFormatSupported(MediaFormat format){
+    final Map<String, Object> map = format.getMap();
+    final String mime = (String) map.get(MediaFormat.KEY_MIME);
+    if (mime != null && !mMime.equalsIgnoreCase(mime)) {
+        return false;
+    }
+    for (Feature feat : getValidFeatures()) {
+        Integer yesNo = (Integer) map.get(MediaFormat.KEY_FEATURE_ + feat.mName);
+        if (yesNo == null) {
+            continue;
+        }
+        if ((yesNo == 1 && !isFeatureSupported(feat.mName)) || (yesNo == 0 && isFeatureRequired(feat.mName))) {
+            return false;
+        }
+    }
+    Integer profile = (Integer) map.get(MediaFormat.KEY_PROFILE);
+    Integer level = (Integer) map.get(MediaFormat.KEY_LEVEL);
+    if (profile != null) {
+        if (!supportsProfileLevel(profile, level)) {
+            return false;
+        }
+        CodecCapabilities levelCaps = null;
+        int maxLevel = 0;
+        for (CodecProfileLevel pl : profileLevels) {
+            if (pl.profile == profile && pl.level > maxLevel) {
+                if (!mMime.equalsIgnoreCase(MediaFormat.MIMETYPE_VIDEO_H263) || pl.level != CodecProfileLevel.H263Level45 || maxLevel == CodecProfileLevel.H263Level10) {
+                    maxLevel = pl.level;
+                }
+            }
+        }
+        levelCaps = createFromProfileLevel(mMime, profile, maxLevel);
+        Map<String, Object> mapWithoutProfile = new HashMap<>(map);
+        mapWithoutProfile.remove(MediaFormat.KEY_PROFILE);
+        MediaFormat formatWithoutProfile = new MediaFormat(mapWithoutProfile);
+        if (levelCaps != null && !levelCaps.isFormatSupported(formatWithoutProfile)) {
+            return false;
+        }
+    }
+    if (mAudioCaps != null && !mAudioCaps.supportsFormat(format)) {
+        return false;
+    }
+    if (mVideoCaps != null && !mVideoCaps.supportsFormat(format)) {
+        return false;
+    }
+    if (mEncoderCaps != null && !mEncoderCaps.supportsFormat(format)) {
+        return false;
+    }
+    return true;
+}

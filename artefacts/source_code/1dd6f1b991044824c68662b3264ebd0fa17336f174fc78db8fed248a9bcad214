@@ -1,0 +1,13 @@
+public static AudioProductStrategy getAudioProductStrategyWithId(int id){
+    synchronized (sLock) {
+        if (sAudioProductStrategies == null) {
+            sAudioProductStrategies = initializeAudioProductStrategies();
+        }
+        for (AudioProductStrategy strategy : sAudioProductStrategies) {
+            if (strategy.getId() == id) {
+                return strategy;
+            }
+        }
+    }
+    return null;
+}

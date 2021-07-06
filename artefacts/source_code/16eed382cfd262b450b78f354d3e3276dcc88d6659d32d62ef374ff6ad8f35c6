@@ -1,0 +1,10 @@
+public void clearPullAtomCallback(int atomTag){
+    synchronized (sLock) {
+        try {
+            IStatsManagerService service = getIStatsManagerServiceLocked();
+            service.unregisterPullAtomCallback(atomTag);
+        } catch (RemoteException e) {
+            throw new RuntimeException("Unable to unregister pull atom callback");
+        }
+    }
+}

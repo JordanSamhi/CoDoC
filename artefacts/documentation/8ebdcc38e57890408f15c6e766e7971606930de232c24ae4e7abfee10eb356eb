@@ -1,0 +1,18 @@
+
+     * Try to acquire the lock non-exclusively, blocking until the operation completes.
+     *
+     * <p>If the lock has already been closed, or being closed before this operation returns,
+     * the call will immediately return {@code false}.</p>
+     *
+     * <p>If other threads hold a non-exclusive lock (and the lock is not yet closed),
+     * this operation will return immediately. If another thread holds an exclusive lock,
+     * this thread will block until the exclusive lock has been released.</p>
+     *
+     * <p>This lock is re-entrant; acquiring more than one non-exclusive lock per thread is
+     * supported, and must be matched by an equal number of {@link #releaseLock} calls.</p>
+     *
+     * @return {@code ScopedLock} instance if the lock was acquired, or {@code null} if the lock
+     *         was already closed.
+     *
+     * @throws IllegalStateException if this thread is already holding an exclusive lock
+     

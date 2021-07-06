@@ -1,0 +1,16 @@
+public static int getConnectionStateForStatus(String status){
+    if (status.equals(STATUS_PENDING)) {
+        return Connection.STATE_INITIALIZING;
+    } else if (status.equals(STATUS_DIALING_IN)) {
+        return Connection.STATE_RINGING;
+    } else if (status.equals(STATUS_ALERTING) || status.equals(STATUS_DIALING_OUT)) {
+        return Connection.STATE_DIALING;
+    } else if (status.equals(STATUS_ON_HOLD) || status.equals(STATUS_SEND_ONLY)) {
+        return Connection.STATE_HOLDING;
+    } else if (status.equals(STATUS_CONNECTED) || status.equals(STATUS_MUTED_VIA_FOCUS) || status.equals(STATUS_DISCONNECTING) || status.equals(STATUS_SEND_RECV)) {
+        return Connection.STATE_ACTIVE;
+    } else if (status.equals(STATUS_DISCONNECTED)) {
+        return Connection.STATE_DISCONNECTED;
+    }
+    return Call.STATE_ACTIVE;
+}

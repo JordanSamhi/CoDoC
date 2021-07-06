@@ -1,0 +1,9 @@
+public static ServiceState mergeServiceStates(ServiceState baseSs, ServiceState voiceSs){
+    if (voiceSs.mVoiceRegState != STATE_IN_SERVICE) {
+        return baseSs;
+    }
+    ServiceState newSs = new ServiceState(baseSs);
+    newSs.mVoiceRegState = voiceSs.mVoiceRegState;
+    newSs.mIsEmergencyOnly = false;
+    return newSs;
+}

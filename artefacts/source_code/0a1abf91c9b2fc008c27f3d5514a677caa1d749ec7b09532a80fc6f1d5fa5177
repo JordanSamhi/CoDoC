@@ -1,0 +1,10 @@
+public static void removeStatusChangeListener(Object handle){
+    if (handle == null) {
+        throw new IllegalArgumentException("you passed in a null handle");
+    }
+    try {
+        getContentService().removeStatusChangeListener((ISyncStatusObserver.Stub) handle);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

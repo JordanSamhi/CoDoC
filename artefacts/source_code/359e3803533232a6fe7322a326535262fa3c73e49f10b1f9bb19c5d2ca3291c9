@@ -1,0 +1,21 @@
+public void setPreferredNetworkType(int networkType, Message response){
+    int modemRaf = getRadioAccessFamily();
+    int rafFromType = RadioAccessFamily.getRafFromNetworkType(networkType);
+    long allowedNetworkTypes = getAllowedNetworkTypes();
+    if (modemRaf == RadioAccessFamily.RAF_UNKNOWN || rafFromType == RadioAccessFamily.RAF_UNKNOWN) {
+        Rlog.d(LOG_TAG, "setPreferredNetworkType: Abort, unknown RAF: " + modemRaf + " " + rafFromType);
+        if (response != null) {
+            CommandException ex;
+            ex = new CommandException(CommandException.Error.GENERIC_FAILURE);
+            AsyncResult.forMessage(response, null, ex);
+            response.sendToTarget();
+        }
+        return;
+    }
+    int filteredRaf = (int) (rafFromType & modemRaf & allowedNetworkTypes & getAllowedNetworkTypesForAllReasons());
+    int filteredType = RadioAccessFamily.getNetworkTypeFromRaf(filteredRaf);
+    long powerAllowedNetworkTypes = getAllowedNetworkTypes(TelephonyManager.ALLOWED_NETWORK_TYPES_REASON_POWER);
+    Rlog.d(LOG_TAG, "setPreferredNetworkType: networkType = " + networkType + " modemRaf = " + modemRaf + " rafFromType = " + rafFromType + " allowedNetworkTypes = " + allowedNetworkTypes + " power allowedNetworkTypes = " + powerAllowedNetworkTypes + " filteredType = " + filteredType);
+    mCi.setPreferredNetworkType(filteredType, response);
+    mPreferredNetworkTypeRegistrants.notifyRegistrants();
+}

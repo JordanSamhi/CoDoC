@@ -1,0 +1,15 @@
+public void makeInactive(boolean animate){
+    if (mActivated) {
+        mActivated = false;
+        if (mDimmed) {
+            if (animate) {
+                startActivateAnimation(true);
+            } else {
+                updateBackground();
+            }
+        }
+    }
+    if (mOnActivatedListener != null) {
+        mOnActivatedListener.onActivationReset(this);
+    }
+}

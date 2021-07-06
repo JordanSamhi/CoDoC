@@ -1,0 +1,15 @@
+public static void dump(FileDescriptor fd, PrintWriter printWriter, String[] args){
+    if (sContext == null)
+        return;
+    IndentingPrintWriter pw = new IndentingPrintWriter(printWriter, "  ");
+    sContext.enforceCallingOrSelfPermission(android.Manifest.permission.DUMP, "Requires DUMP");
+    pw.println("Initialized=" + (sContext != null ? "Yes" : "No"));
+    pw.println("Debug Package=" + sDebugPackageName);
+    pw.println("Anomaly Counts:");
+    pw.increaseIndent();
+    for (UUID event : sEvents.keySet()) {
+        pw.println(event + ": " + sEvents.get(event));
+    }
+    pw.decreaseIndent();
+    pw.flush();
+}

@@ -1,0 +1,37 @@
+public synchronized IpSecTunnelInterfaceResponse createTunnelInterface(String localAddr, String remoteAddr, Network underlyingNetwork, IBinder binder, String callingPackage){
+    enforceTunnelFeatureAndPermissions(callingPackage);
+    Objects.requireNonNull(binder, "Null Binder passed to createTunnelInterface");
+    Objects.requireNonNull(underlyingNetwork, "No underlying network was specified");
+    checkInetAddress(localAddr);
+    checkInetAddress(remoteAddr);
+    int callerUid = Binder.getCallingUid();
+    UserRecord userRecord = mUserResourceTracker.getUserRecord(callerUid);
+    if (!userRecord.mTunnelQuotaTracker.isAvailable()) {
+        return new IpSecTunnelInterfaceResponse(IpSecManager.Status.RESOURCE_UNAVAILABLE);
+    }
+    final int resourceId = mNextResourceId++;
+    final int ikey = reserveNetId();
+    final int okey = reserveNetId();
+    String intfName = String.format("%s%d", INetd.IPSEC_INTERFACE_PREFIX, resourceId);
+    try {
+        final INetd netd = mSrvConfig.getNetdInstance();
+        netd.ipSecAddTunnelInterface(intfName, localAddr, remoteAddr, ikey, okey, resourceId);
+        Binder.withCleanCallingIdentity(() -> {
+            mNetworkManager.setInterfaceUp(intfName);
+        });
+        for (int selAddrFamily : ADDRESS_FAMILIES) {
+            netd.ipSecAddSecurityPolicy(callerUid, selAddrFamily, IpSecManager.DIRECTION_OUT, localAddr, remoteAddr, 0, okey, 0xffffffff, resourceId);
+            netd.ipSecAddSecurityPolicy(callerUid, selAddrFamily, IpSecManager.DIRECTION_IN, remoteAddr, localAddr, 0, ikey, 0xffffffff, resourceId);
+        }
+        userRecord.mTunnelInterfaceRecords.put(resourceId, new RefcountedResource<TunnelInterfaceRecord>(new TunnelInterfaceRecord(resourceId, intfName, underlyingNetwork, localAddr, remoteAddr, ikey, okey, resourceId), binder));
+        return new IpSecTunnelInterfaceResponse(IpSecManager.Status.OK, resourceId, intfName);
+    } catch (RemoteException e) {
+        releaseNetId(ikey);
+        releaseNetId(okey);
+        throw e.rethrowFromSystemServer();
+    } catch (Throwable t) {
+        releaseNetId(ikey);
+        releaseNetId(okey);
+        throw t;
+    }
+}

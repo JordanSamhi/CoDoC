@@ -1,0 +1,14 @@
+public UserInfo createGuest(Context context, String name){
+    UserInfo guest = null;
+    try {
+        guest = mService.createUserWithThrow(name, USER_TYPE_FULL_GUEST, 0);
+        if (guest != null) {
+            Settings.Secure.putStringForUser(context.getContentResolver(), Settings.Secure.SKIP_FIRST_USE_HINTS, "1", guest.id);
+        }
+    } catch (ServiceSpecificException e) {
+        return null;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+    return guest;
+}

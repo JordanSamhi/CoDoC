@@ -1,0 +1,10 @@
+public int setCountryIso(String iso, int subId){
+    if (DBG)
+        logd("[setCountryIso]+ iso:" + iso + " subId:" + subId);
+    ContentValues value = new ContentValues();
+    value.put(SubscriptionManager.ISO_COUNTRY_CODE, iso);
+    int result = mContext.getContentResolver().update(SubscriptionManager.getUriForSubscriptionId(subId), value, null, null);
+    refreshCachedActiveSubscriptionInfoList();
+    notifySubscriptionInfoChanged();
+    return result;
+}

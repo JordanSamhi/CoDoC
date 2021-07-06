@@ -1,0 +1,14 @@
+public boolean hideSoftInputFromWindow(IBinder windowToken, int flags, ResultReceiver resultReceiver){
+    checkFocus();
+    synchronized (mH) {
+        final View servedView = getServedViewLocked();
+        if (servedView == null || servedView.getWindowToken() != windowToken) {
+            return false;
+        }
+        try {
+            return mService.hideSoftInput(mClient, windowToken, flags, resultReceiver);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

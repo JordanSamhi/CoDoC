@@ -1,0 +1,13 @@
+public void collectDbStats(ArrayList<DbStats> dbStatsList){
+    synchronized (mLock) {
+        if (mAvailablePrimaryConnection != null) {
+            mAvailablePrimaryConnection.collectDbStats(dbStatsList);
+        }
+        for (SQLiteConnection connection : mAvailableNonPrimaryConnections) {
+            connection.collectDbStats(dbStatsList);
+        }
+        for (SQLiteConnection connection : mAcquiredConnections.keySet()) {
+            connection.collectDbStatsUnsafe(dbStatsList);
+        }
+    }
+}

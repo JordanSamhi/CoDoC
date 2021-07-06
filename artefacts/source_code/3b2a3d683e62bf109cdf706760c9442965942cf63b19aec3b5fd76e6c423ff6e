@@ -1,0 +1,11 @@
+public void onTouchInteractionEnd(){
+    synchronized (mLock) {
+        mTouchInteractionInProgress = false;
+        final int oldActiveWindow = mActiveWindowId;
+        setActiveWindowLocked(mTopFocusedWindowId);
+        final boolean accessibilityFocusOnlyInActiveWindow = !isTrackingWindowsLocked();
+        if (oldActiveWindow != mActiveWindowId && mAccessibilityFocusedWindowId == oldActiveWindow && accessibilityFocusOnlyInActiveWindow) {
+            clearAccessibilityFocusLocked(oldActiveWindow);
+        }
+    }
+}

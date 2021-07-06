@@ -1,0 +1,42 @@
+
+         * Build a periodic sync. Either this or syncOnce() <b>must</b> be called for this builder.
+         * Syncs are identified by target {@link android.provider} and by the
+         * contents of the extras bundle.
+         * You cannot reuse the same builder for one-time syncs after having specified a periodic
+         * sync (by calling this function). If you do, an <code>IllegalArgumentException</code>
+         * will be thrown.
+         * <p>The bundle for a periodic sync can be queried by applications with the correct
+         * permissions using
+         * {@link ContentResolver#getPeriodicSyncs(Account account, String provider)}, so no
+         * sensitive data should be transferred here.
+         *
+         * Example usage.
+         *
+         * <pre>
+         *     Request a periodic sync every 5 hours with 20 minutes of flex.
+         *     SyncRequest.Builder builder =
+         *         (new SyncRequest.Builder()).syncPeriodic(5 * HOUR_IN_SECS, 20 * MIN_IN_SECS);
+         *
+         *     Schedule a periodic sync every hour at any point in time during that hour.
+         *     SyncRequest.Builder builder =
+         *         (new SyncRequest.Builder()).syncPeriodic(1 * HOUR_IN_SECS, 1 * HOUR_IN_SECS);
+         * </pre>
+         *
+         * N.B.: Periodic syncs are not allowed to have any of
+         * {@link ContentResolver#SYNC_EXTRAS_DO_NOT_RETRY},
+         * {@link ContentResolver#SYNC_EXTRAS_IGNORE_BACKOFF},
+         * {@link ContentResolver#SYNC_EXTRAS_IGNORE_SETTINGS},
+         * {@link ContentResolver#SYNC_EXTRAS_INITIALIZE},
+         * {@link ContentResolver#SYNC_EXTRAS_FORCE},
+         * {@link ContentResolver#SYNC_EXTRAS_EXPEDITED},
+         * {@link ContentResolver#SYNC_EXTRAS_MANUAL}
+         * set to true. If any are supplied then an <code>IllegalArgumentException</code> will
+         * be thrown.
+         *
+         * @param pollFrequency the amount of time in seconds that you wish
+         *            to elapse between periodic syncs. A minimum period of 1 hour is enforced.
+         * @param beforeSeconds the amount of flex time in seconds before
+         *            {@code pollFrequency} that you permit for the sync to take
+         *            place. Must be less than {@code pollFrequency} and greater than
+         *            MAX(5% of {@code pollFrequency}, 5 minutes)
+         

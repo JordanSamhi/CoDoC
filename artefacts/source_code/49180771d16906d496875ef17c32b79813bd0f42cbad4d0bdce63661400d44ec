@@ -1,0 +1,68 @@
+public void applyPostLayoutPolicyLw(WindowState win, WindowManager.LayoutParams attrs, WindowState attached, WindowState imeTarget){
+    final boolean affectsSystemUi = win.canAffectSystemUiFlags();
+    if (DEBUG_LAYOUT)
+        Slog.i(TAG, "Win " + win + ": affectsSystemUi=" + affectsSystemUi);
+    mService.mPolicy.applyKeyguardPolicyLw(win, imeTarget);
+    final int fl = PolicyControl.getWindowFlags(win, attrs);
+    if (mTopFullscreenOpaqueWindowState == null && affectsSystemUi && attrs.type == TYPE_INPUT_METHOD) {
+        mForcingShowNavBar = true;
+        mForcingShowNavBarLayer = win.getSurfaceLayer();
+    }
+    boolean appWindow = attrs.type >= FIRST_APPLICATION_WINDOW && attrs.type < FIRST_SYSTEM_WINDOW;
+    final int windowingMode = win.getWindowingMode();
+    final boolean inFullScreenOrSplitScreenSecondaryWindowingMode = windowingMode == WINDOWING_MODE_FULLSCREEN || windowingMode == WINDOWING_MODE_SPLIT_SCREEN_SECONDARY;
+    if (mTopFullscreenOpaqueWindowState == null && affectsSystemUi) {
+        if ((fl & FLAG_FORCE_NOT_FULLSCREEN) != 0) {
+            mForceStatusBar = true;
+        }
+        if (win.isDreamWindow()) {
+            if (!mDreamingLockscreen || (win.isVisibleLw() && win.hasDrawnLw())) {
+                mShowingDream = true;
+                appWindow = true;
+            }
+        }
+        if (appWindow && attached == null) {
+            if (attrs.isFullscreen() && inFullScreenOrSplitScreenSecondaryWindowingMode) {
+                if (DEBUG_LAYOUT)
+                    Slog.v(TAG, "Fullscreen window: " + win);
+                mTopFullscreenOpaqueWindowState = win;
+                if (mTopFullscreenOpaqueOrDimmingWindowState == null) {
+                    mTopFullscreenOpaqueOrDimmingWindowState = win;
+                }
+                if ((fl & FLAG_ALLOW_LOCK_WHILE_SCREEN_ON) != 0) {
+                    mAllowLockscreenWhenOn = true;
+                }
+            }
+        }
+    }
+    if (affectsSystemUi && attrs.type == TYPE_VOICE_INTERACTION) {
+        if (mTopFullscreenOpaqueWindowState == null) {
+            mTopFullscreenOpaqueWindowState = win;
+            if (mTopFullscreenOpaqueOrDimmingWindowState == null) {
+                mTopFullscreenOpaqueOrDimmingWindowState = win;
+            }
+        }
+        if (mTopDockedOpaqueWindowState == null) {
+            mTopDockedOpaqueWindowState = win;
+            if (mTopDockedOpaqueOrDimmingWindowState == null) {
+                mTopDockedOpaqueOrDimmingWindowState = win;
+            }
+        }
+    }
+    if (mTopFullscreenOpaqueOrDimmingWindowState == null && affectsSystemUi && win.isDimming() && inFullScreenOrSplitScreenSecondaryWindowingMode) {
+        mTopFullscreenOpaqueOrDimmingWindowState = win;
+    }
+    if (mTopDockedOpaqueWindowState == null && affectsSystemUi && appWindow && attached == null && attrs.isFullscreen() && windowingMode == WINDOWING_MODE_SPLIT_SCREEN_PRIMARY) {
+        mTopDockedOpaqueWindowState = win;
+        if (mTopDockedOpaqueOrDimmingWindowState == null) {
+            mTopDockedOpaqueOrDimmingWindowState = win;
+        }
+    }
+    final WindowState navBarWin = hasNavigationBar() ? mNavigationBar : null;
+    if (!mIsFreeformWindowOverlappingWithNavBar && win.inFreeformWindowingMode() && isOverlappingWithNavBar(win, navBarWin)) {
+        mIsFreeformWindowOverlappingWithNavBar = true;
+    }
+    if (mTopDockedOpaqueOrDimmingWindowState == null && affectsSystemUi && win.isDimming() && windowingMode == WINDOWING_MODE_SPLIT_SCREEN_PRIMARY) {
+        mTopDockedOpaqueOrDimmingWindowState = win;
+    }
+}

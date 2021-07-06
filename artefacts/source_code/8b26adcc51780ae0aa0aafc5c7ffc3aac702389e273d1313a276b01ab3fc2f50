@@ -1,0 +1,26 @@
+public boolean getBgScanCapabilities(@NonNull String ifaceName, WifiNative.ScanCapabilities capabilities){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        try {
+            MutableBoolean ans = new MutableBoolean(false);
+            WifiNative.ScanCapabilities out = capabilities;
+            iface.getBackgroundScanCapabilities((status, cap) -> {
+                if (!ok(status))
+                    return;
+                mVerboseLog.info("scan capabilities %").c(cap.toString()).flush();
+                out.max_scan_cache_size = cap.maxCacheSize;
+                out.max_ap_cache_per_scan = cap.maxApCachePerScan;
+                out.max_scan_buckets = cap.maxBuckets;
+                out.max_rssi_sample_size = 0;
+                out.max_scan_reporting_threshold = cap.maxReportingThreshold;
+                ans.value = true;
+            });
+            return ans.value;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+}

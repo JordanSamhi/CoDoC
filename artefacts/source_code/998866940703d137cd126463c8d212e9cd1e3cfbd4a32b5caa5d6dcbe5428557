@@ -1,0 +1,12 @@
+public void flush(KeyEventFilter keyEventFilter){
+    synchronized (mLock) {
+        List<PendingKeyEvent> pendingEvents = mPendingEventsMap.get(keyEventFilter);
+        if (pendingEvents != null) {
+            for (int i = 0; i < pendingEvents.size(); i++) {
+                PendingKeyEvent pendingEvent = pendingEvents.get(i);
+                removeReferenceToPendingEventLocked(pendingEvent);
+            }
+            mPendingEventsMap.remove(keyEventFilter);
+        }
+    }
+}

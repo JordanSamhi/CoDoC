@@ -1,0 +1,17 @@
+
+     * Maximum number of images that can be acquired from the ImageReader by any time (for example,
+     * with {@link #acquireNextImage}).
+     *
+     * <p>An image is considered acquired after it's returned by a function from ImageReader, and
+     * until the Image is {@link Image#close closed} to release the image back to the ImageReader.
+     * </p>
+     *
+     * <p>Attempting to acquire more than {@code maxImages} concurrently will result in the
+     * acquire function throwing a {@link IllegalStateException}. Furthermore,
+     * while the max number of images have been acquired by the ImageReader user, the producer
+     * enqueueing additional images may stall until at least one image has been released. </p>
+     *
+     * @return Maximum number of images for this ImageReader.
+     *
+     * @see Image#close
+     

@@ -1,0 +1,12 @@
+public static Set<String> getHiddenTvInputIds(Context context, int userId){
+    String hiddenIdsString = Settings.Secure.getStringForUser(context.getContentResolver(), Settings.Secure.TV_INPUT_HIDDEN_INPUTS, userId);
+    Set<String> set = new HashSet<>();
+    if (TextUtils.isEmpty(hiddenIdsString)) {
+        return set;
+    }
+    String[] ids = hiddenIdsString.split(TV_INPUT_SEPARATOR);
+    for (String id : ids) {
+        set.add(Uri.decode(id));
+    }
+    return set;
+}

@@ -1,0 +1,16 @@
+public void onReceivedAccessibilityEvent(AccessibilityEvent event){
+    switch(event.getEventType()) {
+        case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+        case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+            if (mLastInjectedHoverEventForClick != null) {
+                mLastInjectedHoverEventForClick.recycle();
+                mLastInjectedHoverEventForClick = null;
+            }
+            mLastTouchedWindowId = -1;
+            break;
+        case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
+        case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
+            mLastTouchedWindowId = event.getWindowId();
+            break;
+    }
+}

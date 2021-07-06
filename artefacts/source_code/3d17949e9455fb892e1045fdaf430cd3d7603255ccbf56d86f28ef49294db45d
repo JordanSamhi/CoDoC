@@ -1,0 +1,25 @@
+public void restoreEntity(BackupDataInputStream data){
+    if (mWpm == null) {
+        Slog.w(TAG, "restoreEntity(): no wallpaper service");
+        return;
+    }
+    final String key = data.getKey();
+    if (isKeyInList(key, mKeys)) {
+        if (key.equals(WALLPAPER_IMAGE_KEY)) {
+            File stage = new File(STAGE_FILE);
+            try {
+                if (writeFile(stage, data)) {
+                    try (FileInputStream in = new FileInputStream(stage)) {
+                        mWpm.setStream(in);
+                    } catch (IOException e) {
+                        Slog.e(TAG, "Unable to set restored wallpaper: " + e.getMessage());
+                    }
+                } else {
+                    Slog.e(TAG, "Unable to save restored wallpaper");
+                }
+            } finally {
+                stage.delete();
+            }
+        }
+    }
+}

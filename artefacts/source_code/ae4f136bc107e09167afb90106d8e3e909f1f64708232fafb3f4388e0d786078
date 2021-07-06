@@ -1,0 +1,10 @@
+public void getSurfacePackage(ISurfacePackageResultCallback callback){
+    Log.d(TAG, "getSurfacePackage");
+    mHandler.post(() -> {
+        try {
+            callback.onResult(mViewHost == null ? null : mViewHost.getSurfacePackage());
+        } catch (RemoteException e) {
+            Log.w(TAG, "RemoteException calling onSurfacePackage");
+        }
+    });
+}

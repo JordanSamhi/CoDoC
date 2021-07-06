@@ -1,0 +1,11 @@
+public Palette.Builder setRegion(int left, int top, int right, int bottom){
+    if (mBitmap != null) {
+        if (mRegion == null)
+            mRegion = new Rect();
+        mRegion.set(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+        if (!mRegion.intersect(left, top, right, bottom)) {
+            throw new IllegalArgumentException("The given region must intersect with " + "the Bitmap's dimensions.");
+        }
+    }
+    return this;
+}

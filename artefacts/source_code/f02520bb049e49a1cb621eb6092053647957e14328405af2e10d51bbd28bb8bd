@@ -1,0 +1,9 @@
+public static T trimToSize(@Nullable T text, @IntRange(from = 1) int size){
+    Preconditions.checkArgument(size > 0);
+    if (TextUtils.isEmpty(text) || text.length() <= size)
+        return text;
+    if (Character.isHighSurrogate(text.charAt(size - 1)) && Character.isLowSurrogate(text.charAt(size))) {
+        size = size - 1;
+    }
+    return (T) text.subSequence(0, size);
+}

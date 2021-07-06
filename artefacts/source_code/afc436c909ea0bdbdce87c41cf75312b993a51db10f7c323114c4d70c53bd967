@@ -1,0 +1,30 @@
+public static Bitmap parseToRGB(byte[] data, int length, boolean transparency, byte[] clut){
+    int valueIndex = 0;
+    int width = data[valueIndex++] & 0xFF;
+    int height = data[valueIndex++] & 0xFF;
+    int bitsPerImg = data[valueIndex++] & 0xFF;
+    int numOfClutEntries = data[valueIndex++] & 0xFF;
+    if (true == transparency) {
+        clut[numOfClutEntries - 1] = Color.TRANSPARENT;
+    }
+    int numOfPixels = width * height;
+    int[] pixels = new int[numOfPixels];
+    valueIndex = 6;
+    int pixelIndex = 0;
+    int bitsStartOffset = 8 - bitsPerImg;
+    int bitIndex = bitsStartOffset;
+    byte currentByte = data[valueIndex++];
+    int mask = getMask(bitsPerImg);
+    boolean bitsOverlaps = (8 % bitsPerImg == 0);
+    while (pixelIndex < numOfPixels) {
+        if (bitIndex < 0) {
+            currentByte = data[valueIndex++];
+            bitIndex = bitsOverlaps ? (bitsStartOffset) : (bitIndex * -1);
+        }
+        int clutEntry = ((currentByte >> bitIndex) & mask);
+        int clutIndex = clutEntry * CLUT_ENTRY_SIZE;
+        pixels[pixelIndex++] = Color.rgb(clut[clutIndex], clut[clutIndex + 1], clut[clutIndex + 2]);
+        bitIndex -= bitsPerImg;
+    }
+    return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+}

@@ -1,0 +1,24 @@
+public void onPull(float deltaDistance, float displacement){
+    final long now = AnimationUtils.currentAnimationTimeMillis();
+    mTargetDisplacement = displacement;
+    if (mState == STATE_PULL_DECAY && now - mStartTime < mDuration) {
+        return;
+    }
+    if (mState != STATE_PULL) {
+        mGlowScaleY = Math.max(PULL_GLOW_BEGIN, mGlowScaleY);
+    }
+    mState = STATE_PULL;
+    mStartTime = now;
+    mDuration = PULL_TIME;
+    mPullDistance += deltaDistance;
+    final float absdd = Math.abs(deltaDistance);
+    mGlowAlpha = mGlowAlphaStart = Math.min(MAX_ALPHA, mGlowAlpha + (absdd * PULL_DISTANCE_ALPHA_GLOW_FACTOR));
+    if (mPullDistance == 0) {
+        mGlowScaleY = mGlowScaleYStart = 0;
+    } else {
+        final float scale = (float) (Math.max(0, 1 - 1 / Math.sqrt(Math.abs(mPullDistance) * mBounds.height()) - 0.3d) / 0.7d);
+        mGlowScaleY = mGlowScaleYStart = scale;
+    }
+    mGlowAlphaFinish = mGlowAlpha;
+    mGlowScaleYFinish = mGlowScaleY;
+}

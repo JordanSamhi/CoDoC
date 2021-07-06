@@ -1,0 +1,14 @@
+public void setRemoteViewsAdapter(Intent intent, boolean isAsync){
+    if (mRemoteViewsAdapter != null) {
+        Intent.FilterComparison fcNew = new Intent.FilterComparison(intent);
+        Intent.FilterComparison fcOld = new Intent.FilterComparison(mRemoteViewsAdapter.getRemoteViewsServiceIntent());
+        if (fcNew.equals(fcOld)) {
+            return;
+        }
+    }
+    mDeferNotifyDataSetChanged = false;
+    mRemoteViewsAdapter = new RemoteViewsAdapter(getContext(), intent, this, isAsync);
+    if (mRemoteViewsAdapter.isDataReady()) {
+        setAdapter(mRemoteViewsAdapter);
+    }
+}

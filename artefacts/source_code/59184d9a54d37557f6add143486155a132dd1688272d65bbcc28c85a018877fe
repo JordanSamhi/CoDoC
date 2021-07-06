@@ -1,0 +1,13 @@
+public int getRelativeStartPadding(View view){
+    boolean isRtl = isLayoutRtl();
+    int startPadding = 0;
+    while (view.getParent() instanceof ViewGroup) {
+        View parent = (View) view.getParent();
+        startPadding += isRtl ? parent.getWidth() - view.getRight() : view.getLeft();
+        view = parent;
+        if (view == this) {
+            return startPadding;
+        }
+    }
+    return startPadding;
+}

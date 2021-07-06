@@ -1,0 +1,13 @@
+public void screenTurnedOff(){
+    if (DEBUG_WAKEUP)
+        Slog.i(TAG, "Screen turned off...");
+    updateScreenOffSleepToken(true);
+    mDefaultDisplayPolicy.screenTurnedOff();
+    synchronized (mLock) {
+        if (mKeyguardDelegate != null) {
+            mKeyguardDelegate.onScreenTurnedOff();
+        }
+    }
+    mDefaultDisplayRotation.updateOrientationListener();
+    reportScreenStateToVrManager(false);
+}

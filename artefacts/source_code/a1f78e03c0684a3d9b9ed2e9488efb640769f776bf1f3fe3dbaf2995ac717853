@@ -1,0 +1,10 @@
+public void onSendSmsComplete(int result, int messageRef){
+    checkCallerIsPhoneOrCarrierApp();
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        mSmsSender.disposeConnection(mContext);
+        processSendSmsResponse(mSmsSender.mTracker, result, messageRef);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

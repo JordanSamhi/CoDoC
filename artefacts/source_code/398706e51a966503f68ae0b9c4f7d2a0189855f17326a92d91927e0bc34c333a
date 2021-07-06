@@ -1,0 +1,8 @@
+public synchronized boolean allowPurging(boolean allowPurging) throws IOException{
+    boolean oldValue = mAllowPurging;
+    if (oldValue != allowPurging) {
+        native_pin(mSharedMemory.getFileDescriptor(), !allowPurging);
+        mAllowPurging = allowPurging;
+    }
+    return oldValue;
+}

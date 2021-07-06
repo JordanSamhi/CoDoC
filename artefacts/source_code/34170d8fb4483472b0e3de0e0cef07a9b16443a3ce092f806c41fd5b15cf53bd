@@ -1,0 +1,18 @@
+public static T whitelistIpcs(Supplier<T> supplier){
+    if (STRICT_MODE_ENABLED && !sTemporarilyIgnoreStrictMode) {
+        synchronized (sLock) {
+            sTemporarilyIgnoreStrictMode = true;
+        }
+        final T val;
+        try {
+            val = supplier.get();
+        } finally {
+            synchronized (sLock) {
+                sTemporarilyIgnoreStrictMode = false;
+            }
+        }
+        return val;
+    } else {
+        return supplier.get();
+    }
+}

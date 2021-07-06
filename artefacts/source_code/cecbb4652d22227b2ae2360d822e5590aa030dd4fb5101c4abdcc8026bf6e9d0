@@ -1,0 +1,65 @@
+public boolean interceptMediaKey(KeyEvent event){
+    final int keyCode = event.getKeyCode();
+    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_MEDIA_PLAY:
+            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                if (mTelephonyManager == null) {
+                    mTelephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+                }
+                if (mTelephonyManager != null && mTelephonyManager.getCallState() != TelephonyManager.CALL_STATE_IDLE) {
+                    return true;
+                }
+            case KeyEvent.KEYCODE_MUTE:
+            case KeyEvent.KEYCODE_HEADSETHOOK:
+            case KeyEvent.KEYCODE_MEDIA_STOP:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+            case KeyEvent.KEYCODE_MEDIA_RECORD:
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            case KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK:
+                {
+                    handleMediaKeyEvent(event);
+                    return true;
+                }
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                {
+                    if (KEYGUARD_MANAGES_VOLUME) {
+                        synchronized (this) {
+                            if (mAudioManager == null) {
+                                mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                            }
+                        }
+                        mAudioManager.adjustSuggestedStreamVolume(keyCode == KeyEvent.KEYCODE_VOLUME_UP ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER, AudioManager.STREAM_MUSIC, 0);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+        }
+    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_MUTE:
+            case KeyEvent.KEYCODE_HEADSETHOOK:
+            case KeyEvent.KEYCODE_MEDIA_PLAY:
+            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+            case KeyEvent.KEYCODE_MEDIA_STOP:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+            case KeyEvent.KEYCODE_MEDIA_REWIND:
+            case KeyEvent.KEYCODE_MEDIA_RECORD:
+            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            case KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK:
+                {
+                    handleMediaKeyEvent(event);
+                    return true;
+                }
+        }
+    }
+    return false;
+}

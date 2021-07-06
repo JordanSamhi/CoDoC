@@ -1,0 +1,9 @@
+public static VoiceCallRatTracker fromProto(RawVoiceCallRatUsage[] usages){
+    VoiceCallRatTracker tracker = new VoiceCallRatTracker();
+    if (usages == null) {
+        Rlog.e(TAG, "fromProto: usages=null");
+    } else {
+        Arrays.stream(usages).forEach(e -> tracker.addProto(e));
+    }
+    return tracker;
+}

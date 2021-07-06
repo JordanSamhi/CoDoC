@@ -1,0 +1,22 @@
+public AccessibilityNodeInfo findAccessibilityNodeInfoByAccessibilityId(int connectionId, @NonNull IBinder leashToken, long accessibilityNodeId, boolean bypassCache, int prefetchFlags, Bundle arguments){
+    if (leashToken == null) {
+        return null;
+    }
+    int windowId = -1;
+    try {
+        IAccessibilityServiceConnection connection = getConnection(connectionId);
+        if (connection != null) {
+            windowId = connection.getWindowIdForLeashToken(leashToken);
+        } else {
+            if (DEBUG) {
+                Log.w(LOG_TAG, "No connection for connection id: " + connectionId);
+            }
+        }
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error while calling remote getWindowIdForLeashToken", re);
+    }
+    if (windowId == -1) {
+        return null;
+    }
+    return findAccessibilityNodeInfoByAccessibilityId(connectionId, windowId, accessibilityNodeId, bypassCache, prefetchFlags, arguments);
+}

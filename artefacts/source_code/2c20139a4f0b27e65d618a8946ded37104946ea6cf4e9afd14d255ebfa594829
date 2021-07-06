@@ -1,0 +1,14 @@
+public Canvas lockCanvas(@Nullable Rect dirty){
+    if (!isAvailable())
+        return null;
+    if (mCanvas == null) {
+        mCanvas = new Canvas();
+    }
+    synchronized (mNativeWindowLock) {
+        if (!nLockCanvas(mNativeWindow, mCanvas, dirty)) {
+            return null;
+        }
+    }
+    mSaveCount = mCanvas.save();
+    return mCanvas;
+}

@@ -1,0 +1,29 @@
+public static boolean isBuildConsistent(){
+    if (IS_ENG)
+        return true;
+    if (IS_TREBLE_ENABLED) {
+        int result = VintfObject.verifyWithoutAvb();
+        if (result != 0) {
+            Slog.e(TAG, "Vendor interface is incompatible, error=" + String.valueOf(result));
+        }
+        return result == 0;
+    }
+    final String system = SystemProperties.get("ro.system.build.fingerprint");
+    final String vendor = SystemProperties.get("ro.vendor.build.fingerprint");
+    final String bootimage = SystemProperties.get("ro.bootimage.build.fingerprint");
+    final String requiredBootloader = SystemProperties.get("ro.build.expect.bootloader");
+    final String currentBootloader = SystemProperties.get("ro.bootloader");
+    final String requiredRadio = SystemProperties.get("ro.build.expect.baseband");
+    final String currentRadio = joinListOrElse(TelephonyProperties.baseband_version(), "");
+    if (TextUtils.isEmpty(system)) {
+        Slog.e(TAG, "Required ro.system.build.fingerprint is empty!");
+        return false;
+    }
+    if (!TextUtils.isEmpty(vendor)) {
+        if (!Objects.equals(system, vendor)) {
+            Slog.e(TAG, "Mismatched fingerprints; system reported " + system + " but vendor reported " + vendor);
+            return false;
+        }
+    }
+    return true;
+}

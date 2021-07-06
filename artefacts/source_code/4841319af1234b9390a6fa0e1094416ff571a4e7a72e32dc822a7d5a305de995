@@ -1,0 +1,13 @@
+public int setDataSource(@Nullable Filter source){
+    synchronized (mLock) {
+        TunerUtils.checkResourceState(TAG, mIsClosed);
+        if (mSource != null) {
+            throw new IllegalStateException("Data source is existing");
+        }
+        int res = nativeSetDataSource(source);
+        if (res == Tuner.RESULT_SUCCESS) {
+            mSource = source;
+        }
+        return res;
+    }
+}

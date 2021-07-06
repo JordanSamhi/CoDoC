@@ -1,0 +1,14 @@
+public void enter(){
+    if (mLayoutId > 0 || mLayout != null) {
+        getSceneRoot().removeAllViews();
+        if (mLayoutId > 0) {
+            LayoutInflater.from(mContext).inflate(mLayoutId, mSceneRoot);
+        } else {
+            mSceneRoot.addView(mLayout);
+        }
+    }
+    if (mEnterAction != null) {
+        mEnterAction.run();
+    }
+    setCurrentScene(mSceneRoot, this);
+}

@@ -1,0 +1,19 @@
+public Package parseMonolithicPackage(File apkFile, int flags) throws PackageParserException{
+    final PackageLite lite = parseMonolithicPackageLite(apkFile, flags);
+    if (mOnlyCoreApps) {
+        if (!lite.coreApp) {
+            throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED, "Not a coreApp: " + apkFile);
+        }
+    }
+    final SplitAssetLoader assetLoader = new DefaultSplitAssetLoader(lite, flags);
+    try {
+        final Package pkg = parseBaseApk(apkFile, assetLoader.getBaseAssetManager(), flags);
+        pkg.setCodePath(apkFile.getCanonicalPath());
+        pkg.setUse32bitAbi(lite.use32bitAbi);
+        return pkg;
+    } catch (IOException e) {
+        throw new PackageParserException(INSTALL_PARSE_FAILED_UNEXPECTED_EXCEPTION, "Failed to get path: " + apkFile, e);
+    } finally {
+        IoUtils.closeQuietly(assetLoader);
+    }
+}

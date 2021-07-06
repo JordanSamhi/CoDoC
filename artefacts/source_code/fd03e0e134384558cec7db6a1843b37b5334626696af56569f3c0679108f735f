@@ -1,0 +1,10 @@
+public String getIsimIst(int subId) throws RemoteException{
+    return callPhoneMethodForSubIdWithPrivilegedCheck(subId, "getIsimIst", (phone) -> {
+        IsimRecords isim = phone.getIsimRecords();
+        if (isim != null) {
+            return isim.getIsimIst();
+        } else {
+            return null;
+        }
+    });
+}

@@ -1,0 +1,13 @@
+public void resetOtaEmergencyNumberDbFilePath(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            telephony.resetOtaEmergencyNumberDbFilePath();
+        } else {
+            throw new IllegalStateException("telephony service is null.");
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "resetOtaEmergencyNumberDbFilePath RemoteException", ex);
+        ex.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,12 @@
+public void scrollToDescendant(@NonNull View child){
+    if (!mIsLayoutDirty) {
+        child.getDrawingRect(mTempRect);
+        offsetDescendantRectToMyCoords(child, mTempRect);
+        int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(mTempRect);
+        if (scrollDelta != 0) {
+            scrollBy(0, scrollDelta);
+        }
+    } else {
+        mChildToScrollTo = child;
+    }
+}

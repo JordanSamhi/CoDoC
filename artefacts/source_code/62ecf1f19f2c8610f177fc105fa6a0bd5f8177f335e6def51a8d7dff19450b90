@@ -1,0 +1,8 @@
+public static void notifyEmergencyContact(Context context){
+    try {
+        Log.i(LOG_TAG, "notifyEmergencyContact; caller=%s", context.getOpPackageName());
+        context.getContentResolver().call(AUTHORITY_URI, METHOD_NOTIFY_EMERGENCY_CONTACT, null, null);
+    } catch (NullPointerException | IllegalArgumentException ex) {
+        Log.w(null, "notifyEmergencyContact: provider not ready.");
+    }
+}

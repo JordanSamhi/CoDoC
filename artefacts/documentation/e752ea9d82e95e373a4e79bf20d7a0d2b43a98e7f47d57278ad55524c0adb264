@@ -1,0 +1,26 @@
+
+     * Notifies the Android System that a fill request (
+     * {@link AutofillService#onFillRequest(FillRequest, android.os.CancellationSignal,
+     * FillCallback)}) could not be fulfilled by the service (for example, because the user data was
+     * not available yet), so the request could be retried later.
+     *
+     * <p><b>Note: </b>this method should not be used when the service didn't have the heursitics to
+     * fulfill the request; in this case, the service should call {@link #onSuccess(FillResponse)
+     * onSuccess(null)} instead.
+     *
+     * <p><b>Note: </b>prior to {@link android.os.Build.VERSION_CODES#Q}, this
+     * method was not working as intended and the service should always call
+     * {@link #onSuccess(FillResponse) onSuccess(null)} instead.
+     *
+     * <p><b>Note: </b>for apps targeting {@link android.os.Build.VERSION_CODES#Q} or higher, this
+     * method just logs the message on {@code logcat}; for apps targetting older SDKs, it also
+     * displays the message to user using a {@link android.widget.Toast}. Generally speaking, you
+     * should not display an error to the user if the request failed, unless the request had the
+     * {@link FillRequest#FLAG_MANUAL_REQUEST} flag.
+     *
+     * @param message error message. <b>Note: </b> this message should <b>not</b> contain PII
+     * (Personally Identifiable Information, such as username or email address).
+     *
+     * @throws IllegalStateException if this method or {@link #onSuccess(FillResponse)} was already
+     * called.
+     

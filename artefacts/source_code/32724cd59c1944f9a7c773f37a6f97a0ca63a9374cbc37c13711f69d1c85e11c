@@ -1,0 +1,11 @@
+public int getDimensionPixelSize(int index, int defValue){
+    try {
+        return getDimension(index, null);
+    } catch (RuntimeException e) {
+        String s = getString(index);
+        if (s != null) {
+            Bridge.getLog().warning(LayoutLog.TAG_RESOURCES_FORMAT, String.format("\"%1$s\" in attribute \"%2$s\" is not a valid format.", s, mNames[index]), null, null);
+        }
+        return defValue;
+    }
+}

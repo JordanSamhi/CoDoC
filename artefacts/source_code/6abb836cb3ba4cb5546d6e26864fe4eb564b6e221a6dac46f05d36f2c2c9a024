@@ -1,0 +1,5 @@
+public static EncryptedFullRestoreTask newInstance(Context context, FullRestoreDownloader fullRestoreDownloader, SecretKey tertiaryKey) throws NoSuchAlgorithmException, NoSuchPaddingException{
+    File temporaryFolder = new File(context.getFilesDir(), DEFAULT_TEMPORARY_FOLDER);
+    temporaryFolder.mkdirs();
+    return new EncryptedFullRestoreTask(temporaryFolder, fullRestoreDownloader, new BackupFileDecryptorTask(tertiaryKey));
+}

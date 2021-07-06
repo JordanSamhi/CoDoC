@@ -1,0 +1,23 @@
+public boolean insertSettingLocked(String name, String value, String tag, boolean makeDefault, boolean forceNonSystemPackage, String packageName, boolean overrideableByRestore){
+    if (TextUtils.isEmpty(name)) {
+        return false;
+    }
+    Setting oldState = mSettings.get(name);
+    String oldValue = (oldState != null) ? oldState.value : null;
+    String oldDefaultValue = (oldState != null) ? oldState.defaultValue : null;
+    Setting newState;
+    if (oldState != null) {
+        if (!oldState.update(value, makeDefault, packageName, tag, forceNonSystemPackage, overrideableByRestore)) {
+            return false;
+        }
+        newState = oldState;
+    } else {
+        newState = new Setting(name, value, makeDefault, packageName, tag, forceNonSystemPackage);
+        mSettings.put(name, newState);
+    }
+    FrameworkStatsLog.write(FrameworkStatsLog.SETTING_CHANGED, name, value, newState.value, oldValue, tag, makeDefault, getUserIdFromKey(mKey), FrameworkStatsLog.SETTING_CHANGED__REASON__UPDATED);
+    addHistoricalOperationLocked(HISTORICAL_OPERATION_UPDATE, newState);
+    updateMemoryUsagePerPackageLocked(packageName, oldValue, value, oldDefaultValue, newState.getDefaultValue());
+    scheduleWriteIfNeededLocked();
+    return true;
+}

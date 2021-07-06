@@ -1,0 +1,31 @@
+public void testConnection(){
+    disconnect();
+    final MediaBrowser.ConnectionCallback connectionCallback = new MediaBrowser.ConnectionCallback() {
+
+        @Override
+        public void onConnected() {
+            Log.d(TAG, "connected");
+            if (mMediaBrowser == null || !mMediaBrowser.isConnected() || TextUtils.isEmpty(mMediaBrowser.getRoot())) {
+                mCallback.onError();
+            } else {
+                mCallback.onConnected();
+            }
+        }
+
+        @Override
+        public void onConnectionSuspended() {
+            Log.d(TAG, "suspended");
+            mCallback.onError();
+        }
+
+        @Override
+        public void onConnectionFailed() {
+            Log.d(TAG, "failed");
+            mCallback.onError();
+        }
+    };
+    Bundle rootHints = new Bundle();
+    rootHints.putBoolean(MediaBrowserService.BrowserRoot.EXTRA_RECENT, true);
+    mMediaBrowser = new MediaBrowser(mContext, mComponentName, connectionCallback, rootHints);
+    mMediaBrowser.connect();
+}

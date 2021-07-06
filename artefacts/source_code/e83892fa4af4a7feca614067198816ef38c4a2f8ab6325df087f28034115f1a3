@@ -1,0 +1,17 @@
+public String getBestVolumeDescription(VolumeInfo vol){
+    if (vol == null)
+        return null;
+    if (!TextUtils.isEmpty(vol.fsUuid)) {
+        final VolumeRecord rec = findRecordByUuid(vol.fsUuid);
+        if (rec != null && !TextUtils.isEmpty(rec.nickname)) {
+            return rec.nickname;
+        }
+    }
+    if (!TextUtils.isEmpty(vol.getDescription())) {
+        return vol.getDescription();
+    }
+    if (vol.disk != null) {
+        return vol.disk.getDescription();
+    }
+    return null;
+}

@@ -1,0 +1,8 @@
+public void startActivityFromChild(@NonNull Activity child, @RequiresPermission Intent intent, int requestCode, @Nullable Bundle options){
+    options = transferSpringboardActivityOptions(options);
+    Instrumentation.ActivityResult ar = mInstrumentation.execStartActivity(this, mMainThread.getApplicationThread(), mToken, child, intent, requestCode, options);
+    if (ar != null) {
+        mMainThread.sendActivityResult(mToken, child.mEmbeddedID, requestCode, ar.getResultCode(), ar.getResultData());
+    }
+    cancelInputsAndStartExitTransition(options);
+}

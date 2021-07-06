@@ -1,0 +1,19 @@
+public final void setParameters(@Nullable Bundle params){
+    if (params == null) {
+        return;
+    }
+    String[] keys = new String[params.size()];
+    Object[] values = new Object[params.size()];
+    int i = 0;
+    for (final String key : params.keySet()) {
+        keys[i] = key;
+        Object value = params.get(key);
+        if (value instanceof byte[]) {
+            values[i] = ByteBuffer.wrap((byte[]) value);
+        } else {
+            values[i] = value;
+        }
+        ++i;
+    }
+    setParameters(keys, values);
+}

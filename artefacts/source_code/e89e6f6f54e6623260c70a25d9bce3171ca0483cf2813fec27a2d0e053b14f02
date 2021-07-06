@@ -1,0 +1,15 @@
+public synchronized void setSecondaryProgress(int secondaryProgress){
+    if (mIndeterminate) {
+        return;
+    }
+    if (secondaryProgress < mMin) {
+        secondaryProgress = mMin;
+    }
+    if (secondaryProgress > mMax) {
+        secondaryProgress = mMax;
+    }
+    if (secondaryProgress != mSecondaryProgress) {
+        mSecondaryProgress = secondaryProgress;
+        refreshProgress(R.id.secondaryProgress, mSecondaryProgress, false, false);
+    }
+}

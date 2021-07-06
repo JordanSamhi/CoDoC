@@ -1,0 +1,13 @@
+public InputStream openNonAsset(int cookie, @NonNull String fileName, int accessMode) throws IOException{
+    Objects.requireNonNull(fileName, "fileName");
+    synchronized (this) {
+        ensureOpenLocked();
+        final long asset = nativeOpenNonAsset(mObject, cookie, fileName, accessMode);
+        if (asset == 0) {
+            throw new FileNotFoundException("Asset absolute file: " + fileName);
+        }
+        final AssetInputStream assetInputStream = new AssetInputStream(asset);
+        incRefsLocked(assetInputStream.hashCode());
+        return assetInputStream;
+    }
+}

@@ -1,0 +1,15 @@
+public static void captureLayers(View root, final DataOutputStream clientStream) throws IOException{
+    try {
+        Rect outRect = new Rect();
+        try {
+            root.mAttachInfo.mSession.getDisplayFrame(root.mAttachInfo.mWindow, outRect);
+        } catch (RemoteException e) {
+        }
+        clientStream.writeInt(outRect.width());
+        clientStream.writeInt(outRect.height());
+        captureViewLayer(root, clientStream, true);
+        clientStream.write(2);
+    } finally {
+        clientStream.close();
+    }
+}

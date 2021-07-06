@@ -1,0 +1,10 @@
+public void notifyAppWidgetViewDataChanged(int[] appWidgetIds, int viewId){
+    if (mService == null) {
+        return;
+    }
+    try {
+        mService.notifyAppWidgetViewDataChanged(mPackageName, appWidgetIds, viewId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,17 @@
+public static MemorySnapshot readMemorySnapshotFromProcfs(int pid){
+    long[] output = new long[STATUS_KEYS.length];
+    output[0] = -1;
+    output[3] = -1;
+    output[4] = -1;
+    Process.readProcLines("/proc/" + pid + "/status", STATUS_KEYS, output);
+    if (output[0] == -1 || output[3] == -1 || output[4] == -1) {
+        return null;
+    }
+    final MemorySnapshot snapshot = new MemorySnapshot();
+    snapshot.uid = (int) output[0];
+    snapshot.rssHighWaterMarkInKilobytes = (int) output[1];
+    snapshot.rssInKilobytes = (int) output[2];
+    snapshot.anonRssInKilobytes = (int) output[3];
+    snapshot.swapInKilobytes = (int) output[4];
+    return snapshot;
+}

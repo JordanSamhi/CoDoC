@@ -1,0 +1,21 @@
+
+     * Waits for the result of a {@link android.hardware.usb.UsbRequest#queue} operation
+     * <p>Note that this may return requests queued on multiple
+     * {@link android.hardware.usb.UsbEndpoint}s. When multiple endpoints are in use,
+     * {@link android.hardware.usb.UsbRequest#getEndpoint} and {@link
+     * android.hardware.usb.UsbRequest#getClientData} can be useful in determining how to process
+     * the result of this function.</p>
+     * <p>Android processes {@link UsbRequest UsbRequests} asynchronously. Hence it is not
+     * guaranteed that {@link #requestWait(long) requestWait(0)} returns a request that has been
+     * queued right before even if the request could have been processed immediately.</p>
+     *
+     * @param timeout timeout in milliseconds. If 0 this method does not wait.
+     *
+     * @return a completed USB request, or {@code null} if an error occurred
+     *
+     * @throws BufferOverflowException if the number of bytes read or written is more than the
+     *                                 limit of the request's buffer. The number of bytes is
+     *                                 determined by the {@code length} parameter of
+     *                                 {@link UsbRequest#queue(ByteBuffer, int)}
+     * @throws TimeoutException if no request was received in {@code timeout} milliseconds.
+     

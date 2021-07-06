@@ -1,0 +1,25 @@
+public static int findContrastColor(int color, int other, boolean findFg, double minRatio){
+    int fg = findFg ? color : other;
+    int bg = findFg ? other : color;
+    if (ColorUtilsFromCompat.calculateContrast(fg, bg) >= minRatio) {
+        return color;
+    }
+    double[] lab = new double[3];
+    ColorUtilsFromCompat.colorToLAB(findFg ? fg : bg, lab);
+    double low = 0, high = lab[0];
+    final double a = lab[1], b = lab[2];
+    for (int i = 0; i < 15 && high - low > 0.00001; i++) {
+        final double l = (low + high) / 2;
+        if (findFg) {
+            fg = ColorUtilsFromCompat.LABToColor(l, a, b);
+        } else {
+            bg = ColorUtilsFromCompat.LABToColor(l, a, b);
+        }
+        if (ColorUtilsFromCompat.calculateContrast(fg, bg) > minRatio) {
+            low = l;
+        } else {
+            high = l;
+        }
+    }
+    return ColorUtilsFromCompat.LABToColor(low, a, b);
+}

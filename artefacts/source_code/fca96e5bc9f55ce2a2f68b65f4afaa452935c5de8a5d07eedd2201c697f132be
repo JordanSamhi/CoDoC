@@ -1,0 +1,22 @@
+public boolean handleDismissalInterception(NotificationEntry entry){
+    if (entry == null) {
+        return false;
+    }
+    if (isSummaryOfBubbles(entry)) {
+        handleSummaryDismissalInterception(entry);
+    } else {
+        Bubble bubble = mBubbleData.getBubbleInStackWithKey(entry.getKey());
+        if (bubble == null || !entry.isBubble()) {
+            bubble = mBubbleData.getOverflowBubbleWithKey(entry.getKey());
+        }
+        if (bubble == null) {
+            return false;
+        }
+        bubble.setSuppressNotification(true);
+        bubble.setShowDot(false);
+    }
+    for (NotifCallback cb : mCallbacks) {
+        cb.invalidateNotifications("BubbleController.handleDismissalInterception");
+    }
+    return true;
+}

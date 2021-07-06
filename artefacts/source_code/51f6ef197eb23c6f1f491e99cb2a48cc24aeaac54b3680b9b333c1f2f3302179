@@ -1,0 +1,24 @@
+public Bitmap toBitmap(int width, int height, int inset, int color){
+    final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    final Canvas canvas = new Canvas(bitmap);
+    final Paint paint = new Paint();
+    paint.setAntiAlias(BITMAP_RENDERING_ANTIALIAS);
+    paint.setDither(BITMAP_RENDERING_DITHER);
+    paint.setColor(color);
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStrokeJoin(Paint.Join.ROUND);
+    paint.setStrokeCap(Paint.Cap.ROUND);
+    paint.setStrokeWidth(BITMAP_RENDERING_WIDTH);
+    final Path path = toPath();
+    final RectF bounds = new RectF();
+    path.computeBounds(bounds, true);
+    final float sx = (width - 2 * inset) / bounds.width();
+    final float sy = (height - 2 * inset) / bounds.height();
+    final float scale = sx > sy ? sy : sx;
+    paint.setStrokeWidth(2.0f / scale);
+    path.offset(-bounds.left + (width - bounds.width() * scale) / 2.0f, -bounds.top + (height - bounds.height() * scale) / 2.0f);
+    canvas.translate(inset, inset);
+    canvas.scale(scale, scale);
+    canvas.drawPath(path, paint);
+    return bitmap;
+}

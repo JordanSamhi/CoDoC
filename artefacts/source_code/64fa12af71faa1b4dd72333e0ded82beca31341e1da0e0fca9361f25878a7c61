@@ -1,0 +1,12 @@
+public boolean isDataRoamingEnabled(){
+    boolean isDataRoamingEnabled = false;
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            isDataRoamingEnabled = telephony.isDataRoamingEnabled(getSubId(SubscriptionManager.getDefaultDataSubscriptionId()));
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#isDataRoamingEnabled", e);
+    }
+    return isDataRoamingEnabled;
+}

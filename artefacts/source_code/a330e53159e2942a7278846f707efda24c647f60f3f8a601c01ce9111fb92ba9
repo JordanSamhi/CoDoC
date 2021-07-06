@@ -1,0 +1,12 @@
+public final void enableIms(int slotId){
+    MmTelFeatureCompatAdapter adapter = mMmTelCompatAdapters.get(slotId);
+    if (adapter == null) {
+        Log.w(TAG, "enableIms: adapter null for slot :" + slotId);
+        return;
+    }
+    try {
+        adapter.enableIms();
+    } catch (RemoteException e) {
+        Log.w(TAG, "Couldn't enable IMS: " + e.getMessage());
+    }
+}

@@ -1,0 +1,17 @@
+public void setHasOverlayUi(int pid, boolean hasOverlayUi){
+    synchronized (ActivityManagerService.this) {
+        final ProcessRecord pr;
+        synchronized (mPidsSelfLocked) {
+            pr = mPidsSelfLocked.get(pid);
+            if (pr == null) {
+                Slog.w(TAG, "setHasOverlayUi called on unknown pid: " + pid);
+                return;
+            }
+        }
+        if (pr.hasOverlayUi() == hasOverlayUi) {
+            return;
+        }
+        pr.setHasOverlayUi(hasOverlayUi);
+        updateOomAdjLocked(pr, true, OomAdjuster.OOM_ADJ_REASON_UI_VISIBILITY);
+    }
+}

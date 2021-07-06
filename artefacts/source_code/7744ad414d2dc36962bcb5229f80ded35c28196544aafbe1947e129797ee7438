@@ -1,0 +1,17 @@
+public void writeString(Parcel p, String s){
+    final Integer cur = mIndexes.get(s);
+    if (cur != null) {
+        p.writeInt(cur);
+        if (DEBUG) {
+            Log.i(TAG, "Duplicate '" + s + "' at " + cur);
+        }
+    } else {
+        final int index = mStrings.size();
+        mIndexes.put(s, index);
+        mStrings.add(s);
+        if (DEBUG) {
+            Log.i(TAG, "New '" + s + "' at " + index);
+        }
+        p.writeInt(index);
+    }
+}

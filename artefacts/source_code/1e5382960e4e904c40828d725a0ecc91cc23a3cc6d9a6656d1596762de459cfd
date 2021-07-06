@@ -1,0 +1,9 @@
+public Builder addChild(int id, @NonNull Transformation transformation){
+    throwIfDestroyed();
+    Preconditions.checkArgument((transformation instanceof InternalTransformation), "not provided by Android System: " + transformation);
+    if (mTransformations == null) {
+        mTransformations = new ArrayList<>();
+    }
+    mTransformations.add(new Pair<>(id, (InternalTransformation) transformation));
+    return this;
+}

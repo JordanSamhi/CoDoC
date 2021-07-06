@@ -1,0 +1,15 @@
+public boolean resetSelection(int textIndex, Editor editor){
+    final TextView textView = editor.getTextView();
+    if (isSelectionStarted() && mAllowReset && textIndex >= mSelectionStart && textIndex <= mSelectionEnd && getText(textView) instanceof Spannable) {
+        mAllowReset = false;
+        boolean selected = editor.selectCurrentWord();
+        if (selected) {
+            final int[] sortedSelectionIndices = sortSelctionIndicesFromTextView(textView);
+            mSelectionStart = sortedSelectionIndices[0];
+            mSelectionEnd = sortedSelectionIndices[1];
+            mLogger.logSelectionAction(sortedSelectionIndices[0], sortedSelectionIndices[1], SelectionEvent.ACTION_RESET, null, null);
+        }
+        return selected;
+    }
+    return false;
+}

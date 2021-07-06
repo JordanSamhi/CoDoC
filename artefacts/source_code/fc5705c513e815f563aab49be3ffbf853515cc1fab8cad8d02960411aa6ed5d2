@@ -1,0 +1,19 @@
+public void startSession(int sessionId){
+    if (sessionId == INVALID_SESSION_ID) {
+        throw new IllegalArgumentException();
+    }
+    if (mSessionId != INVALID_SESSION_ID) {
+        Log.e(TAG, "Stopping session " + mSessionId + " before starting " + sessionId);
+        stopSession();
+    }
+    if (this != mWifiConnectedNetworkScorerHolder) {
+        return;
+    }
+    mSessionId = sessionId;
+    try {
+        mScorer.onStart(sessionId);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Unable to start Wifi connected network scorer " + this, e);
+        revertToDefaultConnectedScorer();
+    }
+}

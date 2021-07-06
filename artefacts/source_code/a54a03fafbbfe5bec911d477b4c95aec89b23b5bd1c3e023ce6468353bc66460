@@ -1,0 +1,11 @@
+public Model getModel(UUID soundModelId){
+    try {
+        GenericSoundModel model = mSoundTriggerService.getSoundModel(new ParcelUuid(soundModelId));
+        if (model == null) {
+            return null;
+        }
+        return new Model(model);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

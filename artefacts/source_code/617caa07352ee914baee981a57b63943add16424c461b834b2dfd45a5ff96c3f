@@ -1,0 +1,47 @@
+public void updateAdnBySearch(int efid, AdnRecord oldAdn, AdnRecord newAdn, String pin2, Message response){
+    int extensionEF;
+    extensionEF = extensionEfForEf(efid);
+    if (extensionEF < 0) {
+        sendErrorResponse(response, "EF is not known ADN-like EF:0x" + Integer.toHexString(efid).toUpperCase());
+        return;
+    }
+    ArrayList<AdnRecord> oldAdnList;
+    if (efid == EF_PBR) {
+        oldAdnList = mUsimPhoneBookManager.loadEfFilesFromUsim();
+    } else {
+        oldAdnList = getRecordsIfLoaded(efid);
+    }
+    if (oldAdnList == null) {
+        sendErrorResponse(response, "Adn list not exist for EF:0x" + Integer.toHexString(efid).toUpperCase());
+        return;
+    }
+    int index = -1;
+    int count = 1;
+    for (Iterator<AdnRecord> it = oldAdnList.iterator(); it.hasNext(); ) {
+        if (oldAdn.isEqual(it.next())) {
+            index = count;
+            break;
+        }
+        count++;
+    }
+    if (index == -1) {
+        sendErrorResponse(response, "Adn record don't exist for " + oldAdn);
+        return;
+    }
+    if (efid == EF_PBR) {
+        AdnRecord foundAdn = oldAdnList.get(index - 1);
+        efid = foundAdn.mEfid;
+        extensionEF = foundAdn.mExtRecord;
+        index = foundAdn.mRecordNumber;
+        newAdn.mEfid = efid;
+        newAdn.mExtRecord = extensionEF;
+        newAdn.mRecordNumber = index;
+    }
+    Message pendingResponse = mUserWriteResponse.get(efid);
+    if (pendingResponse != null) {
+        sendErrorResponse(response, "Have pending update for EF:0x" + Integer.toHexString(efid).toUpperCase());
+        return;
+    }
+    mUserWriteResponse.put(efid, response);
+    new AdnRecordLoader(mFh).updateEF(newAdn, efid, extensionEF, index, pin2, obtainMessage(EVENT_UPDATE_ADN_DONE, efid, index, newAdn));
+}

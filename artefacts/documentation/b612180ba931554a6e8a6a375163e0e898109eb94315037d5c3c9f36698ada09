@@ -1,0 +1,19 @@
+
+     * Change the ICC password used in ICC pin lock.
+     *
+     * If the password was changed successfully, a value of {@link Integer#MAX_VALUE} is returned.
+     * If an incorrect old password is specified, the return value will indicate how many more
+     * attempts the user can make to change the password before the SIM is locked.
+     * Using PUK code to unlock SIM if enter the incorrect old password 3 times.
+     *
+     * @param oldPassword is the old password
+     * @param newPassword is the new password
+     * @return an integer representing the status of IccLock changed in the following three cases:
+     *   - {@link TelephonyManager#CHANGE_ICC_LOCK_SUCCESS} if changed IccLock successfully.
+     *   - Positive number and zero for remaining password attempts.
+     *   - Negative number for other failure cases (such like enabling/disabling PIN failed).
+     *
+     * @throws SecurityException if the caller doesn't have the permission.
+     *
+     * @hide
+     

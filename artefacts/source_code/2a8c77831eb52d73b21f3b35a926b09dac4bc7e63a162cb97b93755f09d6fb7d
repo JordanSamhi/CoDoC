@@ -1,0 +1,9 @@
+public void fill(int requestId, int datasetIndex, Dataset dataset){
+    synchronized (mLock) {
+        if (mDestroyed) {
+            Slog.w(TAG, "Call to Session#fill() rejected - session: " + id + " destroyed");
+            return;
+        }
+    }
+    mHandler.sendMessage(obtainMessage(Session::autoFill, this, requestId, datasetIndex, dataset, true));
+}

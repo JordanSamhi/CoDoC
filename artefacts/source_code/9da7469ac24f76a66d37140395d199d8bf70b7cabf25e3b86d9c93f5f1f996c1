@@ -1,0 +1,59 @@
+public static SmsMessage newCdmaSmsMessageFromRil(CdmaSmsMessage cdmaSmsMessage){
+    SmsEnvelope env = new SmsEnvelope();
+    CdmaSmsAddress addr = new CdmaSmsAddress();
+    CdmaSmsSubaddress subaddr = new CdmaSmsSubaddress();
+    byte[] data;
+    byte count;
+    int countInt;
+    int addressDigitMode;
+    env.teleService = cdmaSmsMessage.teleserviceId;
+    if (cdmaSmsMessage.isServicePresent) {
+        env.messageType = SmsEnvelope.MESSAGE_TYPE_BROADCAST;
+    } else {
+        if (SmsEnvelope.TELESERVICE_NOT_SET == env.teleService) {
+            env.messageType = SmsEnvelope.MESSAGE_TYPE_ACKNOWLEDGE;
+        } else {
+            env.messageType = SmsEnvelope.MESSAGE_TYPE_POINT_TO_POINT;
+        }
+    }
+    env.serviceCategory = cdmaSmsMessage.serviceCategory;
+    addressDigitMode = cdmaSmsMessage.address.digitMode;
+    addr.digitMode = (byte) (0xFF & addressDigitMode);
+    addr.numberMode = (byte) (0xFF & cdmaSmsMessage.address.numberMode);
+    addr.ton = cdmaSmsMessage.address.numberType;
+    addr.numberPlan = (byte) (0xFF & cdmaSmsMessage.address.numberPlan);
+    count = (byte) cdmaSmsMessage.address.digits.size();
+    addr.numberOfDigits = count;
+    data = new byte[count];
+    for (int index = 0; index < count; index++) {
+        data[index] = cdmaSmsMessage.address.digits.get(index);
+        if (addressDigitMode == CdmaSmsAddress.DIGIT_MODE_4BIT_DTMF) {
+            data[index] = SmsMessage.convertDtmfToAscii(data[index]);
+        }
+    }
+    addr.origBytes = data;
+    subaddr.type = cdmaSmsMessage.subAddress.subaddressType;
+    subaddr.odd = (byte) (cdmaSmsMessage.subAddress.odd ? 1 : 0);
+    count = (byte) cdmaSmsMessage.subAddress.digits.size();
+    if (count < 0) {
+        count = 0;
+    }
+    data = new byte[count];
+    for (int index = 0; index < count; ++index) {
+        data[index] = cdmaSmsMessage.subAddress.digits.get(index);
+    }
+    subaddr.origBytes = data;
+    countInt = cdmaSmsMessage.bearerData.size();
+    if (countInt < 0) {
+        countInt = 0;
+    }
+    data = new byte[countInt];
+    for (int index = 0; index < countInt; index++) {
+        data[index] = cdmaSmsMessage.bearerData.get(index);
+    }
+    env.bearerData = data;
+    env.origAddress = addr;
+    env.origSubaddress = subaddr;
+    SmsMessage msg = new SmsMessage(addr, env);
+    return msg;
+}

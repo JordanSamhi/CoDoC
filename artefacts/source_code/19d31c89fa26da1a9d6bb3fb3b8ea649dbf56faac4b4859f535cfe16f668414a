@@ -1,0 +1,16 @@
+public void sendDialerSpecialCode(String inputCode){
+    try {
+        final ITelephony telephony = getITelephony();
+        if (telephony == null) {
+            if (!isSystemProcess()) {
+                throw new RuntimeException("Telephony service unavailable");
+            }
+            return;
+        }
+        telephony.sendDialerSpecialCode(mContext.getOpPackageName(), inputCode);
+    } catch (RemoteException ex) {
+        if (!isSystemProcess()) {
+            ex.rethrowAsRuntimeException();
+        }
+    }
+}

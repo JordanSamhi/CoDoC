@@ -1,0 +1,8 @@
+public UsbRequest requestWait(long timeout) throws TimeoutException{
+    timeout = Preconditions.checkArgumentNonnegative(timeout, "timeout");
+    UsbRequest request = native_request_wait(timeout);
+    if (request != null) {
+        request.dequeue(true);
+    }
+    return request;
+}

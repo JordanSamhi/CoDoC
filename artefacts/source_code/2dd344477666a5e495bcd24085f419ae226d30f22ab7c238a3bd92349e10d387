@@ -1,0 +1,10 @@
+public MediaProjection getMediaProjection(int resultCode, @NonNull Intent resultData){
+    if (resultCode != Activity.RESULT_OK || resultData == null) {
+        return null;
+    }
+    IBinder projection = resultData.getIBinderExtra(EXTRA_MEDIA_PROJECTION);
+    if (projection == null) {
+        return null;
+    }
+    return new MediaProjection(mContext, IMediaProjection.Stub.asInterface(projection));
+}

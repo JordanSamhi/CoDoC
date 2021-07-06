@@ -1,0 +1,12 @@
+public static HSFriendlyNameElement parse(ByteBuffer payload) throws ProtocolException{
+    List<I18Name> names = new ArrayList<I18Name>();
+    while (payload.hasRemaining()) {
+        I18Name name = I18Name.parse(payload);
+        int textBytes = name.getText().getBytes(StandardCharsets.UTF_8).length;
+        if (textBytes > MAXIMUM_OPERATOR_NAME_LENGTH) {
+            throw new ProtocolException("Operator Name exceeds the maximum allowed " + textBytes);
+        }
+        names.add(name);
+    }
+    return new HSFriendlyNameElement(names);
+}

@@ -1,0 +1,15 @@
+public boolean canEasyConnect(){
+    if (getWifiConfiguration() == null) {
+        return false;
+    }
+    if (!mWifiManager.isEasyConnectSupported()) {
+        return false;
+    }
+    switch(mSecurity) {
+        case SECURITY_PSK:
+        case SECURITY_SAE:
+            return true;
+        default:
+            return false;
+    }
+}

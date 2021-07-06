@@ -1,0 +1,26 @@
+public void setAutoTimeRequired(ComponentName who, boolean required){
+    if (!mHasFeature) {
+        return;
+    }
+    Objects.requireNonNull(who, "ComponentName is null");
+    final int userHandle = UserHandle.getCallingUserId();
+    boolean requireAutoTimeChanged = false;
+    synchronized (getLockObject()) {
+        if (isManagedProfile(userHandle)) {
+            throw new SecurityException("Managed profile cannot set auto time required");
+        }
+        ActiveAdmin admin = getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER);
+        if (admin.requireAutoTime != required) {
+            admin.requireAutoTime = required;
+            saveSettingsLocked(userHandle);
+            requireAutoTimeChanged = true;
+        }
+    }
+    if (requireAutoTimeChanged) {
+        pushUserRestrictions(userHandle);
+    }
+    if (required) {
+        mInjector.binderWithCleanCallingIdentity(() -> mInjector.settingsGlobalPutInt(Settings.Global.AUTO_TIME, 1));
+    }
+    DevicePolicyEventLogger.createEvent(DevicePolicyEnums.SET_AUTO_TIME_REQUIRED).setAdmin(who).setBoolean(required).write();
+}

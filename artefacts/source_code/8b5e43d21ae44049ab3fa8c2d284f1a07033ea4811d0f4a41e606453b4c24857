@@ -1,0 +1,8 @@
+public static ArrayList<CellInfo> convertHalCellInfoList_1_5(ArrayList<android.hardware.radio.V1_5.CellInfo> records){
+    ArrayList<CellInfo> response = new ArrayList<>(records.size());
+    final long nanotime = SystemClock.elapsedRealtimeNanos();
+    for (android.hardware.radio.V1_5.CellInfo record : records) {
+        response.add(CellInfo.create(record, nanotime));
+    }
+    return response;
+}

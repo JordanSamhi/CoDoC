@@ -1,0 +1,25 @@
+public static Allocation[] createAllocations(RenderScript rs, Type t, int usage, int numAlloc){
+    try {
+        Trace.traceBegin(RenderScript.TRACE_TAG, "createAllocations");
+        rs.validate();
+        if (t.getID(rs) == 0) {
+            throw new RSInvalidStateException("Bad Type");
+        }
+        Allocation[] mAllocationArray = new Allocation[numAlloc];
+        mAllocationArray[0] = createTyped(rs, t, usage);
+        if ((usage & USAGE_IO_INPUT) != 0) {
+            if (numAlloc > MAX_NUMBER_IO_INPUT_ALLOC) {
+                mAllocationArray[0].destroy();
+                throw new RSIllegalArgumentException("Exceeds the max number of Allocations allowed: " + MAX_NUMBER_IO_INPUT_ALLOC);
+            }
+            mAllocationArray[0].setupBufferQueue(numAlloc);
+            ;
+        }
+        for (int i = 1; i < numAlloc; i++) {
+            mAllocationArray[i] = createFromAllocation(rs, mAllocationArray[0]);
+        }
+        return mAllocationArray;
+    } finally {
+        Trace.traceEnd(RenderScript.TRACE_TAG);
+    }
+}

@@ -1,0 +1,8 @@
+public long getAncestralSerialNumber(){
+    try (RandomAccessFile af = getAncestralSerialNumberFile()) {
+        return af.readLong();
+    } catch (IOException e) {
+        Slog.w(TAG, addUserIdToLogMessage(mUserId, "Unable to write to work profile serial number file:"), e);
+        return -1;
+    }
+}

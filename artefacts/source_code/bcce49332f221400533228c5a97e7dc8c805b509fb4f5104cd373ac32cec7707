@@ -1,0 +1,14 @@
+public static void setClientState(@NonNull IResultReceiver clientReceiver, int sessionState, @Nullable IBinder binder){
+    try {
+        final Bundle extras;
+        if (binder != null) {
+            extras = new Bundle();
+            extras.putBinder(MainContentCaptureSession.EXTRA_BINDER, binder);
+        } else {
+            extras = null;
+        }
+        clientReceiver.send(sessionState, extras);
+    } catch (RemoteException e) {
+        Slog.w(TAG, "Error async reporting result to client: " + e);
+    }
+}

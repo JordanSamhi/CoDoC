@@ -1,0 +1,15 @@
+public boolean setExternalSim(@NonNull String ifaceName, boolean useExternalSim){
+    synchronized (mLock) {
+        final String methodStr = "setExternalSim";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return false;
+        try {
+            SupplicantStatus status = iface.setExternalSim(useExternalSim);
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

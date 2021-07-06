@@ -1,0 +1,8 @@
+public static void writeMediaSize(@NonNull Context context, @NonNull DualDumpOutputStream proto, String idName, long id, @NonNull PrintAttributes.MediaSize mediaSize){
+    long token = proto.start(idName, id);
+    proto.write("id", MediaSizeProto.ID, mediaSize.getId());
+    proto.write("label", MediaSizeProto.LABEL, mediaSize.getLabel(context.getPackageManager()));
+    proto.write("height_mils", MediaSizeProto.HEIGHT_MILS, mediaSize.getHeightMils());
+    proto.write("width_mils", MediaSizeProto.WIDTH_MILS, mediaSize.getWidthMils());
+    proto.end(token);
+}

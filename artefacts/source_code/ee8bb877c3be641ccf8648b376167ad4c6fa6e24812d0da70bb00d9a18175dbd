@@ -1,0 +1,6 @@
+public static List<CellIdentity> getPrioritizedCellIdentities(@NonNull final ServiceState ss){
+    final List<NetworkRegistrationInfo> regInfos = ss.getNetworkRegistrationInfoList();
+    if (regInfos.isEmpty())
+        return Collections.emptyList();
+    return regInfos.stream().filter(nri -> nri.getCellIdentity() != null).filter(nri -> nri.getTransportType() == AccessNetworkConstants.TRANSPORT_TYPE_WWAN).sorted(Comparator.comparing(NetworkRegistrationInfo::isRegistered).thenComparing((nri) -> nri.getDomain() & NetworkRegistrationInfo.DOMAIN_CS).reversed()).map(nri -> nri.getCellIdentity()).distinct().collect(Collectors.toList());
+}

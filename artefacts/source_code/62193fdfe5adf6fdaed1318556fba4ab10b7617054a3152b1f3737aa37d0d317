@@ -1,0 +1,7 @@
+public void setBluetoothA2dpOn(boolean on){
+    final int uid = Binder.getCallingUid();
+    final int pid = Binder.getCallingPid();
+    final String eventSource = new StringBuilder("setBluetoothA2dpOn(").append(on).append(") from u/pid:").append(uid).append("/").append(pid).toString();
+    new MediaMetrics.Item(MediaMetrics.Name.AUDIO_DEVICE + MediaMetrics.SEPARATOR + "setBluetoothA2dpOn").setUid(uid).setPid(pid).set(MediaMetrics.Property.STATE, on ? MediaMetrics.Value.ON : MediaMetrics.Value.OFF).record();
+    mDeviceBroker.setBluetoothA2dpOn_Async(on, eventSource);
+}

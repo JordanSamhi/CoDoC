@@ -1,0 +1,8 @@
+public void registerSystemAction(int id, RemoteAction action){
+    synchronized (mSystemActionLock) {
+        mRegisteredSystemActions.put(id, action);
+    }
+    if (mListener != null) {
+        mListener.onSystemActionsChanged();
+    }
+}

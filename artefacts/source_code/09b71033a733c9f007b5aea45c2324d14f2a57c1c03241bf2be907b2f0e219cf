@@ -1,0 +1,7 @@
+public IBinder getWindowTokenForUserAndWindowIdLocked(int userId, int windowId){
+    IBinder windowToken = mGlobalWindowTokens.get(windowId);
+    if (windowToken == null && isValidUserForWindowTokensLocked(userId)) {
+        windowToken = getWindowTokensForUserLocked(userId).get(windowId);
+    }
+    return windowToken;
+}

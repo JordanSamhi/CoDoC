@@ -1,0 +1,14 @@
+public String getType(@NonNull Uri url) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    beforeRemote();
+    try {
+        return mContentProvider.getType(url);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

@@ -1,0 +1,44 @@
+public Path getCornerPath(Corner corner){
+    if (mRoundedPath.isEmpty()) {
+        return mRoundedPath;
+    }
+    int cornerRadius;
+    int rotateDegrees;
+    int translateX;
+    int translateY;
+    switch(corner) {
+        case TOP_LEFT:
+            cornerRadius = mTopCornerRadius;
+            rotateDegrees = 0;
+            translateX = 0;
+            translateY = 0;
+            break;
+        case TOP_RIGHT:
+            cornerRadius = mTopCornerRadius;
+            rotateDegrees = 90;
+            translateX = mWidth;
+            translateY = 0;
+            break;
+        case BOTTOM_RIGHT:
+            cornerRadius = mBottomCornerRadius;
+            rotateDegrees = 180;
+            translateX = mWidth;
+            translateY = mHeight;
+            break;
+        case BOTTOM_LEFT:
+        default:
+            cornerRadius = mBottomCornerRadius;
+            rotateDegrees = 270;
+            translateX = 0;
+            translateY = mHeight;
+            break;
+    }
+    mPath.reset();
+    mMatrix.reset();
+    mPath.addPath(mRoundedPath);
+    mMatrix.preScale(cornerRadius / mPathScale, cornerRadius / mPathScale);
+    mMatrix.postRotate(rotateDegrees);
+    mMatrix.postTranslate(translateX, translateY);
+    mPath.transform(mMatrix);
+    return mPath;
+}

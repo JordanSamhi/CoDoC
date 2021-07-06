@@ -1,0 +1,4 @@
+public static String getAppContentDescription(Context context, String packageName, int userId){
+    final CharSequence appLabel = getApplicationLabel(context.getPackageManager(), packageName);
+    return context.getSystemService(UserManager.class).isManagedProfile(userId) ? context.getString(R.string.accessibility_work_profile_app_description, appLabel) : appLabel.toString();
+}

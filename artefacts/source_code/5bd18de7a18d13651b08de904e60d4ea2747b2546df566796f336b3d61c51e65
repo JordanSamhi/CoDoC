@@ -1,0 +1,27 @@
+public static Bitmap decodeFileDescriptor(FileDescriptor fd, Rect outPadding, Options opts){
+    validate(opts);
+    Bitmap bm;
+    Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeFileDescriptor");
+    try {
+        if (nativeIsSeekable(fd)) {
+            bm = nativeDecodeFileDescriptor(fd, outPadding, opts, Options.nativeInBitmap(opts), Options.nativeColorSpace(opts));
+        } else {
+            FileInputStream fis = new FileInputStream(fd);
+            try {
+                bm = decodeStreamInternal(fis, outPadding, opts);
+            } finally {
+                try {
+                    fis.close();
+                } catch (Throwable t) {
+                }
+            }
+        }
+        if (bm == null && opts != null && opts.inBitmap != null) {
+            throw new IllegalArgumentException("Problem decoding into existing bitmap");
+        }
+        setDensityFromOptions(bm, opts);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
+    }
+    return bm;
+}

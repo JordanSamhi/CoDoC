@@ -1,0 +1,39 @@
+public boolean configureAgentProperties(AwareNetworkRequestInformation nnri, Set<NetworkRequest> networkRequests, int ndpId, NetworkCapabilities.Builder ncBuilder, LinkProperties linkProperties){
+    InetAddress linkLocal = null;
+    NetworkInterface ni;
+    try {
+        ni = NetworkInterface.getByName(nnri.interfaceName);
+    } catch (SocketException e) {
+        Log.e(TAG, "onDataPathConfirm: ACCEPT nnri=" + nnri + ": can't get network interface - " + e);
+        mMgr.endDataPath(ndpId);
+        nnri.state = AwareNetworkRequestInformation.STATE_TERMINATING;
+        return false;
+    }
+    if (ni == null) {
+        Log.e(TAG, "onDataPathConfirm: ACCEPT nnri=" + nnri + ": can't get network interface (null)");
+        mMgr.endDataPath(ndpId);
+        nnri.state = AwareNetworkRequestInformation.STATE_TERMINATING;
+        return false;
+    }
+    Enumeration<InetAddress> addresses = ni.getInetAddresses();
+    while (addresses.hasMoreElements()) {
+        InetAddress ip = addresses.nextElement();
+        if (ip instanceof Inet6Address && ip.isLinkLocalAddress()) {
+            linkLocal = ip;
+            break;
+        }
+    }
+    if (linkLocal == null) {
+        Log.e(TAG, "onDataPathConfirm: ACCEPT nnri=" + nnri + ": no link local addresses");
+        mMgr.endDataPath(ndpId);
+        nnri.state = AwareNetworkRequestInformation.STATE_TERMINATING;
+        return false;
+    }
+    ncBuilder.setRequestorUid(nnri.uid);
+    ncBuilder.setRequestorPackageName(nnri.packageName);
+    ncBuilder.setNetworkSpecifier(new WifiAwareAgentNetworkSpecifier(networkRequests.stream().map(NetworkRequest::getNetworkSpecifier).toArray(WifiAwareNetworkSpecifier[]::new)));
+    linkProperties.setInterfaceName(nnri.interfaceName);
+    linkProperties.addLinkAddress(new LinkAddress(linkLocal, 64));
+    linkProperties.addRoute(new RouteInfo(new IpPrefix("fe80::/64"), null, nnri.interfaceName, RTN_UNICAST));
+    return true;
+}

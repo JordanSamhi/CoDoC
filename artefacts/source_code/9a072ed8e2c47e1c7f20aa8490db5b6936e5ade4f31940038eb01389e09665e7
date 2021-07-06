@@ -1,0 +1,16 @@
+public int getConnectionState(BluetoothDevice device){
+    if (DBG)
+        log("getConnectionState(" + device + ")");
+    final IBluetoothMap service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.getConnectionState(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return BluetoothProfile.STATE_DISCONNECTED;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return BluetoothProfile.STATE_DISCONNECTED;
+}

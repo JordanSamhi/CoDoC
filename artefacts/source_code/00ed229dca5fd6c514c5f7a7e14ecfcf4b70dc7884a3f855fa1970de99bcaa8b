@@ -1,0 +1,52 @@
+public static boolean populateComponent(Cursor cursor, ICalendar.Component component){
+    int dtstartColumn = cursor.getColumnIndex(CalendarContract.Events.DTSTART);
+    int durationColumn = cursor.getColumnIndex(CalendarContract.Events.DURATION);
+    int tzidColumn = cursor.getColumnIndex(CalendarContract.Events.EVENT_TIMEZONE);
+    int rruleColumn = cursor.getColumnIndex(CalendarContract.Events.RRULE);
+    int rdateColumn = cursor.getColumnIndex(CalendarContract.Events.RDATE);
+    int exruleColumn = cursor.getColumnIndex(CalendarContract.Events.EXRULE);
+    int exdateColumn = cursor.getColumnIndex(CalendarContract.Events.EXDATE);
+    int allDayColumn = cursor.getColumnIndex(CalendarContract.Events.ALL_DAY);
+    long dtstart = -1;
+    if (!cursor.isNull(dtstartColumn)) {
+        dtstart = cursor.getLong(dtstartColumn);
+    }
+    String duration = cursor.getString(durationColumn);
+    String tzid = cursor.getString(tzidColumn);
+    String rruleStr = cursor.getString(rruleColumn);
+    String rdateStr = cursor.getString(rdateColumn);
+    String exruleStr = cursor.getString(exruleColumn);
+    String exdateStr = cursor.getString(exdateColumn);
+    boolean allDay = cursor.getInt(allDayColumn) == 1;
+    if ((dtstart == -1) || (TextUtils.isEmpty(duration)) || ((TextUtils.isEmpty(rruleStr)) && (TextUtils.isEmpty(rdateStr)))) {
+        return false;
+    }
+    ICalendar.Property dtstartProp = new ICalendar.Property("DTSTART");
+    Time dtstartTime = null;
+    if (!TextUtils.isEmpty(tzid)) {
+        if (!allDay) {
+            dtstartProp.addParameter(new ICalendar.Parameter("TZID", tzid));
+        }
+        dtstartTime = new Time(tzid);
+    } else {
+        dtstartTime = new Time(Time.TIMEZONE_UTC);
+    }
+    dtstartTime.set(dtstart);
+    if (allDay) {
+        dtstartProp.addParameter(new ICalendar.Parameter("VALUE", "DATE"));
+        dtstartTime.allDay = true;
+        dtstartTime.hour = 0;
+        dtstartTime.minute = 0;
+        dtstartTime.second = 0;
+    }
+    dtstartProp.setValue(dtstartTime.format2445());
+    component.addProperty(dtstartProp);
+    ICalendar.Property durationProp = new ICalendar.Property("DURATION");
+    durationProp.setValue(duration);
+    component.addProperty(durationProp);
+    addPropertiesForRuleStr(component, "RRULE", rruleStr);
+    addPropertyForDateStr(component, "RDATE", rdateStr);
+    addPropertiesForRuleStr(component, "EXRULE", exruleStr);
+    addPropertyForDateStr(component, "EXDATE", exdateStr);
+    return true;
+}

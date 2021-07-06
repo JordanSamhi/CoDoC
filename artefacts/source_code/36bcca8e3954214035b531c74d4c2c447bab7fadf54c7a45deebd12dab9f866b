@@ -1,0 +1,9 @@
+public void writeElapsedTimeMetric(int action, String key){
+    if (mMetricsFeature == null || mMetricsCategory == METRICS_CATEGORY_UNKNOWN) {
+        return;
+    }
+    if (mCreationTimestamp != 0L) {
+        final int elapse = (int) (SystemClock.elapsedRealtime() - mCreationTimestamp);
+        mMetricsFeature.action(METRICS_CATEGORY_UNKNOWN, action, mMetricsCategory, key, elapse);
+    }
+}

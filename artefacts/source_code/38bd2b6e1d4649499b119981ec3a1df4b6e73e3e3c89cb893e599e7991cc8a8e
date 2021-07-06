@@ -1,0 +1,11 @@
+public void startSync(Uri uri, Bundle extras){
+    Account account = null;
+    if (extras != null) {
+        String accountName = extras.getString(SYNC_EXTRAS_ACCOUNT);
+        if (!TextUtils.isEmpty(accountName)) {
+            account = new Account(accountName, "com.google");
+        }
+        extras.remove(SYNC_EXTRAS_ACCOUNT);
+    }
+    requestSync(account, uri != null ? uri.getAuthority() : null, extras);
+}

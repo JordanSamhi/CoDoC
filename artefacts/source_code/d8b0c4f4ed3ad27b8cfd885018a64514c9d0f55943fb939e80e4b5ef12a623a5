@@ -1,0 +1,10 @@
+public long getSize() throws IOException{
+    try {
+        return mSession.getSize();
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

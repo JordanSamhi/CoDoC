@@ -1,0 +1,11 @@
+public void vibrate(long[] pattern, int repeat, AudioAttributes attributes){
+    if (repeat < -1 || repeat >= pattern.length) {
+        Log.e(TAG, "vibrate called with repeat index out of bounds" + " (pattern.length=" + pattern.length + ", index=" + repeat + ")");
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    try {
+        vibrate(VibrationEffect.createWaveform(pattern, repeat), attributes);
+    } catch (IllegalArgumentException iae) {
+        Log.e(TAG, "Failed to create VibrationEffect", iae);
+    }
+}

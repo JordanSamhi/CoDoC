@@ -1,0 +1,22 @@
+public void destroyLoader(int id){
+    if (mCreatingLoader) {
+        throw new IllegalStateException("Called while creating a loader");
+    }
+    if (DEBUG)
+        Log.v(TAG, "destroyLoader in " + this + " of " + id);
+    int idx = mLoaders.indexOfKey(id);
+    if (idx >= 0) {
+        LoaderInfo info = mLoaders.valueAt(idx);
+        mLoaders.removeAt(idx);
+        info.destroy();
+    }
+    idx = mInactiveLoaders.indexOfKey(id);
+    if (idx >= 0) {
+        LoaderInfo info = mInactiveLoaders.valueAt(idx);
+        mInactiveLoaders.removeAt(idx);
+        info.destroy();
+    }
+    if (mHost != null && !hasRunningLoaders()) {
+        mHost.mFragmentManager.startPendingDeferredFragments();
+    }
+}

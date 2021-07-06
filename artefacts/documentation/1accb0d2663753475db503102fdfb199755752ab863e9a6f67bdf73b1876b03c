@@ -1,0 +1,18 @@
+
+     * This method should be triggered by the IMS providers to pass the result of the sent message
+     * to the platform.
+     *
+     * @param token token provided in {@link #sendSms(int, int, String, String, boolean, byte[])}
+     * @param messageRef the message reference, which may be 1 byte if it is in
+     *     {@link SmsMessage#FORMAT_3GPP} format (see TS.123.040) or 2 bytes if it is in
+     *     {@link SmsMessage#FORMAT_3GPP2} format (see 3GPP2 C.S0015-B).
+     * @param status result of sending the SMS.
+     * @param reason reason in case status is failure.
+     *
+     * @throws RuntimeException if called before {@link #onReady()} is triggered or if the
+     * connection to the framework is not available. If this happens attempting to send the SMS
+     * should be aborted.
+     * @deprecated Use {@link #onSendSmsResultSuccess(int, int)} or
+     * {@link #onSendSmsResultError(int, int, int, int, int)} to notify the framework of the SMS
+     * send result.
+     

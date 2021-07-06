@@ -1,0 +1,16 @@
+public int getOffsetInPartition(int position){
+    ensureCacheValid();
+    int start = 0;
+    for (Partition partition : mPartitions) {
+        int end = start + partition.count;
+        if (position >= start && position < end) {
+            int offset = position - start;
+            if (partition.hasHeader) {
+                offset--;
+            }
+            return offset;
+        }
+        start = end;
+    }
+    return -1;
+}

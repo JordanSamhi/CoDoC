@@ -1,0 +1,40 @@
+
+         * Store a name/value pair into the database.
+         * <p>
+         * The method takes an optional tag to associate with the setting
+         * which can be used to clear only settings made by your package and
+         * associated with this tag by passing the tag to {@link
+         * #resetToDefaults(ContentResolver, String)}. Anyone can override
+         * the current tag. Also if another package changes the setting
+         * then the tag will be set to the one specified in the set call
+         * which can be null. Also any of the settings setters that do not
+         * take a tag as an argument effectively clears the tag.
+         * </p><p>
+         * For example, if you set settings A and B with tags T1 and T2 and
+         * another app changes setting A (potentially to the same value), it
+         * can assign to it a tag T3 (note that now the package that changed
+         * the setting is not yours). Now if you reset your changes for T1 and
+         * T2 only setting B will be reset and A not (as it was changed by
+         * another package) but since A did not change you are in the desired
+         * initial state. Now if the other app changes the value of A (assuming
+         * you registered an observer in the beginning) you would detect that
+         * the setting was changed by another app and handle this appropriately
+         * (ignore, set back to some value, etc).
+         * </p><p>
+         * Also the method takes an argument whether to make the value the
+         * default for this setting. If the system already specified a default
+         * value, then the one passed in here will <strong>not</strong>
+         * be set as the default.
+         * </p>
+         *
+         * @param resolver to access the database with.
+         * @param name to store.
+         * @param value to associate with the name.
+         * @param tag to associate with the setting.
+         * @param makeDefault whether to make the value the default one.
+         * @return true if the value was set, false on database errors.
+         *
+         * @see #resetToDefaults(ContentResolver, String)
+         *
+         * @hide
+         

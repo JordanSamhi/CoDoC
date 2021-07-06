@@ -1,0 +1,24 @@
+public void setWindowsOnAllDisplays(SparseArray<List<AccessibilityWindowInfo>> windowsOnAllDisplays){
+    synchronized (mLock) {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "Set windows");
+        }
+        clearWindowCacheLocked();
+        if (windowsOnAllDisplays == null) {
+            return;
+        }
+        final int displayCounts = windowsOnAllDisplays.size();
+        for (int i = 0; i < displayCounts; i++) {
+            final List<AccessibilityWindowInfo> windowsOfDisplay = windowsOnAllDisplays.valueAt(i);
+            if (windowsOfDisplay == null) {
+                continue;
+            }
+            final int displayId = windowsOnAllDisplays.keyAt(i);
+            final int windowCount = windowsOfDisplay.size();
+            for (int j = 0; j < windowCount; j++) {
+                addWindowByDisplayLocked(displayId, windowsOfDisplay.get(j));
+            }
+        }
+        mIsAllWindowsCached = true;
+    }
+}

@@ -1,0 +1,9 @@
+public UserInfo createProfileForUser(String name, @NonNull String userType, @UserInfoFlag int flags, @UserIdInt int userId, String[] disallowedPackages){
+    try {
+        return mService.createProfileForUserWithThrow(name, userType, flags, userId, disallowedPackages);
+    } catch (ServiceSpecificException e) {
+        return null;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

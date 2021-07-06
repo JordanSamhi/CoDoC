@@ -1,0 +1,26 @@
+public static Notification maybeCloneStrippedForDelivery(Notification n){
+    String templateClass = n.extras.getString(EXTRA_TEMPLATE);
+    if (!TextUtils.isEmpty(templateClass) && getNotificationStyleClass(templateClass) == null) {
+        return n;
+    }
+    boolean stripContentView = n.contentView instanceof BuilderRemoteViews && n.extras.getInt(EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT, -1) == n.contentView.getSequenceNumber();
+    boolean stripBigContentView = n.bigContentView instanceof BuilderRemoteViews && n.extras.getInt(EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT, -1) == n.bigContentView.getSequenceNumber();
+    boolean stripHeadsUpContentView = n.headsUpContentView instanceof BuilderRemoteViews && n.extras.getInt(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT, -1) == n.headsUpContentView.getSequenceNumber();
+    if (!stripContentView && !stripBigContentView && !stripHeadsUpContentView) {
+        return n;
+    }
+    Notification clone = n.clone();
+    if (stripContentView) {
+        clone.contentView = null;
+        clone.extras.remove(EXTRA_REBUILD_CONTENT_VIEW_ACTION_COUNT);
+    }
+    if (stripBigContentView) {
+        clone.bigContentView = null;
+        clone.extras.remove(EXTRA_REBUILD_BIG_CONTENT_VIEW_ACTION_COUNT);
+    }
+    if (stripHeadsUpContentView) {
+        clone.headsUpContentView = null;
+        clone.extras.remove(EXTRA_REBUILD_HEADS_UP_CONTENT_VIEW_ACTION_COUNT);
+    }
+    return clone;
+}

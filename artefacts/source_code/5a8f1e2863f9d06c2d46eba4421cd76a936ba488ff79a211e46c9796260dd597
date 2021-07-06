@@ -1,0 +1,12 @@
+public boolean setLockCredentialWithToken(@NonNull LockscreenCredential credential, long tokenHandle, byte[] token, int userHandle){
+    if (!hasSecureLockScreen()) {
+        throw new UnsupportedOperationException("This operation requires the lock screen feature.");
+    }
+    credential.checkLength();
+    LockSettingsInternal localService = getLockSettingsInternal();
+    if (!localService.setLockCredentialWithToken(credential, tokenHandle, token, userHandle)) {
+        return false;
+    }
+    onPostPasswordChanged(credential, userHandle);
+    return true;
+}

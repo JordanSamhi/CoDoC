@@ -1,0 +1,17 @@
+public void writeToParcel(Parcel out){
+    final long start = SystemClock.uptimeMillis();
+    out.writeInt(mFileNumbers.size() - 1);
+    for (int i = 0; i < mFileNumbers.size() - 1; i++) {
+        AtomicFile file = getFile(mFileNumbers.get(i));
+        byte[] raw = new byte[0];
+        try {
+            raw = file.readFully();
+        } catch (Exception e) {
+            Slog.e(TAG, "Error reading file " + file.getBaseFile().getPath(), e);
+        }
+        out.writeByteArray(raw);
+    }
+    if (DEBUG) {
+        Slog.d(TAG, "writeToParcel duration ms:" + (SystemClock.uptimeMillis() - start));
+    }
+}

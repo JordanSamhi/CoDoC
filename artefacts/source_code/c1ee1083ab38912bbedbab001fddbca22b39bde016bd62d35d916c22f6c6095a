@@ -1,0 +1,11 @@
+public void onGroupRemoved(String groupIfName, boolean isGo){
+    if (groupIfName == null) {
+        Log.e(TAG, "Missing group name.");
+        return;
+    }
+    logd("Group " + groupIfName + " removed from " + mInterface);
+    WifiP2pGroup group = new WifiP2pGroup();
+    group.setInterface(groupIfName);
+    group.setIsGroupOwner(isGo);
+    mMonitor.broadcastP2pGroupRemoved(mInterface, group);
+}

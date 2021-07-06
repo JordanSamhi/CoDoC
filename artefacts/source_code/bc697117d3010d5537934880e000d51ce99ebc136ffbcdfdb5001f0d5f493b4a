@@ -1,0 +1,10 @@
+public synchronized int setConfigInt(int item, int value) throws RemoteException{
+    mProvisionedIntValue.remove(item);
+    int retVal = getImsConfigImpl().setConfig(item, value);
+    if (retVal == ImsConfig.OperationStatusConstants.SUCCESS) {
+        updateCachedValue(item, value, true);
+    } else {
+        Log.d(TAG, "Set provision value of " + item + " to " + value + " failed with error code " + retVal);
+    }
+    return retVal;
+}

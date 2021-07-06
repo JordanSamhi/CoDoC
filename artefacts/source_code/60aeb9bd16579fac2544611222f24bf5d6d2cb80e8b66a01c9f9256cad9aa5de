@@ -1,0 +1,16 @@
+public void unbind() throws RemoteException{
+    synchronized (mLock) {
+        mBackoff.stop();
+        if (mImsServiceConnection == null) {
+            return;
+        }
+        changeImsServiceFeatures(new HashSet<>());
+        removeImsServiceFeatureCallbacks();
+        Log.i(LOG_TAG, "Unbinding ImsService: " + mComponentName);
+        mLocalLog.log("unbinding");
+        mContext.unbindService(mImsServiceConnection);
+        mIsBound = false;
+        mIsBinding = false;
+        cleanUpService();
+    }
+}

@@ -1,0 +1,12 @@
+public void add(EventStats right){
+    if (mEventType != right.mEventType) {
+        throw new IllegalArgumentException("Can't merge EventStats for event #" + mEventType + " with EventStats for event #" + right.mEventType);
+    }
+    if (right.mBeginTimeStamp > mBeginTimeStamp) {
+        mLastEventTime = Math.max(mLastEventTime, right.mLastEventTime);
+    }
+    mBeginTimeStamp = Math.min(mBeginTimeStamp, right.mBeginTimeStamp);
+    mEndTimeStamp = Math.max(mEndTimeStamp, right.mEndTimeStamp);
+    mTotalTime += right.mTotalTime;
+    mCount += right.mCount;
+}

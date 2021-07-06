@@ -1,0 +1,11 @@
+public void classifyContentSelections(@NonNull ClassificationsRequest request, @NonNull @CallbackExecutor Executor callbackExecutor, @NonNull ClassificationsCallback callback){
+    if (mService == null) {
+        Log.e(TAG, "classifyContentSelections called, " + "but no ContentSuggestionsManager configured");
+        return;
+    }
+    try {
+        mService.classifyContentSelections(mUser, request, new ClassificationsCallbackWrapper(callback, callbackExecutor));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

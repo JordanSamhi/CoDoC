@@ -1,0 +1,23 @@
+public boolean submitRequest(Request request, String name){
+    if (isDestroyed()) {
+        Log.w(TAG, "Cannot interact with a destroyed voice interactor");
+        return false;
+    }
+    try {
+        if (request.mRequestInterface != null) {
+            throw new IllegalStateException("Given " + request + " is already active");
+        }
+        IVoiceInteractorRequest ireq = request.submit(mInteractor, mContext.getOpPackageName(), mCallback);
+        request.mRequestInterface = ireq;
+        request.mContext = mContext;
+        request.mActivity = mActivity;
+        request.mName = name;
+        synchronized (mActiveRequests) {
+            mActiveRequests.put(ireq.asBinder(), request);
+        }
+        return true;
+    } catch (RemoteException e) {
+        Log.w(TAG, "Remove voice interactor service died", e);
+        return false;
+    }
+}

@@ -1,0 +1,30 @@
+public final void closePanel(PanelFeatureState st, boolean doCallback){
+    if (doCallback && st.featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != null && mDecorContentParent.isOverflowMenuShowing()) {
+        checkCloseActionMenu(st.menu);
+        return;
+    }
+    final ViewManager wm = getWindowManager();
+    if ((wm != null) && st.isOpen) {
+        if (st.decorView != null) {
+            wm.removeView(st.decorView);
+            if (st.isCompact) {
+                sRotationWatcher.removeWindow(this);
+            }
+        }
+        if (doCallback) {
+            callOnPanelClosed(st.featureId, st, null);
+        }
+    }
+    st.isPrepared = false;
+    st.isHandled = false;
+    st.isOpen = false;
+    st.shownPanelView = null;
+    if (st.isInExpandedMode) {
+        st.refreshDecorView = true;
+        st.isInExpandedMode = false;
+    }
+    if (mPreparedPanel == st) {
+        mPreparedPanel = null;
+        mPanelChordingKey = 0;
+    }
+}

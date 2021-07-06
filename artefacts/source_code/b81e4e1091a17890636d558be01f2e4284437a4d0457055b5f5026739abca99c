@@ -1,0 +1,44 @@
+public void dump(String prefix, PrintWriter pw){
+    pw.print(prefix);
+    pw.print("id: ");
+    pw.print(mId);
+    pw.print(prefix);
+    pw.print("Default Algorithm: ");
+    pw.print(mDefaultAlgorithm);
+    pw.print(prefix);
+    pw.print("Default Args");
+    pw.print(mDefaultArgs);
+    if (mCategoryAlgorithms != null && mCategoryAlgorithms.size() > 0) {
+        pw.print(prefix);
+        pw.print("Algorithms per category: ");
+        for (int i = 0; i < mCategoryAlgorithms.size(); i++) {
+            pw.print(prefix);
+            pw.print(prefix);
+            pw.print(mCategoryAlgorithms.keyAt(i));
+            pw.print(": ");
+            pw.println(Helper.getRedacted(mCategoryAlgorithms.valueAt(i)));
+            pw.print("args=");
+            pw.print(mCategoryArgs.get(mCategoryAlgorithms.keyAt(i)));
+        }
+    }
+    pw.print(prefix);
+    pw.print("Field ids size: ");
+    pw.println(mCategoryIds.length);
+    for (int i = 0; i < mCategoryIds.length; i++) {
+        pw.print(prefix);
+        pw.print(prefix);
+        pw.print(i);
+        pw.print(": ");
+        pw.println(Helper.getRedacted(mCategoryIds[i]));
+    }
+    pw.print(prefix);
+    pw.print("Values size: ");
+    pw.println(mValues.length);
+    for (int i = 0; i < mValues.length; i++) {
+        pw.print(prefix);
+        pw.print(prefix);
+        pw.print(i);
+        pw.print(": ");
+        pw.println(Helper.getRedacted(mValues[i]));
+    }
+}

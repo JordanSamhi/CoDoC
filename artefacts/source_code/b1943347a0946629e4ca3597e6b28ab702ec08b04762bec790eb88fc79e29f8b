@@ -1,0 +1,8 @@
+public List<AccessibilityNodeInfo> findAccessibilityNodeInfosByText(String text){
+    enforceSealed();
+    if (!canPerformRequestOverConnection(mConnectionId, mWindowId, mSourceNodeId)) {
+        return Collections.emptyList();
+    }
+    AccessibilityInteractionClient client = AccessibilityInteractionClient.getInstance();
+    return client.findAccessibilityNodeInfosByText(mConnectionId, mWindowId, mSourceNodeId, text);
+}

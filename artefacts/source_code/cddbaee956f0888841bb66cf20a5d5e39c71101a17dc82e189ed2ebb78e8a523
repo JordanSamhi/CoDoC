@@ -1,0 +1,10 @@
+public void handleScreenStateChanged(boolean screenOn){
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "handleScreenStateChanged: screenOn = " + screenOn);
+    }
+    mScreenOn = screenOn;
+    if (canActivateLowLatencyLock(IGNORE_SCREEN_STATE_MASK)) {
+        updateOpMode();
+        setBlameLowLatencyWatchList(screenOn);
+    }
+}

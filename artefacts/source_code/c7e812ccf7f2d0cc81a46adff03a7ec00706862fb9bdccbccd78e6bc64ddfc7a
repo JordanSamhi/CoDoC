@@ -1,0 +1,31 @@
+public void setDeviceMobilityState(@DeviceMobilityState int newState){
+    int oldDeviceMobilityState = mDeviceMobilityState;
+    localLog("Device mobility state changed. state=" + newState);
+    int newPnoScanIntervalMs = deviceMobilityStateToPnoScanIntervalMs(newState);
+    if (newPnoScanIntervalMs < 0) {
+        Log.e(TAG, "Invalid device mobility state: " + newState);
+        return;
+    }
+    mDeviceMobilityState = newState;
+    mWifiChannelUtilization.setDeviceMobilityState(newState);
+    int oldPnoScanIntervalMs = deviceMobilityStateToPnoScanIntervalMs(oldDeviceMobilityState);
+    if (newPnoScanIntervalMs == oldPnoScanIntervalMs) {
+        if (mPnoScanStarted) {
+            mWifiMetrics.logPnoScanStop();
+            mWifiMetrics.enterDeviceMobilityState(newState);
+            mWifiMetrics.logPnoScanStart();
+        } else {
+            mWifiMetrics.enterDeviceMobilityState(newState);
+        }
+    } else {
+        Log.d(TAG, "PNO Scan Interval changed to " + newPnoScanIntervalMs + " ms.");
+        if (mPnoScanStarted) {
+            Log.d(TAG, "Restarting PNO Scan with new scan interval");
+            stopPnoScan();
+            mWifiMetrics.enterDeviceMobilityState(newState);
+            startDisconnectedPnoScan();
+        } else {
+            mWifiMetrics.enterDeviceMobilityState(newState);
+        }
+    }
+}

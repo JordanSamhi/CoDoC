@@ -1,0 +1,18 @@
+public void setRemoteDevice(ICameraDeviceUser remoteDevice) throws CameraAccessException{
+    synchronized (mInterfaceLock) {
+        if (mInError)
+            return;
+        mRemoteDevice = new ICameraDeviceUserWrapper(remoteDevice);
+        IBinder remoteDeviceBinder = remoteDevice.asBinder();
+        if (remoteDeviceBinder != null) {
+            try {
+                remoteDeviceBinder.linkToDeath(this, 0);
+            } catch (RemoteException e) {
+                CameraDeviceImpl.this.mDeviceExecutor.execute(mCallOnDisconnected);
+                throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "The camera device has encountered a serious error");
+            }
+        }
+        mDeviceExecutor.execute(mCallOnOpened);
+        mDeviceExecutor.execute(mCallOnUnconfigured);
+    }
+}

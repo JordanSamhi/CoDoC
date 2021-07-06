@@ -1,0 +1,37 @@
+
+     * Returns true if the sensor is a wake-up sensor.
+     * <p>
+     * <b>Application Processor Power modes</b> <p>
+     * Application Processor(AP), is the processor on which applications run.  When no wake lock is
+     * held and the user is not interacting with the device, this processor can enter a “Suspend”
+     * mode, reducing the power consumption by 10 times or more.
+     * </p>
+     * <p>
+     * <b>Non-wake-up sensors</b> <p>
+     * Non-wake-up sensors are sensors that do not wake the AP out of suspend to report data. While
+     * the AP is in suspend mode, the sensors continue to function and generate events, which are
+     * put in a hardware FIFO. The events in the FIFO are delivered to the application when the AP
+     * wakes up. If the FIFO was too small to store all events generated while the AP was in
+     * suspend mode, the older events are lost: the oldest data is dropped to accommodate the newer
+     * data. In the extreme case where the FIFO is non-existent {@code maxFifoEventCount() == 0},
+     * all events generated while the AP was in suspend mode are lost. Applications using
+     * non-wake-up sensors should usually:
+     * <ul>
+     * <li>Either unregister from the sensors when they do not need them, usually in the activity’s
+     * {@code onPause} method. This is the most common case.
+     * <li>Or realize that the sensors are consuming some power while the AP is in suspend mode and
+     * that even then, some events might be lost.
+     * </ul>
+     * </p>
+     * <p>
+     * <b>Wake-up sensors</b> <p>
+     * In opposition to non-wake-up sensors, wake-up sensors ensure that their data is delivered
+     * independently of the state of the AP. While the AP is awake, the wake-up sensors behave
+     * like non-wake-up-sensors. When the AP is asleep, wake-up sensors wake up the AP to deliver
+     * events. That is, the AP will wake up and the sensor will deliver the events before the
+     * maximum reporting latency is elapsed or the hardware FIFO gets full. See {@link
+     * SensorManager#registerListener(SensorEventListener, Sensor, int, int)} for more details.
+     * </p>
+     *
+     * @return <code>true</code> if this is a wake-up sensor, <code>false</code> otherwise.
+     

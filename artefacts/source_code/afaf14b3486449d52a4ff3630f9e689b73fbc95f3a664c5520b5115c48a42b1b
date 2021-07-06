@@ -1,0 +1,9 @@
+public static void transformToRotation(@Rotation int oldRotation, @Rotation int newRotation, int newWidth, int newHeight, Matrix out){
+    final boolean flipped = newRotation == ROTATION_90 || newRotation == ROTATION_270;
+    final int h = flipped ? newWidth : newHeight;
+    final int w = flipped ? newHeight : newWidth;
+    final Matrix tmp = new Matrix();
+    transformLogicalToPhysicalCoordinates(oldRotation, w, h, out);
+    transformPhysicalToLogicalCoordinates(newRotation, w, h, tmp);
+    out.postConcat(tmp);
+}

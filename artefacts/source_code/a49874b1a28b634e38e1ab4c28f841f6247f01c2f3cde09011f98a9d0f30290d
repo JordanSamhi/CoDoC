@@ -1,0 +1,3 @@
+public String getStatus(){
+    return "ProtoLog status: " + ((isProtoEnabled()) ? "Enabled" : "Disabled") + "\nEnabled log groups: \n  Proto: " + LOG_GROUPS.values().stream().filter(it -> it.isEnabled() && it.isLogToProto()).map(IProtoLogGroup::name).collect(Collectors.joining(" ")) + "\n  Logcat: " + LOG_GROUPS.values().stream().filter(it -> it.isEnabled() && it.isLogToLogcat()).map(IProtoLogGroup::name).collect(Collectors.joining(" ")) + "\nLogging definitions loaded: " + mViewerConfig.knownViewerStringsNumber();
+}

@@ -1,0 +1,16 @@
+public boolean isLePeriodicAdvertisingSupported(){
+    if (!getLeAccess()) {
+        return false;
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.isLePeriodicAdvertisingSupported();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to get isLePeriodicAdvertisingSupported, error: ", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return false;
+}

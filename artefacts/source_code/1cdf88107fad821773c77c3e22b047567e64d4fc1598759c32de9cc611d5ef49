@@ -1,0 +1,14 @@
+public void close(){
+    synchronized (mLock) {
+        if (mIsClosed)
+            return;
+        mIsClosed = true;
+        mPrograms.clear();
+        mListCallbacks.clear();
+        mOnCompleteListeners.clear();
+        if (mOnCloseListener != null) {
+            mOnCloseListener.onClose();
+            mOnCloseListener = null;
+        }
+    }
+}

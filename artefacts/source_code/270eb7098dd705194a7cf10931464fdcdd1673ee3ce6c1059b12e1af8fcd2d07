@@ -1,0 +1,19 @@
+public Session openSession() throws IOException{
+    if (!mService.isConnected()) {
+        throw new IllegalStateException("service is not connected");
+    }
+    synchronized (mLock) {
+        ISecureElementSession session;
+        try {
+            session = mReader.openSession();
+        } catch (ServiceSpecificException e) {
+            throw new IOException(e.getMessage());
+        } catch (RemoteException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+        if (session == null) {
+            throw new IOException("service session is null.");
+        }
+        return new Session(mService, session, this);
+    }
+}

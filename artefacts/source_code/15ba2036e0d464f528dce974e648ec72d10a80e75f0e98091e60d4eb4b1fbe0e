@@ -1,0 +1,12 @@
+public void setViewAlpha(float alpha){
+    if (isNaN(alpha)) {
+        throw new IllegalArgumentException("alpha cannot be NaN: " + alpha);
+    }
+    if (alpha != mViewAlpha) {
+        mViewAlpha = alpha;
+        mDrawable.setAlpha((int) (255 * alpha));
+        if (mChangeRunnable != null) {
+            mChangeRunnable.run();
+        }
+    }
+}

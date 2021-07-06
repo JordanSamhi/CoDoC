@@ -1,0 +1,43 @@
+public boolean transact(int code, Parcel data, Parcel reply, int flags) throws RemoteException{
+    Binder.checkParcel(this, code, data, "Unreasonably large binder buffer");
+    if (mWarnOnBlocking && ((flags & FLAG_ONEWAY) == 0) && Binder.sWarnOnBlockingOnCurrentThread.get()) {
+        mWarnOnBlocking = false;
+        if (Build.IS_USERDEBUG) {
+            Log.wtf(Binder.TAG, "Outgoing transactions from this process must be FLAG_ONEWAY", new Throwable());
+        } else {
+            Log.w(Binder.TAG, "Outgoing transactions from this process must be FLAG_ONEWAY", new Throwable());
+        }
+    }
+    final boolean tracingEnabled = Binder.isTracingEnabled();
+    if (tracingEnabled) {
+        final Throwable tr = new Throwable();
+        Binder.getTransactionTracker().addTrace(tr);
+        StackTraceElement stackTraceElement = tr.getStackTrace()[1];
+        Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName());
+    }
+    final Binder.ProxyTransactListener transactListener = sTransactListener;
+    Object session = null;
+    if (transactListener != null) {
+        final int origWorkSourceUid = Binder.getCallingWorkSourceUid();
+        session = transactListener.onTransactStarted(this, code, flags);
+        final int updatedWorkSourceUid = Binder.getCallingWorkSourceUid();
+        if (origWorkSourceUid != updatedWorkSourceUid) {
+            data.replaceCallingWorkSourceUid(updatedWorkSourceUid);
+        }
+    }
+    final AppOpsManager.PausedNotedAppOpsCollection prevCollection = AppOpsManager.pauseNotedAppOpsCollection();
+    if ((flags & FLAG_ONEWAY) == 0 && AppOpsManager.isListeningForOpNoted()) {
+        flags |= FLAG_COLLECT_NOTED_APP_OPS;
+    }
+    try {
+        return transactNative(code, data, reply, flags);
+    } finally {
+        AppOpsManager.resumeNotedAppOpsCollection(prevCollection);
+        if (transactListener != null) {
+            transactListener.onTransactEnded(session);
+        }
+        if (tracingEnabled) {
+            Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
+        }
+    }
+}

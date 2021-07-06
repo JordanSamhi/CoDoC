@@ -1,0 +1,9 @@
+public static void ejectRoot(@NonNull ContentResolver content, @NonNull Uri rootUri){
+    try {
+        final Bundle in = new Bundle();
+        in.putParcelable(DocumentsContract.EXTRA_URI, rootUri);
+        content.call(rootUri.getAuthority(), METHOD_EJECT_ROOT, null, in);
+    } catch (Exception e) {
+        Log.w(TAG, "Failed to eject", e);
+    }
+}

@@ -1,0 +1,28 @@
+public void unregisterRouteCallback(@NonNull RouteCallback routeCallback){
+    Objects.requireNonNull(routeCallback, "callback must not be null");
+    if (!mRouteCallbackRecords.remove(new RouteCallbackRecord(null, routeCallback, null))) {
+        Log.w(TAG, "unregisterRouteCallback: Ignoring unknown callback");
+        return;
+    }
+    synchronized (sRouterLock) {
+        if (mStub == null) {
+            return;
+        }
+        if (updateDiscoveryPreferenceIfNeededLocked()) {
+            try {
+                mMediaRouterService.setDiscoveryRequestWithRouter2(mStub, mDiscoveryPreference);
+            } catch (RemoteException ex) {
+                Log.e(TAG, "unregisterRouteCallback: Unable to set discovery request.", ex);
+            }
+        }
+        if (mRouteCallbackRecords.isEmpty() && mNonSystemRoutingControllers.isEmpty()) {
+            try {
+                mMediaRouterService.unregisterRouter2(mStub);
+            } catch (RemoteException ex) {
+                Log.e(TAG, "Unable to unregister media router.", ex);
+            }
+            mStub = null;
+        }
+        mShouldUpdateRoutes = true;
+    }
+}

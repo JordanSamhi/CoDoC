@@ -1,0 +1,6 @@
+public void allowAutojoinGlobal(boolean choice){
+    enforceNetworkSettingsPermission();
+    int callingUid = Binder.getCallingUid();
+    mLog.info("allowAutojoin=% uid=%").c(choice).c(callingUid).flush();
+    mWifiThreadRunner.post(() -> mClientModeImpl.allowAutoJoinGlobal(choice));
+}

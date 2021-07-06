@@ -1,0 +1,16 @@
+public void destroy(){
+    if (sDebug) {
+        Log.d(TAG, "destroy(): mDestroyed=" + mDestroyed + " mShowing=" + mShowing + " mFillView=" + mFillView);
+    }
+    synchronized (mLock) {
+        if (mDestroyed)
+            return;
+        if (mUpdateCalled) {
+            mFillView.setOnClickListener(null);
+            hide();
+            mProxy.logEvent(AutofillProxy.REPORT_EVENT_UI_DESTROYED);
+        }
+        mDestroyed = true;
+        mCloseGuard.close();
+    }
+}

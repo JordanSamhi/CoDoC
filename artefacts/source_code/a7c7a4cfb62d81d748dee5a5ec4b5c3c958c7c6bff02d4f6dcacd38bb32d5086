@@ -1,0 +1,12 @@
+public void restoreBackupData(byte[] data){
+    enforceNetworkSettingsPermission();
+    mLog.info("restoreBackupData uid=%").c(Binder.getCallingUid()).flush();
+    if (mClientModeImplChannel == null) {
+        Log.e(TAG, "mClientModeImplChannel is not initialized");
+        return;
+    }
+    Log.d(TAG, "Restoring backup data");
+    List<WifiConfiguration> wifiConfigurations = mWifiBackupRestore.retrieveConfigurationsFromBackupData(data);
+    restoreNetworks(wifiConfigurations);
+    Log.d(TAG, "Restored backup data");
+}

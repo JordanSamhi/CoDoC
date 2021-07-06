@@ -1,0 +1,14 @@
+public static Cursor create(@NonNull Cursor cursor, @NonNull Map<String, Object> redactions){
+    final SparseArray<Object> internalRedactions = new SparseArray<>();
+    final String[] columns = cursor.getColumnNames();
+    for (int i = 0; i < columns.length; i++) {
+        if (redactions.containsKey(columns[i])) {
+            internalRedactions.put(i, redactions.get(columns[i]));
+        }
+    }
+    if (internalRedactions.size() == 0) {
+        return cursor;
+    } else {
+        return new RedactingCursor(cursor, internalRedactions);
+    }
+}

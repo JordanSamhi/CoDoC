@@ -1,0 +1,5 @@
+public void authorizeReport(int callingUid, final String callingPackage, final String receiverClass, final String reportId, final int flags, final IIncidentAuthListener listener){
+    mRequestQueue.enqueue(listener.asBinder(), true, () -> {
+        authorizeReportImpl(callingUid, callingPackage, receiverClass, reportId, flags, listener);
+    });
+}

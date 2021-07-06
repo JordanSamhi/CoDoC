@@ -1,0 +1,28 @@
+public String toString(){
+    StringBuilder str = new StringBuilder();
+    str.append("LensShadingMap{");
+    final String[] channelPrefix = { "R:(", "G_even:(", "G_odd:(", "B:(" };
+    for (int ch = 0; ch < COUNT; ch++) {
+        str.append(channelPrefix[ch]);
+        for (int r = 0; r < mRows; r++) {
+            str.append("[");
+            for (int c = 0; c < mColumns; c++) {
+                float gain = getGainFactor(ch, c, r);
+                str.append(gain);
+                if (c < mColumns - 1) {
+                    str.append(", ");
+                }
+            }
+            str.append("]");
+            if (r < mRows - 1) {
+                str.append(", ");
+            }
+        }
+        str.append(")");
+        if (ch < COUNT - 1) {
+            str.append(", ");
+        }
+    }
+    str.append("}");
+    return str.toString();
+}

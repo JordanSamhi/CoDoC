@@ -1,0 +1,19 @@
+public static final void writeStringArrayXml(String[] val, String name, XmlSerializer out) throws XmlPullParserException, java.io.IOException{
+    if (val == null) {
+        out.startTag(null, "null");
+        out.endTag(null, "null");
+        return;
+    }
+    out.startTag(null, "string-array");
+    if (name != null) {
+        out.attribute(null, "name", name);
+    }
+    final int N = val.length;
+    out.attribute(null, "num", Integer.toString(N));
+    for (int i = 0; i < N; i++) {
+        out.startTag(null, "item");
+        out.attribute(null, "value", val[i]);
+        out.endTag(null, "item");
+    }
+    out.endTag(null, "string-array");
+}

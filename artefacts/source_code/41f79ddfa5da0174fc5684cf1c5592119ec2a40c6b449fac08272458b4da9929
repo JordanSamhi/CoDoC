@@ -1,0 +1,10 @@
+public void bindConstants(Allocation a, int slot){
+    if (slot < 0 || slot >= mConstants.length) {
+        throw new IllegalArgumentException("Slot ID out of range.");
+    }
+    if (a != null && a.getType().getID(mRS) != mConstants[slot].getID(mRS)) {
+        throw new IllegalArgumentException("Allocation type does not match slot type.");
+    }
+    long id = a != null ? a.getID(mRS) : 0;
+    mRS.nProgramBindConstants(getID(mRS), slot, id);
+}

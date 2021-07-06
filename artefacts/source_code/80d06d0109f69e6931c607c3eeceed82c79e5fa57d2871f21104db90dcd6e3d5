@@ -1,0 +1,17 @@
+public void merge(@NonNull HistoricalOps other){
+    mBeginTimeMillis = Math.min(mBeginTimeMillis, other.mBeginTimeMillis);
+    mEndTimeMillis = Math.max(mEndTimeMillis, other.mEndTimeMillis);
+    final int uidCount = other.getUidCount();
+    for (int i = 0; i < uidCount; i++) {
+        final HistoricalUidOps otherUidOps = other.getUidOpsAt(i);
+        final HistoricalUidOps thisUidOps = getUidOps(otherUidOps.getUid());
+        if (thisUidOps != null) {
+            thisUidOps.merge(otherUidOps);
+        } else {
+            if (mHistoricalUidOps == null) {
+                mHistoricalUidOps = new SparseArray<>();
+            }
+            mHistoricalUidOps.put(otherUidOps.getUid(), otherUidOps);
+        }
+    }
+}

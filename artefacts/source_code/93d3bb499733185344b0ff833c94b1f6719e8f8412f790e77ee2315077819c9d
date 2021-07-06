@@ -1,0 +1,14 @@
+public boolean requestMtu(int mtu){
+    if (DBG) {
+        Log.d(TAG, "configureMTU() - device: " + mDevice.getAddress() + " mtu: " + mtu);
+    }
+    if (mService == null || mClientIf == 0)
+        return false;
+    try {
+        mService.configureMTU(mClientIf, mDevice.getAddress(), mtu);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

@@ -1,0 +1,57 @@
+public String dumpGnssMetricsAsText(){
+    StringBuilder s = new StringBuilder();
+    s.append("GNSS_KPI_START").append('\n');
+    s.append("  KPI logging start time: ").append(mLogStartInElapsedRealTime).append("\n");
+    s.append("  KPI logging end time: ");
+    TimeUtils.formatDuration(SystemClock.elapsedRealtimeNanos() / 1000000L, s);
+    s.append("\n");
+    s.append("  Number of location reports: ").append(mLocationFailureStatistics.getCount()).append("\n");
+    if (mLocationFailureStatistics.getCount() > 0) {
+        s.append("  Percentage location failure: ").append(100.0 * mLocationFailureStatistics.getMean()).append("\n");
+    }
+    s.append("  Number of TTFF reports: ").append(mTimeToFirstFixSecStatistics.getCount()).append("\n");
+    if (mTimeToFirstFixSecStatistics.getCount() > 0) {
+        s.append("  TTFF mean (sec): ").append(mTimeToFirstFixSecStatistics.getMean()).append("\n");
+        s.append("  TTFF standard deviation (sec): ").append(mTimeToFirstFixSecStatistics.getStandardDeviation()).append("\n");
+    }
+    s.append("  Number of position accuracy reports: ").append(mPositionAccuracyMeterStatistics.getCount()).append("\n");
+    if (mPositionAccuracyMeterStatistics.getCount() > 0) {
+        s.append("  Position accuracy mean (m): ").append(mPositionAccuracyMeterStatistics.getMean()).append("\n");
+        s.append("  Position accuracy standard deviation (m): ").append(mPositionAccuracyMeterStatistics.getStandardDeviation()).append("\n");
+    }
+    s.append("  Number of CN0 reports: ").append(mTopFourAverageCn0Statistics.getCount()).append("\n");
+    if (mTopFourAverageCn0Statistics.getCount() > 0) {
+        s.append("  Top 4 Avg CN0 mean (dB-Hz): ").append(mTopFourAverageCn0Statistics.getMean()).append("\n");
+        s.append("  Top 4 Avg CN0 standard deviation (dB-Hz): ").append(mTopFourAverageCn0Statistics.getStandardDeviation()).append("\n");
+    }
+    s.append("  Total number of sv status messages processed: ").append(mNumSvStatus).append("\n");
+    s.append("  Total number of L5 sv status messages processed: ").append(mNumL5SvStatus).append("\n");
+    s.append("  Total number of sv status messages processed, " + "where sv is used in fix: ").append(mNumSvStatusUsedInFix).append("\n");
+    s.append("  Total number of L5 sv status messages processed, " + "where sv is used in fix: ").append(mNumL5SvStatusUsedInFix).append("\n");
+    s.append("  Number of L5 CN0 reports: ").append(mTopFourAverageCn0StatisticsL5.getCount()).append("\n");
+    if (mTopFourAverageCn0StatisticsL5.getCount() > 0) {
+        s.append("  L5 Top 4 Avg CN0 mean (dB-Hz): ").append(mTopFourAverageCn0StatisticsL5.getMean()).append("\n");
+        s.append("  L5 Top 4 Avg CN0 standard deviation (dB-Hz): ").append(mTopFourAverageCn0StatisticsL5.getStandardDeviation()).append("\n");
+    }
+    s.append("  Used-in-fix constellation types: ");
+    for (int i = 0; i < mConstellationTypes.length; i++) {
+        if (mConstellationTypes[i]) {
+            s.append(GnssStatus.constellationTypeToString(i)).append(" ");
+        }
+    }
+    s.append("\n");
+    s.append("GNSS_KPI_END").append("\n");
+    GpsBatteryStats stats = mGnssPowerMetrics.getGpsBatteryStats();
+    if (stats != null) {
+        s.append("Power Metrics").append("\n");
+        s.append("  Time on battery (min): ").append(stats.getLoggingDurationMs() / ((double) DateUtils.MINUTE_IN_MILLIS)).append("\n");
+        long[] t = stats.getTimeInGpsSignalQualityLevel();
+        if (t != null && t.length == NUM_GPS_SIGNAL_QUALITY_LEVELS) {
+            s.append("  Amount of time (while on battery) Top 4 Avg CN0 > " + GnssPowerMetrics.POOR_TOP_FOUR_AVG_CN0_THRESHOLD_DB_HZ + " dB-Hz (min): ").append(t[1] / ((double) DateUtils.MINUTE_IN_MILLIS)).append("\n");
+            s.append("  Amount of time (while on battery) Top 4 Avg CN0 <= " + GnssPowerMetrics.POOR_TOP_FOUR_AVG_CN0_THRESHOLD_DB_HZ + " dB-Hz (min): ").append(t[0] / ((double) DateUtils.MINUTE_IN_MILLIS)).append("\n");
+        }
+        s.append("  Energy consumed while on battery (mAh): ").append(stats.getEnergyConsumedMaMs() / ((double) DateUtils.HOUR_IN_MILLIS)).append("\n");
+    }
+    s.append("Hardware Version: ").append(SystemProperties.get("ro.boot.revision", "")).append("\n");
+    return s.toString();
+}

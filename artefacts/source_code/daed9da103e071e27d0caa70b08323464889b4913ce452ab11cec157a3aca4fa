@@ -1,0 +1,14 @@
+public boolean transformViewTo(TransformState otherState, float transformationAmount){
+    mTransformedView.animate().cancel();
+    if (sameAs(otherState)) {
+        if (mTransformedView.getVisibility() == View.VISIBLE) {
+            mTransformedView.setAlpha(0.0f);
+            mTransformedView.setVisibility(View.INVISIBLE);
+        }
+        return false;
+    } else {
+        CrossFadeHelper.fadeOut(mTransformedView, transformationAmount);
+    }
+    transformViewFullyTo(otherState, transformationAmount);
+    return true;
+}

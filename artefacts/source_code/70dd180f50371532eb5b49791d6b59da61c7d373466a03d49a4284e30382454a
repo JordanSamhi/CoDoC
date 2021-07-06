@@ -1,0 +1,13 @@
+public void handleMessage(Message msg){
+    AsyncResult ar;
+    switch(msg.what) {
+        case EVENT_HARDWARE_CONFIG_CHANGED:
+            if (DBG)
+                logd("handleMessage: received EVENT_HARDWARE_CONFIG_CHANGED");
+            ar = (AsyncResult) msg.obj;
+            handleGetHardwareConfigChanged(ar);
+            break;
+        default:
+            loge("handleMessage: Unknown Event " + msg.what);
+    }
+}

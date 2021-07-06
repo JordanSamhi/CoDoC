@@ -1,0 +1,26 @@
+
+     * Create a new NDEF Record containing external (application-specific) data.<p>
+     * Use this method to encode application specific data into an NDEF Record.
+     * The data is typed by a domain name (usually your Android package name) and
+     * a domain-specific type. This data is packaged into a "NFC Forum External
+     * Type" NDEF Record.<p>
+     * NFC Forum requires that the domain and type used in an external record
+     * are treated as case insensitive, however Android intent filtering is
+     * always case sensitive. So this method will force the domain and type to
+     * lower-case before creating the NDEF Record.<p>
+     * The unchecked exception {@link IllegalArgumentException} will be thrown
+     * if the domain and type have serious problems, for example if either field
+     * is empty, so always catch this
+     * exception if you are passing user-generated data into this method.<p>
+     * There are no such restrictions on the payload data.<p>
+     * For efficiency, This method might not make an internal copy of the
+     * data byte array, so take care not
+     * to modify the data byte array while still using the returned
+     * NdefRecord.
+     *
+     * Reference specification: NFCForum-TS-RTD_1.0
+     * @param domain domain-name of issuing organization
+     * @param type domain-specific type of data
+     * @param data payload as bytes
+     * @throws IllegalArugmentException if either domain or type are empty or invalid
+     

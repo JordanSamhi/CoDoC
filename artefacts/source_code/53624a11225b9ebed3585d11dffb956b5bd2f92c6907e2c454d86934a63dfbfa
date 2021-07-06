@@ -1,0 +1,11 @@
+public List<EventStats> queryEventStats(int intervalType, long beginTime, long endTime){
+    try {
+        @SuppressWarnings("unchecked")
+        ParceledListSlice<EventStats> slice = mService.queryEventStats(intervalType, beginTime, endTime, mContext.getOpPackageName());
+        if (slice != null) {
+            return slice.getList();
+        }
+    } catch (RemoteException e) {
+    }
+    return Collections.emptyList();
+}

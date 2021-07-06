@@ -1,0 +1,10 @@
+public boolean isWhitelisted(@NonNull Context context){
+    if (whitelistedComponents == null)
+        return true;
+    final ContentCaptureClient client = context.getContentCaptureClient();
+    if (client == null) {
+        Log.w(TAG, "isWhitelisted(): no ContentCaptureClient on " + context);
+        return false;
+    }
+    return whitelistedComponents.contains(client.contentCaptureClientGetComponentName());
+}

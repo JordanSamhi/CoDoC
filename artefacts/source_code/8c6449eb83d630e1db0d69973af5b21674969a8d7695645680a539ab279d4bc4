@@ -1,0 +1,13 @@
+public void sendMessage(int clientId, int sessionId, PeerHandle peerHandle, byte[] message, int messageId, int retryCount){
+    if (peerHandle == null) {
+        throw new IllegalArgumentException("sendMessage: invalid peerHandle - must be non-null");
+    }
+    if (VDBG) {
+        Log.v(TAG, "sendMessage(): clientId=" + clientId + ", sessionId=" + sessionId + ", peerHandle=" + peerHandle.peerId + ", messageId=" + messageId + ", retryCount=" + retryCount);
+    }
+    try {
+        mService.sendMessage(clientId, sessionId, peerHandle.peerId, message, messageId, retryCount);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

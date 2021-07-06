@@ -1,0 +1,16 @@
+public void bindAllocation(Allocation va, int slot){
+    mRS.validate();
+    mRS.validateObject(va);
+    if (va != null) {
+        android.content.Context context = mRS.getApplicationContext();
+        if (context.getApplicationInfo().targetSdkVersion >= 20) {
+            final Type t = va.mType;
+            if (t.hasMipmaps() || t.hasFaces() || (t.getY() != 0) || (t.getZ() != 0)) {
+                throw new RSIllegalArgumentException("API 20+ only allows simple 1D allocations to be " + "used with bind.");
+            }
+        }
+        mRS.nScriptBindAllocation(getID(mRS), va.getID(mRS), slot);
+    } else {
+        mRS.nScriptBindAllocation(getID(mRS), 0, slot);
+    }
+}

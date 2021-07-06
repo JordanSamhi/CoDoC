@@ -1,0 +1,13 @@
+public List<Light> getLights(){
+    getContext().enforceCallingOrSelfPermission(Manifest.permission.CONTROL_DEVICE_LIGHTS, "getLights requires CONTROL_DEVICE_LIGHTS_PERMISSION");
+    synchronized (LightsService.this) {
+        final List<Light> lights = new ArrayList<Light>();
+        for (int i = 0; i < mLightsById.size(); i++) {
+            if (!mLightsById.valueAt(i).isSystemLight()) {
+                HwLight hwLight = mLightsById.valueAt(i).mHwLight;
+                lights.add(new Light(hwLight.id, hwLight.ordinal, hwLight.type));
+            }
+        }
+        return lights;
+    }
+}

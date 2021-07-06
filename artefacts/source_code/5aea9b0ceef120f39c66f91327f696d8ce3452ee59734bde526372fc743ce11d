@@ -1,0 +1,16 @@
+public synchronized void deleteVpnProfile(@NonNull String packageName, @NonNull KeyStore keyStore){
+    checkNotNull(packageName, "No package name provided");
+    checkNotNull(keyStore, "KeyStore missing");
+    verifyCallingUidAndPackage(packageName);
+    enforceNotRestrictedUser();
+    Binder.withCleanCallingIdentity(() -> {
+        if (isCurrentIkev2VpnLocked(packageName)) {
+            if (mAlwaysOn) {
+                setAlwaysOnPackage(null, false, null, keyStore);
+            } else {
+                prepareInternal(VpnConfig.LEGACY_VPN);
+            }
+        }
+        keyStore.delete(getProfileNameForPackage(packageName), Process.SYSTEM_UID);
+    });
+}

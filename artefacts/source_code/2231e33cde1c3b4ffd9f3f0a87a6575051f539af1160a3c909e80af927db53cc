@@ -1,0 +1,12 @@
+public static String decodeCaCertificateAlias(String alias){
+    byte[] data = new byte[alias.length() >> 1];
+    for (int n = 0, position = 0; n < alias.length(); n += 2, position++) {
+        data[position] = (byte) Integer.parseInt(alias.substring(n, n + 2), 16);
+    }
+    try {
+        return new String(data, StandardCharsets.UTF_8);
+    } catch (NumberFormatException e) {
+        e.printStackTrace();
+        return alias;
+    }
+}

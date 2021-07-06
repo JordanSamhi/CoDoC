@@ -1,0 +1,41 @@
+public int updateBounds(int minTopPosition, int minBottomPosition, boolean shiftBackgroundWithFirst){
+    int top = minTopPosition;
+    int bottom = minTopPosition;
+    ExpandableView firstView = getFirstVisibleChild();
+    if (firstView != null) {
+        int finalTranslationY = (int) Math.ceil(ViewState.getFinalTranslationY(firstView));
+        int newTop;
+        if (isTargetTop(finalTranslationY)) {
+            newTop = finalTranslationY;
+        } else {
+            newTop = (int) Math.ceil(firstView.getTranslationY());
+        }
+        top = Math.max(newTop, top);
+        if (firstView.showingPulsing()) {
+            bottom = Math.max(bottom, finalTranslationY + ExpandableViewState.getFinalActualHeight(firstView));
+            if (shiftBackgroundWithFirst) {
+                mBounds.left += Math.max(firstView.getTranslation(), 0);
+                mBounds.right += Math.min(firstView.getTranslation(), 0);
+            }
+        }
+    }
+    top = Math.max(minTopPosition, top);
+    ExpandableView lastView = getLastVisibleChild();
+    if (lastView != null) {
+        float finalTranslationY = ViewState.getFinalTranslationY(lastView);
+        int finalHeight = ExpandableViewState.getFinalActualHeight(lastView);
+        int finalBottom = (int) Math.floor(finalTranslationY + finalHeight - lastView.getClipBottomAmount());
+        int newBottom;
+        if (isTargetBottom(finalBottom)) {
+            newBottom = finalBottom;
+        } else {
+            newBottom = (int) (lastView.getTranslationY() + lastView.getActualHeight() - lastView.getClipBottomAmount());
+            minBottomPosition = (int) Math.min(lastView.getTranslationY() + lastView.getActualHeight(), minBottomPosition);
+        }
+        bottom = Math.max(bottom, Math.max(newBottom, minBottomPosition));
+    }
+    bottom = Math.max(top, bottom);
+    mBounds.top = top;
+    mBounds.bottom = bottom;
+    return bottom;
+}

@@ -1,0 +1,22 @@
+public long getPasswordExpirationTimeout(ComponentName who, int userHandle, boolean parent){
+    if (!mHasFeature || !mLockPatternUtils.hasSecureLockScreen()) {
+        return 0L;
+    }
+    enforceFullCrossUsersPermission(userHandle);
+    synchronized (getLockObject()) {
+        long timeout = 0L;
+        if (who != null) {
+            ActiveAdmin admin = getActiveAdminUncheckedLocked(who, userHandle, parent);
+            return admin != null ? admin.passwordExpirationTimeout : timeout;
+        }
+        List<ActiveAdmin> admins = getActiveAdminsForLockscreenPoliciesLocked(userHandle, parent);
+        final int N = admins.size();
+        for (int i = 0; i < N; i++) {
+            ActiveAdmin admin = admins.get(i);
+            if (timeout == 0L || (admin.passwordExpirationTimeout != 0L && timeout > admin.passwordExpirationTimeout)) {
+                timeout = admin.passwordExpirationTimeout;
+            }
+        }
+        return timeout;
+    }
+}

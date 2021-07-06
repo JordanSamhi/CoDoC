@@ -1,0 +1,25 @@
+public void initialize(String appName, String notificationKey, ExpansionLogger logger, KeyguardBypassController bypassController, NotificationGroupManager groupManager, HeadsUpManager headsUpManager, RowContentBindStage rowContentBindStage, OnExpandClickListener onExpandClickListener, NotificationMediaManager notificationMediaManager, OnAppOpsClickListener onAppOpsClickListener, FalsingManager falsingManager, StatusBarStateController statusBarStateController, PeopleNotificationIdentifier peopleNotificationIdentifier){
+    mAppName = appName;
+    if (mMenuRow == null) {
+        mMenuRow = new NotificationMenuRow(mContext, peopleNotificationIdentifier);
+    }
+    if (mMenuRow.getMenuView() != null) {
+        mMenuRow.setAppName(mAppName);
+    }
+    mLogger = logger;
+    mLoggingKey = notificationKey;
+    mBypassController = bypassController;
+    mGroupManager = groupManager;
+    mPrivateLayout.setGroupManager(groupManager);
+    mHeadsUpManager = headsUpManager;
+    mRowContentBindStage = rowContentBindStage;
+    mOnExpandClickListener = onExpandClickListener;
+    mMediaManager = notificationMediaManager;
+    setAppOpsOnClickListener(onAppOpsClickListener);
+    mFalsingManager = falsingManager;
+    mStatusbarStateController = statusBarStateController;
+    mPeopleNotificationIdentifier = peopleNotificationIdentifier;
+    for (NotificationContentView l : mLayouts) {
+        l.setPeopleNotificationIdentifier(mPeopleNotificationIdentifier);
+    }
+}

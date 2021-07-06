@@ -1,0 +1,12 @@
+public boolean addKeepalivePacketFilter(int slot, TcpKeepalivePacketData pkt){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.addKeepalivePacketFilter(slot, pkt.toStableParcelable());
+        return true;
+    } catch (RemoteException e) {
+        log("Error adding Keepalive Packet Filter ", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,18 @@
+public void startNextFile(){
+    if (mFileNumbers.isEmpty()) {
+        Slog.wtf(TAG, "mFileNumbers should never be empty");
+        return;
+    }
+    final int next = mFileNumbers.get(mFileNumbers.size() - 1) + 1;
+    mFileNumbers.add(next);
+    setActiveFile(next);
+    if (!hasFreeDiskSpace()) {
+        int oldest = mFileNumbers.remove(0);
+        getFile(oldest).delete();
+    }
+    while (mFileNumbers.size() > mStats.mConstants.MAX_HISTORY_FILES) {
+        int oldest = mFileNumbers.get(0);
+        getFile(oldest).delete();
+        mFileNumbers.remove(0);
+    }
+}

@@ -1,0 +1,16 @@
+public boolean areCarrierKeysAbsentOrExpiring(){
+    for (int key_type : CARRIER_KEY_TYPES) {
+        if (!isKeyEnabled(key_type)) {
+            continue;
+        }
+        ImsiEncryptionInfo imsiEncryptionInfo = mPhone.getCarrierInfoForImsiEncryption(key_type);
+        if (imsiEncryptionInfo == null) {
+            Log.d(LOG_TAG, "Key not found for: " + key_type);
+            return true;
+        }
+        Date imsiDate = imsiEncryptionInfo.getExpirationTime();
+        long timeToExpire = imsiDate.getTime() - System.currentTimeMillis();
+        return (timeToExpire < START_RENEWAL_WINDOW_DAYS * DAY_IN_MILLIS) ? true : false;
+    }
+    return false;
+}

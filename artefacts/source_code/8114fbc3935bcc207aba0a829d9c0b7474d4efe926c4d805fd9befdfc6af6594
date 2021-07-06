@@ -1,0 +1,16 @@
+public boolean packageIsSignedByExactlyLPr(String packageName, KeySetHandle ks){
+    PackageSetting pkg = mPackages.get(packageName);
+    if (pkg == null) {
+        throw new NullPointerException("Invalid package name");
+    }
+    if (pkg.keySetData == null || pkg.keySetData.getProperSigningKeySet() == PackageKeySetData.KEYSET_UNASSIGNED) {
+        throw new NullPointerException("Package has no KeySet data");
+    }
+    long id = getIdByKeySetLPr(ks);
+    if (id == KEYSET_NOT_FOUND) {
+        return false;
+    }
+    ArraySet<Long> pkgKeys = mKeySetMapping.get(pkg.keySetData.getProperSigningKeySet());
+    ArraySet<Long> testKeys = mKeySetMapping.get(id);
+    return pkgKeys.equals(testKeys);
+}

@@ -1,0 +1,57 @@
+public int predictThroughput(DeviceWiphyCapabilities deviceCapabilities, @WifiStandard int wifiStandardAp, int channelWidthAp, int rssiDbm, int frequency, int maxNumSpatialStreamAp, int channelUtilizationBssLoad, int channelUtilizationLinkLayerStats, boolean isBluetoothConnected){
+    if (deviceCapabilities == null) {
+        Log.e(TAG, "Null device capabilities passed to throughput predictor");
+        return 0;
+    }
+    int maxNumSpatialStreamDevice = Math.min(deviceCapabilities.getMaxNumberTxSpatialStreams(), deviceCapabilities.getMaxNumberRxSpatialStreams());
+    if (mContext.getResources().getBoolean(R.bool.config_wifiFrameworkMaxNumSpatialStreamDeviceOverrideEnable)) {
+        maxNumSpatialStreamDevice = mContext.getResources().getInteger(R.integer.config_wifiFrameworkMaxNumSpatialStreamDeviceOverrideValue);
+    }
+    int maxNumSpatialStream = Math.min(maxNumSpatialStreamDevice, maxNumSpatialStreamAp);
+    int wifiStandard;
+    switch(wifiStandardAp) {
+        case ScanResult.WIFI_STANDARD_11AX:
+            if (deviceCapabilities.isWifiStandardSupported(ScanResult.WIFI_STANDARD_11AX)) {
+                wifiStandard = ScanResult.WIFI_STANDARD_11AX;
+                break;
+            }
+        case ScanResult.WIFI_STANDARD_11AC:
+            if (deviceCapabilities.isWifiStandardSupported(ScanResult.WIFI_STANDARD_11AC)) {
+                wifiStandard = ScanResult.WIFI_STANDARD_11AC;
+                break;
+            }
+        case ScanResult.WIFI_STANDARD_11N:
+            if (deviceCapabilities.isWifiStandardSupported(ScanResult.WIFI_STANDARD_11N)) {
+                wifiStandard = ScanResult.WIFI_STANDARD_11N;
+                break;
+            }
+        default:
+            wifiStandard = ScanResult.WIFI_STANDARD_LEGACY;
+    }
+    int channelWidth;
+    switch(channelWidthAp) {
+        case ScanResult.CHANNEL_WIDTH_160MHZ:
+            if (deviceCapabilities.isChannelWidthSupported(ScanResult.CHANNEL_WIDTH_160MHZ)) {
+                channelWidth = ScanResult.CHANNEL_WIDTH_160MHZ;
+                break;
+            }
+        case ScanResult.CHANNEL_WIDTH_80MHZ:
+            if (deviceCapabilities.isChannelWidthSupported(ScanResult.CHANNEL_WIDTH_80MHZ)) {
+                channelWidth = ScanResult.CHANNEL_WIDTH_80MHZ;
+                break;
+            }
+        case ScanResult.CHANNEL_WIDTH_40MHZ:
+            if (deviceCapabilities.isChannelWidthSupported(ScanResult.CHANNEL_WIDTH_40MHZ)) {
+                channelWidth = ScanResult.CHANNEL_WIDTH_40MHZ;
+                break;
+            }
+        default:
+            channelWidth = ScanResult.CHANNEL_WIDTH_20MHZ;
+    }
+    if (mVerboseLoggingEnabled) {
+        StringBuilder sb = new StringBuilder();
+        Log.d(TAG, sb.append("AP Nss: ").append(maxNumSpatialStreamAp).append(", Device Nss: ").append(maxNumSpatialStreamDevice).append(", freq: ").append(frequency).toString());
+    }
+    int channelUtilization = getValidChannelUtilization(frequency, channelUtilizationBssLoad, channelUtilizationLinkLayerStats, isBluetoothConnected);
+    return predictThroughputInternal(wifiStandard, channelWidth, rssiDbm, maxNumSpatialStream, channelUtilization);
+}

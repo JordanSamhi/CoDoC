@@ -1,0 +1,42 @@
+public void forceViewsToAppear(){
+    if (!mIsReturning) {
+        return;
+    }
+    if (!mIsReadyForTransition) {
+        mIsReadyForTransition = true;
+        final ViewGroup decor = getDecor();
+        if (decor != null && mViewsReadyListener != null) {
+            mViewsReadyListener.removeListener();
+            mViewsReadyListener = null;
+        }
+        showViews(mTransitioningViews, true);
+        setTransitioningViewsVisiblity(View.VISIBLE, true);
+        mSharedElements.clear();
+        mAllSharedElementNames.clear();
+        mTransitioningViews.clear();
+        mIsReadyForTransition = true;
+        viewsTransitionComplete();
+        sharedElementTransitionComplete();
+    } else {
+        if (!mSharedElementTransitionStarted) {
+            moveSharedElementsFromOverlay();
+            mSharedElementTransitionStarted = true;
+            showViews(mSharedElements, true);
+            mSharedElements.clear();
+            sharedElementTransitionComplete();
+        }
+        if (!mIsViewsTransitionStarted) {
+            mIsViewsTransitionStarted = true;
+            showViews(mTransitioningViews, true);
+            setTransitioningViewsVisiblity(View.VISIBLE, true);
+            mTransitioningViews.clear();
+            viewsTransitionComplete();
+        }
+        cancelPendingTransitions();
+    }
+    mAreViewsReady = true;
+    if (mResultReceiver != null) {
+        mResultReceiver.send(MSG_CANCEL, null);
+        mResultReceiver = null;
+    }
+}

@@ -1,0 +1,28 @@
+public static String getSeInfo(AndroidPackage pkg, boolean isPrivileged, int targetSdkVersion){
+    String seInfo = null;
+    synchronized (sPolicies) {
+        if (!sPolicyRead) {
+            if (DEBUG_POLICY) {
+                Slog.d(TAG, "Policy not read");
+            }
+        } else {
+            for (Policy policy : sPolicies) {
+                seInfo = policy.getMatchedSeInfo(pkg);
+                if (seInfo != null) {
+                    break;
+                }
+            }
+        }
+    }
+    if (seInfo == null) {
+        seInfo = DEFAULT_SEINFO;
+    }
+    if (isPrivileged) {
+        seInfo += PRIVILEGED_APP_STR;
+    }
+    seInfo += TARGETSDKVERSION_STR + targetSdkVersion;
+    if (DEBUG_POLICY_INSTALL) {
+        Slog.i(TAG, "package (" + pkg.getPackageName() + ") labeled with " + "seinfo=" + seInfo);
+    }
+    return seInfo;
+}

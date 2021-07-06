@@ -1,0 +1,16 @@
+public void attachViews(ScrimView scrimBehind, ScrimView scrimInFront, ScrimView scrimForBubble){
+    mScrimBehind = scrimBehind;
+    mScrimInFront = scrimInFront;
+    mScrimForBubble = scrimForBubble;
+    final ScrimState[] states = ScrimState.values();
+    for (int i = 0; i < states.length; i++) {
+        states[i].init(mScrimInFront, mScrimBehind, mScrimForBubble, mDozeParameters, mDockManager);
+        states[i].setScrimBehindAlphaKeyguard(mScrimBehindAlphaKeyguard);
+        states[i].setDefaultScrimAlpha(mDefaultScrimAlpha);
+    }
+    mScrimBehind.setDefaultFocusHighlightEnabled(false);
+    mScrimInFront.setDefaultFocusHighlightEnabled(false);
+    mScrimForBubble.setDefaultFocusHighlightEnabled(false);
+    updateScrims();
+    mKeyguardUpdateMonitor.registerCallback(mKeyguardVisibilityCallback);
+}

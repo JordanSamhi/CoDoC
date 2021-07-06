@@ -1,0 +1,39 @@
+
+     * Set the flash unit's torch mode of the camera of the given ID without opening the camera
+     * device.
+     *
+     * <p>Use {@link #getCameraIdList} to get the list of available camera devices and use
+     * {@link #getCameraCharacteristics} to check whether the camera device has a flash unit.
+     * Note that even if a camera device has a flash unit, turning on the torch mode may fail
+     * if the camera device or other camera resources needed to turn on the torch mode are in use.
+     * </p>
+     *
+     * <p> If {@link #setTorchMode} is called to turn on or off the torch mode successfully,
+     * {@link CameraManager.TorchCallback#onTorchModeChanged} will be invoked.
+     * However, even if turning on the torch mode is successful, the application does not have the
+     * exclusive ownership of the flash unit or the camera device. The torch mode will be turned
+     * off and becomes unavailable when the camera device that the flash unit belongs to becomes
+     * unavailable or when other camera resources to keep the torch on become unavailable (
+     * {@link CameraManager.TorchCallback#onTorchModeUnavailable} will be invoked). Also,
+     * other applications are free to call {@link #setTorchMode} to turn off the torch mode (
+     * {@link CameraManager.TorchCallback#onTorchModeChanged} will be invoked). If the latest
+     * application that turned on the torch mode exits, the torch mode will be turned off.
+     *
+     * @param cameraId
+     *             The unique identifier of the camera device that the flash unit belongs to.
+     * @param enabled
+     *             The desired state of the torch mode for the target camera device. Set to
+     *             {@code true} to turn on the torch mode. Set to {@code false} to turn off the
+     *             torch mode.
+     *
+     * @throws CameraAccessException if it failed to access the flash unit.
+     *             {@link CameraAccessException#CAMERA_IN_USE} will be thrown if the camera device
+     *             is in use. {@link CameraAccessException#MAX_CAMERAS_IN_USE} will be thrown if
+     *             other camera resources needed to turn on the torch mode are in use.
+     *             {@link CameraAccessException#CAMERA_DISCONNECTED} will be thrown if camera
+     *             service is not available.
+     *
+     * @throws IllegalArgumentException if cameraId was null, cameraId doesn't match any currently
+     *             or previously available camera device, or the camera device doesn't have a
+     *             flash unit.
+     

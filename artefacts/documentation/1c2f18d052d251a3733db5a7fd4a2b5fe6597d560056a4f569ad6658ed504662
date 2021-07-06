@@ -1,0 +1,20 @@
+
+     * Queues the request to send or receive data on its endpoint.
+     * <p>For OUT endpoints, the given buffer data will be sent on the endpoint. For IN endpoints,
+     * the endpoint will attempt to read the given number of bytes into the specified buffer. If the
+     * queueing operation is successful, return true. The result will be returned via
+     * {@link UsbDeviceConnection#requestWait}</p>
+     *
+     * @param buffer the buffer containing the bytes to write, or location to store the results of a
+     *               read. Position and array offset will be ignored and assumed to be 0. Limit and
+     *               capacity will be ignored. Once the request
+     *               {@link UsbDeviceConnection#requestWait() is processed} the position will be set
+     *               to the number of bytes read/written.
+     * @param length number of bytes to read or write. Before {@value Build.VERSION_CODES#P}, a
+     *               value larger than 16384 bytes would be truncated down to 16384. In API
+     *               {@value Build.VERSION_CODES#P} and after, any value of length is valid.
+     *
+     * @return true if the queueing operation succeeded
+     *
+     * @deprecated Use {@link #queue(ByteBuffer)} instead.
+     

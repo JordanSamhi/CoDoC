@@ -1,0 +1,20 @@
+public void checkForAnyMotion(){
+    if (DEBUG) {
+        Slog.d(TAG, "checkForAnyMotion(). mState = " + mState);
+    }
+    if (mState != STATE_ACTIVE) {
+        synchronized (mLock) {
+            mState = STATE_ACTIVE;
+            if (DEBUG) {
+                Slog.d(TAG, "Moved from STATE_INACTIVE to STATE_ACTIVE.");
+            }
+            mCurrentGravityVector = null;
+            mPreviousGravityVector = null;
+            mWakeLock.acquire();
+            Message wakelockTimeoutMsg = Message.obtain(mHandler, mWakelockTimeout);
+            mHandler.sendMessageDelayed(wakelockTimeoutMsg, WAKELOCK_TIMEOUT_MILLIS);
+            mWakelockTimeoutIsActive = true;
+            startOrientationMeasurementLocked();
+        }
+    }
+}

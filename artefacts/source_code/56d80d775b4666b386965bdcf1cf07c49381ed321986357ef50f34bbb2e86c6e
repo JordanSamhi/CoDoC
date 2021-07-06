@@ -1,0 +1,14 @@
+public static void dumpStats(IndentingPrintWriter pw, String key, Object value){
+    final Parcel tmp = Parcel.obtain();
+    tmp.writeValue(value);
+    final int size = tmp.dataPosition();
+    tmp.recycle();
+    if (size > 1024) {
+        pw.println(key + " [size=" + size + "]");
+        if (value instanceof BaseBundle) {
+            dumpStats(pw, (BaseBundle) value);
+        } else if (value instanceof SparseArray) {
+            dumpStats(pw, (SparseArray) value);
+        }
+    }
+}

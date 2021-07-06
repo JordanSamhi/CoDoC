@@ -1,0 +1,15 @@
+public boolean canReorderNotification(ExpandableNotificationRow row){
+    if (mReorderingAllowed) {
+        return true;
+    }
+    if (mAddedChildren.contains(row)) {
+        return true;
+    }
+    if (mLowPriorityReorderingViews.contains(row.getEntry())) {
+        return true;
+    }
+    if (mAllowedReorderViews.contains(row) && !mVisibilityLocationProvider.isInVisibleLocation(row.getEntry())) {
+        return true;
+    }
+    return false;
+}

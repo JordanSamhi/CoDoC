@@ -1,0 +1,8 @@
+public boolean isRoleHeld(@NonNull String roleName){
+    Preconditions.checkStringNotEmpty(roleName, "roleName cannot be null or empty");
+    try {
+        return mService.isRoleHeld(roleName, mContext.getPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

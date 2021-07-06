@@ -1,0 +1,56 @@
+public boolean hasFileDescriptors(){
+    if ((mFlags & FLAG_HAS_FDS_KNOWN) == 0) {
+        boolean fdFound = false;
+        if (mParcelledData != null) {
+            if (mParcelledData.hasFileDescriptors()) {
+                fdFound = true;
+            }
+        } else {
+            for (int i = mMap.size() - 1; i >= 0; i--) {
+                Object obj = mMap.valueAt(i);
+                if (obj instanceof Parcelable) {
+                    if ((((Parcelable) obj).describeContents() & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0) {
+                        fdFound = true;
+                        break;
+                    }
+                } else if (obj instanceof Parcelable[]) {
+                    Parcelable[] array = (Parcelable[]) obj;
+                    for (int n = array.length - 1; n >= 0; n--) {
+                        Parcelable p = array[n];
+                        if (p != null && ((p.describeContents() & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0)) {
+                            fdFound = true;
+                            break;
+                        }
+                    }
+                } else if (obj instanceof SparseArray) {
+                    SparseArray<? extends Parcelable> array = (SparseArray<? extends Parcelable>) obj;
+                    for (int n = array.size() - 1; n >= 0; n--) {
+                        Parcelable p = array.valueAt(n);
+                        if (p != null && (p.describeContents() & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0) {
+                            fdFound = true;
+                            break;
+                        }
+                    }
+                } else if (obj instanceof ArrayList) {
+                    ArrayList array = (ArrayList) obj;
+                    if (!array.isEmpty() && (array.get(0) instanceof Parcelable)) {
+                        for (int n = array.size() - 1; n >= 0; n--) {
+                            Parcelable p = (Parcelable) array.get(n);
+                            if (p != null && ((p.describeContents() & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0)) {
+                                fdFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (fdFound) {
+            mFlags |= FLAG_HAS_FDS;
+        } else {
+            mFlags &= ~FLAG_HAS_FDS;
+        }
+        mFlags |= FLAG_HAS_FDS_KNOWN;
+    }
+    return (mFlags & FLAG_HAS_FDS) != 0;
+}

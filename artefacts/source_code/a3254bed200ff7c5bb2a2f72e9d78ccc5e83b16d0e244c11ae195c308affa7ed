@@ -1,0 +1,14 @@
+public MediaCodecInfo makeRegular(){
+    ArrayList<CodecCapabilities> caps = new ArrayList<CodecCapabilities>();
+    for (CodecCapabilities c : mCaps.values()) {
+        if (c.isRegular()) {
+            caps.add(c);
+        }
+    }
+    if (caps.size() == 0) {
+        return null;
+    } else if (caps.size() == mCaps.size()) {
+        return this;
+    }
+    return new MediaCodecInfo(mName, mCanonicalName, mFlags, caps.toArray(new CodecCapabilities[caps.size()]));
+}

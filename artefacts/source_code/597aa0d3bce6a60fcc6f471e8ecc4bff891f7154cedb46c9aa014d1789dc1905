@@ -1,0 +1,47 @@
+public static SparseArray<String> findMessageNames(Class[] classes, String[] prefixes){
+    SparseArray<String> messageNames = new SparseArray<>();
+    for (Class c : classes) {
+        String className = c.getName();
+        if (DBG)
+            Log.d(TAG, "Examining class " + className);
+        Field[] fields;
+        try {
+            fields = c.getDeclaredFields();
+        } catch (SecurityException e) {
+            Log.e(TAG, "Can't list fields of class " + className);
+            continue;
+        }
+        for (Field field : fields) {
+            int modifiers = field.getModifiers();
+            if (!Modifier.isStatic(modifiers) | !Modifier.isFinal(modifiers)) {
+                continue;
+            }
+            String name = field.getName();
+            for (String prefix : prefixes) {
+                if (!name.startsWith(prefix)) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    int value;
+                    try {
+                        value = field.getInt(null);
+                    } catch (IllegalArgumentException | ExceptionInInitializerError e) {
+                        break;
+                    }
+                    String previousName = messageNames.get(value);
+                    if (previousName != null && !previousName.equals(name)) {
+                        throw new DuplicateConstantError(name, previousName, value);
+                    }
+                    messageNames.put(value, name);
+                    if (DBG) {
+                        Log.d(TAG, String.format("Found constant: %s.%s = %d", className, name, value));
+                    }
+                } catch (SecurityException | IllegalAccessException e) {
+                    continue;
+                }
+            }
+        }
+    }
+    return messageNames;
+}

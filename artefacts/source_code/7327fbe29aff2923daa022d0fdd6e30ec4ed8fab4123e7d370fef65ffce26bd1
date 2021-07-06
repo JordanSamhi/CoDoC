@@ -1,0 +1,6 @@
+public long setRecoveryServiceCertPath(int userId, int uid, @NonNull String rootAlias, CertPath certPath) throws CertificateEncodingException{
+    if (certPath.getCertificates().size() == 0) {
+        throw new CertificateEncodingException("No certificate contained in the cert path.");
+    }
+    return setBytes(userId, uid, rootAlias, RootOfTrustEntry.COLUMN_NAME_CERT_PATH, certPath.getEncoded(CERT_PATH_ENCODING));
+}

@@ -1,0 +1,7 @@
+public void registerStatusListener(@NonNull ManagerStatusListener listener, @Nullable Handler handler){
+    synchronized (mLock) {
+        if (!mManagerStatusListeners.add(new ManagerStatusListenerProxy(listener, handler))) {
+            Log.w(TAG, "registerStatusListener: duplicate registration ignored");
+        }
+    }
+}

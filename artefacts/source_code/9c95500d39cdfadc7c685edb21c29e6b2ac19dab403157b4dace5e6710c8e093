@@ -1,0 +1,20 @@
+public void setTimeZone(String timeZone){
+    if (TextUtils.isEmpty(timeZone)) {
+        return;
+    }
+    if (mTargetSdkVersion >= Build.VERSION_CODES.M) {
+        boolean hasTimeZone = false;
+        try {
+            hasTimeZone = ZoneInfoDb.getInstance().hasTimeZone(timeZone);
+        } catch (IOException ignored) {
+        }
+        if (!hasTimeZone) {
+            throw new IllegalArgumentException("Timezone: " + timeZone + " is not an Olson ID");
+        }
+    }
+    try {
+        mService.setTimeZone(timeZone);
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

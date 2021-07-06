@@ -1,0 +1,37 @@
+public SparseArray<List<AccessibilityWindowInfo>> getWindowsOnAllDisplays(){
+    synchronized (mLock) {
+        if (!mIsAllWindowsCached) {
+            return null;
+        }
+        final SparseArray<List<AccessibilityWindowInfo>> returnWindows = new SparseArray<>();
+        final int displayCounts = mWindowCacheByDisplay.size();
+        if (displayCounts > 0) {
+            for (int i = 0; i < displayCounts; i++) {
+                final int displayId = mWindowCacheByDisplay.keyAt(i);
+                final SparseArray<AccessibilityWindowInfo> windowsOfDisplay = mWindowCacheByDisplay.valueAt(i);
+                if (windowsOfDisplay == null) {
+                    continue;
+                }
+                final int windowCount = windowsOfDisplay.size();
+                if (windowCount > 0) {
+                    SparseArray<AccessibilityWindowInfo> sortedWindows = mTempWindowArray;
+                    sortedWindows.clear();
+                    for (int j = 0; j < windowCount; j++) {
+                        AccessibilityWindowInfo window = windowsOfDisplay.valueAt(j);
+                        sortedWindows.put(window.getLayer(), window);
+                    }
+                    final int sortedWindowCount = sortedWindows.size();
+                    List<AccessibilityWindowInfo> windows = new ArrayList<>(sortedWindowCount);
+                    for (int j = sortedWindowCount - 1; j >= 0; j--) {
+                        AccessibilityWindowInfo window = sortedWindows.valueAt(j);
+                        windows.add(new AccessibilityWindowInfo(window));
+                        sortedWindows.removeAt(j);
+                    }
+                    returnWindows.put(displayId, windows);
+                }
+            }
+            return returnWindows;
+        }
+        return null;
+    }
+}

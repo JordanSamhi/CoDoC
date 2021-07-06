@@ -1,0 +1,16 @@
+public int getPriority(BluetoothDevice device){
+    if (VDBG)
+        log("getPriority(" + device + ")");
+    final IBluetoothHeadset service = mService;
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return BluetoothAdapter.connectionPolicyToPriority(service.getPriority(device));
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return BluetoothProfile.PRIORITY_OFF;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return BluetoothProfile.PRIORITY_OFF;
+}

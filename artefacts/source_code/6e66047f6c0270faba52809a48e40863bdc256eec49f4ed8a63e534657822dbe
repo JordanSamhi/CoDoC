@@ -1,0 +1,12 @@
+public void commitAnimationFrame(long frameTime){
+    if (!mStartTimeCommitted) {
+        mStartTimeCommitted = true;
+        long adjustment = frameTime - mLastFrameTime;
+        if (adjustment > 0) {
+            mStartTime += adjustment;
+            if (DEBUG) {
+                Log.d(TAG, "Adjusted start time by " + adjustment + " ms: " + toString());
+            }
+        }
+    }
+}

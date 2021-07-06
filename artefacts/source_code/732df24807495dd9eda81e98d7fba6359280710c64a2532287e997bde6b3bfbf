@@ -1,0 +1,11 @@
+public static void put(IBinder token, InputMethodPrivilegedOperations ops){
+    synchronized (sLock) {
+        if (sRegistry == null) {
+            sRegistry = new WeakHashMap<>();
+        }
+        final WeakReference<InputMethodPrivilegedOperations> previousOps = sRegistry.put(token, new WeakReference<>(ops));
+        if (previousOps != null) {
+            throw new IllegalStateException(previousOps.get() + " is already registered for " + " this token=" + token + " newOps=" + ops);
+        }
+    }
+}

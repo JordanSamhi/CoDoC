@@ -1,0 +1,9 @@
+public void addInterfaceToLocalNetwork(String iface, List<RouteInfo> routes){
+    modifyInterfaceInNetwork(MODIFY_OPERATION_ADD, INetd.LOCAL_NET_ID, iface);
+    for (RouteInfo route : routes) {
+        if (!route.isDefaultRoute()) {
+            modifyRoute(MODIFY_OPERATION_ADD, INetd.LOCAL_NET_ID, route);
+        }
+    }
+    modifyRoute(MODIFY_OPERATION_ADD, INetd.LOCAL_NET_ID, new RouteInfo(new IpPrefix("fe80::/64"), null, iface, RouteInfo.RTN_UNICAST));
+}

@@ -1,0 +1,20 @@
+
+     * Parse scheduler options supplied in this string form:
+     *
+     * <pre>
+     * backoff=(fixed)+(incremental)[+(exponential)] max=(maxmoratorium) min=(mintrigger) [period=](interval)
+     * </pre>
+     *
+     * All values are times in (possibly fractional) <em>seconds</em> (not milliseconds).
+     * Omitted settings are left at whatever existing default value was passed in.
+     *
+     * <p>
+     * The default options: <code>backoff=0+5 max=86400 min=0 period=0</code><br>
+     * Fractions are OK: <code>backoff=+2.5 period=10.0</code><br>
+     * The "period=" can be omitted: <code>3600</code><br>
+     *
+     * @param spec describing some or all scheduler options.
+     * @param options to update with parsed values.
+     * @return the options passed in (for convenience)
+     * @throws IllegalArgumentException if the syntax is invalid
+     

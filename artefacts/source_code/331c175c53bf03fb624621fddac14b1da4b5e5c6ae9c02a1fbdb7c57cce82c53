@@ -1,0 +1,14 @@
+public static final Uri insert(ContentResolver cr, long eventId, long begin, long end, long alarmTime, int minutes){
+    ContentValues values = new ContentValues();
+    values.put(CalendarAlerts.EVENT_ID, eventId);
+    values.put(CalendarAlerts.BEGIN, begin);
+    values.put(CalendarAlerts.END, end);
+    values.put(CalendarAlerts.ALARM_TIME, alarmTime);
+    long currentTime = System.currentTimeMillis();
+    values.put(CalendarAlerts.CREATION_TIME, currentTime);
+    values.put(CalendarAlerts.RECEIVED_TIME, 0);
+    values.put(CalendarAlerts.NOTIFY_TIME, 0);
+    values.put(CalendarAlerts.STATE, STATE_SCHEDULED);
+    values.put(CalendarAlerts.MINUTES, minutes);
+    return cr.insert(CONTENT_URI, values);
+}

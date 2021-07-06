@@ -1,0 +1,18 @@
+public JSONArray dumpChannelsJson(NotificationManagerService.DumpFilter filter){
+    JSONArray channels = new JSONArray();
+    Map<String, Integer> packageChannels = getPackageChannels();
+    for (Map.Entry<String, Integer> channelCount : packageChannels.entrySet()) {
+        final String packageName = channelCount.getKey();
+        if (filter == null || filter.matches(packageName)) {
+            JSONObject channelCountJson = new JSONObject();
+            try {
+                channelCountJson.put("packageName", packageName);
+                channelCountJson.put("channelCount", channelCount.getValue());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            channels.put(channelCountJson);
+        }
+    }
+    return channels;
+}

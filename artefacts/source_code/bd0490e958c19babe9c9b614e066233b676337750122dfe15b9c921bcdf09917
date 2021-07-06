@@ -1,0 +1,7 @@
+public void canonicalizeAsync(Uri uri, RemoteCallback callback){
+    AsyncTask.SERIAL_EXECUTOR.execute(() -> {
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(ContentResolver.REMOTE_CALLBACK_RESULT, canonicalize(uri));
+        callback.sendResult(bundle);
+    });
+}

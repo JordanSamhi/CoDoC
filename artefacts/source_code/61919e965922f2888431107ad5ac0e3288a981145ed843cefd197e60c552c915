@@ -1,0 +1,16 @@
+public void stopAdvertisingSet(AdvertisingSetCallback callback){
+    if (callback == null) {
+        throw new IllegalArgumentException("callback cannot be null");
+    }
+    IAdvertisingSetCallback wrapped = mCallbackWrappers.remove(callback);
+    if (wrapped == null) {
+        return;
+    }
+    IBluetoothGatt gatt;
+    try {
+        gatt = mBluetoothManager.getBluetoothGatt();
+        gatt.stopAdvertisingSet(wrapped);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to stop advertising - ", e);
+    }
+}

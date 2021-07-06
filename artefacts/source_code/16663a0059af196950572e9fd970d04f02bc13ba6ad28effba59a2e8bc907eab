@@ -1,0 +1,11 @@
+public ViewParent getParentForAccessibility(){
+    if (mParent instanceof View) {
+        View parentView = (View) mParent;
+        if (parentView.includeForAccessibility()) {
+            return mParent;
+        } else {
+            return mParent.getParentForAccessibility();
+        }
+    }
+    return null;
+}

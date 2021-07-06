@@ -1,0 +1,9 @@
+public VideoCallImpl getVideoCallImpl(String callingPackageName, int targetSdkVersion){
+    if (mVideoCall == null && mVideoCallProvider != null) {
+        try {
+            mVideoCall = new VideoCallImpl(mVideoCallProvider, callingPackageName, targetSdkVersion);
+        } catch (RemoteException ignored) {
+        }
+    }
+    return mVideoCall;
+}

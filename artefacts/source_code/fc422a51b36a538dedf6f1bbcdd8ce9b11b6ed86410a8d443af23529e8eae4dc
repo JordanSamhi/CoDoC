@@ -1,0 +1,14 @@
+public static void distanceBetween(double startLatitude, double startLongitude, double endLatitude, double endLongitude, float[] results){
+    if (results == null || results.length < 1) {
+        throw new IllegalArgumentException("results is null or has length < 1");
+    }
+    BearingDistanceCache cache = sBearingDistanceCache.get();
+    computeDistanceAndBearing(startLatitude, startLongitude, endLatitude, endLongitude, cache);
+    results[0] = cache.mDistance;
+    if (results.length > 1) {
+        results[1] = cache.mInitialBearing;
+        if (results.length > 2) {
+            results[2] = cache.mFinalBearing;
+        }
+    }
+}

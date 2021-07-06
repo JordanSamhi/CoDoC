@@ -1,0 +1,30 @@
+
+     * Formats a string of given directionality for use in plain-text output of the context
+     * directionality, so an opposite-directionality string is neither garbled nor garbles its
+     * surroundings. This makes use of Unicode bidi formatting characters.
+     * <p>
+     * The algorithm: In case the given directionality doesn't match the context directionality, wraps
+     * the string with Unicode bidi formatting characters: RLE+{@code str}+PDF for RTL text, or
+     * LRE+{@code str}+PDF for LTR text.
+     * <p>
+     * If {@code isolate}, directionally isolates the string so that it does not garble its
+     * surroundings. Currently, this is done by "resetting" the directionality after the string by
+     * appending a trailing Unicode bidi mark matching the context directionality (LRM or RLM) when
+     * either the overall directionality or the exit directionality of the string is opposite to
+     * that of the context. Unless the formatter was built using
+     * {@link Builder#stereoReset(boolean)} with a {@code false} argument, also prepends a Unicode
+     * bidi mark matching the context directionality when either the overall directionality or the
+     * entry directionality of the string is opposite to that of the context. Note that as opposed
+     * to the overall directionality, the entry and exit directionalities are determined from the
+     * string itself.
+     * <p>
+     * Does *not* do HTML-escaping.
+     *
+     * @param str The input string.
+     * @param heuristic The algorithm to be used to estimate the string's overall direction.
+     *        See {@link TextDirectionHeuristics} for pre-defined heuristics.
+     * @param isolate Whether to directionally isolate the string to prevent it from garbling the
+     *     content around it
+     * @return Input string after applying the above processing. {@code null} if {@code str} is
+     *     {@code null}.
+     

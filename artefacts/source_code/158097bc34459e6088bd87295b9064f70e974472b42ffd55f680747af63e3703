@@ -1,0 +1,18 @@
+public void onBackPressed(){
+    if (mActionBar != null && mActionBar.collapseActionView()) {
+        return;
+    }
+    FragmentManager fragmentManager = mFragments.getFragmentManager();
+    if (!fragmentManager.isStateSaved() && fragmentManager.popBackStackImmediate()) {
+        return;
+    }
+    if (!isTaskRoot()) {
+        finishAfterTransition();
+        return;
+    }
+    try {
+        ActivityTaskManager.getService().onBackPressedOnTaskRoot(mToken, new RequestFinishCallback(new WeakReference<>(this)));
+    } catch (RemoteException e) {
+        finishAfterTransition();
+    }
+}

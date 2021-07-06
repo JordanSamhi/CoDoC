@@ -1,0 +1,19 @@
+public void onWakeLockAcquired(int flags, String tag, String packageName, int ownerUid, int ownerPid, WorkSource workSource, String historyTag){
+    if (DEBUG) {
+        Slog.d(TAG, "onWakeLockAcquired: flags=" + flags + ", tag=\"" + tag + "\", packageName=" + packageName + ", ownerUid=" + ownerUid + ", ownerPid=" + ownerPid + ", workSource=" + workSource);
+    }
+    final int monitorType = getBatteryStatsWakeLockMonitorType(flags);
+    if (monitorType >= 0) {
+        try {
+            final boolean unimportantForLogging = ownerUid == Process.SYSTEM_UID && (flags & PowerManager.UNIMPORTANT_FOR_LOGGING) != 0;
+            if (workSource != null) {
+                mBatteryStats.noteStartWakelockFromSource(workSource, ownerPid, tag, historyTag, monitorType, unimportantForLogging);
+            } else {
+                mBatteryStats.noteStartWakelock(ownerUid, ownerPid, tag, historyTag, monitorType, unimportantForLogging);
+                mAppOps.startOpNoThrow(AppOpsManager.OP_WAKE_LOCK, ownerUid, packageName);
+            }
+        } catch (RemoteException ex) {
+        }
+    }
+    mWakeLockLog.onWakeLockAcquired(tag, ownerUid, flags);
+}

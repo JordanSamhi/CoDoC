@@ -1,0 +1,35 @@
+public String getKeyIdForCredentials(WifiConfiguration current){
+    String keyMgmt = "";
+    try {
+        if (TextUtils.isEmpty(SSID))
+            SSID = current.SSID;
+        if (allowedKeyManagement.cardinality() == 0) {
+            allowedKeyManagement = current.allowedKeyManagement;
+        }
+        if (allowedKeyManagement.get(KeyMgmt.WPA_EAP)) {
+            keyMgmt += KeyMgmt.strings[KeyMgmt.WPA_EAP];
+        }
+        if (allowedKeyManagement.get(KeyMgmt.OSEN)) {
+            keyMgmt += KeyMgmt.strings[KeyMgmt.OSEN];
+        }
+        if (allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
+            keyMgmt += KeyMgmt.strings[KeyMgmt.IEEE8021X];
+        }
+        if (allowedKeyManagement.get(KeyMgmt.SUITE_B_192)) {
+            keyMgmt += KeyMgmt.strings[KeyMgmt.SUITE_B_192];
+        }
+        if (allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+            keyMgmt += KeyMgmt.strings[KeyMgmt.WAPI_CERT];
+        }
+        if (TextUtils.isEmpty(keyMgmt)) {
+            throw new IllegalStateException("Not an EAP network");
+        }
+        String keyId = trimStringForKeyId(SSID) + "_" + keyMgmt + "_" + trimStringForKeyId(enterpriseConfig.getKeyId(current != null ? current.enterpriseConfig : null));
+        if (!fromWifiNetworkSuggestion) {
+            return keyId;
+        }
+        return keyId + "_" + trimStringForKeyId(BSSID) + "_" + trimStringForKeyId(creatorName);
+    } catch (NullPointerException e) {
+        throw new IllegalStateException("Invalid config details");
+    }
+}

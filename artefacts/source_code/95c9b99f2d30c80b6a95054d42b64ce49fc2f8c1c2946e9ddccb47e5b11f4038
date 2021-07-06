@@ -1,0 +1,45 @@
+public int executeForCursorWindow(String sql, Object[] bindArgs, CursorWindow window, int startPos, int requiredPos, boolean countAllRows, CancellationSignal cancellationSignal){
+    if (sql == null) {
+        throw new IllegalArgumentException("sql must not be null.");
+    }
+    if (window == null) {
+        throw new IllegalArgumentException("window must not be null.");
+    }
+    window.acquireReference();
+    try {
+        int actualPos = -1;
+        int countedRows = -1;
+        int filledRows = -1;
+        final int cookie = mRecentOperations.beginOperation("executeForCursorWindow", sql, bindArgs);
+        try {
+            final PreparedStatement statement = acquirePreparedStatement(sql);
+            try {
+                throwIfStatementForbidden(statement);
+                bindArguments(statement, bindArgs);
+                applyBlockGuardPolicy(statement);
+                attachCancellationSignal(cancellationSignal);
+                try {
+                    final long result = nativeExecuteForCursorWindow(mConnectionPtr, statement.mStatementPtr, window.mWindowPtr, startPos, requiredPos, countAllRows);
+                    actualPos = (int) (result >> 32);
+                    countedRows = (int) result;
+                    filledRows = window.getNumRows();
+                    window.setStartPosition(actualPos);
+                    return countedRows;
+                } finally {
+                    detachCancellationSignal(cancellationSignal);
+                }
+            } finally {
+                releasePreparedStatement(statement);
+            }
+        } catch (RuntimeException ex) {
+            mRecentOperations.failOperation(cookie, ex);
+            throw ex;
+        } finally {
+            if (mRecentOperations.endOperationDeferLog(cookie)) {
+                mRecentOperations.logOperation(cookie, "window='" + window + "', startPos=" + startPos + ", actualPos=" + actualPos + ", filledRows=" + filledRows + ", countedRows=" + countedRows);
+            }
+        }
+    } finally {
+        window.releaseReference();
+    }
+}

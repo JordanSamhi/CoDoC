@@ -1,0 +1,22 @@
+public static boolean checkRequiredSystemProperties(@Nullable String rawPropNames, @Nullable String rawPropValues){
+    if (TextUtils.isEmpty(rawPropNames) || TextUtils.isEmpty(rawPropValues)) {
+        if (!TextUtils.isEmpty(rawPropNames) || !TextUtils.isEmpty(rawPropValues)) {
+            Slog.w(TAG, "Disabling overlay - incomplete property :'" + rawPropNames + "=" + rawPropValues + "' - require both requiredSystemPropertyName" + " AND requiredSystemPropertyValue to be specified.");
+            return false;
+        }
+        return true;
+    }
+    final String[] propNames = rawPropNames.split(",");
+    final String[] propValues = rawPropValues.split(",");
+    if (propNames.length != propValues.length) {
+        Slog.w(TAG, "Disabling overlay - property :'" + rawPropNames + "=" + rawPropValues + "' - require both requiredSystemPropertyName" + " AND requiredSystemPropertyValue lists to have the same size.");
+        return false;
+    }
+    for (int i = 0; i < propNames.length; i++) {
+        final String currValue = SystemProperties.get(propNames[i]);
+        if (!TextUtils.equals(currValue, propValues[i])) {
+            return false;
+        }
+    }
+    return true;
+}

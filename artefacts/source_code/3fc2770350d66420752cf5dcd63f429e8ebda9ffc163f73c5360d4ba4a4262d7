@@ -1,0 +1,17 @@
+public void noteSignalPoll(@NonNull ExtendedWifiInfo wifiInfo){
+    if (!mPolled && wifiInfo.getRssi() != INVALID_RSSI) {
+        updatePerBssid(Event.FIRST_POLL_AFTER_CONNECTION, wifiInfo);
+        mPolled = true;
+    }
+    updatePerBssid(Event.SIGNAL_POLL, wifiInfo);
+    int validTxSpeed = geTxLinkSpeedWithSufficientTxRate(wifiInfo);
+    updatePerNetwork(Event.SIGNAL_POLL, wifiInfo.getSSID(), wifiInfo.getRssi(), validTxSpeed, UNKNOWN_REASON);
+    if (mTsRoam > TS_NONE && wifiInfo.getRssi() != INVALID_RSSI) {
+        long duration = mClock.getElapsedSinceBootMillis() - mTsRoam;
+        if (duration >= SUCCESS_MILLIS_SINCE_ROAM) {
+            updatePerBssid(Event.ROAM_SUCCESS, wifiInfo);
+            mTsRoam = TS_NONE;
+            doWritesBssid();
+        }
+    }
+}

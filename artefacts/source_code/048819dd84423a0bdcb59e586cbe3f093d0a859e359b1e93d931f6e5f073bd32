@@ -1,0 +1,20 @@
+public void fadeKeyguardAfterLaunchTransition(final Runnable beforeFading, Runnable endRunnable){
+    mHandler.removeMessages(MSG_LAUNCH_TRANSITION_TIMEOUT);
+    mLaunchTransitionEndRunnable = endRunnable;
+    Runnable hideRunnable = () -> {
+        mKeyguardStateController.setLaunchTransitionFadingAway(true);
+        if (beforeFading != null) {
+            beforeFading.run();
+        }
+        updateScrimController();
+        mPresenter.updateMediaMetaData(false, true);
+        mNotificationPanelViewController.setAlpha(1);
+        mNotificationPanelViewController.fadeOut(FADE_KEYGUARD_START_DELAY, FADE_KEYGUARD_DURATION, this::onLaunchTransitionFadingEnded);
+        mCommandQueue.appTransitionStarting(mDisplayId, SystemClock.uptimeMillis(), LightBarTransitionsController.DEFAULT_TINT_ANIMATION_DURATION, true);
+    };
+    if (mNotificationPanelViewController.isLaunchTransitionRunning()) {
+        mNotificationPanelViewController.setLaunchTransitionEndRunnable(hideRunnable);
+    } else {
+        hideRunnable.run();
+    }
+}

@@ -1,0 +1,15 @@
+public boolean removeChild(ItemHierarchy child){
+    final int childIndex = identityIndexOf(children, child);
+    final int childPosition = getChildPosition(childIndex);
+    dirty = true;
+    if (childIndex != -1) {
+        final int childCount = child.getCount();
+        children.remove(childIndex);
+        child.unregisterObserver(this);
+        if (childCount > 0) {
+            notifyItemRangeRemoved(childPosition, childCount);
+        }
+        return true;
+    }
+    return false;
+}

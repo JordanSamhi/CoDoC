@@ -1,0 +1,7 @@
+public final void notifyDataCallListChanged(List<DataCallResponse> dataCallList){
+    synchronized (mDataCallListChangedCallbacks) {
+        for (IDataServiceCallback callback : mDataCallListChangedCallbacks) {
+            mHandler.obtainMessage(DATA_SERVICE_INDICATION_DATA_CALL_LIST_CHANGED, mSlotIndex, 0, new DataCallListChangedIndication(dataCallList, callback)).sendToTarget();
+        }
+    }
+}

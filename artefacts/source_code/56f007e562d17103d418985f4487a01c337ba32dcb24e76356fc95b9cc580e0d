@@ -1,0 +1,9 @@
+public void testRestoreAccessibilityDisplayMagnificationScale_alreadyConfigured_doesNotRestoreValue() throws Exception{
+    float defaultSettingValue = setDefaultAccessibilityDisplayMagnificationScale();
+    String settingName = Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_SCALE;
+    float restoreSettingValue = defaultSettingValue + 0.5f;
+    float configuredSettingValue = defaultSettingValue + 1.0f;
+    Settings.Secure.putFloat(mContentResolver, settingName, configuredSettingValue);
+    mSettingsHelper.restoreValue(mContext, mContentResolver, new ContentValues(2), Settings.Secure.getUriFor(settingName), settingName, String.valueOf(restoreSettingValue), Build.VERSION.SDK_INT);
+    assertEquals(configuredSettingValue, Settings.Secure.getFloat(mContentResolver, settingName), FLOAT_TOLERANCE);
+}

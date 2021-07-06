@@ -1,0 +1,13 @@
+public R getOrCompute(T t, int rotation){
+    if (t != mCachedFor) {
+        mCache.clear();
+        mCachedFor = t;
+    }
+    final int idx = mCache.indexOfKey(rotation);
+    if (idx >= 0) {
+        return mCache.valueAt(idx);
+    }
+    final R result = mComputation.compute(t, rotation);
+    mCache.put(rotation, result);
+    return result;
+}

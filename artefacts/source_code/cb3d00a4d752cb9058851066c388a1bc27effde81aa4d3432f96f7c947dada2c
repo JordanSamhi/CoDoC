@@ -1,0 +1,12 @@
+public final ArrayList<T> createTypedArrayList(@NonNull Parcelable.Creator<T> c){
+    int N = readInt();
+    if (N < 0) {
+        return null;
+    }
+    ArrayList<T> l = new ArrayList<T>(N);
+    while (N > 0) {
+        l.add(readTypedObject(c));
+        N--;
+    }
+    return l;
+}

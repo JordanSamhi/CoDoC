@@ -1,0 +1,37 @@
+public void onDescriptorRead(String address, int status, int handle, byte[] value){
+    if (VDBG) {
+        Log.d(TAG, "onDescriptorRead() - Device=" + address + " handle=" + handle);
+    }
+    if (!address.equals(mDevice.getAddress())) {
+        return;
+    }
+    synchronized (mDeviceBusyLock) {
+        mDeviceBusy = false;
+    }
+    BluetoothGattDescriptor descriptor = getDescriptorById(mDevice, handle);
+    if (descriptor == null)
+        return;
+    if ((status == GATT_INSUFFICIENT_AUTHENTICATION || status == GATT_INSUFFICIENT_ENCRYPTION) && (mAuthRetryState != AUTH_RETRY_STATE_MITM)) {
+        try {
+            final int authReq = (mAuthRetryState == AUTH_RETRY_STATE_IDLE) ? AUTHENTICATION_NO_MITM : AUTHENTICATION_MITM;
+            mService.readDescriptor(mClientIf, address, handle, authReq);
+            mAuthRetryState++;
+            return;
+        } catch (RemoteException e) {
+            Log.e(TAG, "", e);
+        }
+    }
+    mAuthRetryState = AUTH_RETRY_STATE_IDLE;
+    runOrQueueCallback(new Runnable() {
+
+        @Override
+        public void run() {
+            final BluetoothGattCallback callback = mCallback;
+            if (callback != null) {
+                if (status == 0)
+                    descriptor.setValue(value);
+                callback.onDescriptorRead(BluetoothGatt.this, descriptor, status);
+            }
+        }
+    });
+}

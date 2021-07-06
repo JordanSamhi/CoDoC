@@ -1,0 +1,11 @@
+public String getDeviceOwnerNameOnAnyUser(){
+    throwIfParentInstance("getDeviceOwnerNameOnAnyUser");
+    if (mService != null) {
+        try {
+            return mService.getDeviceOwnerName();
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

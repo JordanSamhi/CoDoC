@@ -1,0 +1,10 @@
+public void shutdown(){
+    enforceStatusBarService();
+    long identity = Binder.clearCallingIdentity();
+    try {
+        mNotificationDelegate.prepareForPossibleShutdown();
+        mHandler.post(() -> ShutdownThread.shutdown(getUiContext(), PowerManager.SHUTDOWN_USER_REQUESTED, false));
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

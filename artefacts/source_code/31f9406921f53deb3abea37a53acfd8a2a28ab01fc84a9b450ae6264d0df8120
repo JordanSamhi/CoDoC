@@ -1,0 +1,29 @@
+public WrappedKey getKey(int uid, String alias){
+    SQLiteDatabase db = mKeyStoreDbHelper.getReadableDatabase();
+    String[] projection = { KeysEntry._ID, KeysEntry.COLUMN_NAME_NONCE, KeysEntry.COLUMN_NAME_WRAPPED_KEY, KeysEntry.COLUMN_NAME_GENERATION_ID, KeysEntry.COLUMN_NAME_RECOVERY_STATUS, KeysEntry.COLUMN_NAME_KEY_METADATA };
+    String selection = KeysEntry.COLUMN_NAME_UID + " = ? AND " + KeysEntry.COLUMN_NAME_ALIAS + " = ?";
+    String[] selectionArguments = { Integer.toString(uid), alias };
+    try (Cursor cursor = db.query(KeysEntry.TABLE_NAME, projection, selection, selectionArguments, null, null, null)) {
+        int count = cursor.getCount();
+        if (count == 0) {
+            return null;
+        }
+        if (count > 1) {
+            Log.wtf(TAG, String.format(Locale.US, "%d WrappedKey entries found for uid=%d alias='%s'. " + "Should only ever be 0 or 1.", count, uid, alias));
+            return null;
+        }
+        cursor.moveToFirst();
+        byte[] nonce = cursor.getBlob(cursor.getColumnIndexOrThrow(KeysEntry.COLUMN_NAME_NONCE));
+        byte[] keyMaterial = cursor.getBlob(cursor.getColumnIndexOrThrow(KeysEntry.COLUMN_NAME_WRAPPED_KEY));
+        int generationId = cursor.getInt(cursor.getColumnIndexOrThrow(KeysEntry.COLUMN_NAME_GENERATION_ID));
+        int recoveryStatus = cursor.getInt(cursor.getColumnIndexOrThrow(KeysEntry.COLUMN_NAME_RECOVERY_STATUS));
+        byte[] keyMetadata;
+        int metadataIdx = cursor.getColumnIndexOrThrow(KeysEntry.COLUMN_NAME_KEY_METADATA);
+        if (cursor.isNull(metadataIdx)) {
+            keyMetadata = null;
+        } else {
+            keyMetadata = cursor.getBlob(metadataIdx);
+        }
+        return new WrappedKey(nonce, keyMaterial, keyMetadata, generationId, recoveryStatus);
+    }
+}

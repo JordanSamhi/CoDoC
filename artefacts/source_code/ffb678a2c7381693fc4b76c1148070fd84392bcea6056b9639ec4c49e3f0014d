@@ -1,0 +1,10 @@
+public void setFeature(int userId, int feature, boolean enabled, byte[] token, SetFeatureCallback callback){
+    if (mService != null) {
+        try {
+            mSetFeatureCallback = callback;
+            mService.setFeature(userId, feature, enabled, token, mServiceReceiver, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

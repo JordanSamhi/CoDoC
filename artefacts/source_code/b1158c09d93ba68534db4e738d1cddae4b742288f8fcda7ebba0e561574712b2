@@ -1,0 +1,24 @@
+public void setBeamPushUris(Uri[] uris, Activity activity){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+        if (!sHasBeamFeature) {
+            return;
+        }
+    }
+    if (activity == null) {
+        throw new NullPointerException("activity cannot be null");
+    }
+    if (uris != null) {
+        for (Uri uri : uris) {
+            if (uri == null)
+                throw new NullPointerException("Uri not " + "allowed to be null");
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equalsIgnoreCase("file") && !scheme.equalsIgnoreCase("content"))) {
+                throw new IllegalArgumentException("URI needs to have " + "either scheme file or scheme content");
+            }
+        }
+    }
+    mNfcActivityManager.setNdefPushContentUri(activity, uris);
+}

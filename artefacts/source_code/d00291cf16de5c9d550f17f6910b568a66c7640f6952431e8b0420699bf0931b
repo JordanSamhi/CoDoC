@@ -1,0 +1,23 @@
+public void conference(Call heldCall) throws CallStateException{
+    int subId = heldCall.getPhone().getSubId();
+    if (VDBG) {
+        Rlog.d(LOG_TAG, "conference(" + heldCall + ")");
+        Rlog.d(LOG_TAG, toString());
+    }
+    Phone fgPhone = getFgPhone(subId);
+    if (fgPhone != null) {
+        if (fgPhone instanceof SipPhone) {
+            ((SipPhone) fgPhone).conference(heldCall);
+        } else if (canConference(heldCall)) {
+            fgPhone.conference();
+        } else {
+            throw (new CallStateException("Can't conference foreground and selected background call"));
+        }
+    } else {
+        Rlog.d(LOG_TAG, "conference: fgPhone=null");
+    }
+    if (VDBG) {
+        Rlog.d(LOG_TAG, "End conference(" + heldCall + ")");
+        Rlog.d(LOG_TAG, toString());
+    }
+}

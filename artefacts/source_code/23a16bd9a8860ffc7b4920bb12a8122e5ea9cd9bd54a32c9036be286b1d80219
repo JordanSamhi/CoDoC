@@ -1,0 +1,15 @@
+public boolean keyDispatchingTimedOut(String reason, int windowPid){
+    ActivityRecord anrActivity;
+    WindowProcessController anrApp;
+    boolean windowFromSameProcessAsActivity;
+    synchronized (mAtmService.mGlobalLock) {
+        anrActivity = getWaitingHistoryRecordLocked();
+        anrApp = app;
+        windowFromSameProcessAsActivity = !hasProcess() || app.getPid() == windowPid || windowPid == INVALID_PID;
+    }
+    if (windowFromSameProcessAsActivity) {
+        return mAtmService.mAmInternal.inputDispatchingTimedOut(anrApp.mOwner, anrActivity.shortComponentName, anrActivity.info.applicationInfo, shortComponentName, app, false, reason);
+    } else {
+        return mAtmService.mAmInternal.inputDispatchingTimedOut(windowPid, false, reason) < 0;
+    }
+}

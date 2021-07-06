@@ -1,0 +1,15 @@
+public void onRequestedOverrideConfigurationChanged(Configuration overrideConfiguration){
+    final int diff = diffRequestedOverrideBounds(overrideConfiguration.windowConfiguration.getBounds());
+    super.onRequestedOverrideConfigurationChanged(overrideConfiguration);
+    if (mParent != null) {
+        mParent.onDescendantOverrideConfigurationChanged();
+    }
+    if (diff == BOUNDS_CHANGE_NONE) {
+        return;
+    }
+    if ((diff & BOUNDS_CHANGE_SIZE) == BOUNDS_CHANGE_SIZE) {
+        onResize();
+    } else {
+        onMovedByResize();
+    }
+}

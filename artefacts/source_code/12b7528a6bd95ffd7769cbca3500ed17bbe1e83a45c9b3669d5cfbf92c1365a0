@@ -1,0 +1,9 @@
+public static InterfaceSet getTetheringInterfaces(UpstreamNetworkState ns){
+    if (ns == null) {
+        return null;
+    }
+    final LinkProperties lp = ns.linkProperties;
+    final String if4 = getInterfaceForDestination(lp, INADDR_ANY);
+    final String if6 = getIPv6Interface(ns);
+    return (if4 == null && if6 == null) ? null : new InterfaceSet(if4, if6);
+}

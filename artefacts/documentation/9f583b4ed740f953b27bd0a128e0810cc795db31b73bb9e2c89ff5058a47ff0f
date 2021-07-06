@@ -1,0 +1,34 @@
+
+     * Sends a {@code Call} event from this {@code Call} to the associated {@link Connection} in
+     * the {@link ConnectionService}.
+     * <p>
+     * Call events are used to communicate point in time information from an {@link InCallService}
+     * to a {@link ConnectionService}.  A {@link ConnectionService} implementation could define
+     * events which enable the {@link InCallService}, for example, toggle a unique feature of the
+     * {@link ConnectionService}.
+     * <p>
+     * A {@link ConnectionService} can communicate to the {@link InCallService} using
+     * {@link Connection#sendConnectionEvent(String, Bundle)}.
+     * <p>
+     * Events are exposed to {@link ConnectionService} implementations via
+     * {@link android.telecom.Connection#onCallEvent(String, Bundle)}.
+     * <p>
+     * No assumptions should be made as to how a {@link ConnectionService} will handle these events.
+     * The {@link InCallService} must assume that the {@link ConnectionService} could chose to
+     * ignore some events altogether.
+     * <p>
+     * Events should be fully qualified (e.g., {@code com.example.event.MY_EVENT}) to avoid
+     * conflicts between {@link InCallService} implementations.  Further, {@link InCallService}
+     * implementations shall not re-purpose events in the {@code android.*} namespace, nor shall
+     * they define their own event types in this namespace.  When defining a custom event type,
+     * ensure the contents of the extras {@link Bundle} is clearly defined.  Extra keys for this
+     * bundle should be named similar to the event type (e.g. {@code com.example.extra.MY_EXTRA}).
+     * <p>
+     * When defining events and the associated extras, it is important to keep their behavior
+     * consistent when the associated {@link InCallService} is updated.  Support for deprecated
+     * events/extras should me maintained to ensure backwards compatibility with older
+     * {@link ConnectionService} implementations which were built to support the older behavior.
+     *
+     * @param event The connection event.
+     * @param extras Bundle containing extra information associated with the event.
+     

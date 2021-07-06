@@ -1,0 +1,6 @@
+public boolean getIsAppImportanceLocked(String packageName, int uid){
+    synchronized (mPackagePreferences) {
+        int userLockedFields = getOrCreatePackagePreferencesLocked(packageName, uid).lockedAppFields;
+        return (userLockedFields & LockableAppFields.USER_LOCKED_IMPORTANCE) != 0;
+    }
+}

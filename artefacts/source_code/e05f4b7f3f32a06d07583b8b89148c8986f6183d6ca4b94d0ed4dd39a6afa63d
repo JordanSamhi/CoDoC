@@ -1,0 +1,16 @@
+public static String inputStreamToString(InputStream inputStream, int length, long sizeLimit) throws IOException, AssociationServiceException{
+    if (length < 0) {
+        length = 0;
+    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(length);
+    BufferedInputStream bis = new BufferedInputStream(inputStream);
+    byte[] buffer = new byte[INPUT_BUFFER_SIZE_IN_BYTES];
+    int len = 0;
+    while ((len = bis.read(buffer)) != -1) {
+        baos.write(buffer, 0, len);
+        if (baos.size() > sizeLimit) {
+            throw new AssociationServiceException("The content size of the url is larger than " + sizeLimit);
+        }
+    }
+    return baos.toString("UTF-8");
+}

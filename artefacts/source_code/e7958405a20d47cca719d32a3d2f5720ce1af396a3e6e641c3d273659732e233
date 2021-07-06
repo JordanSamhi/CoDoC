@@ -1,0 +1,18 @@
+public int findBestFitBucket(long beginTimeStamp, long endTimeStamp){
+    synchronized (mLock) {
+        int bestBucket = -1;
+        long smallestDiff = Long.MAX_VALUE;
+        for (int i = mSortedStatFiles.length - 1; i >= 0; i--) {
+            final int index = mSortedStatFiles[i].closestIndexOnOrBefore(beginTimeStamp);
+            int size = mSortedStatFiles[i].size();
+            if (index >= 0 && index < size) {
+                long diff = Math.abs(mSortedStatFiles[i].keyAt(index) - beginTimeStamp);
+                if (diff < smallestDiff) {
+                    smallestDiff = diff;
+                    bestBucket = i;
+                }
+            }
+        }
+        return bestBucket;
+    }
+}

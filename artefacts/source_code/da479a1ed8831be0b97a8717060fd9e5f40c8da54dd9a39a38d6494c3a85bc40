@@ -1,0 +1,13 @@
+public boolean resolveTextDirection(){
+    final boolean result = super.resolveTextDirection();
+    if (result) {
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            final View child = getChildAt(i);
+            if (child.isTextDirectionInherited()) {
+                child.resolveTextDirection();
+            }
+        }
+    }
+    return result;
+}

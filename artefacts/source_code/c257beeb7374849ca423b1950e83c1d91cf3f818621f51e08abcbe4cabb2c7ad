@@ -1,0 +1,8 @@
+public static float brightnessFloatToIntRange(Context context, float brightnessFloat){
+    final PowerManager pm = context.getSystemService(PowerManager.class);
+    final float minFloat = pm.getBrightnessConstraint(PowerManager.BRIGHTNESS_CONSTRAINT_TYPE_MINIMUM);
+    final float maxFloat = pm.getBrightnessConstraint(PowerManager.BRIGHTNESS_CONSTRAINT_TYPE_MAXIMUM);
+    final float minInt = brightnessFloatToIntRange(minFloat, PowerManager.BRIGHTNESS_MIN, PowerManager.BRIGHTNESS_MAX, PowerManager.BRIGHTNESS_OFF + 1, PowerManager.BRIGHTNESS_ON);
+    final float maxInt = brightnessFloatToIntRange(maxFloat, PowerManager.BRIGHTNESS_MIN, PowerManager.BRIGHTNESS_MAX, PowerManager.BRIGHTNESS_OFF + 1, PowerManager.BRIGHTNESS_ON);
+    return brightnessFloatToIntRange(brightnessFloat, minFloat, maxFloat, minInt, maxInt);
+}

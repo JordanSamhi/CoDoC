@@ -1,0 +1,10 @@
+public boolean onKeyUp(int keyCode, @NonNull KeyEvent event){
+    if (isShowing() && mDropDownList.getSelectedItemPosition() >= 0) {
+        boolean consumed = mDropDownList.onKeyUp(keyCode, event);
+        if (consumed && KeyEvent.isConfirmKey(keyCode)) {
+            dismiss();
+        }
+        return consumed;
+    }
+    return false;
+}

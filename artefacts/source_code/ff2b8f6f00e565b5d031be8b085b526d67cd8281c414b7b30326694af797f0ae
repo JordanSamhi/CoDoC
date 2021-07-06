@@ -1,0 +1,27 @@
+public InstalledPackage installPackage(String resourceName) throws IOException, InterruptedException{
+    Log.d(LOG_TAG, "Installing resource APK '" + resourceName + "'");
+    LocalBroadcastReceiver intentSender = new LocalBroadcastReceiver(mContext);
+    PackageInstaller packageInstaller = mContext.getPackageManager().getPackageInstaller();
+    PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+    params.setInstallAsInstantApp(false);
+    int sessionId = packageInstaller.createSession(params);
+    PackageInstaller.Session session = packageInstaller.openSession(sessionId);
+    try (OutputStream os = session.openWrite("TestPackageInstaller", 0, -1);
+        InputStream is = mContext.getResources().getAssets().openNonAsset(resourceName)) {
+        if (is == null) {
+            throw new IOException("Resource " + resourceName + " not found");
+        }
+        byte[] buffer = new byte[4096];
+        int n;
+        while ((n = is.read(buffer)) >= 0) {
+            os.write(buffer, 0, n);
+        }
+    }
+    session.commit(intentSender.getIntentSender(sessionId));
+    session.close();
+    Intent intent = intentSender.getIntentSenderResult();
+    int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE);
+    Assert.assertEquals(PackageInstaller.STATUS_SUCCESS, status);
+    String packageName = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME);
+    return new InstalledPackage(sessionId, packageName);
+}

@@ -1,0 +1,11 @@
+public int getThemeAttributeId(@StyleableRes int index, int defValue){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    if (data[index + STYLE_TYPE] == TypedValue.TYPE_ATTRIBUTE) {
+        return data[index + STYLE_DATA];
+    }
+    return defValue;
+}

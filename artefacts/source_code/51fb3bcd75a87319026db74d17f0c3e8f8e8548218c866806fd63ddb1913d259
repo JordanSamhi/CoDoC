@@ -1,0 +1,44 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    if (!DumpUtils.checkDumpAndUsageStatsPermission(getContext(), TAG, pw))
+        return;
+    int filterUid = -1;
+    boolean proto = false;
+    if (!ArrayUtils.isEmpty(args)) {
+        int opti = 0;
+        while (opti < args.length) {
+            String arg = args[opti];
+            if ("-h".equals(arg)) {
+                dumpHelp(pw);
+                return;
+            } else if ("-a".equals(arg)) {
+            } else if ("--proto".equals(arg)) {
+                proto = true;
+            } else if (arg.length() > 0 && arg.charAt(0) == '-') {
+                pw.println("Unknown option: " + arg);
+                return;
+            } else {
+                break;
+            }
+            opti++;
+        }
+        if (opti < args.length) {
+            String pkg = args[opti];
+            try {
+                filterUid = getContext().getPackageManager().getPackageUid(pkg, PackageManager.MATCH_ANY_USER);
+            } catch (NameNotFoundException ignored) {
+                pw.println("Invalid package: " + pkg);
+                return;
+            }
+        }
+    }
+    final long identityToken = Binder.clearCallingIdentity();
+    try {
+        if (proto) {
+            JobSchedulerService.this.dumpInternalProto(fd, filterUid);
+        } else {
+            JobSchedulerService.this.dumpInternal(new IndentingPrintWriter(pw, "  "), filterUid);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(identityToken);
+    }
+}

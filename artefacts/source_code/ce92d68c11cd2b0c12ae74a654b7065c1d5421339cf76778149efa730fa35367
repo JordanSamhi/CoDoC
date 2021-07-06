@@ -1,0 +1,12 @@
+public static long readVarLong(DataInputStream in) throws IOException{
+    int shift = 0;
+    long result = 0;
+    while (shift < 64) {
+        byte b = in.readByte();
+        result |= (long) (b & 0x7F) << shift;
+        if ((b & 0x80) == 0)
+            return result;
+        shift += 7;
+    }
+    throw new ProtocolException("malformed long");
+}

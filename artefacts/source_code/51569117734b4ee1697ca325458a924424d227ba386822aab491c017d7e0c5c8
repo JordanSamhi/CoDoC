@@ -1,0 +1,28 @@
+public int currentSegment(@NonNull float[] coords, float length){
+    int type = currentSegment(coords);
+    if (mCurrentSegmentLength <= length || type == SEG_MOVETO) {
+        return type;
+    }
+    float t = length / getCurrentSegmentLength();
+    switch(type) {
+        case SEG_CUBICTO:
+        case SEG_QUADTO:
+            float[] curve = new float[8];
+            curve[0] = mLastPoint[0];
+            curve[1] = mLastPoint[1];
+            System.arraycopy(coords, 0, curve, 2, coords.length);
+            if (type == SEG_CUBICTO) {
+                cubicCurveSegment(curve, 0f, t);
+            } else {
+                quadCurveSegment(curve, 0f, t);
+            }
+            System.arraycopy(curve, 2, coords, 0, coords.length);
+            break;
+        default:
+            float[] point = new float[2];
+            getPointAtLength(type, coords, mLastPoint[0], mLastPoint[1], t, point);
+            coords[0] = point[0];
+            coords[1] = point[1];
+    }
+    return type;
+}

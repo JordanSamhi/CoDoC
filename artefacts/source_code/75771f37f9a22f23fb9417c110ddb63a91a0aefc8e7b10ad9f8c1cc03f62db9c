@@ -1,0 +1,24 @@
+public final T createItem(String name, String prefix, AttributeSet attrs) throws ClassNotFoundException, InflateException{
+    Constructor constructor = (Constructor) sConstructorMap.get(name);
+    try {
+        if (null == constructor) {
+            Class clazz = mContext.getClassLoader().loadClass(prefix != null ? (prefix + name) : name);
+            constructor = clazz.getConstructor(mConstructorSignature);
+            constructor.setAccessible(true);
+            sConstructorMap.put(name, constructor);
+        }
+        Object[] args = mConstructorArgs;
+        args[1] = attrs;
+        return (T) constructor.newInstance(args);
+    } catch (NoSuchMethodException e) {
+        InflateException ie = new InflateException(attrs.getPositionDescription() + ": Error inflating class " + (prefix != null ? (prefix + name) : name));
+        ie.initCause(e);
+        throw ie;
+    } catch (ClassNotFoundException e) {
+        throw e;
+    } catch (Exception e) {
+        InflateException ie = new InflateException(attrs.getPositionDescription() + ": Error inflating class " + constructor.getClass().getName());
+        ie.initCause(e);
+        throw ie;
+    }
+}

@@ -1,0 +1,9 @@
+public Builder addOnClickAction(int id, @NonNull OnClickAction action){
+    throwIfDestroyed();
+    Preconditions.checkArgument((action instanceof InternalOnClickAction), "not provided by Android System: " + action);
+    if (mActions == null) {
+        mActions = new SparseArray<InternalOnClickAction>();
+    }
+    mActions.put(id, (InternalOnClickAction) action);
+    return this;
+}

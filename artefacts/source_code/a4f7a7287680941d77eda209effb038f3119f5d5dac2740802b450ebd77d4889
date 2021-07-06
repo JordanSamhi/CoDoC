@@ -1,0 +1,35 @@
+public static ParsedResults parseTlv(byte[] tlvs){
+    int port = 0;
+    int transportProtocol = -1;
+    byte[] ipv6Override = null;
+    try {
+        TlvBufferUtils.TlvIterable tlvi = new TlvBufferUtils.TlvIterable(1, 2, tlvs);
+        tlvi.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+        for (TlvBufferUtils.TlvElement tlve : tlvi) {
+            switch(tlve.type) {
+                case IPV6_LL_TYPE:
+                    if (tlve.length != 8) {
+                        Log.e(TAG, "NetworkInformationData: invalid IPv6 TLV -- length: " + tlve.length);
+                        return null;
+                    }
+                    ipv6Override = tlve.getRawData();
+                    break;
+                case SERVICE_INFO_TYPE:
+                    Pair<Integer, Integer> serviceInfo = parseServiceInfoTlv(tlve.getRawData());
+                    if (serviceInfo == null) {
+                        return null;
+                    }
+                    port = serviceInfo.first;
+                    transportProtocol = serviceInfo.second;
+                    break;
+                default:
+                    Log.w(TAG, "NetworkInformationData: ignoring unknown T -- " + tlve.type);
+                    break;
+            }
+        }
+    } catch (Exception e) {
+        Log.e(TAG, "NetworkInformationData: error parsing TLV -- " + e);
+        return null;
+    }
+    return new ParsedResults(port, transportProtocol, ipv6Override);
+}

@@ -1,0 +1,11 @@
+public long[] getUsageTimesMillis(final Path timeInStatePath){
+    final long[] readLongs = new long[mFrequenciesKhz.length];
+    final boolean readSuccess = Process.readProcFile(timeInStatePath.toString(), mTimeInStateTimeFormat, null, readLongs, null);
+    if (!readSuccess) {
+        return null;
+    }
+    for (int i = 0; i < readLongs.length; i++) {
+        readLongs[i] *= 10;
+    }
+    return readLongs;
+}

@@ -1,0 +1,13 @@
+public void notifySubtreeAccessibilityStateChangedIfNeeded(){
+    if (!AccessibilityManager.getInstance(mContext).isEnabled() || mAttachInfo == null) {
+        return;
+    }
+    if ((getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) && !isImportantForAccessibility() && (getChildCount() > 0)) {
+        ViewParent a11yParent = getParentForAccessibility();
+        if (a11yParent instanceof View) {
+            ((View) a11yParent).notifySubtreeAccessibilityStateChangedIfNeeded();
+            return;
+        }
+    }
+    super.notifySubtreeAccessibilityStateChangedIfNeeded();
+}

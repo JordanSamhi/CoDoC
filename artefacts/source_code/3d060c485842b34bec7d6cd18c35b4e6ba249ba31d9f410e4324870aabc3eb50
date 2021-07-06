@@ -1,0 +1,13 @@
+public void onResolveDrawables(int layoutDirection){
+    if (mLastLayoutDirection == layoutDirection) {
+        return;
+    }
+    mLastLayoutDirection = layoutDirection;
+    if (mDrawables != null) {
+        if (mDrawables.resolveWithLayoutDirection(layoutDirection)) {
+            prepareDrawableForDisplay(mDrawables.mShowing[Drawables.LEFT]);
+            prepareDrawableForDisplay(mDrawables.mShowing[Drawables.RIGHT]);
+            applyCompoundDrawableTint();
+        }
+    }
+}

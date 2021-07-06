@@ -1,0 +1,16 @@
+public void setCompletionHint(CharSequence hint){
+    mHintText = hint;
+    if (hint != null) {
+        if (mHintView == null) {
+            final TextView hintView = (TextView) LayoutInflater.from(mPopupContext).inflate(mHintResource, null).findViewById(R.id.text1);
+            hintView.setText(mHintText);
+            mHintView = hintView;
+            mPopup.setPromptView(hintView);
+        } else {
+            mHintView.setText(hint);
+        }
+    } else {
+        mPopup.setPromptView(null);
+        mHintView = null;
+    }
+}

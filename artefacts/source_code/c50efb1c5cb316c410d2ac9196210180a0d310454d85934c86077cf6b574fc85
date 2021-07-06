@@ -1,0 +1,22 @@
+public boolean isConversation(){
+    Notification notification = getNotification();
+    if (mChannel.isDemoted() || mAppDemotedFromConvo) {
+        return false;
+    }
+    if (mIsNotConversationOverride) {
+        return false;
+    }
+    if (!Notification.MessagingStyle.class.equals(notification.getNotificationStyle())) {
+        if (mPkgAllowedAsConvo && mTargetSdkVersion < Build.VERSION_CODES.R && Notification.CATEGORY_MESSAGE.equals(getNotification().category)) {
+            return true;
+        }
+        return false;
+    }
+    if (mTargetSdkVersion >= Build.VERSION_CODES.R && Notification.MessagingStyle.class.equals(notification.getNotificationStyle()) && mShortcutInfo == null) {
+        return false;
+    }
+    if (mHasSentValidMsg && mShortcutInfo == null) {
+        return false;
+    }
+    return true;
+}

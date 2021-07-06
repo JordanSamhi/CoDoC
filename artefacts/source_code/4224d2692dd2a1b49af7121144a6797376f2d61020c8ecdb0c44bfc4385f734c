@@ -1,0 +1,20 @@
+public boolean getStorageEncryption(ComponentName who, int userHandle){
+    if (!mHasFeature) {
+        return false;
+    }
+    enforceFullCrossUsersPermission(userHandle);
+    synchronized (getLockObject()) {
+        if (who != null) {
+            ActiveAdmin ap = getActiveAdminUncheckedLocked(who, userHandle);
+            return ap != null ? ap.encryptionRequested : false;
+        }
+        DevicePolicyData policy = getUserData(userHandle);
+        final int N = policy.mAdminList.size();
+        for (int i = 0; i < N; i++) {
+            if (policy.mAdminList.get(i).encryptionRequested) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

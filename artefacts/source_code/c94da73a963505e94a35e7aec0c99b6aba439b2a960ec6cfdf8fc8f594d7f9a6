@@ -1,0 +1,11 @@
+public static ProgramStore BLEND_ALPHA_DEPTH_NONE(RenderScript rs){
+    if (rs.mProgramStore_BLEND_ALPHA_DEPTH_NO_DEPTH == null) {
+        ProgramStore.Builder builder = new ProgramStore.Builder(rs);
+        builder.setDepthFunc(ProgramStore.DepthFunc.ALWAYS);
+        builder.setBlendFunc(BlendSrcFunc.SRC_ALPHA, BlendDstFunc.ONE_MINUS_SRC_ALPHA);
+        builder.setDitherEnabled(false);
+        builder.setDepthMaskEnabled(false);
+        rs.mProgramStore_BLEND_ALPHA_DEPTH_NO_DEPTH = builder.create();
+    }
+    return rs.mProgramStore_BLEND_ALPHA_DEPTH_NO_DEPTH;
+}

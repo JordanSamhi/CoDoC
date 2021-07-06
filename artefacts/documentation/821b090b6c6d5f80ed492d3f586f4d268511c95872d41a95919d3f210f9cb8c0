@@ -1,0 +1,49 @@
+
+     * <p>Modifies the bitmap to have a specified width, height, and {@link
+     * Config}, without affecting the underlying allocation backing the bitmap.
+     * Bitmap pixel data is not re-initialized for the new configuration.</p>
+     *
+     * <p>This method can be used to avoid allocating a new bitmap, instead
+     * reusing an existing bitmap's allocation for a new configuration of equal
+     * or lesser size. If the Bitmap's allocation isn't large enough to support
+     * the new configuration, an IllegalArgumentException will be thrown and the
+     * bitmap will not be modified.</p>
+     *
+     * <p>The result of {@link #getByteCount()} will reflect the new configuration,
+     * while {@link #getAllocationByteCount()} will reflect that of the initial
+     * configuration.</p>
+     *
+     * <p>Note: This may change this result of hasAlpha(). When converting to 565,
+     * the new bitmap will always be considered opaque. When converting from 565,
+     * the new bitmap will be considered non-opaque, and will respect the value
+     * set by setPremultiplied().</p>
+     *
+     * <p>WARNING: This method should NOT be called on a bitmap currently in use
+     * by the view system, Canvas, or the AndroidBitmap NDK API. It does not
+     * make guarantees about how the underlying pixel buffer is remapped to the
+     * new config, just that the allocation is reused. Additionally, the view
+     * system does not account for bitmap properties being modifying during use,
+     * e.g. while attached to drawables.</p>
+     *
+     * <p>In order to safely ensure that a Bitmap is no longer in use by the
+     * View system it is necessary to wait for a draw pass to occur after
+     * invalidate()'ing any view that had previously drawn the Bitmap in the last
+     * draw pass due to hardware acceleration's caching of draw commands. As
+     * an example, here is how this can be done for an ImageView:
+     * <pre class="prettyprint">
+     *      ImageView myImageView = ...;
+     *      final Bitmap myBitmap = ...;
+     *      myImageView.setImageDrawable(null);
+     *      myImageView.post(new Runnable() {
+     *          public void run() {
+     *              // myBitmap is now no longer in use by the ImageView
+     *              // and can be safely reconfigured.
+     *              myBitmap.reconfigure(...);
+     *          }
+     *      });
+     * </pre></p>
+     *
+     * @see #setWidth(int)
+     * @see #setHeight(int)
+     * @see #setConfig(Config)
+     

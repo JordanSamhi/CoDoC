@@ -1,0 +1,8 @@
+public void writeData(@NonNull String name, long offsetBytes, long lengthBytes, @NonNull ParcelFileDescriptor incomingFd) throws IOException{
+    try {
+        nativeWriteData(mNativeInstance, name, offsetBytes, lengthBytes, incomingFd);
+    } catch (RuntimeException e) {
+        ExceptionUtils.maybeUnwrapIOException(e);
+        throw e;
+    }
+}

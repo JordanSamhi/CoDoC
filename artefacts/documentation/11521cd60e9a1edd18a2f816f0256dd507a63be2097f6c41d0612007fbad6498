@@ -1,0 +1,17 @@
+
+         * Called when the network is about to be lost, typically because there are no outstanding
+         * requests left for it. This may be paired with a {@link NetworkCallback#onAvailable} call
+         * with the new replacement network for graceful handover. This method is not guaranteed
+         * to be called before {@link NetworkCallback#onLost} is called, for example in case a
+         * network is suddenly disconnected.
+         *
+         * <p>Do NOT call {@link #getNetworkCapabilities(Network)} or
+         * {@link #getLinkProperties(Network)} or other synchronous ConnectivityManager methods in
+         * this callback as this is prone to race conditions ; calling these methods while in a
+         * callback may return an outdated or even a null object.
+         *
+         * @param network The {@link Network} that is about to be lost.
+         * @param maxMsToLive The time in milliseconds the system intends to keep the network
+         *                    connected for graceful handover; note that the network may still
+         *                    suffer a hard loss at any time.
+         

@@ -1,0 +1,25 @@
+public ActivityOptions createSharedElementActivityOptions(int[] sharedViewIds, String[] sharedViewNames, Intent fillInIntent){
+    Context parentContext = getContext();
+    while ((parentContext instanceof ContextWrapper) && !(parentContext instanceof Activity)) {
+        parentContext = ((ContextWrapper) parentContext).getBaseContext();
+    }
+    if (!(parentContext instanceof Activity)) {
+        return null;
+    }
+    List<Pair<View, String>> sharedElements = new ArrayList<>();
+    Bundle extras = new Bundle();
+    for (int i = 0; i < sharedViewIds.length; i++) {
+        View view = findViewById(sharedViewIds[i]);
+        if (view != null) {
+            sharedElements.add(Pair.create(view, sharedViewNames[i]));
+            extras.putParcelable(sharedViewNames[i], RemoteViews.getSourceBounds(view));
+        }
+    }
+    if (!sharedElements.isEmpty()) {
+        fillInIntent.putExtra(RemoteViews.EXTRA_SHARED_ELEMENT_BOUNDS, extras);
+        final ActivityOptions opts = ActivityOptions.makeSceneTransitionAnimation((Activity) parentContext, sharedElements.toArray(new Pair[sharedElements.size()]));
+        opts.setPendingIntentLaunchFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return opts;
+    }
+    return null;
+}

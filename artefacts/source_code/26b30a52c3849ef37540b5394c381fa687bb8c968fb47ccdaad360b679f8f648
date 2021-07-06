@@ -1,0 +1,18 @@
+public int getUiccSlotForCardId(String cardId){
+    synchronized (mLock) {
+        for (int idx = 0; idx < mUiccSlots.length; idx++) {
+            if (mUiccSlots[idx] != null) {
+                UiccCard uiccCard = mUiccSlots[idx].getUiccCard();
+                if (uiccCard != null && cardId.equals(uiccCard.getCardId())) {
+                    return idx;
+                }
+            }
+        }
+        for (int idx = 0; idx < mUiccSlots.length; idx++) {
+            if (mUiccSlots[idx] != null && cardId.equals(mUiccSlots[idx].getIccId())) {
+                return idx;
+            }
+        }
+        return INVALID_SLOT_ID;
+    }
+}

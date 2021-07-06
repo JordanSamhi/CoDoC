@@ -1,0 +1,10 @@
+public void updateIsolation(NotificationEntry entry){
+    boolean isIsolated = isIsolated(entry.getSbn().getKey());
+    if (shouldIsolate(entry)) {
+        if (!isIsolated) {
+            isolateNotification(entry);
+        }
+    } else if (isIsolated) {
+        stopIsolatingNotification(entry);
+    }
+}

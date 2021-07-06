@@ -1,0 +1,7 @@
+public void registerForDataRoamingOff(Handler h, int what, Object obj, boolean notifyNow){
+    Registrant r = new Registrant(h, what, obj);
+    mDataRoamingOffRegistrants.add(r);
+    if (notifyNow && !mSS.getDataRoaming()) {
+        r.notifyRegistrant();
+    }
+}

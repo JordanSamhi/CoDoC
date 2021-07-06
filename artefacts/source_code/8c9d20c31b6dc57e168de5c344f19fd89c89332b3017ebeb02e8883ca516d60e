@@ -1,0 +1,38 @@
+public static String localesToResourceQualifier(LocaleList locs){
+    final StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < locs.size(); i++) {
+        final Locale loc = locs.get(i);
+        final int l = loc.getLanguage().length();
+        if (l == 0) {
+            continue;
+        }
+        final int s = loc.getScript().length();
+        final int c = loc.getCountry().length();
+        final int v = loc.getVariant().length();
+        if (sb.length() != 0) {
+            sb.append(",");
+        }
+        if (l == 2 && s == 0 && (c == 0 || c == 2) && v == 0) {
+            sb.append(loc.getLanguage());
+            if (c == 2) {
+                sb.append("-r").append(loc.getCountry());
+            }
+        } else {
+            sb.append("b+");
+            sb.append(loc.getLanguage());
+            if (s != 0) {
+                sb.append("+");
+                sb.append(loc.getScript());
+            }
+            if (c != 0) {
+                sb.append("+");
+                sb.append(loc.getCountry());
+            }
+            if (v != 0) {
+                sb.append("+");
+                sb.append(loc.getVariant());
+            }
+        }
+    }
+    return sb.toString();
+}

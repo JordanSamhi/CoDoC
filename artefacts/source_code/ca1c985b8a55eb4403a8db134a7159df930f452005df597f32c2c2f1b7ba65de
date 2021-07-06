@@ -1,0 +1,32 @@
+public boolean configureRoaming(@NonNull String ifaceName, WifiNative.RoamingConfig config){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        try {
+            StaRoamingConfig roamingConfig = new StaRoamingConfig();
+            if (config.blacklistBssids != null) {
+                for (String bssid : config.blacklistBssids) {
+                    byte[] mac = NativeUtil.macAddressToByteArray(bssid);
+                    roamingConfig.bssidBlacklist.add(mac);
+                }
+            }
+            if (config.whitelistSsids != null) {
+                for (String ssidStr : config.whitelistSsids) {
+                    byte[] ssid = NativeUtil.byteArrayFromArrayList(NativeUtil.decodeSsid(ssidStr));
+                    roamingConfig.ssidWhitelist.add(ssid);
+                }
+            }
+            WifiStatus status = iface.configureRoaming(roamingConfig);
+            if (!ok(status))
+                return false;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        } catch (IllegalArgumentException e) {
+            mLog.err("Illegal argument for roaming configuration").c(e.toString()).flush();
+            return false;
+        }
+        return true;
+    }
+}

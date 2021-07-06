@@ -1,0 +1,16 @@
+public boolean expandGroup(int groupPos, boolean animate){
+    ExpandableListPosition elGroupPos = ExpandableListPosition.obtain(ExpandableListPosition.GROUP, groupPos, -1, -1);
+    PositionMetadata pm = mConnector.getFlattenedPos(elGroupPos);
+    elGroupPos.recycle();
+    boolean retValue = mConnector.expandGroup(pm);
+    if (mOnGroupExpandListener != null) {
+        mOnGroupExpandListener.onGroupExpand(groupPos);
+    }
+    if (animate) {
+        final int groupFlatPos = pm.position.flatListPos;
+        final int shiftedGroupPosition = groupFlatPos + getHeaderViewsCount();
+        smoothScrollToPosition(shiftedGroupPosition + mAdapter.getChildrenCount(groupPos), shiftedGroupPosition);
+    }
+    pm.recycle();
+    return retValue;
+}

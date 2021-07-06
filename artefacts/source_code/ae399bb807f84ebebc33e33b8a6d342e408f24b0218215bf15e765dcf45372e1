@@ -1,0 +1,14 @@
+public long getSupportedRadioAccessFamily(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return (long) telephony.getRadioAccessFamily(getSlotIndex(), getOpPackageName());
+        } else {
+            return NETWORK_TYPE_BITMASK_UNKNOWN;
+        }
+    } catch (RemoteException ex) {
+        return NETWORK_TYPE_BITMASK_UNKNOWN;
+    } catch (NullPointerException ex) {
+        return NETWORK_TYPE_BITMASK_UNKNOWN;
+    }
+}

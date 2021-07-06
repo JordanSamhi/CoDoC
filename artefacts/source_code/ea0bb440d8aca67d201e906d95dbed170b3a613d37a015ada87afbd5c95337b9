@@ -1,0 +1,14 @@
+public AllocateSpaceResult allocateSpace(@NonNull String payloadMetadataFilename, @NonNull String[] headerKeyValuePairs){
+    AllocateSpaceResult result = new AllocateSpaceResult();
+    try {
+        result.mFreeSpaceRequired = mUpdateEngine.allocateSpaceForPayload(payloadMetadataFilename, headerKeyValuePairs);
+        result.mErrorCode = result.mFreeSpaceRequired == 0 ? ErrorCodeConstants.SUCCESS : ErrorCodeConstants.NOT_ENOUGH_SPACE;
+        return result;
+    } catch (ServiceSpecificException e) {
+        result.mErrorCode = e.errorCode;
+        result.mFreeSpaceRequired = 0;
+        return result;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

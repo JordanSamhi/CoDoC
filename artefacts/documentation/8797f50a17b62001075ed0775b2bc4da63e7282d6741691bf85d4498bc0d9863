@@ -1,0 +1,19 @@
+
+     * An inspection API to retrieve the list of available
+     * {@link android.telephony.mbms.FileServiceInfo}s currently being advertised.
+     * The results are returned asynchronously via a call to
+     * {@link MbmsDownloadSessionCallback#onFileServicesUpdated(List)}
+     *
+     * Asynchronous error codes via the {@link MbmsDownloadSessionCallback#onError(int, String)}
+     * callback may include any of the errors that are not specific to the streaming use-case.
+     *
+     * May throw an {@link IllegalStateException} or {@link IllegalArgumentException}.
+     *
+     * @param classList A list of service classes which the app wishes to receive
+     *                  {@link MbmsDownloadSessionCallback#onFileServicesUpdated(List)} callbacks
+     *                  about. Subsequent calls to this method will replace this list of service
+     *                  classes (i.e. the middleware will no longer send updates for services
+     *                  matching classes only in the old list).
+     *                  Values in this list should be negotiated with the wireless carrier prior
+     *                  to using this API.
+     

@@ -1,0 +1,22 @@
+public void setEapMethod(int eapMethod){
+    switch(eapMethod) {
+        case Eap.WAPI_CERT:
+            mEapMethod = eapMethod;
+            setPhase2Method(Phase2.NONE);
+            break;
+        case Eap.TLS:
+        case Eap.UNAUTH_TLS:
+            setPhase2Method(Phase2.NONE);
+        case Eap.PEAP:
+        case Eap.PWD:
+        case Eap.TTLS:
+        case Eap.SIM:
+        case Eap.AKA:
+        case Eap.AKA_PRIME:
+            mEapMethod = eapMethod;
+            setFieldValue(OPP_KEY_CACHING, "1");
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown EAP method");
+    }
+}

@@ -1,0 +1,11 @@
+public static int listAudioDevicePorts(ArrayList<AudioDevicePort> devices){
+    if (devices == null) {
+        return ERROR_BAD_VALUE;
+    }
+    ArrayList<AudioPort> ports = new ArrayList<AudioPort>();
+    int status = updateAudioPortCache(ports, null, null);
+    if (status == SUCCESS) {
+        filterDevicePorts(ports, devices);
+    }
+    return status;
+}

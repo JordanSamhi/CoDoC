@@ -1,0 +1,12 @@
+public List<String> getAvailableFieldClassificationAlgorithms(){
+    final SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        mService.getAvailableFieldClassificationAlgorithms(receiver);
+        final String[] algorithms = receiver.getStringArrayResult();
+        return algorithms != null ? Arrays.asList(algorithms) : Collections.emptyList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get available field classification algorithms.");
+    }
+}

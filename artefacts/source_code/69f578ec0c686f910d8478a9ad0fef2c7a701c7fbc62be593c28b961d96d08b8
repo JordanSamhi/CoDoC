@@ -1,0 +1,19 @@
+public boolean setConnectionPolicy(@NonNull BluetoothDevice device, @ConnectionPolicy int connectionPolicy){
+    if (DBG)
+        log("setConnectionPolicy(" + device + ", " + connectionPolicy + ")");
+    final IBluetoothMap service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        if (connectionPolicy != BluetoothProfile.CONNECTION_POLICY_FORBIDDEN && connectionPolicy != BluetoothProfile.CONNECTION_POLICY_ALLOWED) {
+            return false;
+        }
+        try {
+            return service.setConnectionPolicy(device, connectionPolicy);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return false;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return false;
+}

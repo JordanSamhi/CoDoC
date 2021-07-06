@@ -1,0 +1,12 @@
+public InputConnection onCreateInputConnection(EditorInfo outAttrs){
+    if (isTextFilterEnabled()) {
+        if (mPublicInputConnection == null) {
+            mDefInputConnection = new BaseInputConnection(this, false);
+            mPublicInputConnection = new InputConnectionWrapper(outAttrs);
+        }
+        outAttrs.inputType = EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_VARIATION_FILTER;
+        outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE;
+        return mPublicInputConnection;
+    }
+    return null;
+}

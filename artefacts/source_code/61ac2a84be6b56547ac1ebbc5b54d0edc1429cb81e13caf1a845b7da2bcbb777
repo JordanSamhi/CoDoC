@@ -1,0 +1,15 @@
+public String listAllStacks(){
+    final List<ActivityManager.StackInfo> stacks;
+    try {
+        stacks = getService().getAllStackInfos();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    final StringBuilder sb = new StringBuilder();
+    if (stacks != null) {
+        for (ActivityManager.StackInfo info : stacks) {
+            sb.append(info).append("\n");
+        }
+    }
+    return sb.toString();
+}

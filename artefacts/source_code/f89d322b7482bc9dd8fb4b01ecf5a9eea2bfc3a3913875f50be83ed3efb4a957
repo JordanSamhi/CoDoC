@@ -1,0 +1,15 @@
+public WifiMetricsProto.WifiDppLog consolidateProto(){
+    WifiMetricsProto.WifiDppLog log = new WifiMetricsProto.WifiDppLog();
+    synchronized (mLock) {
+        log.numDppConfiguratorInitiatorRequests = mWifiDppLogProto.numDppConfiguratorInitiatorRequests;
+        log.numDppEnrolleeInitiatorRequests = mWifiDppLogProto.numDppEnrolleeInitiatorRequests;
+        log.numDppEnrolleeSuccess = mWifiDppLogProto.numDppEnrolleeSuccess;
+        log.numDppR1CapableEnrolleeResponderDevices = mWifiDppLogProto.numDppR1CapableEnrolleeResponderDevices;
+        log.numDppR2CapableEnrolleeResponderDevices = mWifiDppLogProto.numDppR2CapableEnrolleeResponderDevices;
+        log.numDppR2EnrolleeResponderIncompatibleConfiguration = mWifiDppLogProto.numDppR2EnrolleeResponderIncompatibleConfiguration;
+        log.dppFailureCode = consolidateDppFailure(mHistogramDppFailureCode);
+        log.dppConfiguratorSuccessCode = consolidateDppSuccess(mHistogramDppConfiguratorSuccessCode);
+        log.dppOperationTime = mHistogramDppOperationTime.toProto();
+    }
+    return log;
+}

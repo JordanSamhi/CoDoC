@@ -1,0 +1,14 @@
+public Uri getPlaybackUri(){
+    if (mService == null) {
+        throw new IllegalStateException("No streaming service attached");
+    }
+    try {
+        return mService.getPlaybackUri(mSubscriptionId, mServiceInfo.getServiceId());
+    } catch (RemoteException e) {
+        Log.w(LOG_TAG, "Remote process died");
+        mService = null;
+        mParentSession.onStreamingServiceStopped(this);
+        sendErrorToApp(MbmsErrors.ERROR_MIDDLEWARE_LOST, null);
+        return null;
+    }
+}

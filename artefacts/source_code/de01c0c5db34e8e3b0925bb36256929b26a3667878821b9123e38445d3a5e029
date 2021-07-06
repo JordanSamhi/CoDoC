@@ -1,0 +1,10 @@
+public void from(InformationElement ie){
+    if (ie.id != InformationElement.EID_HT_OPERATION) {
+        throw new IllegalArgumentException("Element id is not HT_OPERATION, : " + ie.id);
+    }
+    if (ie.bytes.length < HT_OPERATION_IE_LEN) {
+        throw new IllegalArgumentException("Invalid HT_OPERATION len: " + ie.bytes.length);
+    }
+    mPresent = true;
+    mSecondChannelOffset = ie.bytes[1] & 0x3;
+}

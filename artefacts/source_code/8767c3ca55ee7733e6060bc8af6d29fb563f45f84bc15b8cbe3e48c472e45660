@@ -1,0 +1,14 @@
+public void flushLayoutCache(){
+    synchronized (mCachedXmlBlocks) {
+        Arrays.fill(mCachedXmlBlockCookies, 0);
+        Arrays.fill(mCachedXmlBlockFiles, null);
+        final XmlBlock[] cachedXmlBlocks = mCachedXmlBlocks;
+        for (int i = 0; i < XML_BLOCK_CACHE_SIZE; i++) {
+            final XmlBlock oldBlock = cachedXmlBlocks[i];
+            if (oldBlock != null) {
+                oldBlock.close();
+            }
+        }
+        Arrays.fill(cachedXmlBlocks, null);
+    }
+}

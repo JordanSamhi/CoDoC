@@ -1,0 +1,10 @@
+public void register(){
+    if (!mRegistered) {
+        try {
+            WindowManagerGlobal.getWindowManagerService().registerSystemGestureExclusionListener(mGestureExclusionListener, mDisplayId);
+            mRegistered = true;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to register window manager callbacks", e);
+        }
+    }
+}

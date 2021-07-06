@@ -1,0 +1,28 @@
+
+     * Check a parcel containing metadata is well formed. The header
+     * is checked as well as the individual records format. However, the
+     * data inside the record is not checked because we do lazy access
+     * (we check/unmarshall only data the user asks for.)
+     *
+     * Format of a metadata parcel:
+     <pre>
+                         1                   2                   3
+      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                     metadata total size                       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |     'M'       |     'E'       |     'T'       |     'A'       |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |                                                               |
+      |                .... metadata records ....                     |
+      |                                                               |
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     </pre>
+     *
+     * @param parcel With the serialized data. Metadata keeps a
+     *               reference on it to access it later on. The caller
+     *               should not modify the parcel after this call (and
+     *               not call recycle on it.)
+     * @return false if an error occurred.
+     * {@hide}
+     

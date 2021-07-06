@@ -1,0 +1,10 @@
+public void setUp() throws Exception{
+    SecretKey secretKey = generateAesKey();
+    byte[] salt = new byte[FingerprintMixer.SALT_LENGTH_BYTES];
+    Random random = new Random();
+    random.nextBytes(salt);
+    mFingerprintMixer = new FingerprintMixer(secretKey, salt);
+    mRabinFingerprint64 = new RabinFingerprint64();
+    long chunkBoundaryFingerprint = calculateFingerprint(CHUNK_BOUNDARY_BYTES);
+    mChunker = new ContentDefinedChunker(MIN_SIZE_BYTES, MAX_SIZE_BYTES, mRabinFingerprint64, mFingerprintMixer, (fingerprint) -> fingerprint == chunkBoundaryFingerprint);
+}

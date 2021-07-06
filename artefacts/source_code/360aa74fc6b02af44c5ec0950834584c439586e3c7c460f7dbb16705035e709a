@@ -1,0 +1,7 @@
+public static String pii(boolean enablePiiLogging, Object pii){
+    String val = String.valueOf(pii);
+    if (pii == null || TextUtils.isEmpty(val) || enablePiiLogging) {
+        return val;
+    }
+    return "[" + secureHash(val.getBytes()) + "]";
+}

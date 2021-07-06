@@ -1,0 +1,41 @@
+public static File getFileFromFd(Context context, ParcelFileDescriptor fd, String packageName, String compressionAlg){
+    File newFile = getTemporaryFile(context, packageName);
+    if (fd == null || fd.getFileDescriptor() == null) {
+        return null;
+    }
+    InputStream fr = new ParcelFileDescriptor.AutoCloseInputStream(fd);
+    try {
+        if (TextUtils.equals(compressionAlg, COMPRESSION_XZ)) {
+            fr = new XZInputStream(fr);
+        } else if (TextUtils.equals(compressionAlg, COMPRESSION_LZMA)) {
+            fr = new LZMAInputStream(fr);
+        }
+    } catch (IOException e) {
+        Log.e(TAG, "Compression was set to " + compressionAlg + ", but could not decode ", e);
+        return null;
+    }
+    int nRead;
+    byte[] data = new byte[1024];
+    try {
+        final FileOutputStream fo = new FileOutputStream(newFile);
+        while ((nRead = fr.read(data, 0, data.length)) != -1) {
+            fo.write(data, 0, nRead);
+        }
+        fo.flush();
+        fo.close();
+        Os.chmod(newFile.getAbsolutePath(), 0644);
+        return newFile;
+    } catch (IOException e) {
+        Log.e(TAG, "Reading from Asset FD or writing to temp file failed ", e);
+        return null;
+    } catch (ErrnoException e) {
+        Log.e(TAG, "Could not set permissions on file ", e);
+        return null;
+    } finally {
+        try {
+            fr.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to close the file from FD ", e);
+        }
+    }
+}

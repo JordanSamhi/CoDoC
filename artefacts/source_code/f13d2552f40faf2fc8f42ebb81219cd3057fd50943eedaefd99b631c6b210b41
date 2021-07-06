@@ -1,0 +1,12 @@
+public boolean isOpen(){
+    if (!mService.isConnected()) {
+        Log.e(TAG, "service not connected to system");
+        return false;
+    }
+    try {
+        return !mChannel.isClosed();
+    } catch (RemoteException e) {
+        Log.e(TAG, "Exception in isClosed()");
+        return false;
+    }
+}

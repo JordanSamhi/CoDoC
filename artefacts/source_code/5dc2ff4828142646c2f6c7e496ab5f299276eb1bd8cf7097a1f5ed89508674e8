@@ -1,0 +1,37 @@
+public static int asLongs(CharBuffer buf, long[] array){
+    if (buf == null) {
+        return -1;
+    }
+    final int initialPos = buf.position();
+    int count = 0;
+    long num = -1;
+    char c;
+    while (buf.remaining() > 0 && count < array.length) {
+        c = buf.get();
+        if (!(isNumber(c) || c == ' ' || c == ':')) {
+            buf.position(initialPos);
+            return -2;
+        }
+        if (num < 0) {
+            if (isNumber(c)) {
+                num = c - '0';
+            }
+        } else {
+            if (isNumber(c)) {
+                num = num * 10 + c - '0';
+                if (num < 0) {
+                    buf.position(initialPos);
+                    return -3;
+                }
+            } else {
+                array[count++] = num;
+                num = -1;
+            }
+        }
+    }
+    if (num >= 0) {
+        array[count++] = num;
+    }
+    buf.position(initialPos);
+    return count;
+}

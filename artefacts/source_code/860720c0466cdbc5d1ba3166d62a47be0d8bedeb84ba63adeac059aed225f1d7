@@ -1,0 +1,9 @@
+public static long calculateDefaultFlexTime(long syncTimeSeconds){
+    if (syncTimeSeconds < DEFAULT_MIN_FLEX_ALLOWED_SECS) {
+        return 0L;
+    } else if (syncTimeSeconds < DEFAULT_POLL_FREQUENCY_SECONDS) {
+        return (long) (syncTimeSeconds * DEFAULT_FLEX_PERCENT_SYNC);
+    } else {
+        return (long) (DEFAULT_POLL_FREQUENCY_SECONDS * DEFAULT_FLEX_PERCENT_SYNC);
+    }
+}

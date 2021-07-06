@@ -1,0 +1,13 @@
+public boolean readRemoteRssi(){
+    if (DBG)
+        Log.d(TAG, "readRssi() - device: " + mDevice.getAddress());
+    if (mService == null || mClientIf == 0)
+        return false;
+    try {
+        mService.readRemoteRssi(mClientIf, mDevice.getAddress());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

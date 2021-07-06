@@ -1,0 +1,11 @@
+public byte get(final int index) throws IllegalStateException, IndexOutOfBoundsException{
+    Trace.beginSection("get");
+    if (has(index)) {
+        final int i = index - mOffset;
+        Trace.endSection();
+        return mBuffer[i];
+    } else {
+        Trace.endSection();
+        throw new IndexOutOfBoundsException(String.format("Index %d beyond length.", index));
+    }
+}

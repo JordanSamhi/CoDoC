@@ -1,0 +1,45 @@
+public static PasspointConfiguration convertFromWifiConfig(WifiConfiguration wifiConfig){
+    PasspointConfiguration passpointConfig = new PasspointConfiguration();
+    HomeSp homeSp = new HomeSp();
+    if (TextUtils.isEmpty(wifiConfig.FQDN)) {
+        Log.e(TAG, "Missing FQDN");
+        return null;
+    }
+    homeSp.setFqdn(wifiConfig.FQDN);
+    homeSp.setFriendlyName(wifiConfig.providerFriendlyName);
+    if (wifiConfig.roamingConsortiumIds != null) {
+        homeSp.setRoamingConsortiumOis(Arrays.copyOf(wifiConfig.roamingConsortiumIds, wifiConfig.roamingConsortiumIds.length));
+    }
+    passpointConfig.setHomeSp(homeSp);
+    passpointConfig.setCarrierId(wifiConfig.carrierId);
+    Credential credential = new Credential();
+    credential.setRealm(wifiConfig.enterpriseConfig.getRealm());
+    switch(wifiConfig.enterpriseConfig.getEapMethod()) {
+        case WifiEnterpriseConfig.Eap.TTLS:
+            credential.setUserCredential(buildUserCredentialFromEnterpriseConfig(wifiConfig.enterpriseConfig));
+            break;
+        case WifiEnterpriseConfig.Eap.TLS:
+            Credential.CertificateCredential certCred = new Credential.CertificateCredential();
+            certCred.setCertType(Credential.CertificateCredential.CERT_TYPE_X509V3);
+            credential.setCertCredential(certCred);
+            break;
+        case WifiEnterpriseConfig.Eap.SIM:
+            credential.setSimCredential(buildSimCredentialFromEnterpriseConfig(EAPConstants.EAP_SIM, wifiConfig.enterpriseConfig));
+            break;
+        case WifiEnterpriseConfig.Eap.AKA:
+            credential.setSimCredential(buildSimCredentialFromEnterpriseConfig(EAPConstants.EAP_AKA, wifiConfig.enterpriseConfig));
+            break;
+        case WifiEnterpriseConfig.Eap.AKA_PRIME:
+            credential.setSimCredential(buildSimCredentialFromEnterpriseConfig(EAPConstants.EAP_AKA_PRIME, wifiConfig.enterpriseConfig));
+            break;
+        default:
+            Log.e(TAG, "Unsupported EAP method: " + wifiConfig.enterpriseConfig.getEapMethod());
+            return null;
+    }
+    if (credential.getUserCredential() == null && credential.getCertCredential() == null && credential.getSimCredential() == null) {
+        Log.e(TAG, "Missing credential");
+        return null;
+    }
+    passpointConfig.setCredential(credential);
+    return passpointConfig;
+}

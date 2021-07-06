@@ -1,0 +1,17 @@
+public void removeOnSession2TokensChangedListener(@NonNull OnSession2TokensChangedListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener may not be null");
+    }
+    final Session2TokensChangedWrapper wrapper;
+    synchronized (mLock) {
+        wrapper = mSession2TokensListeners.remove(listener);
+    }
+    if (wrapper != null) {
+        try {
+            mService.removeSession2TokensListener(wrapper.getStub());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error in removeSessionTokensListener.", e);
+            e.rethrowFromSystemServer();
+        }
+    }
+}

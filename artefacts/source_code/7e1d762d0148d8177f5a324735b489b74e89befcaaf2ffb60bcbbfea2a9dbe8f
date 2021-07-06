@@ -1,0 +1,18 @@
+public static int checkAccessLevel(Context context, int callingUid, String callingPackage){
+    final DevicePolicyManagerInternal dpmi = LocalServices.getService(DevicePolicyManagerInternal.class);
+    final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    boolean hasCarrierPrivileges = tm != null && tm.checkCarrierPrivilegesForPackageAnyPhone(callingPackage) == TelephonyManager.CARRIER_PRIVILEGE_STATUS_HAS_ACCESS;
+    boolean isDeviceOwner = dpmi != null && dpmi.isActiveAdminWithPolicy(callingUid, DeviceAdminInfo.USES_POLICY_DEVICE_OWNER);
+    if (hasCarrierPrivileges || isDeviceOwner || UserHandle.getAppId(callingUid) == android.os.Process.SYSTEM_UID) {
+        return NetworkStatsAccess.Level.DEVICE;
+    }
+    boolean hasAppOpsPermission = hasAppOpsPermission(context, callingUid, callingPackage);
+    if (hasAppOpsPermission || context.checkCallingOrSelfPermission(READ_NETWORK_USAGE_HISTORY) == PackageManager.PERMISSION_GRANTED) {
+        return NetworkStatsAccess.Level.DEVICESUMMARY;
+    }
+    boolean isProfileOwner = dpmi != null && dpmi.isActiveAdminWithPolicy(callingUid, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER);
+    if (isProfileOwner) {
+        return NetworkStatsAccess.Level.USER;
+    }
+    return NetworkStatsAccess.Level.DEFAULT;
+}

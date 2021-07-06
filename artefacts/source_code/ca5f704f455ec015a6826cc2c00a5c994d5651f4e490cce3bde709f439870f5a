@@ -1,0 +1,8 @@
+public void startBluetoothSco(IBinder cb, int targetSdkVersion){
+    final int uid = Binder.getCallingUid();
+    final int pid = Binder.getCallingPid();
+    final int scoAudioMode = (targetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2) ? BtHelper.SCO_MODE_VIRTUAL_CALL : BtHelper.SCO_MODE_UNDEFINED;
+    final String eventSource = new StringBuilder("startBluetoothSco()").append(") from u/pid:").append(uid).append("/").append(pid).toString();
+    new MediaMetrics.Item(MediaMetrics.Name.AUDIO_BLUETOOTH).setUid(uid).setPid(pid).set(MediaMetrics.Property.EVENT, "startBluetoothSco").set(MediaMetrics.Property.SCO_AUDIO_MODE, BtHelper.scoAudioModeToString(scoAudioMode)).record();
+    startBluetoothScoInt(cb, scoAudioMode, eventSource);
+}

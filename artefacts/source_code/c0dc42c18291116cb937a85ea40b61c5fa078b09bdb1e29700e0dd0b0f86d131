@@ -1,0 +1,10 @@
+public void removeOnSubscriptionsChangedListener(@NonNull SubscriptionManager.OnSubscriptionsChangedListener listener){
+    if (mSubscriptionChangedListenerMap.get(listener) == null) {
+        return;
+    }
+    try {
+        sRegistry.removeOnSubscriptionsChangedListener(mContext.getOpPackageName(), mSubscriptionChangedListenerMap.get(listener));
+        mSubscriptionChangedListenerMap.remove(listener);
+    } catch (RemoteException ex) {
+    }
+}

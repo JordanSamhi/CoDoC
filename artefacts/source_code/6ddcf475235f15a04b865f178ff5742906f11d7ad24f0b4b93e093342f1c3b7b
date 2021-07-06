@@ -1,0 +1,20 @@
+public String loadHeaderAppName(){
+    CharSequence name = null;
+    final PackageManager pm = mContext.getPackageManager();
+    if (mN.extras.containsKey(EXTRA_SUBSTITUTE_APP_NAME)) {
+        final String pkg = mContext.getPackageName();
+        final String subName = mN.extras.getString(EXTRA_SUBSTITUTE_APP_NAME);
+        if (PackageManager.PERMISSION_GRANTED == pm.checkPermission(android.Manifest.permission.SUBSTITUTE_NOTIFICATION_APP_NAME, pkg)) {
+            name = subName;
+        } else {
+            Log.w(TAG, "warning: pkg " + pkg + " attempting to substitute app name '" + subName + "' without holding perm " + android.Manifest.permission.SUBSTITUTE_NOTIFICATION_APP_NAME);
+        }
+    }
+    if (TextUtils.isEmpty(name)) {
+        name = pm.getApplicationLabel(mContext.getApplicationInfo());
+    }
+    if (TextUtils.isEmpty(name)) {
+        return null;
+    }
+    return String.valueOf(name);
+}

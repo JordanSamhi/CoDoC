@@ -1,0 +1,9 @@
+public boolean grantKeyPairToApp(@Nullable ComponentName admin, @NonNull String alias, @NonNull String packageName){
+    throwIfParentInstance("grantKeyPairToApp");
+    try {
+        return mService.setKeyGrantForApp(admin, mContext.getPackageName(), alias, packageName, true);
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    return false;
+}

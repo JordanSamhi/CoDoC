@@ -1,0 +1,12 @@
+public void attach(){
+    mLp = new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mBarHeight, WindowManager.LayoutParams.TYPE_STATUS_BAR, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, PixelFormat.TRANSLUCENT);
+    mLp.privateFlags |= PRIVATE_FLAG_COLOR_SPACE_AGNOSTIC;
+    mLp.token = new Binder();
+    mLp.gravity = Gravity.TOP;
+    mLp.setFitInsetsTypes(0);
+    mLp.setTitle("StatusBar");
+    mLp.packageName = mContext.getPackageName();
+    mLp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+    mWindowManager.addView(mStatusBarView, mLp);
+    mLpChanged.copyFrom(mLp);
+}

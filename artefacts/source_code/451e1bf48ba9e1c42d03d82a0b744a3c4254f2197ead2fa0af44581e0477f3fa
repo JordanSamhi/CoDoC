@@ -1,0 +1,12 @@
+public synchronized void unlockAutoFocus(CaptureRequest.Builder repeatingBuilder, CaptureRequest.Builder requestBuilder){
+    if (VERBOSE_LOGGING)
+        Log.v(TAG, "unlockAutoFocus");
+    if (mCurrentAfMode == AF_UNINITIALIZED) {
+        throw new IllegalStateException("AF mode was not enabled");
+    }
+    mCurrentAfTrigger = CaptureRequest.CONTROL_AF_TRIGGER_CANCEL;
+    repeatingBuilder.set(CaptureRequest.CONTROL_AF_MODE, mCurrentAfMode);
+    requestBuilder.set(CaptureRequest.CONTROL_AF_MODE, mCurrentAfMode);
+    repeatingBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
+    requestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
+}

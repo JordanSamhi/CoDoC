@@ -1,0 +1,10 @@
+public static SmsMessage newFromCMT(byte[] pdu){
+    try {
+        SmsMessage msg = new SmsMessage();
+        msg.parsePdu(pdu);
+        return msg;
+    } catch (RuntimeException ex) {
+        Rlog.e(LOG_TAG, "SMS PDU parsing failed: ", ex);
+        return null;
+    }
+}

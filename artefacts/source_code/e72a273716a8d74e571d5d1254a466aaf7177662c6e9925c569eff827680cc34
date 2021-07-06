@@ -1,0 +1,13 @@
+public static Long macAddressToLong(byte[] macArray){
+    if (macArray == null) {
+        throw new IllegalArgumentException("null mac bytes");
+    }
+    if (macArray.length != MAC_LENGTH) {
+        throw new IllegalArgumentException("invalid macArray length: " + macArray.length);
+    }
+    try {
+        return ByteBufferReader.readInteger(ByteBuffer.wrap(macArray), ByteOrder.BIG_ENDIAN, macArray.length);
+    } catch (BufferUnderflowException | IllegalArgumentException e) {
+        throw new IllegalArgumentException("invalid macArray");
+    }
+}

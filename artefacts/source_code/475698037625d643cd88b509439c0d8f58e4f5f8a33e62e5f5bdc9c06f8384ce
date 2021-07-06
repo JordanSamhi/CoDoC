@@ -1,0 +1,11 @@
+public void cancelPrompt(){
+    int responseCode = mKeyStore.cancelConfirmationPrompt(mCallbackBinder);
+    if (responseCode == KeyStore.CONFIRMATIONUI_OK) {
+        return;
+    } else if (responseCode == KeyStore.CONFIRMATIONUI_OPERATION_PENDING) {
+        throw new IllegalStateException();
+    } else {
+        Log.w(TAG, "Unexpected responseCode=" + responseCode + " from cancelConfirmationPrompt() call.");
+        throw new IllegalStateException();
+    }
+}

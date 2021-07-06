@@ -1,0 +1,25 @@
+
+     * Adds an account directly to the AccountManager. Additionally it specifies Account visibility
+     * for given list of packages.
+     * <p>
+     * Normally used by sign-up wizards associated with authenticators, not directly by
+     * applications.
+     * <p>
+     * Calling this method does not update the last authenticated timestamp, referred by
+     * {@link #KEY_LAST_AUTHENTICATED_TIME}. To update it, call
+     * {@link #notifyAccountAuthenticated(Account)} after getting success.
+     * <p>
+     * It is safe to call this method from the main thread.
+     * <p>
+     * This method requires the caller to have a signature match with the authenticator that owns
+     * the specified account.
+     *
+     * @param account The {@link Account} to add
+     * @param password The password to associate with the account, null for none
+     * @param extras String values to use for the account's userdata, null for none
+     * @param visibility Map from packageName to visibility values which will be set before account
+     *        is added. See {@link #getAccountVisibility} for possible values.
+     *
+     * @return True if the account was successfully added, false if the account already exists, the
+     *         account is null, or another error occurs.
+     

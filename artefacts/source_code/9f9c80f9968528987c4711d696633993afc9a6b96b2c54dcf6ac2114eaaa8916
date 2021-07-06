@@ -1,0 +1,14 @@
+public void conferenceStateUpdated(ImsConferenceState state){
+    Listener listener;
+    synchronized (this) {
+        notifyConferenceStateUpdated(state);
+        listener = mListener;
+    }
+    if (listener != null) {
+        try {
+            listener.onCallConferenceStateUpdated(this, state);
+        } catch (Throwable t) {
+            loge("callSessionConferenceStateUpdated :: ", t);
+        }
+    }
+}

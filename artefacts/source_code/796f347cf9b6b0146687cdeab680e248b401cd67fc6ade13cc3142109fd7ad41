@@ -1,0 +1,157 @@
+public synchronized boolean enableRange(int startId, int endId, String client){
+    int len = mRanges.size();
+    if (len == 0) {
+        if (tryAddRanges(startId, endId, true)) {
+            mRanges.add(new IntRange(startId, endId, client));
+            return true;
+        } else {
+            return false;
+        }
+    }
+    for (int startIndex = 0; startIndex < len; startIndex++) {
+        IntRange range = mRanges.get(startIndex);
+        if ((startId) >= range.mStartId && (endId) <= range.mEndId) {
+            range.insert(new ClientRange(startId, endId, client));
+            return true;
+        } else if ((startId - 1) == range.mEndId) {
+            int newRangeEndId = endId;
+            IntRange nextRange = null;
+            if ((startIndex + 1) < len) {
+                nextRange = mRanges.get(startIndex + 1);
+                if ((nextRange.mStartId - 1) <= endId) {
+                    if (endId <= nextRange.mEndId) {
+                        newRangeEndId = nextRange.mStartId - 1;
+                    }
+                } else {
+                    nextRange = null;
+                }
+            }
+            if (tryAddRanges(startId, newRangeEndId, true)) {
+                range.mEndId = endId;
+                range.insert(new ClientRange(startId, endId, client));
+                if (nextRange != null) {
+                    if (range.mEndId < nextRange.mEndId) {
+                        range.mEndId = nextRange.mEndId;
+                    }
+                    range.mClients.addAll(nextRange.mClients);
+                    mRanges.remove(nextRange);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else if (startId < range.mStartId) {
+            if ((endId + 1) < range.mStartId) {
+                if (tryAddRanges(startId, endId, true)) {
+                    mRanges.add(startIndex, new IntRange(startId, endId, client));
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (endId <= range.mEndId) {
+                if (tryAddRanges(startId, range.mStartId - 1, true)) {
+                    range.mStartId = startId;
+                    range.mClients.add(0, new ClientRange(startId, endId, client));
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                for (int endIndex = startIndex + 1; endIndex < len; endIndex++) {
+                    IntRange endRange = mRanges.get(endIndex);
+                    if ((endId + 1) < endRange.mStartId) {
+                        if (tryAddRanges(startId, endId, true)) {
+                            range.mStartId = startId;
+                            range.mEndId = endId;
+                            range.mClients.add(0, new ClientRange(startId, endId, client));
+                            int joinIndex = startIndex + 1;
+                            for (int i = joinIndex; i < endIndex; i++) {
+                                IntRange joinRange = mRanges.get(joinIndex);
+                                range.mClients.addAll(joinRange.mClients);
+                                mRanges.remove(joinRange);
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else if (endId <= endRange.mEndId) {
+                        if (tryAddRanges(startId, endRange.mStartId - 1, true)) {
+                            range.mStartId = startId;
+                            range.mEndId = endRange.mEndId;
+                            range.mClients.add(0, new ClientRange(startId, endId, client));
+                            int joinIndex = startIndex + 1;
+                            for (int i = joinIndex; i <= endIndex; i++) {
+                                IntRange joinRange = mRanges.get(joinIndex);
+                                range.mClients.addAll(joinRange.mClients);
+                                mRanges.remove(joinRange);
+                            }
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                if (tryAddRanges(startId, endId, true)) {
+                    range.mStartId = startId;
+                    range.mEndId = endId;
+                    range.mClients.add(0, new ClientRange(startId, endId, client));
+                    int joinIndex = startIndex + 1;
+                    for (int i = joinIndex; i < len; i++) {
+                        IntRange joinRange = mRanges.get(joinIndex);
+                        range.mClients.addAll(joinRange.mClients);
+                        mRanges.remove(joinRange);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else if ((startId + 1) <= range.mEndId) {
+            if (endId <= range.mEndId) {
+                range.insert(new ClientRange(startId, endId, client));
+                return true;
+            } else {
+                int endIndex = startIndex;
+                for (int testIndex = startIndex + 1; testIndex < len; testIndex++) {
+                    IntRange testRange = mRanges.get(testIndex);
+                    if ((endId + 1) < testRange.mStartId) {
+                        break;
+                    } else {
+                        endIndex = testIndex;
+                    }
+                }
+                if (endIndex == startIndex) {
+                    if (tryAddRanges(range.mEndId + 1, endId, true)) {
+                        range.mEndId = endId;
+                        range.insert(new ClientRange(startId, endId, client));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                IntRange endRange = mRanges.get(endIndex);
+                int newRangeEndId = (endId <= endRange.mEndId) ? endRange.mStartId - 1 : endId;
+                if (tryAddRanges(range.mEndId + 1, newRangeEndId, true)) {
+                    newRangeEndId = (endId <= endRange.mEndId) ? endRange.mEndId : endId;
+                    range.mEndId = newRangeEndId;
+                    range.insert(new ClientRange(startId, endId, client));
+                    int joinIndex = startIndex + 1;
+                    for (int i = joinIndex; i <= endIndex; i++) {
+                        IntRange joinRange = mRanges.get(joinIndex);
+                        range.mClients.addAll(joinRange.mClients);
+                        mRanges.remove(joinRange);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+    if (tryAddRanges(startId, endId, true)) {
+        mRanges.add(new IntRange(startId, endId, client));
+        return true;
+    } else {
+        return false;
+    }
+}

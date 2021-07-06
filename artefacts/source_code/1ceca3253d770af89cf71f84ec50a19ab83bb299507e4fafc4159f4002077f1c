@@ -1,0 +1,10 @@
+public void removeNetworkCachedDataIfNeeded(int networkId, MacAddress curMacAddress){
+    synchronized (mLock) {
+        PmkCacheStoreData pmkData = mPmkCacheEntries.get(networkId);
+        if (pmkData == null)
+            return;
+        if (curMacAddress.equals(pmkData.macAddress))
+            return;
+        removeNetworkCachedData(networkId);
+    }
+}

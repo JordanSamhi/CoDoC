@@ -1,0 +1,30 @@
+public void syncRequests(Set<String> newRequestedPackages){
+    boolean enabled;
+    synchronized (mLock) {
+        enabled = mEnabled;
+    }
+    if (!enabled) {
+        Slog.i(TAG, "Health checks disabled, no supported packages");
+        mSupportedConsumer.accept(Collections.emptyList());
+        return;
+    }
+    getSupportedPackages(supportedPackageConfigs -> {
+        mSupportedConsumer.accept(supportedPackageConfigs);
+        getRequestedPackages(previousRequestedPackages -> {
+            synchronized (mLock) {
+                Set<String> supportedPackages = new ArraySet<>();
+                for (PackageConfig config : supportedPackageConfigs) {
+                    supportedPackages.add(config.getPackageName());
+                }
+                newRequestedPackages.retainAll(supportedPackages);
+                actOnDifference(previousRequestedPackages, newRequestedPackages, p -> cancel(p));
+                actOnDifference(newRequestedPackages, previousRequestedPackages, p -> request(p));
+                if (newRequestedPackages.isEmpty()) {
+                    Slog.i(TAG, "No more health check requests, unbinding...");
+                    unbindService();
+                    return;
+                }
+            }
+        });
+    });
+}

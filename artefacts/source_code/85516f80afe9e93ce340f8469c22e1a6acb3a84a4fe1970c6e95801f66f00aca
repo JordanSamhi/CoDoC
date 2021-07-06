@@ -1,0 +1,14 @@
+public void readFromParcel(Parcel in){
+    mConcurrentCameraIds.clear();
+    int cameraCombinationSize = in.readInt();
+    if (cameraCombinationSize < 0) {
+        throw new RuntimeException("cameraCombinationSize " + cameraCombinationSize + " should not be negative");
+    }
+    for (int i = 0; i < cameraCombinationSize; i++) {
+        String cameraId = in.readString();
+        if (cameraId == null) {
+            throw new RuntimeException("Failed to read camera id from Parcel");
+        }
+        mConcurrentCameraIds.add(cameraId);
+    }
+}

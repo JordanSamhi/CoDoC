@@ -1,0 +1,21 @@
+public boolean sameAs(Icon otherIcon){
+    if (otherIcon == this) {
+        return true;
+    }
+    if (mType != otherIcon.getType()) {
+        return false;
+    }
+    switch(mType) {
+        case TYPE_BITMAP:
+        case TYPE_ADAPTIVE_BITMAP:
+            return getBitmap() == otherIcon.getBitmap();
+        case TYPE_DATA:
+            return getDataLength() == otherIcon.getDataLength() && getDataOffset() == otherIcon.getDataOffset() && Arrays.equals(getDataBytes(), otherIcon.getDataBytes());
+        case TYPE_RESOURCE:
+            return getResId() == otherIcon.getResId() && Objects.equals(getResPackage(), otherIcon.getResPackage());
+        case TYPE_URI:
+        case TYPE_URI_ADAPTIVE_BITMAP:
+            return Objects.equals(getUriString(), otherIcon.getUriString());
+    }
+    return false;
+}

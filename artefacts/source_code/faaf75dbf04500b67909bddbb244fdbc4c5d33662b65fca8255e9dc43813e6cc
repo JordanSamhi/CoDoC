@@ -1,0 +1,14 @@
+public Context getPackageContext(Context context){
+    if (mContext == null) {
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfoAsUser(pkg, PackageManager.MATCH_UNINSTALLED_PACKAGES, getUserId());
+            mContext = context.createApplicationContext(ai, Context.CONTEXT_RESTRICTED);
+        } catch (PackageManager.NameNotFoundException e) {
+            mContext = null;
+        }
+    }
+    if (mContext == null) {
+        mContext = context;
+    }
+    return mContext;
+}

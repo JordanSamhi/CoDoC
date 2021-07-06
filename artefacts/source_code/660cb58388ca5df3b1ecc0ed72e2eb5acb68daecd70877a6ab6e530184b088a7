@@ -1,0 +1,8 @@
+public static long getPackageDexMetadataSize(PackageLite pkg){
+    long sizeBytes = 0;
+    Collection<String> dexMetadataList = DexMetadataHelper.getPackageDexMetadata(pkg).values();
+    for (String dexMetadata : dexMetadataList) {
+        sizeBytes += new File(dexMetadata).length();
+    }
+    return sizeBytes;
+}

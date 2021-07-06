@@ -1,0 +1,10 @@
+public void removeActiveAdmin(@NonNull ComponentName admin){
+    throwIfParentInstance("removeActiveAdmin");
+    if (mService != null) {
+        try {
+            mService.removeActiveAdmin(admin, myUserId());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

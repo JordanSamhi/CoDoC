@@ -1,0 +1,42 @@
+public int requestAudioFocus(@NonNull AudioFocusRequest afr, @Nullable AudioPolicy ap){
+    if (afr == null) {
+        throw new NullPointerException("Illegal null AudioFocusRequest");
+    }
+    if (afr.locksFocus() && ap == null) {
+        throw new IllegalArgumentException("Illegal null audio policy when locking audio focus");
+    }
+    registerAudioFocusRequest(afr);
+    final IAudioService service = getService();
+    final int status;
+    int sdk;
+    try {
+        sdk = getContext().getApplicationInfo().targetSdkVersion;
+    } catch (NullPointerException e) {
+        sdk = Build.VERSION.SDK_INT;
+    }
+    final String clientId = getIdForAudioFocusListener(afr.getOnAudioFocusChangeListener());
+    final BlockingFocusResultReceiver focusReceiver;
+    synchronized (mFocusRequestsLock) {
+        try {
+            status = service.requestAudioFocus(afr.getAudioAttributes(), afr.getFocusGain(), mICallBack, mAudioFocusDispatcher, clientId, getContext().getOpPackageName(), afr.getFlags(), ap != null ? ap.cb() : null, sdk);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+        if (status != AudioManager.AUDIOFOCUS_REQUEST_WAITING_FOR_EXT_POLICY) {
+            return status;
+        }
+        if (mFocusRequestsAwaitingResult == null) {
+            mFocusRequestsAwaitingResult = new HashMap<String, BlockingFocusResultReceiver>(1);
+        }
+        focusReceiver = new BlockingFocusResultReceiver(clientId);
+        mFocusRequestsAwaitingResult.put(clientId, focusReceiver);
+    }
+    focusReceiver.waitForResult(EXT_FOCUS_POLICY_TIMEOUT_MS);
+    if (DEBUG && !focusReceiver.receivedResult()) {
+        Log.e(TAG, "requestAudio response from ext policy timed out, denying request");
+    }
+    synchronized (mFocusRequestsLock) {
+        mFocusRequestsAwaitingResult.remove(clientId);
+    }
+    return focusReceiver.requestResult();
+}

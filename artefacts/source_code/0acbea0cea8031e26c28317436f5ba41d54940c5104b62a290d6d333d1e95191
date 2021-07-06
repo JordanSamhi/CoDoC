@@ -1,0 +1,10 @@
+public static void syncDelete(@NonNull Context context, @NonNull String namespace, @NonNull String key){
+    String currentValue = get(namespace, key);
+    if (currentValue == null || currentValue.equals("null")) {
+        return;
+    }
+    OneTimeSettingsListener observer = new OneTimeSettingsListener(context, namespace, key, DEFAULT_TIMEOUT_MS);
+    delete(namespace, key);
+    observer.assertCalled();
+    assertNewValue(namespace, key, "null");
+}

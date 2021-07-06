@@ -1,0 +1,28 @@
+public void setSlideEdge(@GravityFlag int slideEdge){
+    switch(slideEdge) {
+        case Gravity.LEFT:
+            mSlideCalculator = sCalculateLeft;
+            break;
+        case Gravity.TOP:
+            mSlideCalculator = sCalculateTop;
+            break;
+        case Gravity.RIGHT:
+            mSlideCalculator = sCalculateRight;
+            break;
+        case Gravity.BOTTOM:
+            mSlideCalculator = sCalculateBottom;
+            break;
+        case Gravity.START:
+            mSlideCalculator = sCalculateStart;
+            break;
+        case Gravity.END:
+            mSlideCalculator = sCalculateEnd;
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid slide direction");
+    }
+    mSlideEdge = slideEdge;
+    SidePropagation propagation = new SidePropagation();
+    propagation.setSide(slideEdge);
+    setPropagation(propagation);
+}

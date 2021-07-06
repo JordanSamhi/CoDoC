@@ -1,0 +1,17 @@
+public void addHotplugEventListener(HotplugEventListener listener){
+    if (mService == null) {
+        Log.e(TAG, "HdmiControlService is not available");
+        return;
+    }
+    if (mHotplugEventListeners.containsKey(listener)) {
+        Log.e(TAG, "listener is already registered");
+        return;
+    }
+    IHdmiHotplugEventListener wrappedListener = getHotplugEventListenerWrapper(listener);
+    mHotplugEventListeners.put(listener, wrappedListener);
+    try {
+        mService.addHotplugEventListener(wrappedListener);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

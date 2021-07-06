@@ -1,0 +1,9 @@
+public BluetoothSocket createL2capChannel(int psm) throws IOException{
+    if (!isBluetoothEnabled()) {
+        Log.e(TAG, "createL2capChannel: Bluetooth is not enabled");
+        throw new IOException();
+    }
+    if (DBG)
+        Log.d(TAG, "createL2capChannel: psm=" + psm);
+    return new BluetoothSocket(BluetoothSocket.TYPE_L2CAP_LE, -1, true, true, this, psm, null);
+}

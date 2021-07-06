@@ -1,0 +1,11 @@
+public static IFullBackupRestoreObserver sendEndRestore(IFullBackupRestoreObserver observer){
+    if (observer != null) {
+        try {
+            observer.onEndRestore();
+        } catch (RemoteException e) {
+            Slog.w(TAG, "full restore observer went away: endRestore");
+            observer = null;
+        }
+    }
+    return observer;
+}

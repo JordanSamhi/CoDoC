@@ -1,0 +1,25 @@
+public void dump(String prefix, FileDescriptor fd, PrintWriter out, String[] args){
+    String eglVersion = mEglVersion[0] + "." + mEglVersion[1];
+    out.print(prefix);
+    out.print("EGL version=");
+    out.print(eglVersion);
+    out.print(", ");
+    out.print("EGL ready=");
+    out.print(mEglReady);
+    out.print(", ");
+    out.print("has EglContext=");
+    out.print(hasEglContext());
+    out.print(", ");
+    out.print("has EglSurface=");
+    out.println(hasEglSurface());
+    int[] configs = getConfig();
+    StringBuilder sb = new StringBuilder();
+    sb.append('{');
+    for (int egl : configs) {
+        sb.append("0x").append(Integer.toHexString(egl)).append(",");
+    }
+    sb.setCharAt(sb.length() - 1, '}');
+    out.print(prefix);
+    out.print("EglConfig=");
+    out.println(sb.toString());
+}

@@ -1,0 +1,5 @@
+public void registerForOtaspChange(Handler h, int what, Object obj){
+    checkCorrectThread(h);
+    mOtaspRegistrants.addUnique(h, what, obj);
+    new Registrant(h, what, obj).notifyRegistrant(new AsyncResult(null, getOtasp(), null));
+}

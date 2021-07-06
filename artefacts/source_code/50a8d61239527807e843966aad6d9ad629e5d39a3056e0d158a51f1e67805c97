@@ -1,0 +1,22 @@
+public boolean equals(Object obj){
+    if (!getClass().equals(obj != null ? obj.getClass() : null))
+        return false;
+    SliceAuthority other = (SliceAuthority) obj;
+    if (mPaths.size() != other.mPaths.size())
+        return false;
+    ArrayList<String[]> p1 = new ArrayList<>(mPaths);
+    ArrayList<String[]> p2 = new ArrayList<>(other.mPaths);
+    p1.sort(Comparator.comparing(o -> TextUtils.join(",", o)));
+    p2.sort(Comparator.comparing(o -> TextUtils.join(",", o)));
+    for (int i = 0; i < p1.size(); i++) {
+        String[] a1 = p1.get(i);
+        String[] a2 = p2.get(i);
+        if (a1.length != a2.length)
+            return false;
+        for (int j = 0; j < a1.length; j++) {
+            if (!Objects.equals(a1[j], a2[j]))
+                return false;
+        }
+    }
+    return Objects.equals(mAuthority, other.mAuthority) && Objects.equals(mPkg, other.mPkg);
+}

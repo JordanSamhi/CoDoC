@@ -1,0 +1,12 @@
+public static Path findDocumentPath(@NonNull ContentResolver content, @NonNull Uri treeUri) throws FileNotFoundException{
+    try {
+        final Bundle in = new Bundle();
+        in.putParcelable(DocumentsContract.EXTRA_URI, treeUri);
+        final Bundle out = content.call(treeUri.getAuthority(), METHOD_FIND_DOCUMENT_PATH, null, in);
+        return out.getParcelable(DocumentsContract.EXTRA_RESULT);
+    } catch (Exception e) {
+        Log.w(TAG, "Failed to find path", e);
+        rethrowIfNecessary(e);
+        return null;
+    }
+}

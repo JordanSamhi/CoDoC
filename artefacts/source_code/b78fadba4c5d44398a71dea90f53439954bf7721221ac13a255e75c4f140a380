@@ -1,0 +1,15 @@
+public void noteConnectionAttempt(@NonNull ExtendedWifiInfo wifiInfo, int scanRssi, String ssid){
+    if (mTsConnectionAttemptStart > TS_NONE) {
+        if (mPolled) {
+            updatePerBssid(Event.LAST_POLL_BEFORE_SWITCH, wifiInfo);
+        }
+        mAttemptingSwitch = true;
+    }
+    mTsConnectionAttemptStart = mClock.getElapsedSinceBootMillis();
+    mPolled = false;
+    mSsidPrev = mSsidCurr;
+    mSsidCurr = ssid;
+    mFirmwareAlertTimeMs = TS_NONE;
+    updatePerNetwork(Event.CONNECTION_ATTEMPT, ssid, scanRssi, LINK_SPEED_UNKNOWN, UNKNOWN_REASON);
+    logd("CONNECTION_ATTEMPT" + (mAttemptingSwitch ? " X " : " ") + wifiInfo);
+}

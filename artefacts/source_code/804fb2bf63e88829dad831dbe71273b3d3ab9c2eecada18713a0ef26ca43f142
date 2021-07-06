@@ -1,0 +1,15 @@
+public void readFromParcel(Parcel in){
+    setNetworkSelectionStatus(in.readInt());
+    setNetworkSelectionDisableReason(in.readInt());
+    for (int index = DISABLED_NONE; index < NETWORK_SELECTION_DISABLED_MAX; index++) {
+        setDisableReasonCounter(index, in.readInt());
+    }
+    setDisableTime(in.readLong());
+    setNetworkSelectionBSSID(in.readString());
+    if (in.readInt() == CONNECT_CHOICE_EXISTS) {
+        setConnectChoice(in.readString());
+    } else {
+        setConnectChoice(null);
+    }
+    setHasEverConnected(in.readInt() != 0);
+}

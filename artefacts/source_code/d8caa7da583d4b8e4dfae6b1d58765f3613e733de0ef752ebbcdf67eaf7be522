@@ -1,0 +1,63 @@
+public SimAuthResponseData get3GAuthResponse(SimAuthRequestData requestData, WifiConfiguration config){
+    StringBuilder sb = new StringBuilder();
+    byte[] rand = null;
+    byte[] authn = null;
+    String resType = WifiNative.SIM_AUTH_RESP_TYPE_UMTS_AUTH;
+    if (requestData.data.length == 2) {
+        try {
+            rand = parseHex(requestData.data[0]);
+            authn = parseHex(requestData.data[1]);
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "malformed challenge");
+        }
+    } else {
+        Log.e(TAG, "malformed challenge");
+    }
+    String tmResponse = "";
+    if (rand != null && authn != null) {
+        String base64Challenge = Base64.encodeToString(concatHex(rand, authn), Base64.NO_WRAP);
+        int subId = getBestMatchSubscriptionId(config);
+        if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+            return null;
+        }
+        tmResponse = mTelephonyManager.createForSubscriptionId(subId).getIccAuthentication(TelephonyManager.APPTYPE_USIM, TelephonyManager.AUTHTYPE_EAP_AKA, base64Challenge);
+        Log.v(TAG, "Raw Response - " + tmResponse);
+    }
+    boolean goodReponse = false;
+    if (tmResponse != null && tmResponse.length() > 4) {
+        byte[] result = Base64.decode(tmResponse, Base64.DEFAULT);
+        Log.e(TAG, "Hex Response - " + makeHex(result));
+        byte tag = result[0];
+        if (tag == (byte) 0xdb) {
+            Log.v(TAG, "successful 3G authentication ");
+            int resLen = result[1];
+            String res = makeHex(result, 2, resLen);
+            int ckLen = result[resLen + 2];
+            String ck = makeHex(result, resLen + 3, ckLen);
+            int ikLen = result[resLen + ckLen + 3];
+            String ik = makeHex(result, resLen + ckLen + 4, ikLen);
+            sb.append(":" + ik + ":" + ck + ":" + res);
+            Log.v(TAG, "ik:" + ik + "ck:" + ck + " res:" + res);
+            goodReponse = true;
+        } else if (tag == (byte) 0xdc) {
+            Log.e(TAG, "synchronisation failure");
+            int autsLen = result[1];
+            String auts = makeHex(result, 2, autsLen);
+            resType = WifiNative.SIM_AUTH_RESP_TYPE_UMTS_AUTS;
+            sb.append(":" + auts);
+            Log.v(TAG, "auts:" + auts);
+            goodReponse = true;
+        } else {
+            Log.e(TAG, "bad response - unknown tag = " + tag);
+        }
+    } else {
+        Log.e(TAG, "bad response - " + tmResponse);
+    }
+    if (goodReponse) {
+        String response = sb.toString();
+        Log.v(TAG, "Supplicant Response -" + response);
+        return new SimAuthResponseData(resType, response);
+    } else {
+        return null;
+    }
+}

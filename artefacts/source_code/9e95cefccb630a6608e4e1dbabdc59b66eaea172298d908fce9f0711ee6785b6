@@ -1,0 +1,11 @@
+public void snoozeNotificationUntilContextFromListener(INotificationListener token, String key, String snoozeCriterionId){
+    long identity = Binder.clearCallingIdentity();
+    try {
+        synchronized (mNotificationLock) {
+            final ManagedServiceInfo info = mListeners.checkServiceTokenLocked(token);
+            snoozeNotificationInt(key, SNOOZE_UNTIL_UNSPECIFIED, snoozeCriterionId, info);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

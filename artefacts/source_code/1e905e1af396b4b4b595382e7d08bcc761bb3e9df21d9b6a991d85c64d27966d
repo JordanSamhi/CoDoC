@@ -1,0 +1,28 @@
+public boolean markGuestForDeletion(@UserIdInt int userId){
+    checkManageUsersPermission("Only the system can remove users");
+    if (getUserRestrictions(UserHandle.getCallingUserId()).getBoolean(UserManager.DISALLOW_REMOVE_USER, false)) {
+        Slog.w(LOG_TAG, "Cannot remove user. DISALLOW_REMOVE_USER is enabled.");
+        return false;
+    }
+    long ident = Binder.clearCallingIdentity();
+    try {
+        final UserData userData;
+        synchronized (mPackagesLock) {
+            synchronized (mUsersLock) {
+                userData = mUsers.get(userId);
+                if (userId == 0 || userData == null || mRemovingUserIds.get(userId)) {
+                    return false;
+                }
+            }
+            if (!userData.info.isGuest()) {
+                return false;
+            }
+            userData.info.guestToRemove = true;
+            userData.info.flags |= UserInfo.FLAG_DISABLED;
+            writeUserLP(userData);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    return true;
+}

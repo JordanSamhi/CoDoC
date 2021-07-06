@@ -1,0 +1,12 @@
+public void stopAdvertising(final AdvertiseCallback callback){
+    synchronized (mLegacyAdvertisers) {
+        if (callback == null) {
+            throw new IllegalArgumentException("callback cannot be null");
+        }
+        AdvertisingSetCallback wrapper = mLegacyAdvertisers.get(callback);
+        if (wrapper == null)
+            return;
+        stopAdvertisingSet(wrapper);
+        mLegacyAdvertisers.remove(callback);
+    }
+}

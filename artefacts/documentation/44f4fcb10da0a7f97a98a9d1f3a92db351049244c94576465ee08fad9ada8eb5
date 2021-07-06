@@ -1,0 +1,65 @@
+
+         * Triggers a custom UI before before autofilling the screen with any data set in this
+         * response.
+         *
+         * <p><b>Note:</b> Although the name of this method suggests that it should be used just for
+         * authentication flow, it can be used for other advanced flows; see {@link AutofillService}
+         * for examples.
+         *
+         * <p>This is typically useful when a user interaction is required to unlock their
+         * data vault if you encrypt the data set labels and data set data. It is recommended
+         * to encrypt only the sensitive data and not the data set labels which would allow
+         * auth on the data set level leading to a better user experience. Note that if you
+         * use sensitive data as a label, for example an email address, then it should also
+         * be encrypted. The provided {@link android.app.PendingIntent intent} must be an
+         * {@link Activity} which implements your authentication flow. Also if you provide an auth
+         * intent you also need to specify the presentation view to be shown in the fill UI
+         * for the user to trigger your authentication flow.
+         *
+         * <p>When a user triggers autofill, the system launches the provided intent
+         * whose extras will have the
+         * {@link android.view.autofill.AutofillManager#EXTRA_ASSIST_STRUCTURE screen
+         * content} and your {@link android.view.autofill.AutofillManager#EXTRA_CLIENT_STATE
+         * client state}. Once you complete your authentication flow you should set the
+         * {@link Activity} result to {@link android.app.Activity#RESULT_OK} and set the
+         * {@link android.view.autofill.AutofillManager#EXTRA_AUTHENTICATION_RESULT} extra
+         * with the fully populated {@link FillResponse response} (or {@code null} if the screen
+         * cannot be autofilled).
+         *
+         * <p>For example, if you provided an empty {@link FillResponse response} because the
+         * user's data was locked and marked that the response needs an authentication then
+         * in the response returned if authentication succeeds you need to provide all
+         * available data sets some of which may need to be further authenticated, for
+         * example a credit card whose CVV needs to be entered.
+         *
+         * <p>If you provide an authentication intent you must also provide a presentation
+         * which is used to visualize visualize the response for triggering the authentication
+         * flow.
+         *
+         * <p><b>Note:</b> Do not make the provided pending intent
+         * immutable by using {@link android.app.PendingIntent#FLAG_IMMUTABLE} as the
+         * platform needs to fill in the authentication arguments.
+         *
+         * <p>Theme does not work with RemoteViews layout. Avoid hardcoded text color
+         * or background color: Autofill on different platforms may have different themes.
+         *
+         * @param authentication Intent to an activity with your authentication flow.
+         * @param presentation The presentation to visualize the response.
+         * @param ids id of Views that when focused will display the authentication UI.
+         *
+         * @return This builder.
+         *
+         * @throws IllegalArgumentException if any of the following occurs:
+         * <ul>
+         *   <li>{@code ids} is {@code null}</li>
+         *   <li>{@code ids} is empty</li>
+         *   <li>{@code ids} contains a {@code null} element</li>
+         *   <li>both {@code authentication} and {@code presentation} are {@code null}</li>
+         *   <li>both {@code authentication} and {@code presentation} are non-{@code null}</li>
+         * </ul>
+         *
+         * @throws IllegalStateException if a {@link #setHeader(RemoteViews) header} or a
+         * {@link #setFooter(RemoteViews) footer} are already set for this builder.
+         *
+         * @see android.app.PendingIntent#getIntentSender()
+         

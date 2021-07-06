@@ -1,0 +1,14 @@
+public boolean connect(BluetoothDevice device, boolean autoConnect){
+    if (DBG) {
+        Log.d(TAG, "connect() - device: " + device.getAddress() + ", auto: " + autoConnect);
+    }
+    if (mService == null || mServerIf == 0)
+        return false;
+    try {
+        mService.serverConnect(mServerIf, device.getAddress(), !autoConnect, mTransport);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

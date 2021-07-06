@@ -1,0 +1,6 @@
+public void registerAudioFocusRequest(@NonNull AudioFocusRequest afr){
+    final Handler h = afr.getOnAudioFocusChangeListenerHandler();
+    final FocusRequestInfo fri = new FocusRequestInfo(afr, (h == null) ? null : new ServiceEventHandlerDelegate(h).getHandler());
+    final String key = getIdForAudioFocusListener(afr.getOnAudioFocusChangeListener());
+    mAudioFocusIdListenerMap.put(key, fri);
+}

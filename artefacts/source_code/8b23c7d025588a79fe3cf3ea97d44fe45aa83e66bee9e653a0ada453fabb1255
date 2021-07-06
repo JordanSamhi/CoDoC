@@ -1,0 +1,11 @@
+public boolean isSearching(){
+    NetworkRegistrationInfo psRegState = getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_PS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    if (psRegState != null && psRegState.getRegistrationState() == NetworkRegistrationInfo.REGISTRATION_STATE_NOT_REGISTERED_SEARCHING) {
+        return true;
+    }
+    NetworkRegistrationInfo csRegState = getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_CS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    if (csRegState != null && csRegState.getRegistrationState() == NetworkRegistrationInfo.REGISTRATION_STATE_NOT_REGISTERED_SEARCHING) {
+        return true;
+    }
+    return false;
+}

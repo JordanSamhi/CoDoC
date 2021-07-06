@@ -1,0 +1,21 @@
+public void addRow(Iterable<?> columnValues){
+    int start = rowCount * columnCount;
+    int end = start + columnCount;
+    ensureCapacity(end);
+    if (columnValues instanceof ArrayList<?>) {
+        addRow((ArrayList<?>) columnValues, start);
+        return;
+    }
+    int current = start;
+    Object[] localData = data;
+    for (Object columnValue : columnValues) {
+        if (current == end) {
+            throw new IllegalArgumentException("columnValues.size() > columnNames.length");
+        }
+        localData[current++] = columnValue;
+    }
+    if (current != end) {
+        throw new IllegalArgumentException("columnValues.size() < columnNames.length");
+    }
+    rowCount++;
+}

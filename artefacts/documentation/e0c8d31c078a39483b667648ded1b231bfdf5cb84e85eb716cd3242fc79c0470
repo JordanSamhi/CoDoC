@@ -1,0 +1,38 @@
+
+     * Determine whether or not output streams can be configured with a particular class
+     * as a consumer.
+     *
+     * <p>The following list is generally usable for outputs:
+     * <ul>
+     * <li>{@link android.media.ImageReader} -
+     * Recommended for image processing or streaming to external resources (such as a file or
+     * network)
+     * <li>{@link android.media.MediaRecorder} -
+     * Recommended for recording video (simple to use)
+     * <li>{@link android.media.MediaCodec} -
+     * Recommended for recording video (more complicated to use, with more flexibility)
+     * <li>{@link android.renderscript.Allocation} -
+     * Recommended for image processing with {@link android.renderscript RenderScript}
+     * <li>{@link android.view.SurfaceHolder} -
+     * Recommended for low-power camera preview with {@link android.view.SurfaceView}
+     * <li>{@link android.graphics.SurfaceTexture} -
+     * Recommended for OpenGL-accelerated preview processing or compositing with
+     * {@link android.view.TextureView}
+     * </ul>
+     * </p>
+     *
+     * <p>Generally speaking this means that creating a {@link Surface} from that class <i>may</i>
+     * provide a producer endpoint that is suitable to be used with
+     * {@link CameraDevice#createCaptureSession}.</p>
+     *
+     * <p>Since not all of the above classes support output of all format and size combinations,
+     * the particular combination should be queried with {@link #isOutputSupportedFor(Surface)}.</p>
+     *
+     * @param klass a non-{@code null} {@link Class} object reference
+     * @return {@code true} if this class is supported as an output, {@code false} otherwise
+     *
+     * @throws NullPointerException if {@code klass} was {@code null}
+     *
+     * @see CameraDevice#createCaptureSession
+     * @see #isOutputSupportedFor(Surface)
+     

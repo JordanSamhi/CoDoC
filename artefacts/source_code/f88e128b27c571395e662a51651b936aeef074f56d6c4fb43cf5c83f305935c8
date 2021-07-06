@@ -1,0 +1,18 @@
+public void copy2DRangeFrom(int xoff, int yoff, Bitmap data){
+    try {
+        Trace.traceBegin(RenderScript.TRACE_TAG, "copy2DRangeFrom");
+        mRS.validate();
+        if (data.getConfig() == null) {
+            Bitmap newBitmap = Bitmap.createBitmap(data.getWidth(), data.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(newBitmap);
+            c.drawBitmap(data, 0, 0, null);
+            copy2DRangeFrom(xoff, yoff, newBitmap);
+            return;
+        }
+        validateBitmapFormat(data);
+        validate2DRange(xoff, yoff, data.getWidth(), data.getHeight());
+        mRS.nAllocationData2D(getIDSafe(), xoff, yoff, mSelectedLOD, mSelectedFace.mID, data);
+    } finally {
+        Trace.traceEnd(RenderScript.TRACE_TAG);
+    }
+}

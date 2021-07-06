@@ -1,0 +1,13 @@
+
+     * Request that keepalive be started with the given {@code intervalSec}. See
+     * {@link SocketKeepalive}. If the remote binder dies, or the binder call throws an exception
+     * when invoking start or stop of the {@link SocketKeepalive}, a {@link RemoteException} will be
+     * thrown into the {@code executor}. This is typically not important to catch because the remote
+     * party is the system, so if it is not in shape to communicate through binder the system is
+     * probably going down anyway. If the caller cares regardless, it can use a custom
+     * {@link Executor} to catch the {@link RemoteException}.
+     *
+     * @param intervalSec The target interval in seconds between keepalive packet transmissions.
+     *                    The interval should be between 10 seconds and 3600 seconds, otherwise
+     *                    {@link #ERROR_INVALID_INTERVAL} will be returned.
+     

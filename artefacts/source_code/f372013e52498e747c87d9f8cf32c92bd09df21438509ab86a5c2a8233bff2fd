@@ -1,0 +1,10 @@
+public DvrRecorder openDvrRecorder(@BytesLong long bufferSize, @CallbackExecutor @NonNull Executor executor, @NonNull OnRecordStatusChangedListener l){
+    Objects.requireNonNull(executor, "executor must not be null");
+    Objects.requireNonNull(l, "OnRecordStatusChangedListener must not be null");
+    if (!checkResource(TunerResourceManager.TUNER_RESOURCE_TYPE_DEMUX)) {
+        return null;
+    }
+    DvrRecorder dvr = nativeOpenDvrRecorder(bufferSize);
+    dvr.setListener(executor, l);
+    return dvr;
+}

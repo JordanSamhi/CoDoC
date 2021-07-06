@@ -1,0 +1,52 @@
+public void updateConnectionStats(WifiInfo wifiInfo, String interfaceName){
+    mExperiments.forEach(e -> e.updateConnectionStats(wifiInfo));
+    if (!isLinkProbingSupported())
+        return;
+    long now = mClock.getElapsedSinceBootMillis();
+    if (mLastTxSuccessCount < wifiInfo.txSuccess) {
+        mLastTxSuccessIncreaseTimestampMs = now;
+    }
+    mLastTxSuccessCount = wifiInfo.txSuccess;
+    long timeSinceLastLinkProbeMs = now - mLastLinkProbeTimestampMs;
+    if (timeSinceLastLinkProbeMs < DELAY_BETWEEN_PROBES_MS) {
+        return;
+    }
+    long timeSinceLastTxSuccessIncreaseMs = now - mLastTxSuccessIncreaseTimestampMs;
+    if (timeSinceLastTxSuccessIncreaseMs < DELAY_AFTER_TX_SUCCESS_MS) {
+        return;
+    }
+    long timeSinceLastScreenOnMs = now - mLastScreenOnTimestampMs;
+    if (timeSinceLastScreenOnMs < SCREEN_ON_DELAY_MS) {
+        return;
+    }
+    int rssi = wifiInfo.getRssi();
+    int linkSpeed = wifiInfo.getLinkSpeed();
+    if (rssi != WifiInfo.INVALID_RSSI && rssi > RSSI_THRESHOLD && linkSpeed > LINK_SPEED_THRESHOLD_MBPS) {
+        return;
+    }
+    if (!mTimedQuotaManager.requestQuota()) {
+        return;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, String.format("link probing triggered with conditions: timeSinceLastLinkProbeMs=%d " + "timeSinceLastTxSuccessIncreaseMs=%d rssi=%d linkSpeed=%s", timeSinceLastLinkProbeMs, timeSinceLastTxSuccessIncreaseMs, rssi, linkSpeed));
+    }
+    mWifiNative.probeLink(interfaceName, MacAddress.fromString(wifiInfo.getBSSID()), new WifiNl80211Manager.SendMgmtFrameCallback() {
+
+        @Override
+        public void onAck(int elapsedTimeMs) {
+            if (mVerboseLoggingEnabled) {
+                Log.d(TAG, "link probing success, elapsedTimeMs=" + elapsedTimeMs);
+            }
+            mWifiMetrics.logLinkProbeSuccess(timeSinceLastTxSuccessIncreaseMs, rssi, linkSpeed, elapsedTimeMs);
+        }
+
+        @Override
+        public void onFailure(int reason) {
+            if (mVerboseLoggingEnabled) {
+                Log.d(TAG, "link probing failure, reason=" + reason);
+            }
+            mWifiMetrics.logLinkProbeFailure(timeSinceLastTxSuccessIncreaseMs, rssi, linkSpeed, reason);
+        }
+    }, -1);
+    mLastLinkProbeTimestampMs = mClock.getElapsedSinceBootMillis();
+}

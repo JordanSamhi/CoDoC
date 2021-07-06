@@ -1,0 +1,16 @@
+public static final long findNextAlarmTime(ContentResolver cr, long millis){
+    String selection = ALARM_TIME + ">=" + millis;
+    String[] projection = new String[] { ALARM_TIME };
+    Cursor cursor = cr.query(CONTENT_URI, projection, WHERE_FINDNEXTALARMTIME, (new String[] { Long.toString(millis) }), SORT_ORDER_ALARMTIME_ASC);
+    long alarmTime = -1;
+    try {
+        if (cursor != null && cursor.moveToFirst()) {
+            alarmTime = cursor.getLong(0);
+        }
+    } finally {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    return alarmTime;
+}

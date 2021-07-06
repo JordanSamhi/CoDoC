@@ -1,0 +1,15 @@
+public int bulkInsert(@NonNull Uri url, @NonNull ContentValues[] initialValues) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    Objects.requireNonNull(initialValues, "initialValues");
+    beforeRemote();
+    try {
+        return mContentProvider.bulkInsert(mPackageName, mAttributionTag, url, initialValues);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

@@ -1,0 +1,46 @@
+public ModemPowerStats buildProto(){
+    ModemPowerStats m = new ModemPowerStats();
+    CellularBatteryStats stats = getStats();
+    if (stats != null) {
+        m.loggingDurationMs = stats.getLoggingDurationMillis();
+        m.energyConsumedMah = stats.getEnergyConsumedMaMillis() / ((double) DateUtils.HOUR_IN_MILLIS);
+        m.numPacketsTx = stats.getNumPacketsTx();
+        m.cellularKernelActiveTimeMs = stats.getKernelActiveTimeMillis();
+        long timeInVeryPoorRxSignalLevelMs = stats.getTimeInRxSignalStrengthLevelMicros(CellSignalStrength.SIGNAL_STRENGTH_NONE_OR_UNKNOWN);
+        if (timeInVeryPoorRxSignalLevelMs >= 0) {
+            m.timeInVeryPoorRxSignalLevelMs = timeInVeryPoorRxSignalLevelMs;
+        }
+        m.sleepTimeMs = stats.getSleepTimeMillis();
+        m.idleTimeMs = stats.getIdleTimeMillis();
+        m.rxTimeMs = stats.getRxTimeMillis();
+        List<Long> txTimeMillis = new ArrayList<>();
+        for (int i = 0; i < ModemActivityInfo.TX_POWER_LEVELS; i++) {
+            long t = stats.getTxTimeMillis(i);
+            if (t >= 0) {
+                txTimeMillis.add(t);
+            }
+        }
+        m.txTimeMs = txTimeMillis.stream().mapToLong(Long::longValue).toArray();
+        m.numBytesTx = stats.getNumBytesTx();
+        m.numPacketsRx = stats.getNumPacketsRx();
+        m.numBytesRx = stats.getNumBytesRx();
+        List<Long> timeInRatMicros = new ArrayList<>();
+        for (int i = 0; i < NUM_DATA_CONNECTION_TYPES; i++) {
+            long tr = stats.getTimeInRatMicros(i);
+            if (tr >= 0) {
+                timeInRatMicros.add(tr);
+            }
+        }
+        m.timeInRatMs = timeInRatMicros.stream().mapToLong(Long::longValue).toArray();
+        List<Long> rxSignalStrengthLevelMicros = new ArrayList<>();
+        for (int i = 0; i < CellSignalStrength.getNumSignalStrengthLevels(); i++) {
+            long rx = stats.getTimeInRxSignalStrengthLevelMicros(i);
+            if (rx >= 0) {
+                rxSignalStrengthLevelMicros.add(rx);
+            }
+        }
+        m.timeInRxSignalStrengthLevelMs = rxSignalStrengthLevelMicros.stream().mapToLong(Long::longValue).toArray();
+        m.monitoredRailEnergyConsumedMah = stats.getMonitoredRailChargeConsumedMaMillis() / ((double) DateUtils.HOUR_IN_MILLIS);
+    }
+    return m;
+}

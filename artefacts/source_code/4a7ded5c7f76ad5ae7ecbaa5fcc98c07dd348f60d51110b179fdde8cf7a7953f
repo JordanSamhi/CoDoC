@@ -1,0 +1,11 @@
+public void notifyConfigurationChanged(){
+    synchronized (mService.mGlobalLock) {
+        mService.getDefaultDisplayContentLocked().sendNewConfiguration();
+    }
+    synchronized (mInputDevicesReadyMonitor) {
+        if (!mInputDevicesReady) {
+            mInputDevicesReady = true;
+            mInputDevicesReadyMonitor.notifyAll();
+        }
+    }
+}

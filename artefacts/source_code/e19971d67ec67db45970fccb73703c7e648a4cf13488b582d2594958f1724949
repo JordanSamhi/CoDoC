@@ -1,0 +1,25 @@
+public String describeImmutableDifferences(@Nullable NetworkCapabilities that){
+    if (that == null) {
+        return "other NetworkCapabilities was null";
+    }
+    StringJoiner joiner = new StringJoiner(", ");
+    final long mask = ~MUTABLE_CAPABILITIES & ~(1 << NET_CAPABILITY_NOT_METERED);
+    long oldImmutableCapabilities = this.mNetworkCapabilities & mask;
+    long newImmutableCapabilities = that.mNetworkCapabilities & mask;
+    if (oldImmutableCapabilities != newImmutableCapabilities) {
+        String before = capabilityNamesOf(BitUtils.unpackBits(oldImmutableCapabilities));
+        String after = capabilityNamesOf(BitUtils.unpackBits(newImmutableCapabilities));
+        joiner.add(String.format("immutable capabilities changed: %s -> %s", before, after));
+    }
+    if (!equalsSpecifier(that)) {
+        NetworkSpecifier before = this.getNetworkSpecifier();
+        NetworkSpecifier after = that.getNetworkSpecifier();
+        joiner.add(String.format("specifier changed: %s -> %s", before, after));
+    }
+    if (!equalsTransportTypes(that)) {
+        String before = transportNamesOf(this.getTransportTypes());
+        String after = transportNamesOf(that.getTransportTypes());
+        joiner.add(String.format("transports changed: %s -> %s", before, after));
+    }
+    return joiner.toString();
+}

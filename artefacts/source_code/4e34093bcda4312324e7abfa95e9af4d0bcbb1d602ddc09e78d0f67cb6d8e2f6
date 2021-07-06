@@ -1,0 +1,12 @@
+public boolean notifyPreconnectionComplete(boolean success){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.notifyPreconnectionComplete(success);
+        return true;
+    } catch (RemoteException e) {
+        log("Error notifying IpClient Preconnection completed", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

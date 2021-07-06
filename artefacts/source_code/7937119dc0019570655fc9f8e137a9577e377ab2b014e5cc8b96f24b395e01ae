@@ -1,0 +1,8 @@
+public static IPermissionManager getPermissionManager(){
+    if (sPermissionManager != null) {
+        return sPermissionManager;
+    }
+    final IBinder b = ServiceManager.getService("permissionmgr");
+    sPermissionManager = IPermissionManager.Stub.asInterface(b);
+    return sPermissionManager;
+}

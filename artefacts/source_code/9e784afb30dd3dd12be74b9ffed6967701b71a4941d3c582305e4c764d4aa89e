@@ -1,0 +1,6 @@
+public static AutofillValue forText(@Nullable CharSequence value){
+    if (sVerbose && !Looper.getMainLooper().isCurrentThread()) {
+        Log.v(TAG, "forText() not called on main thread: " + Thread.currentThread());
+    }
+    return value == null ? null : new AutofillValue(AUTOFILL_TYPE_TEXT, TextUtils.trimNoCopySpans(value));
+}

@@ -1,0 +1,22 @@
+
+     * Called by a device owner or profile owner of secondary users that is affiliated with the
+     * device to disable the keyguard altogether.
+     * <p>
+     * Setting the keyguard to disabled has the same effect as choosing "None" as the screen lock
+     * type. However, this call has no effect if a password, pin or pattern is currently set. If a
+     * password, pin or pattern is set after the keyguard was disabled, the keyguard stops being
+     * disabled.
+     *
+     * <p>
+     * As of {@link android.os.Build.VERSION_CODES#P}, this call also dismisses the
+     * keyguard if it is currently shown.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param disabled {@code true} disables the keyguard, {@code false} reenables it.
+     * @return {@code false} if attempting to disable the keyguard while a lock password was in
+     *         place. {@code true} otherwise.
+     * @throws SecurityException if {@code admin} is not the device owner, or a profile owner of
+     * secondary user that is affiliated with the device.
+     * @see #isAffiliatedUser
+     * @see #getSecondaryUsers
+     

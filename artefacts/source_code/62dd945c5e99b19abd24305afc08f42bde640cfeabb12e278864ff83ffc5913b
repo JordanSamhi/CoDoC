@@ -1,0 +1,36 @@
+public boolean shouldFilterOut(NotificationEntry entry){
+    final StatusBarNotification sbn = entry.getSbn();
+    if (!(getEnvironment().isDeviceProvisioned() || showNotificationEvenIfUnprovisioned(sbn))) {
+        return true;
+    }
+    if (!getEnvironment().isNotificationForCurrentProfiles(sbn)) {
+        return true;
+    }
+    if (getUserManager().isLockscreenPublicMode(sbn.getUserId()) && (sbn.getNotification().visibility == Notification.VISIBILITY_SECRET || getUserManager().shouldHideNotifications(sbn.getUserId()) || getUserManager().shouldHideNotifications(sbn.getKey()))) {
+        return true;
+    }
+    if (mStatusBarStateController.isDozing() && entry.shouldSuppressAmbient()) {
+        return true;
+    }
+    if (!mStatusBarStateController.isDozing() && entry.shouldSuppressNotificationList()) {
+        return true;
+    }
+    if (entry.getRanking().isSuspended()) {
+        return true;
+    }
+    if (getFsc().isDisclosureNotification(sbn) && !getFsc().isDisclosureNeededForUser(sbn.getUserId())) {
+        return true;
+    }
+    if (getFsc().isSystemAlertNotification(sbn)) {
+        final String[] apps = sbn.getNotification().extras.getStringArray(Notification.EXTRA_FOREGROUND_APPS);
+        if (apps != null && apps.length >= 1) {
+            if (!getFsc().isSystemAlertWarningNeeded(sbn.getUserId(), apps[0])) {
+                return true;
+            }
+        }
+    }
+    if (mIsMediaFlagEnabled && isMediaNotification(sbn)) {
+        return true;
+    }
+    return false;
+}

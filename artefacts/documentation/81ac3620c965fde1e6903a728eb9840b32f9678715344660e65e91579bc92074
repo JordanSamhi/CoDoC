@@ -1,0 +1,14 @@
+
+     * Sets the RTP payload type for dual-tone multi-frequency (DTMF) digits.
+     * The primary usage is to send digits to the remote gateway to perform
+     * certain tasks, such as second-stage dialing. According to RFC 2833, the
+     * RTP payload type for DTMF is assigned dynamically, so it must be in the
+     * range of 96 and 127. One can use {@code -1} to disable DTMF and free up
+     * the previous assigned type. This method cannot be called when the stream
+     * already joined an {@link AudioGroup}.
+     *
+     * @param type The RTP payload type to be used or {@code -1} to disable it.
+     * @throws IllegalArgumentException if the type is invalid or used by codec.
+     * @throws IllegalStateException if the stream is busy.
+     * @see AudioGroup#sendDtmf(int)
+     

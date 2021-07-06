@@ -1,0 +1,9 @@
+public void notifyDownstreamLinkProperties(LinkProperties lp){
+    final String ifname = lp.getInterfaceName();
+    final LinkProperties oldLp = mDownstreams.put(ifname, new LinkProperties(lp));
+    if (Objects.equals(oldLp, lp))
+        return;
+    if (!started())
+        return;
+    pushDownstreamState(oldLp, lp);
+}

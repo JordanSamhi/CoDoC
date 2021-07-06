@@ -1,0 +1,10 @@
+public void testRequestBackup_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    String[] packages = { TEST_PACKAGE };
+    IBackupObserver observer = mock(IBackupObserver.class);
+    IBackupManagerMonitor monitor = mock(IBackupManagerMonitor.class);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.requestBackup(mUserTwoId, packages, observer, monitor, 0);
+    verify(mUserOneService, never()).requestBackup(packages, observer, monitor, 0);
+}

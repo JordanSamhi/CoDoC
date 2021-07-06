@@ -1,0 +1,20 @@
+public void put(long key, E value){
+    int i = ContainerHelpers.binarySearch(mKeys, mSize, key);
+    if (i >= 0) {
+        mValues[i] = value;
+    } else {
+        i = ~i;
+        if (i < mSize && mValues[i] == DELETED) {
+            mKeys[i] = key;
+            mValues[i] = value;
+            return;
+        }
+        if (mGarbage && mSize >= mKeys.length) {
+            gc();
+            i = ~ContainerHelpers.binarySearch(mKeys, mSize, key);
+        }
+        mKeys = GrowingArrayUtils.insert(mKeys, mSize, i, key);
+        mValues = GrowingArrayUtils.insert(mValues, mSize, i, value);
+        mSize++;
+    }
+}

@@ -1,0 +1,12 @@
+public boolean setNetworkConnectChoice(int networkId, String connectChoiceConfigKey){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Set network connect choice " + connectChoiceConfigKey + " for " + networkId);
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        return false;
+    }
+    config.getNetworkSelectionStatus().setConnectChoice(connectChoiceConfigKey);
+    saveToStore(false);
+    return true;
+}

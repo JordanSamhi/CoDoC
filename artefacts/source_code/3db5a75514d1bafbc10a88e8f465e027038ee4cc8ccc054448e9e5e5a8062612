@@ -1,0 +1,12 @@
+public boolean enableBLE(){
+    if (!isBleScanAlwaysAvailable()) {
+        return false;
+    }
+    String packageName = ActivityThread.currentPackageName();
+    try {
+        return mManagerService.enableBle(packageName, mToken);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return false;
+}

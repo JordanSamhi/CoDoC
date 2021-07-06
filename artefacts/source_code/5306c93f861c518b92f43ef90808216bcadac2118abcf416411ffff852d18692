@@ -1,0 +1,8 @@
+public WifiLinkLayerStats syncGetLinkLayerStats(AsyncChannel channel){
+    Message resultMsg = channel.sendMessageSynchronously(CMD_GET_LINK_LAYER_STATS);
+    if (messageIsNull(resultMsg))
+        return null;
+    WifiLinkLayerStats result = (WifiLinkLayerStats) resultMsg.obj;
+    resultMsg.recycle();
+    return result;
+}

@@ -1,0 +1,5 @@
+public void create_withUnencodableSecretKey_throwsInvalidKeyException(){
+    byte[] keyBytes = new byte[KEY_SIZE_BITS / 8];
+    UnencodableSecretKeySpec keySpec = new UnencodableSecretKeySpec(keyBytes, 0, keyBytes.length, KEY_ALGORITHM);
+    assertThrows(InvalidKeyException.class, () -> new FingerprintMixer(keySpec, randomSalt()));
+}

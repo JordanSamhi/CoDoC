@@ -1,0 +1,16 @@
+public void updateEntry(boolean updatePostTime){
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+        Log.v(TAG, "updateEntry");
+    }
+    long currentTime = mClock.currentTimeMillis();
+    mEarliestRemovaltime = currentTime + mMinimumDisplayTime;
+    if (updatePostTime) {
+        mPostTime = Math.max(mPostTime, currentTime);
+    }
+    removeAutoRemovalCallbacks();
+    if (!isSticky()) {
+        long finishTime = calculateFinishTime();
+        long removeDelay = Math.max(finishTime - currentTime, mMinimumDisplayTime);
+        mHandler.postDelayed(mRemoveAlertRunnable, removeDelay);
+    }
+}

@@ -1,0 +1,7 @@
+public void sendData(String callingPackage, String callingAttributionTag, String destAddr, String scAddr, int destPort, byte[] data, PendingIntent sentIntent, PendingIntent deliveryIntent){
+    if (!mSmsPermissions.checkCallingCanSendSms(callingPackage, callingAttributionTag, "Sending SMS message")) {
+        returnUnspecifiedFailure(sentIntent);
+        return;
+    }
+    sendDataInternal(callingPackage, destAddr, scAddr, destPort, data, sentIntent, deliveryIntent, false);
+}

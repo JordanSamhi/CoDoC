@@ -1,0 +1,10 @@
+public static PackageManager getPackageManagerForUser(Context context, int userId){
+    Context contextForUser = context;
+    if (userId >= 0) {
+        try {
+            contextForUser = context.createPackageContextAsUser(context.getPackageName(), Context.CONTEXT_RESTRICTED, new UserHandle(userId));
+        } catch (NameNotFoundException e) {
+        }
+    }
+    return contextForUser.getPackageManager();
+}

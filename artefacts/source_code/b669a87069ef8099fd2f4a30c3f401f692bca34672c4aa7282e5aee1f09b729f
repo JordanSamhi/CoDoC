@@ -1,0 +1,15 @@
+public void rotateTo(Resources res, @Surface.Rotation int targetRotation){
+    final int rotationDelta = (targetRotation - mRotation + 4) % 4;
+    final boolean changeOrient = (rotationDelta % 2) != 0;
+    final int origWidth = mWidth;
+    final int origHeight = mHeight;
+    mRotation = targetRotation;
+    if (changeOrient) {
+        mWidth = origHeight;
+        mHeight = origWidth;
+    }
+    if (mCutout != null && !mCutout.isEmpty()) {
+        mCutout = calculateDisplayCutoutForRotation(mCutout, rotationDelta, origWidth, origHeight);
+    }
+    recalcInsets(res);
+}

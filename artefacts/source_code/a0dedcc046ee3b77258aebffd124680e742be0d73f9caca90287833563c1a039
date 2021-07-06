@@ -1,0 +1,10 @@
+public FallbackAction getFallbackAction(int keyCode, int metaState){
+    FallbackAction action = FallbackAction.obtain();
+    metaState = KeyEvent.normalizeMetaState(metaState);
+    if (nativeGetFallbackAction(mPtr, keyCode, metaState, action)) {
+        action.metaState = KeyEvent.normalizeMetaState(action.metaState);
+        return action;
+    }
+    action.recycle();
+    return null;
+}

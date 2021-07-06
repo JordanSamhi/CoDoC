@@ -1,0 +1,14 @@
+public final boolean addConnection(Connection connection){
+    Log.d(this, "Connection=%s, connection=", connection);
+    if (connection != null && !mChildConnections.contains(connection)) {
+        if (connection.setConference(this)) {
+            mChildConnections.add(connection);
+            onConnectionAdded(connection);
+            for (Listener l : mListeners) {
+                l.onConnectionAdded(this, connection);
+            }
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,0 +1,6 @@
+public double distance(@NonNull LatLng p){
+    double dlat = Math.sin(0.5 * Math.toRadians(lat - p.lat));
+    double dlng = Math.sin(0.5 * Math.toRadians(lng - p.lng));
+    double x = dlat * dlat + dlng * dlng * Math.cos(Math.toRadians(lat)) * Math.cos(Math.toRadians(p.lat));
+    return 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x)) * EARTH_RADIUS_METER;
+}

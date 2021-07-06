@@ -1,0 +1,12 @@
+public int untether(@NonNull final String iface){
+    final String callerPkg = mContext.getOpPackageName();
+    Log.i(TAG, "untether caller:" + callerPkg);
+    final RequestDispatcher dispatcher = new RequestDispatcher();
+    return dispatcher.waitForResult((connector, listener) -> {
+        try {
+            connector.untether(iface, callerPkg, listener);
+        } catch (RemoteException e) {
+            throw new IllegalStateException(e);
+        }
+    });
+}

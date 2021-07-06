@@ -1,0 +1,30 @@
+
+     * Set additional input method subtypes. Only a process which shares the same uid with the IME
+     * can add additional input method subtypes to the IME.
+     * Please note that a subtype's status is stored in the system.
+     * For example, enabled subtypes are remembered by the framework even after they are removed
+     * by using this method. If you re-add the same subtypes again,
+     * they will just get enabled. If you want to avoid such conflicts, for instance, you may
+     * want to create a "different" new subtype even with the same locale and mode,
+     * by changing its extra value. The different subtype won't get affected by the stored past
+     * status. (You may want to take a look at {@link InputMethodSubtype#hashCode()} to refer
+     * to the current implementation.)
+     *
+     * <p>NOTE: If the same subtype exists in both the manifest XML file and additional subtypes
+     * specified by {@code subtypes}, those multiple instances are automatically merged into one
+     * instance.</p>
+     *
+     * <p>CAVEAT: In API Level 23 and prior, the system may do nothing if an empty
+     * {@link InputMethodSubtype} is specified in {@code subtypes}, which prevents you from removing
+     * the last one entry of additional subtypes. If your IME statically defines one or more
+     * subtypes in the manifest XML file, you may be able to work around this limitation by
+     * specifying one of those statically defined subtypes in {@code subtypes}.</p>
+     *
+     * @param imiId Id of InputMethodInfo which additional input method subtypes will be added to.
+     * @param subtypes subtypes will be added as additional subtypes of the current input method.
+     * @deprecated For IMEs that have already implemented features like customizable/downloadable
+     *             keyboard layouts/languages, please start migration to other approaches. One idea
+     *             would be exposing only one unified {@link InputMethodSubtype} then implement
+     *             IME's own language switching mechanism within that unified subtype. The support
+     *             of "Additional Subtype" may be completely dropped in a future version of Android.
+     

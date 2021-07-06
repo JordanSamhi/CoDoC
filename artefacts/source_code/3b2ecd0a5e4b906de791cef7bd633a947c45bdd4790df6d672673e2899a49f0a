@@ -1,0 +1,19 @@
+public void addOperation(UndoOperation<?> op, int mergeMode){
+    if (mWorking == null) {
+        throw new IllegalStateException("Must be called during an update");
+    }
+    UndoOwner owner = op.getOwner();
+    if (owner.mManager != this) {
+        throw new IllegalArgumentException("Given operation's owner is not in this undo manager.");
+    }
+    if (mergeMode != MERGE_MODE_NONE && !mMerged && !mWorking.hasData()) {
+        UndoState state = getTopUndo(null);
+        if (state != null && (mergeMode == MERGE_MODE_ANY || !state.hasMultipleOwners()) && state.canMerge() && state.hasOperation(op.getOwner())) {
+            mWorking.destroy();
+            mWorking = state;
+            mUndos.remove(state);
+            mMerged = true;
+        }
+    }
+    mWorking.addOperation(op);
+}

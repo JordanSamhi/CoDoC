@@ -1,0 +1,35 @@
+public static int getColor(@Nullable String value){
+    if (value == null) {
+        throw new NumberFormatException("null value");
+    }
+    value = value.trim();
+    int len = value.length();
+    if (len < 2 || len > 9) {
+        throw new NumberFormatException(String.format("Color value '%s' has wrong size. Format is either" + "#AARRGGBB, #RRGGBB, #RGB, or #ARGB", value));
+    }
+    if (value.charAt(0) != '#') {
+        if (value.startsWith(SdkConstants.PREFIX_THEME_REF)) {
+            throw new NumberFormatException(String.format("Attribute '%s' not found. Are you using the right theme?", value));
+        }
+        throw new NumberFormatException(String.format("Color value '%s' must start with #", value));
+    }
+    value = value.substring(1);
+    if (len == 4) {
+        char[] color = new char[8];
+        color[0] = color[1] = 'F';
+        color[2] = color[3] = value.charAt(0);
+        color[4] = color[5] = value.charAt(1);
+        color[6] = color[7] = value.charAt(2);
+        value = new String(color);
+    } else if (len == 5) {
+        char[] color = new char[8];
+        color[0] = color[1] = value.charAt(0);
+        color[2] = color[3] = value.charAt(1);
+        color[4] = color[5] = value.charAt(2);
+        color[6] = color[7] = value.charAt(3);
+        value = new String(color);
+    } else if (len == 7) {
+        value = "FF" + value;
+    }
+    return (int) Long.parseLong(value, 16);
+}

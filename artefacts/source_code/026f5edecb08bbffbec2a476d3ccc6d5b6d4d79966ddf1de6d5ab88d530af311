@@ -1,0 +1,11 @@
+public int setLoopPoints(@IntRange(from = 0) int startInFrames, @IntRange(from = 0) int endInFrames, @IntRange(from = -1) int loopCount){
+    if (mDataLoadMode == MODE_STREAM || mState == STATE_UNINITIALIZED || getPlayState() == PLAYSTATE_PLAYING) {
+        return ERROR_INVALID_OPERATION;
+    }
+    if (loopCount == 0) {
+        ;
+    } else if (!(0 <= startInFrames && startInFrames < mNativeBufferSizeInFrames && startInFrames < endInFrames && endInFrames <= mNativeBufferSizeInFrames)) {
+        return ERROR_BAD_VALUE;
+    }
+    return native_set_loop(startInFrames, endInFrames, loopCount);
+}

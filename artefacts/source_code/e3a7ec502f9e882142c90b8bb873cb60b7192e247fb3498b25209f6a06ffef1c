@@ -1,0 +1,15 @@
+public static void dumpCurrentRow(Cursor cursor, PrintStream stream){
+    String[] cols = cursor.getColumnNames();
+    stream.println("" + cursor.getPosition() + " {");
+    int length = cols.length;
+    for (int i = 0; i < length; i++) {
+        String value;
+        try {
+            value = cursor.getString(i);
+        } catch (SQLiteException e) {
+            value = "<unprintable>";
+        }
+        stream.println("   " + cols[i] + '=' + value);
+    }
+    stream.println("}");
+}

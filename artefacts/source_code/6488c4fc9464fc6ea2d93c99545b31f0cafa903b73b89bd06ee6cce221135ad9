@@ -1,0 +1,10 @@
+public QueueRequest setHardwareBuffer(@NonNull HardwareBuffer buffer){
+    if (!isAccessible()) {
+        throw new IllegalStateException("The request is stale");
+    }
+    if (mLinearBlock != null || mHardwareBuffer != null) {
+        throw new IllegalStateException("Cannot set block twice");
+    }
+    mHardwareBuffer = buffer;
+    return this;
+}

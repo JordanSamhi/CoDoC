@@ -1,0 +1,17 @@
+public static Dialog create(@NonNull Context context, ListAdapter adapter){
+    ViewGroup listView = (ViewGroup) LayoutInflater.from(context).inflate(com.android.systemui.R.layout.global_actions_power_dialog, null);
+    for (int i = 0; i < adapter.getCount(); i++) {
+        View action = adapter.getView(i, null, listView);
+        listView.addView(action);
+    }
+    Resources res = context.getResources();
+    Dialog dialog = new Dialog(context);
+    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    dialog.setContentView(listView);
+    Window window = dialog.getWindow();
+    window.setType(WindowManager.LayoutParams.TYPE_VOLUME_OVERLAY);
+    window.setTitle("");
+    window.setBackgroundDrawable(res.getDrawable(com.android.systemui.R.drawable.control_background, context.getTheme()));
+    window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+    return dialog;
+}

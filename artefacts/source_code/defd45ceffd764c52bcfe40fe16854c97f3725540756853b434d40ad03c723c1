@@ -1,0 +1,17 @@
+public List<PackageStats> getPackageStats(long timeoutMillis){
+    synchronized (this) {
+        if (mStats == null) {
+            mStats = new CompletableFuture<>();
+            mBackgroundHandler.sendEmptyMessage(BackgroundHandler.MSG_START_LOADING_SIZES);
+        }
+    }
+    List<PackageStats> value = null;
+    try {
+        value = mStats.get(timeoutMillis, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException | ExecutionException e) {
+        Log.e(TAG, "An exception occurred while getting app storage", e);
+    } catch (TimeoutException e) {
+        Log.e(TAG, "AppCollector timed out");
+    }
+    return value;
+}

@@ -1,0 +1,54 @@
+public static BerTlv decode(byte[] data) throws ResultException{
+    int curIndex = 0;
+    int endIndex = data.length;
+    int tag, length = 0;
+    boolean isLengthValid = true;
+    try {
+        tag = data[curIndex++] & 0xff;
+        if (tag == BER_PROACTIVE_COMMAND_TAG) {
+            int temp = data[curIndex++] & 0xff;
+            if (temp < 0x80) {
+                length = temp;
+            } else if (temp == 0x81) {
+                temp = data[curIndex++] & 0xff;
+                if (temp < 0x80) {
+                    throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD, "length < 0x80 length=" + Integer.toHexString(length) + " curIndex=" + curIndex + " endIndex=" + endIndex);
+                }
+                length = temp;
+            } else {
+                throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD, "Expected first byte to be length or a length tag and < 0x81" + " byte= " + Integer.toHexString(temp) + " curIndex=" + curIndex + " endIndex=" + endIndex);
+            }
+        } else {
+            if (ComprehensionTlvTag.COMMAND_DETAILS.value() == (tag & ~0x80)) {
+                tag = BER_UNKNOWN_TAG;
+                curIndex = 0;
+            }
+        }
+    } catch (IndexOutOfBoundsException e) {
+        throw new ResultException(ResultCode.REQUIRED_VALUES_MISSING, "IndexOutOfBoundsException " + " curIndex=" + curIndex + " endIndex=" + endIndex);
+    } catch (ResultException e) {
+        throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD, e.explanation());
+    }
+    if (endIndex - curIndex < length) {
+        throw new ResultException(ResultCode.CMD_DATA_NOT_UNDERSTOOD, "Command had extra data endIndex=" + endIndex + " curIndex=" + curIndex + " length=" + length);
+    }
+    List<ComprehensionTlv> ctlvs = ComprehensionTlv.decodeMany(data, curIndex);
+    if (tag == BER_PROACTIVE_COMMAND_TAG) {
+        int totalLength = 0;
+        for (ComprehensionTlv item : ctlvs) {
+            int itemLength = item.getLength();
+            if (itemLength >= 0x80 && itemLength <= 0xFF) {
+                totalLength += itemLength + 3;
+            } else if (itemLength >= 0 && itemLength < 0x80) {
+                totalLength += itemLength + 2;
+            } else {
+                isLengthValid = false;
+                break;
+            }
+        }
+        if (length != totalLength) {
+            isLengthValid = false;
+        }
+    }
+    return new BerTlv(tag, ctlvs, isLengthValid);
+}

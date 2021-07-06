@@ -1,0 +1,19 @@
+public void copyFrom(SurfaceControl other){
+    if (other == null) {
+        throw new IllegalArgumentException("other must not be null");
+    }
+    long surfaceControlPtr = other.mNativeObject;
+    if (surfaceControlPtr == 0) {
+        throw new NullPointerException("null SurfaceControl native object. Are you using a released SurfaceControl?");
+    }
+    long newNativeObject = nativeGetFromSurfaceControl(mNativeObject, surfaceControlPtr);
+    synchronized (mLock) {
+        if (newNativeObject == mNativeObject) {
+            return;
+        }
+        if (mNativeObject != 0) {
+            nativeRelease(mNativeObject);
+        }
+        setNativeObjectLocked(newNativeObject);
+    }
+}

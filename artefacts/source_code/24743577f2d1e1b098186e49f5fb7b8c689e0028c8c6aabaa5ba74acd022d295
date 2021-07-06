@@ -1,0 +1,12 @@
+public boolean isVibrating(){
+    if (mService == null) {
+        Log.w(TAG, "Failed to vibrate; no vibrator service.");
+        return false;
+    }
+    try {
+        return mService.isVibrating();
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    return false;
+}

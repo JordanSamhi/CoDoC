@@ -1,0 +1,7 @@
+public void testSetBackupEnabled_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.setBackupEnabled(mUserTwoId, true);
+    verify(mUserOneService, never()).setBackupEnabled(true);
+}

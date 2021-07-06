@@ -1,0 +1,8 @@
+public void getPageSize(int pageIndex, @NonNull Point outSize){
+    throwIfClosed();
+    throwIfOutSizeNull(outSize);
+    throwIfPageNotInDocument(pageIndex);
+    synchronized (PdfRenderer.sPdfiumLock) {
+        nativeGetPageSize(mNativeDocument, pageIndex, outSize);
+    }
+}

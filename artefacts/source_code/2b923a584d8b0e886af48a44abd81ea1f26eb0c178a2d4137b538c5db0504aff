@@ -1,0 +1,11 @@
+public void registerSessionCallback(@NonNull SessionCallback callback, @NonNull Handler handler){
+    synchronized (mDelegates) {
+        final SessionCallbackDelegate delegate = new SessionCallbackDelegate(callback, new HandlerExecutor(handler));
+        try {
+            mInstaller.registerCallback(delegate, mUserId);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+        mDelegates.add(delegate);
+    }
+}

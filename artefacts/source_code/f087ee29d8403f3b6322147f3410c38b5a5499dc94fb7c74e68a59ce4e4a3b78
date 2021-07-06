@@ -1,0 +1,13 @@
+public void dispatchResume(){
+    mCurState = RESUMED;
+    if (mSingleMode) {
+        if (mResumed != null) {
+            moveToState(mResumed, RESUMED);
+        }
+    } else {
+        final int N = mActivityArray.size();
+        for (int i = 0; i < N; i++) {
+            moveToState(mActivityArray.get(i), RESUMED);
+        }
+    }
+}

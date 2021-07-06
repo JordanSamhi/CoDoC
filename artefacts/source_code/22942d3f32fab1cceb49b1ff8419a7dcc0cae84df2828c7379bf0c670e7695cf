@@ -1,0 +1,15 @@
+public String getDevicePath(){
+    try {
+        String extconPath = String.format(Locale.US, "/sys/class/extcon/%s", mName);
+        File devPath = new File(extconPath);
+        if (devPath.exists()) {
+            String canonicalPath = devPath.getCanonicalPath();
+            int start = canonicalPath.indexOf("/devices");
+            return canonicalPath.substring(start);
+        }
+        return null;
+    } catch (IOException e) {
+        Slog.e(TAG, "Could not get the extcon device path for " + mName, e);
+        return null;
+    }
+}

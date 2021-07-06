@@ -1,0 +1,14 @@
+public static int getIntMetaData(BluetoothDevice bluetoothDevice, int key){
+    if (bluetoothDevice == null) {
+        return META_INT_ERROR;
+    }
+    final byte[] data = bluetoothDevice.getMetadata(key);
+    if (data == null) {
+        return META_INT_ERROR;
+    }
+    try {
+        return Integer.parseInt(new String(data));
+    } catch (NumberFormatException e) {
+        return META_INT_ERROR;
+    }
+}

@@ -1,0 +1,7 @@
+public void writeToParcel(Parcel p, int flags){
+    checkRecycled("Can't parcel a recycled bitmap");
+    noteHardwareBitmapSlowCall();
+    if (!nativeWriteToParcel(mNativePtr, mDensity, p)) {
+        throw new RuntimeException("native writeToParcel failed");
+    }
+}

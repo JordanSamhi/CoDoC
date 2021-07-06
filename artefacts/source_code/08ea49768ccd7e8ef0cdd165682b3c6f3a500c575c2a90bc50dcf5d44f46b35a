@@ -1,0 +1,12 @@
+public void requireScrollWithNavigationBar(@NonNull final NavigationBar navigationBar){
+    setOnRequireScrollStateChangedListener(new OnRequireScrollStateChangedListener() {
+
+        @Override
+        public void onRequireScrollStateChanged(boolean scrollNeeded) {
+            navigationBar.getMoreButton().setVisibility(scrollNeeded ? View.VISIBLE : View.GONE);
+            navigationBar.getNextButton().setVisibility(scrollNeeded ? View.GONE : View.VISIBLE);
+        }
+    });
+    navigationBar.getMoreButton().setOnClickListener(createOnClickListener(null));
+    requireScroll();
+}

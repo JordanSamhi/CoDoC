@@ -1,0 +1,12 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    pw.println("Dump of CarrierPrivilegesTracker");
+    pw.println("CarrierPrivilegesTracker - Log Begin ----");
+    mLocalLog.dump(fd, pw, args);
+    pw.println("CarrierPrivilegesTracker - Log End ----");
+    pw.println("CarrierPrivilegesTracker - Privileged UIDs: " + Arrays.toString(mPrivilegedUids));
+    pw.println("CarrierPrivilegesTracker - SIM-loaded Certs: " + mUiccCerts);
+    pw.println("CarrierPrivilegesTracker - CarrierPrivileged Certs: " + mCarrierConfigCerts);
+    if (VDBG) {
+        pw.println("CarrierPrivilegesTracker - Obfuscated Pkgs + Certs: " + getObfuscatedPackages());
+    }
+}

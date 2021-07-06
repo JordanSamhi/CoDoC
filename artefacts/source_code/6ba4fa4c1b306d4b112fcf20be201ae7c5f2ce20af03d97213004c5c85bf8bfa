@@ -1,0 +1,10 @@
+public void setShareIntent(Intent shareIntent){
+    if (shareIntent != null) {
+        final String action = shareIntent.getAction();
+        if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+    }
+    ActivityChooserModel dataModel = ActivityChooserModel.get(mContext, mShareHistoryFileName);
+    dataModel.setIntent(shareIntent);
+}

@@ -1,0 +1,123 @@
+public void dump(PrintWriter pw){
+    synchronized (mLock) {
+        pw.println("WifiP2pMetrics:");
+        pw.println("mConnectionEvents:");
+        for (P2pConnectionEvent event : mConnectionEventList) {
+            StringBuilder sb = new StringBuilder();
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(event.startTimeMillis);
+            sb.append("startTime=");
+            sb.append(event.startTimeMillis == 0 ? "            <null>" : String.format("%tm-%td %tH:%tM:%tS.%tL", c, c, c, c, c, c));
+            sb.append(", connectionType=");
+            switch(event.connectionType) {
+                case P2pConnectionEvent.CONNECTION_FRESH:
+                    sb.append("FRESH");
+                    break;
+                case P2pConnectionEvent.CONNECTION_REINVOKE:
+                    sb.append("REINVOKE");
+                    break;
+                case P2pConnectionEvent.CONNECTION_LOCAL:
+                    sb.append("LOCAL");
+                    break;
+                case P2pConnectionEvent.CONNECTION_FAST:
+                    sb.append("FAST");
+                    break;
+                default:
+                    sb.append("UNKNOWN");
+                    break;
+            }
+            sb.append(", wpsMethod=");
+            switch(event.wpsMethod) {
+                case P2pConnectionEvent.WPS_NA:
+                    sb.append("NA");
+                    break;
+                case P2pConnectionEvent.WPS_PBC:
+                    sb.append("PBC");
+                    break;
+                case P2pConnectionEvent.WPS_DISPLAY:
+                    sb.append("DISPLAY");
+                    break;
+                case P2pConnectionEvent.WPS_KEYPAD:
+                    sb.append("KEYPAD");
+                    break;
+                case P2pConnectionEvent.WPS_LABEL:
+                    sb.append("LABLE");
+                    break;
+                default:
+                    sb.append("UNKNOWN");
+                    break;
+            }
+            sb.append(", durationTakenToConnectMillis=");
+            sb.append(event.durationTakenToConnectMillis);
+            sb.append(", connectivityLevelFailureCode=");
+            switch(event.connectivityLevelFailureCode) {
+                case P2pConnectionEvent.CLF_NONE:
+                    sb.append("NONE");
+                    break;
+                case P2pConnectionEvent.CLF_TIMEOUT:
+                    sb.append("TIMEOUT");
+                    break;
+                case P2pConnectionEvent.CLF_CANCEL:
+                    sb.append("CANCEL");
+                    break;
+                case P2pConnectionEvent.CLF_PROV_DISC_FAIL:
+                    sb.append("PROV_DISC_FAIL");
+                    break;
+                case P2pConnectionEvent.CLF_INVITATION_FAIL:
+                    sb.append("INVITATION_FAIL");
+                    break;
+                case P2pConnectionEvent.CLF_USER_REJECT:
+                    sb.append("USER_REJECT");
+                    break;
+                case P2pConnectionEvent.CLF_NEW_CONNECTION_ATTEMPT:
+                    sb.append("NEW_CONNECTION_ATTEMPT");
+                    break;
+                case P2pConnectionEvent.CLF_UNKNOWN:
+                default:
+                    sb.append("UNKNOWN");
+                    break;
+            }
+            if (event == mCurrentConnectionEvent) {
+                sb.append(" CURRENTLY OPEN EVENT");
+            }
+            pw.println(sb.toString());
+        }
+        pw.println("mGroupEvents:");
+        for (GroupEvent event : mGroupEventList) {
+            StringBuilder sb = new StringBuilder();
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(event.startTimeMillis);
+            sb.append("netId=");
+            sb.append(event.netId);
+            sb.append(", startTime=");
+            sb.append(event.startTimeMillis == 0 ? "            <null>" : String.format("%tm-%td %tH:%tM:%tS.%tL", c, c, c, c, c, c));
+            sb.append(", channelFrequency=");
+            sb.append(event.channelFrequency);
+            sb.append(", groupRole=");
+            switch(event.groupRole) {
+                case GroupEvent.GROUP_CLIENT:
+                    sb.append("GroupClient");
+                    break;
+                case GroupEvent.GROUP_OWNER:
+                default:
+                    sb.append("GroupOwner");
+                    break;
+            }
+            sb.append(", numConnectedClients=");
+            sb.append(event.numConnectedClients);
+            sb.append(", numCumulativeClients=");
+            sb.append(event.numCumulativeClients);
+            sb.append(", sessionDurationMillis=");
+            sb.append(event.sessionDurationMillis);
+            sb.append(", idleDurationMillis=");
+            sb.append(event.idleDurationMillis);
+            if (event == mCurrentGroupEvent) {
+                sb.append(" CURRENTLY OPEN EVENT");
+            }
+            pw.println(sb.toString());
+        }
+        pw.println("mWifiP2pStatsProto.numPersistentGroup=" + mNumPersistentGroup);
+        pw.println("mWifiP2pStatsProto.numTotalPeerScans=" + mWifiP2pStatsProto.numTotalPeerScans);
+        pw.println("mWifiP2pStatsProto.numTotalServiceScans=" + mWifiP2pStatsProto.numTotalServiceScans);
+    }
+}

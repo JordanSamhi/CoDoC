@@ -1,0 +1,10 @@
+public UiObject getChildByText(UiSelector childPattern, String text, boolean allowScrollSearch) throws UiObjectNotFoundException{
+    Tracer.trace(childPattern, text, allowScrollSearch);
+    if (text != null) {
+        if (allowScrollSearch) {
+            scrollIntoView(new UiSelector().text(text));
+        }
+        return super.getChildByText(childPattern, text);
+    }
+    throw new UiObjectNotFoundException("for text= \"" + text + "\"");
+}

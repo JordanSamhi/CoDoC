@@ -1,0 +1,29 @@
+public int[] extractThemeAttrs(@Nullable int[] scrap){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    int[] attrs = null;
+    final int[] data = mData;
+    final int N = length();
+    for (int i = 0; i < N; i++) {
+        final int index = i * STYLE_NUM_ENTRIES;
+        if (data[index + STYLE_TYPE] != TypedValue.TYPE_ATTRIBUTE) {
+            continue;
+        }
+        data[index + STYLE_TYPE] = TypedValue.TYPE_NULL;
+        final int attr = data[index + STYLE_DATA];
+        if (attr == 0) {
+            continue;
+        }
+        if (attrs == null) {
+            if (scrap != null && scrap.length == N) {
+                attrs = scrap;
+                Arrays.fill(attrs, 0);
+            } else {
+                attrs = new int[N];
+            }
+        }
+        attrs[i] = attr;
+    }
+    return attrs;
+}

@@ -1,0 +1,14 @@
+public void pulse(@NonNull DozeHost.PulseCallback callback, int reason){
+    if (callback == null) {
+        throw new IllegalArgumentException("callback must not be null");
+    }
+    if (!mDozing || mPulseCallback != null) {
+        if (DEBUG) {
+            Log.d(TAG, "Pulse supressed. Dozing: " + mDozeParameters + " had callback? " + (mPulseCallback != null));
+        }
+        callback.onPulseFinished();
+        return;
+    }
+    mPulseCallback = callback;
+    mPulseReason = reason;
+}

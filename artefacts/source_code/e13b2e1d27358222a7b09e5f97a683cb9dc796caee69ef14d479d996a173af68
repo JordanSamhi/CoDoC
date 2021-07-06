@@ -1,0 +1,18 @@
+public synchronized int beginCopyObject(MtpObject object, MtpObject newParent){
+    if (sDebug)
+        Log.v(TAG, "beginCopyObject " + object.getName() + " to " + newParent.getPath());
+    String name = object.getName();
+    if (!newParent.isDir())
+        return -1;
+    if (newParent.isRoot() && mSubdirectories != null && !mSubdirectories.contains(name))
+        return -1;
+    getChildren(newParent);
+    if (newParent.getChild(name) != null)
+        return -1;
+    MtpObject newObj = object.copy(object.isDir());
+    newParent.addChild(newObj);
+    newObj.setParent(newParent);
+    if (!generalBeginCopyObject(newObj, true))
+        return -1;
+    return newObj.getId();
+}

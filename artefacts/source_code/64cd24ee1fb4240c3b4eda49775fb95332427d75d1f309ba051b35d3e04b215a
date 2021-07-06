@@ -1,0 +1,31 @@
+public int addDppPeerUri(@NonNull String ifaceName, @NonNull String uri){
+    final String methodStr = "addDppPeerUri";
+    MutableBoolean status = new MutableBoolean(false);
+    MutableInt bootstrapId = new MutableInt(-1);
+    if (!isV1_2()) {
+        Log.e(TAG, "Method " + methodStr + " is not supported in existing HAL");
+        return -1;
+    }
+    ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+    if (iface == null) {
+        return -1;
+    }
+    android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface staIfaceV12 = getStaIfaceMockableV1_2(iface);
+    if (staIfaceV12 == null) {
+        Log.e(TAG, methodStr + ": ISupplicantStaIface is null");
+        return -1;
+    }
+    try {
+        staIfaceV12.addDppPeerUri(uri, (SupplicantStatus statusInternal, int bootstrapIdInternal) -> {
+            status.value = statusInternal.code == SupplicantStatusCode.SUCCESS;
+            if (status.value) {
+                bootstrapId.value = bootstrapIdInternal;
+            }
+            checkStatusAndLogFailure(statusInternal, methodStr);
+        });
+    } catch (RemoteException e) {
+        handleRemoteException(e, methodStr);
+        return -1;
+    }
+    return bootstrapId.value;
+}

@@ -1,0 +1,10 @@
+public static float[] cctToIlluminantdXyz(@IntRange(from = 1) int cct){
+    if (cct < 1) {
+        throw new IllegalArgumentException("Temperature must be greater than 0");
+    }
+    final float icct = 1.0f / cct;
+    final float icct2 = icct * icct;
+    final float x = cct <= 7000.0f ? 0.244063f + 0.09911e3f * icct + 2.9678e6f * icct2 - 4.6070e9f * icct2 * icct : 0.237040f + 0.24748e3f * icct + 1.9018e6f * icct2 - 2.0064e9f * icct2 * icct;
+    final float y = -3.0f * x * x + 2.87f * x - 0.275f;
+    return xyYToXyz(new float[] { x, y });
+}

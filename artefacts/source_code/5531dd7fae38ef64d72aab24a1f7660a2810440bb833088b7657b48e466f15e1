@@ -1,0 +1,11 @@
+public static boolean isActiveService(Context context, ComponentName service){
+    String cur = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.VOICE_INTERACTION_SERVICE);
+    if (cur == null || cur.isEmpty()) {
+        return false;
+    }
+    ComponentName curComp = ComponentName.unflattenFromString(cur);
+    if (curComp == null) {
+        return false;
+    }
+    return curComp.equals(service);
+}

@@ -1,0 +1,10 @@
+public final List<NotificationChannelGroup> getNotificationChannelGroups(@NonNull String pkg, @NonNull UserHandle user){
+    if (!isBound())
+        return null;
+    try {
+        return getNotificationInterface().getNotificationChannelGroupsFromPrivilegedListener(mWrapper, pkg, user).getList();
+    } catch (RemoteException e) {
+        Log.v(TAG, "Unable to contact notification manager", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

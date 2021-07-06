@@ -1,0 +1,28 @@
+
+     * <p>Installs a callback to be invoked for every preview frame, using
+     * buffers supplied with {@link #addCallbackBuffer(byte[])}, in addition to
+     * displaying them on the screen.  The callback will be repeatedly called
+     * for as long as preview is active and buffers are available.  Any other
+     * preview callbacks are overridden.</p>
+     *
+     * <p>The purpose of this method is to improve preview efficiency and frame
+     * rate by allowing preview frame memory reuse.  You must call
+     * {@link #addCallbackBuffer(byte[])} at some point -- before or after
+     * calling this method -- or no callbacks will received.</p>
+     *
+     * <p>The buffer queue will be cleared if this method is called with a null
+     * callback, {@link #setPreviewCallback(Camera.PreviewCallback)} is called,
+     * or {@link #setOneShotPreviewCallback(Camera.PreviewCallback)} is
+     * called.</p>
+     *
+     * <p>If you are using the preview data to create video or still images,
+     * strongly consider using {@link android.media.MediaActionSound} to
+     * properly indicate image capture or recording start/stop to the user.</p>
+     *
+     * @param cb a callback object that receives a copy of the preview frame,
+     *     or null to stop receiving callbacks and clear the buffer queue.
+     * @throws RuntimeException if release() has been called on this Camera
+     *     instance.
+     * @see #addCallbackBuffer(byte[])
+     * @see android.media.MediaActionSound
+     

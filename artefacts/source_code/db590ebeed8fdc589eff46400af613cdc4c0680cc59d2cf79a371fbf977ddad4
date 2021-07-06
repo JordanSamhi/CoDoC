@@ -1,0 +1,17 @@
+public void write(long fieldId, @Nullable String val){
+    assertNotCompacted();
+    final int id = (int) fieldId;
+    switch((int) ((fieldId & (FIELD_TYPE_MASK | FIELD_COUNT_MASK)) >> FIELD_TYPE_SHIFT)) {
+        case (int) ((FIELD_TYPE_STRING | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeStringImpl(id, val);
+            break;
+        case (int) ((FIELD_TYPE_STRING | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_STRING | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedStringImpl(id, val);
+            break;
+        default:
+            {
+                throw new IllegalArgumentException("Attempt to call write(long, String) with " + getFieldIdString(fieldId));
+            }
+    }
+}

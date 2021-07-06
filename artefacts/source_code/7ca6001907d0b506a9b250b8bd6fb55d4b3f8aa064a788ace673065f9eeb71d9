@@ -1,0 +1,30 @@
+public void onRegistration(IHealth oldService, IHealth newService, String instance){
+    if (newService == null)
+        return;
+    traceBegin("HealthUnregisterCallback");
+    try {
+        if (oldService != null) {
+            int r = oldService.unregisterCallback(this);
+            if (r != Result.SUCCESS) {
+                Slog.w(TAG, "health: cannot unregister previous callback: " + Result.toString(r));
+            }
+        }
+    } catch (RemoteException ex) {
+        Slog.w(TAG, "health: cannot unregister previous callback (transaction error): " + ex.getMessage());
+    } finally {
+        traceEnd();
+    }
+    traceBegin("HealthRegisterCallback");
+    try {
+        int r = newService.registerCallback(this);
+        if (r != Result.SUCCESS) {
+            Slog.w(TAG, "health: cannot register callback: " + Result.toString(r));
+            return;
+        }
+        newService.update();
+    } catch (RemoteException ex) {
+        Slog.e(TAG, "health: cannot register callback (transaction error): " + ex.getMessage());
+    } finally {
+        traceEnd();
+    }
+}

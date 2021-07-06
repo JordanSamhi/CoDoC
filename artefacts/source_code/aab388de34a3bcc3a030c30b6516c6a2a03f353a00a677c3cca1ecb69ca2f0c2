@@ -1,0 +1,14 @@
+public void start(Context context, Looper looper, WifiAwareMetrics awareMetrics, WifiPermissionsUtil wifiPermissionsUtil, WifiPermissionsWrapper permissionsWrapper, NetdWrapper netdWrapper){
+    if (VDBG)
+        Log.v(TAG, "start");
+    mContext = context;
+    mAwareMetrics = awareMetrics;
+    mWifiPermissionsUtil = wifiPermissionsUtil;
+    mPermissionsWrapper = permissionsWrapper;
+    mNetdWrapper = netdWrapper;
+    mLooper = looper;
+    mHandler = new Handler(mLooper);
+    mNetworkFactory = new WifiAwareNetworkFactory(looper, context, sNetworkCapabilitiesFilter);
+    mNetworkFactory.setScoreFilter(NETWORK_FACTORY_SCORE_AVAIL);
+    mNetworkFactory.register();
+}

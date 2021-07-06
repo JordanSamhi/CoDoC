@@ -1,0 +1,19 @@
+public MeasuredText build(){
+    ensureNativePtrNoReuse();
+    if (mCurrentOffset != mText.length) {
+        throw new IllegalStateException("Style info has not been provided for all text.");
+    }
+    if (mHintMt != null && mHintMt.mComputeHyphenation != mComputeHyphenation) {
+        throw new IllegalArgumentException("The hyphenation configuration is different from given hint MeasuredText");
+    }
+    try {
+        long hintPtr = (mHintMt == null) ? 0 : mHintMt.getNativePtr();
+        long ptr = nBuildMeasuredText(mNativePtr, hintPtr, mText, mComputeHyphenation, mComputeLayout);
+        final MeasuredText res = new MeasuredText(ptr, mText, mComputeHyphenation, mComputeLayout);
+        sRegistry.registerNativeAllocation(res, ptr);
+        return res;
+    } finally {
+        nFreeBuilder(mNativePtr);
+        mNativePtr = 0;
+    }
+}

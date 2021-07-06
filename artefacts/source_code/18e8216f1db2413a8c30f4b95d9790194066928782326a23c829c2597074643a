@@ -1,0 +1,28 @@
+public int getSpanIndex(int position, int spanCount){
+    int positionSpanSize = getSpanSize(position);
+    if (positionSpanSize == spanCount) {
+        return 0;
+    }
+    int span = 0;
+    int startPos = 0;
+    if (mCacheSpanIndices && mSpanIndexCache.size() > 0) {
+        int prevKey = findReferenceIndexFromCache(position);
+        if (prevKey >= 0) {
+            span = mSpanIndexCache.get(prevKey) + getSpanSize(prevKey);
+            startPos = prevKey + 1;
+        }
+    }
+    for (int i = startPos; i < position; i++) {
+        int size = getSpanSize(i);
+        span += size;
+        if (span == spanCount) {
+            span = 0;
+        } else if (span > spanCount) {
+            span = size;
+        }
+    }
+    if (span + positionSpanSize <= spanCount) {
+        return span;
+    }
+    return 0;
+}

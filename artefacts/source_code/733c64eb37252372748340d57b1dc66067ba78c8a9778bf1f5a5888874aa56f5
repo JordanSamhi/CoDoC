@@ -1,0 +1,10 @@
+public void setSecondaryVisible(boolean nowVisible, boolean animate){
+    if (mIsSecondaryVisible != nowVisible) {
+        mSecondaryAnimating = animate;
+        mIsSecondaryVisible = nowVisible;
+        setViewVisible(mSecondaryView, nowVisible, animate, mSecondaryVisibilityEndRunnable);
+    }
+    if (!mSecondaryAnimating) {
+        mSecondaryVisibilityEndRunnable.run();
+    }
+}

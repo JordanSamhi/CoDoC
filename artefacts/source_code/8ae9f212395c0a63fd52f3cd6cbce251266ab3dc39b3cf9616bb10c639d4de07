@@ -1,0 +1,45 @@
+public void updateCarrierConfigCache(PersistableBundle carrierConfig){
+    mAllowEmergencyVideoCalls = carrierConfig.getBoolean(CarrierConfigManager.KEY_ALLOW_EMERGENCY_VIDEO_CALLS_BOOL);
+    mTreatDowngradedVideoCallsAsVideoCalls = carrierConfig.getBoolean(CarrierConfigManager.KEY_TREAT_DOWNGRADED_VIDEO_CALLS_AS_VIDEO_CALLS_BOOL);
+    mDropVideoCallWhenAnsweringAudioCall = carrierConfig.getBoolean(CarrierConfigManager.KEY_DROP_VIDEO_CALL_WHEN_ANSWERING_AUDIO_CALL_BOOL);
+    mAllowAddCallDuringVideoCall = carrierConfig.getBoolean(CarrierConfigManager.KEY_ALLOW_ADD_CALL_DURING_VIDEO_CALL_BOOL);
+    mAllowHoldingVideoCall = carrierConfig.getBoolean(CarrierConfigManager.KEY_ALLOW_HOLD_VIDEO_CALL_BOOL);
+    mNotifyVtHandoverToWifiFail = carrierConfig.getBoolean(CarrierConfigManager.KEY_NOTIFY_VT_HANDOVER_TO_WIFI_FAILURE_BOOL);
+    mSupportDowngradeVtToAudio = carrierConfig.getBoolean(CarrierConfigManager.KEY_SUPPORT_DOWNGRADE_VT_TO_AUDIO_BOOL);
+    mNotifyHandoverVideoFromWifiToLTE = carrierConfig.getBoolean(CarrierConfigManager.KEY_NOTIFY_HANDOVER_VIDEO_FROM_WIFI_TO_LTE_BOOL);
+    mNotifyHandoverVideoFromLTEToWifi = carrierConfig.getBoolean(CarrierConfigManager.KEY_NOTIFY_HANDOVER_VIDEO_FROM_LTE_TO_WIFI_BOOL);
+    mIgnoreDataEnabledChangedForVideoCalls = carrierConfig.getBoolean(CarrierConfigManager.KEY_IGNORE_DATA_ENABLED_CHANGED_FOR_VIDEO_CALLS);
+    mIsViLteDataMetered = carrierConfig.getBoolean(CarrierConfigManager.KEY_VILTE_DATA_IS_METERED_BOOL);
+    mSupportPauseVideo = carrierConfig.getBoolean(CarrierConfigManager.KEY_SUPPORT_PAUSE_IMS_VIDEO_CALLS_BOOL);
+    mAlwaysPlayRemoteHoldTone = carrierConfig.getBoolean(CarrierConfigManager.KEY_ALWAYS_PLAY_REMOTE_HOLD_TONE_BOOL);
+    mAutoRetryFailedWifiEmergencyCall = carrierConfig.getBoolean(CarrierConfigManager.KEY_AUTO_RETRY_FAILED_WIFI_EMERGENCY_CALL);
+    mSupportCepOnPeer = carrierConfig.getBoolean(CarrierConfigManager.KEY_SUPPORT_IMS_CONFERENCE_EVENT_PACKAGE_ON_PEER_BOOL);
+    String[] mappings = carrierConfig.getStringArray(CarrierConfigManager.KEY_IMS_REASONINFO_MAPPING_STRING_ARRAY);
+    if (mappings != null && mappings.length > 0) {
+        for (String mapping : mappings) {
+            String[] values = mapping.split(Pattern.quote("|"));
+            if (values.length != 3) {
+                continue;
+            }
+            try {
+                Integer fromCode;
+                if (values[0].equals("*")) {
+                    fromCode = null;
+                } else {
+                    fromCode = Integer.parseInt(values[0]);
+                }
+                String message = values[1];
+                if (message == null) {
+                    message = "";
+                }
+                int toCode = Integer.parseInt(values[2]);
+                addReasonCodeRemapping(fromCode, message, toCode);
+                log("Loaded ImsReasonInfo mapping : fromCode = " + fromCode == null ? "any" : fromCode + " ; message = " + message + " ; toCode = " + toCode);
+            } catch (NumberFormatException nfe) {
+                loge("Invalid ImsReasonInfo mapping found: " + mapping);
+            }
+        }
+    } else {
+        log("No carrier ImsReasonInfo mappings defined.");
+    }
+}

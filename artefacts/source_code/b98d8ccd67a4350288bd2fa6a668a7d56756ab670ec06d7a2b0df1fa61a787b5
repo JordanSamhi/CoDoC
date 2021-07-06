@@ -1,0 +1,32 @@
+public void allocateBytes(FileDescriptor fd, @BytesLong long bytes, @RequiresPermission @AllocateFlags int flags) throws IOException{
+    final File file = ParcelFileDescriptor.getFile(fd);
+    final UUID uuid = getUuidForPath(file);
+    for (int i = 0; i < 3; i++) {
+        try {
+            final long haveBytes = Os.fstat(fd).st_blocks * 512;
+            final long needBytes = bytes - haveBytes;
+            if (needBytes > 0) {
+                allocateBytes(uuid, needBytes, flags);
+            }
+            try {
+                Os.posix_fallocate(fd, 0, bytes);
+                return;
+            } catch (ErrnoException e) {
+                if (e.errno == OsConstants.ENOSYS || e.errno == OsConstants.ENOTSUP) {
+                    Log.w(TAG, "fallocate() not supported; falling back to ftruncate()");
+                    Os.ftruncate(fd, bytes);
+                    return;
+                } else {
+                    throw e;
+                }
+            }
+        } catch (ErrnoException e) {
+            if (e.errno == OsConstants.ENOSPC) {
+                Log.w(TAG, "Odd, not enough space; let's try again?");
+                continue;
+            }
+            throw e.rethrowAsIOException();
+        }
+    }
+    throw new IOException("Well this is embarassing; we can't allocate " + bytes + " for " + file);
+}

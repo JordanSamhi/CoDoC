@@ -1,0 +1,22 @@
+public boolean disable(short transactionId){
+    if (mDbg)
+        Log.d(TAG, "disable");
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "disable: null interface");
+        return false;
+    }
+    try {
+        WifiStatus status = iface.disableRequest(transactionId);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "disable: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "disable: exception: " + e);
+        return false;
+    }
+}

@@ -1,0 +1,24 @@
+
+     * Merging the locale came from backup server and current device locale.
+     *
+     * Merge works with following rules.
+     * - The backup locales are appended to the current locale with keeping order.
+     *   e.g. current locale "en-US,zh-CN" and backup locale "ja-JP,ko-KR" are merged to
+     *   "en-US,zh-CH,ja-JP,ko-KR".
+     *
+     * - Duplicated locales are dropped.
+     *   e.g. current locale "en-US,zh-CN" and backup locale "ja-JP,zh-Hans-CN,en-US" are merged to
+     *   "en-US,zh-CN,ja-JP".
+     *
+     * - Unsupported locales are dropped.
+     *   e.g. current locale "en-US" and backup locale "ja-JP,zh-CN" but the supported locales
+     *   are "en-US,zh-CN", the merged locale list is "en-US,zh-CN".
+     *
+     * - The final result locale list only contains the supported locales.
+     *   e.g. current locale "en-US" and backup locale "zh-Hans-CN" and supported locales are
+     *   "en-US,zh-CN", the merged locale list is "en-US,zh-CN".
+     *
+     * @param restore The locale list that came from backup server.
+     * @param current The device's locale setting.
+     * @param supportedLocales The list of language tags supported by this device.
+     

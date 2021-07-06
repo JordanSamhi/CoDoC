@@ -1,0 +1,10 @@
+public static SparseArray<IpConfiguration> readIpAndProxyConfigurations(String filePath){
+    BufferedInputStream bufferedInputStream;
+    try {
+        bufferedInputStream = new BufferedInputStream(new FileInputStream(filePath));
+    } catch (FileNotFoundException e) {
+        loge("Error opening configuration file: " + e);
+        return new SparseArray<>();
+    }
+    return readIpAndProxyConfigurations(bufferedInputStream);
+}

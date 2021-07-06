@@ -1,0 +1,12 @@
+public boolean categoryAllowsForegroundPreference(String category){
+    if (CATEGORY_PAYMENT.equals(category)) {
+        boolean preferForeground = false;
+        try {
+            preferForeground = Settings.Secure.getInt(mContext.getContentResolver(), Settings.Secure.NFC_PAYMENT_FOREGROUND) != 0;
+        } catch (SettingNotFoundException e) {
+        }
+        return preferForeground;
+    } else {
+        return true;
+    }
+}

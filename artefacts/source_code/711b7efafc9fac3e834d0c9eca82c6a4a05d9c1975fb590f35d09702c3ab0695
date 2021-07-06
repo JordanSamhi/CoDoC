@@ -1,0 +1,8 @@
+public boolean canCameraGestureBeLaunched(){
+    if (!mStatusBar.isCameraAllowedByAdmin()) {
+        return false;
+    }
+    ResolveInfo resolveInfo = mKeyguardBottomArea.resolveCameraIntent();
+    String packageToLaunch = (resolveInfo == null || resolveInfo.activityInfo == null) ? null : resolveInfo.activityInfo.packageName;
+    return packageToLaunch != null && (mBarState != StatusBarState.SHADE || !isForegroundApp(packageToLaunch)) && !mAffordanceHelper.isSwipingInProgress();
+}

@@ -1,0 +1,9 @@
+public final void flush(){
+    synchronized (mBufferLock) {
+        invalidateByteBuffers(mCachedInputBuffers);
+        invalidateByteBuffers(mCachedOutputBuffers);
+        mDequeuedInputBuffers.clear();
+        mDequeuedOutputBuffers.clear();
+    }
+    native_flush();
+}

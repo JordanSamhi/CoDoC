@@ -1,0 +1,9 @@
+public void load(Map<Integer, List<PackageInfo>> existingPackages){
+    try {
+        loadInternal(existingPackages);
+    } catch (Exception e) {
+        mPackageDexUsage.clear();
+        mDynamicCodeLogger.clear();
+        Slog.w(TAG, "Exception while loading. Starting with a fresh state.", e);
+    }
+}

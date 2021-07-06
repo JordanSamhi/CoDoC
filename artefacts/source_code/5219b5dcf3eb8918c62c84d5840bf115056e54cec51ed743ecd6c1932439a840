@@ -1,0 +1,25 @@
+public void registerContentObserver(Uri uri, boolean notifyForDescendants, IContentObserver observer, int userHandle, int targetSdkVersion){
+    if (observer == null || uri == null) {
+        throw new IllegalArgumentException("You must pass a valid uri and observer");
+    }
+    final int uid = Binder.getCallingUid();
+    final int pid = Binder.getCallingPid();
+    userHandle = handleIncomingUser(uri, pid, uid, Intent.FLAG_GRANT_READ_URI_PERMISSION, true, userHandle);
+    final String msg = LocalServices.getService(ActivityManagerInternal.class).checkContentProviderAccess(uri.getAuthority(), userHandle);
+    if (msg != null) {
+        if (targetSdkVersion >= Build.VERSION_CODES.O) {
+            throw new SecurityException(msg);
+        } else {
+            if (msg.startsWith("Failed to find provider")) {
+            } else {
+                Log.w(TAG, "Ignoring content changes for " + uri + " from " + uid + ": " + msg);
+                return;
+            }
+        }
+    }
+    synchronized (mRootNode) {
+        mRootNode.addObserverLocked(uri, observer, notifyForDescendants, mRootNode, uid, pid, userHandle);
+        if (false)
+            Log.v(TAG, "Registered observer " + observer + " at " + uri + " with notifyForDescendants " + notifyForDescendants);
+    }
+}

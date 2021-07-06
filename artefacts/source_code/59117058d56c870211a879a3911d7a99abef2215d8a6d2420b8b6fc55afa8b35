@@ -1,0 +1,7 @@
+public int bulkTransfer(UsbEndpoint endpoint, byte[] buffer, int offset, int length, int timeout){
+    checkBounds(buffer, offset, length);
+    if (mContext.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.P && length > UsbRequest.MAX_USBFS_BUFFER_SIZE) {
+        length = UsbRequest.MAX_USBFS_BUFFER_SIZE;
+    }
+    return native_bulk_request(endpoint.getAddress(), buffer, offset, length, timeout);
+}

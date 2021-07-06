@@ -1,0 +1,12 @@
+public static int getSupportedKeepalivesForNetworkCapabilities(@NonNull int[] supportedKeepalives, @NonNull NetworkCapabilities nc){
+    final int[] transports = nc.getTransportTypes();
+    if (transports.length == 0)
+        return 0;
+    int supportedCount = supportedKeepalives[transports[0]];
+    for (final int transport : transports) {
+        if (supportedCount > supportedKeepalives[transport]) {
+            supportedCount = supportedKeepalives[transport];
+        }
+    }
+    return supportedCount;
+}

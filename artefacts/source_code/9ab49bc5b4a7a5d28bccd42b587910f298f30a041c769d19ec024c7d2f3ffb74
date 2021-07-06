@@ -1,0 +1,18 @@
+public static void addResultsToIntent(RemoteInput[] remoteInputs, Intent intent, Bundle results){
+    Intent clipDataIntent = getClipDataIntentFromIntent(intent);
+    if (clipDataIntent == null) {
+        clipDataIntent = new Intent();
+    }
+    Bundle resultsBundle = clipDataIntent.getBundleExtra(EXTRA_RESULTS_DATA);
+    if (resultsBundle == null) {
+        resultsBundle = new Bundle();
+    }
+    for (RemoteInput remoteInput : remoteInputs) {
+        Object result = results.get(remoteInput.getResultKey());
+        if (result instanceof CharSequence) {
+            resultsBundle.putCharSequence(remoteInput.getResultKey(), (CharSequence) result);
+        }
+    }
+    clipDataIntent.putExtra(EXTRA_RESULTS_DATA, resultsBundle);
+    intent.setClipData(ClipData.newIntent(RESULTS_CLIP_LABEL, clipDataIntent));
+}

@@ -1,0 +1,21 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("[ImsPhoneConnection objId: ");
+    sb.append(System.identityHashCode(this));
+    sb.append(" telecomCallID: ");
+    sb.append(getTelecomCallId());
+    sb.append(" address: ");
+    sb.append(Rlog.pii(LOG_TAG, getAddress()));
+    sb.append(" isAdhocConf: ");
+    sb.append(isAdhocConference() ? "Y" : "N");
+    sb.append(" ImsCall: ");
+    synchronized (this) {
+        if (mImsCall == null) {
+            sb.append("null");
+        } else {
+            sb.append(mImsCall);
+        }
+    }
+    sb.append("]");
+    return sb.toString();
+}

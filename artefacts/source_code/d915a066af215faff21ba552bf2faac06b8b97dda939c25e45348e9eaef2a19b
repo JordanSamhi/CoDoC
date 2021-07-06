@@ -1,0 +1,14 @@
+public void setWebDomain(@Nullable String domain){
+    if (domain == null)
+        return;
+    Uri uri = Uri.parse(domain);
+    if (uri == null) {
+        Log.w(TAG, "Failed to parse web domain");
+        return;
+    }
+    mWebScheme = uri.getScheme();
+    if (mWebScheme == null) {
+        uri = Uri.parse("http://" + domain);
+    }
+    mWebDomain = uri.getHost();
+}

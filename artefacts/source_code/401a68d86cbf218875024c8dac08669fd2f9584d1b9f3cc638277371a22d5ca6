@@ -1,0 +1,10 @@
+public void systemRunning(){
+    registerForAlarms();
+    HandlerThread thread = new HandlerThread(TAG);
+    thread.start();
+    mHandler = new MyHandler(thread.getLooper());
+    mNetworkTimeUpdateCallback = new NetworkTimeUpdateCallback();
+    mCM.registerDefaultNetworkCallback(mNetworkTimeUpdateCallback, mHandler);
+    mAutoTimeSettingObserver = new AutoTimeSettingObserver(mContext, mHandler, EVENT_AUTO_TIME_ENABLED);
+    mAutoTimeSettingObserver.observe();
+}

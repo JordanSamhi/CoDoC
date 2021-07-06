@@ -1,0 +1,14 @@
+public final int matchDataAuthority(Uri data, boolean wildcardSupported){
+    if (data == null || mDataAuthorities == null) {
+        return NO_MATCH_DATA;
+    }
+    final int numDataAuthorities = mDataAuthorities.size();
+    for (int i = 0; i < numDataAuthorities; i++) {
+        final AuthorityEntry ae = mDataAuthorities.get(i);
+        int match = ae.match(data, wildcardSupported);
+        if (match >= 0) {
+            return match;
+        }
+    }
+    return NO_MATCH_DATA;
+}

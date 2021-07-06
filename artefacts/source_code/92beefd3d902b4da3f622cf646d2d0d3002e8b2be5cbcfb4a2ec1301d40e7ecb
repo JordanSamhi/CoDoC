@@ -1,0 +1,14 @@
+public static float[] checkArrayElementsInRange(float[] value, float lower, float upper, String valueName){
+    checkNotNull(value, valueName + " must not be null");
+    for (int i = 0; i < value.length; ++i) {
+        float v = value[i];
+        if (Float.isNaN(v)) {
+            throw new IllegalArgumentException(valueName + "[" + i + "] must not be NaN");
+        } else if (v < lower) {
+            throw new IllegalArgumentException(String.format("%s[%d] is out of range of [%f, %f] (too low)", valueName, i, lower, upper));
+        } else if (v > upper) {
+            throw new IllegalArgumentException(String.format("%s[%d] is out of range of [%f, %f] (too high)", valueName, i, lower, upper));
+        }
+    }
+    return value;
+}

@@ -1,0 +1,43 @@
+public void onMovementBoundsChanged(Rect destinationBoundsOut, boolean fromRotation, boolean fromImeAdjustment, boolean fromShelfAdjustment, WindowContainerTransaction wct){
+    final PipAnimationController.PipTransitionAnimator animator = mPipAnimationController.getCurrentAnimator();
+    if (animator == null || !animator.isRunning() || animator.getTransitionDirection() != TRANSITION_DIRECTION_TO_PIP) {
+        if (mInPip && fromRotation) {
+            int direction = TRANSITION_DIRECTION_NONE;
+            if (animator != null) {
+                direction = animator.getTransitionDirection();
+                animator.removeAllUpdateListeners();
+                animator.removeAllListeners();
+                animator.cancel();
+                sendOnPipTransitionCancelled(direction);
+                sendOnPipTransitionFinished(direction);
+            }
+            mLastReportedBounds.set(destinationBoundsOut);
+            final SurfaceControl.Transaction tx = createFinishResizeSurfaceTransaction(destinationBoundsOut);
+            prepareFinishResizeTransaction(destinationBoundsOut, direction, tx, wct);
+        } else {
+            if (animator != null && animator.isRunning()) {
+                if (!animator.getDestinationBounds().isEmpty()) {
+                    destinationBoundsOut.set(animator.getDestinationBounds());
+                }
+            } else {
+                if (!mLastReportedBounds.isEmpty()) {
+                    destinationBoundsOut.set(mLastReportedBounds);
+                }
+            }
+        }
+        return;
+    }
+    final Rect currentDestinationBounds = animator.getDestinationBounds();
+    destinationBoundsOut.set(currentDestinationBounds);
+    if (!fromImeAdjustment && !fromShelfAdjustment && mPipBoundsHandler.getDisplayBounds().contains(currentDestinationBounds)) {
+        return;
+    }
+    final Rect newDestinationBounds = mPipBoundsHandler.getDestinationBounds(mTaskInfo.topActivity, getAspectRatioOrDefault(mPictureInPictureParams), null, getMinimalSize(mTaskInfo.topActivityInfo));
+    if (newDestinationBounds.equals(currentDestinationBounds))
+        return;
+    if (animator.getAnimationType() == ANIM_TYPE_BOUNDS) {
+        animator.updateEndValue(newDestinationBounds);
+    }
+    animator.setDestinationBounds(newDestinationBounds);
+    destinationBoundsOut.set(newDestinationBounds);
+}

@@ -1,0 +1,31 @@
+
+     * Inform SubscriptionManager that subscriptions in the list are bundled
+     * as a group. It can be multiple primary (non-opportunistic) subscriptions,
+     * or one or more primary plus one or more opportunistic subscriptions.
+     *
+     * This API will always create a new immutable group and assign group UUID to all the
+     * subscriptions, regardless whether they are in a group already or not.
+     *
+     * Grouped subscriptions will have below behaviors:
+     * 1) They will share the same user settings.
+     * 2) The opportunistic subscriptions in the group is considered invisible and will not
+     *    return from {@link #getActiveSubscriptionInfoList()}, unless caller has carrier
+     *    privilege permission of the subscriptions.
+     * 3) The opportunistic subscriptions in the group can't be active by itself. If all other
+     *    non-opportunistic ones are deactivated (unplugged or disabled in Settings),
+     *    the opportunistic ones will be deactivated automatically.
+     *
+     * Caller will either have {@link android.Manifest.permission#MODIFY_PHONE_STATE}
+     * permission or had carrier privilege permission on the subscriptions:
+     * {@link TelephonyManager#hasCarrierPrivileges()} or
+     * {@link #canManageSubscription(SubscriptionInfo)}
+     *
+     * @throws SecurityException if the caller doesn't meet the requirements
+     *             outlined above.
+     * @throws IllegalArgumentException if any of the subscriptions in the list doesn't exist.
+     * @throws IllegalStateException if Telephony service is in bad state.
+     *
+     * @param subIdList list of subId that will be in the same group
+     * @return groupUUID a UUID assigned to the subscription group.
+     *
+     

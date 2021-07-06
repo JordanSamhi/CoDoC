@@ -1,0 +1,24 @@
+public void addOnPreferredDeviceForStrategyChangedListener(@NonNull @CallbackExecutor Executor executor, @NonNull OnPreferredDeviceForStrategyChangedListener listener) throws SecurityException{
+    Objects.requireNonNull(executor);
+    Objects.requireNonNull(listener);
+    synchronized (mPrefDevListenerLock) {
+        if (hasPrefDevListener(listener)) {
+            throw new IllegalArgumentException("attempt to call addOnPreferredDeviceForStrategyChangedListener() " + "on a previously registered listener");
+        }
+        if (mPrefDevListeners == null) {
+            mPrefDevListeners = new ArrayList<>();
+        }
+        final int oldCbCount = mPrefDevListeners.size();
+        mPrefDevListeners.add(new PrefDevListenerInfo(listener, executor));
+        if (oldCbCount == 0 && mPrefDevListeners.size() > 0) {
+            if (mPrefDevDispatcherStub == null) {
+                mPrefDevDispatcherStub = new StrategyPreferredDeviceDispatcherStub();
+            }
+            try {
+                getService().registerStrategyPreferredDeviceDispatcher(mPrefDevDispatcherStub);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

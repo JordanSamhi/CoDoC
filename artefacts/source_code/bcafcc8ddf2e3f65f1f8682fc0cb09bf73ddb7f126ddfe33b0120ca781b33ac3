@@ -1,0 +1,55 @@
+public KernelWakelockStats parseProcWakelocks(byte[] wlBuffer, int len, boolean wakeup_sources, final KernelWakelockStats staleStats){
+    String name;
+    int count;
+    long totalTime;
+    int startIndex;
+    int endIndex;
+    int i;
+    for (i = 0; i < len && wlBuffer[i] != '\n' && wlBuffer[i] != '\0'; i++) ;
+    startIndex = endIndex = i + 1;
+    synchronized (this) {
+        while (endIndex < len) {
+            for (endIndex = startIndex; endIndex < len && wlBuffer[endIndex] != '\n' && wlBuffer[endIndex] != '\0'; endIndex++) ;
+            if (endIndex > (len - 1)) {
+                break;
+            }
+            String[] nameStringArray = mProcWakelocksName;
+            long[] wlData = mProcWakelocksData;
+            for (int j = startIndex; j < endIndex; j++) {
+                if ((wlBuffer[j] & 0x80) != 0)
+                    wlBuffer[j] = (byte) '?';
+            }
+            boolean parsed = Process.parseProcLine(wlBuffer, startIndex, endIndex, wakeup_sources ? WAKEUP_SOURCES_FORMAT : PROC_WAKELOCKS_FORMAT, nameStringArray, wlData, null);
+            name = nameStringArray[0].trim();
+            count = (int) wlData[1];
+            if (wakeup_sources) {
+                totalTime = wlData[2] * 1000;
+            } else {
+                totalTime = (wlData[2] + 500) / 1000;
+            }
+            if (parsed && name.length() > 0) {
+                if (!staleStats.containsKey(name)) {
+                    staleStats.put(name, new KernelWakelockStats.Entry(count, totalTime, sKernelWakelockUpdateVersion));
+                } else {
+                    KernelWakelockStats.Entry kwlStats = staleStats.get(name);
+                    if (kwlStats.mVersion == sKernelWakelockUpdateVersion) {
+                        kwlStats.mCount += count;
+                        kwlStats.mTotalTime += totalTime;
+                    } else {
+                        kwlStats.mCount = count;
+                        kwlStats.mTotalTime = totalTime;
+                        kwlStats.mVersion = sKernelWakelockUpdateVersion;
+                    }
+                }
+            } else if (!parsed) {
+                try {
+                    Slog.wtf(TAG, "Failed to parse proc line: " + new String(wlBuffer, startIndex, endIndex - startIndex));
+                } catch (Exception e) {
+                    Slog.wtf(TAG, "Failed to parse proc line!");
+                }
+            }
+            startIndex = endIndex + 1;
+        }
+        return staleStats;
+    }
+}

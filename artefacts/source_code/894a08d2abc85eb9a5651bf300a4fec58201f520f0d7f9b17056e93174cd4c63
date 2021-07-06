@@ -1,0 +1,15 @@
+public void forceUpdateUserSetupComplete(){
+    enforceCanManageProfileAndDeviceOwners();
+    enforceCallerSystemUserHandle();
+    if (!mInjector.isBuildDebuggable()) {
+        return;
+    }
+    final int userId = UserHandle.USER_SYSTEM;
+    boolean isUserCompleted = mInjector.settingsSecureGetIntForUser(Settings.Secure.USER_SETUP_COMPLETE, 0, userId) != 0;
+    DevicePolicyData policy = getUserData(userId);
+    policy.mUserSetupComplete = isUserCompleted;
+    mStateCache.setDeviceProvisioned(isUserCompleted);
+    synchronized (getLockObject()) {
+        saveSettingsLocked(userId);
+    }
+}

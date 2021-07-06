@@ -1,0 +1,20 @@
+public static Range<T>[] intersectSortedDistinctRanges(Range<T>[] one, Range<T>[] another){
+    int ix = 0;
+    Vector<Range<T>> result = new Vector<Range<T>>();
+    for (Range<T> range : another) {
+        while (ix < one.length && one[ix].getUpper().compareTo(range.getLower()) < 0) {
+            ++ix;
+        }
+        while (ix < one.length && one[ix].getUpper().compareTo(range.getUpper()) < 0) {
+            result.add(range.intersect(one[ix]));
+            ++ix;
+        }
+        if (ix == one.length) {
+            break;
+        }
+        if (one[ix].getLower().compareTo(range.getUpper()) <= 0) {
+            result.add(range.intersect(one[ix]));
+        }
+    }
+    return result.toArray(new Range[result.size()]);
+}

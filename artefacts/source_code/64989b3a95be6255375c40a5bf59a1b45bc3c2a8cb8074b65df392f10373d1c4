@@ -1,0 +1,13 @@
+public boolean removeApIface(@NonNull String ifaceName){
+    synchronized (sLock) {
+        IWifiApIface iface = getApIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        if (!mHalDeviceManager.removeIface((IWifiIface) iface)) {
+            mLog.err("Failed to remove AP iface").flush();
+            return boolResult(false);
+        }
+        mIWifiApIfaces.remove(ifaceName);
+        return true;
+    }
+}

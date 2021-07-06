@@ -1,0 +1,9 @@
+public boolean revokeKeyPairFromApp(@Nullable ComponentName admin, @NonNull String alias, @NonNull String packageName){
+    throwIfParentInstance("revokeKeyPairFromApp");
+    try {
+        return mService.setKeyGrantForApp(admin, mContext.getPackageName(), alias, packageName, false);
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    return false;
+}

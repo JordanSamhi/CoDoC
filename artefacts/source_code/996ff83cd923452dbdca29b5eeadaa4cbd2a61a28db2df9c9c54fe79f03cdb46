@@ -1,0 +1,12 @@
+public MediaCodecInfo getCodecInfo(){
+    String name = getName();
+    synchronized (mCodecInfoLock) {
+        if (mCodecInfo == null) {
+            mCodecInfo = getOwnCodecInfo();
+            if (mCodecInfo == null) {
+                mCodecInfo = MediaCodecList.getInfoFor(name);
+            }
+        }
+        return mCodecInfo;
+    }
+}

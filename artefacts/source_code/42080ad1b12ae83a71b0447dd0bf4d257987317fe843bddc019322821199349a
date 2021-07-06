@@ -1,0 +1,14 @@
+public void setNavigationIcon(@Nullable Drawable icon){
+    if (icon != null) {
+        ensureNavButtonView();
+        if (!isChildOrHidden(mNavButtonView)) {
+            addSystemView(mNavButtonView, true);
+        }
+    } else if (mNavButtonView != null && isChildOrHidden(mNavButtonView)) {
+        removeView(mNavButtonView);
+        mHiddenViews.remove(mNavButtonView);
+    }
+    if (mNavButtonView != null) {
+        mNavButtonView.setImageDrawable(icon);
+    }
+}

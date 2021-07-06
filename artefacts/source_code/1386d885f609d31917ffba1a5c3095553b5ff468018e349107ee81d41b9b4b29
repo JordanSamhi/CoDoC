@@ -1,0 +1,11 @@
+public void onProcCachedStateChanged(boolean isCached){
+    if (!isCached) {
+        synchronized (mAtm.mGlobalLockWithoutBoost) {
+            if (mPendingConfiguration != null) {
+                final Configuration config = mPendingConfiguration;
+                mPendingConfiguration = null;
+                dispatchConfigurationChange(config);
+            }
+        }
+    }
+}

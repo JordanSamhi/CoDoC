@@ -1,0 +1,28 @@
+
+     * Get the character offset within the string whose position is closest to the specified
+     * horizontal position.
+     *
+     * <p>The returned value is generally the value of {@code offset} for which
+     * {@link #getRunAdvance} yields a result most closely approximating {@code advance},
+     * and which is also on a grapheme cluster boundary. As such, it is the preferred method
+     * for positioning a cursor in response to a touch or pointer event. The grapheme cluster
+     * boundaries are based on
+     * <a href="http://unicode.org/reports/tr29/">Unicode Standard Annex #29</a> but with some
+     * tailoring for better user experience.
+     *
+     * <p>Note that {@code advance} is a (generally positive) width measurement relative to the start
+     * of the run. Thus, for RTL runs it the distance from the point to the right edge.
+     *
+     * <p>All indices are relative to the start of {@code text}. Further, {@code 0 <= contextStart
+     * <= start <= end <= contextEnd <= text.length} must hold on entry, and {@code start <= result
+     * <= end} will hold on return.
+     *
+     * @param text the text to measure. Cannot be null.
+     * @param start the index of the start of the range to measure
+     * @param end the index + 1 of the end of the range to measure
+     * @param contextStart the index of the start of the shaping context
+     * @param contextEnd the index + 1 of the end of the range to measure
+     * @param isRtl whether the run is in RTL direction
+     * @param advance width relative to start of run
+     * @return index of offset
+     

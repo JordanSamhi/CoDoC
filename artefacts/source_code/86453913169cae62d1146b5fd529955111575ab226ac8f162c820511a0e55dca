@@ -1,0 +1,19 @@
+public static boolean matchRoamingConsortium(RoamingConsortiumElement element, long[] providerOIs, boolean matchAll){
+    if (element == null) {
+        return false;
+    }
+    if (providerOIs == null) {
+        return false;
+    }
+    List<Long> rcOIs = element.getOIs();
+    for (long oi : providerOIs) {
+        if (rcOIs.contains(oi)) {
+            if (!matchAll) {
+                return true;
+            }
+        } else if (matchAll) {
+            return false;
+        }
+    }
+    return matchAll;
+}

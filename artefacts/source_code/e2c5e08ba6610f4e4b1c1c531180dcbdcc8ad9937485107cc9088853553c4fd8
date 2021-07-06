@@ -1,0 +1,58 @@
+public boolean updateNetworkKeys(WifiConfiguration config, WifiConfiguration existingConfig){
+    Preconditions.checkNotNull(mKeyStore);
+    Preconditions.checkNotNull(config.enterpriseConfig);
+    WifiEnterpriseConfig enterpriseConfig = config.enterpriseConfig;
+    String keyId = config.getKeyIdForCredentials(existingConfig);
+    WifiEnterpriseConfig existingEnterpriseConfig = null;
+    String existingKeyId = null;
+    if (existingConfig != null) {
+        Preconditions.checkNotNull(existingConfig.enterpriseConfig);
+        existingEnterpriseConfig = existingConfig.enterpriseConfig;
+        existingKeyId = existingConfig.getKeyIdForCredentials(existingConfig);
+    }
+    if (!needsKeyStore(enterpriseConfig)) {
+        return true;
+    }
+    try {
+        if (!installKeys(existingEnterpriseConfig, enterpriseConfig, existingKeyId, keyId)) {
+            Log.e(TAG, config.SSID + ": failed to install keys");
+            return false;
+        }
+    } catch (IllegalStateException e) {
+        Log.e(TAG, config.SSID + " invalid config for key installation: " + e.getMessage());
+        return false;
+    }
+    if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.SUITE_B_192)) {
+        Certificate caCert = null;
+        try {
+            caCert = mKeyStore.getCertificate(config.enterpriseConfig.getCaCertificateAlias());
+        } catch (KeyStoreException e) {
+            Log.e(TAG, "Failed to get Suite-B certificate", e);
+        }
+        if (caCert == null || !(caCert instanceof X509Certificate)) {
+            Log.e(TAG, "Failed reading CA certificate for Suite-B");
+            return false;
+        }
+        X509Certificate x509CaCert = (X509Certificate) caCert;
+        String sigAlgOid = x509CaCert.getSigAlgOID();
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "Signature algorithm: " + sigAlgOid);
+        }
+        config.allowedSuiteBCiphers.clear();
+        if (sigAlgOid.equals("1.2.840.113549.1.1.12")) {
+            config.allowedSuiteBCiphers.set(WifiConfiguration.SuiteBCipher.ECDHE_RSA);
+            if (mVerboseLoggingEnabled) {
+                Log.d(TAG, "Selecting Suite-B RSA");
+            }
+        } else if (sigAlgOid.equals("1.2.840.10045.4.3.3")) {
+            config.allowedSuiteBCiphers.set(WifiConfiguration.SuiteBCipher.ECDHE_ECDSA);
+            if (mVerboseLoggingEnabled) {
+                Log.d(TAG, "Selecting Suite-B ECDSA");
+            }
+        } else {
+            Log.e(TAG, "Invalid CA certificate type for Suite-B: " + sigAlgOid);
+            return false;
+        }
+    }
+    return true;
+}

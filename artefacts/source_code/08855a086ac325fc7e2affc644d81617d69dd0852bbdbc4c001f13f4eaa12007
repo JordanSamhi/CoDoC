@@ -1,0 +1,17 @@
+public void adjustMetrics(@NonNull DisplayMetrics metrics, @Surface.Rotation int realRotation){
+    if (noFlip(realRotation)) {
+        return;
+    }
+    int w = metrics.widthPixels;
+    metrics.widthPixels = metrics.heightPixels;
+    metrics.heightPixels = w;
+    w = metrics.noncompatWidthPixels;
+    metrics.noncompatWidthPixels = metrics.noncompatHeightPixels;
+    metrics.noncompatHeightPixels = w;
+    float x = metrics.xdpi;
+    metrics.xdpi = metrics.ydpi;
+    metrics.ydpi = x;
+    x = metrics.noncompatXdpi;
+    metrics.noncompatXdpi = metrics.noncompatYdpi;
+    metrics.noncompatYdpi = x;
+}

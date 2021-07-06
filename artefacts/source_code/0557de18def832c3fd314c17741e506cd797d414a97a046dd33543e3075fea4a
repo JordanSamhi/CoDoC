@@ -1,0 +1,12 @@
+public void evictCredentialEncryptionKey(@UserIdInt int userId){
+    checkManageUsersPermission("evict CE key");
+    final IActivityManager am = ActivityManagerNative.getDefault();
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        am.restartUserInBackground(userId);
+    } catch (RemoteException re) {
+        throw re.rethrowAsRuntimeException();
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

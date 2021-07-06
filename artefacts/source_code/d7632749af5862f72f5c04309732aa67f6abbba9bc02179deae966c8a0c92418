@@ -1,0 +1,21 @@
+public void unregisterStreamEventCallback(@NonNull StreamEventCallback eventCallback){
+    if (eventCallback == null) {
+        throw new IllegalArgumentException("Illegal null StreamEventCallback");
+    }
+    if (!mOffloaded) {
+        throw new IllegalStateException("No StreamEventCallback on non-offloaded AudioTrack");
+    }
+    synchronized (mStreamEventCbLock) {
+        StreamEventCbInfo seciToRemove = null;
+        for (StreamEventCbInfo seci : mStreamEventCbInfoList) {
+            if (seci.mStreamEventCb == eventCallback) {
+                mStreamEventCbInfoList.remove(seci);
+                if (mStreamEventCbInfoList.size() == 0) {
+                    endStreamEventHandling();
+                }
+                return;
+            }
+        }
+        throw new IllegalArgumentException("StreamEventCallback was not registered");
+    }
+}

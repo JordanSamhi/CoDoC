@@ -1,0 +1,20 @@
+
+     * Retrieves the application restrictions for a given target application running in the calling
+     * user.
+     * <p>
+     * The caller must be a profile or device owner on that user, or the package allowed to manage
+     * application restrictions via {@link #setDelegatedScopes} with the
+     * {@link #DELEGATION_APP_RESTRICTIONS} scope; otherwise a security exception will be thrown.
+     *
+     * <p>NOTE: The method performs disk I/O and shouldn't be called on the main thread
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with, or
+     *            {@code null} if called by the application restrictions managing package.
+     * @param packageName The name of the package to fetch restricted settings of.
+     * @return {@link Bundle} of settings corresponding to what was set last time
+     *         {@link DevicePolicyManager#setApplicationRestrictions} was called, or an empty
+     *         {@link Bundle} if no restrictions have been set.
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * @see #setDelegatedScopes
+     * @see #DELEGATION_APP_RESTRICTIONS
+     

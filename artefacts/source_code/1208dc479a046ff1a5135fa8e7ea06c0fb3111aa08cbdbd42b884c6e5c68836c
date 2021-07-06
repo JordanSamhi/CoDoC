@@ -1,0 +1,15 @@
+public String getNonResourceString(@StyleableRes int index){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    final int type = data[index + STYLE_TYPE];
+    if (type == TypedValue.TYPE_STRING) {
+        final int cookie = data[index + STYLE_ASSET_COOKIE];
+        if (cookie < 0) {
+            return mXml.getPooledString(data[index + STYLE_DATA]).toString();
+        }
+    }
+    return null;
+}

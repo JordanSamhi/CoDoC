@@ -1,0 +1,25 @@
+public void registerCancelListener(CancelListener cancelListener){
+    synchronized (this) {
+        if (mCancelReceiver == null) {
+            mCancelReceiver = new IResultReceiver.Stub() {
+
+                @Override
+                public void send(int resultCode, Bundle resultData) throws RemoteException {
+                    notifyCancelListeners();
+                }
+            };
+        }
+        if (mCancelListeners == null) {
+            mCancelListeners = new ArraySet<>();
+        }
+        boolean wasEmpty = mCancelListeners.isEmpty();
+        mCancelListeners.add(cancelListener);
+        if (wasEmpty) {
+            try {
+                ActivityManager.getService().registerIntentSenderCancelListener(mTarget, mCancelReceiver);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

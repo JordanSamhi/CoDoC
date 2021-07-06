@@ -1,0 +1,9 @@
+public static byte[] getSha256Hash(InputStream stream) throws IOException, NoSuchAlgorithmException{
+    MessageDigest digester = MessageDigest.getInstance("SHA256");
+    int bytesRead;
+    byte[] buf = new byte[FILE_READ_BUFFER_SIZE];
+    while ((bytesRead = stream.read(buf)) >= 0) {
+        digester.update(buf, 0, bytesRead);
+    }
+    return digester.digest();
+}

@@ -1,0 +1,74 @@
+public boolean onMediaButtonEvent(@NonNull Intent mediaButtonIntent){
+    if (mSession != null && mHandler != null && Intent.ACTION_MEDIA_BUTTON.equals(mediaButtonIntent.getAction())) {
+        KeyEvent ke = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+        if (ke != null && ke.getAction() == KeyEvent.ACTION_DOWN) {
+            PlaybackState state = mSession.mPlaybackState;
+            long validActions = state == null ? 0 : state.getActions();
+            switch(ke.getKeyCode()) {
+                case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                case KeyEvent.KEYCODE_HEADSETHOOK:
+                    if (ke.getRepeatCount() > 0) {
+                        handleMediaPlayPauseKeySingleTapIfPending();
+                    } else if (mMediaPlayPauseKeyPending) {
+                        mHandler.removeMessages(CallbackMessageHandler.MSG_PLAY_PAUSE_KEY_DOUBLE_TAP_TIMEOUT);
+                        mMediaPlayPauseKeyPending = false;
+                        if ((validActions & PlaybackState.ACTION_SKIP_TO_NEXT) != 0) {
+                            onSkipToNext();
+                        }
+                    } else {
+                        mMediaPlayPauseKeyPending = true;
+                        mSession.dispatchMediaButtonDelayed(mSession.getCurrentControllerInfo(), mediaButtonIntent, ViewConfiguration.getDoubleTapTimeout());
+                    }
+                    return true;
+                default:
+                    handleMediaPlayPauseKeySingleTapIfPending();
+                    break;
+            }
+            switch(ke.getKeyCode()) {
+                case KeyEvent.KEYCODE_MEDIA_PLAY:
+                    if ((validActions & PlaybackState.ACTION_PLAY) != 0) {
+                        onPlay();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                    if ((validActions & PlaybackState.ACTION_PAUSE) != 0) {
+                        onPause();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_NEXT:
+                    if ((validActions & PlaybackState.ACTION_SKIP_TO_NEXT) != 0) {
+                        onSkipToNext();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                    if ((validActions & PlaybackState.ACTION_SKIP_TO_PREVIOUS) != 0) {
+                        onSkipToPrevious();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_STOP:
+                    if ((validActions & PlaybackState.ACTION_STOP) != 0) {
+                        onStop();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    if ((validActions & PlaybackState.ACTION_FAST_FORWARD) != 0) {
+                        onFastForward();
+                        return true;
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    if ((validActions & PlaybackState.ACTION_REWIND) != 0) {
+                        onRewind();
+                        return true;
+                    }
+                    break;
+            }
+        }
+    }
+    return false;
+}

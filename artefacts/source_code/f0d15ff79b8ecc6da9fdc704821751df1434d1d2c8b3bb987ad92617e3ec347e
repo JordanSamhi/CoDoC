@@ -1,0 +1,29 @@
+public void setNdefPushMessageCallback(CreateNdefMessageCallback callback, Activity activity, Activity... activities){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+        if (!sHasBeamFeature) {
+            return;
+        }
+    }
+    int targetSdkVersion = getSdkVersion();
+    try {
+        if (activity == null) {
+            throw new NullPointerException("activity cannot be null");
+        }
+        mNfcActivityManager.setNdefPushMessageCallback(activity, callback, 0);
+        for (Activity a : activities) {
+            if (a == null) {
+                throw new NullPointerException("activities cannot contain null");
+            }
+            mNfcActivityManager.setNdefPushMessageCallback(a, callback, 0);
+        }
+    } catch (IllegalStateException e) {
+        if (targetSdkVersion < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            Log.e(TAG, "Cannot call API with Activity that has already " + "been destroyed", e);
+        } else {
+            throw (e);
+        }
+    }
+}

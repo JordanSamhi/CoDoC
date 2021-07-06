@@ -1,0 +1,153 @@
+public void dumpCheckinLocked(PrintWriter pw, String reqPackage, int section){
+    final long now = SystemClock.uptimeMillis();
+    final ArrayMap<String, SparseArray<LongSparseArray<PackageState>>> pkgMap = mPackages.getMap();
+    pw.println("vers,5");
+    pw.print("period,");
+    pw.print(mTimePeriodStartClockStr);
+    pw.print(",");
+    pw.print(mTimePeriodStartRealtime);
+    pw.print(",");
+    pw.print(mRunning ? SystemClock.elapsedRealtime() : mTimePeriodEndRealtime);
+    boolean partial = true;
+    if ((mFlags & FLAG_SHUTDOWN) != 0) {
+        pw.print(",shutdown");
+        partial = false;
+    }
+    if ((mFlags & FLAG_SYSPROPS) != 0) {
+        pw.print(",sysprops");
+        partial = false;
+    }
+    if ((mFlags & FLAG_COMPLETE) != 0) {
+        pw.print(",complete");
+        partial = false;
+    }
+    if (partial) {
+        pw.print(",partial");
+    }
+    if (mHasSwappedOutPss) {
+        pw.print(",swapped-out-pss");
+    }
+    pw.println();
+    pw.print("config,");
+    pw.println(mRuntime);
+    if ((section & REPORT_PKG_STATS) != 0) {
+        for (int ip = 0; ip < pkgMap.size(); ip++) {
+            final String pkgName = pkgMap.keyAt(ip);
+            if (reqPackage != null && !reqPackage.equals(pkgName)) {
+                continue;
+            }
+            final SparseArray<LongSparseArray<PackageState>> uids = pkgMap.valueAt(ip);
+            for (int iu = 0; iu < uids.size(); iu++) {
+                final int uid = uids.keyAt(iu);
+                final LongSparseArray<PackageState> vpkgs = uids.valueAt(iu);
+                for (int iv = 0; iv < vpkgs.size(); iv++) {
+                    final long vers = vpkgs.keyAt(iv);
+                    final PackageState pkgState = vpkgs.valueAt(iv);
+                    final int NPROCS = pkgState.mProcesses.size();
+                    final int NSRVS = pkgState.mServices.size();
+                    final int NASCS = pkgState.mAssociations.size();
+                    if ((section & REPORT_PKG_PROC_STATS) != 0) {
+                        for (int iproc = 0; iproc < NPROCS; iproc++) {
+                            ProcessState proc = pkgState.mProcesses.valueAt(iproc);
+                            proc.dumpPackageProcCheckin(pw, pkgName, uid, vers, pkgState.mProcesses.keyAt(iproc), now);
+                        }
+                    }
+                    if ((section & REPORT_PKG_SVC_STATS) != 0) {
+                        for (int isvc = 0; isvc < NSRVS; isvc++) {
+                            final String serviceName = DumpUtils.collapseString(pkgName, pkgState.mServices.keyAt(isvc));
+                            final ServiceState svc = pkgState.mServices.valueAt(isvc);
+                            svc.dumpTimesCheckin(pw, pkgName, uid, vers, serviceName, now);
+                        }
+                    }
+                    if ((section & REPORT_PKG_ASC_STATS) != 0) {
+                        for (int iasc = 0; iasc < NASCS; iasc++) {
+                            final String associationName = DumpUtils.collapseString(pkgName, pkgState.mAssociations.keyAt(iasc));
+                            final AssociationState asc = pkgState.mAssociations.valueAt(iasc);
+                            asc.dumpTimesCheckin(pw, pkgName, uid, vers, associationName, now);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if ((section & REPORT_PROC_STATS) != 0) {
+        ArrayMap<String, SparseArray<ProcessState>> procMap = mProcesses.getMap();
+        for (int ip = 0; ip < procMap.size(); ip++) {
+            String procName = procMap.keyAt(ip);
+            SparseArray<ProcessState> uids = procMap.valueAt(ip);
+            for (int iu = 0; iu < uids.size(); iu++) {
+                final int uid = uids.keyAt(iu);
+                final ProcessState procState = uids.valueAt(iu);
+                procState.dumpProcCheckin(pw, procName, uid, now);
+            }
+        }
+    }
+    pw.print("total");
+    DumpUtils.dumpAdjTimesCheckin(pw, ",", mMemFactorDurations, mMemFactor, mStartTime, now);
+    pw.println();
+    final int sysMemUsageCount = mSysMemUsage.getKeyCount();
+    if (sysMemUsageCount > 0) {
+        pw.print("sysmemusage");
+        for (int i = 0; i < sysMemUsageCount; i++) {
+            final int key = mSysMemUsage.getKeyAt(i);
+            final int type = SparseMappingTable.getIdFromKey(key);
+            pw.print(",");
+            DumpUtils.printProcStateTag(pw, type);
+            for (int j = SYS_MEM_USAGE_SAMPLE_COUNT; j < SYS_MEM_USAGE_COUNT; j++) {
+                if (j > SYS_MEM_USAGE_CACHED_MINIMUM) {
+                    pw.print(":");
+                }
+                pw.print(mSysMemUsage.getValue(key, j));
+            }
+        }
+    }
+    pw.println();
+    TotalMemoryUseCollection totalMem = new TotalMemoryUseCollection(ALL_SCREEN_ADJ, ALL_MEM_ADJ);
+    computeTotalMemoryUse(totalMem, now);
+    pw.print("weights,");
+    pw.print(totalMem.totalTime);
+    pw.print(",");
+    pw.print(totalMem.sysMemCachedWeight);
+    pw.print(":");
+    pw.print(totalMem.sysMemSamples);
+    pw.print(",");
+    pw.print(totalMem.sysMemFreeWeight);
+    pw.print(":");
+    pw.print(totalMem.sysMemSamples);
+    pw.print(",");
+    pw.print(totalMem.sysMemZRamWeight);
+    pw.print(":");
+    pw.print(totalMem.sysMemSamples);
+    pw.print(",");
+    pw.print(totalMem.sysMemKernelWeight);
+    pw.print(":");
+    pw.print(totalMem.sysMemSamples);
+    pw.print(",");
+    pw.print(totalMem.sysMemNativeWeight);
+    pw.print(":");
+    pw.print(totalMem.sysMemSamples);
+    for (int i = 0; i < STATE_COUNT; i++) {
+        pw.print(",");
+        pw.print(totalMem.processStateWeight[i]);
+        pw.print(":");
+        pw.print(totalMem.processStateSamples[i]);
+    }
+    pw.println();
+    final int NPAGETYPES = mPageTypeLabels.size();
+    for (int i = 0; i < NPAGETYPES; i++) {
+        pw.print("availablepages,");
+        pw.print(mPageTypeLabels.get(i));
+        pw.print(",");
+        pw.print(mPageTypeZones.get(i));
+        pw.print(",");
+        final int[] sizes = mPageTypeSizes.get(i);
+        final int N = sizes == null ? 0 : sizes.length;
+        for (int j = 0; j < N; j++) {
+            if (j != 0) {
+                pw.print(",");
+            }
+            pw.print(sizes[j]);
+        }
+        pw.println();
+    }
+}

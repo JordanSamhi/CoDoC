@@ -1,0 +1,11 @@
+public void saveProto(String packageName, T proto) throws IOException{
+    Objects.requireNonNull(proto);
+    File file = getFileForPackage(packageName);
+    try (FileOutputStream os = new FileOutputStream(file)) {
+        os.write(MessageNano.toByteArray(proto));
+    } catch (IOException e) {
+        Slog.e(TAG, "Exception occurred when saving the listing for " + packageName + ", deleting saved listing.", e);
+        file.delete();
+        throw e;
+    }
+}

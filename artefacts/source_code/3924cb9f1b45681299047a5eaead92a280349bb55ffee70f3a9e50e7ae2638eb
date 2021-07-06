@@ -1,0 +1,38 @@
+public int execStartActivitiesAsUser(Context who, IBinder contextThread, IBinder token, Activity target, Intent[] intents, Bundle options, int userId){
+    IApplicationThread whoThread = (IApplicationThread) contextThread;
+    if (mActivityMonitors != null) {
+        synchronized (mSync) {
+            final int N = mActivityMonitors.size();
+            for (int i = 0; i < N; i++) {
+                final ActivityMonitor am = mActivityMonitors.get(i);
+                ActivityResult result = null;
+                if (am.ignoreMatchingSpecificIntents()) {
+                    result = am.onStartActivity(intents[0]);
+                }
+                if (result != null) {
+                    am.mHits++;
+                    return ActivityManager.START_CANCELED;
+                } else if (am.match(who, null, intents[0])) {
+                    am.mHits++;
+                    if (am.isBlocking()) {
+                        return ActivityManager.START_CANCELED;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    try {
+        String[] resolvedTypes = new String[intents.length];
+        for (int i = 0; i < intents.length; i++) {
+            intents[i].migrateExtraStreamToClipData(who);
+            intents[i].prepareToLeaveProcess(who);
+            resolvedTypes[i] = intents[i].resolveTypeIfNeeded(who.getContentResolver());
+        }
+        int result = ActivityTaskManager.getService().startActivities(whoThread, who.getBasePackageName(), who.getAttributionTag(), intents, resolvedTypes, token, options, userId);
+        checkStartActivityResult(result, intents[0]);
+        return result;
+    } catch (RemoteException e) {
+        throw new RuntimeException("Failure from system", e);
+    }
+}

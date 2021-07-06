@@ -1,0 +1,24 @@
+public static void rotateBounds(Rect inOutBounds, Rect parentBounds, int delta){
+    int rdelta = ((delta % 4) + 4) % 4;
+    int origLeft = inOutBounds.left;
+    switch(rdelta) {
+        case 0:
+            return;
+        case 1:
+            inOutBounds.left = inOutBounds.top;
+            inOutBounds.top = parentBounds.right - inOutBounds.right;
+            inOutBounds.right = inOutBounds.bottom;
+            inOutBounds.bottom = parentBounds.right - origLeft;
+            return;
+        case 2:
+            inOutBounds.left = parentBounds.right - inOutBounds.right;
+            inOutBounds.right = parentBounds.right - origLeft;
+            return;
+        case 3:
+            inOutBounds.left = parentBounds.bottom - inOutBounds.bottom;
+            inOutBounds.bottom = inOutBounds.right;
+            inOutBounds.right = parentBounds.bottom - inOutBounds.top;
+            inOutBounds.top = origLeft;
+            return;
+    }
+}

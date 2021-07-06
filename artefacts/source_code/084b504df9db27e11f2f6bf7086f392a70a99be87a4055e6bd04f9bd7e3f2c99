@@ -1,0 +1,10 @@
+public static InterfaceConfiguration fromStableParcel(InterfaceConfigurationParcel p){
+    InterfaceConfiguration cfg = new InterfaceConfiguration();
+    cfg.setHardwareAddress(p.hwAddr);
+    final InetAddress addr = NetworkUtils.numericToInetAddress(p.ipv4Addr);
+    cfg.setLinkAddress(new LinkAddress(addr, p.prefixLength));
+    for (String flag : p.flags) {
+        cfg.setFlag(flag);
+    }
+    return cfg;
+}

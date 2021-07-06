@@ -1,0 +1,36 @@
+public void updateClusterSpeedTimes(@NonNull SparseLongArray updatedUids, boolean onBattery){
+    long totalCpuClustersTimeMs = 0;
+    final long[][] clusterSpeedTimesMs = new long[mKernelCpuSpeedReaders.length][];
+    for (int cluster = 0; cluster < mKernelCpuSpeedReaders.length; cluster++) {
+        clusterSpeedTimesMs[cluster] = mKernelCpuSpeedReaders[cluster].readDelta();
+        if (clusterSpeedTimesMs[cluster] != null) {
+            for (int speed = clusterSpeedTimesMs[cluster].length - 1; speed >= 0; --speed) {
+                totalCpuClustersTimeMs += clusterSpeedTimesMs[cluster][speed];
+            }
+        }
+    }
+    if (totalCpuClustersTimeMs != 0) {
+        final int updatedUidsCount = updatedUids.size();
+        for (int i = 0; i < updatedUidsCount; ++i) {
+            final Uid u = getUidStatsLocked(updatedUids.keyAt(i));
+            final long appCpuTimeUs = updatedUids.valueAt(i);
+            final int numClusters = mPowerProfile.getNumCpuClusters();
+            if (u.mCpuClusterSpeedTimesUs == null || u.mCpuClusterSpeedTimesUs.length != numClusters) {
+                u.mCpuClusterSpeedTimesUs = new LongSamplingCounter[numClusters][];
+            }
+            for (int cluster = 0; cluster < clusterSpeedTimesMs.length; cluster++) {
+                final int speedsInCluster = clusterSpeedTimesMs[cluster].length;
+                if (u.mCpuClusterSpeedTimesUs[cluster] == null || speedsInCluster != u.mCpuClusterSpeedTimesUs[cluster].length) {
+                    u.mCpuClusterSpeedTimesUs[cluster] = new LongSamplingCounter[speedsInCluster];
+                }
+                final LongSamplingCounter[] cpuSpeeds = u.mCpuClusterSpeedTimesUs[cluster];
+                for (int speed = 0; speed < speedsInCluster; speed++) {
+                    if (cpuSpeeds[speed] == null) {
+                        cpuSpeeds[speed] = new LongSamplingCounter(mOnBatteryTimeBase);
+                    }
+                    cpuSpeeds[speed].addCountLocked(appCpuTimeUs * clusterSpeedTimesMs[cluster][speed] / totalCpuClustersTimeMs, onBattery);
+                }
+            }
+        }
+    }
+}

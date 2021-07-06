@@ -1,0 +1,19 @@
+public String getNfcHandoverSelect(){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("getNfcHandoverSelect"))
+            return null;
+        SupplicantResult<ArrayList> result = new SupplicantResult("getNfcHandoverSelect()");
+        try {
+            mISupplicantP2pIface.createNfcHandoverSelectMessage((SupplicantStatus status, ArrayList<Byte> message) -> {
+                result.setResult(status, message);
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        if (!result.isSuccess()) {
+            return null;
+        }
+        return NativeUtil.hexStringFromByteArray(NativeUtil.byteArrayFromArrayList(result.getResult()));
+    }
+}

@@ -1,0 +1,12 @@
+public void setApplicationRestrictionsManagingPackage(@NonNull ComponentName admin, @Nullable String packageName) throws NameNotFoundException{
+    throwIfParentInstance("setApplicationRestrictionsManagingPackage");
+    if (mService != null) {
+        try {
+            if (!mService.setApplicationRestrictionsManagingPackage(admin, packageName)) {
+                throw new NameNotFoundException(packageName);
+            }
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

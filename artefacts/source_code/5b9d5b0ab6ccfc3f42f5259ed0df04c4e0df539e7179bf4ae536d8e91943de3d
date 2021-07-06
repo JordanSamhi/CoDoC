@@ -1,0 +1,12 @@
+public void update(Collection<ScanResultMatchInfo> networkList){
+    if (isUnlocked()) {
+        return;
+    }
+    maybeSetInitializedByTimeout(mClock.getElapsedSinceBootMillis());
+    mNumScans++;
+    if (mIsInitialized) {
+        removeFromLock(networkList);
+    } else {
+        addToLock(networkList);
+    }
+}

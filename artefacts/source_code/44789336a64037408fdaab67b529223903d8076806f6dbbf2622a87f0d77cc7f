@@ -1,0 +1,32 @@
+public Path toPath(float width, float height, int numSample){
+    final float[] pts = GestureUtils.temporalSampling(this, numSample);
+    final RectF rect = boundingBox;
+    GestureUtils.translate(pts, -rect.left, -rect.top);
+    float sx = width / rect.width();
+    float sy = height / rect.height();
+    float scale = sx > sy ? sy : sx;
+    GestureUtils.scale(pts, scale, scale);
+    float mX = 0;
+    float mY = 0;
+    Path path = null;
+    final int count = pts.length;
+    for (int i = 0; i < count; i += 2) {
+        float x = pts[i];
+        float y = pts[i + 1];
+        if (path == null) {
+            path = new Path();
+            path.moveTo(x, y);
+            mX = x;
+            mY = y;
+        } else {
+            float dx = Math.abs(x - mX);
+            float dy = Math.abs(y - mY);
+            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+                path.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+                mX = x;
+                mY = y;
+            }
+        }
+    }
+    return path;
+}

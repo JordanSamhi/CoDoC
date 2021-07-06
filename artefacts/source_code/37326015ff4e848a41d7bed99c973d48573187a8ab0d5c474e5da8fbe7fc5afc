@@ -1,0 +1,14 @@
+public AppWidgetProviderInfo getAppWidgetInfo(int appWidgetId){
+    if (mService == null) {
+        return null;
+    }
+    try {
+        AppWidgetProviderInfo info = mService.getAppWidgetInfo(mPackageName, appWidgetId);
+        if (info != null) {
+            info.updateDimensions(mDisplayMetrics);
+        }
+        return info;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,22 @@
+public static Rating newStarRating(@StarStyle int starRatingStyle, float starRating){
+    float maxRating = -1.0f;
+    switch(starRatingStyle) {
+        case RATING_3_STARS:
+            maxRating = 3.0f;
+            break;
+        case RATING_4_STARS:
+            maxRating = 4.0f;
+            break;
+        case RATING_5_STARS:
+            maxRating = 5.0f;
+            break;
+        default:
+            Log.e(TAG, "Invalid rating style (" + starRatingStyle + ") for a star rating");
+            return null;
+    }
+    if ((starRating < 0.0f) || (starRating > maxRating)) {
+        Log.e(TAG, "Trying to set out of range star-based rating");
+        return null;
+    }
+    return new Rating(starRatingStyle, starRating);
+}

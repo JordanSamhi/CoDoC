@@ -1,0 +1,27 @@
+public float getOutputHeadsetProbability(){
+    if (hasMIDIInterface()) {
+        return 0.0f;
+    }
+    float probability = 0.0f;
+    ArrayList<UsbDescriptor> acDescriptors;
+    boolean hasSpeaker = false;
+    acDescriptors = getACInterfaceDescriptors(UsbACInterface.ACI_OUTPUT_TERMINAL, UsbACInterface.AUDIO_AUDIOCONTROL);
+    for (UsbDescriptor descriptor : acDescriptors) {
+        if (descriptor instanceof UsbACTerminal) {
+            UsbACTerminal outDescr = (UsbACTerminal) descriptor;
+            if (outDescr.getTerminalType() == UsbTerminalTypes.TERMINAL_OUT_SPEAKER || outDescr.getTerminalType() == UsbTerminalTypes.TERMINAL_OUT_HEADPHONES || outDescr.getTerminalType() == UsbTerminalTypes.TERMINAL_BIDIR_HEADSET) {
+                hasSpeaker = true;
+                break;
+            }
+        } else {
+            Log.w(TAG, "Undefined Audio Output terminal l: " + descriptor.getLength() + " t:0x" + Integer.toHexString(descriptor.getType()));
+        }
+    }
+    if (hasSpeaker) {
+        probability += 0.75f;
+    }
+    if (hasSpeaker && hasHIDInterface()) {
+        probability += 0.25f;
+    }
+    return probability;
+}

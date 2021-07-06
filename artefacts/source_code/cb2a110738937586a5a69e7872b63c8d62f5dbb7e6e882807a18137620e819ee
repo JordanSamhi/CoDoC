@@ -1,0 +1,25 @@
+public void isSupported(@MmTelFeature.MmTelCapabilities.MmTelCapability int capability, @AccessNetworkConstants.TransportType int transportType, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback) throws ImsException{
+    if (callback == null) {
+        throw new IllegalArgumentException("Must include a non-null Consumer.");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Must include a non-null Executor.");
+    }
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new ImsException("Could not find Telephony Service.", ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+    try {
+        getITelephony().isMmTelCapabilitySupported(mSubId, new IIntegerConsumer.Stub() {
+
+            @Override
+            public void accept(int result) {
+                executor.execute(() -> callback.accept(result == 1));
+            }
+        }, capability, transportType);
+    } catch (ServiceSpecificException sse) {
+        throw new ImsException(sse.getMessage(), sse.errorCode);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+}

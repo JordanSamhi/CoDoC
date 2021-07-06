@@ -1,0 +1,13 @@
+public static int getCarrierIdFromMccMnc(@NonNull Context context, String mccmnc){
+    try (Cursor cursor = getCursorForMccMnc(context, mccmnc)) {
+        if (cursor == null || !cursor.moveToNext())
+            return TelephonyManager.UNKNOWN_CARRIER_ID;
+        if (VDBG) {
+            logd("[getCarrierIdFromMccMnc]- " + cursor.getCount() + " Records(s) in DB" + " mccmnc: " + mccmnc);
+        }
+        return cursor.getInt(cursor.getColumnIndex(CarrierId.CARRIER_ID));
+    } catch (Exception ex) {
+        loge("[getCarrierIdFromMccMnc]- ex: " + ex);
+    }
+    return TelephonyManager.UNKNOWN_CARRIER_ID;
+}

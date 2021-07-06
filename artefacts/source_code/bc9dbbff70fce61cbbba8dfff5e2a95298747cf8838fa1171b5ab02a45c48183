@@ -1,0 +1,79 @@
+public String getCarConnectionSummary(){
+    boolean profileConnected = false;
+    boolean a2dpNotConnected = false;
+    boolean hfpNotConnected = false;
+    boolean hearingAidNotConnected = false;
+    synchronized (mProfileLock) {
+        for (LocalBluetoothProfile profile : getProfiles()) {
+            int connectionStatus = getProfileConnectionState(profile);
+            switch(connectionStatus) {
+                case BluetoothProfile.STATE_CONNECTING:
+                case BluetoothProfile.STATE_DISCONNECTING:
+                    return mContext.getString(BluetoothUtils.getConnectionStateSummary(connectionStatus));
+                case BluetoothProfile.STATE_CONNECTED:
+                    profileConnected = true;
+                    break;
+                case BluetoothProfile.STATE_DISCONNECTED:
+                    if (profile.isProfileReady()) {
+                        if (profile instanceof A2dpProfile || profile instanceof A2dpSinkProfile) {
+                            a2dpNotConnected = true;
+                        } else if (profile instanceof HeadsetProfile || profile instanceof HfpClientProfile) {
+                            hfpNotConnected = true;
+                        } else if (profile instanceof HearingAidProfile) {
+                            hearingAidNotConnected = true;
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+    String batteryLevelPercentageString = null;
+    final int batteryLevel = getBatteryLevel();
+    if (batteryLevel > BluetoothDevice.BATTERY_LEVEL_UNKNOWN) {
+        batteryLevelPercentageString = com.android.settingslib.Utils.formatPercentage(batteryLevel);
+    }
+    String[] activeDeviceStringsArray = mContext.getResources().getStringArray(R.array.bluetooth_audio_active_device_summaries);
+    String activeDeviceString = activeDeviceStringsArray[0];
+    if (mIsActiveDeviceA2dp && mIsActiveDeviceHeadset) {
+        activeDeviceString = activeDeviceStringsArray[1];
+    } else {
+        if (mIsActiveDeviceA2dp) {
+            activeDeviceString = activeDeviceStringsArray[2];
+        }
+        if (mIsActiveDeviceHeadset) {
+            activeDeviceString = activeDeviceStringsArray[3];
+        }
+    }
+    if (!hearingAidNotConnected && mIsActiveDeviceHearingAid) {
+        activeDeviceString = activeDeviceStringsArray[1];
+        return mContext.getString(R.string.bluetooth_connected, activeDeviceString);
+    }
+    if (profileConnected) {
+        if (a2dpNotConnected && hfpNotConnected) {
+            if (batteryLevelPercentageString != null) {
+                return mContext.getString(R.string.bluetooth_connected_no_headset_no_a2dp_battery_level, batteryLevelPercentageString, activeDeviceString);
+            } else {
+                return mContext.getString(R.string.bluetooth_connected_no_headset_no_a2dp, activeDeviceString);
+            }
+        } else if (a2dpNotConnected) {
+            if (batteryLevelPercentageString != null) {
+                return mContext.getString(R.string.bluetooth_connected_no_a2dp_battery_level, batteryLevelPercentageString, activeDeviceString);
+            } else {
+                return mContext.getString(R.string.bluetooth_connected_no_a2dp, activeDeviceString);
+            }
+        } else if (hfpNotConnected) {
+            if (batteryLevelPercentageString != null) {
+                return mContext.getString(R.string.bluetooth_connected_no_headset_battery_level, batteryLevelPercentageString, activeDeviceString);
+            } else {
+                return mContext.getString(R.string.bluetooth_connected_no_headset, activeDeviceString);
+            }
+        } else {
+            if (batteryLevelPercentageString != null) {
+                return mContext.getString(R.string.bluetooth_connected_battery_level, batteryLevelPercentageString, activeDeviceString);
+            } else {
+                return mContext.getString(R.string.bluetooth_connected, activeDeviceString);
+            }
+        }
+    }
+    return getBondState() == BluetoothDevice.BOND_BONDING ? mContext.getString(R.string.bluetooth_pairing) : null;
+}

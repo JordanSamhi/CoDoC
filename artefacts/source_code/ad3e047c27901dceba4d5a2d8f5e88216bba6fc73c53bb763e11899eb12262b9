@@ -1,0 +1,15 @@
+public Iface removeExistingIface(int newIfaceId){
+    Iface removedIface = null;
+    if (mIfaces.size() > 2) {
+        Log.wtf(TAG, "More than 1 existing interface found");
+    }
+    Iterator<Map.Entry<Integer, Iface>> iter = mIfaces.entrySet().iterator();
+    while (iter.hasNext()) {
+        Map.Entry<Integer, Iface> entry = iter.next();
+        if (entry.getKey() != newIfaceId) {
+            removedIface = entry.getValue();
+            iter.remove();
+        }
+    }
+    return removedIface;
+}

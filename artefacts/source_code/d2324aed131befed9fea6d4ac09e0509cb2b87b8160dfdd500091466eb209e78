@@ -1,0 +1,17 @@
+public void sendReportReadyBroadcast(String pkg, String cls){
+    enforceRequestAuthorizationPermission();
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        final Context context = getContext();
+        final int primaryUser = getAndValidateUser(context);
+        if (primaryUser == UserHandle.USER_NULL) {
+            return;
+        }
+        final Intent intent = new Intent(Intent.ACTION_INCIDENT_REPORT_READY);
+        intent.setComponent(new ComponentName(pkg, cls));
+        Log.d(TAG, "sendReportReadyBroadcast sending primaryUser=" + primaryUser + " userHandle=" + UserHandle.getUserHandleForUid(primaryUser) + " intent=" + intent);
+        context.sendBroadcastAsUserMultiplePermissions(intent, UserHandle.getUserHandleForUid(primaryUser), DUMP_AND_USAGE_STATS_PERMISSIONS);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

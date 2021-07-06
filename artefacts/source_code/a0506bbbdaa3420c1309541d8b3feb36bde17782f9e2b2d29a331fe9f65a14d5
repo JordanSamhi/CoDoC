@@ -1,0 +1,7 @@
+public void cellInfoList(int indicationType, ArrayList<android.hardware.radio.V1_0.CellInfo> records){
+    mRil.processIndication(indicationType);
+    ArrayList<CellInfo> response = RIL.convertHalCellInfoList(records);
+    if (RIL.RILJ_LOGD)
+        mRil.unsljLogRet(RIL_UNSOL_CELL_INFO_LIST, response);
+    mRil.mRilCellInfoListRegistrants.notifyRegistrants(new AsyncResult(null, response, null));
+}

@@ -1,0 +1,28 @@
+public boolean readDescriptor(BluetoothGattDescriptor descriptor){
+    if (VDBG)
+        Log.d(TAG, "readDescriptor() - uuid: " + descriptor.getUuid());
+    if (mService == null || mClientIf == 0)
+        return false;
+    BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
+    if (characteristic == null)
+        return false;
+    BluetoothGattService service = characteristic.getService();
+    if (service == null)
+        return false;
+    BluetoothDevice device = service.getDevice();
+    if (device == null)
+        return false;
+    synchronized (mDeviceBusyLock) {
+        if (mDeviceBusy)
+            return false;
+        mDeviceBusy = true;
+    }
+    try {
+        mService.readDescriptor(mClientIf, device.getAddress(), descriptor.getInstanceId(), AUTHENTICATION_NONE);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        mDeviceBusy = false;
+        return false;
+    }
+    return true;
+}

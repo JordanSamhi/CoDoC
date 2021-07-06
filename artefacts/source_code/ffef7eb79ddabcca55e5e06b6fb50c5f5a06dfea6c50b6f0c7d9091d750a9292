@@ -1,0 +1,89 @@
+public boolean loadWifiConfiguration(WifiConfiguration config, Map<String, String> networkExtras){
+    synchronized (mLock) {
+        if (config == null)
+            return false;
+        config.SSID = null;
+        if (getSsid() && !ArrayUtils.isEmpty(mSsid)) {
+            config.SSID = NativeUtil.encodeSsid(mSsid);
+        } else {
+            Log.e(TAG, "failed to read ssid");
+            return false;
+        }
+        config.networkId = -1;
+        if (getId()) {
+            config.networkId = mNetworkId;
+        } else {
+            Log.e(TAG, "getId failed");
+            return false;
+        }
+        config.getNetworkSelectionStatus().setNetworkSelectionBSSID(null);
+        if (getBssid() && !ArrayUtils.isEmpty(mBssid)) {
+            config.getNetworkSelectionStatus().setNetworkSelectionBSSID(NativeUtil.macAddressFromByteArray(mBssid));
+        }
+        config.hiddenSSID = false;
+        if (getScanSsid()) {
+            config.hiddenSSID = mScanSsid;
+        }
+        config.requirePmf = false;
+        if (getRequirePmf()) {
+            config.requirePmf = mRequirePmf;
+        }
+        config.wepTxKeyIndex = -1;
+        if (getWepTxKeyIdx()) {
+            config.wepTxKeyIndex = mWepTxKeyIdx;
+        }
+        for (int i = 0; i < 4; i++) {
+            config.wepKeys[i] = null;
+            if (getWepKey(i) && !ArrayUtils.isEmpty(mWepKey)) {
+                config.wepKeys[i] = NativeUtil.bytesToHexOrQuotedString(mWepKey);
+            }
+        }
+        if (getKeyMgmt()) {
+            BitSet keyMgmtMask = supplicantToWifiConfigurationKeyMgmtMask(mKeyMgmtMask);
+            config.allowedKeyManagement = removeFastTransitionFlags(keyMgmtMask);
+            config.allowedKeyManagement = removeSha256KeyMgmtFlags(config.allowedKeyManagement);
+        }
+        if (getProto()) {
+            config.allowedProtocols = supplicantToWifiConfigurationProtoMask(mProtoMask);
+        }
+        if (getAuthAlg()) {
+            config.allowedAuthAlgorithms = supplicantToWifiConfigurationAuthAlgMask(mAuthAlgMask);
+        }
+        if (getGroupCipher()) {
+            config.allowedGroupCiphers = supplicantToWifiConfigurationGroupCipherMask(mGroupCipherMask);
+        }
+        if (getPairwiseCipher()) {
+            config.allowedPairwiseCiphers = supplicantToWifiConfigurationPairwiseCipherMask(mPairwiseCipherMask);
+        }
+        if (getGroupMgmtCipher()) {
+            config.allowedGroupManagementCiphers = supplicantToWifiConfigurationGroupMgmtCipherMask(mGroupMgmtCipherMask);
+        }
+        config.preSharedKey = null;
+        if (getPskPassphrase() && !TextUtils.isEmpty(mPskPassphrase)) {
+            if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WAPI_PSK)) {
+                config.preSharedKey = mPskPassphrase;
+            } else {
+                config.preSharedKey = NativeUtil.addEnclosingQuotes(mPskPassphrase);
+            }
+        } else if (getPsk() && !ArrayUtils.isEmpty(mPsk)) {
+            config.preSharedKey = NativeUtil.hexStringFromByteArray(mPsk);
+        }
+        if (getIdStr() && !TextUtils.isEmpty(mIdStr)) {
+            Map<String, String> metadata = parseNetworkExtra(mIdStr);
+            networkExtras.putAll(metadata);
+        } else {
+            Log.w(TAG, "getIdStr failed or empty");
+        }
+        if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WAPI_CERT)) {
+            if (config.enterpriseConfig == null) {
+                return false;
+            }
+            config.enterpriseConfig.setEapMethod(WifiEnterpriseConfig.Eap.WAPI_CERT);
+            if (getWapiCertSuite() && !TextUtils.isEmpty(mWapiCertSuite)) {
+                config.enterpriseConfig.setWapiCertSuite(mWapiCertSuite);
+            }
+            return true;
+        }
+        return loadWifiEnterpriseConfig(config.SSID, config.enterpriseConfig);
+    }
+}

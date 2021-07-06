@@ -1,0 +1,5 @@
+public void writeNITZEvent(int phoneId, long timestamp){
+    TelephonyEvent event = new TelephonyEventBuilder(phoneId).setNITZ(timestamp).build();
+    addTelephonyEvent(event);
+    annotateInProgressCallSession(event.timestampMillis, phoneId, new CallSessionEventBuilder(TelephonyCallSession.Event.Type.NITZ_TIME).setNITZ(timestamp));
+}

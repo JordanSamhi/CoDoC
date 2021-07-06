@@ -1,0 +1,29 @@
+public int onShellCommand(ShellCommand shell){
+    PrintWriter pw = shell.getOutPrintWriter();
+    String cmd = shell.getNextArg();
+    if (cmd == null) {
+        return unknownCommand(pw);
+    }
+    switch(cmd) {
+        case "start":
+            startProtoLog(pw);
+            return 0;
+        case "stop":
+            stopProtoLog(pw, true);
+            return 0;
+        case "status":
+            logAndPrintln(pw, getStatus());
+            return 0;
+        case "enable":
+            return setLogging(shell, false, true);
+        case "enable-text":
+            mViewerConfig.loadViewerConfig(pw, VIEWER_CONFIG_FILENAME);
+            return setLogging(shell, true, true);
+        case "disable":
+            return setLogging(shell, false, false);
+        case "disable-text":
+            return setLogging(shell, true, false);
+        default:
+            return unknownCommand(pw);
+    }
+}

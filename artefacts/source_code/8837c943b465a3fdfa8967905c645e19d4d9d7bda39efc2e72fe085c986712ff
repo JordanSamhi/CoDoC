@@ -1,0 +1,17 @@
+public void approveReport(String uri){
+    final PendingReportRec rec;
+    synchronized (mLock) {
+        rec = findAndRemovePendingReportRecLocked(uri);
+        if (rec == null) {
+            Log.e(TAG, "confirmApproved: Couldn't find record for uri: " + uri);
+            return;
+        }
+    }
+    sendBroadcast();
+    Log.i(TAG, "Approved report: " + uri);
+    try {
+        rec.listener.onReportApproved();
+    } catch (RemoteException ex) {
+        Log.w(TAG, "Failed calling back for approval for: " + uri, ex);
+    }
+}

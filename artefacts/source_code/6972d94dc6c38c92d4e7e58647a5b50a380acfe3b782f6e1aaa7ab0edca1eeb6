@@ -1,0 +1,11 @@
+public static boolean moveToPreceding(Spannable text, PositionIterator iter, boolean extendSelection){
+    final int offset = iter.preceding(getSelectionEnd(text));
+    if (offset != PositionIterator.DONE) {
+        if (extendSelection) {
+            extendSelection(text, offset);
+        } else {
+            setSelection(text, offset);
+        }
+    }
+    return true;
+}

@@ -1,0 +1,11 @@
+public void reportStartInput(IBinder startInputToken){
+    final IInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.reportStartInput(startInputToken);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

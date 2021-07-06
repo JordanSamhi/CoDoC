@@ -1,0 +1,24 @@
+
+     * Starts playing an AudioTrack.
+     * <p>
+     * If track's creation mode is {@link #MODE_STATIC}, you must have called one of
+     * the write methods ({@link #write(byte[], int, int)}, {@link #write(byte[], int, int, int)},
+     * {@link #write(short[], int, int)}, {@link #write(short[], int, int, int)},
+     * {@link #write(float[], int, int, int)}, or {@link #write(ByteBuffer, int, int)}) prior to
+     * play().
+     * <p>
+     * If the mode is {@link #MODE_STREAM}, you can optionally prime the data path prior to
+     * calling play(), by writing up to <code>bufferSizeInBytes</code> (from constructor).
+     * If you don't call write() first, or if you call write() but with an insufficient amount of
+     * data, then the track will be in underrun state at play().  In this case,
+     * playback will not actually start playing until the data path is filled to a
+     * device-specific minimum level.  This requirement for the path to be filled
+     * to a minimum level is also true when resuming audio playback after calling stop().
+     * Similarly the buffer will need to be filled up again after
+     * the track underruns due to failure to call write() in a timely manner with sufficient data.
+     * For portability, an application should prime the data path to the maximum allowed
+     * by writing data until the write() method returns a short transfer count.
+     * This allows play() to start immediately, and reduces the chance of underrun.
+     *
+     * @throws IllegalStateException if the track isn't properly initialized
+     

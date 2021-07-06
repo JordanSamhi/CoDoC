@@ -1,0 +1,19 @@
+public void run(){
+    Slog.d(TAG, "Clearing local crypto state.");
+    try {
+        BackupEncryptionDb.newInstance(mContext).clear();
+    } catch (EncryptionDbException e) {
+        Slog.e(TAG, "Error clearing encryption database", e);
+    }
+    mCryptoSettings.clearAllSettingsForBackup();
+    try {
+        ProtoStore.createChunkListingStore(mContext).deleteAllProtos();
+    } catch (IOException e) {
+        Slog.e(TAG, "Error clearing chunk listing store", e);
+    }
+    try {
+        ProtoStore.createKeyValueListingStore(mContext).deleteAllProtos();
+    } catch (IOException e) {
+        Slog.e(TAG, "Error clearing key-value store", e);
+    }
+}

@@ -1,0 +1,10 @@
+public IpSecTransform.Builder setIpv4Encapsulation(@NonNull IpSecManager.UdpEncapsulationSocket localSocket, int remotePort){
+    Preconditions.checkNotNull(localSocket);
+    mConfig.setEncapType(ENCAP_ESPINUDP);
+    if (localSocket.getResourceId() == INVALID_RESOURCE_ID) {
+        throw new IllegalArgumentException("Invalid UdpEncapsulationSocket");
+    }
+    mConfig.setEncapSocketResourceId(localSocket.getResourceId());
+    mConfig.setEncapRemotePort(remotePort);
+    return this;
+}

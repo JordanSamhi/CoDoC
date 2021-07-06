@@ -1,0 +1,15 @@
+public static RoamingConsortium getRoamingConsortiumIE(InformationElement[] ies){
+    RoamingConsortium roamingConsortium = new RoamingConsortium();
+    if (ies != null) {
+        for (InformationElement ie : ies) {
+            if (ie.id == InformationElement.EID_ROAMING_CONSORTIUM) {
+                try {
+                    roamingConsortium.from(ie);
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "Failed to parse Roaming Consortium IE: " + e.getMessage());
+                }
+            }
+        }
+    }
+    return roamingConsortium;
+}

@@ -1,0 +1,13 @@
+public int loadLanguage(IBinder caller, String lang, String country, String variant){
+    if (!checkNonNull(lang)) {
+        return TextToSpeech.ERROR;
+    }
+    int retVal = onIsLanguageAvailable(lang, country, variant);
+    if (retVal == TextToSpeech.LANG_AVAILABLE || retVal == TextToSpeech.LANG_COUNTRY_AVAILABLE || retVal == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE) {
+        SpeechItem item = new LoadLanguageItem(caller, Binder.getCallingUid(), Binder.getCallingPid(), lang, country, variant);
+        if (mSynthHandler.enqueueSpeechItem(TextToSpeech.QUEUE_ADD, item) != TextToSpeech.SUCCESS) {
+            return TextToSpeech.ERROR;
+        }
+    }
+    return retVal;
+}

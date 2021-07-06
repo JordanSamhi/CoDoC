@@ -1,0 +1,57 @@
+public WifiConfiguration getWifiConfig(){
+    WifiConfiguration wifiConfig = new WifiConfiguration();
+    wifiConfig.FQDN = mConfig.getHomeSp().getFqdn();
+    wifiConfig.setPasspointUniqueId(mConfig.getUniqueId());
+    if (mConfig.getHomeSp().getRoamingConsortiumOis() != null) {
+        wifiConfig.roamingConsortiumIds = Arrays.copyOf(mConfig.getHomeSp().getRoamingConsortiumOis(), mConfig.getHomeSp().getRoamingConsortiumOis().length);
+    }
+    if (mConfig.getUpdateIdentifier() != Integer.MIN_VALUE) {
+        wifiConfig.updateIdentifier = Integer.toString(mConfig.getUpdateIdentifier());
+        if (isMeteredNetwork(mConfig)) {
+            wifiConfig.meteredOverride = WifiConfiguration.METERED_OVERRIDE_METERED;
+        }
+    }
+    wifiConfig.providerFriendlyName = mConfig.getHomeSp().getFriendlyName();
+    wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+    wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.IEEE8021X);
+    int carrierId = mConfig.getCarrierId();
+    if (carrierId == TelephonyManager.UNKNOWN_CARRIER_ID) {
+        carrierId = mBestGuessCarrierId;
+    }
+    wifiConfig.carrierId = carrierId;
+    wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+    WifiEnterpriseConfig enterpriseConfig = new WifiEnterpriseConfig();
+    enterpriseConfig.setRealm(mConfig.getCredential().getRealm());
+    enterpriseConfig.setDomainSuffixMatch(mConfig.getHomeSp().getFqdn());
+    if (mConfig.getCredential().getUserCredential() != null) {
+        buildEnterpriseConfigForUserCredential(enterpriseConfig, mConfig.getCredential().getUserCredential());
+        setAnonymousIdentityToNaiRealm(enterpriseConfig, mConfig.getCredential().getRealm());
+    } else if (mConfig.getCredential().getCertCredential() != null) {
+        buildEnterpriseConfigForCertCredential(enterpriseConfig);
+        setAnonymousIdentityToNaiRealm(enterpriseConfig, mConfig.getCredential().getRealm());
+    } else {
+        buildEnterpriseConfigForSimCredential(enterpriseConfig, mConfig.getCredential().getSimCredential());
+    }
+    if (!ArrayUtils.isEmpty(mConfig.getAaaServerTrustedNames())) {
+        enterpriseConfig.setDomainSuffixMatch(String.join(";", mConfig.getAaaServerTrustedNames()));
+        enterpriseConfig.setCaPath(SYSTEM_CA_STORE_PATH);
+    }
+    wifiConfig.enterpriseConfig = enterpriseConfig;
+    if (mConfig.getCredential().getCheckAaaServerCertStatus()) {
+        wifiConfig.enterpriseConfig.setOcsp(WifiEnterpriseConfig.OCSP_REQUIRE_CERT_STATUS);
+    }
+    wifiConfig.allowAutojoin = isAutojoinEnabled();
+    wifiConfig.shared = mIsShared;
+    wifiConfig.fromWifiNetworkSuggestion = mIsFromSuggestion;
+    wifiConfig.ephemeral = mIsFromSuggestion;
+    wifiConfig.creatorName = mPackageName;
+    wifiConfig.creatorUid = mCreatorUid;
+    wifiConfig.trusted = mIsTrusted;
+    if (mConfig.isMacRandomizationEnabled()) {
+        wifiConfig.macRandomizationSetting = WifiConfiguration.RANDOMIZATION_PERSISTENT;
+    } else {
+        wifiConfig.macRandomizationSetting = WifiConfiguration.RANDOMIZATION_NONE;
+    }
+    wifiConfig.meteredOverride = mConfig.getMeteredOverride();
+    return wifiConfig;
+}

@@ -1,0 +1,15 @@
+public boolean isPlaying(){
+    if (mLocalPlayer != null) {
+        return mLocalPlayer.isPlaying();
+    } else if (mAllowRemote && (mRemotePlayer != null)) {
+        try {
+            return mRemotePlayer.isPlaying(mRemoteToken);
+        } catch (RemoteException e) {
+            Log.w(TAG, "Problem checking ringtone: " + e);
+            return false;
+        }
+    } else {
+        Log.w(TAG, "Neither local nor remote playback available");
+        return false;
+    }
+}

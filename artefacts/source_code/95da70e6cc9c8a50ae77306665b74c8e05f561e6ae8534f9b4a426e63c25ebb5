@@ -1,0 +1,21 @@
+public void resetCarrierPrivilegedApps(){
+    Log.w(TAG, "SIM state is changed!");
+    for (PerAppInfo appInfo : mActiveNetworkSuggestionsPerApp.values()) {
+        int carrierId = mWifiCarrierInfoManager.getCarrierIdForPackageWithCarrierPrivileges(appInfo.packageName);
+        if (carrierId == appInfo.carrierId) {
+            continue;
+        }
+        if (carrierId == TelephonyManager.UNKNOWN_CARRIER_ID) {
+            Log.i(TAG, "Carrier privilege revoked for " + appInfo.packageName);
+            removeInternal(Collections.EMPTY_LIST, appInfo.packageName, appInfo);
+            mActiveNetworkSuggestionsPerApp.remove(appInfo.packageName);
+            continue;
+        }
+        Log.i(TAG, "Carrier privilege granted for " + appInfo.packageName);
+        appInfo.carrierId = carrierId;
+        for (ExtendedWifiNetworkSuggestion ewns : appInfo.extNetworkSuggestions) {
+            ewns.wns.wifiConfiguration.carrierId = carrierId;
+        }
+    }
+    saveToStore();
+}

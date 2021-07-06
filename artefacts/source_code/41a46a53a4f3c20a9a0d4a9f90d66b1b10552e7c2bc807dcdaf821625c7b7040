@@ -1,0 +1,21 @@
+public void sendRttModifyRequest(boolean rttOn){
+    logi("sendRttModifyRequest");
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            loge("sendRttModifyRequest::no session");
+        }
+        if (rttOn && mCallProfile.mMediaProfile.isRttCall()) {
+            logi("sendRttModifyRequest::Already RTT call, ignoring request to turn on.");
+            return;
+        } else if (!rttOn && !mCallProfile.mMediaProfile.isRttCall()) {
+            logi("sendRttModifyRequest::Not RTT call, ignoring request to turn off.");
+            return;
+        }
+        Parcel p = Parcel.obtain();
+        mCallProfile.writeToParcel(p, 0);
+        p.setDataPosition(0);
+        ImsCallProfile requestedProfile = new ImsCallProfile(p);
+        requestedProfile.mMediaProfile.setRttMode(rttOn ? ImsStreamMediaProfile.RTT_MODE_FULL : ImsStreamMediaProfile.RTT_MODE_DISABLED);
+        mSession.sendRttModifyRequest(requestedProfile);
+    }
+}

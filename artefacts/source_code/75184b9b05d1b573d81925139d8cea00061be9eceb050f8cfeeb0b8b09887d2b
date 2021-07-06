@@ -1,0 +1,21 @@
+public void read() throws XmlPullParserException, IOException{
+    for (StoreFile sharedStoreFile : mSharedStores) {
+        resetStoreData(sharedStoreFile);
+    }
+    if (mUserStores != null) {
+        for (StoreFile userStoreFile : mUserStores) {
+            resetStoreData(userStoreFile);
+        }
+    }
+    long readStartTime = mClock.getElapsedSinceBootMillis();
+    readFromSharedStoreFiles();
+    if (mUserStores != null) {
+        readFromUserStoreFiles();
+    }
+    long readTime = mClock.getElapsedSinceBootMillis() - readStartTime;
+    try {
+        mWifiMetrics.noteWifiConfigStoreReadDuration(toIntExact(readTime));
+    } catch (ArithmeticException e) {
+    }
+    Log.d(TAG, "Reading from all stores completed in " + readTime + " ms.");
+}

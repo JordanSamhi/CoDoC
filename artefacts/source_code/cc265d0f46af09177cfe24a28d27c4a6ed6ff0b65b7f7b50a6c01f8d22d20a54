@@ -1,0 +1,18 @@
+public boolean find(int timeout){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("find"))
+            return false;
+        if (timeout < 0) {
+            Log.e(TAG, "Invalid timeout value: " + timeout);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("find(" + timeout + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.find(timeout));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

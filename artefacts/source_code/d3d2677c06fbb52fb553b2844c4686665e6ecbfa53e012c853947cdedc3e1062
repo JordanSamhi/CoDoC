@@ -1,0 +1,17 @@
+public void deliverResult(BitmapResult result){
+    Bitmap bitmap = result != null ? result.bitmap : null;
+    if (isReset()) {
+        if (bitmap != null) {
+            onReleaseResources(bitmap);
+        }
+        return;
+    }
+    Bitmap oldBitmap = mBitmap;
+    mBitmap = bitmap;
+    if (isStarted()) {
+        super.deliverResult(result);
+    }
+    if (oldBitmap != null && oldBitmap != bitmap && !oldBitmap.isRecycled()) {
+        onReleaseResources(oldBitmap);
+    }
+}

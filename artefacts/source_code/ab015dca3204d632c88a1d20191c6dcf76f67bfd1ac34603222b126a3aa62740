@@ -1,0 +1,6 @@
+public boolean isWfcEnabledByPlatform(){
+    if (SystemProperties.getInt(PROPERTY_DBG_WFC_AVAIL_OVERRIDE + Integer.toString(mPhoneId), SYSTEM_PROPERTY_NOT_SET) == 1 || SystemProperties.getInt(PROPERTY_DBG_WFC_AVAIL_OVERRIDE, SYSTEM_PROPERTY_NOT_SET) == 1) {
+        return true;
+    }
+    return mContext.getResources().getBoolean(com.android.internal.R.bool.config_device_wfc_ims_available) && getBooleanCarrierConfig(CarrierConfigManager.KEY_CARRIER_WFC_IMS_AVAILABLE_BOOL) && isGbaValid();
+}

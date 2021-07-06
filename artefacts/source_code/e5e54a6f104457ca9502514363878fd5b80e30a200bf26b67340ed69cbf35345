@@ -1,0 +1,14 @@
+public int delete(@NonNull Uri url, @Nullable Bundle extras) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    beforeRemote();
+    try {
+        return mContentProvider.delete(mPackageName, mAttributionTag, url, extras);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

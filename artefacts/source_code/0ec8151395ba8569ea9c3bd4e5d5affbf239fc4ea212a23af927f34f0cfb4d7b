@@ -1,0 +1,13 @@
+public Map<AutofillId, Set<String>> getManuallyEnteredField(){
+    if (mManuallyFilledFieldIds == null || mManuallyFilledDatasetIds == null) {
+        return Collections.emptyMap();
+    }
+    final int size = mManuallyFilledFieldIds.size();
+    final Map<AutofillId, Set<String>> manuallyFilledFields = new ArrayMap<>(size);
+    for (int i = 0; i < size; i++) {
+        final AutofillId fieldId = mManuallyFilledFieldIds.get(i);
+        final ArrayList<String> datasetIds = mManuallyFilledDatasetIds.get(i);
+        manuallyFilledFields.put(fieldId, new ArraySet<>(datasetIds));
+    }
+    return manuallyFilledFields;
+}

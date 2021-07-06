@@ -1,0 +1,11 @@
+public long getCacheQuotaBytes(@NonNull UUID storageUuid) throws IOException{
+    try {
+        final ApplicationInfo app = mContext.getApplicationInfo();
+        return mStorageManager.getCacheQuotaBytes(convert(storageUuid), app.uid);
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,27 @@
+public void migrateNetworkScorerAppSettingIfNeeded(){
+    final String scorerAppPkgNameSetting = mSettingsFacade.getString(mContext, Settings.Global.NETWORK_SCORER_APP);
+    if (TextUtils.isEmpty(scorerAppPkgNameSetting)) {
+        return;
+    }
+    final NetworkScorerAppData currentAppData = getActiveScorer();
+    if (currentAppData == null) {
+        return;
+    }
+    if (DEBUG) {
+        Log.d(TAG, "Migrating Settings.Global.NETWORK_SCORER_APP " + "(" + scorerAppPkgNameSetting + ")...");
+    }
+    final ComponentName enableUseOpenWifiActivity = currentAppData.getEnableUseOpenWifiActivity();
+    final String useOpenWifiSetting = mSettingsFacade.getString(mContext, Settings.Global.USE_OPEN_WIFI_PACKAGE);
+    if (TextUtils.isEmpty(useOpenWifiSetting) && enableUseOpenWifiActivity != null && scorerAppPkgNameSetting.equals(enableUseOpenWifiActivity.getPackageName())) {
+        mSettingsFacade.putString(mContext, Settings.Global.USE_OPEN_WIFI_PACKAGE, scorerAppPkgNameSetting);
+        if (DEBUG) {
+            Log.d(TAG, "Settings.Global.USE_OPEN_WIFI_PACKAGE set to " + "'" + scorerAppPkgNameSetting + "'.");
+        }
+    }
+    mSettingsFacade.putString(mContext, Settings.Global.NETWORK_SCORER_APP, null);
+    if (DEBUG) {
+        Log.d(TAG, "Settings.Global.NETWORK_SCORER_APP migration complete.");
+        final String setting = mSettingsFacade.getString(mContext, Settings.Global.USE_OPEN_WIFI_PACKAGE);
+        Log.d(TAG, "Settings.Global.USE_OPEN_WIFI_PACKAGE is: '" + setting + "'.");
+    }
+}

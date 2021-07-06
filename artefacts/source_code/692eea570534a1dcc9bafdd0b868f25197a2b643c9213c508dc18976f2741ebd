@@ -1,0 +1,93 @@
+public int getPropertyList(ContentProviderClient provider, String volumeName, MtpStorageManager.MtpObject object, MtpPropertyList list){
+    Cursor c = null;
+    int id = object.getId();
+    String path = object.getPath().toString();
+    for (Property property : mProperties) {
+        if (property.column != -1 && c == null) {
+            try {
+                final Uri uri = MtpDatabase.getObjectPropertiesUri(object.getFormat(), volumeName);
+                c = provider.query(uri, mColumns, PATH_WHERE, new String[] { path }, null, null);
+                if (c != null && !c.moveToNext()) {
+                    c.close();
+                    c = null;
+                }
+            } catch (IllegalArgumentException e) {
+                return MtpConstants.RESPONSE_INVALID_OBJECT_PROP_CODE;
+            } catch (RemoteException e) {
+                Log.e(TAG, "Mediaprovider lookup failed");
+            }
+        }
+        switch(property.code) {
+            case MtpConstants.PROPERTY_PROTECTION_STATUS:
+                list.append(id, property.code, property.type, 0);
+                break;
+            case MtpConstants.PROPERTY_NAME:
+            case MtpConstants.PROPERTY_OBJECT_FILE_NAME:
+            case MtpConstants.PROPERTY_DISPLAY_NAME:
+                list.append(id, property.code, object.getName());
+                break;
+            case MtpConstants.PROPERTY_DATE_MODIFIED:
+            case MtpConstants.PROPERTY_DATE_ADDED:
+                list.append(id, property.code, format_date_time(object.getModifiedTime()));
+                break;
+            case MtpConstants.PROPERTY_STORAGE_ID:
+                list.append(id, property.code, property.type, object.getStorageId());
+                break;
+            case MtpConstants.PROPERTY_OBJECT_FORMAT:
+                list.append(id, property.code, property.type, object.getFormat());
+                break;
+            case MtpConstants.PROPERTY_OBJECT_SIZE:
+                list.append(id, property.code, property.type, object.getSize());
+                break;
+            case MtpConstants.PROPERTY_PARENT_OBJECT:
+                list.append(id, property.code, property.type, object.getParent().isRoot() ? 0 : object.getParent().getId());
+                break;
+            case MtpConstants.PROPERTY_PERSISTENT_UID:
+                long puid = (object.getPath().toString().hashCode() << 32) + object.getModifiedTime();
+                list.append(id, property.code, property.type, puid);
+                break;
+            case MtpConstants.PROPERTY_ORIGINAL_RELEASE_DATE:
+                int year = 0;
+                if (c != null)
+                    year = c.getInt(property.column);
+                String dateTime = Integer.toString(year) + "0101T000000";
+                list.append(id, property.code, dateTime);
+                break;
+            case MtpConstants.PROPERTY_TRACK:
+                int track = 0;
+                if (c != null)
+                    track = c.getInt(property.column);
+                list.append(id, property.code, MtpConstants.TYPE_UINT16, track % 1000);
+                break;
+            case MtpConstants.PROPERTY_AUDIO_WAVE_CODEC:
+            case MtpConstants.PROPERTY_AUDIO_BITRATE:
+            case MtpConstants.PROPERTY_SAMPLE_RATE:
+                list.append(id, property.code, MtpConstants.TYPE_UINT32, 0);
+                break;
+            case MtpConstants.PROPERTY_BITRATE_TYPE:
+            case MtpConstants.PROPERTY_NUMBER_OF_CHANNELS:
+                list.append(id, property.code, MtpConstants.TYPE_UINT16, 0);
+                break;
+            default:
+                switch(property.type) {
+                    case MtpConstants.TYPE_UNDEFINED:
+                        list.append(id, property.code, property.type, 0);
+                        break;
+                    case MtpConstants.TYPE_STR:
+                        String value = "";
+                        if (c != null)
+                            value = c.getString(property.column);
+                        list.append(id, property.code, value);
+                        break;
+                    default:
+                        long longValue = 0L;
+                        if (c != null)
+                            longValue = c.getLong(property.column);
+                        list.append(id, property.code, property.type, longValue);
+                }
+        }
+    }
+    if (c != null)
+        c.close();
+    return MtpConstants.RESPONSE_OK;
+}

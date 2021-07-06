@@ -1,0 +1,15 @@
+public boolean setWpsModelName(@NonNull String ifaceName, String modelName){
+    synchronized (mLock) {
+        final String methodStr = "setWpsModelName";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return false;
+        try {
+            SupplicantStatus status = iface.setWpsModelName(modelName);
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

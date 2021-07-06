@@ -1,0 +1,10 @@
+public boolean isActiveSubId(int subId){
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            return iSub.isActiveSubId(subId, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return false;
+}

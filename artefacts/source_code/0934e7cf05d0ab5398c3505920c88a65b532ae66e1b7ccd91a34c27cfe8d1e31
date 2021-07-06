@@ -1,0 +1,16 @@
+public long[] getRegisteredExperimentIds() throws StatsUnavailableException{
+    synchronized (sLock) {
+        try {
+            IStatsManagerService service = getIStatsManagerServiceLocked();
+            return service.getRegisteredExperimentIds();
+        } catch (RemoteException e) {
+            if (DEBUG) {
+                Log.d(TAG, "Failed to connect to StatsManagerService when getting " + "registered experiment IDs");
+            }
+            throw new StatsUnavailableException("could not connect", e);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to getRegisteredExperimentIds in statsmanager");
+            throw new StatsUnavailableException(e.getMessage(), e);
+        }
+    }
+}

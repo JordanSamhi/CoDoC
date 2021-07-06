@@ -1,0 +1,8 @@
+public int fullyConnectSync(Context srcContext, Handler srcHandler, Handler dstHandler){
+    int status = connectSync(srcContext, srcHandler, dstHandler);
+    if (status == STATUS_SUCCESSFUL) {
+        Message response = sendMessageSynchronously(CMD_CHANNEL_FULL_CONNECTION);
+        status = response.arg1;
+    }
+    return status;
+}

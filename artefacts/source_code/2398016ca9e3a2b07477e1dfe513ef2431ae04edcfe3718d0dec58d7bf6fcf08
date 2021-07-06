@@ -1,0 +1,8 @@
+public void update(MotionEvent event, int policyFlags){
+    mMetaState = event.getMetaState();
+    boolean moved = detectMovement(event);
+    cacheLastEvent(event, policyFlags, mLastMotionEvent == null || moved);
+    if (moved) {
+        rescheduleClick(mDelay);
+    }
+}

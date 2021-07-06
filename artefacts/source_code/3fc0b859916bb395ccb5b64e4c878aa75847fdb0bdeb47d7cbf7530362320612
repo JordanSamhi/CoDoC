@@ -1,0 +1,9 @@
+public synchronized PhoneCapability getStaticPhoneCapability(){
+    if (getDefaultCapability().equals(mStaticCapability)) {
+        log("getStaticPhoneCapability: sending the request for getting PhoneCapability");
+        Message callback = Message.obtain(mHandler, EVENT_GET_PHONE_CAPABILITY_DONE);
+        mRadioConfig.getPhoneCapability(callback);
+    }
+    log("getStaticPhoneCapability: mStaticCapability " + mStaticCapability);
+    return mStaticCapability;
+}

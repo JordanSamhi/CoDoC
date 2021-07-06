@@ -1,0 +1,21 @@
+
+     * For testing purposes only. Not for third party applications.
+     *
+     * Initialize data injection mode and create a client for data injection. SensorService should
+     * already be operating in DATA_INJECTION mode for this call succeed. To set SensorService into
+     * DATA_INJECTION mode "adb shell dumpsys sensorservice data_injection" needs to be called
+     * through adb. Typically this is done using a host side test.  This mode is expected to be used
+     * only for testing purposes. If the HAL is set to data injection mode, it will ignore the input
+     * from physical sensors and read sensor data that is injected from the test application. This
+     * mode is used for testing vendor implementations for various algorithms like Rotation Vector,
+     * Significant Motion, Step Counter etc. Not all HALs support DATA_INJECTION. This method will
+     * fail in those cases. Once this method succeeds, the test can call
+     * {@link injectSensorData(Sensor, float[], int, long)} to inject sensor data into the HAL.
+     *
+     * @param enable True to initialize a client in DATA_INJECTION mode.
+     *               False to clean up the native resources.
+     *
+     * @return true if the HAL supports data injection and false
+     *         otherwise.
+     * @hide
+     

@@ -1,0 +1,16 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeString(deviceName);
+    dest.writeString(deviceAddress);
+    dest.writeString(primaryDeviceType);
+    dest.writeString(secondaryDeviceType);
+    dest.writeInt(wpsConfigMethodsSupported);
+    dest.writeInt(deviceCapability);
+    dest.writeInt(groupCapability);
+    dest.writeInt(status);
+    if (wfdInfo != null) {
+        dest.writeInt(1);
+        wfdInfo.writeToParcel(dest, flags);
+    } else {
+        dest.writeInt(0);
+    }
+}

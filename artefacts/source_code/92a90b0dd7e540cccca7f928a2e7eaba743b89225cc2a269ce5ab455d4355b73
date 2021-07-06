@@ -1,0 +1,28 @@
+public static void longClickView(InstrumentationTestCase test, View v){
+    int[] xy = new int[2];
+    v.getLocationOnScreen(xy);
+    final int viewWidth = v.getWidth();
+    final int viewHeight = v.getHeight();
+    final float x = xy[0] + (viewWidth / 2.0f);
+    float y = xy[1] + (viewHeight / 2.0f);
+    Instrumentation inst = test.getInstrumentation();
+    long downTime = SystemClock.uptimeMillis();
+    long eventTime = SystemClock.uptimeMillis();
+    MotionEvent event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
+    eventTime = SystemClock.uptimeMillis();
+    final int touchSlop = ViewConfiguration.get(v.getContext()).getScaledTouchSlop();
+    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, x + touchSlop / 2, y + touchSlop / 2, 0);
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
+    try {
+        Thread.sleep((long) (ViewConfiguration.getLongPressTimeout() * 1.5f));
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    eventTime = SystemClock.uptimeMillis();
+    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, y, 0);
+    inst.sendPointerSync(event);
+    inst.waitForIdleSync();
+}

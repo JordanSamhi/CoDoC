@@ -1,0 +1,34 @@
+public static int bidi(int dir, char[] chs, byte[] chInfo){
+    if (chs == null || chInfo == null) {
+        throw new NullPointerException();
+    }
+    final int length = chs.length;
+    if (chInfo.length < length) {
+        throw new IndexOutOfBoundsException();
+    }
+    final byte paraLevel;
+    switch(dir) {
+        case Layout.DIR_REQUEST_LTR:
+            paraLevel = Bidi.LTR;
+            break;
+        case Layout.DIR_REQUEST_RTL:
+            paraLevel = Bidi.RTL;
+            break;
+        case Layout.DIR_REQUEST_DEFAULT_LTR:
+            paraLevel = Bidi.LEVEL_DEFAULT_LTR;
+            break;
+        case Layout.DIR_REQUEST_DEFAULT_RTL:
+            paraLevel = Bidi.LEVEL_DEFAULT_RTL;
+            break;
+        default:
+            paraLevel = Bidi.LTR;
+            break;
+    }
+    final Bidi icuBidi = new Bidi(length, 0);
+    icuBidi.setPara(chs, paraLevel, null);
+    for (int i = 0; i < length; i++) {
+        chInfo[i] = icuBidi.getLevelAt(i);
+    }
+    final byte result = icuBidi.getParaLevel();
+    return (result & 0x1) == 0 ? Layout.DIR_LEFT_TO_RIGHT : Layout.DIR_RIGHT_TO_LEFT;
+}

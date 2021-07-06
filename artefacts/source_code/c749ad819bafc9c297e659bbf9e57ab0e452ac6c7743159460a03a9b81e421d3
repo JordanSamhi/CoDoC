@@ -1,0 +1,85 @@
+public static SubmitPdu getSubmitPdu(String scAddress, String destinationAddress, String message, boolean statusReportRequested, byte[] header, int encoding, int languageTable, int languageShiftTable, int validityPeriod){
+    if (message == null || destinationAddress == null) {
+        return null;
+    }
+    if (encoding == ENCODING_UNKNOWN) {
+        TextEncodingDetails ted = calculateLength(message, false);
+        encoding = ted.codeUnitSize;
+        languageTable = ted.languageTable;
+        languageShiftTable = ted.languageShiftTable;
+        if (encoding == ENCODING_7BIT && (languageTable != 0 || languageShiftTable != 0)) {
+            if (header != null) {
+                SmsHeader smsHeader = SmsHeader.fromByteArray(header);
+                if (smsHeader.languageTable != languageTable || smsHeader.languageShiftTable != languageShiftTable) {
+                    Rlog.w(LOG_TAG, "Updating language table in SMS header: " + smsHeader.languageTable + " -> " + languageTable + ", " + smsHeader.languageShiftTable + " -> " + languageShiftTable);
+                    smsHeader.languageTable = languageTable;
+                    smsHeader.languageShiftTable = languageShiftTable;
+                    header = SmsHeader.toByteArray(smsHeader);
+                }
+            } else {
+                SmsHeader smsHeader = new SmsHeader();
+                smsHeader.languageTable = languageTable;
+                smsHeader.languageShiftTable = languageShiftTable;
+                header = SmsHeader.toByteArray(smsHeader);
+            }
+        }
+    }
+    SubmitPdu ret = new SubmitPdu();
+    int validityPeriodFormat = VALIDITY_PERIOD_FORMAT_NONE;
+    int relativeValidityPeriod = INVALID_VALIDITY_PERIOD;
+    if ((relativeValidityPeriod = getRelativeValidityPeriod(validityPeriod)) >= 0) {
+        validityPeriodFormat = VALIDITY_PERIOD_FORMAT_RELATIVE;
+    }
+    byte mtiByte = (byte) (0x01 | (validityPeriodFormat << 0x03) | (header != null ? 0x40 : 0x00));
+    ByteArrayOutputStream bo = getSubmitPduHead(scAddress, destinationAddress, mtiByte, statusReportRequested, ret);
+    if (bo == null)
+        return ret;
+    byte[] userData;
+    try {
+        if (encoding == ENCODING_7BIT) {
+            userData = GsmAlphabet.stringToGsm7BitPackedWithHeader(message, header, languageTable, languageShiftTable);
+        } else {
+            try {
+                userData = encodeUCS2(message, header);
+            } catch (UnsupportedEncodingException uex) {
+                Rlog.e(LOG_TAG, "Implausible UnsupportedEncodingException ", uex);
+                return null;
+            }
+        }
+    } catch (EncodeException ex) {
+        if (ex.getError() == EncodeException.ERROR_EXCEED_SIZE) {
+            Rlog.e(LOG_TAG, "Exceed size limitation EncodeException", ex);
+            return null;
+        } else {
+            try {
+                userData = encodeUCS2(message, header);
+                encoding = ENCODING_16BIT;
+            } catch (EncodeException ex1) {
+                Rlog.e(LOG_TAG, "Exceed size limitation EncodeException", ex1);
+                return null;
+            } catch (UnsupportedEncodingException uex) {
+                Rlog.e(LOG_TAG, "Implausible UnsupportedEncodingException ", uex);
+                return null;
+            }
+        }
+    }
+    if (encoding == ENCODING_7BIT) {
+        if ((0xff & userData[0]) > MAX_USER_DATA_SEPTETS) {
+            Rlog.e(LOG_TAG, "Message too long (" + (0xff & userData[0]) + " septets)");
+            return null;
+        }
+        bo.write(0x00);
+    } else {
+        if ((0xff & userData[0]) > MAX_USER_DATA_BYTES) {
+            Rlog.e(LOG_TAG, "Message too long (" + (0xff & userData[0]) + " bytes)");
+            return null;
+        }
+        bo.write(0x08);
+    }
+    if (validityPeriodFormat == VALIDITY_PERIOD_FORMAT_RELATIVE) {
+        bo.write(relativeValidityPeriod);
+    }
+    bo.write(userData, 0, userData.length);
+    ret.encodedMessage = bo.toByteArray();
+    return ret;
+}

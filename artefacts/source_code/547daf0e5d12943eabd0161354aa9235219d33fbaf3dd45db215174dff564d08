@@ -1,0 +1,25 @@
+public Network registerNetworkAgent(Messenger messenger, NetworkInfo networkInfo, LinkProperties linkProperties, NetworkCapabilities networkCapabilities, int currentScore, NetworkAgentConfig networkAgentConfig, int providerId){
+    if (networkCapabilities.hasTransport(TRANSPORT_TEST)) {
+        enforceAnyPermissionOf(Manifest.permission.MANAGE_TEST_NETWORKS);
+        networkCapabilities = new NetworkCapabilities(networkCapabilities);
+        networkCapabilities.restrictCapabilitesForTestNetwork(Binder.getCallingUid());
+    } else {
+        enforceNetworkFactoryPermission();
+    }
+    LinkProperties lp = new LinkProperties(linkProperties);
+    final NetworkCapabilities nc = new NetworkCapabilities(networkCapabilities);
+    final NetworkAgentInfo nai = new NetworkAgentInfo(messenger, new AsyncChannel(), new Network(mNetIdManager.reserveNetId()), new NetworkInfo(networkInfo), lp, nc, currentScore, mContext, mTrackerHandler, new NetworkAgentConfig(networkAgentConfig), this, mNetd, mDnsResolver, mNMS, providerId, Binder.getCallingUid());
+    nai.getAndSetNetworkCapabilities(mixInCapabilities(nai, nc));
+    processLinkPropertiesFromAgent(nai, nai.linkProperties);
+    final String extraInfo = networkInfo.getExtraInfo();
+    final String name = TextUtils.isEmpty(extraInfo) ? nai.networkCapabilities.getSsid() : extraInfo;
+    if (DBG)
+        log("registerNetworkAgent " + nai);
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mDeps.getNetworkStack().makeNetworkMonitor(nai.network, name, new NetworkMonitorCallbacks(nai));
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+    return nai.network;
+}

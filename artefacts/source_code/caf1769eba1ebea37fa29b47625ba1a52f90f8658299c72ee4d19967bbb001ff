@@ -1,0 +1,9 @@
+public void registerForCarrierPrivilegeRulesLoaded(Handler h, int what, Object obj){
+    synchronized (mLock) {
+        Registrant r = new Registrant(h, what, obj);
+        mCarrierPrivilegeRegistrants.add(r);
+        if (areCarrierPriviligeRulesLoaded()) {
+            r.notifyRegistrant();
+        }
+    }
+}

@@ -1,0 +1,43 @@
+public int getLogLevel(){
+    switch(getTag()) {
+        case TAG_ADB_SHELL_INTERACTIVE:
+        case TAG_ADB_SHELL_CMD:
+        case TAG_SYNC_RECV_FILE:
+        case TAG_SYNC_SEND_FILE:
+        case TAG_APP_PROCESS_START:
+        case TAG_KEYGUARD_DISMISSED:
+        case TAG_KEYGUARD_SECURED:
+        case TAG_OS_STARTUP:
+        case TAG_OS_SHUTDOWN:
+        case TAG_LOGGING_STARTED:
+        case TAG_LOGGING_STOPPED:
+        case TAG_MEDIA_MOUNT:
+        case TAG_MEDIA_UNMOUNT:
+        case TAG_PASSWORD_EXPIRATION_SET:
+        case TAG_PASSWORD_COMPLEXITY_SET:
+        case TAG_PASSWORD_HISTORY_LENGTH_SET:
+        case TAG_MAX_SCREEN_LOCK_TIMEOUT_SET:
+        case TAG_MAX_PASSWORD_ATTEMPTS_SET:
+        case TAG_USER_RESTRICTION_ADDED:
+        case TAG_USER_RESTRICTION_REMOVED:
+        case TAG_CAMERA_POLICY_SET:
+            return LEVEL_INFO;
+        case TAG_CERT_AUTHORITY_REMOVED:
+        case TAG_CRYPTO_SELF_TEST_COMPLETED:
+            return getSuccess() ? LEVEL_INFO : LEVEL_ERROR;
+        case TAG_CERT_AUTHORITY_INSTALLED:
+        case TAG_KEYGUARD_DISMISS_AUTH_ATTEMPT:
+        case TAG_KEY_IMPORT:
+        case TAG_KEY_DESTRUCTION:
+        case TAG_KEY_GENERATED:
+            return getSuccess() ? LEVEL_INFO : LEVEL_WARNING;
+        case TAG_LOG_BUFFER_SIZE_CRITICAL:
+        case TAG_WIPE_FAILURE:
+        case TAG_KEY_INTEGRITY_VIOLATION:
+            return LEVEL_ERROR;
+        case TAG_CERT_VALIDATION_FAILURE:
+            return LEVEL_WARNING;
+        default:
+            return LEVEL_INFO;
+    }
+}

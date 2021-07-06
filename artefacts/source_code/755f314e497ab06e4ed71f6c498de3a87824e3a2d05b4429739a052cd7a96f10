@@ -1,0 +1,30 @@
+public void startGroupEvent(WifiP2pGroup group){
+    if (group == null) {
+        if (DBG)
+            Log.d(TAG, "Cannot start group event due to null group");
+        return;
+    }
+    synchronized (mLock) {
+        if (mCurrentGroupEvent != null) {
+            if (DBG)
+                Log.d(TAG, "Overlapping group event!");
+            endGroupEvent();
+        }
+        while (mGroupEventList.size() >= MAX_GROUP_EVENTS) {
+            mGroupEventList.remove(0);
+        }
+        mCurrentGroupEventStartTime = mClock.getElapsedSinceBootMillis();
+        if (group.getClientList().size() == 0) {
+            mCurrentGroupEventIdleStartTime = mClock.getElapsedSinceBootMillis();
+        } else {
+            mCurrentGroupEventIdleStartTime = 0;
+        }
+        mCurrentGroupEvent = new GroupEvent();
+        mCurrentGroupEvent.netId = group.getNetworkId();
+        mCurrentGroupEvent.startTimeMillis = mClock.getWallClockMillis();
+        mCurrentGroupEvent.numConnectedClients = group.getClientList().size();
+        mCurrentGroupEvent.channelFrequency = group.getFrequency();
+        mCurrentGroupEvent.groupRole = group.isGroupOwner() ? GroupEvent.GROUP_OWNER : GroupEvent.GROUP_CLIENT;
+        mGroupEventList.add(mCurrentGroupEvent);
+    }
+}

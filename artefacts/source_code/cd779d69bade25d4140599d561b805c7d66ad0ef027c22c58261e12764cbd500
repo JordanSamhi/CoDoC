@@ -1,0 +1,6 @@
+public List<MediaRoute2Info> getSelectedRoutes(@NonNull RoutingSessionInfo sessionInfo){
+    Objects.requireNonNull(sessionInfo, "sessionInfo must not be null");
+    synchronized (mRoutesLock) {
+        return sessionInfo.getSelectedRoutes().stream().map(mRoutes::get).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+}

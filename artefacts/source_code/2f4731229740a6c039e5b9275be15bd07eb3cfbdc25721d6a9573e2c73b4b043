@@ -1,0 +1,16 @@
+public void onItemClick(AdapterView<?> parent, View view, int position, long id){
+    if (position < 0) {
+        return;
+    }
+    final RecipientEntry entry = getAdapter().getItem(position);
+    if (entry.getEntryType() == RecipientEntry.ENTRY_TYPE_PERMISSION_REQUEST) {
+        if (mPermissionsRequestItemClickedListener != null) {
+            mPermissionsRequestItemClickedListener.onPermissionsRequestItemClicked(this, entry.getPermissions());
+        }
+        return;
+    }
+    final int charactersTyped = submitItemAtPosition(position);
+    if (charactersTyped > -1 && mRecipientEntryItemClickedListener != null) {
+        mRecipientEntryItemClickedListener.onRecipientEntryItemClicked(charactersTyped, position);
+    }
+}

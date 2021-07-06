@@ -1,0 +1,15 @@
+public CharSequence loadUnsafeLabel(PackageManager pm){
+    if (nonLocalizedLabel != null) {
+        return nonLocalizedLabel;
+    }
+    if (labelRes != 0) {
+        CharSequence label = pm.getText(packageName, labelRes, getApplicationInfo());
+        if (label != null) {
+            return label.toString().trim();
+        }
+    }
+    if (name != null) {
+        return name;
+    }
+    return packageName;
+}

@@ -1,0 +1,11 @@
+public void registerForDataRegStateOrRatChanged(@TransportType int transport, Handler h, int what, Object obj){
+    Registrant r = new Registrant(h, what, obj);
+    if (mDataRegStateOrRatChangedRegistrants.get(transport) == null) {
+        mDataRegStateOrRatChangedRegistrants.put(transport, new RegistrantList());
+    }
+    mDataRegStateOrRatChangedRegistrants.get(transport).add(r);
+    Pair<Integer, Integer> registrationInfo = getRegistrationInfo(transport);
+    if (registrationInfo != null) {
+        r.notifyResult(registrationInfo);
+    }
+}

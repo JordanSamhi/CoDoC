@@ -1,0 +1,39 @@
+public void visit(String textTraceLine){
+    final TraceMarkLine line = TraceMarkLine.parse(textTraceLine);
+    if (line == null) {
+        return;
+    }
+    if (line.isAsync) {
+        if (mTraceLineFilter.test(line)) {
+            if (line.isBegin) {
+                mPendingStarts.put(line.name, line);
+            } else {
+                final TraceMarkLine start = mPendingStarts.remove(line.name);
+                if (start != null) {
+                    addSlice(start, line);
+                }
+            }
+        }
+        return;
+    }
+    int depth = 1;
+    if (line.isBegin) {
+        final Integer existingDepth = mDepthMap.putIfAbsent(line.taskPid, 1);
+        if (existingDepth != null) {
+            mDepthMap.put(line.taskPid, depth = existingDepth + 1);
+        }
+        if (mTraceLineFilter.test(line)) {
+            mPendingStarts.put(getSyncPendingStartKey(line, depth), line);
+        }
+    } else {
+        final Integer existingDepth = mDepthMap.get(line.taskPid);
+        if (existingDepth != null) {
+            depth = existingDepth;
+            mDepthMap.put(line.taskPid, existingDepth - 1);
+        }
+        final TraceMarkLine begin = mPendingStarts.remove(getSyncPendingStartKey(line, depth));
+        if (begin != null) {
+            addSlice(begin, line);
+        }
+    }
+}

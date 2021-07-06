@@ -1,0 +1,38 @@
+public static ImsiEncryptionInfo getCarrierInfoForImsiEncryption(int keyType, Context context, String operatorNumeric){
+    String mcc = "";
+    String mnc = "";
+    if (!TextUtils.isEmpty(operatorNumeric)) {
+        mcc = operatorNumeric.substring(0, 3);
+        mnc = operatorNumeric.substring(3);
+        Log.i(LOG_TAG, "using values for mnc, mcc: " + mnc + "," + mcc);
+    } else {
+        Log.e(LOG_TAG, "Invalid networkOperator: " + operatorNumeric);
+        return null;
+    }
+    Cursor findCursor = null;
+    try {
+        ContentResolver mContentResolver = context.getContentResolver();
+        String[] columns = { Telephony.CarrierColumns.PUBLIC_KEY, Telephony.CarrierColumns.EXPIRATION_TIME, Telephony.CarrierColumns.KEY_IDENTIFIER };
+        findCursor = mContentResolver.query(Telephony.CarrierColumns.CONTENT_URI, columns, "mcc=? and mnc=? and key_type=?", new String[] { mcc, mnc, String.valueOf(keyType) }, null);
+        if (findCursor == null || !findCursor.moveToFirst()) {
+            Log.d(LOG_TAG, "No rows found for keyType: " + keyType);
+            return null;
+        }
+        if (findCursor.getCount() > 1) {
+            Log.e(LOG_TAG, "More than 1 row found for the keyType: " + keyType);
+        }
+        byte[] carrier_key = findCursor.getBlob(0);
+        Date expirationTime = new Date(findCursor.getLong(1));
+        String keyIdentifier = findCursor.getString(2);
+        return new ImsiEncryptionInfo(mcc, mnc, keyType, keyIdentifier, carrier_key, expirationTime);
+    } catch (IllegalArgumentException e) {
+        Log.e(LOG_TAG, "Bad arguments:" + e);
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "Query failed:" + e);
+    } finally {
+        if (findCursor != null) {
+            findCursor.close();
+        }
+    }
+    return null;
+}

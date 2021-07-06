@@ -1,0 +1,14 @@
+public static String guessImageType(final byte[] input){
+    if (input == null) {
+        return null;
+    }
+    if (input.length >= 3 && input[0] == 'G' && input[1] == 'I' && input[2] == 'F') {
+        return "GIF";
+    } else if (input.length >= 4 && input[0] == (byte) 0x89 && input[1] == 'P' && input[2] == 'N' && input[3] == 'G') {
+        return "PNG";
+    } else if (input.length >= 2 && input[0] == (byte) 0xff && input[1] == (byte) 0xd8) {
+        return "JPEG";
+    } else {
+        return null;
+    }
+}

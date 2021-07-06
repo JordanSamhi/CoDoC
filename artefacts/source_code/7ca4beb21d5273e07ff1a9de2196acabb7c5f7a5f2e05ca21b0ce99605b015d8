@@ -1,0 +1,14 @@
+public static synchronized CacheResult getSurrogate(String url, Map<String, String> headers){
+    if (urlInterceptDisabled()) {
+        return null;
+    }
+    Iterator iter = getHandlers().listIterator();
+    while (iter.hasNext()) {
+        UrlInterceptHandler handler = (UrlInterceptHandler) iter.next();
+        CacheResult result = handler.service(url, headers);
+        if (result != null) {
+            return result;
+        }
+    }
+    return null;
+}

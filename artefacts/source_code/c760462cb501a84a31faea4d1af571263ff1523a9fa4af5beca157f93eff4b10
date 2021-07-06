@@ -1,0 +1,10 @@
+public Notification.Builder getNotificationBuilder(){
+    Context context = mPhone.getContext();
+    Intent notificationIntent = new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS);
+    notificationIntent.putExtra("expandable", true);
+    PendingIntent settingsIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+    Resources res = SubscriptionManager.getResourcesForSubId(context, mPhone.getSubId());
+    CharSequence title = res.getText(com.android.internal.R.string.NetworkPreferenceSwitchTitle);
+    CharSequence details = res.getText(com.android.internal.R.string.NetworkPreferenceSwitchSummary);
+    return new Notification.Builder(context).setContentTitle(title).setStyle(new Notification.BigTextStyle().bigText(details)).setContentText(details).setChannelId(NotificationChannelController.CHANNEL_ID_ALERT).setContentIntent(settingsIntent);
+}

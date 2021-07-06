@@ -1,0 +1,18 @@
+public int getUserSwitchability(UserHandle userHandle){
+    final TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+    int flags = SWITCHABILITY_STATUS_OK;
+    if (tm.getCallState() != TelephonyManager.CALL_STATE_IDLE) {
+        flags |= SWITCHABILITY_STATUS_USER_IN_CALL;
+    }
+    if (hasUserRestriction(DISALLOW_USER_SWITCH, userHandle)) {
+        flags |= SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED;
+    }
+    if (!isHeadlessSystemUserMode()) {
+        final boolean allowUserSwitchingWhenSystemUserLocked = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.ALLOW_USER_SWITCHING_WHEN_SYSTEM_USER_LOCKED, 0) != 0;
+        final boolean systemUserUnlocked = isUserUnlocked(UserHandle.SYSTEM);
+        if (!allowUserSwitchingWhenSystemUserLocked && !systemUserUnlocked) {
+            flags |= SWITCHABILITY_STATUS_SYSTEM_USER_LOCKED;
+        }
+    }
+    return flags;
+}

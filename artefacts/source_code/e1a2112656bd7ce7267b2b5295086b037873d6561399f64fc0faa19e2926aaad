@@ -1,0 +1,19 @@
+public void setDismissFraction(float fraction){
+    if (DEBUG) {
+        Log.d(TAG, "setDismissFraction() hasActivity=" + (mToActivityMessenger != null) + " fraction=" + fraction);
+    }
+    if (mToActivityMessenger != null) {
+        mTmpDismissFractionData.clear();
+        mTmpDismissFractionData.putFloat(EXTRA_DISMISS_FRACTION, fraction);
+        Message m = Message.obtain();
+        m.what = PipMenuActivity.MESSAGE_UPDATE_DISMISS_FRACTION;
+        m.obj = mTmpDismissFractionData;
+        try {
+            mToActivityMessenger.send(m);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Could not notify menu to update dismiss fraction", e);
+        }
+    } else if (!mStartActivityRequested || isStartActivityRequestedElapsed()) {
+        startMenuActivity(MENU_STATE_NONE, null, false, false, false, false);
+    }
+}

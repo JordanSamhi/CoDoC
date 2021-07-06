@@ -1,0 +1,21 @@
+public int enqueue(JobInfo job, JobWorkItem work) throws RemoteException{
+    if (DEBUG) {
+        Slog.d(TAG, "Enqueueing job: " + job.toString() + " work: " + work);
+    }
+    final int uid = Binder.getCallingUid();
+    final int userId = UserHandle.getUserId(uid);
+    enforceValidJobRequest(uid, job);
+    if (job.isPersisted()) {
+        throw new IllegalArgumentException("Can't enqueue work for persisted jobs");
+    }
+    if (work == null) {
+        throw new NullPointerException("work is null");
+    }
+    validateJobFlags(job, uid);
+    long ident = Binder.clearCallingIdentity();
+    try {
+        return JobSchedulerService.this.scheduleAsPackage(job, work, uid, null, userId, null);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

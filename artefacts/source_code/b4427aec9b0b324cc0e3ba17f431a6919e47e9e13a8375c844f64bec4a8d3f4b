@@ -1,0 +1,11 @@
+public List<TvContentRating> getBlockedRatings(){
+    try {
+        List<TvContentRating> ratings = new ArrayList<>();
+        for (String rating : mService.getBlockedRatings(mUserId)) {
+            ratings.add(TvContentRating.unflattenFromString(rating));
+        }
+        return ratings;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

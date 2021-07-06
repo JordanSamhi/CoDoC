@@ -1,0 +1,20 @@
+public void setWakeMode(Context context, int mode){
+    boolean washeld = false;
+    if (SystemProperties.getBoolean("audio.offload.ignore_setawake", false) == true) {
+        Log.w(TAG, "IGNORING setWakeMode " + mode);
+        return;
+    }
+    if (mWakeLock != null) {
+        if (mWakeLock.isHeld()) {
+            washeld = true;
+            mWakeLock.release();
+        }
+        mWakeLock = null;
+    }
+    PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    mWakeLock = pm.newWakeLock(mode | PowerManager.ON_AFTER_RELEASE, MediaPlayer.class.getName());
+    mWakeLock.setReferenceCounted(false);
+    if (washeld) {
+        mWakeLock.acquire();
+    }
+}

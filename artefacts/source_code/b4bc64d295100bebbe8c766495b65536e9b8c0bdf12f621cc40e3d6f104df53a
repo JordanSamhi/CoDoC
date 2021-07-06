@@ -1,0 +1,19 @@
+public void broadcastIntentToCrossProfileManifestReceiversAsUser(Intent intent, UserHandle parentHandle, boolean requiresPermission){
+    Objects.requireNonNull(intent);
+    Objects.requireNonNull(parentHandle);
+    final int userId = parentHandle.getIdentifier();
+    Slog.i(LOG_TAG, String.format("Sending %s broadcast to manifest receivers.", intent.getAction()));
+    try {
+        final List<ResolveInfo> receivers = mIPackageManager.queryIntentReceivers(intent, null, STOCK_PM_FLAGS, parentHandle.getIdentifier()).getList();
+        for (ResolveInfo receiver : receivers) {
+            final String packageName = receiver.getComponentInfo().packageName;
+            if (checkCrossProfilePackagePermissions(packageName, userId, requiresPermission) || checkModifyQuietModePermission(packageName, userId)) {
+                Slog.i(LOG_TAG, String.format("Sending %s broadcast to %s.", intent.getAction(), packageName));
+                final Intent packageIntent = new Intent(intent).setComponent(receiver.getComponentInfo().getComponentName()).addFlags(Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND);
+                mContext.sendBroadcastAsUser(packageIntent, parentHandle);
+            }
+        }
+    } catch (RemoteException ex) {
+        Slog.w(LOG_TAG, String.format("Cannot get list of broadcast receivers for %s because: %s.", intent.getAction(), ex));
+    }
+}

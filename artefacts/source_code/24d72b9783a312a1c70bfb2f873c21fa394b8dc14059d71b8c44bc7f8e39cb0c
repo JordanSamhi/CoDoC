@@ -1,0 +1,14 @@
+public List<PendingReport> getPendingReports(){
+    List<String> strings;
+    try {
+        strings = getCompanionServiceLocked().getPendingReports();
+    } catch (RemoteException ex) {
+        throw new RuntimeException(ex);
+    }
+    final int size = strings.size();
+    ArrayList<PendingReport> result = new ArrayList(size);
+    for (int i = 0; i < size; i++) {
+        result.add(new PendingReport(Uri.parse(strings.get(i))));
+    }
+    return result;
+}

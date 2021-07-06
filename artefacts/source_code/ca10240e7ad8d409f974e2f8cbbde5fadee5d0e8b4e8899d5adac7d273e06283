@@ -1,0 +1,9 @@
+public void unrotate(Transaction transaction, WindowContainer win){
+    transaction.setMatrix(win.getSurfaceControl(), mTransform, mFloat9);
+    final float[] winSurfacePos = { win.mLastSurfacePosition.x, win.mLastSurfacePosition.y };
+    mTransform.mapPoints(winSurfacePos);
+    transaction.setPosition(win.getSurfaceControl(), winSurfacePos[0], winSurfacePos[1]);
+    if (mApplyFixedTransformHint) {
+        transaction.setFixedTransformHint(win.mSurfaceControl, mFixedTransformHint);
+    }
+}

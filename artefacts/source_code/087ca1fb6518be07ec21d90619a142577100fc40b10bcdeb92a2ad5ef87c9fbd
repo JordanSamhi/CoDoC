@@ -1,0 +1,28 @@
+public Drawable getShortcutIconDrawable(@NonNull ShortcutInfo shortcut, int density){
+    if (shortcut.hasIconFile()) {
+        final ParcelFileDescriptor pfd = getShortcutIconFd(shortcut);
+        return loadDrawableFromFileDescriptor(pfd, shortcut.hasAdaptiveBitmap());
+    } else if (shortcut.hasIconUri()) {
+        final ParcelFileDescriptor pfd = getUriShortcutIconFd(shortcut);
+        return loadDrawableFromFileDescriptor(pfd, shortcut.hasAdaptiveBitmap());
+    } else if (shortcut.hasIconResource()) {
+        return loadDrawableResourceFromPackage(shortcut.getPackage(), shortcut.getIconResourceId(), shortcut.getUserHandle(), density);
+    } else if (shortcut.getIcon() != null) {
+        final Icon icon = shortcut.getIcon();
+        switch(icon.getType()) {
+            case Icon.TYPE_RESOURCE:
+                {
+                    return loadDrawableResourceFromPackage(shortcut.getPackage(), icon.getResId(), shortcut.getUserHandle(), density);
+                }
+            case Icon.TYPE_BITMAP:
+            case Icon.TYPE_ADAPTIVE_BITMAP:
+                {
+                    return icon.loadDrawable(mContext);
+                }
+            default:
+                return null;
+        }
+    } else {
+        return null;
+    }
+}

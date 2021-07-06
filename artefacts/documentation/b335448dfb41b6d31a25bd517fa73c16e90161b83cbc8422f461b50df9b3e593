@@ -1,0 +1,45 @@
+
+     * Called by a client to open a read-only stream containing data of a
+     * particular MIME type.  This is like {@link #openAssetFile(Uri, String)},
+     * except the file can only be read-only and the content provider may
+     * perform data conversions to generate data of the desired type.
+     *
+     * <p>The default implementation compares the given mimeType against the
+     * result of {@link #getType(Uri)} and, if they match, simply calls
+     * {@link #openAssetFile(Uri, String)}.
+     *
+     * <p>See {@link ClipData} for examples of the use and implementation
+     * of this method.
+     * <p>
+     * The returned AssetFileDescriptor can be a pipe or socket pair to enable
+     * streaming of data.
+     *
+     * <p class="note">For better interoperability with other applications, it is recommended
+     * that for any URIs that can be opened, you also support queries on them
+     * containing at least the columns specified by {@link android.provider.OpenableColumns}.
+     * You may also want to support other common columns if you have additional meta-data
+     * to supply, such as {@link android.provider.MediaStore.MediaColumns#DATE_ADDED}
+     * in {@link android.provider.MediaStore.MediaColumns}.</p>
+     *
+     * @param uri The data in the content provider being queried.
+     * @param mimeTypeFilter The type of data the client desires.  May be
+     * a pattern, such as *&#47;*, if the caller does not have specific type
+     * requirements; in this case the content provider will pick its best
+     * type matching the pattern.
+     * @param opts Additional options from the client.  The definitions of
+     * these are specific to the content provider being called.
+     *
+     * @return Returns a new AssetFileDescriptor from which the client can
+     * read data of the desired type.
+     *
+     * @throws FileNotFoundException Throws FileNotFoundException if there is
+     * no file associated with the given URI or the mode is invalid.
+     * @throws SecurityException Throws SecurityException if the caller does
+     * not have permission to access the data.
+     * @throws IllegalArgumentException Throws IllegalArgumentException if the
+     * content provider does not support the requested MIME type.
+     *
+     * @see #getStreamTypes(Uri, String)
+     * @see #openAssetFile(Uri, String)
+     * @see ClipDescription#compareMimeTypes(String, String)
+     

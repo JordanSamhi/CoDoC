@@ -1,0 +1,21 @@
+public TransitionSet addTransition(Transition transition){
+    if (transition != null) {
+        addTransitionInternal(transition);
+        if (mDuration >= 0) {
+            transition.setDuration(mDuration);
+        }
+        if ((mChangeFlags & FLAG_CHANGE_INTERPOLATOR) != 0) {
+            transition.setInterpolator(getInterpolator());
+        }
+        if ((mChangeFlags & FLAG_CHANGE_PROPAGATION) != 0) {
+            transition.setPropagation(getPropagation());
+        }
+        if ((mChangeFlags & FLAG_CHANGE_PATH_MOTION) != 0) {
+            transition.setPathMotion(getPathMotion());
+        }
+        if ((mChangeFlags & FLAG_CHANGE_EPICENTER) != 0) {
+            transition.setEpicenterCallback(getEpicenterCallback());
+        }
+    }
+    return this;
+}

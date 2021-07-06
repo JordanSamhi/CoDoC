@@ -1,0 +1,16 @@
+public void callSessionMultipartyStateChanged(ImsCallSession session, boolean isMultiParty){
+    if (VDBG) {
+        logi("callSessionMultipartyStateChanged isMultiParty: " + (isMultiParty ? "Y" : "N"));
+    }
+    ImsCall.Listener listener;
+    synchronized (ImsCall.this) {
+        listener = mListener;
+    }
+    if (listener != null) {
+        try {
+            listener.onMultipartyStateChanged(ImsCall.this, isMultiParty);
+        } catch (Throwable t) {
+            loge("callSessionMultipartyStateChanged :: ", t);
+        }
+    }
+}

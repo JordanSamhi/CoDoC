@@ -1,0 +1,8 @@
+public void grantPermission(UsbDevice device, String packageName){
+    try {
+        int uid = mContext.getPackageManager().getPackageUidAsUser(packageName, mContext.getUserId());
+        grantPermission(device, uid);
+    } catch (NameNotFoundException e) {
+        Log.e(TAG, "Package " + packageName + " not found.", e);
+    }
+}

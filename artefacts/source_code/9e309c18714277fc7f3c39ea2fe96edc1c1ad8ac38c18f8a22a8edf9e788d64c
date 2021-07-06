@@ -1,0 +1,10 @@
+public static String geoCountryCodeForMccMnc(@NonNull MccMnc mccMnc){
+    String countryCode = null;
+    if (mccMnc.mnc != null) {
+        countryCode = countryCodeForMccMncNoFallback(mccMnc);
+    }
+    if (TextUtils.isEmpty(countryCode)) {
+        countryCode = MccTable.countryCodeForMcc(mccMnc.mcc);
+    }
+    return countryCode;
+}

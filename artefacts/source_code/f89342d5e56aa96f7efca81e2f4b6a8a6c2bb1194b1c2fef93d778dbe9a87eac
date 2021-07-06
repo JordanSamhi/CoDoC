@@ -1,0 +1,14 @@
+public boolean injectInputEvent(InputEvent event, boolean sync){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "Injecting: " + event + " sync: " + sync);
+        }
+        return mUiAutomationConnection.injectInputEvent(event, sync);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error while injecting input event!", re);
+    }
+    return false;
+}

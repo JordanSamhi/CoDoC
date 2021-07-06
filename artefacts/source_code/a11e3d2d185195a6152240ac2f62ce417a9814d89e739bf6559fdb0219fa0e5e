@@ -1,0 +1,18 @@
+public IncrementalStorage createStorage(@NonNull String path, @NonNull DataLoaderParams params, @CreateMode int createMode, boolean autoStartDataLoader, @Nullable IDataLoaderStatusListener statusListener, @Nullable StorageHealthCheckParams healthCheckParams, @Nullable IStorageHealthListener healthListener){
+    try {
+        final int id = mService.createStorage(path, params.getData(), createMode, statusListener, healthCheckParams, healthListener);
+        if (id < 0) {
+            return null;
+        }
+        final IncrementalStorage storage = new IncrementalStorage(mService, id);
+        synchronized (mStorages) {
+            mStorages.put(id, storage);
+        }
+        if (autoStartDataLoader) {
+            storage.startLoading();
+        }
+        return storage;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

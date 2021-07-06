@@ -1,0 +1,19 @@
+public void setIsSyncableAsUser(Account account, String providerName, int syncable, int userId){
+    if (TextUtils.isEmpty(providerName)) {
+        throw new IllegalArgumentException("Authority must not be empty");
+    }
+    enforceCrossUserPermission(userId, "no permission to set the sync settings for user " + userId);
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS, "no permission to write the sync settings");
+    syncable = normalizeSyncable(syncable);
+    final int callingUid = Binder.getCallingUid();
+    final int callingPid = Binder.getCallingPid();
+    long identityToken = clearCallingIdentity();
+    try {
+        SyncManager syncManager = getSyncManager();
+        if (syncManager != null) {
+            syncManager.getSyncStorageEngine().setIsSyncable(account, userId, providerName, syncable, callingUid, callingPid);
+        }
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+}

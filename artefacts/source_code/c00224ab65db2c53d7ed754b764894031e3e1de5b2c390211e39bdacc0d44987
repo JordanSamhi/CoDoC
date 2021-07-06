@@ -1,0 +1,45 @@
+public static void waitToFinish(){
+    long startTime = System.currentTimeMillis();
+    boolean hadMessages = false;
+    Handler handler = getHandler();
+    synchronized (sLock) {
+        if (handler.hasMessages(QueuedWorkHandler.MSG_RUN)) {
+            handler.removeMessages(QueuedWorkHandler.MSG_RUN);
+            if (DEBUG) {
+                hadMessages = true;
+                Log.d(LOG_TAG, "waiting");
+            }
+        }
+        sCanDelay = false;
+    }
+    StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
+    try {
+        processPendingWork();
+    } finally {
+        StrictMode.setThreadPolicy(oldPolicy);
+    }
+    try {
+        while (true) {
+            Runnable finisher;
+            synchronized (sLock) {
+                finisher = sFinishers.poll();
+            }
+            if (finisher == null) {
+                break;
+            }
+            finisher.run();
+        }
+    } finally {
+        sCanDelay = true;
+    }
+    synchronized (sLock) {
+        long waitTime = System.currentTimeMillis() - startTime;
+        if (waitTime > 0 || hadMessages) {
+            mWaitTimes.add(Long.valueOf(waitTime).intValue());
+            mNumWaits++;
+            if (DEBUG || mNumWaits % 1024 == 0 || waitTime > MAX_WAIT_TIME_MILLIS) {
+                mWaitTimes.log(LOG_TAG, "waited: ");
+            }
+        }
+    }
+}

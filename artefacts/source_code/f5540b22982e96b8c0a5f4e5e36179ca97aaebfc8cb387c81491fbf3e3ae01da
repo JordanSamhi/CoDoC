@@ -1,0 +1,22 @@
+public void setDefaultProxy(@Nullable ProxyInfo proxyInfo){
+    synchronized (mProxyLock) {
+        if (Objects.equals(mDefaultProxy, proxyInfo))
+            return;
+        if (proxyInfo != null && !proxyInfo.isValid()) {
+            if (DBG)
+                Slog.d(TAG, "Invalid proxy properties, ignoring: " + proxyInfo);
+            return;
+        }
+        if ((mGlobalProxy != null) && (proxyInfo != null) && (!Uri.EMPTY.equals(proxyInfo.getPacFileUrl())) && proxyInfo.getPacFileUrl().equals(mGlobalProxy.getPacFileUrl())) {
+            mGlobalProxy = proxyInfo;
+            sendProxyBroadcast();
+            return;
+        }
+        mDefaultProxy = proxyInfo;
+        if (mGlobalProxy != null)
+            return;
+        if (mDefaultProxyEnabled) {
+            sendProxyBroadcast();
+        }
+    }
+}

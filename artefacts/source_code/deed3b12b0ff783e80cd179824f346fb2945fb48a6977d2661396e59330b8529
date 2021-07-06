@@ -1,0 +1,31 @@
+public static ByteBuffer createBuffer(@NonNull AssetManager am, @NonNull String path, boolean isAsset, int cookie) throws IOException{
+    Preconditions.checkNotNull(am, "assetManager can not be null");
+    Preconditions.checkNotNull(path, "path can not be null");
+    AssetFileDescriptor assetFD;
+    try {
+        if (isAsset) {
+            assetFD = am.openFd(path);
+        } else if (cookie > 0) {
+            assetFD = am.openNonAssetFd(cookie, path);
+        } else {
+            assetFD = am.openNonAssetFd(path);
+        }
+        try (FileInputStream fis = assetFD.createInputStream()) {
+            final FileChannel fc = fis.getChannel();
+            long startOffset = assetFD.getStartOffset();
+            long declaredLength = assetFD.getDeclaredLength();
+            return fc.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+        }
+    } catch (IOException e) {
+    }
+    try (InputStream assetStream = isAsset ? am.open(path, AssetManager.ACCESS_BUFFER) : am.openNonAsset(cookie, path, AssetManager.ACCESS_BUFFER)) {
+        int capacity = assetStream.available();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(capacity);
+        buffer.order(ByteOrder.nativeOrder());
+        assetStream.read(buffer.array(), buffer.arrayOffset(), assetStream.available());
+        if (assetStream.read() != -1) {
+            throw new IOException("Unable to access full contents of " + path);
+        }
+        return buffer;
+    }
+}

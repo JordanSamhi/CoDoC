@@ -1,0 +1,5 @@
+public void CTRMV(@Uplo int Uplo, @Transpose int TransA, @Diag int Diag, Allocation A, Allocation X, int incX){
+    validateTRMV(Element.F32_2(mRS), Uplo, TransA, Diag, A, X, incX);
+    int N = A.getType().getY();
+    mRS.nScriptIntrinsicBLAS_Complex(getID(mRS), RsBlas_ctrmv, TransA, 0, 0, Uplo, Diag, 0, N, 0, 0, 0, A.getID(mRS), X.getID(mRS), 0, 0, 0, incX, 0, 0, 0);
+}

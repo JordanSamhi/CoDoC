@@ -1,0 +1,12 @@
+public ParcelFileDescriptor openAccessory(UsbAccessory accessory, UsbUserPermissionManager permissions, int uid){
+    UsbAccessory currentAccessory = mHandler.getCurrentAccessory();
+    if (currentAccessory == null) {
+        throw new IllegalArgumentException("no accessory attached");
+    }
+    if (!currentAccessory.equals(accessory)) {
+        String error = accessory.toString() + " does not match current accessory " + currentAccessory;
+        throw new IllegalArgumentException(error);
+    }
+    permissions.checkPermission(accessory, uid);
+    return nativeOpenAccessory();
+}

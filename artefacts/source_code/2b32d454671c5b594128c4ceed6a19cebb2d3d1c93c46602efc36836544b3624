@@ -1,0 +1,11 @@
+public void setAudioAttributes(AudioAttributes attributes) throws IllegalArgumentException{
+    if (attributes == null) {
+        final String msg = "Cannot set AudioAttributes to null";
+        throw new IllegalArgumentException(msg);
+    }
+    baseUpdateAudioAttributes(attributes);
+    Parcel pattributes = Parcel.obtain();
+    attributes.writeToParcel(pattributes, AudioAttributes.FLATTEN_TAGS);
+    setParameter(KEY_PARAMETER_AUDIO_ATTRIBUTES, pattributes);
+    pattributes.recycle();
+}

@@ -1,0 +1,14 @@
+public void writeByteBuffer(@NonNull OutputStream dngOutput, @NonNull Size size, @NonNull ByteBuffer pixels, @IntRange(from = 0) long offset) throws IOException{
+    if (dngOutput == null) {
+        throw new IllegalArgumentException("Null dngOutput passed to writeByteBuffer");
+    } else if (size == null) {
+        throw new IllegalArgumentException("Null size passed to writeByteBuffer");
+    } else if (pixels == null) {
+        throw new IllegalArgumentException("Null pixels passed to writeByteBuffer");
+    } else if (offset < 0) {
+        throw new IllegalArgumentException("Negative offset passed to writeByteBuffer");
+    }
+    int width = size.getWidth();
+    int height = size.getHeight();
+    writeByteBuffer(width, height, pixels, dngOutput, DEFAULT_PIXEL_STRIDE, width * DEFAULT_PIXEL_STRIDE, offset);
+}

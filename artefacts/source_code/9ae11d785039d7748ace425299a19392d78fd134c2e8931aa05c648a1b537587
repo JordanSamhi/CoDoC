@@ -1,0 +1,14 @@
+public long executeForLastInsertedRowId(String sql, Object[] bindArgs, int connectionFlags, CancellationSignal cancellationSignal){
+    if (sql == null) {
+        throw new IllegalArgumentException("sql must not be null.");
+    }
+    if (executeSpecial(sql, bindArgs, connectionFlags, cancellationSignal)) {
+        return 0;
+    }
+    acquireConnection(sql, connectionFlags, cancellationSignal);
+    try {
+        return mConnection.executeForLastInsertedRowId(sql, bindArgs, cancellationSignal);
+    } finally {
+        releaseConnection();
+    }
+}

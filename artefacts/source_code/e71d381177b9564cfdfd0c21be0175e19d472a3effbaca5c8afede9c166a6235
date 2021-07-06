@@ -1,0 +1,20 @@
+public void onActivityResumed(Activity activity){
+    int readerModeFlags = 0;
+    Bundle readerModeExtras = null;
+    Binder token;
+    synchronized (NfcActivityManager.this) {
+        NfcActivityState state = findActivityState(activity);
+        if (DBG)
+            Log.d(TAG, "onResume() for " + activity + " " + state);
+        if (state == null)
+            return;
+        state.resumed = true;
+        token = state.token;
+        readerModeFlags = state.readerModeFlags;
+        readerModeExtras = state.readerModeExtras;
+    }
+    if (readerModeFlags != 0) {
+        setReaderMode(token, readerModeFlags, readerModeExtras);
+    }
+    requestNfcServiceCallback();
+}

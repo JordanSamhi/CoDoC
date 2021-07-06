@@ -1,0 +1,47 @@
+public ViewNode[] findViewNodesByAutofillIds(@NonNull AutofillId[] ids){
+    final LinkedList<ViewNode> nodesToProcess = new LinkedList<>();
+    final ViewNode[] foundNodes = new AssistStructure.ViewNode[ids.length];
+    final SparseIntArray missingNodeIndexes = new SparseIntArray(ids.length);
+    for (int i = 0; i < ids.length; i++) {
+        if (mViewNodeLookupTable != null) {
+            int lookupTableIndex = mViewNodeLookupTable.indexOfKey(ids[i]);
+            if (lookupTableIndex >= 0) {
+                foundNodes[i] = mViewNodeLookupTable.valueAt(lookupTableIndex);
+            } else {
+                missingNodeIndexes.put(i, 0);
+            }
+        } else {
+            missingNodeIndexes.put(i, 0);
+        }
+    }
+    final int numWindowNodes = mStructure.getWindowNodeCount();
+    for (int i = 0; i < numWindowNodes; i++) {
+        nodesToProcess.add(mStructure.getWindowNodeAt(i).getRootViewNode());
+    }
+    while (missingNodeIndexes.size() > 0 && !nodesToProcess.isEmpty()) {
+        final ViewNode node = nodesToProcess.removeFirst();
+        for (int i = 0; i < missingNodeIndexes.size(); i++) {
+            final int index = missingNodeIndexes.keyAt(i);
+            final AutofillId id = ids[index];
+            if (id.equals(node.getAutofillId())) {
+                foundNodes[index] = node;
+                if (mViewNodeLookupTable == null) {
+                    mViewNodeLookupTable = new ArrayMap<>(ids.length);
+                }
+                mViewNodeLookupTable.put(id, node);
+                missingNodeIndexes.removeAt(i);
+                break;
+            }
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            nodesToProcess.addLast(node.getChildAt(i));
+        }
+    }
+    for (int i = 0; i < missingNodeIndexes.size(); i++) {
+        if (mViewNodeLookupTable == null) {
+            mViewNodeLookupTable = new ArrayMap<>(missingNodeIndexes.size());
+        }
+        mViewNodeLookupTable.put(ids[missingNodeIndexes.keyAt(i)], null);
+    }
+    return foundNodes;
+}

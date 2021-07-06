@@ -1,0 +1,7 @@
+public int getSubscriptionId(){
+    try {
+        return (mSubId == SubscriptionManager.DEFAULT_SUBSCRIPTION_ID) ? getISmsServiceOrThrow().getPreferredSmsSubscription() : mSubId;
+    } catch (RemoteException e) {
+        return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+    }
+}

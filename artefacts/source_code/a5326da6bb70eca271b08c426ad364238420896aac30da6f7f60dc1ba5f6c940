@@ -1,0 +1,15 @@
+public void refresh(){
+    setTitle(this, mAccessPoint);
+    final Context context = getContext();
+    int level = mAccessPoint.getLevel();
+    int wifiSpeed = mAccessPoint.getSpeed();
+    if (level != mLevel || wifiSpeed != mWifiSpeed) {
+        mLevel = level;
+        mWifiSpeed = wifiSpeed;
+        updateIcon(mLevel, context);
+        notifyChanged();
+    }
+    updateBadge(context);
+    setSummary(mForSavedNetworks ? mAccessPoint.getSavedNetworkSummary() : mAccessPoint.getSettingsSummary());
+    mContentDescription = buildContentDescription(getContext(), this, mAccessPoint);
+}

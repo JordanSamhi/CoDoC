@@ -1,0 +1,12 @@
+public Set<String> getCrossProfileCalendarPackages(){
+    throwIfParentInstance("getCrossProfileCalendarPackages");
+    if (mService != null) {
+        try {
+            final List<String> packageNames = mService.getCrossProfileCalendarPackagesForUser(myUserId());
+            return packageNames == null ? null : new ArraySet<>(packageNames);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return Collections.emptySet();
+}

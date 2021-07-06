@@ -1,0 +1,12 @@
+public final Alignment getParagraphAlignment(int line){
+    Alignment align = mAlignment;
+    if (mSpannedText) {
+        Spanned sp = (Spanned) mText;
+        AlignmentSpan[] spans = getParagraphSpans(sp, getLineStart(line), getLineEnd(line), AlignmentSpan.class);
+        int spanLength = spans.length;
+        if (spanLength > 0) {
+            align = spans[spanLength - 1].getAlignment();
+        }
+    }
+    return align;
+}

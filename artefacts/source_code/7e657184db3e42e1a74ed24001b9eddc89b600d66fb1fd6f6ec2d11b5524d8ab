@@ -1,0 +1,20 @@
+public void thawDisplayRotation(int displayId){
+    if (!checkCallingPermission(android.Manifest.permission.SET_ORIENTATION, "thawRotation()")) {
+        throw new SecurityException("Requires SET_ORIENTATION permission");
+    }
+    ProtoLog.v(WM_DEBUG_ORIENTATION, "thawRotation: mRotation=%d", getDefaultDisplayRotation());
+    long origId = Binder.clearCallingIdentity();
+    try {
+        synchronized (mGlobalLock) {
+            final DisplayContent display = mRoot.getDisplayContent(displayId);
+            if (display == null) {
+                Slog.w(TAG, "Trying to thaw rotation for a missing display.");
+                return;
+            }
+            display.getDisplayRotation().thawRotation();
+        }
+    } finally {
+        Binder.restoreCallingIdentity(origId);
+    }
+    updateRotationUnchecked(false, false);
+}

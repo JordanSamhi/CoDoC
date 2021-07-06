@@ -1,0 +1,12 @@
+public void noteWifiOff(boolean isDeferred, boolean isTimeout, int duration){
+    synchronized (mLock) {
+        mWifiOffMetrics.numWifiOff++;
+        if (isDeferred) {
+            mWifiOffMetrics.numWifiOffDeferring++;
+            if (isTimeout) {
+                mWifiOffMetrics.numWifiOffDeferringTimeout++;
+            }
+            mWifiOffMetrics.wifiOffDeferringTimeHistogram.increment(duration);
+        }
+    }
+}

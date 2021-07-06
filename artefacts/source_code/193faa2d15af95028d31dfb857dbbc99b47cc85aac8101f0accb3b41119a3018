@@ -1,0 +1,19 @@
+public static void forEach(@Nullable Map<K, V> cur, @Nullable BiConsumer<K, V> action){
+    if (cur == null || action == null) {
+        return;
+    }
+    int size = cur.size();
+    if (size == 0) {
+        return;
+    }
+    if (cur instanceof ArrayMap) {
+        ArrayMap<K, V> arrayMap = (ArrayMap<K, V>) cur;
+        for (int i = 0; i < size; i++) {
+            action.accept(arrayMap.keyAt(i), arrayMap.valueAt(i));
+        }
+    } else {
+        for (K key : cur.keySet()) {
+            action.accept(key, cur.get(key));
+        }
+    }
+}

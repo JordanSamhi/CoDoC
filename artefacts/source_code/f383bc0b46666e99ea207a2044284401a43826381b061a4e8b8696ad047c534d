@@ -1,0 +1,34 @@
+public void show(){
+    super.show();
+    if (mOnItemLongClickListener != null) {
+        getListView().setOnItemLongClickListener(mOnItemLongClickListener);
+    }
+    ListView listView = getListView();
+    Resources res = mContext.getResources();
+    setVerticalOffset(-getAnchorView().getHeight() / 2);
+    if (mIsDropDownMode) {
+        listView.setDividerHeight(res.getDimensionPixelSize(R.dimen.control_list_divider));
+        listView.setDivider(res.getDrawable(R.drawable.controls_list_divider_inset));
+    } else {
+        if (mAdapter == null)
+            return;
+        int parentWidth = res.getSystem().getDisplayMetrics().widthPixels;
+        int widthSpec = MeasureSpec.makeMeasureSpec((int) (parentWidth * 0.9), MeasureSpec.AT_MOST);
+        int maxWidth = 0;
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            View child = mAdapter.getView(i, null, listView);
+            child.measure(widthSpec, MeasureSpec.UNSPECIFIED);
+            int w = child.getMeasuredWidth();
+            maxWidth = Math.max(w, maxWidth);
+        }
+        int width = Math.max(maxWidth, (int) (parentWidth * 0.5));
+        listView.setPadding(0, mMenuVerticalPadding, 0, mMenuVerticalPadding);
+        setWidth(width);
+        if (getAnchorView().getLayoutDirection() == LayoutDirection.LTR) {
+            setHorizontalOffset(getAnchorView().getWidth() - mGlobalActionsSidePadding - width);
+        } else {
+            setHorizontalOffset(mGlobalActionsSidePadding);
+        }
+    }
+    super.show();
+}

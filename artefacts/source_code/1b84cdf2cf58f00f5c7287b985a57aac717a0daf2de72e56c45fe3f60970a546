@@ -1,0 +1,7 @@
+public void onEntryRemoved(NotificationEntry entry, int reason){
+    final String entryKey = entry.getKey();
+    if (mHeadsUpManager.isAlerting(entryKey)) {
+        boolean removeImmediatelyForRemoteInput = mRemoteInputManager.getController().isSpinning(entryKey) && !FORCE_REMOTE_INPUT_HISTORY;
+        mHeadsUpManager.removeNotification(entry.getKey(), removeImmediatelyForRemoteInput);
+    }
+}

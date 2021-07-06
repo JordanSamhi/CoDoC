@@ -1,0 +1,9 @@
+public AccountManagerFuture<Bundle> getAuthTokenByFeatures(final String accountType, final String authTokenType, final String[] features, final Activity activity, final Bundle addAccountOptions, final Bundle getAuthTokenOptions, final AccountManagerCallback<Bundle> callback, final Handler handler){
+    if (accountType == null)
+        throw new IllegalArgumentException("account type is null");
+    if (authTokenType == null)
+        throw new IllegalArgumentException("authTokenType is null");
+    final GetAuthTokenByTypeAndFeaturesTask task = new GetAuthTokenByTypeAndFeaturesTask(accountType, authTokenType, features, activity, addAccountOptions, getAuthTokenOptions, callback, handler);
+    task.start();
+    return task;
+}

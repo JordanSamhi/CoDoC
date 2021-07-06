@@ -1,0 +1,57 @@
+public boolean getTransformation(long currentTime, Transformation outTransformation){
+    if (mStartTime == -1) {
+        mStartTime = currentTime;
+    }
+    final long startOffset = getStartOffset();
+    final long duration = mDuration;
+    float normalizedTime;
+    if (duration != 0) {
+        normalizedTime = ((float) (currentTime - (mStartTime + startOffset))) / (float) duration;
+    } else {
+        normalizedTime = currentTime < mStartTime ? 0.0f : 1.0f;
+    }
+    final boolean expired = normalizedTime >= 1.0f || isCanceled();
+    mMore = !expired;
+    if (!mFillEnabled)
+        normalizedTime = Math.max(Math.min(normalizedTime, 1.0f), 0.0f);
+    if ((normalizedTime >= 0.0f || mFillBefore) && (normalizedTime <= 1.0f || mFillAfter)) {
+        if (!mStarted) {
+            fireAnimationStart();
+            mStarted = true;
+            if (NoImagePreloadHolder.USE_CLOSEGUARD) {
+                guard.open("cancel or detach or getTransformation");
+            }
+        }
+        if (mFillEnabled)
+            normalizedTime = Math.max(Math.min(normalizedTime, 1.0f), 0.0f);
+        if (mCycleFlip) {
+            normalizedTime = 1.0f - normalizedTime;
+        }
+        final float interpolatedTime = mInterpolator.getInterpolation(normalizedTime);
+        applyTransformation(interpolatedTime, outTransformation);
+    }
+    if (expired) {
+        if (mRepeatCount == mRepeated || isCanceled()) {
+            if (!mEnded) {
+                mEnded = true;
+                guard.close();
+                fireAnimationEnd();
+            }
+        } else {
+            if (mRepeatCount > 0) {
+                mRepeated++;
+            }
+            if (mRepeatMode == REVERSE) {
+                mCycleFlip = !mCycleFlip;
+            }
+            mStartTime = -1;
+            mMore = true;
+            fireAnimationRepeat();
+        }
+    }
+    if (!mMore && mOneMoreTime) {
+        mOneMoreTime = false;
+        return true;
+    }
+    return mMore;
+}

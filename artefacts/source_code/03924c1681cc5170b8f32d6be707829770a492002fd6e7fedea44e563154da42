@@ -1,0 +1,10 @@
+public List<RecentTaskInfo> getRecentTasks(int maxNum, int flags) throws SecurityException{
+    try {
+        if (maxNum < 0) {
+            throw new IllegalArgumentException("The requested number of tasks should be >= 0");
+        }
+        return getTaskService().getRecentTasks(maxNum, flags, mContext.getUserId()).getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

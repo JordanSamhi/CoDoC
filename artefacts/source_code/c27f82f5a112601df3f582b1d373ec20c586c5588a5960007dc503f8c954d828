@@ -1,0 +1,25 @@
+public void addListener(@Nullable TRequest request, @NonNull TListener listener, CallerIdentity callerIdentity){
+    Objects.requireNonNull(listener, "Attempted to register a 'null' listener.");
+    IBinder binder = listener.asBinder();
+    synchronized (mListenerMap) {
+        if (mListenerMap.containsKey(binder)) {
+            return;
+        }
+        IdentifiedListener identifiedListener = new IdentifiedListener(request, listener, callerIdentity);
+        mListenerMap.put(binder, identifiedListener);
+        int result;
+        if (!isAvailableInPlatform()) {
+            result = RESULT_NOT_AVAILABLE;
+        } else if (mHasIsSupported && !mIsSupported) {
+            result = RESULT_NOT_SUPPORTED;
+        } else if (!isGpsEnabled()) {
+            result = RESULT_GPS_LOCATION_DISABLED;
+        } else if (mHasIsSupported && mIsSupported) {
+            tryRegister();
+            result = RESULT_SUCCESS;
+        } else {
+            return;
+        }
+        post(identifiedListener, getHandlerOperation(result));
+    }
+}

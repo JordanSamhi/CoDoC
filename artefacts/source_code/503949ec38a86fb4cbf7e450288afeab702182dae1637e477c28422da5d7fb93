@@ -1,0 +1,15 @@
+public static String bytesToHexOrQuotedString(ArrayList<Byte> bytes){
+    if (bytes == null) {
+        throw new IllegalArgumentException("null ssid bytes");
+    }
+    byte[] byteArray = byteArrayFromArrayList(bytes);
+    if (!bytes.contains(Byte.valueOf((byte) 0))) {
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
+        try {
+            CharBuffer decoded = decoder.decode(ByteBuffer.wrap(byteArray));
+            return "\"" + decoded.toString() + "\"";
+        } catch (CharacterCodingException cce) {
+        }
+    }
+    return hexStringFromByteArray(byteArray);
+}

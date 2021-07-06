@@ -1,0 +1,12 @@
+public void saveToXml(XmlSerializer out) throws IOException{
+    out.attribute(null, KEY_POLICY_TYPE, Integer.toString(mPolicyType));
+    out.attribute(null, KEY_INSTALL_WINDOW_START, Integer.toString(mMaintenanceWindowStart));
+    out.attribute(null, KEY_INSTALL_WINDOW_END, Integer.toString(mMaintenanceWindowEnd));
+    for (int i = 0; i < mFreezePeriods.size(); i++) {
+        FreezePeriod interval = mFreezePeriods.get(i);
+        out.startTag(null, KEY_FREEZE_TAG);
+        out.attribute(null, KEY_FREEZE_START, interval.getStart().toString());
+        out.attribute(null, KEY_FREEZE_END, interval.getEnd().toString());
+        out.endTag(null, KEY_FREEZE_TAG);
+    }
+}

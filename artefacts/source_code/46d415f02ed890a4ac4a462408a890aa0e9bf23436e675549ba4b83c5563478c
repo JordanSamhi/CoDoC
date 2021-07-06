@@ -1,0 +1,22 @@
+public MediaDrm.KeyRequest getKeyRequest(@Nullable byte[] keySetId, @Nullable byte[] initData, @Nullable String mimeType, @MediaDrm.KeyType int keyType, @Nullable Map<String, String> optionalParameters) throws NoDrmSchemeException{
+    Log.v(TAG, "getKeyRequest: " + " keySetId: " + keySetId + " initData:" + initData + " mimeType: " + mimeType + " keyType: " + keyType + " optionalParameters: " + optionalParameters);
+    synchronized (mDrmLock) {
+        if (!mActiveDrmScheme) {
+            Log.e(TAG, "getKeyRequest NoDrmSchemeException");
+            throw new NoDrmSchemeException("getKeyRequest: Has to set a DRM scheme first.");
+        }
+        try {
+            byte[] scope = (keyType != MediaDrm.KEY_TYPE_RELEASE) ? mDrmSessionId : keySetId;
+            HashMap<String, String> hmapOptionalParameters = (optionalParameters != null) ? new HashMap<String, String>(optionalParameters) : null;
+            MediaDrm.KeyRequest request = mDrmObj.getKeyRequest(scope, initData, mimeType, keyType, hmapOptionalParameters);
+            Log.v(TAG, "getKeyRequest:   --> request: " + request);
+            return request;
+        } catch (NotProvisionedException e) {
+            Log.w(TAG, "getKeyRequest NotProvisionedException: " + "Unexpected. Shouldn't have reached here.");
+            throw new IllegalStateException("getKeyRequest: Unexpected provisioning error.");
+        } catch (Exception e) {
+            Log.w(TAG, "getKeyRequest Exception " + e);
+            throw e;
+        }
+    }
+}

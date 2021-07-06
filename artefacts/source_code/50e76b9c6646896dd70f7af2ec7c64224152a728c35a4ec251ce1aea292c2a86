@@ -1,0 +1,12 @@
+public void copyTo(int[] destination, int offset){
+    Objects.requireNonNull(destination, "destination must not be null");
+    if (offset < 0) {
+        throw new IllegalArgumentException("Null offset passed to copyTo");
+    }
+    if (destination.length - offset < COUNT) {
+        throw new ArrayIndexOutOfBoundsException("destination too small to fit elements");
+    }
+    for (int i = 0; i < COUNT; ++i) {
+        destination[offset + i] = mCfaOffsets[i];
+    }
+}

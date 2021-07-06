@@ -1,0 +1,11 @@
+public DataLoaderParams getDataLoaderParams(){
+    try {
+        DataLoaderParamsParcel data = mSession.getDataLoaderParams();
+        if (data == null) {
+            return null;
+        }
+        return new DataLoaderParams(data);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

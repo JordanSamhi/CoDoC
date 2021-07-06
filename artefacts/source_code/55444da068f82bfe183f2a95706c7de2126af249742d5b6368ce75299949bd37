@@ -1,0 +1,9 @@
+public List<ResolveInfo> queryBroadcastReceivers(@NonNull Intent intent, @ResolveInfoFlags int flags, @UserIdInt int userId){
+    final String msg = "Shame on you for calling the hidden API " + "queryBroadcastReceivers(). Shame!";
+    if (VMRuntime.getRuntime().getTargetSdkVersion() >= Build.VERSION_CODES.O) {
+        throw new UnsupportedOperationException(msg);
+    } else {
+        Log.d(TAG, msg);
+        return queryBroadcastReceiversAsUser(intent, flags, userId);
+    }
+}

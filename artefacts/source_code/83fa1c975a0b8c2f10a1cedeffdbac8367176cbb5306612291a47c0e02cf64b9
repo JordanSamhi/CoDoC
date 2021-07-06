@@ -1,0 +1,18 @@
+public static boolean isExternalStorageManager(@NonNull File path){
+    final Context context = Objects.requireNonNull(AppGlobals.getInitialApplication());
+    String packageName = Objects.requireNonNull(context.getPackageName());
+    int uid = context.getApplicationInfo().uid;
+    final AppOpsManager appOps = context.getSystemService(AppOpsManager.class);
+    final int opMode = appOps.checkOpNoThrow(AppOpsManager.OP_MANAGE_EXTERNAL_STORAGE, uid, packageName);
+    switch(opMode) {
+        case AppOpsManager.MODE_DEFAULT:
+            return PackageManager.PERMISSION_GRANTED == context.checkPermission(Manifest.permission.MANAGE_EXTERNAL_STORAGE, Process.myPid(), uid);
+        case AppOpsManager.MODE_ALLOWED:
+            return true;
+        case AppOpsManager.MODE_ERRORED:
+        case AppOpsManager.MODE_IGNORED:
+            return false;
+        default:
+            throw new IllegalStateException("Unknown AppOpsManager mode " + opMode);
+    }
+}

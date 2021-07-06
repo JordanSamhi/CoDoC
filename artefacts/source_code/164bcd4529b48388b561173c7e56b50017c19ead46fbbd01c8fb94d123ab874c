@@ -1,0 +1,10 @@
+public int[] supplyPukReportResult(String puk, String pin){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.supplyPukReportResultForSubscriber(getSubId(), puk, pin);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#]", e);
+    }
+    return new int[0];
+}

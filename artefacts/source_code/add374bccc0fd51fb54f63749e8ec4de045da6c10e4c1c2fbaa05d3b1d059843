@@ -1,0 +1,19 @@
+public Bundle saveInstanceState(){
+    Bundle state = null;
+    final int N = mActivityArray.size();
+    for (int i = 0; i < N; i++) {
+        final LocalActivityRecord r = mActivityArray.get(i);
+        if (state == null) {
+            state = new Bundle();
+        }
+        if ((r.instanceState != null || r.curState == RESUMED) && r.activity != null) {
+            final Bundle childState = new Bundle();
+            r.activity.performSaveInstanceState(childState);
+            r.instanceState = childState;
+        }
+        if (r.instanceState != null) {
+            state.putBundle(r.id, r.instanceState);
+        }
+    }
+    return state;
+}

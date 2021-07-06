@@ -1,0 +1,15 @@
+public WifiDeviceFilter build(){
+    checkNotUsed();
+    mBuilderFieldsSet |= 0x8;
+    if ((mBuilderFieldsSet & 0x1) == 0) {
+        mNamePattern = null;
+    }
+    if ((mBuilderFieldsSet & 0x2) == 0) {
+        mBssid = null;
+    }
+    if ((mBuilderFieldsSet & 0x4) == 0) {
+        mBssidMask = MacAddress.BROADCAST_ADDRESS;
+    }
+    WifiDeviceFilter o = new WifiDeviceFilter(mNamePattern, mBssid, mBssidMask);
+    return o;
+}

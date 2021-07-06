@@ -1,0 +1,64 @@
+public static Pair<Long, Long> dumpStackTraces(String tracesFile, ArrayList<Integer> firstPids, ArrayList<Integer> nativePids, ArrayList<Integer> extraPids){
+    Slog.i(TAG, "Dumping to " + tracesFile);
+    long remainingTime = 20 * 1000;
+    long firstPidStart = -1;
+    long firstPidEnd = -1;
+    if (firstPids != null) {
+        int num = firstPids.size();
+        for (int i = 0; i < num; i++) {
+            final int pid = firstPids.get(i);
+            final boolean firstPid = i == 0 && MY_PID != pid;
+            File tf = null;
+            if (firstPid) {
+                tf = new File(tracesFile);
+                firstPidStart = tf.exists() ? tf.length() : 0;
+            }
+            Slog.i(TAG, "Collecting stacks for pid " + pid);
+            final long timeTaken = dumpJavaTracesTombstoned(pid, tracesFile, remainingTime);
+            remainingTime -= timeTaken;
+            if (remainingTime <= 0) {
+                Slog.e(TAG, "Aborting stack trace dump (current firstPid=" + pid + "); deadline exceeded.");
+                return firstPidStart >= 0 ? new Pair<>(firstPidStart, firstPidEnd) : null;
+            }
+            if (firstPid) {
+                firstPidEnd = tf.length();
+            }
+            if (DEBUG_ANR) {
+                Slog.d(TAG, "Done with pid " + firstPids.get(i) + " in " + timeTaken + "ms");
+            }
+        }
+    }
+    if (nativePids != null) {
+        for (int pid : nativePids) {
+            Slog.i(TAG, "Collecting stacks for native pid " + pid);
+            final long nativeDumpTimeoutMs = Math.min(NATIVE_DUMP_TIMEOUT_MS, remainingTime);
+            final long start = SystemClock.elapsedRealtime();
+            Debug.dumpNativeBacktraceToFileTimeout(pid, tracesFile, (int) (nativeDumpTimeoutMs / 1000));
+            final long timeTaken = SystemClock.elapsedRealtime() - start;
+            remainingTime -= timeTaken;
+            if (remainingTime <= 0) {
+                Slog.e(TAG, "Aborting stack trace dump (current native pid=" + pid + "); deadline exceeded.");
+                return firstPidStart >= 0 ? new Pair<>(firstPidStart, firstPidEnd) : null;
+            }
+            if (DEBUG_ANR) {
+                Slog.d(TAG, "Done with native pid " + pid + " in " + timeTaken + "ms");
+            }
+        }
+    }
+    if (extraPids != null) {
+        for (int pid : extraPids) {
+            Slog.i(TAG, "Collecting stacks for extra pid " + pid);
+            final long timeTaken = dumpJavaTracesTombstoned(pid, tracesFile, remainingTime);
+            remainingTime -= timeTaken;
+            if (remainingTime <= 0) {
+                Slog.e(TAG, "Aborting stack trace dump (current extra pid=" + pid + "); deadline exceeded.");
+                return firstPidStart >= 0 ? new Pair<>(firstPidStart, firstPidEnd) : null;
+            }
+            if (DEBUG_ANR) {
+                Slog.d(TAG, "Done with extra pid " + pid + " in " + timeTaken + "ms");
+            }
+        }
+    }
+    Slog.i(TAG, "Done dumping");
+    return firstPidStart >= 0 ? new Pair<>(firstPidStart, firstPidEnd) : null;
+}

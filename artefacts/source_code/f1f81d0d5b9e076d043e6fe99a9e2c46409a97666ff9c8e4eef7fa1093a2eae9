@@ -1,0 +1,16 @@
+public void dump(String prefix, PrintWriter pw){
+    pw.append(prefix).println("ClientTransaction{");
+    pw.append(prefix).print("  callbacks=[");
+    final int size = mActivityCallbacks != null ? mActivityCallbacks.size() : 0;
+    if (size > 0) {
+        pw.println();
+        for (int i = 0; i < size; i++) {
+            pw.append(prefix).append("    ").println(mActivityCallbacks.get(i).toString());
+        }
+        pw.append(prefix).println("  ]");
+    } else {
+        pw.println("]");
+    }
+    pw.append(prefix).append("  stateRequest=").println(mLifecycleStateRequest != null ? mLifecycleStateRequest.toString() : null);
+    pw.append(prefix).println("}");
+}

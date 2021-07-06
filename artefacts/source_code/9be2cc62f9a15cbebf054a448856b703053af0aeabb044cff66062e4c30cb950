@@ -1,0 +1,26 @@
+public void enableVerboseLogging(int verbose){
+    if (verbose > 0) {
+        mVerboseLoggingEnabled = true;
+        setLogRecSize(mActivityManager.isLowRamDevice() ? NUM_LOG_RECS_VERBOSE_LOW_MEMORY : NUM_LOG_RECS_VERBOSE);
+    } else {
+        mVerboseLoggingEnabled = false;
+        setLogRecSize(NUM_LOG_RECS_NORMAL);
+    }
+    setSupplicantLogLevel();
+    mCountryCode.enableVerboseLogging(verbose);
+    mWifiScoreReport.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiDiagnostics.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiMonitor.enableVerboseLogging(verbose);
+    mWifiNative.enableVerboseLogging(verbose);
+    mWifiConfigManager.enableVerboseLogging(verbose);
+    mSupplicantStateTracker.enableVerboseLogging(verbose);
+    mPasspointManager.enableVerboseLogging(verbose);
+    mNetworkFactory.enableVerboseLogging(verbose);
+    mLinkProbeManager.enableVerboseLogging(mVerboseLoggingEnabled);
+    mMboOceController.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiScoreCard.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiHealthMonitor.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiInjector.getThroughputPredictor().enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiDataStall.enableVerboseLogging(mVerboseLoggingEnabled);
+    mWifiConnectivityManager.enableVerboseLogging(mVerboseLoggingEnabled);
+}

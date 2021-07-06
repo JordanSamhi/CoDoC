@@ -1,0 +1,50 @@
+
+         * Create a specifier object used to request a local Wi-Fi network. The generated
+         * {@link NetworkSpecifier} should be used in
+         * {@link NetworkRequest.Builder#setNetworkSpecifier(NetworkSpecifier)} when building
+         * the {@link NetworkRequest}. These specifiers can only be used to request a local wifi
+         * network (i.e no internet capability). So, the device will not switch it's default route
+         * to wifi if there are other transports (cellular for example) available.
+         *<p>
+         * Note: Apps can set a combination of network match params:
+         * <li> SSID Pattern using {@link #setSsidPattern(PatternMatcher)} OR Specific SSID using
+         * {@link #setSsid(String)}. </li>
+         * AND/OR
+         * <li> BSSID Pattern using {@link #setBssidPattern(MacAddress, MacAddress)} OR Specific
+         * BSSID using {@link #setBssid(MacAddress)} </li>
+         * to trigger connection to a network that matches the set params.
+         * The system will find the set of networks matching the request and present the user
+         * with a system dialog which will allow the user to select a specific Wi-Fi network to
+         * connect to or to deny the request.
+         *</p>
+         *
+         * For example:
+         * To connect to an open network with a SSID prefix of "test" and a BSSID OUI of "10:03:23":
+         *
+         * <pre>{@code
+         * final NetworkSpecifier specifier =
+         *      new Builder()
+         *      .setSsidPattern(new PatternMatcher("test", PatterMatcher.PATTERN_PREFIX))
+         *      .setBssidPattern(MacAddress.fromString("10:03:23:00:00:00"),
+         *                       MacAddress.fromString("ff:ff:ff:00:00:00"))
+         *      .build()
+         * final NetworkRequest request =
+         *      new NetworkRequest.Builder()
+         *      .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+         *      .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+         *      .setNetworkSpecifier(specifier)
+         *      .build();
+         * final ConnectivityManager connectivityManager =
+         *      context.getSystemService(Context.CONNECTIVITY_SERVICE);
+         * final NetworkCallback networkCallback = new NetworkCallback() {
+         *      ...
+         *      {@literal @}Override
+         *      void onAvailable(...) {}
+         *      // etc.
+         * };
+         * connectivityManager.requestNetwork(request, networkCallback);
+         * }</pre>
+         *
+         * @return Instance of {@link NetworkSpecifier}.
+         * @throws IllegalStateException on invalid params set.
+         

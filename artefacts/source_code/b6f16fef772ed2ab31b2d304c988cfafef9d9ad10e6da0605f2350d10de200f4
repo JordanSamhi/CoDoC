@@ -1,0 +1,22 @@
+public void scheduleWriteFallbackFilesJob(){
+    final Context context = getContext();
+    final JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    if (jobScheduler == null) {
+        return;
+    }
+    if (jobScheduler.getPendingJob(WRITE_FALLBACK_SETTINGS_FILES_JOB_ID) != null) {
+        return;
+    }
+    final PersistableBundle bundle = new PersistableBundle();
+    final File globalSettingsFile = mSettingsRegistry.getSettingsFile(makeKey(SETTINGS_TYPE_GLOBAL, UserHandle.USER_SYSTEM));
+    final File systemSettingsFile = mSettingsRegistry.getSettingsFile(makeKey(SETTINGS_TYPE_SYSTEM, UserHandle.USER_SYSTEM));
+    final File secureSettingsFile = mSettingsRegistry.getSettingsFile(makeKey(SETTINGS_TYPE_SECURE, UserHandle.USER_SYSTEM));
+    final File ssaidSettingsFile = mSettingsRegistry.getSettingsFile(makeKey(SETTINGS_TYPE_SSAID, UserHandle.USER_SYSTEM));
+    final File configSettingsFile = mSettingsRegistry.getSettingsFile(makeKey(SETTINGS_TYPE_CONFIG, UserHandle.USER_SYSTEM));
+    bundle.putString(TABLE_GLOBAL, globalSettingsFile.getAbsolutePath());
+    bundle.putString(TABLE_SYSTEM, systemSettingsFile.getAbsolutePath());
+    bundle.putString(TABLE_SECURE, secureSettingsFile.getAbsolutePath());
+    bundle.putString(TABLE_SSAID, ssaidSettingsFile.getAbsolutePath());
+    bundle.putString(TABLE_CONFIG, configSettingsFile.getAbsolutePath());
+    jobScheduler.schedule(new JobInfo.Builder(WRITE_FALLBACK_SETTINGS_FILES_JOB_ID, new ComponentName(context, WriteFallbackSettingsFilesJobService.class)).setExtras(bundle).setPeriodic(ONE_DAY_INTERVAL_MILLIS).setRequiresCharging(true).setPersisted(true).build());
+}

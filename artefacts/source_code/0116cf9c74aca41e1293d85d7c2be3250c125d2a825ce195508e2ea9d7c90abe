@@ -1,0 +1,15 @@
+public void registerAudioDeviceCallback(AudioDeviceCallback callback, @Nullable Handler handler){
+    synchronized (mDeviceCallbacks) {
+        if (callback != null && !mDeviceCallbacks.containsKey(callback)) {
+            if (mDeviceCallbacks.size() == 0) {
+                if (mPortListener == null) {
+                    mPortListener = new OnAmPortUpdateListener();
+                }
+                registerAudioPortUpdateListener(mPortListener);
+            }
+            NativeEventHandlerDelegate delegate = new NativeEventHandlerDelegate(callback, handler);
+            mDeviceCallbacks.put(callback, delegate);
+            broadcastDeviceListChange_sync(delegate.getHandler());
+        }
+    }
+}

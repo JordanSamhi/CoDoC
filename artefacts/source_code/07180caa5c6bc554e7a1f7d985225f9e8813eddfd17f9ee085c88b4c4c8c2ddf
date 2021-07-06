@@ -1,0 +1,12 @@
+public void showError(@Nullable CharSequence message, @NonNull AutoFillUiCallback callback){
+    Slog.w(TAG, "showError(): " + message);
+    mHandler.post(() -> {
+        if (mCallback != callback) {
+            return;
+        }
+        hideAllUiThread(callback);
+        if (!TextUtils.isEmpty(message)) {
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
+    });
+}

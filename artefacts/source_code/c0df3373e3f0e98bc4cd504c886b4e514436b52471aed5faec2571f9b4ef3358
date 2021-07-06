@@ -1,0 +1,10 @@
+public void setOrientationHint(int degrees){
+    if (degrees != 0 && degrees != 90 && degrees != 180 && degrees != 270) {
+        throw new IllegalArgumentException("Unsupported angle: " + degrees);
+    }
+    if (mState == MUXER_STATE_INITIALIZED) {
+        nativeSetOrientationHint(mNativeObject, degrees);
+    } else {
+        throw new IllegalStateException("Can't set rotation degrees due" + " to wrong state(" + convertMuxerStateCodeToString(mState) + ")");
+    }
+}

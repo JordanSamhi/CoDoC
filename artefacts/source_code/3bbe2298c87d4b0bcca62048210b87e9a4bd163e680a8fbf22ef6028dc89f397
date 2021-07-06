@@ -1,0 +1,11 @@
+public static String encryptDataUsingPublicKey(PublicKey key, byte[] data, int encodingFlag){
+    try {
+        Cipher cipher = Cipher.getInstance(IMSI_CIPHER_TRANSFORMATION);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedBytes = cipher.doFinal(data);
+        return Base64.encodeToString(encryptedBytes, 0, encryptedBytes.length, encodingFlag);
+    } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        Log.e(TAG, "Encryption failed: " + e.getMessage());
+        return null;
+    }
+}

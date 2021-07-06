@@ -1,0 +1,19 @@
+public boolean isValid(@NonNull ValueFinder finder){
+    if (mIds == null || mIds.length == 0)
+        return false;
+    final StringBuilder builder = new StringBuilder();
+    for (AutofillId id : mIds) {
+        final String partialNumber = finder.findByAutofillId(id);
+        if (partialNumber == null) {
+            if (sDebug)
+                Log.d(TAG, "No partial number for id " + id);
+            return false;
+        }
+        builder.append(partialNumber);
+    }
+    final String number = builder.toString();
+    boolean valid = isLuhnChecksumValid(number);
+    if (sDebug)
+        Log.d(TAG, "isValid(" + number.length() + " chars): " + valid);
+    return valid;
+}

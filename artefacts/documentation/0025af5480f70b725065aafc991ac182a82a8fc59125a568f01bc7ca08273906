@@ -1,0 +1,27 @@
+
+     * Configure a list of freeze periods on top of the current policy. When the device's clock is
+     * within any of the freeze periods, all incoming system updates including security patches will
+     * be blocked and cannot be installed. When the device is outside the freeze periods, the normal
+     * policy behavior will apply.
+     * <p>
+     * Each individual freeze period is allowed to be at most 90 days long, and adjacent freeze
+     * periods need to be at least 60 days apart. Also, the list of freeze periods should not
+     * contain duplicates or overlap with each other. If any of these conditions is not met, a
+     * {@link ValidationFailedException} will be thrown.
+     * <p>
+     * Handling of leap year: we ignore leap years in freeze period calculations, in particular,
+     * <ul>
+     * <li>When a freeze period is defined, February 29th is disregarded so even though a freeze
+     * period can be specified to start or end on February 29th, it will be treated as if the period
+     * started or ended on February 28th.</li>
+     * <li>When applying freeze period behavior to the device, a system clock of February 29th is
+     * treated as if it were February 28th</li>
+     * <li>When calculating the number of days of a freeze period or separation between two freeze
+     * periods, February 29th is also ignored and not counted as one day.</li>
+     * </ul>
+     *
+     * @param freezePeriods the list of freeze periods
+     * @throws ValidationFailedException if the supplied freeze periods do not meet the
+     *         requirement set above
+     * @return this instance
+     

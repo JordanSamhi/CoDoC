@@ -1,0 +1,11 @@
+public String getHeadAsHex(){
+    String headHex = IccUtils.bytesToHexString(IccUtils.unsignedIntToBytes(mTag));
+    if (mDataLength <= 127) {
+        headHex += IccUtils.byteToHex((byte) mDataLength);
+    } else {
+        byte[] lenBytes = IccUtils.unsignedIntToBytes(mDataLength);
+        headHex += IccUtils.byteToHex((byte) (lenBytes.length | 0x80));
+        headHex += IccUtils.bytesToHexString(lenBytes);
+    }
+    return headHex;
+}

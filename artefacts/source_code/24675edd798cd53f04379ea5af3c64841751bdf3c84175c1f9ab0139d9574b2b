@@ -1,0 +1,7 @@
+public void setZoom(@FloatRange(from = 0f) float zoom){
+    Preconditions.checkArgumentPositive(zoom, "Zoom should be positive");
+    mZoom = zoom;
+    mSourceWidth = mIsFishEyeStyle ? mWindowWidth : Math.round(mWindowWidth / mZoom);
+    mSourceHeight = Math.round(mWindowHeight / mZoom);
+    mDirtyState = true;
+}

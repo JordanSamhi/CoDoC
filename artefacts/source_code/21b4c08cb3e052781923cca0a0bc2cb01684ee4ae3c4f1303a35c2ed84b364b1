@@ -1,0 +1,10 @@
+public void portSelect(int portId, @NonNull SelectCallback callback){
+    if (callback == null) {
+        throw new IllegalArgumentException("Callback must not be null");
+    }
+    try {
+        mService.portSelect(portId, getCallbackWrapper(callback));
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to select port: ", e);
+    }
+}

@@ -1,0 +1,23 @@
+public static int getAndValidateUser(Context context){
+    UserInfo currentUser;
+    try {
+        currentUser = ActivityManager.getService().getCurrentUser();
+    } catch (RemoteException ex) {
+        throw new RuntimeException(ex);
+    }
+    final UserManager um = UserManager.get(context);
+    final UserInfo primaryUser = um.getPrimaryUser();
+    if (currentUser == null) {
+        Log.w(TAG, "No current user.  Nobody to approve the report." + " The report will be denied.");
+        return UserHandle.USER_NULL;
+    }
+    if (primaryUser == null) {
+        Log.w(TAG, "No primary user.  Nobody to approve the report." + " The report will be denied.");
+        return UserHandle.USER_NULL;
+    }
+    if (primaryUser.id != currentUser.id) {
+        Log.w(TAG, "Only the primary user can approve bugreports, but they are not" + " the current user. The report will be denied.");
+        return UserHandle.USER_NULL;
+    }
+    return primaryUser.id;
+}

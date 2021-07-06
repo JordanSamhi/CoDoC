@@ -1,0 +1,27 @@
+
+     * Request a network to satisfy a set of {@link android.net.NetworkCapabilities}, limited
+     * by a timeout.
+     *
+     * This function behaves identically to the non-timed-out version
+     * {@link #requestNetwork(NetworkRequest, NetworkCallback)}, but if a suitable network
+     * is not found within the given time (in milliseconds) the
+     * {@link NetworkCallback#onUnavailable()} callback is called. The request can still be
+     * released normally by calling {@link #unregisterNetworkCallback(NetworkCallback)} but does
+     * not have to be released if timed-out (it is automatically released). Unregistering a
+     * request that timed out is not an error.
+     *
+     * <p>Do not use this method to poll for the existence of specific networks (e.g. with a small
+     * timeout) - {@link #registerNetworkCallback(NetworkRequest, NetworkCallback)} is provided
+     * for that purpose. Calling this method will attempt to bring up the requested network.
+     *
+     * <p>This method has the same permission requirements as
+     * {@link #requestNetwork(NetworkRequest, NetworkCallback)}, is subject to the same limitations,
+     * and throws the same exceptions in the same conditions.
+     *
+     * @param request {@link NetworkRequest} describing this request.
+     * @param networkCallback The {@link NetworkCallback} to be utilized for this request. Note
+     *                        the callback must not be shared - it uniquely specifies this request.
+     * @param timeoutMs The time in milliseconds to attempt looking for a suitable network
+     *                  before {@link NetworkCallback#onUnavailable()} is called. The timeout must
+     *                  be a positive value (i.e. >0).
+     

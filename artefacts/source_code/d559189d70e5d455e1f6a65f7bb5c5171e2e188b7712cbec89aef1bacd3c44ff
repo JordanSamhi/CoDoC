@@ -1,0 +1,11 @@
+public void removeConnection(T c){
+    synchronized (mService.mGlobalLock) {
+        if (mConnections == null) {
+            return;
+        }
+        if (DEBUG_CLEANUP && mIsDisconnecting) {
+            Slog.v(TAG_ATM, "Remove pending disconnecting " + c + " of " + mActivity);
+        }
+        mConnections.remove(c);
+    }
+}

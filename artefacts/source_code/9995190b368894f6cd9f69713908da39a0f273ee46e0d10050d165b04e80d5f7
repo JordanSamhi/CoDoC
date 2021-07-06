@@ -1,0 +1,39 @@
+public ParcelFileDescriptor openProxyFileDescriptor(int mode, ProxyFileDescriptorCallback callback, Handler handler, ThreadFactory factory) throws IOException{
+    Preconditions.checkNotNull(callback);
+    MetricsLogger.count(mContext, "storage_open_proxy_file_descriptor", 1);
+    while (true) {
+        try {
+            synchronized (mFuseAppLoopLock) {
+                boolean newlyCreated = false;
+                if (mFuseAppLoop == null) {
+                    final AppFuseMount mount = mStorageManager.mountProxyFileDescriptorBridge();
+                    if (mount == null) {
+                        throw new IOException("Failed to mount proxy bridge");
+                    }
+                    mFuseAppLoop = new FuseAppLoop(mount.mountPointId, mount.fd, factory);
+                    newlyCreated = true;
+                }
+                if (handler == null) {
+                    handler = new Handler(Looper.getMainLooper());
+                }
+                try {
+                    final int fileId = mFuseAppLoop.registerCallback(callback, handler);
+                    final ParcelFileDescriptor pfd = mStorageManager.openProxyFileDescriptor(mFuseAppLoop.getMountPointId(), fileId, mode);
+                    if (pfd == null) {
+                        mFuseAppLoop.unregisterCallback(fileId);
+                        throw new FuseUnavailableMountException(mFuseAppLoop.getMountPointId());
+                    }
+                    return pfd;
+                } catch (FuseUnavailableMountException exception) {
+                    if (newlyCreated) {
+                        throw new IOException(exception);
+                    }
+                    mFuseAppLoop = null;
+                    continue;
+                }
+            }
+        } catch (RemoteException e) {
+            throw new IOException(e);
+        }
+    }
+}

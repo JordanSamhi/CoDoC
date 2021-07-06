@@ -1,0 +1,8 @@
+public void backupManifest(PackageInfo packageInfo, File manifestFile, File filesDir, @Nullable String domain, @Nullable String linkDomain, boolean withApk) throws IOException{
+    byte[] manifestBytes = getManifestBytes(packageInfo, withApk);
+    FileOutputStream outputStream = new FileOutputStream(manifestFile);
+    outputStream.write(manifestBytes);
+    outputStream.close();
+    manifestFile.setLastModified(0);
+    FullBackup.backupToTar(packageInfo.packageName, domain, linkDomain, filesDir.getAbsolutePath(), manifestFile.getAbsolutePath(), mOutput);
+}

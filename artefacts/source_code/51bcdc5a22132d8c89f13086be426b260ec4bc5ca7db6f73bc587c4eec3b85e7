@@ -1,0 +1,10 @@
+public PointF getPoint(int colorChannel, int index){
+    checkArgumentColorChannel(colorChannel);
+    if (index < 0 || index >= getPointCount(colorChannel)) {
+        throw new IllegalArgumentException("index out of range");
+    }
+    final float[] curve = getCurve(colorChannel);
+    final float pIn = curve[index * POINT_SIZE + OFFSET_POINT_IN];
+    final float pOut = curve[index * POINT_SIZE + OFFSET_POINT_OUT];
+    return new PointF(pIn, pOut);
+}

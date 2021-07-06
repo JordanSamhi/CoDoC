@@ -1,0 +1,17 @@
+public DngCreator setLocation(@NonNull Location location){
+    if (location == null) {
+        throw new IllegalArgumentException("Null location passed to setLocation");
+    }
+    double latitude = location.getLatitude();
+    double longitude = location.getLongitude();
+    long time = location.getTime();
+    int[] latTag = toExifLatLong(latitude);
+    int[] longTag = toExifLatLong(longitude);
+    String latRef = latitude >= 0 ? GPS_LAT_REF_NORTH : GPS_LAT_REF_SOUTH;
+    String longRef = longitude >= 0 ? GPS_LONG_REF_EAST : GPS_LONG_REF_WEST;
+    String dateTag = sExifGPSDateStamp.format(time);
+    mGPSTimeStampCalendar.setTimeInMillis(time);
+    int[] timeTag = new int[] { mGPSTimeStampCalendar.get(Calendar.HOUR_OF_DAY), 1, mGPSTimeStampCalendar.get(Calendar.MINUTE), 1, mGPSTimeStampCalendar.get(Calendar.SECOND), 1 };
+    nativeSetGpsTags(latTag, latRef, longTag, longRef, dateTag, timeTag);
+    return this;
+}

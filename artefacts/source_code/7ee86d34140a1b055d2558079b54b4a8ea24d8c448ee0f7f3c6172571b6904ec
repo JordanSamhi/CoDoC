@@ -1,0 +1,24 @@
+public ParcelFileDescriptor getData(){
+    PrintService.throwIfNotCalledOnMainThread();
+    ParcelFileDescriptor source = null;
+    ParcelFileDescriptor sink = null;
+    try {
+        ParcelFileDescriptor[] fds = ParcelFileDescriptor.createPipe();
+        source = fds[0];
+        sink = fds[1];
+        mPrintServiceClient.writePrintJobData(sink, mPrintJobId);
+        return source;
+    } catch (IOException ioe) {
+        Log.e(LOG_TAG, "Error calling getting print job data!", ioe);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error calling getting print job data!", re);
+    } finally {
+        if (sink != null) {
+            try {
+                sink.close();
+            } catch (IOException ioe) {
+            }
+        }
+    }
+    return null;
+}

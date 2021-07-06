@@ -1,0 +1,17 @@
+public NetworkSpecifier createNetworkSpecifier(int clientId, int role, int sessionId, @NonNull PeerHandle peerHandle, @Nullable byte[] pmk, @Nullable String passphrase){
+    if (VDBG) {
+        Log.v(TAG, "createNetworkSpecifier: role=" + role + ", sessionId=" + sessionId + ", peerHandle=" + ((peerHandle == null) ? peerHandle : peerHandle.peerId) + ", pmk=" + ((pmk == null) ? "null" : "non-null") + ", passphrase=" + ((passphrase == null) ? "null" : "non-null"));
+    }
+    if (!WifiAwareUtils.isLegacyVersion(mContext, Build.VERSION_CODES.Q)) {
+        throw new UnsupportedOperationException("API deprecated - use WifiAwareNetworkSpecifier.Builder");
+    }
+    if (role != WIFI_AWARE_DATA_PATH_ROLE_INITIATOR && role != WIFI_AWARE_DATA_PATH_ROLE_RESPONDER) {
+        throw new IllegalArgumentException("createNetworkSpecifier: Invalid 'role' argument when creating a network " + "specifier");
+    }
+    if (role == WIFI_AWARE_DATA_PATH_ROLE_INITIATOR || !WifiAwareUtils.isLegacyVersion(mContext, Build.VERSION_CODES.P)) {
+        if (peerHandle == null) {
+            throw new IllegalArgumentException("createNetworkSpecifier: Invalid peer handle - cannot be null");
+        }
+    }
+    return new WifiAwareNetworkSpecifier((peerHandle == null) ? WifiAwareNetworkSpecifier.NETWORK_SPECIFIER_TYPE_IB_ANY_PEER : WifiAwareNetworkSpecifier.NETWORK_SPECIFIER_TYPE_IB, role, clientId, sessionId, peerHandle != null ? peerHandle.peerId : 0, null, pmk, passphrase, 0, -1);
+}

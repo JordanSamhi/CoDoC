@@ -1,0 +1,17 @@
+public String getMeid(int slotIndex){
+    ITelephony telephony = getITelephony();
+    if (telephony == null)
+        return null;
+    try {
+        String meid = telephony.getMeidForSlot(slotIndex, getOpPackageName(), getAttributionTag());
+        if (TextUtils.isEmpty(meid)) {
+            Log.d(TAG, "getMeid: return null because MEID is not available");
+            return null;
+        }
+        return meid;
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

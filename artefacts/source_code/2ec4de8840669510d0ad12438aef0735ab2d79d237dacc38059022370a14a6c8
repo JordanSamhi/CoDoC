@@ -1,0 +1,16 @@
+public AudioRecord createAudioRecordSink(AudioMix mix) throws IllegalArgumentException{
+    if (!policyReadyToUse()) {
+        Log.e(TAG, "Cannot create AudioRecord sink for AudioMix");
+        return null;
+    }
+    checkMixReadyToUse(mix, false);
+    AudioFormat mixFormat = new AudioFormat.Builder(mix.getFormat()).setChannelMask(AudioFormat.inChannelMaskFromOutChannelMask(mix.getFormat().getChannelMask())).build();
+    AudioRecord ar = new AudioRecord(new AudioAttributes.Builder().setInternalCapturePreset(MediaRecorder.AudioSource.REMOTE_SUBMIX).addTag(addressForTag(mix)).addTag(AudioRecord.SUBMIX_FIXED_VOLUME).build(), mixFormat, AudioRecord.getMinBufferSize(mix.getFormat().getSampleRate(), AudioFormat.CHANNEL_IN_STEREO, mix.getFormat().getEncoding()), AudioManager.AUDIO_SESSION_ID_GENERATE);
+    synchronized (mLock) {
+        if (mCaptors == null) {
+            mCaptors = new ArrayList<>(1);
+        }
+        mCaptors.add(new WeakReference<AudioRecord>(ar));
+    }
+    return ar;
+}

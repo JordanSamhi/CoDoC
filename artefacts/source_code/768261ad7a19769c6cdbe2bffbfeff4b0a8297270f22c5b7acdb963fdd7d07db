@@ -1,0 +1,8 @@
+public void onStaDeauthorized(byte[] srcAddress, byte[] p2pDeviceAddress){
+    logd("STA deauthorized on " + mInterface);
+    WifiP2pDevice device = createStaEventDevice(srcAddress, p2pDeviceAddress);
+    if (device == null) {
+        return;
+    }
+    mMonitor.broadcastP2pApStaDisconnected(mInterface, device);
+}

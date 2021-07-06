@@ -1,0 +1,23 @@
+public boolean deleteAwareNetworkInterface(short transactionId, String interfaceName){
+    if (mDbg) {
+        Log.v(TAG, "deleteAwareNetworkInterface: transactionId=" + transactionId + ", " + "interfaceName=" + interfaceName);
+    }
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "deleteAwareNetworkInterface: null interface");
+        return false;
+    }
+    try {
+        WifiStatus status = iface.deleteDataInterfaceRequest(transactionId, interfaceName);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "deleteAwareNetworkInterface: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "deleteAwareNetworkInterface: exception: " + e);
+        return false;
+    }
+}

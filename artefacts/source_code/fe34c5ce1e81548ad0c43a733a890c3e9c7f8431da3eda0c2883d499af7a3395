@@ -1,0 +1,16 @@
+public static boolean isMetered(@Nullable WifiConfiguration config, @Nullable WifiInfo info){
+    boolean metered = false;
+    if (info != null && info.getMeteredHint()) {
+        metered = true;
+    }
+    if (config != null && config.meteredHint) {
+        metered = true;
+    }
+    if (config != null && config.meteredOverride == WifiConfiguration.METERED_OVERRIDE_METERED) {
+        metered = true;
+    }
+    if (config != null && config.meteredOverride == WifiConfiguration.METERED_OVERRIDE_NOT_METERED) {
+        metered = false;
+    }
+    return metered;
+}

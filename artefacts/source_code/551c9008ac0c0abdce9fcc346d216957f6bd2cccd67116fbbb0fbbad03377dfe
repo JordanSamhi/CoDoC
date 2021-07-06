@@ -1,0 +1,107 @@
+public void setCompoundDrawablesRelative(@Nullable Drawable start, @Nullable Drawable top, @Nullable Drawable end, @Nullable Drawable bottom){
+    Drawables dr = mDrawables;
+    if (dr != null) {
+        if (dr.mShowing[Drawables.LEFT] != null) {
+            dr.mShowing[Drawables.LEFT].setCallback(null);
+        }
+        dr.mShowing[Drawables.LEFT] = dr.mDrawableLeftInitial = null;
+        if (dr.mShowing[Drawables.RIGHT] != null) {
+            dr.mShowing[Drawables.RIGHT].setCallback(null);
+        }
+        dr.mShowing[Drawables.RIGHT] = dr.mDrawableRightInitial = null;
+        dr.mDrawableSizeLeft = dr.mDrawableHeightLeft = 0;
+        dr.mDrawableSizeRight = dr.mDrawableHeightRight = 0;
+    }
+    final boolean drawables = start != null || top != null || end != null || bottom != null;
+    if (!drawables) {
+        if (dr != null) {
+            if (!dr.hasMetadata()) {
+                mDrawables = null;
+            } else {
+                if (dr.mDrawableStart != null)
+                    dr.mDrawableStart.setCallback(null);
+                dr.mDrawableStart = null;
+                if (dr.mShowing[Drawables.TOP] != null) {
+                    dr.mShowing[Drawables.TOP].setCallback(null);
+                }
+                dr.mShowing[Drawables.TOP] = null;
+                if (dr.mDrawableEnd != null) {
+                    dr.mDrawableEnd.setCallback(null);
+                }
+                dr.mDrawableEnd = null;
+                if (dr.mShowing[Drawables.BOTTOM] != null) {
+                    dr.mShowing[Drawables.BOTTOM].setCallback(null);
+                }
+                dr.mShowing[Drawables.BOTTOM] = null;
+                dr.mDrawableSizeStart = dr.mDrawableHeightStart = 0;
+                dr.mDrawableSizeEnd = dr.mDrawableHeightEnd = 0;
+                dr.mDrawableSizeTop = dr.mDrawableWidthTop = 0;
+                dr.mDrawableSizeBottom = dr.mDrawableWidthBottom = 0;
+            }
+        }
+    } else {
+        if (dr == null) {
+            mDrawables = dr = new Drawables(getContext());
+        }
+        mDrawables.mOverride = true;
+        if (dr.mDrawableStart != start && dr.mDrawableStart != null) {
+            dr.mDrawableStart.setCallback(null);
+        }
+        dr.mDrawableStart = start;
+        if (dr.mShowing[Drawables.TOP] != top && dr.mShowing[Drawables.TOP] != null) {
+            dr.mShowing[Drawables.TOP].setCallback(null);
+        }
+        dr.mShowing[Drawables.TOP] = top;
+        if (dr.mDrawableEnd != end && dr.mDrawableEnd != null) {
+            dr.mDrawableEnd.setCallback(null);
+        }
+        dr.mDrawableEnd = end;
+        if (dr.mShowing[Drawables.BOTTOM] != bottom && dr.mShowing[Drawables.BOTTOM] != null) {
+            dr.mShowing[Drawables.BOTTOM].setCallback(null);
+        }
+        dr.mShowing[Drawables.BOTTOM] = bottom;
+        final Rect compoundRect = dr.mCompoundRect;
+        int[] state;
+        state = getDrawableState();
+        if (start != null) {
+            start.setState(state);
+            start.copyBounds(compoundRect);
+            start.setCallback(this);
+            dr.mDrawableSizeStart = compoundRect.width();
+            dr.mDrawableHeightStart = compoundRect.height();
+        } else {
+            dr.mDrawableSizeStart = dr.mDrawableHeightStart = 0;
+        }
+        if (end != null) {
+            end.setState(state);
+            end.copyBounds(compoundRect);
+            end.setCallback(this);
+            dr.mDrawableSizeEnd = compoundRect.width();
+            dr.mDrawableHeightEnd = compoundRect.height();
+        } else {
+            dr.mDrawableSizeEnd = dr.mDrawableHeightEnd = 0;
+        }
+        if (top != null) {
+            top.setState(state);
+            top.copyBounds(compoundRect);
+            top.setCallback(this);
+            dr.mDrawableSizeTop = compoundRect.height();
+            dr.mDrawableWidthTop = compoundRect.width();
+        } else {
+            dr.mDrawableSizeTop = dr.mDrawableWidthTop = 0;
+        }
+        if (bottom != null) {
+            bottom.setState(state);
+            bottom.copyBounds(compoundRect);
+            bottom.setCallback(this);
+            dr.mDrawableSizeBottom = compoundRect.height();
+            dr.mDrawableWidthBottom = compoundRect.width();
+        } else {
+            dr.mDrawableSizeBottom = dr.mDrawableWidthBottom = 0;
+        }
+    }
+    resetResolvedDrawables();
+    resolveDrawables();
+    invalidate();
+    requestLayout();
+}

@@ -1,0 +1,11 @@
+public static String getFormattedPhoneNumber(Context context, SubscriptionInfo subscriptionInfo){
+    String formattedNumber = null;
+    if (subscriptionInfo != null) {
+        final TelephonyManager telephonyManager = context.getSystemService(TelephonyManager.class);
+        final String rawNumber = telephonyManager.createForSubscriptionId(subscriptionInfo.getSubscriptionId()).getLine1Number();
+        if (!TextUtils.isEmpty(rawNumber)) {
+            formattedNumber = PhoneNumberUtils.formatNumber(rawNumber);
+        }
+    }
+    return formattedNumber;
+}

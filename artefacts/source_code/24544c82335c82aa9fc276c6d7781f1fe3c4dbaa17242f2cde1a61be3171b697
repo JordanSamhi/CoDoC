@@ -1,0 +1,50 @@
+public int read(byte[] b, int offset, int length) throws IOException{
+    if (mCodec == null) {
+        throw new IllegalStateException("not open");
+    }
+    if (mBufOut >= mBufIn && !mSawOutputEOS) {
+        mBufOut = 0;
+        mBufIn = 0;
+        while (!mSawInputEOS) {
+            int index = mCodec.dequeueInputBuffer(0);
+            if (index < 0) {
+                break;
+            } else {
+                int numRead;
+                for (numRead = 0; numRead < SAMPLES_PER_FRAME * 2; ) {
+                    int n = mInputStream.read(mBuf, numRead, SAMPLES_PER_FRAME * 2 - numRead);
+                    if (n == -1) {
+                        mSawInputEOS = true;
+                        break;
+                    }
+                    numRead += n;
+                }
+                ByteBuffer buf = mCodec.getInputBuffer(index);
+                buf.put(mBuf, 0, numRead);
+                mCodec.queueInputBuffer(index, 0, numRead, 0, mSawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
+            }
+        }
+        int index = mCodec.dequeueOutputBuffer(mInfo, 0);
+        if (index >= 0) {
+            mBufIn = mInfo.size;
+            ByteBuffer out = mCodec.getOutputBuffer(index);
+            out.get(mBuf, 0, mBufIn);
+            mCodec.releaseOutputBuffer(index, false);
+            if ((mInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                mSawOutputEOS = true;
+            }
+        }
+    }
+    if (mBufOut < mBufIn) {
+        if (length > mBufIn - mBufOut) {
+            length = mBufIn - mBufOut;
+        }
+        System.arraycopy(mBuf, mBufOut, b, offset, length);
+        mBufOut += length;
+        return length;
+    }
+    if (mSawInputEOS && mSawOutputEOS) {
+        return -1;
+    }
+    return 0;
+}

@@ -1,0 +1,44 @@
+public InvalidKeyException getInvalidKeyException(String keystoreKeyAlias, int uid, KeyStoreException e){
+    switch(e.getErrorCode()) {
+        case LOCKED:
+            return new UserNotAuthenticatedException();
+        case KeymasterDefs.KM_ERROR_KEY_EXPIRED:
+            return new KeyExpiredException();
+        case KeymasterDefs.KM_ERROR_KEY_NOT_YET_VALID:
+            return new KeyNotYetValidException();
+        case KeymasterDefs.KM_ERROR_KEY_USER_NOT_AUTHENTICATED:
+        case OP_AUTH_NEEDED:
+            {
+                KeyCharacteristics keyCharacteristics = new KeyCharacteristics();
+                int getKeyCharacteristicsErrorCode = getKeyCharacteristics(keystoreKeyAlias, null, null, uid, keyCharacteristics);
+                if (getKeyCharacteristicsErrorCode != NO_ERROR) {
+                    return new InvalidKeyException("Failed to obtained key characteristics", getKeyStoreException(getKeyCharacteristicsErrorCode));
+                }
+                List<BigInteger> keySids = keyCharacteristics.getUnsignedLongs(KeymasterDefs.KM_TAG_USER_SECURE_ID);
+                if (keySids.isEmpty()) {
+                    return new KeyPermanentlyInvalidatedException();
+                }
+                long rootSid = GateKeeper.getSecureUserId();
+                if ((rootSid != 0) && (keySids.contains(KeymasterArguments.toUint64(rootSid)))) {
+                    return new UserNotAuthenticatedException();
+                }
+                final BiometricManager bm = mContext.getSystemService(BiometricManager.class);
+                long[] biometricSids = bm.getAuthenticatorIds();
+                boolean canUnlockViaBiometrics = true;
+                for (long sid : biometricSids) {
+                    if (!keySids.contains(KeymasterArguments.toUint64(sid))) {
+                        canUnlockViaBiometrics = false;
+                        break;
+                    }
+                }
+                if (canUnlockViaBiometrics) {
+                    return new UserNotAuthenticatedException();
+                }
+                return new KeyPermanentlyInvalidatedException();
+            }
+        case UNINITIALIZED:
+            return new KeyPermanentlyInvalidatedException();
+        default:
+            return new InvalidKeyException("Keystore operation failed", e);
+    }
+}

@@ -1,0 +1,7 @@
+public void testGetConfigurationIntent_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.getConfigurationIntent(mUserTwoId, TEST_TRANSPORT);
+    verify(mUserOneService, never()).getConfigurationIntent(TEST_TRANSPORT);
+}

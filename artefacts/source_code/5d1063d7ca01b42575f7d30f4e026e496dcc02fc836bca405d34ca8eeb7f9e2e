@@ -1,0 +1,21 @@
+public FillResponse build(){
+    throwIfDestroyed();
+    if (mAuthentication == null && mDatasets == null && mSaveInfo == null && mDisableDuration == 0 && mFieldClassificationIds == null && mClientState == null) {
+        throw new IllegalStateException("need to provide: at least one DataSet, or a " + "SaveInfo, or an authentication with a presentation, " + "or a FieldsDetection, or a client state, or disable autofill");
+    }
+    if (mDatasets == null && (mHeader != null || mFooter != null)) {
+        throw new IllegalStateException("must add at least 1 dataset when using header or footer");
+    }
+    if (mDatasets != null) {
+        for (final Dataset dataset : mDatasets) {
+            if (dataset.getFieldInlinePresentation(0) != null) {
+                mSupportsInlineSuggestions = true;
+                break;
+            }
+        }
+    } else if (mInlinePresentation != null) {
+        mSupportsInlineSuggestions = true;
+    }
+    mDestroyed = true;
+    return new FillResponse(this);
+}

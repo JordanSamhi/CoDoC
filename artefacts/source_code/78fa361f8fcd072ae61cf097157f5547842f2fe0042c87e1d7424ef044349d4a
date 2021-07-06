@@ -1,0 +1,13 @@
+public void associate(InetAddress address, int port){
+    if (isBusy()) {
+        throw new IllegalStateException("Busy");
+    }
+    if (!(address instanceof Inet4Address && mLocalAddress instanceof Inet4Address) && !(address instanceof Inet6Address && mLocalAddress instanceof Inet6Address)) {
+        throw new IllegalArgumentException("Unsupported address");
+    }
+    if (port < 0 || port > 65535) {
+        throw new IllegalArgumentException("Invalid port");
+    }
+    mRemoteAddress = address;
+    mRemotePort = port;
+}

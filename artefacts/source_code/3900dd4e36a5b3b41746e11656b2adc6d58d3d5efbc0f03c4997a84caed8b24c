@@ -1,0 +1,24 @@
+public void jumpToSegment(float length){
+    isIteratorDone = false;
+    if (length <= 0f) {
+        mNextIndex = 0;
+        return;
+    }
+    float accLength = 0;
+    float[] lastPoint = new float[2];
+    for (mNextIndex = 0; mNextIndex < mTypes.length; mNextIndex++) {
+        float segmentLength = mSegmentsLength[mNextIndex];
+        if (accLength + segmentLength >= length && mTypes[mNextIndex] != SEG_MOVETO) {
+            float[] estimatedPoint = new float[2];
+            getPointAtLength(mTypes[mNextIndex], mCoordinates[mNextIndex], lastPoint[0], lastPoint[1], (length - accLength) / segmentLength, estimatedPoint);
+            mCurrentType = PathIterator.SEG_MOVETO;
+            mCurrentCoords[0] = estimatedPoint[0];
+            mCurrentCoords[1] = estimatedPoint[1];
+            mCurrentSegmentLength = 0;
+            mOffsetLength = length - accLength;
+            return;
+        }
+        accLength += segmentLength;
+        getShapeEndPoint(mTypes[mNextIndex], mCoordinates[mNextIndex], lastPoint);
+    }
+}

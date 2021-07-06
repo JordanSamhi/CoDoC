@@ -1,0 +1,13 @@
+public double[] getLatLongAsDoubles(){
+    Rational[] latitude = getTagRationalValues(TAG_GPS_LATITUDE);
+    String latitudeRef = getTagStringValue(TAG_GPS_LATITUDE_REF);
+    Rational[] longitude = getTagRationalValues(TAG_GPS_LONGITUDE);
+    String longitudeRef = getTagStringValue(TAG_GPS_LONGITUDE_REF);
+    if (latitude == null || longitude == null || latitudeRef == null || longitudeRef == null || latitude.length < 3 || longitude.length < 3) {
+        return null;
+    }
+    double[] latLon = new double[2];
+    latLon[0] = convertLatOrLongToDouble(latitude, latitudeRef);
+    latLon[1] = convertLatOrLongToDouble(longitude, longitudeRef);
+    return latLon;
+}

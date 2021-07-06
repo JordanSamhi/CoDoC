@@ -1,0 +1,14 @@
+public void deflect(String number) throws ImsException{
+    logi("deflect :: session=" + mSession + ", number=" + Rlog.pii(TAG, number));
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            throw new ImsException("No call to deflect", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        try {
+            mSession.deflect(number);
+        } catch (Throwable t) {
+            loge("deflect :: ", t);
+            throw new ImsException("deflect()", t, 0);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public void setTouchscreenBlocksFocus(boolean touchscreenBlocksFocus){
+    if (touchscreenBlocksFocus) {
+        mGroupFlags |= FLAG_TOUCHSCREEN_BLOCKS_FOCUS;
+        if (hasFocus() && !isKeyboardNavigationCluster()) {
+            final View focusedChild = getDeepestFocusedChild();
+            if (!focusedChild.isFocusableInTouchMode()) {
+                final View newFocus = focusSearch(FOCUS_FORWARD);
+                if (newFocus != null) {
+                    newFocus.requestFocus();
+                }
+            }
+        }
+    } else {
+        mGroupFlags &= ~FLAG_TOUCHSCREEN_BLOCKS_FOCUS;
+    }
+}

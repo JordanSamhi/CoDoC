@@ -1,0 +1,9 @@
+public static SmsMessage createFromNativeSmsSubmitPdu(@NonNull byte[] data, boolean isCdma){
+    SmsMessageBase wrappedMessage;
+    if (isCdma) {
+        wrappedMessage = com.android.internal.telephony.cdma.SmsMessage.createFromEfRecord(0, data);
+    } else {
+        wrappedMessage = com.android.internal.telephony.gsm.SmsMessage.createFromEfRecord(0, data);
+    }
+    return wrappedMessage != null ? new SmsMessage(wrappedMessage) : null;
+}

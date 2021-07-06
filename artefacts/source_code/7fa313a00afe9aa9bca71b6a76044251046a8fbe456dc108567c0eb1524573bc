@@ -1,0 +1,27 @@
+public void removeOnAccountsUpdatedListener(OnAccountsUpdateListener listener){
+    if (listener == null)
+        throw new IllegalArgumentException("listener is null");
+    synchronized (mAccountsUpdatedListeners) {
+        if (!mAccountsUpdatedListeners.containsKey(listener)) {
+            Log.e(TAG, "Listener was not previously added");
+            return;
+        }
+        Set<String> accountTypes = mAccountsUpdatedListenersTypes.get(listener);
+        String[] accountsArray;
+        if (accountTypes != null) {
+            accountsArray = accountTypes.toArray(new String[accountTypes.size()]);
+        } else {
+            accountsArray = null;
+        }
+        mAccountsUpdatedListeners.remove(listener);
+        mAccountsUpdatedListenersTypes.remove(listener);
+        if (mAccountsUpdatedListeners.isEmpty()) {
+            mContext.unregisterReceiver(mAccountsChangedBroadcastReceiver);
+        }
+        try {
+            mService.unregisterAccountListener(accountsArray, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

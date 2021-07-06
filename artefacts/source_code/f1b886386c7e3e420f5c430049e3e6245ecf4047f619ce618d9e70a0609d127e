@@ -1,0 +1,17 @@
+public void setLatestEventInfo(Context context, CharSequence contentTitle, CharSequence contentText, PendingIntent contentIntent){
+    if (context.getApplicationInfo().targetSdkVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+        Log.e(TAG, "setLatestEventInfo() is deprecated and you should feel deprecated.", new Throwable());
+    }
+    if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.N) {
+        extras.putBoolean(EXTRA_SHOW_WHEN, true);
+    }
+    final Notification.Builder builder = new Notification.Builder(context, this);
+    if (contentTitle != null) {
+        builder.setContentTitle(contentTitle);
+    }
+    if (contentText != null) {
+        builder.setContentText(contentText);
+    }
+    builder.setContentIntent(contentIntent);
+    builder.build();
+}

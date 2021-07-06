@@ -1,0 +1,27 @@
+
+     * Gets or creates a new Resources object associated with the IBinder token. References returned
+     * by this method live as long as the Activity, meaning they can be cached and used by the
+     * Activity even after a configuration change. If any other parameter is changed
+     * (resDir, splitResDirs, overrideConfig) for a given Activity, the same Resources object
+     * is updated and handed back to the caller. However, changing the class loader will result in a
+     * new Resources object.
+     * <p/>
+     * If activityToken is null, a cached Resources object will be returned if it matches the
+     * input parameters. Otherwise a new Resources object that satisfies these parameters is
+     * returned.
+     *
+     * @param activityToken Represents an Activity. If null, global resources are assumed.
+     * @param resDir The base resource path. Can be null (only framework resources will be loaded).
+     * @param splitResDirs An array of split resource paths. Can be null.
+     * @param overlayDirs An array of overlay paths. Can be null.
+     * @param libDirs An array of resource library paths. Can be null.
+     * @param displayId The ID of the display for which to create the resources.
+     * @param overrideConfig The configuration to apply on top of the base configuration. Can be
+     * null. Mostly used with Activities that are in multi-window which may override width and
+     * height properties from the base config.
+     * @param compatInfo The compatibility settings to use. Cannot be null. A default to use is
+     * {@link CompatibilityInfo#DEFAULT_COMPATIBILITY_INFO}.
+     * @param classLoader The class loader to use when inflating Resources. If null, the
+     * {@link ClassLoader#getSystemClassLoader()} is used.
+     * @return a Resources object from which to access resources.
+     

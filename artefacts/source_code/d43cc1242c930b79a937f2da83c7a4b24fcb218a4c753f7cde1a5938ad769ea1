@@ -1,0 +1,30 @@
+public void writeImsSetFeatureValue(int phoneId, int feature, int network, int value){
+    TelephonySettings s = new TelephonySettings();
+    if (network == ImsRegistrationImplBase.REGISTRATION_TECH_LTE) {
+        switch(feature) {
+            case MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE:
+                s.isEnhanced4GLteModeEnabled = (value != 0);
+                break;
+            case MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VIDEO:
+                s.isVtOverLteEnabled = (value != 0);
+                break;
+        }
+    } else if (network == ImsRegistrationImplBase.REGISTRATION_TECH_IWLAN) {
+        switch(feature) {
+            case MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE:
+                s.isWifiCallingEnabled = (value != 0);
+                break;
+            case MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VIDEO:
+                s.isVtOverWifiEnabled = (value != 0);
+                break;
+        }
+    }
+    if (mLastSettings.get(phoneId) != null && Arrays.equals(TelephonySettings.toByteArray(mLastSettings.get(phoneId)), TelephonySettings.toByteArray(s))) {
+        return;
+    }
+    mLastSettings.put(phoneId, s);
+    TelephonyEvent event = new TelephonyEventBuilder(phoneId).setSettings(s).build();
+    addTelephonyEvent(event);
+    annotateInProgressCallSession(event.timestampMillis, phoneId, new CallSessionEventBuilder(TelephonyCallSession.Event.Type.SETTINGS_CHANGED).setSettings(s));
+    annotateInProgressSmsSession(event.timestampMillis, phoneId, new SmsSessionEventBuilder(SmsSession.Event.Type.SETTINGS_CHANGED).setSettings(s));
+}

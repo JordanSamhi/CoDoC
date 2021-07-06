@@ -1,0 +1,10 @@
+public void sendCommand(@NonNull String command, @Nullable Bundle args, @Nullable ResultReceiver cb){
+    if (TextUtils.isEmpty(command)) {
+        throw new IllegalArgumentException("command cannot be null or empty");
+    }
+    try {
+        mSessionBinder.sendCommand(mContext.getPackageName(), command, args, cb);
+    } catch (RemoteException e) {
+        Log.d(TAG, "Dead object in sendCommand.", e);
+    }
+}

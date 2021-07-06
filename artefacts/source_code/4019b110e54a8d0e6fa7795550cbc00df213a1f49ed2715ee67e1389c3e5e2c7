@@ -1,0 +1,10 @@
+public void getCount_includesResultsInLastTwentyFourHours(){
+    setTimeMillis(0);
+    mWindowedcount.record();
+    setTimeMillis(TimeUnit.HOURS.toMillis(4));
+    mWindowedcount.record();
+    setTimeMillis(TimeUnit.HOURS.toMillis(23));
+    mWindowedcount.record();
+    mWindowedcount.record();
+    assertThat(mWindowedcount.getCount()).isEqualTo(4);
+}

@@ -1,0 +1,17 @@
+public final void startPreloading(){
+    synchronized (sSync) {
+        if (sPreloaded) {
+            throw new IllegalStateException("Resources already preloaded");
+        }
+        sPreloaded = true;
+        mPreloading = true;
+        mConfiguration.densityDpi = DisplayMetrics.DENSITY_DEVICE;
+        updateConfiguration(null, null, null);
+        if (TRACE_FOR_DETAILED_PRELOAD) {
+            mPreloadTracingPreloadStartTime = SystemClock.uptimeMillis();
+            mPreloadTracingStartBitmapSize = Bitmap.sPreloadTracingTotalBitmapsSize;
+            mPreloadTracingStartBitmapCount = Bitmap.sPreloadTracingNumInstantiatedBitmaps;
+            Log.d(TAG_PRELOAD, "Preload starting");
+        }
+    }
+}

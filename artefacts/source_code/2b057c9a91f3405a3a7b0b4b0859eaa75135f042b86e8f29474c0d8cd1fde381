@@ -1,0 +1,15 @@
+public void dumpDebug(ProtoOutputStream proto, long fieldId){
+    final long token = proto.start(fieldId);
+    if (mHtmlText != null) {
+        proto.write(ClipDataProto.Item.HTML_TEXT, mHtmlText);
+    } else if (mText != null) {
+        proto.write(ClipDataProto.Item.TEXT, mText.toString());
+    } else if (mUri != null) {
+        proto.write(ClipDataProto.Item.URI, mUri.toString());
+    } else if (mIntent != null) {
+        mIntent.dumpDebug(proto, ClipDataProto.Item.INTENT, true, true, true, true);
+    } else {
+        proto.write(ClipDataProto.Item.NOTHING, true);
+    }
+    proto.end(token);
+}

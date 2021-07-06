@@ -1,0 +1,8 @@
+public int getPackageImportance(String packageName){
+    try {
+        int procState = getService().getPackageProcessState(packageName, mContext.getOpPackageName());
+        return RunningAppProcessInfo.procStateToImportanceForClient(procState, mContext);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

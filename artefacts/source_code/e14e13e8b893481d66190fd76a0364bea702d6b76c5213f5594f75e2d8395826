@@ -1,0 +1,39 @@
+public List<ShortcutManager.ShareShortcutInfo> getMatchingShareTargets(@NonNull IntentFilter filter){
+    final List<ShareTargetInfo> matchedTargets = new ArrayList<>();
+    for (int i = 0; i < mShareTargets.size(); i++) {
+        final ShareTargetInfo target = mShareTargets.get(i);
+        for (ShareTargetInfo.TargetData data : target.mTargetData) {
+            if (filter.hasDataType(data.mMimeType)) {
+                matchedTargets.add(target);
+                break;
+            }
+        }
+    }
+    if (matchedTargets.isEmpty()) {
+        return new ArrayList<>();
+    }
+    final ArrayList<ShortcutInfo> shortcuts = new ArrayList<>();
+    findAll(shortcuts, ShortcutInfo::isNonManifestVisible, ShortcutInfo.CLONE_REMOVE_FOR_APP_PREDICTION);
+    final List<ShortcutManager.ShareShortcutInfo> result = new ArrayList<>();
+    for (int i = 0; i < shortcuts.size(); i++) {
+        final Set<String> categories = shortcuts.get(i).getCategories();
+        if (categories == null || categories.isEmpty()) {
+            continue;
+        }
+        for (int j = 0; j < matchedTargets.size(); j++) {
+            boolean hasAllCategories = true;
+            final ShareTargetInfo target = matchedTargets.get(j);
+            for (int q = 0; q < target.mCategories.length; q++) {
+                if (!categories.contains(target.mCategories[q])) {
+                    hasAllCategories = false;
+                    break;
+                }
+            }
+            if (hasAllCategories) {
+                result.add(new ShortcutManager.ShareShortcutInfo(shortcuts.get(i), new ComponentName(getPackageName(), target.mTargetClass)));
+                break;
+            }
+        }
+    }
+    return result;
+}

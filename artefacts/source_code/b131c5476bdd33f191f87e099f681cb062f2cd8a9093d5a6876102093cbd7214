@@ -1,0 +1,12 @@
+public float getPixelSize(){
+    if (mVectorState == null || mVectorState.mBaseWidth == 0 || mVectorState.mBaseHeight == 0 || mVectorState.mViewportHeight == 0 || mVectorState.mViewportWidth == 0) {
+        return 1;
+    }
+    float intrinsicWidth = mVectorState.mBaseWidth;
+    float intrinsicHeight = mVectorState.mBaseHeight;
+    float viewportWidth = mVectorState.mViewportWidth;
+    float viewportHeight = mVectorState.mViewportHeight;
+    float scaleX = viewportWidth / intrinsicWidth;
+    float scaleY = viewportHeight / intrinsicHeight;
+    return Math.min(scaleX, scaleY);
+}

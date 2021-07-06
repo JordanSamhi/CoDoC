@@ -1,0 +1,17 @@
+public void failNextJpeg(){
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        CaptureHolder h1 = mJpegCaptureQueue.peek();
+        CaptureHolder h2 = mJpegProduceQueue.peek();
+        CaptureHolder h = (h1 == null) ? h2 : ((h2 == null) ? h1 : ((h1.compareTo(h2) <= 0) ? h1 : h2));
+        if (h != null) {
+            mJpegCaptureQueue.remove(h);
+            mJpegProduceQueue.remove(h);
+            mActiveRequests.remove(h);
+            h.setJpegFailed();
+        }
+    } finally {
+        lock.unlock();
+    }
+}

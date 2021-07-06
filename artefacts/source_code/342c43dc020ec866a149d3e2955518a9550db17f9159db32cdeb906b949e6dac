@@ -1,0 +1,8 @@
+public void flush() throws IOException{
+    int endByte = mNextBitIndex / BYTE_BITS;
+    if (mNextBitIndex % BYTE_BITS != 0) {
+        endByte++;
+    }
+    mOutputStream.write(mBuffer, 0, endByte);
+    reset();
+}

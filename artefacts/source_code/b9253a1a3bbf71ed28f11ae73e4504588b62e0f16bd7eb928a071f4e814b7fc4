@@ -1,0 +1,25 @@
+public Set<ExtendedWifiNetworkSuggestion> getNetworkSuggestionsForFqdn(String fqdn){
+    Set<ExtendedWifiNetworkSuggestion> extNetworkSuggestions = getNetworkSuggestionsForFqdnMatch(fqdn);
+    if (extNetworkSuggestions == null) {
+        return null;
+    }
+    final String activeScorerPackage = mNetworkScoreManager.getActiveScorerPackage();
+    Set<ExtendedWifiNetworkSuggestion> approvedExtNetworkSuggestions = new HashSet<>();
+    for (ExtendedWifiNetworkSuggestion ewns : extNetworkSuggestions) {
+        if (!ewns.perAppInfo.isApproved(activeScorerPackage)) {
+            sendUserApprovalNotificationIfNotApproved(ewns.perAppInfo.packageName, ewns.perAppInfo.uid);
+            continue;
+        }
+        if (isSimBasedSuggestion(ewns)) {
+            mWifiCarrierInfoManager.sendImsiProtectionExemptionNotificationIfRequired(getCarrierIdFromSuggestion(ewns));
+        }
+        approvedExtNetworkSuggestions.add(ewns);
+    }
+    if (approvedExtNetworkSuggestions.isEmpty()) {
+        return null;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "getNetworkSuggestionsForFqdn Found " + approvedExtNetworkSuggestions + " for " + fqdn);
+    }
+    return approvedExtNetworkSuggestions;
+}

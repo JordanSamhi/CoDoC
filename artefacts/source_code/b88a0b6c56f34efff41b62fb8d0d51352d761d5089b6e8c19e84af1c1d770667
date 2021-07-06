@@ -1,0 +1,18 @@
+public static List<InputMethodSubtype> sort(Context context, int flags, InputMethodInfo imi, List<InputMethodSubtype> subtypeList){
+    if (imi == null)
+        return subtypeList;
+    final HashSet<InputMethodSubtype> inputSubtypesSet = new HashSet<InputMethodSubtype>(subtypeList);
+    final ArrayList<InputMethodSubtype> sortedList = new ArrayList<InputMethodSubtype>();
+    int N = imi.getSubtypeCount();
+    for (int i = 0; i < N; ++i) {
+        InputMethodSubtype subtype = imi.getSubtypeAt(i);
+        if (inputSubtypesSet.contains(subtype)) {
+            sortedList.add(subtype);
+            inputSubtypesSet.remove(subtype);
+        }
+    }
+    for (InputMethodSubtype subtype : inputSubtypesSet) {
+        sortedList.add(subtype);
+    }
+    return sortedList;
+}

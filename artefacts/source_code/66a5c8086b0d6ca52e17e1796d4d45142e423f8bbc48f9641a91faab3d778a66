@@ -1,0 +1,115 @@
+public boolean dispatchDragEvent(DragEvent event){
+    boolean retval = false;
+    final float tx = event.mX;
+    final float ty = event.mY;
+    final ClipData td = event.mClipData;
+    final PointF localPoint = getLocalPoint();
+    switch(event.mAction) {
+        case DragEvent.ACTION_DRAG_STARTED:
+            {
+                mCurrentDragChild = null;
+                mCurrentDragStartEvent = DragEvent.obtain(event);
+                if (mChildrenInterestedInDrag == null) {
+                    mChildrenInterestedInDrag = new HashSet<View>();
+                } else {
+                    mChildrenInterestedInDrag.clear();
+                }
+                final int count = mChildrenCount;
+                final View[] children = mChildren;
+                for (int i = 0; i < count; i++) {
+                    final View child = children[i];
+                    child.mPrivateFlags2 &= ~View.DRAG_MASK;
+                    if (child.getVisibility() == VISIBLE) {
+                        if (notifyChildOfDragStart(children[i])) {
+                            retval = true;
+                        }
+                    }
+                }
+                mIsInterestedInDrag = super.dispatchDragEvent(event);
+                if (mIsInterestedInDrag) {
+                    retval = true;
+                }
+                if (!retval) {
+                    mCurrentDragStartEvent.recycle();
+                    mCurrentDragStartEvent = null;
+                }
+            }
+            break;
+        case DragEvent.ACTION_DRAG_ENDED:
+            {
+                final HashSet<View> childrenInterestedInDrag = mChildrenInterestedInDrag;
+                if (childrenInterestedInDrag != null) {
+                    for (View child : childrenInterestedInDrag) {
+                        if (child.dispatchDragEvent(event)) {
+                            retval = true;
+                        }
+                    }
+                    childrenInterestedInDrag.clear();
+                }
+                if (mCurrentDragStartEvent != null) {
+                    mCurrentDragStartEvent.recycle();
+                    mCurrentDragStartEvent = null;
+                }
+                if (mIsInterestedInDrag) {
+                    if (super.dispatchDragEvent(event)) {
+                        retval = true;
+                    }
+                    mIsInterestedInDrag = false;
+                }
+            }
+            break;
+        case DragEvent.ACTION_DRAG_LOCATION:
+        case DragEvent.ACTION_DROP:
+            {
+                View target = findFrontmostDroppableChildAt(event.mX, event.mY, localPoint);
+                if (target != mCurrentDragChild) {
+                    if (sCascadedDragDrop) {
+                        final int action = event.mAction;
+                        event.mX = 0;
+                        event.mY = 0;
+                        event.mClipData = null;
+                        if (mCurrentDragChild != null) {
+                            event.mAction = DragEvent.ACTION_DRAG_EXITED;
+                            mCurrentDragChild.dispatchDragEnterExitInPreN(event);
+                        }
+                        if (target != null) {
+                            event.mAction = DragEvent.ACTION_DRAG_ENTERED;
+                            target.dispatchDragEnterExitInPreN(event);
+                        }
+                        event.mAction = action;
+                        event.mX = tx;
+                        event.mY = ty;
+                        event.mClipData = td;
+                    }
+                    mCurrentDragChild = target;
+                }
+                if (target == null && mIsInterestedInDrag) {
+                    target = this;
+                }
+                if (target != null) {
+                    if (target != this) {
+                        event.mX = localPoint.x;
+                        event.mY = localPoint.y;
+                        retval = target.dispatchDragEvent(event);
+                        event.mX = tx;
+                        event.mY = ty;
+                        if (mIsInterestedInDrag) {
+                            final boolean eventWasConsumed;
+                            if (sCascadedDragDrop) {
+                                eventWasConsumed = retval;
+                            } else {
+                                eventWasConsumed = event.mEventHandlerWasCalled;
+                            }
+                            if (!eventWasConsumed) {
+                                retval = super.dispatchDragEvent(event);
+                            }
+                        }
+                    } else {
+                        retval = super.dispatchDragEvent(event);
+                    }
+                }
+            }
+            break;
+    }
+    return retval;
+}

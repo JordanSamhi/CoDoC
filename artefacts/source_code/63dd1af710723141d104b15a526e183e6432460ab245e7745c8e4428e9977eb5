@@ -1,0 +1,11 @@
+public long getAllowedNetworkTypes(@TelephonyManager.AllowedNetworkTypesReason int reason){
+    synchronized (mAllowedNetworkTypesForReasons) {
+        switch(reason) {
+            case TelephonyManager.ALLOWED_NETWORK_TYPES_REASON_POWER:
+                return mAllowedNetworkTypesForReasons.getOrDefault(TelephonyManager.ALLOWED_NETWORK_TYPES_REASON_POWER, TelephonyManager.getAllNetworkTypesBitmask());
+            default:
+                Rlog.e(LOG_TAG, "Invalid allowed network type reason: " + reason);
+                return TelephonyManager.getAllNetworkTypesBitmask();
+        }
+    }
+}

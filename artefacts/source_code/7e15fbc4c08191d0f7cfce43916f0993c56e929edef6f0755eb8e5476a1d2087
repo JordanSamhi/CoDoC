@@ -1,0 +1,15 @@
+public void buildNewRa(RaParams deprecatedParams, RaParams newParams){
+    synchronized (mLock) {
+        if (deprecatedParams != null) {
+            mDeprecatedInfoTracker.putPrefixes(deprecatedParams.prefixes);
+            mDeprecatedInfoTracker.putDnses(deprecatedParams.dnses);
+        }
+        if (newParams != null) {
+            mDeprecatedInfoTracker.removePrefixes(newParams.prefixes);
+            mDeprecatedInfoTracker.removeDnses(newParams.dnses);
+        }
+        mRaParams = newParams;
+        assembleRaLocked();
+    }
+    maybeNotifyMulticastTransmitter();
+}

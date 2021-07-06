@@ -1,0 +1,15 @@
+public static void setLayoutParameter(final View view, final String param, final int value) throws NoSuchFieldException, IllegalAccessException{
+    final ViewGroup.LayoutParams p = view.getLayoutParams();
+    final Field f = p.getClass().getField(param);
+    if (f.getType() != int.class) {
+        throw new RuntimeException("Only integer layout parameters can be set. Field " + param + " is of type " + f.getType().getSimpleName());
+    }
+    f.set(p, Integer.valueOf(value));
+    view.post(new Runnable() {
+
+        @Override
+        public void run() {
+            view.setLayoutParams(p);
+        }
+    });
+}

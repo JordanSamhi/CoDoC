@@ -1,0 +1,10 @@
+public boolean hasAncestorOrSelf(SigningDetails oldDetails){
+    if (this == UNKNOWN || oldDetails == UNKNOWN) {
+        return false;
+    }
+    if (oldDetails.signatures.length > 1) {
+        return signaturesMatchExactly(oldDetails);
+    } else {
+        return hasCertificate(oldDetails.signatures[0]);
+    }
+}

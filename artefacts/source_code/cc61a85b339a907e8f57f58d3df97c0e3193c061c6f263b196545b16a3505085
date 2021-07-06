@@ -1,0 +1,8 @@
+public TransportClient getTransportClient(String transportName, String caller){
+    try {
+        return getTransportClientOrThrow(transportName, caller);
+    } catch (TransportNotRegisteredException e) {
+        Slog.w(TAG, "Transport " + transportName + " not registered");
+        return null;
+    }
+}

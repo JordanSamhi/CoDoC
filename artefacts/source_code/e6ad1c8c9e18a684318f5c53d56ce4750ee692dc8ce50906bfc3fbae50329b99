@@ -1,0 +1,11 @@
+public void onSeek(long timeUs){
+    if (DEBUG)
+        Log.d(TAG, "onSeek " + timeUs);
+    synchronized (this) {
+        long timeMs = timeUs / 1000;
+        updateActiveCues(true, timeMs);
+        takeTime(timeMs);
+    }
+    updateView(mActiveCues);
+    scheduleTimedEvents();
+}

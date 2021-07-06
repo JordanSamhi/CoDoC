@@ -1,0 +1,12 @@
+public void rewindWriteTo(int writePos){
+    if (writePos > getWritePos()) {
+        throw new RuntimeException("rewindWriteTo only can go backwards" + writePos);
+    }
+    mWriteBufIndex = writePos / mChunkSize;
+    mWriteIndex = writePos % mChunkSize;
+    if (mWriteIndex == 0 && mWriteBufIndex != 0) {
+        mWriteIndex = mChunkSize;
+        mWriteBufIndex--;
+    }
+    mWriteBuffer = mBuffers.get(mWriteBufIndex);
+}

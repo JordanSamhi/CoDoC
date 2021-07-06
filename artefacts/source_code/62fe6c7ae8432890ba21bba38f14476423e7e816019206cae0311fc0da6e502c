@@ -1,0 +1,8 @@
+public static void setErrorCallback(ErrorCallback cb){
+    synchronized (AudioSystem.class) {
+        sErrorCallback = cb;
+        if (cb != null) {
+            cb.onError(checkAudioFlinger());
+        }
+    }
+}

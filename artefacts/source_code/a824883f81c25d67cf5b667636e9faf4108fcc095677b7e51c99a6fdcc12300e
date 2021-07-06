@@ -1,0 +1,12 @@
+public boolean handleBssidConnectionFailure(String bssid, String ssid, @FailureReason int reasonCode, boolean isLowRssi){
+    if (!isValidNetworkAndFailureReason(bssid, ssid, reasonCode)) {
+        return false;
+    }
+    if (reasonCode == REASON_ABNORMAL_DISCONNECT) {
+        long connectionTime = mWifiScoreCard.getBssidConnectionTimestampMs(ssid, bssid);
+        if (mClock.getWallClockMillis() - connectionTime > mContext.getResources().getInteger(R.integer.config_wifiBssidBlocklistAbnormalDisconnectTimeWindowMs)) {
+            return false;
+        }
+    }
+    return handleBssidConnectionFailureInternal(bssid, ssid, reasonCode, isLowRssi);
+}

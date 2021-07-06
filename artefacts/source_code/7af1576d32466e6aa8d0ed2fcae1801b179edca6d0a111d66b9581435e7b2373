@@ -1,0 +1,12 @@
+public void dumpDebug(ProtoOutputStream proto, long fieldId){
+    final long token = proto.start(fieldId);
+    proto.write(ProfilerInfoProto.PROFILE_FILE, profileFile);
+    if (profileFd != null) {
+        proto.write(ProfilerInfoProto.PROFILE_FD, profileFd.getFd());
+    }
+    proto.write(ProfilerInfoProto.SAMPLING_INTERVAL, samplingInterval);
+    proto.write(ProfilerInfoProto.AUTO_STOP_PROFILER, autoStopProfiler);
+    proto.write(ProfilerInfoProto.STREAMING_OUTPUT, streamingOutput);
+    proto.write(ProfilerInfoProto.AGENT, agent);
+    proto.end(token);
+}

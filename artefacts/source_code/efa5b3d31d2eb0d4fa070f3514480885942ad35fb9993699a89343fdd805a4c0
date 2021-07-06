@@ -1,0 +1,14 @@
+public ContentCaptureEvent addAutofillId(@NonNull AutofillId id){
+    Preconditions.checkNotNull(id);
+    if (mIds == null) {
+        mIds = new ArrayList<>();
+        if (mId == null) {
+            Log.w(TAG, "addAutofillId(" + id + ") called without an initial id");
+        } else {
+            mIds.add(mId);
+            mId = null;
+        }
+    }
+    mIds.add(id);
+    return this;
+}

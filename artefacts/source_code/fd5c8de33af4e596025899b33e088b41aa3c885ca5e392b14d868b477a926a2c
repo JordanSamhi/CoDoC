@@ -1,0 +1,10 @@
+public void stopServiceForOwner(int userId, @NonNull String actionForLog){
+    final long token = mInjector.binderClearCallingIdentity();
+    try {
+        synchronized (mLock) {
+            disconnectServiceOnUserLocked(userId, actionForLog);
+        }
+    } finally {
+        mInjector.binderRestoreCallingIdentity(token);
+    }
+}

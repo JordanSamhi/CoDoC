@@ -1,0 +1,8 @@
+public static void scheduleZramWriteback(Context context){
+    int markIdleDelay = SystemProperties.getInt(MARK_IDLE_DELAY_PROP, 20);
+    int firstWbDelay = SystemProperties.getInt(FIRST_WB_DELAY_PROP, 180);
+    boolean forceWb = SystemProperties.getBoolean(FORCE_WRITEBACK_PROP, false);
+    JobScheduler js = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    js.schedule(new JobInfo.Builder(MARK_IDLE_JOB_ID, sZramWriteback).setMinimumLatency(TimeUnit.MINUTES.toMillis(markIdleDelay)).setOverrideDeadline(TimeUnit.MINUTES.toMillis(markIdleDelay)).build());
+    js.schedule(new JobInfo.Builder(WRITEBACK_IDLE_JOB_ID, sZramWriteback).setMinimumLatency(TimeUnit.MINUTES.toMillis(firstWbDelay)).setRequiresDeviceIdle(!forceWb).build());
+}

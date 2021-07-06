@@ -1,0 +1,10 @@
+public void setSharedBufferModeEnabled(boolean enabled){
+    if (mIsSharedBufferModeEnabled != enabled) {
+        int error = nativeSetSharedBufferModeEnabled(mNativeObject, enabled);
+        if (error != 0) {
+            throw new RuntimeException("Failed to set shared buffer mode on Surface (bad object?)");
+        } else {
+            mIsSharedBufferModeEnabled = enabled;
+        }
+    }
+}

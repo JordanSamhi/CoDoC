@@ -1,0 +1,14 @@
+public PeriodicAdvertisingManager getPeriodicAdvertisingManager(){
+    if (!getLeAccess()) {
+        return null;
+    }
+    if (!isLePeriodicAdvertisingSupported()) {
+        return null;
+    }
+    synchronized (mLock) {
+        if (sPeriodicAdvertisingManager == null) {
+            sPeriodicAdvertisingManager = new PeriodicAdvertisingManager(mManagerService);
+        }
+    }
+    return sPeriodicAdvertisingManager;
+}

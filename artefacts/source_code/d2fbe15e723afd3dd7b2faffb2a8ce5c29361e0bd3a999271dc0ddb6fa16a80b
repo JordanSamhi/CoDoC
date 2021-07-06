@@ -1,0 +1,41 @@
+public AttestedKeyPair generateKeyPair(@Nullable ComponentName admin, @NonNull String algorithm, @NonNull KeyGenParameterSpec keySpec, @AttestationIdType int idAttestationFlags){
+    throwIfParentInstance("generateKeyPair");
+    try {
+        final ParcelableKeyGenParameterSpec parcelableSpec = new ParcelableKeyGenParameterSpec(keySpec);
+        KeymasterCertificateChain attestationChain = new KeymasterCertificateChain();
+        final boolean success = mService.generateKeyPair(admin, mContext.getPackageName(), algorithm, parcelableSpec, idAttestationFlags, attestationChain);
+        if (!success) {
+            Log.e(TAG, "Error generating key via DevicePolicyManagerService.");
+            return null;
+        }
+        final String alias = keySpec.getKeystoreAlias();
+        final KeyPair keyPair = KeyChain.getKeyPair(mContext, alias);
+        Certificate[] outputChain = null;
+        try {
+            if (AttestationUtils.isChainValid(attestationChain)) {
+                outputChain = AttestationUtils.parseCertificateChain(attestationChain);
+            }
+        } catch (KeyAttestationException e) {
+            Log.e(TAG, "Error parsing attestation chain for alias " + alias, e);
+            mService.removeKeyPair(admin, mContext.getPackageName(), alias);
+            return null;
+        }
+        return new AttestedKeyPair(keyPair, outputChain);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (KeyChainException e) {
+        Log.w(TAG, "Failed to generate key", e);
+    } catch (InterruptedException e) {
+        Log.w(TAG, "Interrupted while generating key", e);
+        Thread.currentThread().interrupt();
+    } catch (ServiceSpecificException e) {
+        Log.w(TAG, String.format("Key Generation failure: %d", e.errorCode));
+        switch(e.errorCode) {
+            case KEY_GEN_STRONGBOX_UNAVAILABLE:
+                throw new StrongBoxUnavailableException("No StrongBox for key generation.");
+            default:
+                throw new RuntimeException(String.format("Unknown error while generating key: %d", e.errorCode));
+        }
+    }
+    return null;
+}

@@ -1,0 +1,12 @@
+public static String cdmaCheckAndProcessPlusCode(String dialStr){
+    if (!TextUtils.isEmpty(dialStr)) {
+        if (isReallyDialable(dialStr.charAt(0)) && isNonSeparator(dialStr)) {
+            String currIso = TelephonyManager.getDefault().getNetworkCountryIso();
+            String defaultIso = TelephonyManager.getDefault().getSimCountryIso();
+            if (!TextUtils.isEmpty(currIso) && !TextUtils.isEmpty(defaultIso)) {
+                return cdmaCheckAndProcessPlusCodeByNumberFormat(dialStr, getFormatTypeFromCountryCode(currIso), getFormatTypeFromCountryCode(defaultIso));
+            }
+        }
+    }
+    return dialStr;
+}

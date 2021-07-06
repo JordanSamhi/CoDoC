@@ -1,0 +1,13 @@
+public void start(ImsCallSession session, String callee) throws ImsException{
+    logi("start(1) :: session=" + session);
+    synchronized (mLockObj) {
+        mSession = session;
+        try {
+            session.setListener(createCallSessionListener());
+            session.start(callee, mCallProfile);
+        } catch (Throwable t) {
+            loge("start(1) :: ", t);
+            throw new ImsException("start(1)", t, 0);
+        }
+    }
+}

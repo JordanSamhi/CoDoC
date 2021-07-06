@@ -1,0 +1,9 @@
+public static int calculateMinimumBackgroundAlpha(@ColorInt int foreground, @ColorInt int background, float minContrastRatio){
+    background = setAlphaComponent(background, 255);
+    final int leastContrastyColor = setAlphaComponent(foreground, 255);
+    return binaryAlphaSearch(foreground, background, minContrastRatio, (fg, bg, alpha) -> {
+        int testBackground = blendARGB(leastContrastyColor, bg, alpha / 255f);
+        testBackground = setAlphaComponent(testBackground, 255);
+        return calculateContrast(fg, testBackground);
+    });
+}

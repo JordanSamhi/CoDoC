@@ -1,0 +1,10 @@
+public final Allocation createPreviewAllocation(RenderScript rs, int usage) throws RSIllegalArgumentException{
+    Parameters p = getParameters();
+    Size previewSize = p.getPreviewSize();
+    Type.Builder yuvBuilder = new Type.Builder(rs, Element.createPixel(rs, Element.DataType.UNSIGNED_8, Element.DataKind.PIXEL_YUV));
+    yuvBuilder.setYuvFormat(ImageFormat.YV12);
+    yuvBuilder.setX(previewSize.width);
+    yuvBuilder.setY(previewSize.height);
+    Allocation a = Allocation.createTyped(rs, yuvBuilder.create(), usage | Allocation.USAGE_IO_INPUT);
+    return a;
+}

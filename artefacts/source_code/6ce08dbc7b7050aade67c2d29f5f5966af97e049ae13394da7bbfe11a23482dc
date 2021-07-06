@@ -1,0 +1,10 @@
+public void systemReady(){
+    if (DEBUG)
+        Slog.d(TAG, "systemReady");
+    try {
+        Settings.Global.putInt(mContentResolver, Settings.Global.ADB_ENABLED, mIsAdbUsbEnabled ? 1 : 0);
+        Settings.Global.putInt(mContentResolver, Settings.Global.ADB_WIFI_ENABLED, mIsAdbWifiEnabled ? 1 : 0);
+    } catch (SecurityException e) {
+        Slog.d(TAG, "ADB_ENABLED is restricted.");
+    }
+}

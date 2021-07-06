@@ -1,0 +1,10 @@
+public CharSequence[] getTextArray(@StyleableRes int index){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    final TypedValue value = mValue;
+    if (getValueAt(index * STYLE_NUM_ENTRIES, value)) {
+        return mResources.getTextArray(value.resourceId);
+    }
+    return null;
+}

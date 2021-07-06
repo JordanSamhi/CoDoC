@@ -1,0 +1,22 @@
+public boolean getRoamingCapabilities(@NonNull String ifaceName, WifiNative.RoamingCapabilities capabilities){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        try {
+            MutableBoolean ok = new MutableBoolean(false);
+            WifiNative.RoamingCapabilities out = capabilities;
+            iface.getRoamingCapabilities((status, cap) -> {
+                if (!ok(status))
+                    return;
+                out.maxBlacklistSize = cap.maxBlacklistSize;
+                out.maxWhitelistSize = cap.maxWhitelistSize;
+                ok.value = true;
+            });
+            return ok.value;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+}

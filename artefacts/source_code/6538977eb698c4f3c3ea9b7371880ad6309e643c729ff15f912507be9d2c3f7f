@@ -1,0 +1,17 @@
+public int getVoWiFiModeSetting(){
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new RuntimeException("Could not find Telephony Service.");
+    }
+    try {
+        return iTelephony.getVoWiFiModeSetting(mSubId);
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == ImsException.CODE_ERROR_INVALID_SUBSCRIPTION) {
+            throw new IllegalArgumentException(e.getMessage());
+        } else {
+            throw new RuntimeException(e.getMessage());
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,21 @@
+public void initRecoveryServiceWithSigFile(@NonNull String rootCertificateAlias, @NonNull byte[] recoveryServiceCertFile, @NonNull byte[] recoveryServiceSigFile) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    rootCertificateAlias = mTestCertHelper.getDefaultCertificateAliasIfEmpty(rootCertificateAlias);
+    Objects.requireNonNull(recoveryServiceCertFile, "recoveryServiceCertFile is null");
+    Objects.requireNonNull(recoveryServiceSigFile, "recoveryServiceSigFile is null");
+    SigXml sigXml;
+    try {
+        sigXml = SigXml.parse(recoveryServiceSigFile);
+    } catch (CertParsingException e) {
+        Log.d(TAG, "Failed to parse the sig file: " + HexDump.toHexString(recoveryServiceSigFile));
+        throw new ServiceSpecificException(ERROR_BAD_CERTIFICATE_FORMAT, e.getMessage());
+    }
+    X509Certificate rootCert = mTestCertHelper.getRootCertificate(rootCertificateAlias);
+    try {
+        sigXml.verifyFileSignature(rootCert, recoveryServiceCertFile);
+    } catch (CertValidationException e) {
+        Log.d(TAG, "The signature over the cert file is invalid." + " Cert: " + HexDump.toHexString(recoveryServiceCertFile) + " Sig: " + HexDump.toHexString(recoveryServiceSigFile));
+        throw new ServiceSpecificException(ERROR_INVALID_CERTIFICATE, e.getMessage());
+    }
+    initRecoveryService(rootCertificateAlias, recoveryServiceCertFile);
+}

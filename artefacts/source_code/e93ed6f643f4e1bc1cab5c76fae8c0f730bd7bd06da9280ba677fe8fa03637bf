@@ -1,0 +1,8 @@
+public void startAppDetailsActivity(ComponentName component, UserHandle user, Rect sourceBounds, Bundle opts){
+    logErrorForInvalidProfileAccess(user);
+    try {
+        mService.showAppDetailsAsUser(mContext.getIApplicationThread(), mContext.getPackageName(), mContext.getAttributionTag(), component, sourceBounds, opts, user);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

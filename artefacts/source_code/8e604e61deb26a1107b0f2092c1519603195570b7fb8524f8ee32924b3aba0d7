@@ -1,0 +1,21 @@
+public int getParticipantPresentation(){
+    Uri address = getHandle();
+    if (address == null) {
+        return PhoneConstants.PRESENTATION_RESTRICTED;
+    }
+    String number = address.getSchemeSpecificPart();
+    if (TextUtils.isEmpty(number)) {
+        return PhoneConstants.PRESENTATION_RESTRICTED;
+    }
+    String[] hostParts = number.split("[;]");
+    String addressPart = hostParts[0];
+    String[] numberParts = addressPart.split("[@]");
+    if (numberParts.length != 2) {
+        return PhoneConstants.PRESENTATION_ALLOWED;
+    }
+    String hostName = numberParts[1];
+    if (hostName.equals(ANONYMOUS_INVALID_HOST)) {
+        return PhoneConstants.PRESENTATION_RESTRICTED;
+    }
+    return PhoneConstants.PRESENTATION_ALLOWED;
+}

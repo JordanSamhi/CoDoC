@@ -1,0 +1,9 @@
+public void noteIpReachabilityLost(@NonNull ExtendedWifiInfo wifiInfo){
+    if (mTsRoam > TS_NONE) {
+        mTsConnectionAttemptStart = mTsRoam;
+        updatePerBssid(Event.ROAM_FAILURE, wifiInfo);
+    } else {
+        updatePerBssid(Event.IP_REACHABILITY_LOST, wifiInfo);
+    }
+    doWrites();
+}

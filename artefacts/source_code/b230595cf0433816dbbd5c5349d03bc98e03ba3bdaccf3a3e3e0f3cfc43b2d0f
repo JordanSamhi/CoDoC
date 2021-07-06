@@ -1,0 +1,16 @@
+public void removeHotplugEventListener(HotplugEventListener listener){
+    if (mService == null) {
+        Log.e(TAG, "HdmiControlService is not available");
+        return;
+    }
+    IHdmiHotplugEventListener wrappedListener = mHotplugEventListeners.remove(listener);
+    if (wrappedListener == null) {
+        Log.e(TAG, "tried to remove not-registered listener");
+        return;
+    }
+    try {
+        mService.removeHotplugEventListener(wrappedListener);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

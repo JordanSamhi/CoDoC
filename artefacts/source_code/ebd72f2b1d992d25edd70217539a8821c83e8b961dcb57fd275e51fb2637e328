@@ -1,0 +1,7 @@
+public void unregisterPredictionUpdatesLocked(@NonNull AppPredictionSessionId sessionId, @NonNull IPredictionCallback callback){
+    final boolean serviceExists = resolveService(sessionId, s -> s.unregisterPredictionUpdates(sessionId, callback), false);
+    final AppPredictionSessionInfo sessionInfo = mSessionInfos.get(sessionId);
+    if (serviceExists && sessionInfo != null) {
+        sessionInfo.removeCallbackLocked(callback);
+    }
+}

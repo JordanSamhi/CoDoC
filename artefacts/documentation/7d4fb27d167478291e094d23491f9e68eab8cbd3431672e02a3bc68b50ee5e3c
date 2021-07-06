@@ -1,0 +1,29 @@
+
+     * Creates a new Camera object to access a particular hardware camera. If
+     * the same camera is opened by other applications, this will throw a
+     * RuntimeException.
+     *
+     * <p>You must call {@link #release()} when you are done using the camera,
+     * otherwise it will remain locked and be unavailable to other applications.
+     *
+     * <p>Your application should only have one Camera object active at a time
+     * for a particular hardware camera.
+     *
+     * <p>Callbacks from other methods are delivered to the event loop of the
+     * thread which called open().  If this thread has no event loop, then
+     * callbacks are delivered to the main application event loop.  If there
+     * is no main application event loop, callbacks are not delivered.
+     *
+     * <p class="caution"><b>Caution:</b> On some devices, this method may
+     * take a long time to complete.  It is best to call this method from a
+     * worker thread (possibly using {@link android.os.AsyncTask}) to avoid
+     * blocking the main application UI thread.
+     *
+     * @param cameraId the hardware camera to access, between 0 and
+     *     {@link #getNumberOfCameras()}-1.
+     * @return a new Camera object, connected, locked and ready for use.
+     * @throws RuntimeException if opening the camera fails (for example, if the
+     *     camera is in use by another process or device policy manager has
+     *     disabled the camera).
+     * @see android.app.admin.DevicePolicyManager#getCameraDisabled(android.content.ComponentName)
+     

@@ -1,0 +1,8 @@
+public void cacheShortcuts(@NonNull String packageName, @NonNull List<String> shortcutIds, @NonNull UserHandle user, @ShortcutCacheFlags int cacheFlags){
+    logErrorForInvalidProfileAccess(user);
+    try {
+        mService.cacheShortcuts(mContext.getPackageName(), packageName, shortcutIds, user, cacheFlags);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

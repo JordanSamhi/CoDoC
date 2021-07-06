@@ -1,0 +1,22 @@
+public void getPermissionUsages(boolean countSystem, long numMillis, @NonNull @CallbackExecutor Executor executor, @NonNull OnPermissionUsageResultCallback callback){
+    checkArgumentNonnegative(numMillis);
+    checkNotNull(executor);
+    checkNotNull(callback);
+    mRemoteService.postAsync(service -> {
+        AndroidFuture<List<RuntimePermissionUsageInfo>> getPermissionUsagesResult = new AndroidFuture<>();
+        service.getPermissionUsages(countSystem, numMillis, getPermissionUsagesResult);
+        return getPermissionUsagesResult;
+    }).whenCompleteAsync((getPermissionUsagesResult, err) -> {
+        if (err != null) {
+            Log.e(TAG, "Error getting permission usages", err);
+            callback.onPermissionUsageResult(Collections.emptyList());
+        } else {
+            long token = Binder.clearCallingIdentity();
+            try {
+                callback.onPermissionUsageResult(CollectionUtils.emptyIfNull(getPermissionUsagesResult));
+            } finally {
+                Binder.restoreCallingIdentity(token);
+            }
+        }
+    }, executor);
+}

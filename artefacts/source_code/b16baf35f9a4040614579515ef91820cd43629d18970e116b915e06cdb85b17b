@@ -1,0 +1,11 @@
+public boolean setPreferredNetworkType(int subId, @PrefNetworkMode int networkType){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.setPreferredNetworkType(subId, networkType);
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "setPreferredNetworkType RemoteException", ex);
+    }
+    return false;
+}

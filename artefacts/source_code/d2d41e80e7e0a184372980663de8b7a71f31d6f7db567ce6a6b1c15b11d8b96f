@@ -1,0 +1,16 @@
+public void setQuickScaleEnabled(boolean scales){
+    mQuickScaleEnabled = scales;
+    if (mQuickScaleEnabled && mGestureDetector == null) {
+        GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                mAnchoredScaleStartX = e.getX();
+                mAnchoredScaleStartY = e.getY();
+                mAnchoredScaleMode = ANCHORED_SCALE_MODE_DOUBLE_TAP;
+                return true;
+            }
+        };
+        mGestureDetector = new GestureDetector(mContext, gestureListener, mHandler);
+    }
+}

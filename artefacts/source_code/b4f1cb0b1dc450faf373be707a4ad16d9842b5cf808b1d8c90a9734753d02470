@@ -1,0 +1,12 @@
+public boolean isSupportedCountry(@NonNull String countryIso){
+    if (!callerCanWriteEmbeddedSubscriptions()) {
+        throw new SecurityException("Must have WRITE_EMBEDDED_SUBSCRIPTIONS to check if the country is supported");
+    }
+    if (mSupportedCountries == null || mSupportedCountries.isEmpty()) {
+        Log.i(TAG, "Using blacklist unsupportedCountries=" + mUnsupportedCountries);
+        return !isEsimUnsupportedCountry(countryIso);
+    } else {
+        Log.i(TAG, "Using whitelist supportedCountries=" + mSupportedCountries);
+        return isEsimSupportedCountry(countryIso);
+    }
+}

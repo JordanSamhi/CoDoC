@@ -1,0 +1,23 @@
+public static SmsMessage[] getMessagesFromIntent(Intent intent){
+    Object[] messages;
+    try {
+        messages = (Object[]) intent.getSerializableExtra("pdus");
+    } catch (ClassCastException e) {
+        Rlog.e(TAG, "getMessagesFromIntent: " + e);
+        return null;
+    }
+    if (messages == null) {
+        Rlog.e(TAG, "pdus does not exist in the intent");
+        return null;
+    }
+    String format = intent.getStringExtra("format");
+    int subId = intent.getIntExtra(SubscriptionManager.EXTRA_SUBSCRIPTION_INDEX, SubscriptionManager.getDefaultSmsSubscriptionId());
+    Rlog.v(TAG, " getMessagesFromIntent sub_id : " + subId);
+    int pduCount = messages.length;
+    SmsMessage[] msgs = new SmsMessage[pduCount];
+    for (int i = 0; i < pduCount; i++) {
+        byte[] pdu = (byte[]) messages[i];
+        msgs[i] = SmsMessage.createFromPdu(pdu, format);
+    }
+    return msgs;
+}

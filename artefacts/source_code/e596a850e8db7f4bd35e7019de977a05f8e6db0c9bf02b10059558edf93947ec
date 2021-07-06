@@ -1,0 +1,21 @@
+public void appendLibAssetsForMainAssetPath(String assetPath, String[] libAssets){
+    synchronized (this) {
+        final ArrayMap<ResourcesImpl, ResourcesKey> updatedResourceKeys = new ArrayMap<>();
+        final int implCount = mResourceImpls.size();
+        for (int i = 0; i < implCount; i++) {
+            final ResourcesKey key = mResourceImpls.keyAt(i);
+            final WeakReference<ResourcesImpl> weakImplRef = mResourceImpls.valueAt(i);
+            final ResourcesImpl impl = weakImplRef != null ? weakImplRef.get() : null;
+            if (impl != null && Objects.equals(key.mResDir, assetPath)) {
+                String[] newLibAssets = key.mLibDirs;
+                for (String libAsset : libAssets) {
+                    newLibAssets = ArrayUtils.appendElement(String.class, newLibAssets, libAsset);
+                }
+                if (!Arrays.equals(newLibAssets, key.mLibDirs)) {
+                    updatedResourceKeys.put(impl, new ResourcesKey(key.mResDir, key.mSplitResDirs, key.mOverlayDirs, newLibAssets, key.mDisplayId, key.mOverrideConfiguration, key.mCompatInfo, key.mLoaders));
+                }
+            }
+        }
+        redirectResourcesToNewImplLocked(updatedResourceKeys);
+    }
+}

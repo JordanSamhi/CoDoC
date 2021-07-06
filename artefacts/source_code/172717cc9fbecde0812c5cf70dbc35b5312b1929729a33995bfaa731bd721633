@@ -1,0 +1,11 @@
+public void enableBatterySaver(boolean enable, int reason){
+    synchronized (mLock) {
+        if (getFullEnabledLocked() == enable) {
+            return;
+        }
+        setFullEnabledLocked(enable);
+        if (updatePolicyLevelLocked()) {
+            mHandler.postStateChanged(true, reason);
+        }
+    }
+}

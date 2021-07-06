@@ -1,0 +1,12 @@
+public Builder addLocusId(@NonNull LocusId locusId, @Flags int flags){
+    throwIfDestroyed();
+    Preconditions.checkState(!mForEverything, "Already is for everything");
+    Preconditions.checkNotNull(locusId);
+    if (mLocusIds == null) {
+        mLocusIds = new ArrayList<>();
+        mFlags = new IntArray();
+    }
+    mLocusIds.add(locusId);
+    mFlags.add(flags);
+    return this;
+}

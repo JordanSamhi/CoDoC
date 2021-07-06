@@ -1,0 +1,22 @@
+public void setBackgroundDrawable(Drawable background){
+    mBackground = background;
+    if (mBackground instanceof StateListDrawable) {
+        StateListDrawable stateList = (StateListDrawable) mBackground;
+        int aboveAnchorStateIndex = stateList.findStateDrawableIndex(ABOVE_ANCHOR_STATE_SET);
+        int count = stateList.getStateCount();
+        int belowAnchorStateIndex = -1;
+        for (int i = 0; i < count; i++) {
+            if (i != aboveAnchorStateIndex) {
+                belowAnchorStateIndex = i;
+                break;
+            }
+        }
+        if (aboveAnchorStateIndex != -1 && belowAnchorStateIndex != -1) {
+            mAboveAnchorBackgroundDrawable = stateList.getStateDrawable(aboveAnchorStateIndex);
+            mBelowAnchorBackgroundDrawable = stateList.getStateDrawable(belowAnchorStateIndex);
+        } else {
+            mBelowAnchorBackgroundDrawable = null;
+            mAboveAnchorBackgroundDrawable = null;
+        }
+    }
+}

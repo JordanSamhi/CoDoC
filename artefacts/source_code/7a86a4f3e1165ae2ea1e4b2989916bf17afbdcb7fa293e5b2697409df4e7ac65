@@ -1,0 +1,16 @@
+public static Icon validateIcon(Icon icon){
+    switch(icon.getType()) {
+        case Icon.TYPE_RESOURCE:
+        case Icon.TYPE_BITMAP:
+        case Icon.TYPE_ADAPTIVE_BITMAP:
+        case Icon.TYPE_URI:
+        case Icon.TYPE_URI_ADAPTIVE_BITMAP:
+            break;
+        default:
+            throw getInvalidIconException();
+    }
+    if (icon.hasTint()) {
+        throw new IllegalArgumentException("Icons with tints are not supported");
+    }
+    return icon;
+}

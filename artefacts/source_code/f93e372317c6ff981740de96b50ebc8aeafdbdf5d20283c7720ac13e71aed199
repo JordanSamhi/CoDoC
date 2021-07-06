@@ -1,0 +1,8 @@
+public static VersionedPasswordMetrics deserialize(byte[] data){
+    final ByteBuffer buffer = ByteBuffer.allocate(data.length);
+    buffer.put(data, 0, data.length);
+    buffer.flip();
+    final int version = buffer.getInt();
+    PasswordMetrics metrics = new PasswordMetrics(buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt(), buffer.getInt());
+    return new VersionedPasswordMetrics(version, metrics);
+}

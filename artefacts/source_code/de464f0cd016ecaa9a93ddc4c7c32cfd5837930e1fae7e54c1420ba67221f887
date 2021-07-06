@@ -1,0 +1,15 @@
+public boolean startPnoScan(@NonNull String ifaceName, PnoSettings pnoSettings){
+    return mWifiCondManager.startPnoScan(ifaceName, pnoSettings.toNativePnoSettings(), Runnable::run, new WifiNl80211Manager.PnoScanRequestCallback() {
+
+        @Override
+        public void onPnoRequestSucceeded() {
+            mWifiMetrics.incrementPnoScanStartAttemptCount();
+        }
+
+        @Override
+        public void onPnoRequestFailed() {
+            mWifiMetrics.incrementPnoScanStartAttemptCount();
+            mWifiMetrics.incrementPnoScanFailedCount();
+        }
+    });
+}

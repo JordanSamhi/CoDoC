@@ -1,0 +1,23 @@
+public static int countGsmSeptetsUsingTables(CharSequence s, boolean use7bitOnly, int languageTable, int languageShiftTable){
+    int count = 0;
+    int sz = s.length();
+    SparseIntArray charToLanguageTable = sCharsToGsmTables[languageTable];
+    SparseIntArray charToShiftTable = sCharsToShiftTables[languageShiftTable];
+    for (int i = 0; i < sz; i++) {
+        char c = s.charAt(i);
+        if (c == GSM_EXTENDED_ESCAPE) {
+            Log.w(TAG, "countGsmSeptets() string contains Escape character, skipping.");
+            continue;
+        }
+        if (charToLanguageTable.get(c, -1) != -1) {
+            count++;
+        } else if (charToShiftTable.get(c, -1) != -1) {
+            count += 2;
+        } else if (use7bitOnly) {
+            count++;
+        } else {
+            return -1;
+        }
+    }
+    return count;
+}

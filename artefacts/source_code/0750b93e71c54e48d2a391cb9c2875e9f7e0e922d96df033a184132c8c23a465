@@ -1,0 +1,8 @@
+public int storePendingTransaction(Message msg, Object obj){
+    int key = sNextRequestId.getAndIncrement();
+    Pair<Message, Object> pair = new Pair<Message, Object>(msg, obj);
+    synchronized (mPendingTransactions) {
+        mPendingTransactions.put(key, pair);
+    }
+    return key;
+}

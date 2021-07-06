@@ -1,0 +1,30 @@
+public synchronized IpSecUdpEncapResponse openUdpEncapsulationSocket(int port, IBinder binder) throws RemoteException{
+    if (port != 0 && (port < FREE_PORT_MIN || port > PORT_MAX)) {
+        throw new IllegalArgumentException("Specified port number must be a valid non-reserved UDP port");
+    }
+    Objects.requireNonNull(binder, "Null Binder passed to openUdpEncapsulationSocket");
+    int callingUid = Binder.getCallingUid();
+    UserRecord userRecord = mUserResourceTracker.getUserRecord(callingUid);
+    final int resourceId = mNextResourceId++;
+    FileDescriptor sockFd = null;
+    try {
+        if (!userRecord.mSocketQuotaTracker.isAvailable()) {
+            return new IpSecUdpEncapResponse(IpSecManager.Status.RESOURCE_UNAVAILABLE);
+        }
+        sockFd = Os.socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        mUidFdTagger.tag(sockFd, callingUid);
+        Os.setsockoptInt(sockFd, OsConstants.IPPROTO_UDP, OsConstants.UDP_ENCAP, OsConstants.UDP_ENCAP_ESPINUDP);
+        mSrvConfig.getNetdInstance().ipSecSetEncapSocketOwner(new ParcelFileDescriptor(sockFd), callingUid);
+        if (port != 0) {
+            Log.v(TAG, "Binding to port " + port);
+            Os.bind(sockFd, INADDR_ANY, port);
+        } else {
+            port = bindToRandomPort(sockFd);
+        }
+        userRecord.mEncapSocketRecords.put(resourceId, new RefcountedResource<EncapSocketRecord>(new EncapSocketRecord(resourceId, sockFd, port), binder));
+        return new IpSecUdpEncapResponse(IpSecManager.Status.OK, resourceId, port, sockFd);
+    } catch (IOException | ErrnoException e) {
+        IoUtils.closeQuietly(sockFd);
+    }
+    return new IpSecUdpEncapResponse(IpSecManager.Status.RESOURCE_UNAVAILABLE);
+}

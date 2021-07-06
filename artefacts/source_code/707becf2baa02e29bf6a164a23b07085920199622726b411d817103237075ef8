@@ -1,0 +1,11 @@
+public Builder addAllowedApplication(@NonNull String packageName) throws PackageManager.NameNotFoundException{
+    if (mConfig.disallowedApplications != null) {
+        throw new UnsupportedOperationException("addDisallowedApplication already called");
+    }
+    verifyApp(packageName);
+    if (mConfig.allowedApplications == null) {
+        mConfig.allowedApplications = new ArrayList<String>();
+    }
+    mConfig.allowedApplications.add(packageName);
+    return this;
+}

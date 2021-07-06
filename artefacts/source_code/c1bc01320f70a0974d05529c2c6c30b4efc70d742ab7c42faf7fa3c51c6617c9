@@ -1,0 +1,32 @@
+public void refreshExternalCallState(List<ImsExternalCallState> externalCallStates){
+    Log.d(TAG, "refreshExternalCallState");
+    Iterator<Map.Entry<Integer, ImsExternalConnection>> connectionIterator = mExternalConnections.entrySet().iterator();
+    boolean wasCallRemoved = false;
+    while (connectionIterator.hasNext()) {
+        Map.Entry<Integer, ImsExternalConnection> entry = connectionIterator.next();
+        int callId = entry.getKey().intValue();
+        if (!containsCallId(externalCallStates, callId)) {
+            ImsExternalConnection externalConnection = entry.getValue();
+            externalConnection.setTerminated();
+            externalConnection.removeListener(mExternalConnectionListener);
+            connectionIterator.remove();
+            wasCallRemoved = true;
+        }
+    }
+    if (wasCallRemoved) {
+        mCallStateNotifier.notifyPreciseCallStateChanged();
+    }
+    if (externalCallStates != null && !externalCallStates.isEmpty()) {
+        for (ImsExternalCallState callState : externalCallStates) {
+            if (!mExternalConnections.containsKey(callState.getCallId())) {
+                Log.d(TAG, "refreshExternalCallState: got = " + callState);
+                if (callState.getCallState() != ImsExternalCallState.CALL_STATE_CONFIRMED) {
+                    continue;
+                }
+                createExternalConnection(callState);
+            } else {
+                updateExistingConnection(mExternalConnections.get(callState.getCallId()), callState);
+            }
+        }
+    }
+}

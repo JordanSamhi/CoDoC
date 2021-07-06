@@ -1,0 +1,17 @@
+public SubscriptionInfo getActiveSubscriptionInfoForIcc(@NonNull String iccId){
+    if (VDBG)
+        logd("[getActiveSubscriptionInfoForIccIndex]+ iccId=" + iccId);
+    if (iccId == null) {
+        logd("[getActiveSubscriptionInfoForIccIndex]- null iccid");
+        return null;
+    }
+    SubscriptionInfo result = null;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            result = iSub.getActiveSubscriptionInfoForIccId(iccId, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return result;
+}

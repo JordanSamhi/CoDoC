@@ -1,0 +1,15 @@
+public static int convertToRelativeDirection(int flags, int layoutDirection){
+    int masked = flags & ABS_HORIZONTAL_DIR_FLAGS;
+    if (masked == 0) {
+        return flags;
+    }
+    flags &= ~masked;
+    if (layoutDirection == View.LAYOUT_DIRECTION_LTR) {
+        flags |= masked << 2;
+        return flags;
+    } else {
+        flags |= ((masked << 1) & ~ABS_HORIZONTAL_DIR_FLAGS);
+        flags |= ((masked << 1) & ABS_HORIZONTAL_DIR_FLAGS) << 2;
+    }
+    return flags;
+}

@@ -1,0 +1,13 @@
+public final void writeBinderList(@Nullable List<IBinder> val){
+    if (val == null) {
+        writeInt(-1);
+        return;
+    }
+    int N = val.size();
+    int i = 0;
+    writeInt(N);
+    while (i < N) {
+        writeStrongBinder(val.get(i));
+        i++;
+    }
+}

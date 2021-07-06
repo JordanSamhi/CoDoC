@@ -1,0 +1,42 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    IndentingPrintWriter ipw = new IndentingPrintWriter(pw, "  ");
+    int userId = ActivityManager.getCurrentUser();
+    ipw.print("Location Enabled: ");
+    ipw.println(isLocationEnabled(userId));
+    List<String> locationPackageBlacklist = mLocationPackageBlacklist.getValueForUser(userId);
+    if (!locationPackageBlacklist.isEmpty()) {
+        ipw.println("Location Blacklisted Packages:");
+        ipw.increaseIndent();
+        for (String packageName : locationPackageBlacklist) {
+            ipw.println(packageName);
+        }
+        ipw.decreaseIndent();
+        List<String> locationPackageWhitelist = mLocationPackageWhitelist.getValueForUser(userId);
+        if (!locationPackageWhitelist.isEmpty()) {
+            ipw.println("Location Whitelisted Packages:");
+            ipw.increaseIndent();
+            for (String packageName : locationPackageWhitelist) {
+                ipw.println(packageName);
+            }
+            ipw.decreaseIndent();
+        }
+    }
+    Set<String> backgroundThrottlePackageWhitelist = mBackgroundThrottlePackageWhitelist.getValue();
+    if (!backgroundThrottlePackageWhitelist.isEmpty()) {
+        ipw.println("Throttling Whitelisted Packages:");
+        ipw.increaseIndent();
+        for (String packageName : backgroundThrottlePackageWhitelist) {
+            ipw.println(packageName);
+        }
+        ipw.decreaseIndent();
+    }
+    Set<String> ignoreSettingsPackageWhitelist = mIgnoreSettingsPackageWhitelist.getValue();
+    if (!ignoreSettingsPackageWhitelist.isEmpty()) {
+        ipw.println("Bypass Whitelisted Packages:");
+        ipw.increaseIndent();
+        for (String packageName : ignoreSettingsPackageWhitelist) {
+            ipw.println(packageName);
+        }
+        ipw.decreaseIndent();
+    }
+}

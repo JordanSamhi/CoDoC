@@ -1,0 +1,24 @@
+public final int update(@RequiresPermission.Write @NonNull Uri uri, @Nullable ContentValues values, @Nullable Bundle extras){
+    Objects.requireNonNull(uri, "uri");
+    try {
+        if (mWrapped != null)
+            return mWrapped.update(uri, values, extras);
+    } catch (RemoteException e) {
+        return 0;
+    }
+    IContentProvider provider = acquireProvider(uri);
+    if (provider == null) {
+        throw new IllegalArgumentException("Unknown URI " + uri);
+    }
+    try {
+        long startTime = SystemClock.uptimeMillis();
+        int rowsUpdated = provider.update(mPackageName, mAttributionTag, uri, values, extras);
+        long durationMillis = SystemClock.uptimeMillis() - startTime;
+        maybeLogUpdateToEventLog(durationMillis, uri, "update", null);
+        return rowsUpdated;
+    } catch (RemoteException e) {
+        return -1;
+    } finally {
+        releaseProvider(provider);
+    }
+}

@@ -1,0 +1,41 @@
+public void updateLevel(PersistableBundle cc, ServiceState ss){
+    if (cc == null) {
+        mParametersUseForLevel = USE_SSRSRP;
+    } else {
+        mParametersUseForLevel = cc.getInt(CarrierConfigManager.KEY_PARAMETERS_USE_FOR_5G_NR_SIGNAL_BAR_INT, USE_SSRSRP);
+        mSsRsrpThresholds = cc.getIntArray(CarrierConfigManager.KEY_5G_NR_SSRSRP_THRESHOLDS_INT_ARRAY);
+        if (VDBG) {
+            Rlog.i(TAG, "Applying 5G NR SSRSRP Thresholds: " + Arrays.toString(mSsRsrpThresholds));
+        }
+        mSsRsrqThresholds = cc.getIntArray(CarrierConfigManager.KEY_5G_NR_SSRSRQ_THRESHOLDS_INT_ARRAY);
+        if (VDBG) {
+            Rlog.i(TAG, "Applying 5G NR SSRSRQ Thresholds: " + Arrays.toString(mSsRsrqThresholds));
+        }
+        mSsSinrThresholds = cc.getIntArray(CarrierConfigManager.KEY_5G_NR_SSSINR_THRESHOLDS_INT_ARRAY);
+        if (VDBG) {
+            Rlog.i(TAG, "Applying 5G NR SSSINR Thresholds: " + Arrays.toString(mSsSinrThresholds));
+        }
+    }
+    int ssRsrpLevel = SignalStrength.INVALID;
+    int ssRsrqLevel = SignalStrength.INVALID;
+    int ssSinrLevel = SignalStrength.INVALID;
+    if (isLevelForParameter(USE_SSRSRP)) {
+        ssRsrpLevel = updateLevelWithMeasure(mSsRsrp, mSsRsrpThresholds);
+        if (VDBG) {
+            Rlog.i(TAG, "Updated 5G NR SSRSRP Level: " + ssRsrpLevel);
+        }
+    }
+    if (isLevelForParameter(USE_SSRSRQ)) {
+        ssRsrqLevel = updateLevelWithMeasure(mSsRsrq, mSsRsrqThresholds);
+        if (VDBG) {
+            Rlog.i(TAG, "Updated 5G NR SSRSRQ Level: " + ssRsrqLevel);
+        }
+    }
+    if (isLevelForParameter(USE_SSSINR)) {
+        ssSinrLevel = updateLevelWithMeasure(mSsSinr, mSsSinrThresholds);
+        if (VDBG) {
+            Rlog.i(TAG, "Updated 5G NR SSSINR Level: " + ssSinrLevel);
+        }
+    }
+    mLevel = Math.min(Math.min(ssRsrpLevel, ssRsrqLevel), ssSinrLevel);
+}

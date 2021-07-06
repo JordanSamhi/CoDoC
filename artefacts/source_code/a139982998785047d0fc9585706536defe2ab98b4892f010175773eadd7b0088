@@ -1,0 +1,39 @@
+public void onSystemServicesReady(){
+    synchronized (mLock) {
+        if (mStarted) {
+            return;
+        }
+        mStarted = true;
+        mIActivityManager = Objects.requireNonNull(injectIActivityManager());
+        mActivityManagerInternal = Objects.requireNonNull(injectActivityManagerInternal());
+        mAppOpsManager = Objects.requireNonNull(injectAppOpsManager());
+        mAppOpsService = Objects.requireNonNull(injectIAppOpsService());
+        mPowerManagerInternal = Objects.requireNonNull(injectPowerManagerInternal());
+        mAppStandbyInternal = Objects.requireNonNull(injectAppStandbyInternal());
+        mFlagsObserver = new FeatureFlagsObserver();
+        mFlagsObserver.register();
+        mForcedAppStandbyEnabled = mFlagsObserver.isForcedAppStandbyEnabled();
+        mForceAllAppStandbyForSmallBattery = mFlagsObserver.isForcedAppStandbyForSmallBatteryEnabled();
+        mStandbyTracker = new StandbyTracker();
+        mAppStandbyInternal.addListener(mStandbyTracker);
+        try {
+            mIActivityManager.registerUidObserver(new UidObserver(), ActivityManager.UID_OBSERVER_GONE | ActivityManager.UID_OBSERVER_IDLE | ActivityManager.UID_OBSERVER_ACTIVE | ActivityManager.UID_OBSERVER_PROCSTATE, ActivityManager.PROCESS_STATE_UNKNOWN, null);
+            mAppOpsService.startWatchingMode(TARGET_OP, null, new AppOpsWatcher());
+        } catch (RemoteException e) {
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_USER_REMOVED);
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        mContext.registerReceiver(new MyReceiver(), filter);
+        refreshForcedAppStandbyUidPackagesLocked();
+        mPowerManagerInternal.registerLowPowerModeObserver(ServiceType.FORCE_ALL_APPS_STANDBY, (state) -> {
+            synchronized (mLock) {
+                mBatterySaverEnabled = state.batterySaverEnabled;
+                updateForceAllAppStandbyState();
+            }
+        });
+        mBatterySaverEnabled = mPowerManagerInternal.getLowPowerState(ServiceType.FORCE_ALL_APPS_STANDBY).batterySaverEnabled;
+        updateForceAllAppStandbyState();
+    }
+}

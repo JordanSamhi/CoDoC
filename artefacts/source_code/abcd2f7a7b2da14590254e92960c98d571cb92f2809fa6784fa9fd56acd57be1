@@ -1,0 +1,12 @@
+public int getPremiumSmsConsent(@NonNull String packageName){
+    int permission = 0;
+    try {
+        ISms iSms = getISmsService();
+        if (iSms != null) {
+            permission = iSms.getPremiumSmsPermission(packageName);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "getPremiumSmsPermission() RemoteException", e);
+    }
+    return permission;
+}

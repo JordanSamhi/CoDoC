@@ -1,0 +1,10 @@
+public void testFocus_noService() throws Throwable{
+    resetService();
+    mActivityRule.runOnUiThread(() -> {
+        BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+        while (state.keepRunning()) {
+            mUsername.requestFocus();
+            mPassword.requestFocus();
+        }
+    });
+}

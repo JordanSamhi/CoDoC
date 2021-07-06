@@ -1,0 +1,30 @@
+public static int addValueToLogHistogram(long x, SparseIntArray histogram, LogHistParms hp){
+    double logArg = (double) (x - hp.b) / (double) hp.p;
+    int bigBucketIndex = -1;
+    if (logArg > 0) {
+        bigBucketIndex = (int) (Math.log(logArg) / hp.mLog);
+    }
+    int subBucketIndex;
+    if (bigBucketIndex < 0) {
+        bigBucketIndex = 0;
+        subBucketIndex = 0;
+    } else if (bigBucketIndex >= hp.n) {
+        bigBucketIndex = hp.n - 1;
+        subBucketIndex = hp.s - 1;
+    } else {
+        subBucketIndex = (int) ((x - hp.bb[bigBucketIndex]) / hp.sbw[bigBucketIndex]);
+        if (subBucketIndex >= hp.s) {
+            bigBucketIndex++;
+            if (bigBucketIndex >= hp.n) {
+                bigBucketIndex = hp.n - 1;
+                subBucketIndex = hp.s - 1;
+            } else {
+                subBucketIndex = (int) ((x - hp.bb[bigBucketIndex]) / hp.sbw[bigBucketIndex]);
+            }
+        }
+    }
+    int key = bigBucketIndex * hp.s + subBucketIndex;
+    int newValue = histogram.get(key) + 1;
+    histogram.put(key, newValue);
+    return newValue;
+}

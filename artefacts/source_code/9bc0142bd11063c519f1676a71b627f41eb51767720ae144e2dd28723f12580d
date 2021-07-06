@@ -1,0 +1,10 @@
+public int createSession(@NonNull SessionParams params) throws IOException{
+    try {
+        return mInstaller.createSession(params, mInstallerPackageName, mUserId);
+    } catch (RuntimeException e) {
+        ExceptionUtils.maybeUnwrapIOException(e);
+        throw e;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

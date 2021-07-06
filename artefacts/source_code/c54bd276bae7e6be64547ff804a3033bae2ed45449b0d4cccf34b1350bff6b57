@@ -1,0 +1,19 @@
+public boolean readFromParcel(Parcel in){
+    mSequence = in.readInt();
+    mSize = in.readInt();
+    if (mSize != 0) {
+        mTable = new int[mSize];
+        for (int i = 0; i < mSize; i++) {
+            mTable[i] = in.readInt();
+        }
+    } else {
+        mTable = null;
+    }
+    if (validateKeys(true)) {
+        return true;
+    } else {
+        mSize = 0;
+        mTable = null;
+        return false;
+    }
+}

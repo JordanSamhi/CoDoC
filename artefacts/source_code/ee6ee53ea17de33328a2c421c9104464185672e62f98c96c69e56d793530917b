@@ -1,0 +1,10 @@
+public synchronized Parameters getBlocking(){
+    if (mParameters == null) {
+        mParameters = mCamera.getParameters();
+        if (mParameters == null) {
+            Log.e(TAG, "Camera object returned null parameters!");
+            throw new IllegalStateException("camera.getParameters returned null");
+        }
+    }
+    return mParameters;
+}

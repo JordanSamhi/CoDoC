@@ -1,0 +1,14 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeStrongBinder(mClient.asBinder());
+    final boolean writeActivityToken = mActivityToken != null;
+    dest.writeBoolean(writeActivityToken);
+    if (writeActivityToken) {
+        dest.writeStrongBinder(mActivityToken);
+    }
+    dest.writeParcelable(mLifecycleStateRequest, flags);
+    final boolean writeActivityCallbacks = mActivityCallbacks != null;
+    dest.writeBoolean(writeActivityCallbacks);
+    if (writeActivityCallbacks) {
+        dest.writeParcelableList(mActivityCallbacks, flags);
+    }
+}

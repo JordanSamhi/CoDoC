@@ -1,0 +1,43 @@
+
+     * Get the minimum {@link CaptureRequest#SENSOR_FRAME_DURATION frame duration}
+     * for the class/size combination (in nanoseconds).
+     *
+     * <p>This assumes that the {@code klass} is set up to use {@link ImageFormat#PRIVATE}.
+     * For user-defined formats, use {@link #getOutputMinFrameDuration(int, Size)}.</p>
+     *
+     * <p>{@code klass} should be one of the ones which is supported by
+     * {@link #isOutputSupportedFor(Class)}.</p>
+     *
+     * <p>{@code size} should be one of the ones returned by
+     * {@link #getOutputSizes(int)}.</p>
+     *
+     * <p>This corresponds to the minimum frame duration (maximum frame rate) possible when only
+     * that stream is configured in a session, with all processing (typically in
+     * {@code android.*.mode}) set to either {@code OFF} or {@code FAST}.  </p>
+     *
+     * <p>When multiple streams are used in a session, the minimum frame duration will be
+     * {@code max(individual stream min durations)}.  See {@link #getOutputStallDuration} for
+     * details of timing for formats that may cause frame rate slowdown when they are targeted by a
+     * capture request.</p>
+     *
+     * <p>For devices that do not support manual sensor control
+     * ({@link android.hardware.camera2.CameraMetadata#REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR}),
+     * this function may return 0.</p>
+     *
+     * <p>The minimum frame duration of a stream (of a particular format, size) is the same
+     * regardless of whether the stream is input or output.</p>
+     *
+     * @param klass
+     *          a class which is supported by {@link #isOutputSupportedFor(Class)} and has a
+     *          non-empty array returned by {@link #getOutputSizes(Class)}
+     * @param size an output-compatible size
+     * @return a minimum frame duration {@code >} 0 in nanoseconds, or
+     *          0 if the minimum frame duration is not available.
+     *
+     * @throws IllegalArgumentException if {@code klass} or {@code size} was not supported
+     * @throws NullPointerException if {@code size} or {@code klass} was {@code null}
+     *
+     * @see CaptureRequest#SENSOR_FRAME_DURATION
+     * @see ImageFormat
+     * @see PixelFormat
+     

@@ -1,0 +1,26 @@
+
+     * Sets the data source as a content Uri.
+     *
+     * To provide cookies for the subsequent HTTP requests, you can install your own default cookie
+     * handler and use other variants of setDataSource APIs instead. Alternatively, you can use
+     * this API to pass the cookies as a list of HttpCookie. If the app has not installed
+     * a CookieHandler already, this API creates a CookieManager and populates its CookieStore with
+     * the provided cookies. If the app has installed its own handler already, this API requires the
+     * handler to be of CookieManager type such that the API can update the manager’s CookieStore.
+     *
+     * <p><strong>Note</strong> that the cross domain redirection is allowed by default,
+     * but that can be changed with key/value pairs through the headers parameter with
+     * "android-allow-cross-domain-redirect" as the key and "0" or "1" as the value to
+     * disallow or allow cross domain redirection.
+     *
+     * @param context the Context to use when resolving the Uri
+     * @param uri the Content URI of the data you want to play
+     * @param headers the headers to be sent together with the request for the data
+     *                The headers must not include cookies. Instead, use the cookies param.
+     * @param cookies the cookies to be sent together with the request
+     * @throws IllegalArgumentException if cookies are provided and the installed handler is not
+     *                                  a CookieManager
+     * @throws IllegalStateException    if it is called in an invalid state
+     * @throws NullPointerException     if context or uri is null
+     * @throws IOException              if uri has a file scheme and an I/O error occurs
+     

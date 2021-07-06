@@ -1,0 +1,16 @@
+public void timeIsBoring() throws Exception{
+    final BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+    state.pauseTiming();
+    Canvas.freeTextLayoutCaches();
+    final CharSequence text = createRandomText();
+    if (mCached)
+        BoringLayout.isBoring(text, mTextPaint);
+    state.resumeTiming();
+    while (state.keepRunning()) {
+        state.pauseTiming();
+        if (!mCached)
+            Canvas.freeTextLayoutCaches();
+        state.resumeTiming();
+        BoringLayout.isBoring(text, mTextPaint);
+    }
+}

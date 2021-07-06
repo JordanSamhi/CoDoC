@@ -1,0 +1,13 @@
+public XmlResourceParser openXml(@NonNull String fileName) throws IOException{
+    Objects.requireNonNull(fileName, "fileName");
+    synchronized (this) {
+        long nativeXmlPtr = nativeOpenXml(mNativePtr, fileName);
+        try (XmlBlock block = new XmlBlock(null, nativeXmlPtr)) {
+            XmlResourceParser parser = block.newParser();
+            if (parser == null) {
+                throw new AssertionError("block.newParser() returned a null parser");
+            }
+            return parser;
+        }
+    }
+}

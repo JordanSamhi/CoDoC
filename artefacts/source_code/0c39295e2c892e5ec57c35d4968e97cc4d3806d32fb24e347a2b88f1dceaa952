@@ -1,0 +1,10 @@
+public void setDeviceWiphyCapabilities(@NonNull String ifaceName, DeviceWiphyCapabilities capabilities){
+    synchronized (mLock) {
+        Iface iface = mIfaceMgr.getIface(ifaceName);
+        if (iface == null) {
+            Log.e(TAG, "Failed to set device capabilities, interface not found: " + ifaceName);
+            return;
+        }
+        iface.phyCapabilities = capabilities;
+    }
+}

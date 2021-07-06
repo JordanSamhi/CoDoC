@@ -1,0 +1,20 @@
+public void setCallback(@Nullable Callback cb, @Nullable Handler handler){
+    if (cb != null) {
+        synchronized (mListenerLock) {
+            EventHandler newHandler = getEventHandlerOn(handler, mCallbackHandler);
+            if (newHandler != mCallbackHandler) {
+                mCallbackHandler.removeMessages(EVENT_SET_CALLBACK);
+                mCallbackHandler.removeMessages(EVENT_CALLBACK);
+                mCallbackHandler = newHandler;
+            }
+        }
+    } else if (mCallbackHandler != null) {
+        mCallbackHandler.removeMessages(EVENT_SET_CALLBACK);
+        mCallbackHandler.removeMessages(EVENT_CALLBACK);
+    }
+    if (mCallbackHandler != null) {
+        Message msg = mCallbackHandler.obtainMessage(EVENT_SET_CALLBACK, 0, 0, cb);
+        mCallbackHandler.sendMessage(msg);
+        native_setCallback(cb);
+    }
+}

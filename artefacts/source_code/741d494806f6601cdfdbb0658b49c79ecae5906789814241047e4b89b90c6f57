@@ -1,0 +1,20 @@
+public void put(long key, E value){
+    int i = binarySearch(mKeys, 0, mSize, key);
+    if (i >= 0) {
+        mValues[i] = new WeakReference(value);
+    } else {
+        i = ~i;
+        if (i < mSize && (mValues[i] == DELETED || mValues[i].get() == null)) {
+            mKeys[i] = key;
+            mValues[i] = new WeakReference(value);
+            return;
+        }
+        if (mSize >= mKeys.length && (mGarbage || hasReclaimedRefs())) {
+            gc();
+            i = ~binarySearch(mKeys, 0, mSize, key);
+        }
+        mKeys = GrowingArrayUtils.insert(mKeys, mSize, i, key);
+        mValues = GrowingArrayUtils.insert(mValues, mSize, i, new WeakReference(value));
+        mSize++;
+    }
+}

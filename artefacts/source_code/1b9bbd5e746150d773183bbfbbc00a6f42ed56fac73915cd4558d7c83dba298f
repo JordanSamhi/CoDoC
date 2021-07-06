@@ -1,0 +1,9 @@
+public void save(){
+    synchronized (mLock) {
+        if (mDestroyed) {
+            Slog.w(TAG, "Call to Session#save() rejected - session: " + id + " destroyed");
+            return;
+        }
+    }
+    mHandler.sendMessage(obtainMessage(AutofillManagerServiceImpl::handleSessionSave, mService, this));
+}

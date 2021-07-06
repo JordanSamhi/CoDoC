@@ -1,0 +1,11 @@
+public void DSYR2K(@Uplo int Uplo, @Transpose int Trans, double alpha, Allocation A, Allocation B, double beta, Allocation C){
+    validateUplo(Uplo);
+    validateSYR2K(Element.F64(mRS), Trans, A, B, C);
+    int K = -1;
+    if (Trans != NO_TRANSPOSE) {
+        K = A.getType().getY();
+    } else {
+        K = A.getType().getX();
+    }
+    mRS.nScriptIntrinsicBLAS_Double(getID(mRS), RsBlas_dsyr2k, Trans, 0, 0, Uplo, 0, 0, C.getType().getX(), K, alpha, A.getID(mRS), B.getID(mRS), beta, C.getID(mRS), 0, 0, 0, 0);
+}

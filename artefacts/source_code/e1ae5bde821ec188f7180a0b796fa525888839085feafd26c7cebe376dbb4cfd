@@ -1,0 +1,7 @@
+public static CallerIdentity fromBinder(Context context, String packageName, @Nullable String featureId, @Nullable String listenerId){
+    int uid = Binder.getCallingUid();
+    if (!ArrayUtils.contains(context.getPackageManager().getPackagesForUid(uid), packageName)) {
+        throw new SecurityException("invalid package \"" + packageName + "\" for uid " + uid);
+    }
+    return fromBinderUnsafe(context, packageName, featureId, listenerId);
+}

@@ -1,0 +1,11 @@
+public List<SubscriptionInfo> getAvailableSubscriptionInfoList(){
+    List<SubscriptionInfo> result = null;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            result = iSub.getAvailableSubscriptionInfoList(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return result;
+}

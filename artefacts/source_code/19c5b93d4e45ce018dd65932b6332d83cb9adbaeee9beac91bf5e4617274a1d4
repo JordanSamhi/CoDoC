@@ -1,0 +1,23 @@
+public boolean isGrayscaleIcon(Bitmap bitmap){
+    if (bitmap.getWidth() > mGrayscaleIconMaxSize || bitmap.getHeight() > mGrayscaleIconMaxSize) {
+        return false;
+    }
+    synchronized (sLock) {
+        Pair<Boolean, Integer> cached = mGrayscaleBitmapCache.get(bitmap);
+        if (cached != null) {
+            if (cached.second == bitmap.getGenerationId()) {
+                return cached.first;
+            }
+        }
+    }
+    boolean result;
+    int generationId;
+    synchronized (mImageUtils) {
+        result = mImageUtils.isGrayscale(bitmap);
+        generationId = bitmap.getGenerationId();
+    }
+    synchronized (sLock) {
+        mGrayscaleBitmapCache.put(bitmap, Pair.create(result, generationId));
+    }
+    return result;
+}

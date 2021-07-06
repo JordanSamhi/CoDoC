@@ -1,0 +1,11 @@
+public boolean preloadDefault(String abi) throws ZygoteStartFailedEx, IOException{
+    synchronized (mLock) {
+        ZygoteState state = openZygoteSocketIfNeeded(abi);
+        state.mZygoteOutputWriter.write("1");
+        state.mZygoteOutputWriter.newLine();
+        state.mZygoteOutputWriter.write("--preload-default");
+        state.mZygoteOutputWriter.newLine();
+        state.mZygoteOutputWriter.flush();
+        return (state.mZygoteInputStream.readInt() == 0);
+    }
+}

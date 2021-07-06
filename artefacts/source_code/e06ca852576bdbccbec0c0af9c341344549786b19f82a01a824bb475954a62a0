@@ -1,0 +1,16 @@
+public AccessibilityWindowInfo getWindow(int windowId){
+    synchronized (mLock) {
+        final int displayCounts = mWindowCacheByDisplay.size();
+        for (int i = 0; i < displayCounts; i++) {
+            final SparseArray<AccessibilityWindowInfo> windowsOfDisplay = mWindowCacheByDisplay.valueAt(i);
+            if (windowsOfDisplay == null) {
+                continue;
+            }
+            AccessibilityWindowInfo window = windowsOfDisplay.get(windowId);
+            if (window != null) {
+                return new AccessibilityWindowInfo(window);
+            }
+        }
+        return null;
+    }
+}

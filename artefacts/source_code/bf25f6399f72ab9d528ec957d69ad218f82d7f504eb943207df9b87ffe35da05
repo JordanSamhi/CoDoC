@@ -1,0 +1,27 @@
+public boolean isEnabled(boolean isPackageEnabled, boolean isComponentEnabled, String componentName, int flags){
+    if ((flags & MATCH_DISABLED_COMPONENTS) != 0) {
+        return true;
+    }
+    switch(this.enabled) {
+        case COMPONENT_ENABLED_STATE_DISABLED:
+        case COMPONENT_ENABLED_STATE_DISABLED_USER:
+            return false;
+        case COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED:
+            if ((flags & MATCH_DISABLED_UNTIL_USED_COMPONENTS) == 0) {
+                return false;
+            }
+        case COMPONENT_ENABLED_STATE_DEFAULT:
+            if (!isPackageEnabled) {
+                return false;
+            }
+        case COMPONENT_ENABLED_STATE_ENABLED:
+            break;
+    }
+    if (ArrayUtils.contains(this.enabledComponents, componentName)) {
+        return true;
+    }
+    if (ArrayUtils.contains(this.disabledComponents, componentName)) {
+        return false;
+    }
+    return isComponentEnabled;
+}

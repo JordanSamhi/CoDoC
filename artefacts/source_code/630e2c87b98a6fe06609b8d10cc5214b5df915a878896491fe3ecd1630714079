@@ -1,0 +1,11 @@
+public int getPrimaryError(){
+    if (mErrors != 0) {
+        for (int error = SslError.SSL_MAX_ERROR - 1; error >= 0; --error) {
+            if ((mErrors & (0x1 << error)) != 0) {
+                return error;
+            }
+        }
+        assert false;
+    }
+    return -1;
+}

@@ -1,0 +1,45 @@
+public void settingsRestored(){
+    if (Binder.getCallingUid() != android.os.Process.SYSTEM_UID) {
+        throw new RuntimeException("settingsRestored() can only be called from the system process");
+    }
+    if (DEBUG)
+        Slog.v(TAG, "settingsRestored");
+    WallpaperData wallpaper = null;
+    boolean success = false;
+    synchronized (mLock) {
+        loadSettingsLocked(UserHandle.USER_SYSTEM, false);
+        wallpaper = mWallpaperMap.get(UserHandle.USER_SYSTEM);
+        wallpaper.wallpaperId = makeWallpaperIdLocked();
+        wallpaper.allowBackup = true;
+        if (wallpaper.nextWallpaperComponent != null && !wallpaper.nextWallpaperComponent.equals(mImageWallpaper)) {
+            if (!bindWallpaperComponentLocked(wallpaper.nextWallpaperComponent, false, false, wallpaper, null)) {
+                bindWallpaperComponentLocked(null, false, false, wallpaper, null);
+            }
+            success = true;
+        } else {
+            if ("".equals(wallpaper.name)) {
+                if (DEBUG)
+                    Slog.v(TAG, "settingsRestored: name is empty");
+                success = true;
+            } else {
+                if (DEBUG)
+                    Slog.v(TAG, "settingsRestored: attempting to restore named resource");
+                success = restoreNamedResourceLocked(wallpaper);
+            }
+            if (DEBUG)
+                Slog.v(TAG, "settingsRestored: success=" + success + " id=" + wallpaper.wallpaperId);
+            if (success) {
+                generateCrop(wallpaper);
+                bindWallpaperComponentLocked(wallpaper.nextWallpaperComponent, true, false, wallpaper, null);
+            }
+        }
+    }
+    if (!success) {
+        Slog.e(TAG, "Failed to restore wallpaper: '" + wallpaper.name + "'");
+        wallpaper.name = "";
+        getWallpaperDir(UserHandle.USER_SYSTEM).delete();
+    }
+    synchronized (mLock) {
+        saveSettingsLocked(UserHandle.USER_SYSTEM);
+    }
+}

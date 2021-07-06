@@ -1,0 +1,29 @@
+public static byte[] encrypt(@Nullable PublicKey theirPublicKey, @Nullable byte[] sharedSecret, @Nullable byte[] header, @Nullable byte[] payload) throws NoSuchAlgorithmException, InvalidKeyException{
+    sharedSecret = emptyByteArrayIfNull(sharedSecret);
+    if (theirPublicKey == null && sharedSecret.length == 0) {
+        throw new IllegalArgumentException("Both the public key and shared secret are empty");
+    }
+    header = emptyByteArrayIfNull(header);
+    payload = emptyByteArrayIfNull(payload);
+    KeyPair senderKeyPair;
+    byte[] dhSecret;
+    byte[] hkdfInfo;
+    if (theirPublicKey == null) {
+        senderKeyPair = null;
+        dhSecret = EMPTY_BYTE_ARRAY;
+        hkdfInfo = HKDF_INFO_WITHOUT_PUBLIC_KEY;
+    } else {
+        senderKeyPair = genKeyPair();
+        dhSecret = dhComputeSecret(senderKeyPair.getPrivate(), theirPublicKey);
+        hkdfInfo = HKDF_INFO_WITH_PUBLIC_KEY;
+    }
+    byte[] randNonce = genRandomNonce();
+    byte[] keyingMaterial = concat(dhSecret, sharedSecret);
+    SecretKey encryptionKey = hkdfDeriveKey(keyingMaterial, HKDF_SALT, hkdfInfo);
+    byte[] ciphertext = aesGcmEncrypt(encryptionKey, randNonce, payload, header);
+    if (senderKeyPair == null) {
+        return concat(VERSION, randNonce, ciphertext);
+    } else {
+        return concat(VERSION, encodePublicKey(senderKeyPair.getPublic()), randNonce, ciphertext);
+    }
+}

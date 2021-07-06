@@ -1,0 +1,7 @@
+public static long copyInternalUserspace(FileDescriptor in, FileDescriptor out, long count, CancellationSignal signal, Executor executor, ProgressListener listener) throws IOException{
+    if (count != Long.MAX_VALUE) {
+        return copyInternalUserspace(new SizedInputStream(new FileInputStream(in), count), new FileOutputStream(out), signal, executor, listener);
+    } else {
+        return copyInternalUserspace(new FileInputStream(in), new FileOutputStream(out), signal, executor, listener);
+    }
+}

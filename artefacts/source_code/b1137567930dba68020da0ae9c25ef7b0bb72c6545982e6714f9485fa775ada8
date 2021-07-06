@@ -1,0 +1,30 @@
+public Set<Integer> handleUserSwitch(int userId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Handling user switch for " + userId);
+    }
+    if (userId == mCurrentUserId) {
+        Log.w(TAG, "User already in foreground " + userId);
+        return new HashSet<>();
+    }
+    if (mPendingStoreRead) {
+        Log.w(TAG, "User switch before store is read!");
+        mConfiguredNetworks.setNewUser(userId);
+        mCurrentUserId = userId;
+        mDeferredUserUnlockRead = false;
+        mPendingUnlockStoreRead = true;
+        return new HashSet<>();
+    }
+    if (mUserManager.isUserUnlockingOrUnlocked(UserHandle.of(mCurrentUserId))) {
+        saveToStore(true);
+    }
+    Set<Integer> removedNetworkIds = clearInternalDataForCurrentUser();
+    mConfiguredNetworks.setNewUser(userId);
+    mCurrentUserId = userId;
+    if (mUserManager.isUserUnlockingOrUnlocked(UserHandle.of(mCurrentUserId))) {
+        handleUserUnlockOrSwitch(mCurrentUserId);
+    } else {
+        mPendingUnlockStoreRead = true;
+        Log.i(TAG, "Waiting for user unlock to load from store");
+    }
+    return removedNetworkIds;
+}

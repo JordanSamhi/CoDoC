@@ -1,0 +1,16 @@
+public final void showKeyguardErrorMessage(@NonNull CharSequence message){
+    if (message == null) {
+        throw new IllegalArgumentException("message cannot be null");
+    }
+    synchronized (mLock) {
+        if (mCallback == null) {
+            Slog.w(TAG, "Cannot show message because service is not connected to framework.");
+            throw new IllegalStateException("Trust agent is not connected");
+        }
+        try {
+            mCallback.showKeyguardErrorMessage(message);
+        } catch (RemoteException e) {
+            onError("calling showKeyguardErrorMessage");
+        }
+    }
+}

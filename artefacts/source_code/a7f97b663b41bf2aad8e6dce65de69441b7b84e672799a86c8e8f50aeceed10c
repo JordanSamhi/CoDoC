@@ -1,0 +1,14 @@
+public int interceptMotionBeforeQueueingNonInteractive(int displayId, long whenNanos, int policyFlags){
+    if ((policyFlags & FLAG_WAKE) != 0) {
+        if (wakeUp(whenNanos / 1000000, mAllowTheaterModeWakeFromMotion, PowerManager.WAKE_REASON_WAKE_MOTION, "android.policy:MOTION")) {
+            return 0;
+        }
+    }
+    if (shouldDispatchInputWhenNonInteractive(displayId, KEYCODE_UNKNOWN)) {
+        return ACTION_PASS_TO_USER;
+    }
+    if (isTheaterModeEnabled() && (policyFlags & FLAG_WAKE) != 0) {
+        wakeUp(whenNanos / 1000000, mAllowTheaterModeWakeFromMotionWhenNotDreaming, PowerManager.WAKE_REASON_WAKE_MOTION, "android.policy:MOTION");
+    }
+    return 0;
+}

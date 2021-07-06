@@ -1,0 +1,12 @@
+public List<String> getHeldRoles(@NonNull String packageName){
+    synchronized (mLock) {
+        List<String> roleNames = new ArrayList<>();
+        int size = mRoles.size();
+        for (int i = 0; i < size; i++) {
+            if (mRoles.valueAt(i).contains(packageName)) {
+                roleNames.add(mRoles.keyAt(i));
+            }
+        }
+        return roleNames;
+    }
+}

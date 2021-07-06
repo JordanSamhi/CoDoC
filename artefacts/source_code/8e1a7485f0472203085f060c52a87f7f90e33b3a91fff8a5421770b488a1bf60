@@ -1,0 +1,14 @@
+public void playSoundEffect(int effectType){
+    if (effectType < 0 || effectType >= NUM_SOUND_EFFECTS) {
+        return;
+    }
+    if (!querySoundEffectsEnabled(Process.myUserHandle().getIdentifier())) {
+        return;
+    }
+    final IAudioService service = getService();
+    try {
+        service.playSoundEffect(effectType);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

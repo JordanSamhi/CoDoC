@@ -1,0 +1,14 @@
+public boolean arePropertiesAnimatingOnView(View view, DynamicAnimation.ViewProperty... properties){
+    final ObjectAnimator targetAnimator = getTargetAnimatorFromView(view);
+    for (DynamicAnimation.ViewProperty property : properties) {
+        final SpringAnimation animation = getAnimationFromView(property, view);
+        if (animation != null && animation.isRunning()) {
+            return true;
+        }
+        final boolean isTranslation = property.equals(DynamicAnimation.TRANSLATION_X) || property.equals(DynamicAnimation.TRANSLATION_Y);
+        if (isTranslation && targetAnimator != null && targetAnimator.isRunning()) {
+            return true;
+        }
+    }
+    return false;
+}

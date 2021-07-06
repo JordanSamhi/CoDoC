@@ -1,0 +1,21 @@
+public boolean installKeyPair(@Nullable ComponentName admin, @NonNull PrivateKey privKey, @NonNull Certificate[] certs, @NonNull String alias, int flags){
+    throwIfParentInstance("installKeyPair");
+    boolean requestAccess = (flags & INSTALLKEY_REQUEST_CREDENTIALS_ACCESS) == INSTALLKEY_REQUEST_CREDENTIALS_ACCESS;
+    boolean isUserSelectable = (flags & INSTALLKEY_SET_USER_SELECTABLE) == INSTALLKEY_SET_USER_SELECTABLE;
+    try {
+        final byte[] pemCert = Credentials.convertToPem(certs[0]);
+        byte[] pemChain = null;
+        if (certs.length > 1) {
+            pemChain = Credentials.convertToPem(Arrays.copyOfRange(certs, 1, certs.length));
+        }
+        final byte[] pkcs8Key = KeyFactory.getInstance(privKey.getAlgorithm()).getKeySpec(privKey, PKCS8EncodedKeySpec.class).getEncoded();
+        return mService.installKeyPair(admin, mContext.getPackageName(), pkcs8Key, pemCert, pemChain, alias, requestAccess, isUserSelectable);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        Log.w(TAG, "Failed to obtain private key material", e);
+    } catch (CertificateException | IOException e) {
+        Log.w(TAG, "Could not pem-encode certificate", e);
+    }
+    return false;
+}

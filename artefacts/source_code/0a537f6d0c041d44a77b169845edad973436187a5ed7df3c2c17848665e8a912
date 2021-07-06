@@ -1,0 +1,8 @@
+public void testStopServiceForUser_forRegisteredUser_tearsDownCorrectUser() throws Exception{
+    BackupManagerService backupManagerService = createServiceAndRegisterUser(mUserOneId, mUserOneService);
+    backupManagerService.setBackupServiceActive(mUserTwoId, true);
+    backupManagerService.startServiceForUser(mUserTwoId, mUserTwoService);
+    backupManagerService.stopServiceForUser(mUserOneId);
+    verify(mUserOneService).tearDownService();
+    verify(mUserTwoService, never()).tearDownService();
+}

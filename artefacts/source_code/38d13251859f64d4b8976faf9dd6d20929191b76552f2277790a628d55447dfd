@@ -1,0 +1,19 @@
+public void grantUriPermission(IApplicationThread caller, String targetPkg, Uri uri, final int modeFlags, int userId){
+    enforceNotIsolatedCaller("grantUriPermission");
+    GrantUri grantUri = new GrantUri(userId, uri, modeFlags);
+    synchronized (this) {
+        final ProcessRecord r = getRecordForAppLocked(caller);
+        if (r == null) {
+            throw new SecurityException("Unable to find app for caller " + caller + " when granting permission to uri " + grantUri);
+        }
+        if (targetPkg == null) {
+            throw new IllegalArgumentException("null target");
+        }
+        Preconditions.checkFlagsArgument(modeFlags, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        final Intent intent = new Intent();
+        intent.setData(uri);
+        intent.setFlags(modeFlags);
+        final NeededUriGrants needed = mUgmInternal.checkGrantUriPermissionFromIntent(intent, r.uid, targetPkg, UserHandle.getUserId(r.uid));
+        mUgmInternal.grantUriPermissionUncheckedFromIntent(needed, null);
+    }
+}

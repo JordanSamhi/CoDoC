@@ -1,0 +1,10 @@
+public boolean bindDeviceAdminServiceAsUser(@NonNull ComponentName admin, Intent serviceIntent, @NonNull ServiceConnection conn, @Context.BindServiceFlags int flags, @NonNull UserHandle targetUser){
+    throwIfParentInstance("bindDeviceAdminServiceAsUser");
+    try {
+        final IServiceConnection sd = mContext.getServiceDispatcher(conn, mContext.getMainThreadHandler(), flags);
+        serviceIntent.prepareToLeaveProcess(mContext);
+        return mService.bindDeviceAdminServiceAsUser(admin, mContext.getIApplicationThread(), mContext.getActivityToken(), serviceIntent, sd, flags, targetUser.getIdentifier());
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

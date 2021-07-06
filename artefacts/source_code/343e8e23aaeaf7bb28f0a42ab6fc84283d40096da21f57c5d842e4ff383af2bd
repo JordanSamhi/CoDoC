@@ -1,0 +1,14 @@
+public int removeNetworkSuggestions(List<WifiNetworkSuggestion> networkSuggestions, String callingPackageName){
+    if (enforceChangePermission(callingPackageName) != MODE_ALLOWED) {
+        return WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED;
+    }
+    if (mVerboseLoggingEnabled) {
+        mLog.info("removeNetworkSuggestions uid=%").c(Binder.getCallingUid()).flush();
+    }
+    int callingUid = Binder.getCallingUid();
+    int success = mWifiThreadRunner.call(() -> mWifiNetworkSuggestionsManager.remove(networkSuggestions, callingUid, callingPackageName), WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL);
+    if (success != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+        Log.e(TAG, "Failed to remove network suggestions");
+    }
+    return success;
+}

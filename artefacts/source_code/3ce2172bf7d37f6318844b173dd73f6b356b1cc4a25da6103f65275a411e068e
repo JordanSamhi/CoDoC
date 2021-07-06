@@ -1,0 +1,26 @@
+public BitmapInfo createBadgedIconBitmap(@NonNull Drawable icon, UserHandle user, boolean shrinkNonAdaptiveIcons, boolean isInstantApp, float[] scale){
+    if (scale == null) {
+        scale = new float[1];
+    }
+    icon = normalizeAndWrapToAdaptiveIcon(icon, shrinkNonAdaptiveIcons, null, scale);
+    Bitmap bitmap = createIconBitmap(icon, scale[0]);
+    if (ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+        mCanvas.setBitmap(bitmap);
+        getShadowGenerator().recreateIcon(Bitmap.createBitmap(bitmap), mCanvas);
+        mCanvas.setBitmap(null);
+    }
+    if (isInstantApp) {
+        badgeWithDrawable(bitmap, mContext.getDrawable(R.drawable.ic_instant_app_badge));
+    }
+    if (user != null) {
+        BitmapDrawable drawable = new FixedSizeBitmapDrawable(bitmap);
+        Drawable badged = mPm.getUserBadgedIcon(drawable, user);
+        if (badged instanceof BitmapDrawable) {
+            bitmap = ((BitmapDrawable) badged).getBitmap();
+        } else {
+            bitmap = createIconBitmap(badged, 1f);
+        }
+    }
+    int color = extractColor(bitmap);
+    return icon instanceof BitmapInfo.Extender ? ((BitmapInfo.Extender) icon).getExtendedInfo(bitmap, color, this) : BitmapInfo.of(bitmap, color);
+}

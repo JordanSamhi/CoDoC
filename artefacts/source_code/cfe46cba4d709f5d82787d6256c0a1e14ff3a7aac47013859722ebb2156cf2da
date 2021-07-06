@@ -1,0 +1,11 @@
+public int getActiveSubscriptionInfoCount(){
+    int result = 0;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            result = iSub.getActiveSubInfoCount(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return result;
+}

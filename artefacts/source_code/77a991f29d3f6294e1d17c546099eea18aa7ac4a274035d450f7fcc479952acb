@@ -1,0 +1,21 @@
+public static TrivalentPredicate createBogusElapsedRealtimeCheck(@NonNull Context context, @NonNull DeviceState deviceState){
+    PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    final WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
+    return (oldSignal, newSignal) -> {
+        Objects.requireNonNull(newSignal);
+        try {
+            wakeLock.acquire();
+            long elapsedRealtime = deviceState.elapsedRealtime();
+            long millisSinceNitzReceived = elapsedRealtime - newSignal.getReferenceTimeMillis();
+            if (millisSinceNitzReceived < 0 || millisSinceNitzReceived > Integer.MAX_VALUE) {
+                if (DBG) {
+                    Rlog.d(LOG_TAG, "mustProcessNitzSignal: Not processing NITZ signal" + " because unexpected elapsedRealtime=" + elapsedRealtime + " nitzSignal=" + newSignal);
+                }
+                return false;
+            }
+            return null;
+        } finally {
+            wakeLock.release();
+        }
+    };
+}

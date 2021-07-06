@@ -1,0 +1,17 @@
+public Drawable loadDrawableAsUser(Context context, int userId){
+    if (mType == TYPE_RESOURCE) {
+        String resPackage = getResPackage();
+        if (TextUtils.isEmpty(resPackage)) {
+            resPackage = context.getPackageName();
+        }
+        if (getResources() == null && !(getResPackage().equals("android"))) {
+            final PackageManager pm = context.getPackageManager();
+            try {
+                mObj1 = pm.getResourcesForApplicationAsUser(resPackage, userId);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, String.format("Unable to find pkg=%s user=%d", getResPackage(), userId), e);
+            }
+        }
+    }
+    return loadDrawable(context);
+}

@@ -1,0 +1,23 @@
+public int getWfcMode(boolean roaming){
+    int setting;
+    if (!roaming) {
+        if (!getBooleanCarrierConfig(CarrierConfigManager.KEY_EDITABLE_WFC_MODE_BOOL)) {
+            setting = getIntCarrierConfig(CarrierConfigManager.KEY_CARRIER_DEFAULT_WFC_IMS_MODE_INT);
+        } else {
+            setting = getSettingFromSubscriptionManager(SubscriptionManager.WFC_IMS_MODE, CarrierConfigManager.KEY_CARRIER_DEFAULT_WFC_IMS_MODE_INT);
+        }
+        if (DBG)
+            log("getWfcMode - setting=" + setting);
+    } else {
+        if (getBooleanCarrierConfig(CarrierConfigManager.KEY_USE_WFC_HOME_NETWORK_MODE_IN_ROAMING_NETWORK_BOOL)) {
+            setting = getWfcMode(false);
+        } else if (!getBooleanCarrierConfig(CarrierConfigManager.KEY_EDITABLE_WFC_ROAMING_MODE_BOOL)) {
+            setting = getIntCarrierConfig(CarrierConfigManager.KEY_CARRIER_DEFAULT_WFC_IMS_ROAMING_MODE_INT);
+        } else {
+            setting = getSettingFromSubscriptionManager(SubscriptionManager.WFC_IMS_ROAMING_MODE, CarrierConfigManager.KEY_CARRIER_DEFAULT_WFC_IMS_ROAMING_MODE_INT);
+        }
+        if (DBG)
+            log("getWfcMode (roaming) - setting=" + setting);
+    }
+    return setting;
+}

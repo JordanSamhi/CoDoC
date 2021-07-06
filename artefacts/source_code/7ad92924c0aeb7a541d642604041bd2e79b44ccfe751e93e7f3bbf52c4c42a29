@@ -1,0 +1,8 @@
+public void checkValidPin(byte[] pin){
+    logVerbose("checkValidPin");
+    if (mCurrentValidateLockTask != null && mCurrentValidateLockTask.getStatus() != AsyncTask.Status.FINISHED) {
+        mCurrentValidateLockTask.cancel(true);
+    }
+    mCurrentValidateLockTask = new ValidateLockAsyncTask(mInitialLockListener, mInitialLockSetupService, LockTypes.PIN);
+    mCurrentValidateLockTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, pin);
+}

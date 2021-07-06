@@ -1,0 +1,54 @@
+public boolean installCertsAndKeys(){
+    X509Certificate[] x509Certificates = mConfig.getCredential().getCaCertificates();
+    if (x509Certificates != null) {
+        mCaCertificateAliases = new ArrayList<>();
+        for (int i = 0; i < x509Certificates.length; i++) {
+            String alias = String.format("%s%s_%d", ALIAS_HS_TYPE, mProviderId, i);
+            if (!mKeyStore.putCaCertInKeyStore(alias, x509Certificates[i])) {
+                Log.e(TAG, "Failed to install CA Certificate " + alias);
+                uninstallCertsAndKeys();
+                return false;
+            } else {
+                mCaCertificateAliases.add(alias);
+            }
+        }
+    }
+    if (mConfig.getCredential().getClientPrivateKey() != null && mConfig.getCredential().getClientCertificateChain() != null) {
+        String keyName = ALIAS_HS_TYPE + mProviderId;
+        PrivateKey clientKey = mConfig.getCredential().getClientPrivateKey();
+        X509Certificate clientCert = getClientCertificate(mConfig.getCredential().getClientCertificateChain(), mConfig.getCredential().getCertCredential().getCertSha256Fingerprint());
+        if (clientCert == null) {
+            Log.e(TAG, "Failed to locate client certificate");
+            uninstallCertsAndKeys();
+            return false;
+        }
+        if (!mKeyStore.putUserPrivKeyAndCertsInKeyStore(keyName, clientKey, new Certificate[] { clientCert })) {
+            Log.e(TAG, "Failed to install client private key or certificate");
+            uninstallCertsAndKeys();
+            return false;
+        }
+        mClientPrivateKeyAndCertificateAlias = keyName;
+    }
+    if (mConfig.getSubscriptionUpdate() != null) {
+        X509Certificate certificate = mConfig.getSubscriptionUpdate().getCaCertificate();
+        if (certificate == null) {
+            Log.e(TAG, "Failed to locate CA certificate for remediation");
+            uninstallCertsAndKeys();
+            return false;
+        }
+        String certName = ALIAS_HS_TYPE + ALIAS_ALIAS_REMEDIATION_TYPE + mProviderId;
+        if (!mKeyStore.putCaCertInKeyStore(certName, certificate)) {
+            Log.e(TAG, "Failed to install CA certificate for remediation");
+            uninstallCertsAndKeys();
+            return false;
+        }
+        mRemediationCaCertificateAlias = certName;
+    }
+    mConfig.getCredential().setCaCertificates(null);
+    mConfig.getCredential().setClientPrivateKey(null);
+    mConfig.getCredential().setClientCertificateChain(null);
+    if (mConfig.getSubscriptionUpdate() != null) {
+        mConfig.getSubscriptionUpdate().setCaCertificate(null);
+    }
+    return true;
+}

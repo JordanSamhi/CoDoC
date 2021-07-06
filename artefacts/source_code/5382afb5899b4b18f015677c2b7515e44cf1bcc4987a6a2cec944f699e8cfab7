@@ -1,0 +1,24 @@
+public void tune(String inputId, Uri channelUri, Bundle params){
+    if (DEBUG)
+        Log.d(TAG, "tune(" + channelUri + ")");
+    if (TextUtils.isEmpty(inputId)) {
+        throw new IllegalArgumentException("inputId cannot be null or an empty string");
+    }
+    if (mIsRecordingStarted) {
+        throw new IllegalStateException("tune failed - recording already started");
+    }
+    if (mSessionCallback != null && TextUtils.equals(mSessionCallback.mInputId, inputId)) {
+        if (mSession != null) {
+            mSession.tune(channelUri, params);
+        } else {
+            mSessionCallback.mChannelUri = channelUri;
+            mSessionCallback.mConnectionParams = params;
+        }
+    } else {
+        resetInternal();
+        mSessionCallback = new MySessionCallback(inputId, channelUri, params);
+        if (mTvInputManager != null) {
+            mTvInputManager.createRecordingSession(inputId, mSessionCallback, mHandler);
+        }
+    }
+}

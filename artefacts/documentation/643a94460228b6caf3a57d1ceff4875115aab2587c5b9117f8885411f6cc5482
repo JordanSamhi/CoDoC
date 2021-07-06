@@ -1,0 +1,21 @@
+
+     * Initiates a SCO channel connection as a virtual voice call to the current active device
+     * Active handsfree device will be notified of incoming call and connected call.
+     *
+     * <p> Users can listen to {@link #ACTION_AUDIO_STATE_CHANGED}.
+     * If this function returns true, this intent will be broadcasted with
+     * {@link #EXTRA_STATE} set to {@link #STATE_AUDIO_CONNECTING}.
+     *
+     * <p> {@link #EXTRA_STATE} will transition from
+     * {@link #STATE_AUDIO_CONNECTING} to {@link #STATE_AUDIO_CONNECTED} when
+     * audio connection is established and to {@link #STATE_AUDIO_DISCONNECTED}
+     * in case of failure to establish the audio connection.
+     *
+     * @return true if successful, false if one of the following case applies
+     *  - SCO audio is not idle (connecting or connected)
+     *  - virtual call has already started
+     *  - there is no active device
+     *  - a Telecom managed call is going on
+     *  - binder is dead or Bluetooth is disabled or other error
+     * @hide
+     

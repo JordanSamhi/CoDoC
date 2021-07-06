@@ -1,0 +1,18 @@
+public void setUserExpanded(boolean userExpanded, boolean allowChildExpansion){
+    mFalsingManager.setNotificationExpanded();
+    if (mIsSummaryWithChildren && !shouldShowPublic() && allowChildExpansion && !mChildrenContainer.showingAsLowPriority()) {
+        final boolean wasExpanded = mGroupManager.isGroupExpanded(mEntry.getSbn());
+        mGroupManager.setGroupExpanded(mEntry.getSbn(), userExpanded);
+        onExpansionChanged(true, wasExpanded);
+        return;
+    }
+    if (userExpanded && !mExpandable)
+        return;
+    final boolean wasExpanded = isExpanded();
+    mHasUserChangedExpansion = true;
+    mUserExpanded = userExpanded;
+    onExpansionChanged(true, wasExpanded);
+    if (!wasExpanded && isExpanded() && getActualHeight() != getIntrinsicHeight()) {
+        notifyHeightChanged(true);
+    }
+}

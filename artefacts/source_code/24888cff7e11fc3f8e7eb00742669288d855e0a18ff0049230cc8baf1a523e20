@@ -1,0 +1,17 @@
+public int onLoadVoice(String voiceName){
+    Locale locale = Locale.forLanguageTag(voiceName);
+    if (locale == null) {
+        return TextToSpeech.ERROR;
+    }
+    int expectedStatus = getExpectedLanguageAvailableStatus(locale);
+    try {
+        int localeStatus = onIsLanguageAvailable(locale.getISO3Language(), locale.getISO3Country(), locale.getVariant());
+        if (localeStatus != expectedStatus) {
+            return TextToSpeech.ERROR;
+        }
+        onLoadLanguage(locale.getISO3Language(), locale.getISO3Country(), locale.getVariant());
+        return TextToSpeech.SUCCESS;
+    } catch (MissingResourceException e) {
+        return TextToSpeech.ERROR;
+    }
+}

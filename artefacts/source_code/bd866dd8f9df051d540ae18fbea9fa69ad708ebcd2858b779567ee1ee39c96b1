@@ -1,0 +1,27 @@
+public void setAttribute(String key, byte[] value){
+    if (TextUtils.isEmpty(key)) {
+        throw new IllegalArgumentException("Key cannot be empty");
+    }
+    for (int i = 0; i < key.length(); ++i) {
+        char character = key.charAt(i);
+        if (character < 0x20 || character > 0x7E) {
+            throw new IllegalArgumentException("Key strings must be printable US-ASCII");
+        } else if (character == 0x3D) {
+            throw new IllegalArgumentException("Key strings must not include '='");
+        }
+    }
+    if (key.length() + (value == null ? 0 : value.length) >= 255) {
+        throw new IllegalArgumentException("Key length + value length must be < 255 bytes");
+    }
+    if (key.length() > 9) {
+        Log.w(TAG, "Key lengths > 9 are discouraged: " + key);
+    }
+    int txtRecordSize = getTxtRecordSize();
+    int futureSize = txtRecordSize + key.length() + (value == null ? 0 : value.length) + 2;
+    if (futureSize > 1300) {
+        throw new IllegalArgumentException("Total length of attributes must be < 1300 bytes");
+    } else if (futureSize > 400) {
+        Log.w(TAG, "Total length of all attributes exceeds 400 bytes; truncation may occur");
+    }
+    mTxtRecord.put(key, value);
+}

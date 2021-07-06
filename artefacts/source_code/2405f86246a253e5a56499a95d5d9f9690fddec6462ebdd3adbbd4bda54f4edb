@@ -1,0 +1,11 @@
+public long addNewDelegate(T newDelegate){
+    long native_object = sDelegateCounter.getAndIncrement();
+    synchronized (DelegateManager.class) {
+        sDelegates.put(native_object, newDelegate);
+        sJavaReferences.add(newDelegate);
+    }
+    if (Debug.DEBUG) {
+        System.out.println("New " + mClass.getSimpleName() + " " + "with int " + native_object);
+    }
+    return native_object;
+}

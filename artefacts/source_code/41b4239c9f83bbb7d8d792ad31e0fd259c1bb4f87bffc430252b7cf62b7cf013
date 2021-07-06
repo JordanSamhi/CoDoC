@@ -1,0 +1,11 @@
+public boolean isFieldClassificationEnabled(){
+    final SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        mService.isFieldClassificationEnabled(receiver);
+        return receiver.getIntResult() == 1;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get field classification enabled status.");
+    }
+}

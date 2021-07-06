@@ -1,0 +1,9 @@
+public boolean isUidActiveSynced(int uid){
+    if (isUidActive(uid)) {
+        return true;
+    }
+    final long start = mStatLogger.getTime();
+    final boolean ret = mActivityManagerInternal.isUidActive(uid);
+    mStatLogger.logDurationStat(Stats.IS_UID_ACTIVE_RAW, start);
+    return ret;
+}

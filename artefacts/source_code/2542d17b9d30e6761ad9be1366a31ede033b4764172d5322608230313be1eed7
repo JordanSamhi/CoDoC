@@ -1,0 +1,21 @@
+public void destroy(){
+    if (mBitmapProvider == null) {
+        throw new IllegalStateException("BitmapProvider must be non-null");
+    }
+    Bitmap bitmapToReleaseA;
+    Bitmap bitmapToReleaseB = null;
+    synchronized (mLock) {
+        checkDestroyedLocked();
+        bitmapToReleaseA = mFrontBitmap;
+        mFrontBitmap = null;
+        if (mState != STATE_DECODING) {
+            bitmapToReleaseB = mBackBitmap;
+            mBackBitmap = null;
+        }
+        mDestroyed = true;
+    }
+    mBitmapProvider.releaseBitmap(bitmapToReleaseA);
+    if (bitmapToReleaseB != null) {
+        mBitmapProvider.releaseBitmap(bitmapToReleaseB);
+    }
+}

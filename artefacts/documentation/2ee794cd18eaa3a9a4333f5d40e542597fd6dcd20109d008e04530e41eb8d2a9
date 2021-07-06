@@ -1,0 +1,29 @@
+
+         * Called when the framework connects and has declared a new network ready for use.
+         *
+         * <p>For callbacks registered with {@link #registerNetworkCallback}, multiple networks may
+         * be available at the same time, and onAvailable will be called for each of these as they
+         * appear.
+         *
+         * <p>For callbacks registered with {@link #requestNetwork} and
+         * {@link #registerDefaultNetworkCallback}, this means the network passed as an argument
+         * is the new best network for this request and is now tracked by this callback ; this
+         * callback will no longer receive method calls about other networks that may have been
+         * passed to this method previously. The previously-best network may have disconnected, or
+         * it may still be around and the newly-best network may simply be better.
+         *
+         * <p>Starting with {@link android.os.Build.VERSION_CODES#O}, this will always immediately
+         * be followed by a call to {@link #onCapabilitiesChanged(Network, NetworkCapabilities)}
+         * then by a call to {@link #onLinkPropertiesChanged(Network, LinkProperties)}, and a call
+         * to {@link #onBlockedStatusChanged(Network, boolean)}.
+         *
+         * <p>Do NOT call {@link #getNetworkCapabilities(Network)} or
+         * {@link #getLinkProperties(Network)} or other synchronous ConnectivityManager methods in
+         * this callback as this is prone to race conditions (there is no guarantee the objects
+         * returned by these methods will be current). Instead, wait for a call to
+         * {@link #onCapabilitiesChanged(Network, NetworkCapabilities)} and
+         * {@link #onLinkPropertiesChanged(Network, LinkProperties)} whose arguments are guaranteed
+         * to be well-ordered with respect to other callbacks.
+         *
+         * @param network The {@link Network} of the satisfying network.
+         

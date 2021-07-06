@@ -1,0 +1,13 @@
+public static Drawable createFromPath(String pathName){
+    if (pathName == null) {
+        return null;
+    }
+    Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, pathName);
+    try (FileInputStream stream = new FileInputStream(pathName)) {
+        return getBitmapDrawable(null, null, stream);
+    } catch (IOException e) {
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    }
+    return null;
+}

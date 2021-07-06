@@ -1,0 +1,11 @@
+public V valueAt(int index){
+    if (mMap == null) {
+        throw new ArrayIndexOutOfBoundsException(index);
+    }
+    ReferenceWithHistory<V> valueHolder = mMap.valueAt(index);
+    if (valueHolder == null || valueHolder.getHistoryCount() == 0) {
+        Log.w(TAG, "valueAt(" + index + ") was unexpectedly null or empty");
+        return null;
+    }
+    return valueHolder.get();
+}

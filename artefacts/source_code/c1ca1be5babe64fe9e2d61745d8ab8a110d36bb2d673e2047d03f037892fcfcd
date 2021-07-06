@@ -1,0 +1,33 @@
+public Pair<String, String> getSimIdentity(WifiConfiguration config){
+    int subId = getBestMatchSubscriptionId(config);
+    if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+        return null;
+    }
+    TelephonyManager specifiedTm = mTelephonyManager.createForSubscriptionId(subId);
+    String imsi = specifiedTm.getSubscriberId();
+    String mccMnc = "";
+    if (specifiedTm.getSimState() == TelephonyManager.SIM_STATE_READY) {
+        mccMnc = specifiedTm.getSimOperator();
+    }
+    String identity = buildIdentity(getSimMethodForConfig(config), imsi, mccMnc, false);
+    if (identity == null) {
+        Log.e(TAG, "Failed to build the identity");
+        return null;
+    }
+    ImsiEncryptionInfo imsiEncryptionInfo;
+    try {
+        imsiEncryptionInfo = specifiedTm.getCarrierInfoForImsiEncryption(TelephonyManager.KEY_TYPE_WLAN);
+    } catch (RuntimeException e) {
+        Log.e(TAG, "Failed to get imsi encryption info: " + e.getMessage());
+        return null;
+    }
+    if (imsiEncryptionInfo == null) {
+        return Pair.create(identity, "");
+    }
+    String encryptedIdentity = buildEncryptedIdentity(identity, imsiEncryptionInfo);
+    if (encryptedIdentity == null) {
+        Log.e(TAG, "failed to encrypt the identity");
+        return null;
+    }
+    return Pair.create(identity, encryptedIdentity);
+}

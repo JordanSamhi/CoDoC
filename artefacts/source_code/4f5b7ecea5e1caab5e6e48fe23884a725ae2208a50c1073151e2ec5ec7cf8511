@@ -1,0 +1,11 @@
+public void acceptClient(int clientId, IInputMethodSession session, IMultiClientInputMethodSession multiClientSession, InputChannel writeChannel){
+    final IMultiClientInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.acceptClient(clientId, session, multiClientSession, writeChannel);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

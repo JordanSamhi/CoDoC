@@ -1,0 +1,9 @@
+public DisplayInfo getDisplayInfo(int displayId){
+    final int callingUid = Binder.getCallingUid();
+    final long token = Binder.clearCallingIdentity();
+    try {
+        return getDisplayInfoInternal(displayId, callingUid);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

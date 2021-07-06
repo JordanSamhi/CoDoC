@@ -1,0 +1,11 @@
+public boolean removeCrossProfileWidgetProvider(@NonNull ComponentName admin, String packageName){
+    throwIfParentInstance("removeCrossProfileWidgetProvider");
+    if (mService != null) {
+        try {
+            return mService.removeCrossProfileWidgetProvider(admin, packageName);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

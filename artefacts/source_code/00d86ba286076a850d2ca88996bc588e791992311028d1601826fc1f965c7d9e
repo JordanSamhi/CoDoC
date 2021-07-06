@@ -1,0 +1,12 @@
+public void onConfigurationChanged(){
+    if (mSearchable != null && isShowing()) {
+        updateSearchAppIcon();
+        updateSearchBadge();
+        if (isLandscapeMode(getContext())) {
+            mSearchAutoComplete.setInputMethodMode(ListPopupWindow.INPUT_METHOD_NEEDED);
+            if (mSearchAutoComplete.isDropDownAlwaysVisible() || enoughToFilter()) {
+                mSearchAutoComplete.showDropDown();
+            }
+        }
+    }
+}

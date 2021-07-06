@@ -1,0 +1,10 @@
+public static final int getPort(Context ctx){
+    java.net.Proxy proxy = getProxy(ctx, null);
+    if (proxy == java.net.Proxy.NO_PROXY)
+        return -1;
+    try {
+        return ((InetSocketAddress) (proxy.address())).getPort();
+    } catch (Exception e) {
+        return -1;
+    }
+}

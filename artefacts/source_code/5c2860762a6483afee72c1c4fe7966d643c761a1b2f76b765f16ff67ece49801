@@ -1,0 +1,18 @@
+public void execute(final T key, final Runnable task){
+    Trace.beginSection("pool execute");
+    final int hash = key.hashCode();
+    final Value value = mTasks.get(hash);
+    if (value == null || task == null) {
+        if (task != null) {
+            task.run();
+        }
+        Trace.endSection();
+        return;
+    }
+    value.task = task;
+    if (DEBUG) {
+        Log.d(TAG, String.format("ContiguousFIFOAggregator ++ tasks: %s", prettyPrint()));
+    }
+    maybeExecuteNow();
+    Trace.endSection();
+}

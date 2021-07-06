@@ -1,0 +1,12 @@
+public void requireScrollWithButton(@NonNull final Button button, final CharSequence moreText, @Nullable OnClickListener onClickListener){
+    final CharSequence nextText = button.getText();
+    button.setOnClickListener(createOnClickListener(onClickListener));
+    setOnRequireScrollStateChangedListener(new OnRequireScrollStateChangedListener() {
+
+        @Override
+        public void onRequireScrollStateChanged(boolean scrollNeeded) {
+            button.setText(scrollNeeded ? moreText : nextText);
+        }
+    });
+    requireScroll();
+}

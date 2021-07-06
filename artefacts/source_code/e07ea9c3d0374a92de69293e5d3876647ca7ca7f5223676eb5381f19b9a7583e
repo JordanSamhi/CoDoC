@@ -1,0 +1,13 @@
+public synchronized void setUserDataEnabled(boolean enabled, boolean notifyMultiSimSettingController){
+    if (isStandAloneOpportunistic(mPhone.getSubId(), mPhone.getContext()) && !enabled)
+        return;
+    boolean changed = GlobalSettingsHelper.setInt(mPhone.getContext(), Settings.Global.MOBILE_DATA, mPhone.getSubId(), (enabled ? 1 : 0));
+    if (changed) {
+        localLog("UserDataEnabled", enabled);
+        mPhone.notifyUserMobileDataStateChanged(enabled);
+        updateDataEnabledAndNotify(REASON_USER_DATA_ENABLED);
+        if (notifyMultiSimSettingController) {
+            MultiSimSettingController.getInstance().notifyUserDataEnabled(mPhone.getSubId(), enabled);
+        }
+    }
+}

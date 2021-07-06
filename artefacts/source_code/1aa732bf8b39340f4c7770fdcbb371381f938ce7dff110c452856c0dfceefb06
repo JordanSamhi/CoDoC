@@ -1,0 +1,32 @@
+public static Allocation createFromBitmap(RenderScript rs, Bitmap b, MipmapControl mips, int usage){
+    try {
+        Trace.traceBegin(RenderScript.TRACE_TAG, "createFromBitmap");
+        rs.validate();
+        if (b.getConfig() == null) {
+            if ((usage & USAGE_SHARED) != 0) {
+                throw new RSIllegalArgumentException("USAGE_SHARED cannot be used with a Bitmap that has a null config.");
+            }
+            Bitmap newBitmap = Bitmap.createBitmap(b.getWidth(), b.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(newBitmap);
+            c.drawBitmap(b, 0, 0, null);
+            return createFromBitmap(rs, newBitmap, mips, usage);
+        }
+        Type t = typeFromBitmap(rs, b, mips);
+        if (mips == MipmapControl.MIPMAP_NONE && t.getElement().isCompatible(Element.RGBA_8888(rs)) && usage == (USAGE_SHARED | USAGE_SCRIPT | USAGE_GRAPHICS_TEXTURE)) {
+            long id = rs.nAllocationCreateBitmapBackedAllocation(t.getID(rs), mips.mID, b, usage);
+            if (id == 0) {
+                throw new RSRuntimeException("Load failed.");
+            }
+            Allocation alloc = new Allocation(id, rs, t, true, usage, mips);
+            alloc.setBitmap(b);
+            return alloc;
+        }
+        long id = rs.nAllocationCreateFromBitmap(t.getID(rs), mips.mID, b, usage);
+        if (id == 0) {
+            throw new RSRuntimeException("Load failed.");
+        }
+        return new Allocation(id, rs, t, true, usage, mips);
+    } finally {
+        Trace.traceEnd(RenderScript.TRACE_TAG);
+    }
+}

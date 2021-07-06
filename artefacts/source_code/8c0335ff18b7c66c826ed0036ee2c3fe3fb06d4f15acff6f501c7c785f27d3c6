@@ -1,0 +1,43 @@
+public void setGlobalProxy(@Nullable ProxyInfo proxyInfo){
+    synchronized (mProxyLock) {
+        if (proxyInfo == mGlobalProxy)
+            return;
+        if (proxyInfo != null && proxyInfo.equals(mGlobalProxy))
+            return;
+        if (mGlobalProxy != null && mGlobalProxy.equals(proxyInfo))
+            return;
+        final String host;
+        final int port;
+        final String exclList;
+        final String pacFileUrl;
+        if (proxyInfo != null && (!TextUtils.isEmpty(proxyInfo.getHost()) || !Uri.EMPTY.equals(proxyInfo.getPacFileUrl()))) {
+            if (!proxyInfo.isValid()) {
+                if (DBG)
+                    Slog.d(TAG, "Invalid proxy properties, ignoring: " + proxyInfo);
+                return;
+            }
+            mGlobalProxy = new ProxyInfo(proxyInfo);
+            host = mGlobalProxy.getHost();
+            port = mGlobalProxy.getPort();
+            exclList = mGlobalProxy.getExclusionListAsString();
+            pacFileUrl = Uri.EMPTY.equals(proxyInfo.getPacFileUrl()) ? "" : proxyInfo.getPacFileUrl().toString();
+        } else {
+            host = "";
+            port = 0;
+            exclList = "";
+            pacFileUrl = "";
+            mGlobalProxy = null;
+        }
+        final ContentResolver res = mContext.getContentResolver();
+        final long token = Binder.clearCallingIdentity();
+        try {
+            Settings.Global.putString(res, GLOBAL_HTTP_PROXY_HOST, host);
+            Settings.Global.putInt(res, GLOBAL_HTTP_PROXY_PORT, port);
+            Settings.Global.putString(res, GLOBAL_HTTP_PROXY_EXCLUSION_LIST, exclList);
+            Settings.Global.putString(res, GLOBAL_HTTP_PROXY_PAC, pacFileUrl);
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+        sendProxyBroadcast();
+    }
+}

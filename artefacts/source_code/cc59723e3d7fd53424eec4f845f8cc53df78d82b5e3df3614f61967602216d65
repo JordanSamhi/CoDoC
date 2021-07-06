@@ -1,0 +1,42 @@
+public boolean send(Context context, KeyEvent keyEvent, String callingPackageName, int resultCode, PendingIntent.OnFinished onFinishedListener, Handler handler){
+    Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+    mediaButtonIntent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+    mediaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT, keyEvent);
+    mediaButtonIntent.putExtra(Intent.EXTRA_PACKAGE_NAME, callingPackageName);
+    if (mPendingIntent != null) {
+        if (DEBUG_KEY_EVENT) {
+            Log.d(TAG, "Sending " + keyEvent + " to the last known PendingIntent " + mPendingIntent);
+        }
+        try {
+            mPendingIntent.send(context, resultCode, mediaButtonIntent, onFinishedListener, handler);
+        } catch (PendingIntent.CanceledException e) {
+            Log.w(TAG, "Error sending key event to media button receiver " + mPendingIntent, e);
+            return false;
+        }
+    } else if (mComponentName != null) {
+        if (DEBUG_KEY_EVENT) {
+            Log.d(TAG, "Sending " + keyEvent + " to the restored intent " + mComponentName + ", type=" + mComponentType);
+        }
+        mediaButtonIntent.setComponent(mComponentName);
+        UserHandle userHandle = UserHandle.of(mUserId);
+        try {
+            switch(mComponentType) {
+                case COMPONENT_TYPE_ACTIVITY:
+                    context.startActivityAsUser(mediaButtonIntent, userHandle);
+                    break;
+                case COMPONENT_TYPE_SERVICE:
+                    context.startForegroundServiceAsUser(mediaButtonIntent, userHandle);
+                    break;
+                default:
+                    context.sendBroadcastAsUser(mediaButtonIntent, userHandle);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error sending media button to the restored intent " + mComponentName + ", type=" + mComponentType, e);
+            return false;
+        }
+    } else {
+        Log.e(TAG, "Shouldn't be happen -- pending intent or component name must be set");
+        return false;
+    }
+    return true;
+}

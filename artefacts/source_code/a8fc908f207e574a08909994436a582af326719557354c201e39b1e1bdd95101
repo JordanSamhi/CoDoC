@@ -1,0 +1,22 @@
+public OutputFrame getOutputFrame(int index){
+    synchronized (mBufferLock) {
+        if (mBufferMode != BUFFER_MODE_BLOCK) {
+            throw new IllegalStateException("The codec is not configured for block model");
+        }
+        if (index < 0 || index >= mOutputFrames.size()) {
+            throw new IndexOutOfBoundsException("Expected range of index: [0," + (mQueueRequests.size() - 1) + "]; actual: " + index);
+        }
+        OutputFrame frame = mOutputFrames.get(index);
+        if (frame == null) {
+            throw new IllegalArgumentException("Unavailable index: " + index);
+        }
+        if (!frame.isAccessible()) {
+            throw new IllegalArgumentException("The output frame is stale at index " + index);
+        }
+        if (!frame.isLoaded()) {
+            native_getOutputFrame(frame, index);
+            frame.setLoaded(true);
+        }
+        return frame;
+    }
+}

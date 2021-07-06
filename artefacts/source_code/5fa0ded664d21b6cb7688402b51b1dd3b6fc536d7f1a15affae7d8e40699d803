@@ -1,0 +1,48 @@
+public void add(AccessibilityNodeInfo info){
+    synchronized (mLock) {
+        if (VERBOSE) {
+            Log.i(LOG_TAG, "add(" + info + ")");
+        }
+        final int windowId = info.getWindowId();
+        LongSparseArray<AccessibilityNodeInfo> nodes = mNodeCache.get(windowId);
+        if (nodes == null) {
+            nodes = new LongSparseArray<>();
+            mNodeCache.put(windowId, nodes);
+        }
+        final long sourceId = info.getSourceNodeId();
+        AccessibilityNodeInfo oldInfo = nodes.get(sourceId);
+        if (oldInfo != null) {
+            final LongArray newChildrenIds = info.getChildNodeIds();
+            final int oldChildCount = oldInfo.getChildCount();
+            for (int i = 0; i < oldChildCount; i++) {
+                final long oldChildId = oldInfo.getChildId(i);
+                if (newChildrenIds == null || newChildrenIds.indexOf(oldChildId) < 0) {
+                    clearSubTreeLocked(windowId, oldChildId);
+                }
+                if (nodes.get(sourceId) == null) {
+                    clearNodesForWindowLocked(windowId);
+                    return;
+                }
+            }
+            final long oldParentId = oldInfo.getParentNodeId();
+            if (info.getParentNodeId() != oldParentId) {
+                clearSubTreeLocked(windowId, oldParentId);
+            }
+        }
+        AccessibilityNodeInfo clone = new AccessibilityNodeInfo(info);
+        nodes.put(sourceId, clone);
+        if (clone.isAccessibilityFocused()) {
+            if (mAccessibilityFocus != AccessibilityNodeInfo.UNDEFINED_ITEM_ID && mAccessibilityFocus != sourceId) {
+                refreshCachedNodeLocked(windowId, mAccessibilityFocus);
+            }
+            mAccessibilityFocus = sourceId;
+            mAccessibilityFocusedWindow = windowId;
+        } else if (mAccessibilityFocus == sourceId) {
+            mAccessibilityFocus = AccessibilityNodeInfo.UNDEFINED_ITEM_ID;
+            mAccessibilityFocusedWindow = AccessibilityWindowInfo.UNDEFINED_WINDOW_ID;
+        }
+        if (clone.isFocused()) {
+            mInputFocus = sourceId;
+        }
+    }
+}

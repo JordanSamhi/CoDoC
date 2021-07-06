@@ -1,0 +1,11 @@
+public void cancel(){
+    if (mState == State.COMPLETE || mState == State.FAILED) {
+        return;
+    }
+    mState = State.CANCELLED;
+    if (mIsPendingUSSD) {
+        mPhone.mCi.cancelPendingUssd(obtainMessage(EVENT_USSD_CANCEL_COMPLETE, this));
+    } else {
+        mPhone.onMMIDone(this);
+    }
+}

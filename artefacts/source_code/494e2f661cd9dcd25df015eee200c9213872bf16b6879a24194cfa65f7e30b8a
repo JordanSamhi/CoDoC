@@ -1,0 +1,7 @@
+public void testSetBackupPassword_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, UserHandle.USER_SYSTEM, mUserOneService);
+    ShadowBinder.setCallingUserHandle(UserHandle.of(UserHandle.USER_SYSTEM));
+    backupManagerService.setBackupPassword("currentPassword", "newPassword");
+    verify(mUserOneService).setBackupPassword("currentPassword", "newPassword");
+}

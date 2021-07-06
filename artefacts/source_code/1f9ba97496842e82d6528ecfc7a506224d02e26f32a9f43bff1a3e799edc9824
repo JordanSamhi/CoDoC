@@ -1,0 +1,11 @@
+public void forget(int netId, IBinder binder, @Nullable IActionListener callback, int callbackIdentifier){
+    int uid = Binder.getCallingUid();
+    if (!isPrivileged(Binder.getCallingPid(), uid)) {
+        throw new SecurityException(TAG + ": Permission denied");
+    }
+    mLog.info("forget uid=%").c(Binder.getCallingUid()).flush();
+    if (mWifiPermissionsUtil.checkNetworkSettingsPermission(uid)) {
+        mWifiMetrics.logUserActionEvent(UserActionEvent.EVENT_FORGET_WIFI, netId);
+    }
+    mClientModeImpl.forget(netId, binder, callback, callbackIdentifier, uid);
+}

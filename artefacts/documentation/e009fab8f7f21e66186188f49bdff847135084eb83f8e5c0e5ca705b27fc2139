@@ -1,0 +1,21 @@
+
+     * Binds the current process to {@code network}.  All Sockets created in the future
+     * (and not explicitly bound via a bound SocketFactory from
+     * {@link Network#getSocketFactory() Network.getSocketFactory()}) will be bound to
+     * {@code network}.  All host name resolutions will be limited to {@code network} as well.
+     * Note that if {@code network} ever disconnects, all Sockets created in this way will cease to
+     * work and all host name resolutions will fail.  This is by design so an application doesn't
+     * accidentally use Sockets it thinks are still bound to a particular {@link Network}.
+     * To clear binding pass {@code null} for {@code network}.  Using individually bound
+     * Sockets created by Network.getSocketFactory().createSocket() and
+     * performing network-specific host name resolutions via
+     * {@link Network#getAllByName Network.getAllByName} is preferred to calling
+     * {@code setProcessDefaultNetwork}.
+     *
+     * @param network The {@link Network} to bind the current process to, or {@code null} to clear
+     *                the current binding.
+     * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+     * @deprecated This function can throw {@link IllegalStateException}.  Use
+     *             {@link #bindProcessToNetwork} instead.  {@code bindProcessToNetwork}
+     *             is a direct replacement.
+     

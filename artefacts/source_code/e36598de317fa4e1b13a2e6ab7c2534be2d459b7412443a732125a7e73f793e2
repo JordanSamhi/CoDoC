@@ -1,0 +1,61 @@
+public void update(int x, int y, int width, int height, boolean force){
+    if (width >= 0) {
+        mLastWidth = width;
+        setWidth(width);
+    }
+    if (height >= 0) {
+        mLastHeight = height;
+        setHeight(height);
+    }
+    if (!isShowing() || !hasContentView()) {
+        return;
+    }
+    final WindowManager.LayoutParams p = getDecorViewLayoutParams();
+    boolean update = force;
+    final int finalWidth = mWidthMode < 0 ? mWidthMode : mLastWidth;
+    if (width != -1 && p.width != finalWidth) {
+        p.width = mLastWidth = finalWidth;
+        update = true;
+    }
+    final int finalHeight = mHeightMode < 0 ? mHeightMode : mLastHeight;
+    if (height != -1 && p.height != finalHeight) {
+        p.height = mLastHeight = finalHeight;
+        update = true;
+    }
+    if (p.x != x) {
+        p.x = x;
+        update = true;
+    }
+    if (p.y != y) {
+        p.y = y;
+        update = true;
+    }
+    final int newAnim = computeAnimationResource();
+    if (newAnim != p.windowAnimations) {
+        p.windowAnimations = newAnim;
+        update = true;
+    }
+    final int newFlags = computeFlags(p.flags);
+    if (newFlags != p.flags) {
+        p.flags = newFlags;
+        update = true;
+    }
+    final int newGravity = computeGravity();
+    if (newGravity != p.gravity) {
+        p.gravity = newGravity;
+        update = true;
+    }
+    View anchor = null;
+    int newAccessibilityIdOfAnchor = -1;
+    if (mAnchor != null && mAnchor.get() != null) {
+        anchor = mAnchor.get();
+        newAccessibilityIdOfAnchor = anchor.getAccessibilityViewId();
+    }
+    if (newAccessibilityIdOfAnchor != p.accessibilityIdOfAnchor) {
+        p.accessibilityIdOfAnchor = newAccessibilityIdOfAnchor;
+        update = true;
+    }
+    if (update) {
+        update(anchor, p);
+    }
+}

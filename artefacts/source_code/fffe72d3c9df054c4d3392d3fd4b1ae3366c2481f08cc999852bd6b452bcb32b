@@ -1,0 +1,19 @@
+public void setImage(Bitmap image){
+    int imageWidth = image.getWidth();
+    int imageHeight = image.getHeight();
+    Paint paint = new Paint();
+    ColorMatrix desat = new ColorMatrix();
+    desat.setSaturation(0.25f);
+    paint.setColorFilter(new ColorMatrixColorFilter(desat));
+    Matrix matrix = new Matrix();
+    int overlayColor = 0x40FFFFFF;
+    matrix.setTranslate((mPreviewWidth - imageWidth) / 2f, (mPreviewHeight - imageHeight) / 2f);
+    Bitmap picture = generateAdjustedHwBitmap(image, mPreviewWidth, mPreviewHeight, matrix, paint, overlayColor);
+    mNotificationStyle.bigPicture(picture.createAshmemBitmap());
+    float scale = (float) mIconSize / Math.min(imageWidth, imageHeight);
+    matrix.setScale(scale, scale);
+    matrix.postTranslate((mIconSize - (scale * imageWidth)) / 2, (mIconSize - (scale * imageHeight)) / 2);
+    Bitmap icon = generateAdjustedHwBitmap(image, mIconSize, mIconSize, matrix, paint, overlayColor);
+    mNotificationBuilder.setLargeIcon(icon.createAshmemBitmap());
+    mNotificationStyle.bigLargeIcon((Bitmap) null);
+}

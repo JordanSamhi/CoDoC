@@ -1,0 +1,17 @@
+public static void optOutValueFromSettings(Context context, @UserShortcutType int shortcutType, @NonNull String componentId){
+    final StringJoiner joiner = new StringJoiner(String.valueOf(SERVICES_SEPARATOR));
+    final String targetsKey = convertToKey(shortcutType);
+    final String targetsValue = Settings.Secure.getString(context.getContentResolver(), targetsKey);
+    if (TextUtils.isEmpty(targetsValue)) {
+        return;
+    }
+    sStringColonSplitter.setString(targetsValue);
+    while (sStringColonSplitter.hasNext()) {
+        final String id = sStringColonSplitter.next();
+        if (TextUtils.isEmpty(id) || componentId.equals(id)) {
+            continue;
+        }
+        joiner.add(id);
+    }
+    Settings.Secure.putString(context.getContentResolver(), targetsKey, joiner.toString());
+}

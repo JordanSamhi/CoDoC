@@ -1,0 +1,22 @@
+public boolean invokeBeam(Activity activity){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+        if (!sHasBeamFeature) {
+            return false;
+        }
+    }
+    if (activity == null) {
+        throw new NullPointerException("activity may not be null.");
+    }
+    enforceResumed(activity);
+    try {
+        sService.invokeBeam();
+        return true;
+    } catch (RemoteException e) {
+        Log.e(TAG, "invokeBeam: NFC process has died.");
+        attemptDeadServiceRecovery(e);
+        return false;
+    }
+}

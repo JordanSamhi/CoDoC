@@ -1,0 +1,14 @@
+public final void disableSelf(){
+    if (sDebug)
+        Log.d(TAG, "disableSelf()");
+    final IContentCaptureServiceCallback callback = mCallback;
+    if (callback == null) {
+        Log.w(TAG, "disableSelf(): no server callback");
+        return;
+    }
+    try {
+        callback.disableSelf();
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

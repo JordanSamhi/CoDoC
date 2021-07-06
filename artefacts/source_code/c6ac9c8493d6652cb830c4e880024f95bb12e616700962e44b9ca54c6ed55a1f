@@ -1,0 +1,32 @@
+public void onSubtitleTrackSelected(SubtitleTrack track){
+    if (mSelectedSubtitleTrackIndex >= 0) {
+        try {
+            selectOrDeselectInbandTrack(mSelectedSubtitleTrackIndex, false);
+        } catch (IllegalStateException e) {
+        }
+        mSelectedSubtitleTrackIndex = -1;
+    }
+    synchronized (this) {
+        mSubtitleDataListenerDisabled = true;
+    }
+    if (track == null) {
+        return;
+    }
+    synchronized (mIndexTrackPairs) {
+        for (Pair<Integer, SubtitleTrack> p : mIndexTrackPairs) {
+            if (p.first != null && p.second == track) {
+                mSelectedSubtitleTrackIndex = p.first;
+                break;
+            }
+        }
+    }
+    if (mSelectedSubtitleTrackIndex >= 0) {
+        try {
+            selectOrDeselectInbandTrack(mSelectedSubtitleTrackIndex, true);
+        } catch (IllegalStateException e) {
+        }
+        synchronized (this) {
+            mSubtitleDataListenerDisabled = false;
+        }
+    }
+}

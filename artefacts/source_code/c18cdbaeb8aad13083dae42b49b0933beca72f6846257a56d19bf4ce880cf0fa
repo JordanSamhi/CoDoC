@@ -1,0 +1,13 @@
+public String getCallExtra(String name) throws ImsException{
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            throw new ImsException("No call session", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        try {
+            return mSession.getProperty(name);
+        } catch (Throwable t) {
+            loge("getCallExtra :: ", t);
+            throw new ImsException("getCallExtra()", t, 0);
+        }
+    }
+}

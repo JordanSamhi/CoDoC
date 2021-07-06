@@ -1,0 +1,401 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    synchronized (mLock) {
+        consolidateScoringParams();
+        if (args != null && args.length > 0 && PROTO_DUMP_ARG.equals(args[0])) {
+            consolidateProto();
+            byte[] wifiMetricsProto = WifiMetricsProto.WifiLog.toByteArray(mWifiLogProto);
+            String metricsProtoDump = Base64.encodeToString(wifiMetricsProto, Base64.DEFAULT);
+            if (args.length > 1 && CLEAN_DUMP_ARG.equals(args[1])) {
+                pw.print(metricsProtoDump);
+            } else {
+                pw.println("WifiMetrics:");
+                pw.println(metricsProtoDump);
+                pw.println("EndWifiMetrics");
+            }
+            clear();
+        } else {
+            pw.println("WifiMetrics:");
+            pw.println("mConnectionEvents:");
+            for (ConnectionEvent event : mConnectionEventList) {
+                String eventLine = event.toString();
+                if (event == mCurrentConnectionEvent) {
+                    eventLine += " CURRENTLY OPEN EVENT";
+                }
+                pw.println(eventLine);
+            }
+            pw.println("mWifiLogProto.numSavedNetworks=" + mWifiLogProto.numSavedNetworks);
+            pw.println("mWifiLogProto.numSavedNetworksWithMacRandomization=" + mWifiLogProto.numSavedNetworksWithMacRandomization);
+            pw.println("mWifiLogProto.numOpenNetworks=" + mWifiLogProto.numOpenNetworks);
+            pw.println("mWifiLogProto.numLegacyPersonalNetworks=" + mWifiLogProto.numLegacyPersonalNetworks);
+            pw.println("mWifiLogProto.numLegacyEnterpriseNetworks=" + mWifiLogProto.numLegacyEnterpriseNetworks);
+            pw.println("mWifiLogProto.numEnhancedOpenNetworks=" + mWifiLogProto.numEnhancedOpenNetworks);
+            pw.println("mWifiLogProto.numWpa3PersonalNetworks=" + mWifiLogProto.numWpa3PersonalNetworks);
+            pw.println("mWifiLogProto.numWpa3EnterpriseNetworks=" + mWifiLogProto.numWpa3EnterpriseNetworks);
+            pw.println("mWifiLogProto.numWapiPersonalNetworks=" + mWifiLogProto.numWapiPersonalNetworks);
+            pw.println("mWifiLogProto.numWapiEnterpriseNetworks=" + mWifiLogProto.numWapiEnterpriseNetworks);
+            pw.println("mWifiLogProto.numHiddenNetworks=" + mWifiLogProto.numHiddenNetworks);
+            pw.println("mWifiLogProto.numPasspointNetworks=" + mWifiLogProto.numPasspointNetworks);
+            pw.println("mWifiLogProto.isLocationEnabled=" + mWifiLogProto.isLocationEnabled);
+            pw.println("mWifiLogProto.isScanningAlwaysEnabled=" + mWifiLogProto.isScanningAlwaysEnabled);
+            pw.println("mWifiLogProto.isVerboseLoggingEnabled=" + mWifiLogProto.isVerboseLoggingEnabled);
+            pw.println("mWifiLogProto.isEnhancedMacRandomizationForceEnabled=" + mWifiLogProto.isEnhancedMacRandomizationForceEnabled);
+            pw.println("mWifiLogProto.isWifiWakeEnabled=" + mWifiLogProto.isWifiWakeEnabled);
+            pw.println("mWifiLogProto.numNetworksAddedByUser=" + mWifiLogProto.numNetworksAddedByUser);
+            pw.println("mWifiLogProto.numNetworksAddedByApps=" + mWifiLogProto.numNetworksAddedByApps);
+            pw.println("mWifiLogProto.numNonEmptyScanResults=" + mWifiLogProto.numNonEmptyScanResults);
+            pw.println("mWifiLogProto.numEmptyScanResults=" + mWifiLogProto.numEmptyScanResults);
+            pw.println("mWifiLogProto.numConnecitvityOneshotScans=" + mWifiLogProto.numConnectivityOneshotScans);
+            pw.println("mWifiLogProto.numOneshotScans=" + mWifiLogProto.numOneshotScans);
+            pw.println("mWifiLogProto.numOneshotHasDfsChannelScans=" + mWifiLogProto.numOneshotHasDfsChannelScans);
+            pw.println("mWifiLogProto.numBackgroundScans=" + mWifiLogProto.numBackgroundScans);
+            pw.println("mWifiLogProto.numExternalAppOneshotScanRequests=" + mWifiLogProto.numExternalAppOneshotScanRequests);
+            pw.println("mWifiLogProto.numExternalForegroundAppOneshotScanRequestsThrottled=" + mWifiLogProto.numExternalForegroundAppOneshotScanRequestsThrottled);
+            pw.println("mWifiLogProto.numExternalBackgroundAppOneshotScanRequestsThrottled=" + mWifiLogProto.numExternalBackgroundAppOneshotScanRequestsThrottled);
+            pw.println("mWifiLogProto.meteredNetworkStatsSaved=");
+            pw.println(mMeteredNetworkStatsBuilder.toProto(false));
+            pw.println("mWifiLogProto.meteredNetworkStatsSuggestion=");
+            pw.println(mMeteredNetworkStatsBuilder.toProto(true));
+            pw.println("mScanReturnEntries:");
+            pw.println("  SCAN_UNKNOWN: " + getScanReturnEntry(WifiMetricsProto.WifiLog.SCAN_UNKNOWN));
+            pw.println("  SCAN_SUCCESS: " + getScanReturnEntry(WifiMetricsProto.WifiLog.SCAN_SUCCESS));
+            pw.println("  SCAN_FAILURE_INTERRUPTED: " + getScanReturnEntry(WifiMetricsProto.WifiLog.SCAN_FAILURE_INTERRUPTED));
+            pw.println("  SCAN_FAILURE_INVALID_CONFIGURATION: " + getScanReturnEntry(WifiMetricsProto.WifiLog.SCAN_FAILURE_INVALID_CONFIGURATION));
+            pw.println("  FAILURE_WIFI_DISABLED: " + getScanReturnEntry(WifiMetricsProto.WifiLog.FAILURE_WIFI_DISABLED));
+            pw.println("mSystemStateEntries: <state><screenOn> : <scansInitiated>");
+            pw.println("  WIFI_UNKNOWN       ON: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_UNKNOWN, true));
+            pw.println("  WIFI_DISABLED      ON: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_DISABLED, true));
+            pw.println("  WIFI_DISCONNECTED  ON: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_DISCONNECTED, true));
+            pw.println("  WIFI_ASSOCIATED    ON: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_ASSOCIATED, true));
+            pw.println("  WIFI_UNKNOWN      OFF: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_UNKNOWN, false));
+            pw.println("  WIFI_DISABLED     OFF: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_DISABLED, false));
+            pw.println("  WIFI_DISCONNECTED OFF: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_DISCONNECTED, false));
+            pw.println("  WIFI_ASSOCIATED   OFF: " + getSystemStateCount(WifiMetricsProto.WifiLog.WIFI_ASSOCIATED, false));
+            pw.println("mWifiLogProto.numConnectivityWatchdogPnoGood=" + mWifiLogProto.numConnectivityWatchdogPnoGood);
+            pw.println("mWifiLogProto.numConnectivityWatchdogPnoBad=" + mWifiLogProto.numConnectivityWatchdogPnoBad);
+            pw.println("mWifiLogProto.numConnectivityWatchdogBackgroundGood=" + mWifiLogProto.numConnectivityWatchdogBackgroundGood);
+            pw.println("mWifiLogProto.numConnectivityWatchdogBackgroundBad=" + mWifiLogProto.numConnectivityWatchdogBackgroundBad);
+            pw.println("mWifiLogProto.numLastResortWatchdogTriggers=" + mWifiLogProto.numLastResortWatchdogTriggers);
+            pw.println("mWifiLogProto.numLastResortWatchdogBadAssociationNetworksTotal=" + mWifiLogProto.numLastResortWatchdogBadAssociationNetworksTotal);
+            pw.println("mWifiLogProto.numLastResortWatchdogBadAuthenticationNetworksTotal=" + mWifiLogProto.numLastResortWatchdogBadAuthenticationNetworksTotal);
+            pw.println("mWifiLogProto.numLastResortWatchdogBadDhcpNetworksTotal=" + mWifiLogProto.numLastResortWatchdogBadDhcpNetworksTotal);
+            pw.println("mWifiLogProto.numLastResortWatchdogBadOtherNetworksTotal=" + mWifiLogProto.numLastResortWatchdogBadOtherNetworksTotal);
+            pw.println("mWifiLogProto.numLastResortWatchdogAvailableNetworksTotal=" + mWifiLogProto.numLastResortWatchdogAvailableNetworksTotal);
+            pw.println("mWifiLogProto.numLastResortWatchdogTriggersWithBadAssociation=" + mWifiLogProto.numLastResortWatchdogTriggersWithBadAssociation);
+            pw.println("mWifiLogProto.numLastResortWatchdogTriggersWithBadAuthentication=" + mWifiLogProto.numLastResortWatchdogTriggersWithBadAuthentication);
+            pw.println("mWifiLogProto.numLastResortWatchdogTriggersWithBadDhcp=" + mWifiLogProto.numLastResortWatchdogTriggersWithBadDhcp);
+            pw.println("mWifiLogProto.numLastResortWatchdogTriggersWithBadOther=" + mWifiLogProto.numLastResortWatchdogTriggersWithBadOther);
+            pw.println("mWifiLogProto.numLastResortWatchdogSuccesses=" + mWifiLogProto.numLastResortWatchdogSuccesses);
+            pw.println("mWifiLogProto.watchdogTotalConnectionFailureCountAfterTrigger=" + mWifiLogProto.watchdogTotalConnectionFailureCountAfterTrigger);
+            pw.println("mWifiLogProto.watchdogTriggerToConnectionSuccessDurationMs=" + mWifiLogProto.watchdogTriggerToConnectionSuccessDurationMs);
+            pw.println("mWifiLogProto.recordDurationSec=" + ((mClock.getElapsedSinceBootMillis() / 1000) - mRecordStartTimeSec));
+            try {
+                JSONObject rssiMap = new JSONObject();
+                for (Map.Entry<Integer, SparseIntArray> entry : mRssiPollCountsMap.entrySet()) {
+                    int frequency = entry.getKey();
+                    final SparseIntArray histogram = entry.getValue();
+                    JSONArray histogramElements = new JSONArray();
+                    for (int i = MIN_RSSI_POLL; i <= MAX_RSSI_POLL; i++) {
+                        int count = histogram.get(i);
+                        if (count == 0) {
+                            continue;
+                        }
+                        JSONObject histogramElement = new JSONObject();
+                        histogramElement.put(Integer.toString(i), count);
+                        histogramElements.put(histogramElement);
+                    }
+                    rssiMap.put(Integer.toString(frequency), histogramElements);
+                }
+                pw.println("mWifiLogProto.rssiPollCount: " + rssiMap.toString());
+            } catch (JSONException e) {
+                pw.println("JSONException occurred: " + e.getMessage());
+            }
+            pw.println("mWifiLogProto.rssiPollDeltaCount: Printing counts for [" + MIN_RSSI_DELTA + ", " + MAX_RSSI_DELTA + "]");
+            StringBuilder sb = new StringBuilder();
+            for (int i = MIN_RSSI_DELTA; i <= MAX_RSSI_DELTA; i++) {
+                sb.append(mRssiDeltaCounts.get(i) + " ");
+            }
+            pw.println("  " + sb.toString());
+            pw.println("mWifiLogProto.linkSpeedCounts: ");
+            sb.setLength(0);
+            for (int i = 0; i < mLinkSpeedCounts.size(); i++) {
+                LinkSpeedCount linkSpeedCount = mLinkSpeedCounts.valueAt(i);
+                sb.append(linkSpeedCount.linkSpeedMbps).append(":{").append(linkSpeedCount.count).append(", ").append(linkSpeedCount.rssiSumDbm).append(", ").append(linkSpeedCount.rssiSumOfSquaresDbmSq).append("} ");
+            }
+            if (sb.length() > 0) {
+                pw.println(sb.toString());
+            }
+            pw.print("mWifiLogProto.alertReasonCounts=");
+            sb.setLength(0);
+            for (int i = WifiLoggerHal.WIFI_ALERT_REASON_MIN; i <= WifiLoggerHal.WIFI_ALERT_REASON_MAX; i++) {
+                int count = mWifiAlertReasonCounts.get(i);
+                if (count > 0) {
+                    sb.append("(" + i + "," + count + "),");
+                }
+            }
+            if (sb.length() > 1) {
+                sb.setLength(sb.length() - 1);
+                pw.println(sb.toString());
+            } else {
+                pw.println("()");
+            }
+            pw.println("mWifiLogProto.numTotalScanResults=" + mWifiLogProto.numTotalScanResults);
+            pw.println("mWifiLogProto.numOpenNetworkScanResults=" + mWifiLogProto.numOpenNetworkScanResults);
+            pw.println("mWifiLogProto.numLegacyPersonalNetworkScanResults=" + mWifiLogProto.numLegacyPersonalNetworkScanResults);
+            pw.println("mWifiLogProto.numLegacyEnterpriseNetworkScanResults=" + mWifiLogProto.numLegacyEnterpriseNetworkScanResults);
+            pw.println("mWifiLogProto.numEnhancedOpenNetworkScanResults=" + mWifiLogProto.numEnhancedOpenNetworkScanResults);
+            pw.println("mWifiLogProto.numWpa3PersonalNetworkScanResults=" + mWifiLogProto.numWpa3PersonalNetworkScanResults);
+            pw.println("mWifiLogProto.numWpa3EnterpriseNetworkScanResults=" + mWifiLogProto.numWpa3EnterpriseNetworkScanResults);
+            pw.println("mWifiLogProto.numWapiPersonalNetworkScanResults=" + mWifiLogProto.numWapiPersonalNetworkScanResults);
+            pw.println("mWifiLogProto.numWapiEnterpriseNetworkScanResults=" + mWifiLogProto.numWapiEnterpriseNetworkScanResults);
+            pw.println("mWifiLogProto.numHiddenNetworkScanResults=" + mWifiLogProto.numHiddenNetworkScanResults);
+            pw.println("mWifiLogProto.numHotspot2R1NetworkScanResults=" + mWifiLogProto.numHotspot2R1NetworkScanResults);
+            pw.println("mWifiLogProto.numHotspot2R2NetworkScanResults=" + mWifiLogProto.numHotspot2R2NetworkScanResults);
+            pw.println("mWifiLogProto.numHotspot2R3NetworkScanResults=" + mWifiLogProto.numHotspot2R3NetworkScanResults);
+            pw.println("mWifiLogProto.numMboSupportedNetworkScanResults=" + mWifiLogProto.numMboSupportedNetworkScanResults);
+            pw.println("mWifiLogProto.numMboCellularDataAwareNetworkScanResults=" + mWifiLogProto.numMboCellularDataAwareNetworkScanResults);
+            pw.println("mWifiLogProto.numOceSupportedNetworkScanResults=" + mWifiLogProto.numOceSupportedNetworkScanResults);
+            pw.println("mWifiLogProto.numFilsSupportedNetworkScanResults=" + mWifiLogProto.numFilsSupportedNetworkScanResults);
+            pw.println("mWifiLogProto.num11AxNetworkScanResults=" + mWifiLogProto.num11AxNetworkScanResults);
+            pw.println("mWifiLogProto.num6GNetworkScanResults" + mWifiLogProto.num6GNetworkScanResults);
+            pw.println("mWifiLogProto.numBssidFilteredDueToMboAssocDisallowInd=" + mWifiLogProto.numBssidFilteredDueToMboAssocDisallowInd);
+            pw.println("mWifiLogProto.numConnectToNetworkSupportingMbo=" + mWifiLogProto.numConnectToNetworkSupportingMbo);
+            pw.println("mWifiLogProto.numConnectToNetworkSupportingOce=" + mWifiLogProto.numConnectToNetworkSupportingOce);
+            pw.println("mWifiLogProto.numForceScanDueToSteeringRequest=" + mWifiLogProto.numForceScanDueToSteeringRequest);
+            pw.println("mWifiLogProto.numMboCellularSwitchRequest=" + mWifiLogProto.numMboCellularSwitchRequest);
+            pw.println("mWifiLogProto.numSteeringRequestIncludingMboAssocRetryDelay=" + mWifiLogProto.numSteeringRequestIncludingMboAssocRetryDelay);
+            pw.println("mWifiLogProto.numConnectRequestWithFilsAkm=" + mWifiLogProto.numConnectRequestWithFilsAkm);
+            pw.println("mWifiLogProto.numL2ConnectionThroughFilsAuthentication=" + mWifiLogProto.numL2ConnectionThroughFilsAuthentication);
+            pw.println("mWifiLogProto.numScans=" + mWifiLogProto.numScans);
+            pw.println("mWifiLogProto.WifiScoreCount: [" + MIN_WIFI_SCORE + ", " + MAX_WIFI_SCORE + "]");
+            for (int i = 0; i <= MAX_WIFI_SCORE; i++) {
+                pw.print(mWifiScoreCounts.get(i) + " ");
+            }
+            pw.println();
+            pw.println("mWifiLogProto.WifiUsabilityScoreCount: [" + MIN_WIFI_USABILITY_SCORE + ", " + MAX_WIFI_USABILITY_SCORE + "]");
+            for (int i = MIN_WIFI_USABILITY_SCORE; i <= MAX_WIFI_USABILITY_SCORE; i++) {
+                pw.print(mWifiUsabilityScoreCounts.get(i) + " ");
+            }
+            pw.println();
+            pw.println("mWifiLogProto.SoftApManagerReturnCodeCounts:");
+            pw.println("  SUCCESS: " + mSoftApManagerReturnCodeCounts.get(WifiMetricsProto.SoftApReturnCodeCount.SOFT_AP_STARTED_SUCCESSFULLY));
+            pw.println("  FAILED_GENERAL_ERROR: " + mSoftApManagerReturnCodeCounts.get(WifiMetricsProto.SoftApReturnCodeCount.SOFT_AP_FAILED_GENERAL_ERROR));
+            pw.println("  FAILED_NO_CHANNEL: " + mSoftApManagerReturnCodeCounts.get(WifiMetricsProto.SoftApReturnCodeCount.SOFT_AP_FAILED_NO_CHANNEL));
+            pw.println("  FAILED_UNSUPPORTED_CONFIGURATION: " + mSoftApManagerReturnCodeCounts.get(WifiMetricsProto.SoftApReturnCodeCount.SOFT_AP_FAILED_UNSUPPORTED_CONFIGURATION));
+            pw.print("\n");
+            pw.println("mWifiLogProto.numHalCrashes=" + mWifiLogProto.numHalCrashes);
+            pw.println("mWifiLogProto.numWificondCrashes=" + mWifiLogProto.numWificondCrashes);
+            pw.println("mWifiLogProto.numSupplicantCrashes=" + mWifiLogProto.numSupplicantCrashes);
+            pw.println("mWifiLogProto.numHostapdCrashes=" + mWifiLogProto.numHostapdCrashes);
+            pw.println("mWifiLogProto.numSetupClientInterfaceFailureDueToHal=" + mWifiLogProto.numSetupClientInterfaceFailureDueToHal);
+            pw.println("mWifiLogProto.numSetupClientInterfaceFailureDueToWificond=" + mWifiLogProto.numSetupClientInterfaceFailureDueToWificond);
+            pw.println("mWifiLogProto.numSetupClientInterfaceFailureDueToSupplicant=" + mWifiLogProto.numSetupClientInterfaceFailureDueToSupplicant);
+            pw.println("mWifiLogProto.numSetupSoftApInterfaceFailureDueToHal=" + mWifiLogProto.numSetupSoftApInterfaceFailureDueToHal);
+            pw.println("mWifiLogProto.numSetupSoftApInterfaceFailureDueToWificond=" + mWifiLogProto.numSetupSoftApInterfaceFailureDueToWificond);
+            pw.println("mWifiLogProto.numSetupSoftApInterfaceFailureDueToHostapd=" + mWifiLogProto.numSetupSoftApInterfaceFailureDueToHostapd);
+            pw.println("StaEventList:");
+            for (StaEventWithTime event : mStaEventList) {
+                pw.println(event);
+            }
+            pw.println("UserActionEvents:");
+            for (UserActionEventWithTime event : mUserActionEventList) {
+                pw.println(event);
+            }
+            pw.println("mWifiLogProto.numPasspointProviders=" + mWifiLogProto.numPasspointProviders);
+            pw.println("mWifiLogProto.numPasspointProviderInstallation=" + mWifiLogProto.numPasspointProviderInstallation);
+            pw.println("mWifiLogProto.numPasspointProviderInstallSuccess=" + mWifiLogProto.numPasspointProviderInstallSuccess);
+            pw.println("mWifiLogProto.numPasspointProviderUninstallation=" + mWifiLogProto.numPasspointProviderUninstallation);
+            pw.println("mWifiLogProto.numPasspointProviderUninstallSuccess=" + mWifiLogProto.numPasspointProviderUninstallSuccess);
+            pw.println("mWifiLogProto.numPasspointProvidersSuccessfullyConnected=" + mWifiLogProto.numPasspointProvidersSuccessfullyConnected);
+            pw.println("mWifiLogProto.installedPasspointProfileTypeForR1:" + mInstalledPasspointProfileTypeForR1);
+            pw.println("mWifiLogProto.installedPasspointProfileTypeForR2:" + mInstalledPasspointProfileTypeForR2);
+            pw.println("mWifiLogProto.passpointProvisionStats.numProvisionSuccess=" + mNumProvisionSuccess);
+            pw.println("mWifiLogProto.passpointProvisionStats.provisionFailureCount:" + mPasspointProvisionFailureCounts);
+            pw.println("mWifiLogProto.numRadioModeChangeToMcc=" + mWifiLogProto.numRadioModeChangeToMcc);
+            pw.println("mWifiLogProto.numRadioModeChangeToScc=" + mWifiLogProto.numRadioModeChangeToScc);
+            pw.println("mWifiLogProto.numRadioModeChangeToSbs=" + mWifiLogProto.numRadioModeChangeToSbs);
+            pw.println("mWifiLogProto.numRadioModeChangeToDbs=" + mWifiLogProto.numRadioModeChangeToDbs);
+            pw.println("mWifiLogProto.numSoftApUserBandPreferenceUnsatisfied=" + mWifiLogProto.numSoftApUserBandPreferenceUnsatisfied);
+            pw.println("mTotalSsidsInScanHistogram:" + mTotalSsidsInScanHistogram.toString());
+            pw.println("mTotalBssidsInScanHistogram:" + mTotalBssidsInScanHistogram.toString());
+            pw.println("mAvailableOpenSsidsInScanHistogram:" + mAvailableOpenSsidsInScanHistogram.toString());
+            pw.println("mAvailableOpenBssidsInScanHistogram:" + mAvailableOpenBssidsInScanHistogram.toString());
+            pw.println("mAvailableSavedSsidsInScanHistogram:" + mAvailableSavedSsidsInScanHistogram.toString());
+            pw.println("mAvailableSavedBssidsInScanHistogram:" + mAvailableSavedBssidsInScanHistogram.toString());
+            pw.println("mAvailableOpenOrSavedSsidsInScanHistogram:" + mAvailableOpenOrSavedSsidsInScanHistogram.toString());
+            pw.println("mAvailableOpenOrSavedBssidsInScanHistogram:" + mAvailableOpenOrSavedBssidsInScanHistogram.toString());
+            pw.println("mAvailableSavedPasspointProviderProfilesInScanHistogram:" + mAvailableSavedPasspointProviderProfilesInScanHistogram.toString());
+            pw.println("mAvailableSavedPasspointProviderBssidsInScanHistogram:" + mAvailableSavedPasspointProviderBssidsInScanHistogram.toString());
+            pw.println("mWifiLogProto.partialAllSingleScanListenerResults=" + mWifiLogProto.partialAllSingleScanListenerResults);
+            pw.println("mWifiLogProto.fullBandAllSingleScanListenerResults=" + mWifiLogProto.fullBandAllSingleScanListenerResults);
+            pw.println("mWifiAwareMetrics:");
+            mWifiAwareMetrics.dump(fd, pw, args);
+            pw.println("mRttMetrics:");
+            mRttMetrics.dump(fd, pw, args);
+            pw.println("mPnoScanMetrics.numPnoScanAttempts=" + mPnoScanMetrics.numPnoScanAttempts);
+            pw.println("mPnoScanMetrics.numPnoScanFailed=" + mPnoScanMetrics.numPnoScanFailed);
+            pw.println("mPnoScanMetrics.numPnoScanStartedOverOffload=" + mPnoScanMetrics.numPnoScanStartedOverOffload);
+            pw.println("mPnoScanMetrics.numPnoScanFailedOverOffload=" + mPnoScanMetrics.numPnoScanFailedOverOffload);
+            pw.println("mPnoScanMetrics.numPnoFoundNetworkEvents=" + mPnoScanMetrics.numPnoFoundNetworkEvents);
+            pw.println("mWifiLinkLayerUsageStats.loggingDurationMs=" + mWifiLinkLayerUsageStats.loggingDurationMs);
+            pw.println("mWifiLinkLayerUsageStats.radioOnTimeMs=" + mWifiLinkLayerUsageStats.radioOnTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioTxTimeMs=" + mWifiLinkLayerUsageStats.radioTxTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioRxTimeMs=" + mWifiLinkLayerUsageStats.radioRxTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioScanTimeMs=" + mWifiLinkLayerUsageStats.radioScanTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioNanScanTimeMs=" + mWifiLinkLayerUsageStats.radioNanScanTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioBackgroundScanTimeMs=" + mWifiLinkLayerUsageStats.radioBackgroundScanTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioRoamScanTimeMs=" + mWifiLinkLayerUsageStats.radioRoamScanTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioPnoScanTimeMs=" + mWifiLinkLayerUsageStats.radioPnoScanTimeMs);
+            pw.println("mWifiLinkLayerUsageStats.radioHs20ScanTimeMs=" + mWifiLinkLayerUsageStats.radioHs20ScanTimeMs);
+            pw.println("mWifiLogProto.connectToNetworkNotificationCount=" + mConnectToNetworkNotificationCount.toString());
+            pw.println("mWifiLogProto.connectToNetworkNotificationActionCount=" + mConnectToNetworkNotificationActionCount.toString());
+            pw.println("mWifiLogProto.openNetworkRecommenderBlacklistSize=" + mOpenNetworkRecommenderBlacklistSize);
+            pw.println("mWifiLogProto.isWifiNetworksAvailableNotificationOn=" + mIsWifiNetworksAvailableNotificationOn);
+            pw.println("mWifiLogProto.numOpenNetworkRecommendationUpdates=" + mNumOpenNetworkRecommendationUpdates);
+            pw.println("mWifiLogProto.numOpenNetworkConnectMessageFailedToSend=" + mNumOpenNetworkConnectMessageFailedToSend);
+            pw.println("mWifiLogProto.observedHotspotR1ApInScanHistogram=" + mObservedHotspotR1ApInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR2ApInScanHistogram=" + mObservedHotspotR2ApInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR3ApInScanHistogram=" + mObservedHotspotR3ApInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR1EssInScanHistogram=" + mObservedHotspotR1EssInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR2EssInScanHistogram=" + mObservedHotspotR2EssInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR3EssInScanHistogram=" + mObservedHotspotR3EssInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR1ApsPerEssInScanHistogram=" + mObservedHotspotR1ApsPerEssInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR2ApsPerEssInScanHistogram=" + mObservedHotspotR2ApsPerEssInScanHistogram);
+            pw.println("mWifiLogProto.observedHotspotR3ApsPerEssInScanHistogram=" + mObservedHotspotR3ApsPerEssInScanHistogram);
+            pw.println("mWifiLogProto.observed80211mcSupportingApsInScanHistogram" + mObserved80211mcApInScanHistogram);
+            pw.println("mWifiLogProto.bssidBlocklistStats:");
+            pw.println(mBssidBlocklistStats.toString());
+            pw.println("mSoftApTetheredEvents:");
+            for (SoftApConnectedClientsEvent event : mSoftApEventListTethered) {
+                StringBuilder eventLine = new StringBuilder();
+                eventLine.append("event_type=" + event.eventType);
+                eventLine.append(",time_stamp_millis=" + event.timeStampMillis);
+                eventLine.append(",num_connected_clients=" + event.numConnectedClients);
+                eventLine.append(",channel_frequency=" + event.channelFrequency);
+                eventLine.append(",channel_bandwidth=" + event.channelBandwidth);
+                eventLine.append(",max_num_clients_setting_in_softap_configuration=" + event.maxNumClientsSettingInSoftapConfiguration);
+                eventLine.append(",max_num_clients_setting_in_softap_capability=" + event.maxNumClientsSettingInSoftapCapability);
+                eventLine.append(",shutdown_timeout_setting_in_softap_configuration=" + event.shutdownTimeoutSettingInSoftapConfiguration);
+                eventLine.append(",default_shutdown_timeout_setting=" + event.defaultShutdownTimeoutSetting);
+                eventLine.append(",client_control_is_enabled=" + event.clientControlIsEnabled);
+                pw.println(eventLine.toString());
+            }
+            pw.println("mSoftApLocalOnlyEvents:");
+            for (SoftApConnectedClientsEvent event : mSoftApEventListLocalOnly) {
+                StringBuilder eventLine = new StringBuilder();
+                eventLine.append("event_type=" + event.eventType);
+                eventLine.append(",time_stamp_millis=" + event.timeStampMillis);
+                eventLine.append(",num_connected_clients=" + event.numConnectedClients);
+                eventLine.append(",channel_frequency=" + event.channelFrequency);
+                eventLine.append(",channel_bandwidth=" + event.channelBandwidth);
+                eventLine.append(",max_num_clients_setting_in_softap_configuration=" + event.maxNumClientsSettingInSoftapConfiguration);
+                eventLine.append(",max_num_clients_setting_in_softap_capability=" + event.maxNumClientsSettingInSoftapCapability);
+                eventLine.append(",shutdown_timeout_setting_in_softap_configuration=" + event.shutdownTimeoutSettingInSoftapConfiguration);
+                eventLine.append(",default_shutdown_timeout_setting=" + event.defaultShutdownTimeoutSetting);
+                eventLine.append(",client_control_is_enabled=" + event.clientControlIsEnabled);
+                pw.println(eventLine.toString());
+            }
+            mWifiPowerMetrics.dump(pw);
+            mWifiWakeMetrics.dump(pw);
+            pw.println("mWifiLogProto.isMacRandomizationOn=" + mContext.getResources().getBoolean(R.bool.config_wifi_connected_mac_randomization_supported));
+            pw.println("mWifiLogProto.scoreExperimentId=" + mWifiLogProto.scoreExperimentId);
+            pw.println("mExperimentValues.wifiIsUnusableLoggingEnabled=" + mContext.getResources().getBoolean(R.bool.config_wifiIsUnusableEventMetricsEnabled));
+            pw.println("mExperimentValues.wifiDataStallMinTxBad=" + mContext.getResources().getInteger(R.integer.config_wifiDataStallMinTxBad));
+            pw.println("mExperimentValues.wifiDataStallMinTxSuccessWithoutRx=" + mContext.getResources().getInteger(R.integer.config_wifiDataStallMinTxSuccessWithoutRx));
+            pw.println("mExperimentValues.linkSpeedCountsLoggingEnabled=" + mContext.getResources().getBoolean(R.bool.config_wifiLinkSpeedMetricsEnabled));
+            pw.println("mExperimentValues.dataStallDurationMs=" + mExperimentValues.dataStallDurationMs);
+            pw.println("mExperimentValues.dataStallTxTputThrKbps=" + mExperimentValues.dataStallTxTputThrKbps);
+            pw.println("mExperimentValues.dataStallRxTputThrKbps=" + mExperimentValues.dataStallRxTputThrKbps);
+            pw.println("mExperimentValues.dataStallTxPerThr=" + mExperimentValues.dataStallTxPerThr);
+            pw.println("mExperimentValues.dataStallCcaLevelThr=" + mExperimentValues.dataStallCcaLevelThr);
+            pw.println("WifiIsUnusableEventList: ");
+            for (WifiIsUnusableWithTime event : mWifiIsUnusableList) {
+                pw.println(event);
+            }
+            pw.println("Hardware Version: " + SystemProperties.get("ro.boot.revision", ""));
+            pw.println("mWifiUsabilityStatsEntriesList:");
+            for (WifiUsabilityStatsEntry stats : mWifiUsabilityStatsEntriesList) {
+                printWifiUsabilityStatsEntry(pw, stats);
+            }
+            pw.println("mWifiUsabilityStatsList:");
+            for (WifiUsabilityStats stats : mWifiUsabilityStatsListGood) {
+                pw.println("\nlabel=" + stats.label);
+                pw.println("\ntrigger_type=" + stats.triggerType);
+                pw.println("\ntime_stamp_ms=" + stats.timeStampMs);
+                for (WifiUsabilityStatsEntry entry : stats.stats) {
+                    printWifiUsabilityStatsEntry(pw, entry);
+                }
+            }
+            for (WifiUsabilityStats stats : mWifiUsabilityStatsListBad) {
+                pw.println("\nlabel=" + stats.label);
+                pw.println("\ntrigger_type=" + stats.triggerType);
+                pw.println("\ntime_stamp_ms=" + stats.timeStampMs);
+                for (WifiUsabilityStatsEntry entry : stats.stats) {
+                    printWifiUsabilityStatsEntry(pw, entry);
+                }
+            }
+            pw.println("mMobilityStatePnoStatsMap:");
+            for (int i = 0; i < mMobilityStatePnoStatsMap.size(); i++) {
+                printDeviceMobilityStatePnoScanStats(pw, mMobilityStatePnoStatsMap.valueAt(i));
+            }
+            mWifiP2pMetrics.dump(pw);
+            pw.println("mDppMetrics:");
+            mDppMetrics.dump(pw);
+            pw.println("mWifiConfigStoreReadDurationHistogram:" + mWifiConfigStoreReadDurationHistogram.toString());
+            pw.println("mWifiConfigStoreWriteDurationHistogram:" + mWifiConfigStoreWriteDurationHistogram.toString());
+            pw.println("mLinkProbeSuccessRssiCounts:" + mLinkProbeSuccessRssiCounts);
+            pw.println("mLinkProbeFailureRssiCounts:" + mLinkProbeFailureRssiCounts);
+            pw.println("mLinkProbeSuccessLinkSpeedCounts:" + mLinkProbeSuccessLinkSpeedCounts);
+            pw.println("mLinkProbeFailureLinkSpeedCounts:" + mLinkProbeFailureLinkSpeedCounts);
+            pw.println("mLinkProbeSuccessSecondsSinceLastTxSuccessHistogram:" + mLinkProbeSuccessSecondsSinceLastTxSuccessHistogram);
+            pw.println("mLinkProbeFailureSecondsSinceLastTxSuccessHistogram:" + mLinkProbeFailureSecondsSinceLastTxSuccessHistogram);
+            pw.println("mLinkProbeSuccessElapsedTimeMsHistogram:" + mLinkProbeSuccessElapsedTimeMsHistogram);
+            pw.println("mLinkProbeFailureReasonCounts:" + mLinkProbeFailureReasonCounts);
+            pw.println("mLinkProbeExperimentProbeCounts:" + mLinkProbeExperimentProbeCounts);
+            pw.println("mNetworkSelectionExperimentPairNumChoicesCounts:" + mNetworkSelectionExperimentPairNumChoicesCounts);
+            pw.println("mLinkProbeStaEventCount:" + mLinkProbeStaEventCount);
+            pw.println("mWifiNetworkRequestApiLog:\n" + mWifiNetworkRequestApiLog);
+            pw.println("mWifiNetworkRequestApiMatchSizeHistogram:\n" + mWifiNetworkRequestApiMatchSizeHistogram);
+            pw.println("mWifiNetworkSuggestionApiLog:\n" + mWifiNetworkSuggestionApiLog);
+            pw.println("mWifiNetworkSuggestionApiMatchSizeHistogram:\n" + mWifiNetworkSuggestionApiListSizeHistogram);
+            pw.println("mWifiNetworkSuggestionApiAppTypeCounter:\n" + mWifiNetworkSuggestionApiAppTypeCounter);
+            printUserApprovalSuggestionAppReaction(pw);
+            printUserApprovalCarrierReaction(pw);
+            pw.println("mNetworkIdToNominatorId:\n" + mNetworkIdToNominatorId);
+            pw.println("mWifiLockStats:\n" + mWifiLockStats);
+            pw.println("mWifiLockHighPerfAcqDurationSecHistogram:\n" + mWifiLockHighPerfAcqDurationSecHistogram);
+            pw.println("mWifiLockLowLatencyAcqDurationSecHistogram:\n" + mWifiLockLowLatencyAcqDurationSecHistogram);
+            pw.println("mWifiLockHighPerfActiveSessionDurationSecHistogram:\n" + mWifiLockHighPerfActiveSessionDurationSecHistogram);
+            pw.println("mWifiLockLowLatencyActiveSessionDurationSecHistogram:\n" + mWifiLockLowLatencyActiveSessionDurationSecHistogram);
+            pw.println("mWifiToggleStats:\n" + mWifiToggleStats);
+            pw.println("mWifiLogProto.numAddOrUpdateNetworkCalls=" + mWifiLogProto.numAddOrUpdateNetworkCalls);
+            pw.println("mWifiLogProto.numEnableNetworkCalls=" + mWifiLogProto.numEnableNetworkCalls);
+            pw.println("mWifiLogProto.txLinkSpeedCount2g=" + mTxLinkSpeedCount2g);
+            pw.println("mWifiLogProto.txLinkSpeedCount5gLow=" + mTxLinkSpeedCount5gLow);
+            pw.println("mWifiLogProto.txLinkSpeedCount5gMid=" + mTxLinkSpeedCount5gMid);
+            pw.println("mWifiLogProto.txLinkSpeedCount5gHigh=" + mTxLinkSpeedCount5gHigh);
+            pw.println("mWifiLogProto.txLinkSpeedCount6gLow=" + mTxLinkSpeedCount6gLow);
+            pw.println("mWifiLogProto.txLinkSpeedCount6gMid=" + mTxLinkSpeedCount6gMid);
+            pw.println("mWifiLogProto.txLinkSpeedCount6gHigh=" + mTxLinkSpeedCount6gHigh);
+            pw.println("mWifiLogProto.rxLinkSpeedCount2g=" + mRxLinkSpeedCount2g);
+            pw.println("mWifiLogProto.rxLinkSpeedCount5gLow=" + mRxLinkSpeedCount5gLow);
+            pw.println("mWifiLogProto.rxLinkSpeedCount5gMid=" + mRxLinkSpeedCount5gMid);
+            pw.println("mWifiLogProto.rxLinkSpeedCount5gHigh=" + mRxLinkSpeedCount5gHigh);
+            pw.println("mWifiLogProto.rxLinkSpeedCount6gLow=" + mRxLinkSpeedCount6gLow);
+            pw.println("mWifiLogProto.rxLinkSpeedCount6gMid=" + mRxLinkSpeedCount6gMid);
+            pw.println("mWifiLogProto.rxLinkSpeedCount6gHigh=" + mRxLinkSpeedCount6gHigh);
+            pw.println("mWifiLogProto.numIpRenewalFailure=" + mWifiLogProto.numIpRenewalFailure);
+            pw.println("mWifiLogProto.connectionDurationStats=" + mConnectionDurationStats.toString());
+            pw.println("mWifiLogProto.isExternalWifiScorerOn=" + mWifiLogProto.isExternalWifiScorerOn);
+            pw.println("mWifiLogProto.wifiOffMetrics=" + mWifiOffMetrics.toString());
+            pw.println("mWifiLogProto.softApConfigLimitationMetrics=" + mSoftApConfigLimitationMetrics.toString());
+            pw.println("mChannelUtilizationHistogram2G:\n" + mChannelUtilizationHistogram2G);
+            pw.println("mChannelUtilizationHistogramAbove2G:\n" + mChannelUtilizationHistogramAbove2G);
+            pw.println("mTxThroughputMbpsHistogram2G:\n" + mTxThroughputMbpsHistogram2G);
+            pw.println("mRxThroughputMbpsHistogram2G:\n" + mRxThroughputMbpsHistogram2G);
+            pw.println("mTxThroughputMbpsHistogramAbove2G:\n" + mTxThroughputMbpsHistogramAbove2G);
+            pw.println("mRxThroughputMbpsHistogramAbove2G:\n" + mRxThroughputMbpsHistogramAbove2G);
+            pw.println("mCarrierWifiMetrics:\n" + mCarrierWifiMetrics);
+            dumpInitPartialScanMetrics(pw);
+        }
+    }
+}

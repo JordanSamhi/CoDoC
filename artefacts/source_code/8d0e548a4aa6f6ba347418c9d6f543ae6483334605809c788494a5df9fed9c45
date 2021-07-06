@@ -1,0 +1,16 @@
+public void findConnectableNetworksAndHighestPriority(@NonNull OnConnectableListener onConnectableListener){
+    for (PerAppMatchMetaInfo appInfo : mAppInfos.values()) {
+        List<PerNetworkSuggestionMatchMetaInfo> matchedNetworkInfos = appInfo.getHighestPriorityNetworks();
+        for (PerNetworkSuggestionMatchMetaInfo matchedNetworkInfo : matchedNetworkInfos) {
+            if (matchedNetworkInfo.wCmConfiguredNetwork == null) {
+                matchedNetworkInfo.wCmConfiguredNetwork = addCandidateToWifiConfigManager(matchedNetworkInfo.extWifiNetworkSuggestion);
+                if (matchedNetworkInfo.wCmConfiguredNetwork == null)
+                    continue;
+                mLocalLog.log(String.format("network suggestion candidate %s (new)", WifiNetworkSelector.toNetworkString(matchedNetworkInfo.wCmConfiguredNetwork)));
+            } else {
+                mLocalLog.log(String.format("network suggestion candidate %s (existing)", WifiNetworkSelector.toNetworkString(matchedNetworkInfo.wCmConfiguredNetwork)));
+            }
+            onConnectableListener.onConnectable(matchedNetworkInfo.matchingScanDetail, matchedNetworkInfo.wCmConfiguredNetwork);
+        }
+    }
+}

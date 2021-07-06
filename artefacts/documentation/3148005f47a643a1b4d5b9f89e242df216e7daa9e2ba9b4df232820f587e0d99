@@ -1,0 +1,58 @@
+
+     * Hints the Android System whether the {@link android.app.assist.AssistStructure.ViewNode}
+     * associated with this view is considered important for autofill purposes.
+     *
+     * <p>Generally speaking, a view is important for autofill if:
+     * <ol>
+     * <li>The view can be autofilled by an {@link android.service.autofill.AutofillService}.
+     * <li>The view contents can help an {@link android.service.autofill.AutofillService}
+     *     determine how other views can be autofilled.
+     * <ol>
+     *
+     * <p>For example, view containers should typically return {@code false} for performance reasons
+     * (since the important info is provided by their children), but if its properties have relevant
+     * information (for example, a resource id called {@code credentials}, it should return
+     * {@code true}. On the other hand, views representing labels or editable fields should
+     * typically return {@code true}, but in some cases they could return {@code false}
+     * (for example, if they're part of a "Captcha" mechanism).
+     *
+     * <p>The value returned by this method depends on the value returned by
+     * {@link #getImportantForAutofill()}:
+     *
+     * <ol>
+     *   <li>if it returns {@link #IMPORTANT_FOR_AUTOFILL_YES} or
+     *       {@link #IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS}, then it returns {@code true}
+     *   <li>if it returns {@link #IMPORTANT_FOR_AUTOFILL_NO} or
+     *       {@link #IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS}, then it returns {@code false}
+     *   <li>if it returns {@link #IMPORTANT_FOR_AUTOFILL_AUTO}, then it uses some simple heuristics
+     *       that can return {@code true} in some cases (like a container with a resource id),
+     *       but {@code false} in most.
+     *   <li>otherwise, it returns {@code false}.
+     * </ol>
+     *
+     * <p>When a view is considered important for autofill:
+     * <ul>
+     *   <li>The view might automatically trigger an autofill request when focused on.
+     *   <li>The contents of the view are included in the {@link ViewStructure} used in an autofill
+     *       request.
+     * </ul>
+     *
+     * <p>On the other hand, when a view is considered not important for autofill:
+     * <ul>
+     *   <li>The view never automatically triggers autofill requests, but it can trigger a manual
+     *       request through {@link AutofillManager#requestAutofill(View)}.
+     *   <li>The contents of the view are not included in the {@link ViewStructure} used in an
+     *       autofill request, unless the request has the
+     *       {@link #AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS} flag.
+     * </ul>
+     *
+     * @return whether the view is considered important for autofill.
+     *
+     * @see #setImportantForAutofill(int)
+     * @see #IMPORTANT_FOR_AUTOFILL_AUTO
+     * @see #IMPORTANT_FOR_AUTOFILL_YES
+     * @see #IMPORTANT_FOR_AUTOFILL_NO
+     * @see #IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS
+     * @see #IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS
+     * @see AutofillManager#requestAutofill(View)
+     

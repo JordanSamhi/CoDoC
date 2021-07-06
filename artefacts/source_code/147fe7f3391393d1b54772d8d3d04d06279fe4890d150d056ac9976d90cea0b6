@@ -1,0 +1,8 @@
+public boolean shouldHideSilentStatusBarIcons(){
+    INotificationManager service = getService();
+    try {
+        return service.shouldHideSilentStatusIcons(mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

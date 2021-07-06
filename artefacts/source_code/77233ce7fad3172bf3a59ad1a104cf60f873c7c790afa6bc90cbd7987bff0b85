@@ -1,0 +1,16 @@
+public void closeAllExceptView(IBinder token, View view, String who, String what){
+    synchronized (mLock) {
+        int count = mViews.size();
+        for (int i = 0; i < count; i++) {
+            if ((view == null || mViews.get(i) != view) && (token == null || mParams.get(i).token == token)) {
+                ViewRootImpl root = mRoots.get(i);
+                if (who != null) {
+                    WindowLeaked leak = new WindowLeaked(what + " " + who + " has leaked window " + root.getView() + " that was originally added here");
+                    leak.setStackTrace(root.getLocation().getStackTrace());
+                    Log.e(TAG, "", leak);
+                }
+                removeViewLocked(i, false);
+            }
+        }
+    }
+}

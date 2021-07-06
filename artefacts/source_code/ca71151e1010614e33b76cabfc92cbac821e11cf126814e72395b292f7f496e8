@@ -1,0 +1,17 @@
+public void sendImsiProtectionExemptionNotificationIfRequired(int carrierId){
+    int subId = getMatchingSubId(carrierId);
+    if (!mUserDataLoaded) {
+        return;
+    }
+    if (requiresImsiEncryption(subId)) {
+        return;
+    }
+    if (mImsiPrivacyProtectionExemptionMap.containsKey(carrierId)) {
+        return;
+    }
+    if (mUserApprovalUiActive) {
+        return;
+    }
+    Log.i(TAG, "Sending IMSI protection notification for " + carrierId);
+    sendImsiPrivacyNotification(carrierId);
+}

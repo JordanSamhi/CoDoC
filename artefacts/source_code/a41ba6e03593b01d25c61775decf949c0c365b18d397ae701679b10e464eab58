@@ -1,0 +1,15 @@
+public void userEnabledNetwork(int networkId){
+    WifiConfiguration configuration = getInternalConfiguredNetwork(networkId);
+    if (configuration == null) {
+        return;
+    }
+    String network;
+    if (configuration.isPasspoint()) {
+        network = configuration.FQDN;
+    } else {
+        network = configuration.SSID;
+    }
+    mUserTemporarilyDisabledList.remove(network);
+    mWifiInjector.getBssidBlocklistMonitor().clearBssidBlocklistForSsid(configuration.SSID);
+    Log.d(TAG, "Enable disabled network: " + network + " num=" + mUserTemporarilyDisabledList.size());
+}

@@ -1,0 +1,26 @@
+public void removeAccessibilityInteractionConnection(@NonNull IWindow window){
+    synchronized (mLock) {
+        mSecurityPolicy.resolveCallingUserIdEnforcingPermissionsLocked(UserHandle.getCallingUserId());
+        IBinder token = window.asBinder();
+        final int removedWindowId = removeAccessibilityInteractionConnectionInternalLocked(token, mGlobalWindowTokens, mGlobalInteractionConnections);
+        if (removedWindowId >= 0) {
+            onAccessibilityInteractionConnectionRemovedLocked(removedWindowId, token);
+            if (DEBUG) {
+                Slog.i(LOG_TAG, "Removed global connection for pid:" + Binder.getCallingPid() + " with windowId: " + removedWindowId + " and token: " + window.asBinder());
+            }
+            return;
+        }
+        final int userCount = mWindowTokens.size();
+        for (int i = 0; i < userCount; i++) {
+            final int userId = mWindowTokens.keyAt(i);
+            final int removedWindowIdForUser = removeAccessibilityInteractionConnectionInternalLocked(token, getWindowTokensForUserLocked(userId), getInteractionConnectionsForUserLocked(userId));
+            if (removedWindowIdForUser >= 0) {
+                onAccessibilityInteractionConnectionRemovedLocked(removedWindowIdForUser, token);
+                if (DEBUG) {
+                    Slog.i(LOG_TAG, "Removed user connection for pid:" + Binder.getCallingPid() + " with windowId: " + removedWindowIdForUser + " and userId:" + userId + " and token: " + window.asBinder());
+                }
+                return;
+            }
+        }
+    }
+}

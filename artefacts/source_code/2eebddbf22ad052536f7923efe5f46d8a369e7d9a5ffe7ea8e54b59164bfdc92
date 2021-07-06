@@ -1,0 +1,10 @@
+public List<Session2Token> getSession2Tokens(int userId){
+    ArrayList<Session2Token> session2Records = new ArrayList<>();
+    for (MediaSessionRecordImpl record : mSessions) {
+        if ((userId == UserHandle.USER_ALL || record.getUserId() == userId) && record.isActive() && record instanceof MediaSession2Record) {
+            MediaSession2Record session2 = (MediaSession2Record) record;
+            session2Records.add(session2.getSession2Token());
+        }
+    }
+    return session2Records;
+}

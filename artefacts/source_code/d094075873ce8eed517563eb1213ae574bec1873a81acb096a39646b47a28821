@@ -1,0 +1,8 @@
+public void setMicrophoneMute(boolean on){
+    final IAudioService service = getService();
+    try {
+        service.setMicrophoneMute(on, getContext().getOpPackageName(), UserHandle.getCallingUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

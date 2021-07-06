@@ -1,0 +1,10 @@
+public synchronized void writeOnImsServiceSmsSolicitedResponse(int phoneId, @ImsSmsImplBase.SendStatusResult int resultCode, int errorReason, long messageId){
+    InProgressSmsSession smsSession = mInProgressSmsSessions.get(phoneId);
+    if (smsSession == null) {
+        Rlog.e(TAG, "SMS session is missing");
+    } else {
+        smsSession.addEvent(new SmsSessionEventBuilder(SmsSession.Event.Type.SMS_SEND_RESULT).setImsServiceErrno(resultCode).setErrorCode(errorReason).setMessageId((messageId)));
+        smsSession.decreaseExpectedResponse();
+        finishSmsSessionIfNeeded(smsSession);
+    }
+}

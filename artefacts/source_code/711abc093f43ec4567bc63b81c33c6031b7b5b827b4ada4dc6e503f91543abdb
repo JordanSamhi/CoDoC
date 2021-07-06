@@ -1,0 +1,11 @@
+public void setAuthToken(Account account, final String authTokenType, final String authToken){
+    if (account == null)
+        throw new IllegalArgumentException("account is null");
+    if (authTokenType == null)
+        throw new IllegalArgumentException("authTokenType is null");
+    try {
+        mService.setAuthToken(account, authTokenType, authToken);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

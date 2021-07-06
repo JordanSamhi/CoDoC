@@ -1,0 +1,14 @@
+public OffsetResult lookupByNitzCountry(@NonNull NitzData nitzData, @NonNull String isoCountryCode){
+    CountryTimeZones countryTimeZones = getCountryTimeZones(isoCountryCode);
+    if (countryTimeZones == null) {
+        return null;
+    }
+    TimeZone bias = TimeZone.getDefault();
+    Integer dstAdjustmentMillis = nitzData.getDstAdjustmentMillis();
+    if (dstAdjustmentMillis == null) {
+        return countryTimeZones.lookupByOffsetWithBias(nitzData.getCurrentTimeInMillis(), bias, nitzData.getLocalOffsetMillis());
+    } else {
+        boolean isDst = dstAdjustmentMillis != 0;
+        return countryTimeZones.lookupByOffsetWithBias(nitzData.getCurrentTimeInMillis(), bias, nitzData.getLocalOffsetMillis(), isDst);
+    }
+}

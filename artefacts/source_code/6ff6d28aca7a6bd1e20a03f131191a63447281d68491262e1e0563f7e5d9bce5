@@ -1,0 +1,12 @@
+public int waitForOpen(int timeoutMs){
+    if (!mStartDone.block(timeoutMs)) {
+        Log.e(TAG, "waitForOpen - Camera failed to open after timeout of " + OPEN_CAMERA_TIMEOUT_MS + " ms");
+        try {
+            mCamera.release();
+        } catch (RuntimeException e) {
+            Log.e(TAG, "connectBinderShim - Failed to release camera after timeout ", e);
+        }
+        throw new ServiceSpecificException(ICameraService.ERROR_INVALID_OPERATION);
+    }
+    return mInitErrors;
+}

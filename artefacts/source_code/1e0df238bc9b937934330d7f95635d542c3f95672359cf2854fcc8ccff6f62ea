@@ -1,0 +1,22 @@
+public void cancelSyncAsUser(Account account, String authority, ComponentName cname, int userId){
+    if (authority != null && authority.length() == 0) {
+        throw new IllegalArgumentException("Authority must be non-empty");
+    }
+    enforceCrossUserPermission(userId, "no permission to modify the sync settings for user " + userId);
+    long identityToken = clearCallingIdentity();
+    if (cname != null) {
+        Slog.e(TAG, "cname not null.");
+        return;
+    }
+    try {
+        SyncManager syncManager = getSyncManager();
+        if (syncManager != null) {
+            SyncStorageEngine.EndPoint info;
+            info = new SyncStorageEngine.EndPoint(account, authority, userId);
+            syncManager.clearScheduledSyncOperations(info);
+            syncManager.cancelActiveSync(info, null, "API");
+        }
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+}

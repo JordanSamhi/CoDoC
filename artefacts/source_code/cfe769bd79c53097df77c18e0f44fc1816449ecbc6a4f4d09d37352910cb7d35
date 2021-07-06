@@ -1,0 +1,13 @@
+public void invalidateHomeTaskSnapshot(final Activity homeActivity){
+    mBackgroundExecutor.submit(new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                ActivityTaskManager.getService().invalidateHomeTaskSnapshot(homeActivity.getActivityToken());
+            } catch (RemoteException e) {
+                Log.w(TAG, "Failed to invalidate home snapshot", e);
+            }
+        }
+    });
+}

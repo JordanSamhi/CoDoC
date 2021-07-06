@@ -1,0 +1,17 @@
+public void writeToParcel(Parcel dest, int flags){
+    Set<Locale> keySet = names.keySet();
+    dest.writeInt(keySet.size());
+    for (Locale l : keySet) {
+        dest.writeSerializable(l);
+        dest.writeString(names.get(l));
+    }
+    dest.writeString(className);
+    int localesCount = locales.size();
+    dest.writeInt(localesCount);
+    for (Locale l : locales) {
+        dest.writeSerializable(l);
+    }
+    dest.writeString(serviceId);
+    dest.writeSerializable(sessionStartTime);
+    dest.writeSerializable(sessionEndTime);
+}

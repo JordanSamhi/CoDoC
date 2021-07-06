@@ -1,0 +1,10 @@
+public List<String> getAssociations(){
+    if (!checkFeaturePresent()) {
+        return Collections.emptyList();
+    }
+    try {
+        return mService.getAssociations(getCallingPackage(), mContext.getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

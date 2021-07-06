@@ -1,0 +1,9 @@
+public synchronized Session.Info getExternalSession(@Nullable String ownerInfo){
+    int threadId = getCallingThreadId();
+    Session threadSession = mSessionMapper.get(threadId);
+    if (threadSession == null) {
+        Log.d(LOGGING_TAG, "Log.getExternalSession was called with no session " + "active.");
+        return null;
+    }
+    return threadSession.getExternalInfo(ownerInfo);
+}

@@ -1,0 +1,12 @@
+public List<String> getDelegatePackages(ComponentName who, String scope) throws SecurityException{
+    Objects.requireNonNull(who, "ComponentName is null");
+    Objects.requireNonNull(scope, "Scope is null");
+    if (!Arrays.asList(DELEGATIONS).contains(scope)) {
+        throw new IllegalArgumentException("Unexpected delegation scope: " + scope);
+    }
+    final int userId = mInjector.userHandleGetCallingUserId();
+    synchronized (getLockObject()) {
+        getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER);
+        return getDelegatePackagesInternalLocked(scope, userId);
+    }
+}

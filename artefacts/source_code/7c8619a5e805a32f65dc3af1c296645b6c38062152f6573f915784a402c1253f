@@ -1,0 +1,12 @@
+public PublicKey getRecoveryServicePublicKey(int userId, int uid){
+    byte[] keyBytes = getBytes(userId, uid, RecoveryServiceMetadataEntry.COLUMN_NAME_PUBLIC_KEY);
+    if (keyBytes == null) {
+        return null;
+    }
+    try {
+        return decodeX509Key(keyBytes);
+    } catch (InvalidKeySpecException e) {
+        Log.wtf(TAG, String.format(Locale.US, "Recovery service public key entry cannot be decoded for " + "userId=%d uid=%d.", userId, uid));
+        return null;
+    }
+}

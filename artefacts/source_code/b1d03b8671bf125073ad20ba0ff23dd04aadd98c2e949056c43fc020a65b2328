@@ -1,0 +1,6 @@
+public void requestP2pState(@NonNull Channel c, @NonNull P2pStateListener listener){
+    checkChannel(c);
+    if (listener == null)
+        throw new IllegalArgumentException("This listener cannot be null.");
+    c.mAsyncChannel.sendMessage(REQUEST_P2P_STATE, 0, c.putListener(listener));
+}

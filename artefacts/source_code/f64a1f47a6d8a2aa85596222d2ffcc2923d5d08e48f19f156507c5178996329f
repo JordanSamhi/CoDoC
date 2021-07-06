@@ -1,0 +1,20 @@
+public static void addDataResultToIntent(RemoteInput remoteInput, Intent intent, Map<String, Uri> results){
+    Intent clipDataIntent = getClipDataIntentFromIntent(intent);
+    if (clipDataIntent == null) {
+        clipDataIntent = new Intent();
+    }
+    for (Map.Entry<String, Uri> entry : results.entrySet()) {
+        String mimeType = entry.getKey();
+        Uri uri = entry.getValue();
+        if (mimeType == null) {
+            continue;
+        }
+        Bundle resultsBundle = clipDataIntent.getBundleExtra(getExtraResultsKeyForData(mimeType));
+        if (resultsBundle == null) {
+            resultsBundle = new Bundle();
+        }
+        resultsBundle.putString(remoteInput.getResultKey(), uri.toString());
+        clipDataIntent.putExtra(getExtraResultsKeyForData(mimeType), resultsBundle);
+    }
+    intent.setClipData(ClipData.newIntent(RESULTS_CLIP_LABEL, clipDataIntent));
+}

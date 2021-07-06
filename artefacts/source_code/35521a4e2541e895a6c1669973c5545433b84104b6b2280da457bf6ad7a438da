@@ -1,0 +1,16 @@
+public boolean start(float startScale, float targetScale, float centerX, float centerY){
+    if (mRunning) {
+        return false;
+    }
+    mCenterX = centerX;
+    mCenterY = centerY;
+    mTargetScale = targetScale;
+    mStartTime = System.currentTimeMillis();
+    mStartScale = startScale;
+    mZoomingIn = mTargetScale > mStartScale;
+    mVelocity = (mTargetScale - mStartScale) / ZOOM_ANIMATION_DURATION;
+    mRunning = true;
+    mStop = false;
+    mHeader.post(this);
+    return true;
+}

@@ -1,0 +1,14 @@
+public SparseRectFArrayBuilder append(final int key, final float left, final float top, final float right, final float bottom, final int flags){
+    checkIndex(key);
+    ensureBufferSize();
+    final int baseCoordinatesIndex = mCount * 4;
+    mCoordinates[baseCoordinatesIndex + 0] = left;
+    mCoordinates[baseCoordinatesIndex + 1] = top;
+    mCoordinates[baseCoordinatesIndex + 2] = right;
+    mCoordinates[baseCoordinatesIndex + 3] = bottom;
+    final int flagsIndex = mCount;
+    mFlagsArray[flagsIndex] = flags;
+    mKeys[mCount] = key;
+    ++mCount;
+    return this;
+}

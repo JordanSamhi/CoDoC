@@ -1,0 +1,23 @@
+public static Marshaler<T> getMarshaler(TypeReference<T> typeToken, int nativeType){
+    synchronized (sMarshalLock) {
+        MarshalToken<T> marshalToken = new MarshalToken<T>(typeToken, nativeType);
+        Marshaler<T> marshaler = (Marshaler<T>) sMarshalerMap.get(marshalToken);
+        if (marshaler == null) {
+            if (sRegisteredMarshalQueryables.size() == 0) {
+                throw new AssertionError("No available query marshalers registered");
+            }
+            for (MarshalQueryable<?> potentialMarshaler : sRegisteredMarshalQueryables) {
+                MarshalQueryable<T> castedPotential = (MarshalQueryable<T>) potentialMarshaler;
+                if (castedPotential.isTypeMappingSupported(typeToken, nativeType)) {
+                    marshaler = castedPotential.createMarshaler(typeToken, nativeType);
+                    break;
+                }
+            }
+            if (marshaler == null) {
+                throw new UnsupportedOperationException("Could not find marshaler that matches the requested " + "combination of type reference " + typeToken + " and native type " + MarshalHelpers.toStringNativeType(nativeType));
+            }
+            sMarshalerMap.put(marshalToken, marshaler);
+        }
+        return marshaler;
+    }
+}

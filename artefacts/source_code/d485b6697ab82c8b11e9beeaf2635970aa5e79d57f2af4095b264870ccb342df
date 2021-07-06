@@ -1,0 +1,11 @@
+public void draw(@NonNull Canvas canvas){
+    pruneRipples();
+    final Rect bounds = getDirtyBounds();
+    final int saveCount = canvas.save(Canvas.CLIP_SAVE_FLAG);
+    if (isBounded()) {
+        canvas.clipRect(bounds);
+    }
+    drawContent(canvas);
+    drawBackgroundAndRipples(canvas);
+    canvas.restoreToCount(saveCount);
+}

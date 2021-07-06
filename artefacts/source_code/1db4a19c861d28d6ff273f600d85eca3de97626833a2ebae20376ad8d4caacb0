@@ -1,0 +1,26 @@
+public static void announceForAccessibility(final View view, AccessibilityManager accessibilityManager, final CharSequence text){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        view.announceForAccessibility(text);
+        return;
+    }
+    final Context context = view.getContext().getApplicationContext();
+    if (accessibilityManager == null) {
+        accessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+    }
+    if (!accessibilityManager.isEnabled()) {
+        return;
+    }
+    final int eventType = AccessibilityEvent.TYPE_VIEW_FOCUSED;
+    final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
+    event.getText().add(text);
+    event.setEnabled(view.isEnabled());
+    event.setClassName(view.getClass().getName());
+    event.setPackageName(context.getPackageName());
+    final AccessibilityRecordCompat record = AccessibilityEventCompat.asRecord(event);
+    record.setSource(view);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        view.getParent().requestSendAccessibilityEvent(view, event);
+    } else {
+        accessibilityManager.sendAccessibilityEvent(event);
+    }
+}

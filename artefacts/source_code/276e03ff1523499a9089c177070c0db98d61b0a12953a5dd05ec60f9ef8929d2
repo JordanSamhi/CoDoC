@@ -1,0 +1,34 @@
+public boolean addNfcUnlockHandler(final NfcUnlockHandler unlockHandler, String[] tagTechnologies){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+    }
+    if (tagTechnologies.length == 0) {
+        return false;
+    }
+    try {
+        synchronized (mLock) {
+            if (mNfcUnlockHandlers.containsKey(unlockHandler)) {
+                sService.removeNfcUnlockHandler(mNfcUnlockHandlers.get(unlockHandler));
+                mNfcUnlockHandlers.remove(unlockHandler);
+            }
+            INfcUnlockHandler.Stub iHandler = new INfcUnlockHandler.Stub() {
+
+                @Override
+                public boolean onUnlockAttempted(Tag tag) throws RemoteException {
+                    return unlockHandler.onUnlockAttempted(tag);
+                }
+            };
+            sService.addNfcUnlockHandler(iHandler, Tag.getTechCodesFromStrings(tagTechnologies));
+            mNfcUnlockHandlers.put(unlockHandler, iHandler);
+        }
+    } catch (RemoteException e) {
+        attemptDeadServiceRecovery(e);
+        return false;
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Unable to register LockscreenDispatch", e);
+        return false;
+    }
+    return true;
+}

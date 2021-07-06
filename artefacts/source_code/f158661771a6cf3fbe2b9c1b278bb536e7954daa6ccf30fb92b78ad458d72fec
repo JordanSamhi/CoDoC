@@ -1,0 +1,19 @@
+public static void setDefault(@NonNull @Size(min = 1) LocaleList locales, int localeIndex){
+    if (locales == null) {
+        throw new NullPointerException("locales is null");
+    }
+    if (locales.isEmpty()) {
+        throw new IllegalArgumentException("locales is empty");
+    }
+    synchronized (sLock) {
+        sLastDefaultLocale = locales.get(localeIndex);
+        Locale.setDefault(sLastDefaultLocale);
+        sLastExplicitlySetLocaleList = locales;
+        sDefaultLocaleList = locales;
+        if (localeIndex == 0) {
+            sDefaultAdjustedLocaleList = sDefaultLocaleList;
+        } else {
+            sDefaultAdjustedLocaleList = new LocaleList(sLastDefaultLocale, sDefaultLocaleList);
+        }
+    }
+}

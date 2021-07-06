@@ -1,0 +1,33 @@
+public void handleMessage(Message msg){
+    switch(msg.what) {
+        case EVENT_REQUEST_CELL_INFO:
+            mPhone.requestCellInfoUpdate(null, obtainMessage(EVENT_RESPONSE_CELL_INFO));
+            break;
+        case EVENT_UNSOL_CELL_INFO:
+            processCellInfo((AsyncResult) msg.obj);
+            if (mCellInfoList != null && mCellInfoList.size() > 0)
+                requestNextCellInfo(true);
+            break;
+        case EVENT_RESPONSE_CELL_INFO:
+            processCellInfo((AsyncResult) msg.obj);
+            requestNextCellInfo(mCellInfoList != null && mCellInfoList.size() > 0);
+            break;
+        case EVENT_SERVICE_STATE_CHANGED:
+            AsyncResult ar = (AsyncResult) msg.obj;
+            onServiceStateChanged((ServiceState) ar.result);
+            break;
+        case EVENT_SIM_STATE_CHANGED:
+            onSimCardStateChanged(msg.arg1);
+            break;
+        case EVENT_OPERATOR_LOST:
+            updateOperatorNumericImmediate("");
+            updateTrackingStatus();
+            break;
+        case EVENT_OVERRIDE_LOCALE:
+            mCountryOverride = (String) msg.obj;
+            updateLocale();
+            break;
+        default:
+            throw new IllegalStateException("Unexpected message arrives. msg = " + msg.what);
+    }
+}

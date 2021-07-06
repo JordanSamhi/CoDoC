@@ -1,0 +1,14 @@
+public void startTrackingWindows(int displayId){
+    synchronized (mLock) {
+        DisplayWindowsObserver observer = mDisplayWindowsObservers.get(displayId);
+        if (observer == null) {
+            observer = new DisplayWindowsObserver(displayId);
+        }
+        if (observer.isTrackingWindowsLocked()) {
+            return;
+        }
+        if (observer.startTrackingWindowsLocked()) {
+            mDisplayWindowsObservers.put(displayId, observer);
+        }
+    }
+}

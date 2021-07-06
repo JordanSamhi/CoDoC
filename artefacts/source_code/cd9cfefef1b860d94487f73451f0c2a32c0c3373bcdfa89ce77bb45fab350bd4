@@ -1,0 +1,7 @@
+public Account[] getAccountsByTypeAsUser(String type, UserHandle userHandle){
+    try {
+        return mService.getAccountsAsUser(type, userHandle.getIdentifier(), mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

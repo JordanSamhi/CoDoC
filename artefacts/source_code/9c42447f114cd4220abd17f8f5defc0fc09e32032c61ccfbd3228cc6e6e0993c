@@ -1,0 +1,13 @@
+public int setSubscriptionProperty(int subId, String propKey, String propValue){
+    enforceModifyPhoneState("setSubscriptionProperty");
+    final long token = Binder.clearCallingIdentity();
+    try {
+        validateSubId(subId);
+        ContentResolver resolver = mContext.getContentResolver();
+        int result = setSubscriptionPropertyIntoContentResolver(subId, propKey, propValue, resolver);
+        refreshCachedActiveSubscriptionInfoList();
+        return result;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

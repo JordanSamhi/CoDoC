@@ -1,0 +1,24 @@
+
+     * Flush both input and output ports of the component.
+     * <p>
+     * Upon return, all indices previously returned in calls to {@link #dequeueInputBuffer
+     * dequeueInputBuffer} and {@link #dequeueOutputBuffer dequeueOutputBuffer} &mdash; or obtained
+     * via {@link Callback#onInputBufferAvailable onInputBufferAvailable} or
+     * {@link Callback#onOutputBufferAvailable onOutputBufferAvailable} callbacks &mdash; become
+     * invalid, and all buffers are owned by the codec.
+     * <p>
+     * If the codec is configured in asynchronous mode, call {@link #start}
+     * after {@code flush} has returned to resume codec operations. The codec
+     * will not request input buffers until this has happened.
+     * <strong>Note, however, that there may still be outstanding {@code onOutputBufferAvailable}
+     * callbacks that were not handled prior to calling {@code flush}.
+     * The indices returned via these callbacks also become invalid upon calling {@code flush} and
+     * should be discarded.</strong>
+     * <p>
+     * If the codec is configured in synchronous mode, codec will resume
+     * automatically if it is configured with an input surface.  Otherwise, it
+     * will resume when {@link #dequeueInputBuffer dequeueInputBuffer} is called.
+     *
+     * @throws IllegalStateException if not in the Executing state.
+     * @throws MediaCodec.CodecException upon codec error.
+     

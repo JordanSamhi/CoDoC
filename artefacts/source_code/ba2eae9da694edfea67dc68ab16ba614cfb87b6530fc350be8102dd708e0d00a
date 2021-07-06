@@ -1,0 +1,18 @@
+public static List<Integer> convertStringListToIntList(List<String> list, String[] convertFrom, int[] convertTo){
+    if (list == null) {
+        return null;
+    }
+    List<Integer> convertedList = new ArrayList<>(list.size());
+    for (String str : list) {
+        int strIndex = getArrayIndex(convertFrom, str);
+        if (strIndex < 0) {
+            if (DEBUG)
+                Log.v(TAG, "Ignoring invalid value " + str);
+            continue;
+        }
+        if (strIndex < convertTo.length) {
+            convertedList.add(convertTo[strIndex]);
+        }
+    }
+    return convertedList;
+}

@@ -1,0 +1,16 @@
+public Bundle getInputExtras(boolean create){
+    if (mEditor == null && !create)
+        return null;
+    createEditorIfNeeded();
+    if (mEditor.mInputContentType == null) {
+        if (!create)
+            return null;
+        mEditor.createInputContentTypeIfNeeded();
+    }
+    if (mEditor.mInputContentType.extras == null) {
+        if (!create)
+            return null;
+        mEditor.mInputContentType.extras = new Bundle();
+    }
+    return mEditor.mInputContentType.extras;
+}

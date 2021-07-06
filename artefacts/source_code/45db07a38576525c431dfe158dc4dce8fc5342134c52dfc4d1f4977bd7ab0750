@@ -1,0 +1,7 @@
+public static boolean isDefaultOrSystemDialer(Context context, String packageName){
+    if (TextUtils.isEmpty(packageName)) {
+        return false;
+    }
+    final TelecomManager tm = getTelecomManager(context);
+    return packageName.equals(tm.getDefaultDialerPackage()) || packageName.equals(tm.getSystemDialerPackage());
+}

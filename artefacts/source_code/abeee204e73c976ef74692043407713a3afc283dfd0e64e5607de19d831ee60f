@@ -1,0 +1,8 @@
+public static final void writeListXml(List val, OutputStream out) throws XmlPullParserException, java.io.IOException{
+    XmlSerializer serializer = Xml.newSerializer();
+    serializer.setOutput(out, StandardCharsets.UTF_8.name());
+    serializer.startDocument(null, true);
+    serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+    writeListXml(val, null, serializer);
+    serializer.endDocument();
+}

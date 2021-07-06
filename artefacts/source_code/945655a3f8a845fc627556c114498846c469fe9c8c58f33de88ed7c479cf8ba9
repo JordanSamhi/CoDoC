@@ -1,0 +1,18 @@
+public static List<SpellCheckerSubtype> sort(Context context, int flags, SpellCheckerInfo sci, List<SpellCheckerSubtype> subtypeList){
+    if (sci == null)
+        return subtypeList;
+    final HashSet<SpellCheckerSubtype> subtypesSet = new HashSet<SpellCheckerSubtype>(subtypeList);
+    final ArrayList<SpellCheckerSubtype> sortedList = new ArrayList<SpellCheckerSubtype>();
+    int N = sci.getSubtypeCount();
+    for (int i = 0; i < N; ++i) {
+        SpellCheckerSubtype subtype = sci.getSubtypeAt(i);
+        if (subtypesSet.contains(subtype)) {
+            sortedList.add(subtype);
+            subtypesSet.remove(subtype);
+        }
+    }
+    for (SpellCheckerSubtype subtype : subtypesSet) {
+        sortedList.add(subtype);
+    }
+    return sortedList;
+}

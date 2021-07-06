@@ -1,0 +1,10 @@
+public String getKey(){
+    if (mPasspointUniqueId != null) {
+        return mPasspointUniqueId;
+    }
+    String key = getSsidAndSecurityTypeString();
+    if (!shared) {
+        key += "-" + UserHandle.getUserHandleForUid(creatorUid).getIdentifier();
+    }
+    return key;
+}

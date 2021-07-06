@@ -1,0 +1,19 @@
+public DctConstants.State getState(String apnType){
+    DctConstants.State state = DctConstants.State.IDLE;
+    final int apnTypeBitmask = ApnSetting.getApnTypesBitmaskFromString(apnType);
+    for (DataConnection dc : mDataConnections.values()) {
+        ApnSetting apnSetting = dc.getApnSetting();
+        if (apnSetting != null && apnSetting.canHandleType(apnTypeBitmask)) {
+            if (dc.isActive()) {
+                state = getBetterConnectionState(state, DctConstants.State.CONNECTED);
+            } else if (dc.isActivating()) {
+                state = getBetterConnectionState(state, DctConstants.State.CONNECTING);
+            } else if (dc.isInactive()) {
+                state = getBetterConnectionState(state, DctConstants.State.IDLE);
+            } else if (dc.isDisconnecting()) {
+                state = getBetterConnectionState(state, DctConstants.State.DISCONNECTING);
+            }
+        }
+    }
+    return state;
+}

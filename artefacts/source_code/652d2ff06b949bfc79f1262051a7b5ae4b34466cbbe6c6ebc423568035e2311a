@@ -1,0 +1,10 @@
+public static String computeNormalizedSha256Fingerprint(byte[] signature){
+    MessageDigest digester;
+    try {
+        digester = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+        throw new AssertionError("No SHA-256 implementation found.");
+    }
+    digester.update(signature);
+    return byteArrayToHexString(digester.digest());
+}

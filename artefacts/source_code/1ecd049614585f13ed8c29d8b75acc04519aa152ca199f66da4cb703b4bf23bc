@@ -1,0 +1,19 @@
+public void requestRulesAuthTable(String cardId, @CallbackExecutor Executor executor, ResultCallback<EuiccRulesAuthTable> callback){
+    try {
+        getIEuiccCardController().getRulesAuthTable(mContext.getOpPackageName(), cardId, new IGetRulesAuthTableCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, EuiccRulesAuthTable rat) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, rat));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling getRulesAuthTable", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

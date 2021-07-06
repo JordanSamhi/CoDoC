@@ -1,0 +1,9 @@
+public static SubmitPdu getSubmitPdu(String scAddress, String destinationAddress, short destinationPort, byte[] data, boolean statusReportRequested){
+    SubmitPduBase spb;
+    if (useCdmaFormatForMoSms()) {
+        spb = com.android.internal.telephony.cdma.SmsMessage.getSubmitPdu(scAddress, destinationAddress, destinationPort, data, statusReportRequested);
+    } else {
+        spb = com.android.internal.telephony.gsm.SmsMessage.getSubmitPdu(scAddress, destinationAddress, destinationPort, data, statusReportRequested);
+    }
+    return spb != null ? new SubmitPdu(spb) : null;
+}

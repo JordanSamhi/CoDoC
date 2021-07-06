@@ -1,0 +1,24 @@
+public static void formatUid(PrintWriter pw, int uid){
+    if (uid < Process.FIRST_APPLICATION_UID) {
+        pw.print(uid);
+    } else {
+        pw.print('u');
+        pw.print(getUserId(uid));
+        final int appId = getAppId(uid);
+        if (isIsolated(appId)) {
+            if (appId > Process.FIRST_ISOLATED_UID) {
+                pw.print('i');
+                pw.print(appId - Process.FIRST_ISOLATED_UID);
+            } else {
+                pw.print("ai");
+                pw.print(appId - Process.FIRST_APP_ZYGOTE_ISOLATED_UID);
+            }
+        } else if (appId >= Process.FIRST_APPLICATION_UID) {
+            pw.print('a');
+            pw.print(appId - Process.FIRST_APPLICATION_UID);
+        } else {
+            pw.print('s');
+            pw.print(appId);
+        }
+    }
+}

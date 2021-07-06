@@ -1,0 +1,15 @@
+public byte[] getSelectResponse(){
+    if (!mService.isConnected()) {
+        throw new IllegalStateException("service not connected to system");
+    }
+    byte[] response;
+    try {
+        response = mChannel.getSelectResponse();
+    } catch (RemoteException e) {
+        throw new IllegalStateException(e.getMessage());
+    }
+    if (response != null && response.length == 0) {
+        response = null;
+    }
+    return response;
+}

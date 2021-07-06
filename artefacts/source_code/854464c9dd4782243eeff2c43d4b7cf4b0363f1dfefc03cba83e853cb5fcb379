@@ -1,0 +1,26 @@
+public SignalStrength fixupSignalStrength10(SignalStrength signalStrength){
+    List<CellSignalStrengthGsm> gsmList = signalStrength.getCellSignalStrengths(CellSignalStrengthGsm.class);
+    if (gsmList.isEmpty() || !gsmList.get(0).isValid()) {
+        return signalStrength;
+    }
+    CellSignalStrengthGsm gsmStrength = gsmList.get(0);
+    int voiceRat = ServiceState.RIL_RADIO_TECHNOLOGY_UNKNOWN;
+    Phone phone = PhoneFactory.getPhone(mPhoneId);
+    if (phone != null) {
+        ServiceState ss = phone.getServiceState();
+        if (ss != null) {
+            voiceRat = ss.getRilVoiceRadioTechnology();
+        }
+    }
+    switch(voiceRat) {
+        case ServiceState.RIL_RADIO_TECHNOLOGY_UMTS:
+        case ServiceState.RIL_RADIO_TECHNOLOGY_HSDPA:
+        case ServiceState.RIL_RADIO_TECHNOLOGY_HSUPA:
+        case ServiceState.RIL_RADIO_TECHNOLOGY_HSPA:
+        case ServiceState.RIL_RADIO_TECHNOLOGY_HSPAP:
+            break;
+        default:
+            return signalStrength;
+    }
+    return new SignalStrength(new CellSignalStrengthCdma(), new CellSignalStrengthGsm(), new CellSignalStrengthWcdma(gsmStrength.getRssi(), gsmStrength.getBitErrorRate(), CellInfo.UNAVAILABLE, CellInfo.UNAVAILABLE), new CellSignalStrengthTdscdma(), new CellSignalStrengthLte(), new CellSignalStrengthNr());
+}

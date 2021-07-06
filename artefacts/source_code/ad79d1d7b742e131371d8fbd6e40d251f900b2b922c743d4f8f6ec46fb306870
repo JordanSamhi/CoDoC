@@ -1,0 +1,36 @@
+public List<DeferredAction> getPartnerDeferredActions(){
+    if (mContentProviderUri == null) {
+        Log.e(TAG, "No content provider URI found, deferred actions ignored");
+        return new ArrayList<>();
+    }
+    ArrayList<String> partnerSummaryActions;
+    try {
+        partnerSummaryActions = getPartnerSummaryActionsFromContentProvider(mContentProviderUri);
+    } catch (NullPointerException | IllegalArgumentException e) {
+        Log.e(TAG, "Unable to find or successfully query content provider, ignoring action", e);
+        return new ArrayList<>();
+    }
+    if (partnerSummaryActions == null || partnerSummaryActions.isEmpty()) {
+        Log.v(TAG, "No actions were fetched for partners");
+        return new ArrayList<>();
+    }
+    List<DeferredAction> deferredActions = new ArrayList<>();
+    for (String actionId : partnerSummaryActions) {
+        Log.v(TAG, "Attempting to generate deferred action for id: " + actionId);
+        try {
+            boolean completed = getActionCompletionStateFromContentProvider(actionId, mContentProviderUri);
+            Bundle deferredActionBundle = getDeferredActionStateFromContentProvider(actionId, mContentProviderUri);
+            if (deferredActionBundle == null) {
+                Log.v(TAG, "No valid deferredActionBundle for action: " + actionId);
+                continue;
+            }
+            DeferredAction deferredAction = buildDeferredAction(completed, deferredActionBundle);
+            if (deferredAction != null) {
+                deferredActions.add(deferredAction);
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Unable to load the completion or config state for deferred action: " + actionId, e);
+        }
+    }
+    return deferredActions;
+}

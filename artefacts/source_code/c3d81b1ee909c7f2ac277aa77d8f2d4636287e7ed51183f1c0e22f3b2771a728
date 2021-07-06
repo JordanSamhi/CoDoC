@@ -1,0 +1,14 @@
+public boolean unbind(){
+    synchronized (mUpdateEngineCallbackLock) {
+        if (mUpdateEngineCallback == null) {
+            return true;
+        }
+        try {
+            boolean result = mUpdateEngine.unbind(mUpdateEngineCallback);
+            mUpdateEngineCallback = null;
+            return result;
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

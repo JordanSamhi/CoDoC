@@ -1,0 +1,10 @@
+public void writeModemRestartEvent(int phoneId, String reason){
+    final ModemRestart modemRestart = new ModemRestart();
+    String basebandVersion = Build.getRadioVersion();
+    if (basebandVersion != null)
+        modemRestart.basebandVersion = basebandVersion;
+    if (reason != null)
+        modemRestart.reason = reason;
+    TelephonyEvent event = new TelephonyEventBuilder(phoneId).setModemRestart(modemRestart).build();
+    addTelephonyEvent(event);
+}

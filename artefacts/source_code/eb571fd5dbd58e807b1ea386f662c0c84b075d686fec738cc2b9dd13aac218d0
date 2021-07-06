@@ -1,0 +1,30 @@
+public void setWhitelist(@Nullable ArraySet<String> packageNames, @Nullable ArraySet<ComponentName> components){
+    mWhitelistedPackages = null;
+    if (packageNames == null && components == null)
+        return;
+    if ((packageNames != null && packageNames.isEmpty()) || (components != null && components.isEmpty())) {
+        throw new IllegalArgumentException("Packages or Components cannot be empty.");
+    }
+    mWhitelistedPackages = new ArrayMap<>();
+    if (packageNames != null) {
+        for (int i = 0; i < packageNames.size(); i++) {
+            mWhitelistedPackages.put(packageNames.valueAt(i), null);
+        }
+    }
+    if (components != null) {
+        for (int i = 0; i < components.size(); i++) {
+            final ComponentName component = components.valueAt(i);
+            if (component == null) {
+                Log.w(TAG, "setWhitelist(): component is null");
+                continue;
+            }
+            final String packageName = component.getPackageName();
+            ArraySet<ComponentName> set = mWhitelistedPackages.get(packageName);
+            if (set == null) {
+                set = new ArraySet<>();
+                mWhitelistedPackages.put(packageName, set);
+            }
+            set.add(component);
+        }
+    }
+}

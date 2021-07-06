@@ -1,0 +1,12 @@
+public void unregisterUsageCallback(UsageCallback callback){
+    if (callback == null || callback.request == null || callback.request.requestId == DataUsageRequest.REQUEST_ID_UNSET) {
+        throw new IllegalArgumentException("Invalid UsageCallback");
+    }
+    try {
+        mService.unregisterUsageRequest(callback.request);
+    } catch (RemoteException e) {
+        if (DBG)
+            Log.d(TAG, "Remote exception when unregistering callback");
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,14 @@
+public boolean isTtyModeSupported(){
+    try {
+        TelecomManager telecomManager = null;
+        if (mContext != null) {
+            telecomManager = mContext.getSystemService(TelecomManager.class);
+        }
+        if (telecomManager != null) {
+            return telecomManager.isTtySupported();
+        }
+    } catch (SecurityException e) {
+        Log.e(TAG, "Permission error calling TelecomManager#isTtySupported", e);
+    }
+    return false;
+}

@@ -1,0 +1,16 @@
+public ServerTransaction sendRinging(RequestEvent event, String tag) throws SipException{
+    try {
+        Request request = event.getRequest();
+        ServerTransaction transaction = getServerTransaction(event);
+        Response response = mMessageFactory.createResponse(Response.RINGING, request);
+        ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+        toHeader.setTag(tag);
+        response.addHeader(toHeader);
+        if (DBG)
+            log("send RINGING: " + response);
+        transaction.sendResponse(response);
+        return transaction;
+    } catch (ParseException e) {
+        throw new SipException("sendRinging()", e);
+    }
+}

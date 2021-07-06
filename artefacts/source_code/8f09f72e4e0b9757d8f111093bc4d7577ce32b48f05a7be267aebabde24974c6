@@ -1,0 +1,14 @@
+public InputStream getTraceInputStream() throws IOException{
+    if (mAppTraceRetriever == null) {
+        return null;
+    }
+    try {
+        final ParcelFileDescriptor fd = mAppTraceRetriever.getTraceFileDescriptor(mPackageName, mPackageUid, mPid);
+        if (fd == null) {
+            return null;
+        }
+        return new GZIPInputStream(new ParcelFileDescriptor.AutoCloseInputStream(fd));
+    } catch (RemoteException e) {
+        return null;
+    }
+}

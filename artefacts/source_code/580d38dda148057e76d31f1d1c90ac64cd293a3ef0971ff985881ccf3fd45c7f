@@ -1,0 +1,11 @@
+public int getOtaStatus(int cardId){
+    if (!callerCanWriteEmbeddedSubscriptions()) {
+        throw new SecurityException("Must have WRITE_EMBEDDED_SUBSCRIPTIONS to get OTA status");
+    }
+    long token = Binder.clearCallingIdentity();
+    try {
+        return blockingGetOtaStatusFromEuiccService(cardId);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

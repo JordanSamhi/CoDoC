@@ -1,0 +1,18 @@
+public void markPartialTimersAsEligible(){
+    if (ArrayUtils.referenceEquals(mPartialTimers, mLastPartialTimers)) {
+        for (int i = mPartialTimers.size() - 1; i >= 0; --i) {
+            mPartialTimers.get(i).mInList = true;
+        }
+    } else {
+        for (int i = mLastPartialTimers.size() - 1; i >= 0; --i) {
+            mLastPartialTimers.get(i).mInList = false;
+        }
+        mLastPartialTimers.clear();
+        final int numPartialTimers = mPartialTimers.size();
+        for (int i = 0; i < numPartialTimers; ++i) {
+            final StopwatchTimer timer = mPartialTimers.get(i);
+            timer.mInList = true;
+            mLastPartialTimers.add(timer);
+        }
+    }
+}

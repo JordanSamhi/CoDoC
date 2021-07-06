@@ -1,0 +1,12 @@
+public boolean isIdenticalStackedLinks(@NonNull LinkProperties target){
+    if (!mStackedLinks.keySet().equals(target.mStackedLinks.keySet())) {
+        return false;
+    }
+    for (LinkProperties stacked : mStackedLinks.values()) {
+        String iface = stacked.getInterfaceName();
+        if (!stacked.equals(target.mStackedLinks.get(iface))) {
+            return false;
+        }
+    }
+    return true;
+}

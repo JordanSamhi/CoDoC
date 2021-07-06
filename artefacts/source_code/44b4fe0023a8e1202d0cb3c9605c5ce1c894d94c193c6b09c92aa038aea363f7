@@ -1,0 +1,16 @@
+public BluetoothServerSocket listenUsingInsecureL2capOn(int port) throws IOException{
+    Log.d(TAG, "listenUsingInsecureL2capOn: port=" + port);
+    BluetoothServerSocket socket = new BluetoothServerSocket(BluetoothSocket.TYPE_L2CAP, false, false, port, false, false);
+    int errno = socket.mSocket.bindListen();
+    if (port == SOCKET_CHANNEL_AUTO_STATIC_NO_SDP) {
+        int assignedChannel = socket.mSocket.getPort();
+        if (DBG) {
+            Log.d(TAG, "listenUsingInsecureL2capOn: set assigned channel to " + assignedChannel);
+        }
+        socket.setChannel(assignedChannel);
+    }
+    if (errno != 0) {
+        throw new IOException("Error: " + errno);
+    }
+    return socket;
+}

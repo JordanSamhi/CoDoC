@@ -1,0 +1,16 @@
+public static SupplicantNetwork readNetworkFromStream(BufferedReader in){
+    final SupplicantNetwork n = new SupplicantNetwork();
+    String line;
+    try {
+        while (in.ready()) {
+            line = in.readLine();
+            if (line == null || line.startsWith("}")) {
+                break;
+            }
+            n.parseLine(line);
+        }
+    } catch (IOException e) {
+        return null;
+    }
+    return n;
+}

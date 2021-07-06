@@ -1,0 +1,17 @@
+public Uri[] getPinnedSlices(String pkg){
+    verifyCaller(pkg);
+    int callingUser = Binder.getCallingUserHandle().getIdentifier();
+    ArrayList<Uri> ret = new ArrayList<>();
+    synchronized (mLock) {
+        for (PinnedSliceState state : mPinnedSlicesByUri.values()) {
+            if (Objects.equals(pkg, state.getPkg())) {
+                Uri uri = state.getUri();
+                int userId = ContentProvider.getUserIdFromUri(uri, callingUser);
+                if (userId == callingUser) {
+                    ret.add(ContentProvider.getUriWithoutUserId(uri));
+                }
+            }
+        }
+    }
+    return ret.toArray(new Uri[ret.size()]);
+}

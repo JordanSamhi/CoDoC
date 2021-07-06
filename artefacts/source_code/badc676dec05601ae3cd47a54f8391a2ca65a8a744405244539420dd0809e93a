@@ -1,0 +1,39 @@
+public boolean startAlwaysOnVpn(@NonNull KeyStore keyStore){
+    final String alwaysOnPackage;
+    synchronized (this) {
+        alwaysOnPackage = getAlwaysOnPackage();
+        if (alwaysOnPackage == null) {
+            return true;
+        }
+        if (!isAlwaysOnPackageSupported(alwaysOnPackage, keyStore)) {
+            setAlwaysOnPackage(null, false, null, keyStore);
+            return false;
+        }
+        if (getNetworkInfo().isConnected()) {
+            return true;
+        }
+    }
+    final long oldId = Binder.clearCallingIdentity();
+    try {
+        VpnProfile profile = getVpnProfilePrivileged(alwaysOnPackage, keyStore);
+        if (profile != null) {
+            startVpnProfilePrivileged(profile, alwaysOnPackage, null);
+            return true;
+        }
+        DeviceIdleInternal idleController = LocalServices.getService(DeviceIdleInternal.class);
+        idleController.addPowerSaveTempWhitelistApp(Process.myUid(), alwaysOnPackage, VPN_LAUNCH_IDLE_WHITELIST_DURATION_MS, mUserHandle, false, "vpn");
+        Intent serviceIntent = new Intent(VpnConfig.SERVICE_INTERFACE);
+        serviceIntent.setPackage(alwaysOnPackage);
+        try {
+            return mContext.startServiceAsUser(serviceIntent, UserHandle.of(mUserHandle)) != null;
+        } catch (RuntimeException e) {
+            Log.e(TAG, "VpnService " + serviceIntent + " failed to start", e);
+            return false;
+        }
+    } catch (Exception e) {
+        Log.e(TAG, "Error starting always-on VPN", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+}

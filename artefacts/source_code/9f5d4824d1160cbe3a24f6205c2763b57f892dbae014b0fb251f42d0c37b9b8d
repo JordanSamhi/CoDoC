@@ -1,0 +1,56 @@
+public void request(int senderWhat, Handler target, int targetWhat){
+    synchronized (this) {
+        Registration r = null;
+        if (mReg == null) {
+            r = new Registration();
+            r.senderWhat = senderWhat;
+            r.targets = new Handler[1];
+            r.targetWhats = new int[1];
+            r.targets[0] = target;
+            r.targetWhats[0] = targetWhat;
+            mReg = r;
+            r.next = r;
+            r.prev = r;
+        } else {
+            Registration start = mReg;
+            r = start;
+            do {
+                if (r.senderWhat >= senderWhat) {
+                    break;
+                }
+                r = r.next;
+            } while (r != start);
+            int n;
+            if (r.senderWhat != senderWhat) {
+                Registration reg = new Registration();
+                reg.senderWhat = senderWhat;
+                reg.targets = new Handler[1];
+                reg.targetWhats = new int[1];
+                reg.next = r;
+                reg.prev = r.prev;
+                r.prev.next = reg;
+                r.prev = reg;
+                if (r == mReg && r.senderWhat > reg.senderWhat) {
+                    mReg = reg;
+                }
+                r = reg;
+                n = 0;
+            } else {
+                n = r.targets.length;
+                Handler[] oldTargets = r.targets;
+                int[] oldWhats = r.targetWhats;
+                for (int i = 0; i < n; i++) {
+                    if (oldTargets[i] == target && oldWhats[i] == targetWhat) {
+                        return;
+                    }
+                }
+                r.targets = new Handler[n + 1];
+                System.arraycopy(oldTargets, 0, r.targets, 0, n);
+                r.targetWhats = new int[n + 1];
+                System.arraycopy(oldWhats, 0, r.targetWhats, 0, n);
+            }
+            r.targets[n] = target;
+            r.targetWhats[n] = targetWhat;
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public static InputMethodPrivilegedOperations get(IBinder token){
+    synchronized (sLock) {
+        if (sRegistry == null) {
+            return getNopOps();
+        }
+        final WeakReference<InputMethodPrivilegedOperations> wrapperRef = sRegistry.get(token);
+        if (wrapperRef == null) {
+            return getNopOps();
+        }
+        final InputMethodPrivilegedOperations wrapper = wrapperRef.get();
+        if (wrapper == null) {
+            return getNopOps();
+        }
+        return wrapper;
+    }
+}

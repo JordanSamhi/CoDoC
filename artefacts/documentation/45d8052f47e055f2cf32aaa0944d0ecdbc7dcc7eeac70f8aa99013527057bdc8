@@ -1,0 +1,38 @@
+
+     * Override this method to return the children documents contained
+     * in the requested directory. This must return immediate descendants only.
+     *
+     * <p>If your provider is cloud-based, and you have data cached
+     * locally, you may return the local data immediately, setting
+     * {@link DocumentsContract#EXTRA_LOADING} on Cursor extras to indicate that
+     * you are still fetching additional data. Then, when the network data is
+     * available, you can send a change notification to trigger a requery and
+     * return the complete contents. To return a Cursor with extras, you need to
+     * extend and override {@link Cursor#getExtras()}.
+     *
+     * <p>To support change notifications, you must
+     * {@link Cursor#setNotificationUri(ContentResolver, Uri)} with a relevant
+     * Uri, such as
+     * {@link DocumentsContract#buildChildDocumentsUri(String, String)}. Then
+     * you can call {@link ContentResolver#notifyChange(Uri,
+     * android.database.ContentObserver, boolean)} with that Uri to send change
+     * notifications.
+     *
+     * @param parentDocumentId the directory to return children for.
+     * @param projection list of {@link Document} columns to put into the
+     *            cursor. If {@code null} all supported columns should be
+     *            included.
+     * @param queryArgs Bundle containing sorting information or other
+     *            argument useful to the provider. If no sorting
+     *            information is available, default sorting
+     *            will be used, which may be unordered. See
+     *            {@link ContentResolver#QUERY_ARG_SORT_COLUMNS} for
+     *            details.
+     * @throws AuthenticationRequiredException If authentication is required from
+     *            the user (such as login credentials), but it is not guaranteed
+     *            that the client will handle this properly.
+     *
+     * @see DocumentsContract#EXTRA_LOADING
+     * @see DocumentsContract#EXTRA_INFO
+     * @see DocumentsContract#EXTRA_ERROR
+     

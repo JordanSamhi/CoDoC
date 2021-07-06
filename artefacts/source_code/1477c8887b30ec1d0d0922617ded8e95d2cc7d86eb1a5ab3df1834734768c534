@@ -1,0 +1,17 @@
+public void onNotificationRankingUpdated(NotificationEntry entry, @Nullable Integer oldImportance, NotificationUiAdjustment oldAdjustment, NotificationUiAdjustment newAdjustment, NotificationRowContentBinder.InflationCallback callback){
+    if (NotificationUiAdjustment.needReinflate(oldAdjustment, newAdjustment)) {
+        if (entry.rowExists()) {
+            ExpandableNotificationRow row = entry.getRow();
+            row.reset();
+            updateRow(entry, row);
+            inflateContentViews(entry, row, callback);
+        } else {
+        }
+    } else {
+        if (oldImportance != null && entry.getImportance() != oldImportance) {
+            if (entry.rowExists()) {
+                entry.getRow().onNotificationRankingUpdated();
+            }
+        }
+    }
+}

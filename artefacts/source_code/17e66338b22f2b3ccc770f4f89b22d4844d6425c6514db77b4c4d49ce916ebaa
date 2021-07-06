@@ -1,0 +1,9 @@
+public void getDataRegistrationStateResponse_1_4(RadioResponseInfo responseInfo, android.hardware.radio.V1_4.DataRegStateResult dataRegResponse){
+    RILRequest rr = mRil.processResponse(responseInfo);
+    if (rr != null) {
+        if (responseInfo.error == RadioError.NONE) {
+            sendMessageResponse(rr.mResult, dataRegResponse);
+        }
+        mRil.processResponseDone(rr, responseInfo, dataRegResponse);
+    }
+}

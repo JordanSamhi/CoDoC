@@ -1,0 +1,17 @@
+public int getMaxNumOfRegisterableSystemCodes(){
+    try {
+        return sService.getMaxNumOfRegisterableSystemCodes();
+    } catch (RemoteException e) {
+        recoverService();
+        if (sService == null) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return -1;
+        }
+        try {
+            return sService.getMaxNumOfRegisterableSystemCodes();
+        } catch (RemoteException ee) {
+            Log.e(TAG, "Failed to reach CardEmulationService.");
+            return -1;
+        }
+    }
+}

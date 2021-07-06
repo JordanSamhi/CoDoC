@@ -1,0 +1,66 @@
+public Result query(Query query){
+    long currentNonce = (!isDisabledLocal()) ? getCurrentNonce() : NONCE_DISABLED;
+    for (; ; ) {
+        if (currentNonce == NONCE_DISABLED || currentNonce == NONCE_UNSET) {
+            if (DEBUG) {
+                Log.d(TAG, String.format("cache %s %s for %s", cacheName(), currentNonce == NONCE_DISABLED ? "disabled" : "unset", queryToString(query)));
+            }
+            return recompute(query);
+        }
+        final Result cachedResult;
+        synchronized (mLock) {
+            if (currentNonce == mLastSeenNonce) {
+                cachedResult = mCache.get(query);
+                if (cachedResult != null)
+                    mHits++;
+            } else {
+                if (DEBUG) {
+                    Log.d(TAG, String.format("clearing cache %s because nonce changed [%s] -> [%s]", cacheName(), mLastSeenNonce, currentNonce));
+                }
+                mCache.clear();
+                mLastSeenNonce = currentNonce;
+                cachedResult = null;
+            }
+        }
+        if (cachedResult != null) {
+            final Result refreshedResult = refresh(cachedResult, query);
+            if (refreshedResult != cachedResult) {
+                if (DEBUG) {
+                    Log.d(TAG, "cache refresh for " + cacheName() + " " + queryToString(query));
+                }
+                final long afterRefreshNonce = getCurrentNonce();
+                if (currentNonce != afterRefreshNonce) {
+                    currentNonce = afterRefreshNonce;
+                    if (DEBUG) {
+                        Log.d(TAG, String.format("restarting %s %s because nonce changed in refresh", cacheName(), queryToString(query)));
+                    }
+                    continue;
+                }
+                synchronized (mLock) {
+                    if (currentNonce != mLastSeenNonce) {
+                    } else if (refreshedResult == null) {
+                        mCache.remove(query);
+                    } else {
+                        mCache.put(query, refreshedResult);
+                    }
+                }
+                return maybeCheckConsistency(query, refreshedResult);
+            }
+            if (DEBUG) {
+                Log.d(TAG, "cache hit for " + cacheName() + " " + queryToString(query));
+            }
+            return maybeCheckConsistency(query, cachedResult);
+        }
+        if (DEBUG) {
+            Log.d(TAG, "cache miss for " + cacheName() + " " + queryToString(query));
+        }
+        final Result result = recompute(query);
+        synchronized (mLock) {
+            if (mLastSeenNonce == currentNonce && result != null) {
+                mCache.put(query, result);
+            }
+            mMisses++;
+        }
+        return maybeCheckConsistency(query, result);
+    }
+}

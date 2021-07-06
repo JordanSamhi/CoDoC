@@ -1,0 +1,12 @@
+public boolean scan(@NonNull String ifaceName, @WifiAnnotations.ScanType int scanType, Set<Integer> freqs, List<String> hiddenNetworkSSIDs){
+    List<byte[]> hiddenNetworkSsidsArrays = new ArrayList<>();
+    for (String hiddenNetworkSsid : hiddenNetworkSSIDs) {
+        try {
+            hiddenNetworkSsidsArrays.add(NativeUtil.byteArrayFromArrayList(NativeUtil.decodeSsid(hiddenNetworkSsid)));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + hiddenNetworkSsid, e);
+            continue;
+        }
+    }
+    return mWifiCondManager.startScan(ifaceName, scanType, freqs, hiddenNetworkSsidsArrays);
+}

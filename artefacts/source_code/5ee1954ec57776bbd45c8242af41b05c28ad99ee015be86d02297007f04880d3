@@ -1,0 +1,16 @@
+public final void addDataType(String type) throws MalformedMimeTypeException{
+    processMimeType(type, (internalType, isPartial) -> {
+        if (mDataTypes == null) {
+            mDataTypes = new ArrayList<>();
+        }
+        if (mStaticDataTypes == null) {
+            mStaticDataTypes = new ArrayList<>();
+        }
+        if (mDataTypes.contains(internalType)) {
+            return;
+        }
+        mDataTypes.add(internalType.intern());
+        mStaticDataTypes.add(internalType.intern());
+        mHasStaticPartialTypes = mHasStaticPartialTypes || isPartial;
+    });
+}

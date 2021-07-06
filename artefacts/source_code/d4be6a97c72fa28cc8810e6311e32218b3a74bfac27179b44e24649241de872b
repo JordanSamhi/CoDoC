@@ -1,0 +1,14 @@
+public AccountManagerFuture<Bundle> finishSessionAsUser(final Bundle sessionBundle, final Activity activity, final UserHandle userHandle, AccountManagerCallback<Bundle> callback, Handler handler){
+    if (sessionBundle == null) {
+        throw new IllegalArgumentException("sessionBundle is null");
+    }
+    final Bundle appInfo = new Bundle();
+    appInfo.putString(KEY_ANDROID_PACKAGE_NAME, mContext.getPackageName());
+    return new AmsTask(activity, handler, callback) {
+
+        @Override
+        public void doWork() throws RemoteException {
+            mService.finishSessionAsUser(mResponse, sessionBundle, activity != null, appInfo, userHandle.getIdentifier());
+        }
+    }.start();
+}

@@ -1,0 +1,12 @@
+public void handleMessage(Message msg){
+    switch(msg.what) {
+        case EVENT_BIND_DATA_SERVICE:
+            rebindDataService();
+            break;
+        case EVENT_WATCHDOG_TIMEOUT:
+            handleRequestUnresponded((CellularDataServiceCallback) msg.obj);
+            break;
+        default:
+            loge("Unhandled event " + msg.what);
+    }
+}

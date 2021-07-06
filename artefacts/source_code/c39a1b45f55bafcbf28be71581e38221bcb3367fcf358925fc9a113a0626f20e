@@ -1,0 +1,10 @@
+public void sendInputEvent(InputEvent e, Object token, boolean predispatch, FinishedInputEventCallback callback){
+    ActiveInputEvent event = obtainActiveInputEvent(token, callback);
+    long id;
+    if (e instanceof KeyEvent) {
+        id = nativeSendKeyEvent(mPtr, (KeyEvent) e, predispatch);
+    } else {
+        id = nativeSendMotionEvent(mPtr, (MotionEvent) e);
+    }
+    mActiveEventArray.put(id, event);
+}

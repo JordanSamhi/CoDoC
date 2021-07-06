@@ -1,0 +1,14 @@
+public void onFullBackup(FullBackupDataOutput output) throws IOException{
+    if (mVolumes != null) {
+        if (DEBUG)
+            Slog.i(TAG, "Backing up " + mVolumes.length + " shared volumes");
+        ArraySet<String> externalFilesDirFilter = new ArraySet();
+        final File externalAndroidRoot = new File(Environment.getExternalStorageDirectory(), Environment.DIRECTORY_ANDROID);
+        externalFilesDirFilter.add(externalAndroidRoot.getCanonicalPath());
+        for (int i = 0; i < mVolumes.length; i++) {
+            StorageVolume v = mVolumes[i];
+            String domain = FullBackup.SHARED_PREFIX + i;
+            fullBackupFileTree(null, domain, v.getPath(), null, externalFilesDirFilter, output);
+        }
+    }
+}

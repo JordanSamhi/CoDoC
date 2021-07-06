@@ -1,0 +1,10 @@
+public static boolean hasServiceCrashed(String packageName, String serviceName, List<AccessibilityServiceInfo> installedServiceInfos){
+    for (int i = 0; i < installedServiceInfos.size(); i++) {
+        final AccessibilityServiceInfo accessibilityServiceInfo = installedServiceInfos.get(i);
+        final ServiceInfo serviceInfo = installedServiceInfos.get(i).getResolveInfo().serviceInfo;
+        if (TextUtils.equals(serviceInfo.packageName, packageName) && TextUtils.equals(serviceInfo.name, serviceName)) {
+            return accessibilityServiceInfo.crashed;
+        }
+    }
+    return false;
+}

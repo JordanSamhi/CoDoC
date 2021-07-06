@@ -1,0 +1,15 @@
+public void execPerConnectionSQL(@NonNull String sql, @Nullable Object[] bindArgs) throws SQLException{
+    Objects.requireNonNull(sql);
+    bindArgs = DatabaseUtils.deepCopyOf(bindArgs);
+    synchronized (mLock) {
+        throwIfNotOpenLocked();
+        final int index = mConfigurationLocked.perConnectionSql.size();
+        mConfigurationLocked.perConnectionSql.add(Pair.create(sql, bindArgs));
+        try {
+            mConnectionPoolLocked.reconfigure(mConfigurationLocked);
+        } catch (RuntimeException ex) {
+            mConfigurationLocked.perConnectionSql.remove(index);
+            throw ex;
+        }
+    }
+}

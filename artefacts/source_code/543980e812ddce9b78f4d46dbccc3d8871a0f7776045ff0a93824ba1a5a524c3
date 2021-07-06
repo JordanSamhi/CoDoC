@@ -1,0 +1,18 @@
+public void reportConnectionEvent(byte event){
+    switch(event) {
+        case BaseWifiDiagnostics.CONNECTION_EVENT_STARTED:
+            enableTracing();
+            return;
+        case BaseWifiDiagnostics.CONNECTION_EVENT_SUCCEEDED:
+            disableTracing();
+            return;
+        case BaseWifiDiagnostics.CONNECTION_EVENT_FAILED:
+            disableTracing();
+            mLastMileLogForLastFailure = readTrace();
+            return;
+        case BaseWifiDiagnostics.CONNECTION_EVENT_TIMEOUT:
+            disableTracing();
+            mLastMileLogForLastFailure = readTrace();
+            return;
+    }
+}

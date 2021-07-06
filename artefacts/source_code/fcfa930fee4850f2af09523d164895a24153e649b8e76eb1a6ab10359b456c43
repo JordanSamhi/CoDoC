@@ -1,0 +1,21 @@
+public boolean setColorMode(int colorMode, float[] nightDisplayMatrix, int compositionColorMode){
+    if (colorMode == ColorDisplayManager.COLOR_MODE_NATURAL) {
+        applySaturation(COLOR_SATURATION_NATURAL);
+        setDisplayColor(DISPLAY_COLOR_MANAGED, compositionColorMode);
+    } else if (colorMode == ColorDisplayManager.COLOR_MODE_BOOSTED) {
+        applySaturation(COLOR_SATURATION_BOOSTED);
+        setDisplayColor(DISPLAY_COLOR_MANAGED, compositionColorMode);
+    } else if (colorMode == ColorDisplayManager.COLOR_MODE_SATURATED) {
+        applySaturation(COLOR_SATURATION_NATURAL);
+        setDisplayColor(DISPLAY_COLOR_UNMANAGED, compositionColorMode);
+    } else if (colorMode == ColorDisplayManager.COLOR_MODE_AUTOMATIC) {
+        applySaturation(COLOR_SATURATION_NATURAL);
+        setDisplayColor(DISPLAY_COLOR_ENHANCED, compositionColorMode);
+    } else if (colorMode >= ColorDisplayManager.VENDOR_COLOR_MODE_RANGE_MIN && colorMode <= ColorDisplayManager.VENDOR_COLOR_MODE_RANGE_MAX) {
+        applySaturation(COLOR_SATURATION_NATURAL);
+        setDisplayColor(colorMode, compositionColorMode);
+    }
+    setColorMatrix(LEVEL_COLOR_MATRIX_NIGHT_DISPLAY, nightDisplayMatrix);
+    updateConfiguration();
+    return true;
+}

@@ -1,0 +1,15 @@
+public void generateOpenNetworkConfig(){
+    if (!isOpenNetwork()) {
+        throw new IllegalStateException();
+    }
+    if (mConfig != null)
+        return;
+    mConfig = new WifiConfiguration();
+    mConfig.SSID = AccessPoint.convertToQuotedString(ssid);
+    if (security == SECURITY_NONE) {
+        mConfig.allowedKeyManagement.set(KeyMgmt.NONE);
+    } else {
+        mConfig.allowedKeyManagement.set(KeyMgmt.OWE);
+        mConfig.requirePmf = true;
+    }
+}

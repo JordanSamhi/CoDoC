@@ -1,0 +1,29 @@
+
+     * Sets the number of items to prefetch in
+     * {@link #collectInitialPrefetchPositions(int, LayoutPrefetchRegistry)}, which defines
+     * how many inner items should be prefetched when this LayoutManager's RecyclerView
+     * is nested inside another RecyclerView.
+     *
+     * <p>Set this value to the number of items this inner LayoutManager will display when it is
+     * first scrolled into the viewport. RecyclerView will attempt to prefetch that number of items
+     * so they are ready, avoiding jank as the inner RecyclerView is scrolled into the viewport.</p>
+     *
+     * <p>For example, take a vertically scrolling RecyclerView with horizontally scrolling inner
+     * RecyclerViews. The rows always have 4 items visible in them (or 5 if not aligned). Passing
+     * <code>4</code> to this method for each inner RecyclerView's LinearLayoutManager will enable
+     * RecyclerView's prefetching feature to do create/bind work for 4 views within a row early,
+     * before it is scrolled on screen, instead of just the default 2.</p>
+     *
+     * <p>Calling this method does nothing unless the LayoutManager is in a RecyclerView
+     * nested in another RecyclerView.</p>
+     *
+     * <p class="note"><strong>Note:</strong> Setting this value to be larger than the number of
+     * views that will be visible in this view can incur unnecessary bind work, and an increase to
+     * the number of Views created and in active use.</p>
+     *
+     * @param itemCount Number of items to prefetch
+     *
+     * @see #isItemPrefetchEnabled()
+     * @see #getInitialItemPrefetchCount()
+     * @see #collectInitialPrefetchPositions(int, LayoutPrefetchRegistry)
+     

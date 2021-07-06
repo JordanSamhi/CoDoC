@@ -1,0 +1,13 @@
+public List<BluetoothDevice> getDevicesMatchingConnectionStates(int[] states){
+    final IBluetoothHidDevice service = getService();
+    if (service != null) {
+        try {
+            return service.getDevicesMatchingConnectionStates(states);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+    }
+    return new ArrayList<>();
+}

@@ -1,0 +1,14 @@
+public void outputDirtyFlags(String indent, boolean clear, int clearMask){
+    Log.d(VIEW_LOG_TAG, indent + this + "             DIRTY(" + (mPrivateFlags & View.PFLAG_DIRTY_MASK) + ") DRAWN(" + (mPrivateFlags & PFLAG_DRAWN) + ")" + " CACHE_VALID(" + (mPrivateFlags & View.PFLAG_DRAWING_CACHE_VALID) + ") INVALIDATED(" + (mPrivateFlags & PFLAG_INVALIDATED) + ")");
+    if (clear) {
+        mPrivateFlags &= clearMask;
+    }
+    if (this instanceof ViewGroup) {
+        ViewGroup parent = (ViewGroup) this;
+        final int count = parent.getChildCount();
+        for (int i = 0; i < count; i++) {
+            final View child = parent.getChildAt(i);
+            child.outputDirtyFlags(indent + "  ", clear, clearMask);
+        }
+    }
+}

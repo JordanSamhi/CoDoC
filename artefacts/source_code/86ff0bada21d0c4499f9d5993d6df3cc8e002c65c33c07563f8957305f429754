@@ -1,0 +1,8 @@
+public void writeOnImsCommand(int phoneId, ImsCallSession session, int command){
+    InProgressCallSession callSession = mInProgressCallSessions.get(phoneId);
+    if (callSession == null) {
+        Rlog.e(TAG, "Call session is missing");
+    } else {
+        callSession.addEvent(new CallSessionEventBuilder(TelephonyCallSession.Event.Type.IMS_COMMAND).setCallIndex(getCallId(session)).setImsCommand(command));
+    }
+}

@@ -1,0 +1,42 @@
+public ParceledListSlice<WifiConfiguration> getConfiguredNetworks(String packageName, String featureId){
+    enforceAccessPermission();
+    int callingUid = Binder.getCallingUid();
+    if (callingUid != Process.SHELL_UID && callingUid != Process.ROOT_UID) {
+        long ident = Binder.clearCallingIdentity();
+        try {
+            mWifiPermissionsUtil.enforceCanAccessScanResults(packageName, featureId, callingUid, null);
+        } catch (SecurityException e) {
+            Log.e(TAG, "Permission violation - getConfiguredNetworks not allowed for uid=" + callingUid + ", packageName=" + packageName + ", reason=" + e);
+            return new ParceledListSlice<>(new ArrayList<>());
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+    boolean isTargetSdkLessThanQOrPrivileged = isTargetSdkLessThanQOrPrivileged(packageName, Binder.getCallingPid(), callingUid);
+    boolean isCarrierApp = mWifiInjector.makeTelephonyManager().checkCarrierPrivilegesForPackageAnyPhone(packageName) == TelephonyManager.CARRIER_PRIVILEGE_STATUS_HAS_ACCESS;
+    if (!isTargetSdkLessThanQOrPrivileged && !isCarrierApp) {
+        mLog.info("getConfiguredNetworks not allowed for uid=%").c(callingUid).flush();
+        return new ParceledListSlice<>(new ArrayList<>());
+    }
+    if (mVerboseLoggingEnabled) {
+        mLog.info("getConfiguredNetworks uid=%").c(callingUid).flush();
+    }
+    int targetConfigUid = Process.INVALID_UID;
+    if (isPrivileged(getCallingPid(), callingUid) || isDeviceOrProfileOwner(callingUid, packageName)) {
+        targetConfigUid = Process.WIFI_UID;
+    } else if (isCarrierApp) {
+        targetConfigUid = callingUid;
+    }
+    int finalTargetConfigUid = targetConfigUid;
+    List<WifiConfiguration> configs = mWifiThreadRunner.call(() -> mWifiConfigManager.getSavedNetworks(finalTargetConfigUid), Collections.emptyList());
+    if (isTargetSdkLessThanQOrPrivileged) {
+        return new ParceledListSlice<>(configs);
+    }
+    List<WifiConfiguration> creatorConfigs = new ArrayList<>();
+    for (WifiConfiguration config : configs) {
+        if (config.creatorUid == callingUid) {
+            creatorConfigs.add(config);
+        }
+    }
+    return new ParceledListSlice<>(creatorConfigs);
+}

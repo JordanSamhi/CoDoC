@@ -1,0 +1,16 @@
+public void setAutofilled(boolean isAutofilled, boolean hideHighlight){
+    boolean wasChanged = isAutofilled != isAutofilled();
+    if (wasChanged) {
+        if (isAutofilled) {
+            mPrivateFlags3 |= PFLAG3_IS_AUTOFILLED;
+        } else {
+            mPrivateFlags3 &= ~PFLAG3_IS_AUTOFILLED;
+        }
+        if (hideHighlight) {
+            mPrivateFlags4 |= PFLAG4_AUTOFILL_HIDE_HIGHLIGHT;
+        } else {
+            mPrivateFlags4 &= ~PFLAG4_AUTOFILL_HIDE_HIGHLIGHT;
+        }
+        invalidate();
+    }
+}

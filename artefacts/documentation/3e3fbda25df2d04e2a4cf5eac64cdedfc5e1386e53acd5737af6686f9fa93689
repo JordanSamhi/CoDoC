@@ -1,0 +1,18 @@
+
+         * Returns {@code true} if this session is an active staged session.
+         *
+         * We consider a session active if it has been committed and it is either pending
+         * verification, or will be applied at next reboot.
+         *
+         * <p>Staged session is active iff:
+         * <ul>
+         *     <li>It is committed, i.e. {@link SessionInfo#isCommitted()} is {@code true}, and
+         *     <li>it is not applied, i.e. {@link SessionInfo#isStagedSessionApplied()} is {@code
+         *     false}, and
+         *     <li>it is not failed, i.e. {@link SessionInfo#isStagedSessionFailed()} is
+         *     {@code false}.
+         * </ul>
+         *
+         * <p>In case of a multi-package session, reasoning above is applied to the parent session,
+         * since that is the one that should have been {@link Session#commit committed}.
+         

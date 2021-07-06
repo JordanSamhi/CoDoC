@@ -1,0 +1,9 @@
+public void removePasspointConfiguration(String fqdn){
+    try {
+        if (!mService.removePasspointConfiguration(fqdn, mContext.getOpPackageName())) {
+            throw new IllegalArgumentException();
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

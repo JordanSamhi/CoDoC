@@ -1,0 +1,15 @@
+public static Bitmap loadThumbnail(ContentResolver resolver, Uri uri, Size size) throws IOException{
+    try (ContentProviderClient client = resolver.acquireContentProviderClient(uri)) {
+        final Bundle opts = new Bundle();
+        opts.putParcelable(ContentResolver.EXTRA_SIZE, Point.convert(size));
+        return ImageDecoder.decodeBitmap(ImageDecoder.createSource(() -> {
+            return client.openTypedAssetFile(uri, "image/*", opts, null);
+        }), (ImageDecoder decoder, ImageInfo info, Source source) -> {
+            decoder.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);
+            final int sample = calculateSampleSize(info.getSize(), size);
+            if (sample > 1) {
+                decoder.setTargetSampleSize(sample);
+            }
+        });
+    }
+}

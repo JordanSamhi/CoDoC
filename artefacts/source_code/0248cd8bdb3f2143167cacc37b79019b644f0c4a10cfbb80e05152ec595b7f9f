@@ -1,0 +1,14 @@
+public void handleServerValidationFailure(int sessionId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Server Validation failure received in " + mState);
+    }
+    if (sessionId != mCurrentSessionId) {
+        Log.w(TAG, "Expected server validation callback for currentSessionId=" + mCurrentSessionId);
+        return;
+    }
+    if (mState != STATE_OSU_SERVER_CONNECTING) {
+        Log.wtf(TAG, "Server Validation Failure unhandled in mState=" + mState);
+        return;
+    }
+    resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_SERVER_VALIDATION);
+}

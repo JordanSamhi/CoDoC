@@ -1,0 +1,22 @@
+public void writeIncomingSmsError(int phoneId, boolean smsOverIms, int result){
+    logv("Incoming SMS error = " + result);
+    int smsError = SmsManager.RESULT_ERROR_GENERIC_FAILURE;
+    switch(result) {
+        case Intents.RESULT_SMS_HANDLED:
+            return;
+        case Intents.RESULT_SMS_OUT_OF_MEMORY:
+            smsError = SmsManager.RESULT_NO_MEMORY;
+            break;
+        case Intents.RESULT_SMS_UNSUPPORTED:
+            smsError = SmsManager.RESULT_REQUEST_NOT_SUPPORTED;
+            break;
+        case Intents.RESULT_SMS_GENERIC_ERROR:
+        default:
+            smsError = SmsManager.RESULT_ERROR_GENERIC_FAILURE;
+            break;
+    }
+    InProgressSmsSession smsSession = startNewSmsSession(phoneId);
+    SmsSessionEventBuilder eventBuilder = new SmsSessionEventBuilder(SmsSession.Event.Type.SMS_RECEIVED).setErrorCode(smsError).setTech(smsOverIms ? SmsSession.Event.Tech.SMS_IMS : SmsSession.Event.Tech.SMS_GSM);
+    smsSession.addEvent(eventBuilder);
+    finishSmsSession(smsSession);
+}

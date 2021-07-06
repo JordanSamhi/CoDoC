@@ -1,0 +1,12 @@
+public int getCallStateForSlot(int slotIndex){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return CALL_STATE_IDLE;
+        return telephony.getCallStateForSlot(slotIndex);
+    } catch (RemoteException ex) {
+        return CALL_STATE_IDLE;
+    } catch (NullPointerException ex) {
+        return CALL_STATE_IDLE;
+    }
+}

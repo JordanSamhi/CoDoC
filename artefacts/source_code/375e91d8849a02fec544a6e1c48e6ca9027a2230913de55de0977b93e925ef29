@@ -1,0 +1,22 @@
+public void query(@Nullable Network network, @NonNull String domain, @QueryType int nsType, @QueryFlag int flags, @NonNull @CallbackExecutor Executor executor, @Nullable CancellationSignal cancellationSignal, @NonNull Callback<? super List<InetAddress>> callback){
+    if (cancellationSignal != null && cancellationSignal.isCanceled()) {
+        return;
+    }
+    final Object lock = new Object();
+    final FileDescriptor queryfd;
+    final Network queryNetwork;
+    try {
+        queryNetwork = (network != null) ? network : getDnsNetwork();
+        queryfd = resNetworkQuery(queryNetwork.getNetIdForResolv(), domain, CLASS_IN, nsType, flags);
+    } catch (ErrnoException e) {
+        executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, e)));
+        return;
+    }
+    final InetAddressAnswerAccumulator accumulator = new InetAddressAnswerAccumulator(queryNetwork, 1, callback);
+    synchronized (lock) {
+        registerFDListener(executor, queryfd, accumulator, cancellationSignal, lock);
+        if (cancellationSignal == null)
+            return;
+        addCancellationSignal(cancellationSignal, queryfd, lock);
+    }
+}

@@ -1,0 +1,17 @@
+public void setAssistHintVisible(boolean visible){
+    if (!mHandler.getLooper().isCurrentThread()) {
+        mHandler.post(() -> setAssistHintVisible(visible));
+        return;
+    }
+    if (mAssistHintBlocked && visible) {
+        if (DEBUG) {
+            Log.v(TAG, "Assist hint blocked, cannot make it visible");
+        }
+        return;
+    }
+    if (mAssistHintVisible != visible) {
+        mAssistHintVisible = visible;
+        fade(mAssistHintLeft, mAssistHintVisible, true);
+        fade(mAssistHintRight, mAssistHintVisible, false);
+    }
+}

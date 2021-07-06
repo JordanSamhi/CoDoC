@@ -1,0 +1,27 @@
+public RenderSession createSession(SessionParams params){
+    try {
+        Result lastResult;
+        RenderSessionImpl scene = new RenderSessionImpl(params);
+        try {
+            prepareThread();
+            lastResult = scene.init(params.getTimeout());
+            if (lastResult.isSuccess()) {
+                lastResult = scene.inflate();
+                boolean doNotRenderOnCreate = Boolean.TRUE.equals(params.getFlag(RenderParamsFlags.FLAG_DO_NOT_RENDER_ON_CREATE));
+                if (lastResult.isSuccess() && !doNotRenderOnCreate) {
+                    lastResult = scene.render(true);
+                }
+            }
+        } finally {
+            scene.release();
+            cleanupThread();
+        }
+        return new BridgeRenderSession(scene, lastResult);
+    } catch (Throwable t) {
+        Throwable t2 = t;
+        while (t2.getCause() != null) {
+            t2 = t2.getCause();
+        }
+        return new BridgeRenderSession(null, ERROR_UNKNOWN.createResult(t2.getMessage(), t));
+    }
+}

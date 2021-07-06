@@ -1,0 +1,11 @@
+public String simpleQueryForString(){
+    acquireReference();
+    try {
+        return getSession().executeForString(getSql(), getBindArgs(), getConnectionFlags(), null);
+    } catch (SQLiteDatabaseCorruptException ex) {
+        onCorruption();
+        throw ex;
+    } finally {
+        releaseReference();
+    }
+}

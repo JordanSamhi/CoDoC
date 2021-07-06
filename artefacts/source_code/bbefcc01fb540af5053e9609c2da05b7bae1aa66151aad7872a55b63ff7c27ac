@@ -1,0 +1,25 @@
+public void resolveResourceStrings(){
+    final ShortcutService s = mShortcutUser.mService;
+    List<ShortcutInfo> changedShortcuts = null;
+    Resources publisherRes = null;
+    for (int i = mShortcuts.size() - 1; i >= 0; i--) {
+        final ShortcutInfo si = mShortcuts.valueAt(i);
+        if (si.hasStringResources()) {
+            if (publisherRes == null) {
+                publisherRes = getPackageResources();
+                if (publisherRes == null) {
+                    break;
+                }
+            }
+            si.resolveResourceStrings(publisherRes);
+            si.setTimestamp(s.injectCurrentTimeMillis());
+            if (changedShortcuts == null) {
+                changedShortcuts = new ArrayList<>(1);
+            }
+            changedShortcuts.add(si);
+        }
+    }
+    if (!CollectionUtils.isEmpty(changedShortcuts)) {
+        s.packageShortcutsChanged(getPackageName(), getPackageUserId(), changedShortcuts, null);
+    }
+}

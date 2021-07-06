@@ -1,0 +1,67 @@
+public boolean update(DriverCall dc){
+    GsmCdmaCall newParent;
+    boolean changed = false;
+    boolean wasConnectingInOrOut = isConnectingInOrOut();
+    boolean wasHolding = (getState() == GsmCdmaCall.State.HOLDING);
+    newParent = parentFromDCState(dc.state);
+    if (Phone.DEBUG_PHONE)
+        log("parent= " + mParent + ", newParent= " + newParent);
+    if (isPhoneTypeGsm() && mOrigConnection != null) {
+        if (Phone.DEBUG_PHONE)
+            log("update: mOrigConnection is not null");
+    } else if (isIncoming()) {
+        if (!equalsBaseDialString(mAddress, dc.number) && (!mNumberConverted || !equalsBaseDialString(mConvertedNumber, dc.number))) {
+            if (Phone.DEBUG_PHONE)
+                log("update: phone # changed!");
+            mAddress = dc.number;
+            changed = true;
+        }
+    }
+    int newAudioQuality = getAudioQualityFromDC(dc.audioQuality);
+    if (getAudioQuality() != newAudioQuality) {
+        if (Phone.DEBUG_PHONE) {
+            log("update: audioQuality # changed!:  " + (newAudioQuality == Connection.AUDIO_QUALITY_HIGH_DEFINITION ? "high" : "standard"));
+        }
+        setAudioQuality(newAudioQuality);
+        changed = true;
+    }
+    if (dc.audioQuality != mAudioCodec) {
+        mAudioCodec = dc.audioQuality;
+        mMetrics.writeAudioCodecGsmCdma(mOwner.getPhone().getPhoneId(), dc.audioQuality);
+        mOwner.getPhone().getVoiceCallSessionStats().onAudioCodecChanged(this, dc.audioQuality);
+    }
+    if (TextUtils.isEmpty(dc.name)) {
+        if (!TextUtils.isEmpty(mCnapName)) {
+            changed = true;
+            mCnapName = "";
+        }
+    } else if (!dc.name.equals(mCnapName)) {
+        changed = true;
+        mCnapName = dc.name;
+    }
+    if (Phone.DEBUG_PHONE)
+        log("--dssds----" + mCnapName);
+    mCnapNamePresentation = dc.namePresentation;
+    mNumberPresentation = dc.numberPresentation;
+    if (newParent != mParent) {
+        if (mParent != null) {
+            mParent.detach(this);
+        }
+        newParent.attach(this, dc);
+        mParent = newParent;
+        changed = true;
+    } else {
+        boolean parentStateChange;
+        parentStateChange = mParent.update(this, dc);
+        changed = changed || parentStateChange;
+    }
+    if (Phone.DEBUG_PHONE)
+        log("update: parent=" + mParent + ", hasNewParent=" + (newParent != mParent) + ", wasConnectingInOrOut=" + wasConnectingInOrOut + ", wasHolding=" + wasHolding + ", isConnectingInOrOut=" + isConnectingInOrOut() + ", changed=" + changed);
+    if (wasConnectingInOrOut && !isConnectingInOrOut()) {
+        onConnectedInOrOut();
+    }
+    if (changed && !wasHolding && (getState() == GsmCdmaCall.State.HOLDING)) {
+        onStartedHolding();
+    }
+    return changed;
+}

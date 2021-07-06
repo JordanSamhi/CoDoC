@@ -1,0 +1,15 @@
+public final FragmentManager getChildFragmentManager(){
+    if (mChildFragmentManager == null) {
+        instantiateChildFragmentManager();
+        if (mState >= RESUMED) {
+            mChildFragmentManager.dispatchResume();
+        } else if (mState >= STARTED) {
+            mChildFragmentManager.dispatchStart();
+        } else if (mState >= ACTIVITY_CREATED) {
+            mChildFragmentManager.dispatchActivityCreated();
+        } else if (mState >= CREATED) {
+            mChildFragmentManager.dispatchCreate();
+        }
+    }
+    return mChildFragmentManager;
+}

@@ -1,0 +1,18 @@
+public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoInternal(info);
+    if (getAccessibilityNodeProvider() != null) {
+        return;
+    }
+    if (mAttachInfo != null) {
+        final ArrayList<View> childrenForAccessibility = mAttachInfo.mTempArrayList;
+        childrenForAccessibility.clear();
+        addChildrenForAccessibility(childrenForAccessibility);
+        final int childrenForAccessibilityCount = childrenForAccessibility.size();
+        for (int i = 0; i < childrenForAccessibilityCount; i++) {
+            final View child = childrenForAccessibility.get(i);
+            info.addChildUnchecked(child);
+        }
+        childrenForAccessibility.clear();
+    }
+    info.setAvailableExtraData(Collections.singletonList(AccessibilityNodeInfo.EXTRA_DATA_RENDERING_INFO_KEY));
+}

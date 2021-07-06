@@ -1,0 +1,10 @@
+public void setMasterVolumeMuted(@NonNull ComponentName admin, boolean on){
+    throwIfParentInstance("setMasterVolumeMuted");
+    if (mService != null) {
+        try {
+            mService.setMasterVolumeMuted(admin, on);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

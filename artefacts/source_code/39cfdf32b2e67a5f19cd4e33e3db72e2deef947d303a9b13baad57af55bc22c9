@@ -1,0 +1,8 @@
+public void resetCarrierKeysForImsiEncryption(@NonNull WifiConfiguration config){
+    int subId = getBestMatchSubscriptionId(config);
+    if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+        return;
+    }
+    TelephonyManager specifiedTm = mTelephonyManager.createForSubscriptionId(subId);
+    specifiedTm.resetCarrierKeysForImsiEncryption();
+}

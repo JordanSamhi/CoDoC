@@ -1,0 +1,11 @@
+public List<String> getPermittedAccessibilityServices(int userId){
+    throwIfParentInstance("getPermittedAccessibilityServices");
+    if (mService != null) {
+        try {
+            return mService.getPermittedAccessibilityServicesForUser(userId);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

@@ -1,0 +1,7 @@
+public boolean requestPinShortcut(@NonNull ShortcutInfo shortcut, @Nullable IntentSender resultIntent){
+    try {
+        return mService.requestPinShortcut(mContext.getPackageName(), shortcut, resultIntent, injectMyUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

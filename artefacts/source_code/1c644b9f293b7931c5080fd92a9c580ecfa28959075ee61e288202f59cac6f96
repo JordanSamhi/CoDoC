@@ -1,0 +1,10 @@
+public UdpEncapsulationSocket openUdpEncapsulationSocket(int port) throws IOException, ResourceUnavailableException{
+    if (port == 0) {
+        throw new IllegalArgumentException("Specified port must be a valid port number!");
+    }
+    try {
+        return new UdpEncapsulationSocket(mService, port);
+    } catch (ServiceSpecificException e) {
+        throw rethrowCheckedExceptionFromServiceSpecificException(e);
+    }
+}

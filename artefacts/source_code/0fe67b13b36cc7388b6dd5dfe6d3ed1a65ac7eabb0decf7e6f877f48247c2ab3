@@ -1,0 +1,8 @@
+public void removeAnnouncementListener(@NonNull Announcement.OnListUpdatedListener listener){
+    Objects.requireNonNull(listener);
+    synchronized (mAnnouncementListeners) {
+        ICloseHandle closeHandle = mAnnouncementListeners.remove(listener);
+        if (closeHandle != null)
+            Utils.close(closeHandle);
+    }
+}

@@ -1,0 +1,11 @@
+public boolean sendMediaKeyEvent(KeyEvent keyEvent) throws IllegalArgumentException{
+    if (!KeyEvent.isMediaSessionKey(keyEvent.getKeyCode())) {
+        throw new IllegalArgumentException("not a media key event");
+    }
+    synchronized (mInfoLock) {
+        if (mCurrentSession != null) {
+            return mCurrentSession.dispatchMediaButtonEvent(keyEvent);
+        }
+        return false;
+    }
+}

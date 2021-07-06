@@ -1,0 +1,10 @@
+public int read() throws IOException{
+    int ret;
+    synchronized (readMonitor) {
+        FileDescriptor myFd = fd;
+        if (myFd == null)
+            throw new IOException("socket closed");
+        ret = read_native(myFd);
+        return ret;
+    }
+}

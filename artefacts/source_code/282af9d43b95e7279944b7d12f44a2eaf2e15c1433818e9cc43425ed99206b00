@@ -1,0 +1,9 @@
+public void setContentCaptureEnabledLocked(boolean enabled){
+    try {
+        final Bundle extras = new Bundle();
+        extras.putBoolean(MainContentCaptureSession.EXTRA_ENABLED_STATE, true);
+        mSessionStateReceiver.send(enabled ? RESULT_CODE_TRUE : RESULT_CODE_FALSE, extras);
+    } catch (RemoteException e) {
+        Slog.w(TAG, "Error async reporting result to client: " + e);
+    }
+}

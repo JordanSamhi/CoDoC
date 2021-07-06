@@ -1,0 +1,13 @@
+public static String getCarrierNameFromMccMnc(@NonNull Context context, String mccmnc){
+    try (Cursor cursor = getCursorForMccMnc(context, mccmnc)) {
+        if (cursor == null || !cursor.moveToNext())
+            return null;
+        if (VDBG) {
+            logd("[getCarrierNameFromMccMnc]- " + cursor.getCount() + " Records(s) in DB" + " mccmnc: " + mccmnc);
+        }
+        return cursor.getString(cursor.getColumnIndex(CarrierId.CARRIER_NAME));
+    } catch (Exception ex) {
+        loge("[getCarrierNameFromMccMnc]- ex: " + ex);
+    }
+    return null;
+}

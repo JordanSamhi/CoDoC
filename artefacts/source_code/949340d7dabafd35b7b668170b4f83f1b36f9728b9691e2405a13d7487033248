@@ -1,0 +1,25 @@
+public void setRuntimePermissionGrantStateByDeviceAdmin(@NonNull String callerPackageName, @NonNull String packageName, @NonNull String permission, @PermissionGrantState int grantState, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
+    checkStringNotEmpty(callerPackageName);
+    checkStringNotEmpty(packageName);
+    checkStringNotEmpty(permission);
+    checkArgument(grantState == PERMISSION_GRANT_STATE_GRANTED || grantState == PERMISSION_GRANT_STATE_DENIED || grantState == PERMISSION_GRANT_STATE_DEFAULT);
+    checkNotNull(executor);
+    checkNotNull(callback);
+    mRemoteService.postAsync(service -> {
+        AndroidFuture<Boolean> setRuntimePermissionGrantStateResult = new AndroidFuture<>();
+        service.setRuntimePermissionGrantStateByDeviceAdmin(callerPackageName, packageName, permission, grantState, setRuntimePermissionGrantStateResult);
+        return setRuntimePermissionGrantStateResult;
+    }).whenCompleteAsync((setRuntimePermissionGrantStateResult, err) -> {
+        long token = Binder.clearCallingIdentity();
+        try {
+            if (err != null) {
+                Log.e(TAG, "Error setting permissions state for device admin " + packageName, err);
+                callback.accept(false);
+            } else {
+                callback.accept(Boolean.TRUE.equals(setRuntimePermissionGrantStateResult));
+            }
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+    }, executor);
+}

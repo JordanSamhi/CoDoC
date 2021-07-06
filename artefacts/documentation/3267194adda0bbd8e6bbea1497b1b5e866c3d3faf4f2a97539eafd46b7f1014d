@@ -1,0 +1,23 @@
+
+     * Create a connection between two or more devices. The framework will reject the request if
+     * device types are not compatible or the implementation does not support the requested
+     * configuration.
+     * NOTE: current implementation is limited to one source and one sink per patch.
+     * @param patch AudioPatch array where the newly created patch will be returned.
+     *              As input, if patch[0] is not null, the specified patch will be replaced by the
+     *              new patch created. This avoids calling releaseAudioPatch() when modifying a
+     *              patch and allows the implementation to optimize transitions.
+     * @param sources List of source audio ports. All must be AudioPort.ROLE_SOURCE.
+     * @param sinks   List of sink audio ports. All must be AudioPort.ROLE_SINK.
+     *
+     * @return - {@link #SUCCESS} if connection is successful.
+     *         - {@link #ERROR_BAD_VALUE} if incompatible device types are passed.
+     *         - {@link #ERROR_INVALID_OPERATION} if the requested connection is not supported.
+     *         - {@link #ERROR_PERMISSION_DENIED} if the client does not have permission to create
+     *         a patch.
+     *         - {@link #ERROR_DEAD_OBJECT} if the server process is dead
+     *         - {@link #ERROR} if patch cannot be connected for any other reason.
+     *
+     *         patch[0] contains the newly created patch
+     * @hide
+     

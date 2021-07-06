@@ -1,0 +1,18 @@
+public void registerClientProfile(@NonNull ResourceClientProfile profile, @NonNull @CallbackExecutor Executor executor, @NonNull ResourcesReclaimListener listener, @NonNull int[] clientId){
+    try {
+        mService.registerClientProfile(profile, new IResourcesReclaimListener.Stub() {
+
+            @Override
+            public void onReclaimResources() {
+                final long identity = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> listener.onReclaimResources());
+                } finally {
+                    Binder.restoreCallingIdentity(identity);
+                }
+            }
+        }, clientId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

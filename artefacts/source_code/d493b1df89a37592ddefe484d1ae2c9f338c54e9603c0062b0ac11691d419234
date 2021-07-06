@@ -1,0 +1,12 @@
+public static LocaleList forLanguageTags(@Nullable String list){
+    if (list == null || list.equals("")) {
+        return getEmptyLocaleList();
+    } else {
+        final String[] tags = list.split(",");
+        final Locale[] localeArray = new Locale[tags.length];
+        for (int i = 0; i < localeArray.length; i++) {
+            localeArray[i] = Locale.forLanguageTag(tags[i]);
+        }
+        return new LocaleList(localeArray);
+    }
+}

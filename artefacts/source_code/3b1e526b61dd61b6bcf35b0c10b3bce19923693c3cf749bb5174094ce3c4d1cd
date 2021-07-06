@@ -1,0 +1,14 @@
+public String[] getActiveApnTypes(){
+    if (mTransportManager == null || mDcTrackers == null) {
+        Rlog.e(LOG_TAG, "Invalid state for Transport/DcTrackers");
+        return new String[0];
+    }
+    Set<String> activeApnTypes = new HashSet<String>();
+    for (int transportType : mTransportManager.getAvailableTransports()) {
+        DcTracker dct = getDcTracker(transportType);
+        if (dct == null)
+            continue;
+        activeApnTypes.addAll(Arrays.asList(dct.getActiveApnTypes()));
+    }
+    return activeApnTypes.toArray(new String[activeApnTypes.size()]);
+}

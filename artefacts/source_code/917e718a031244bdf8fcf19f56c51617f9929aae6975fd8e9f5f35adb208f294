@@ -1,0 +1,9 @@
+public void dump(@NonNull FileDescriptor fd, @Nullable String[] args){
+    FileOutputStream fout = new FileOutputStream(fd);
+    PrintWriter pw = new FastPrintWriter(fout);
+    try {
+        doDump(fd, pw, args);
+    } finally {
+        pw.flush();
+    }
+}

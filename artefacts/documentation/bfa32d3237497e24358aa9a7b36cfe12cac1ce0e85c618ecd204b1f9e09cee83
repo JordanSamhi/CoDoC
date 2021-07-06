@@ -1,0 +1,49 @@
+
+     * <p>
+     * Create a new reader for images of the desired size and format.
+     * </p>
+     * <p>
+     * The {@code maxImages} parameter determines the maximum number of
+     * {@link Image} objects that can be be acquired from the
+     * {@code ImageReader} simultaneously. Requesting more buffers will use up
+     * more memory, so it is important to use only the minimum number necessary
+     * for the use case.
+     * </p>
+     * <p>
+     * The valid sizes and formats depend on the source of the image data.
+     * </p>
+     * <p>
+     * If the {@code format} is {@link ImageFormat#PRIVATE PRIVATE}, the created
+     * {@link ImageReader} will produce images that are not directly accessible
+     * by the application. The application can still acquire images from this
+     * {@link ImageReader}, and send them to the
+     * {@link android.hardware.camera2.CameraDevice camera} for reprocessing via
+     * {@link ImageWriter} interface. However, the {@link Image#getPlanes()
+     * getPlanes()} will return an empty array for {@link ImageFormat#PRIVATE
+     * PRIVATE} format images. The application can check if an existing reader's
+     * format by calling {@link #getImageFormat()}.
+     * </p>
+     * <p>
+     * {@link ImageFormat#PRIVATE PRIVATE} format {@link ImageReader
+     * ImageReaders} are more efficient to use when application access to image
+     * data is not necessary, compared to ImageReaders using other format such
+     * as {@link ImageFormat#YUV_420_888 YUV_420_888}.
+     * </p>
+     *
+     * @param width The default width in pixels of the Images that this reader
+     *            will produce.
+     * @param height The default height in pixels of the Images that this reader
+     *            will produce.
+     * @param format The format of the Image that this reader will produce. This
+     *            must be one of the {@link android.graphics.ImageFormat} or
+     *            {@link android.graphics.PixelFormat} constants. Note that not
+     *            all formats are supported, like ImageFormat.NV21.
+     * @param maxImages The maximum number of images the user will want to
+     *            access simultaneously. This should be as small as possible to
+     *            limit memory use. Once maxImages Images are obtained by the
+     *            user, one of them has to be released before a new Image will
+     *            become available for access through
+     *            {@link #acquireLatestImage()} or {@link #acquireNextImage()}.
+     *            Must be greater than 0.
+     * @see Image
+     

@@ -1,0 +1,78 @@
+public void readKernelUidCpuTimesLocked(@Nullable ArrayList<StopwatchTimer> partialTimers, @Nullable SparseLongArray updatedUids, boolean onBattery){
+    mTempTotalCpuUserTimeUs = mTempTotalCpuSystemTimeUs = 0;
+    final int numWakelocks = partialTimers == null ? 0 : partialTimers.size();
+    final long startTimeMs = mClocks.uptimeMillis();
+    mCpuUidUserSysTimeReader.readDelta((uid, timesUs) -> {
+        long userTimeUs = timesUs[0], systemTimeUs = timesUs[1];
+        uid = mapUid(uid);
+        if (Process.isIsolated(uid)) {
+            mCpuUidUserSysTimeReader.removeUid(uid);
+            Slog.d(TAG, "Got readings for an isolated uid with no mapping: " + uid);
+            return;
+        }
+        if (!mUserInfoProvider.exists(UserHandle.getUserId(uid))) {
+            Slog.d(TAG, "Got readings for an invalid user's uid " + uid);
+            mCpuUidUserSysTimeReader.removeUid(uid);
+            return;
+        }
+        final Uid u = getUidStatsLocked(uid);
+        mTempTotalCpuUserTimeUs += userTimeUs;
+        mTempTotalCpuSystemTimeUs += systemTimeUs;
+        StringBuilder sb = null;
+        if (DEBUG_ENERGY_CPU) {
+            sb = new StringBuilder();
+            sb.append("  got time for uid=").append(u.mUid).append(": u=");
+            TimeUtils.formatDuration(userTimeUs / 1000, sb);
+            sb.append(" s=");
+            TimeUtils.formatDuration(systemTimeUs / 1000, sb);
+            sb.append("\n");
+        }
+        if (numWakelocks > 0) {
+            userTimeUs = (userTimeUs * WAKE_LOCK_WEIGHT) / 100;
+            systemTimeUs = (systemTimeUs * WAKE_LOCK_WEIGHT) / 100;
+        }
+        if (sb != null) {
+            sb.append("  adding to uid=").append(u.mUid).append(": u=");
+            TimeUtils.formatDuration(userTimeUs / 1000, sb);
+            sb.append(" s=");
+            TimeUtils.formatDuration(systemTimeUs / 1000, sb);
+            Slog.d(TAG, sb.toString());
+        }
+        u.mUserCpuTime.addCountLocked(userTimeUs, onBattery);
+        u.mSystemCpuTime.addCountLocked(systemTimeUs, onBattery);
+        if (updatedUids != null) {
+            updatedUids.put(u.getUid(), userTimeUs + systemTimeUs);
+        }
+    });
+    final long elapsedTimeMs = mClocks.uptimeMillis() - startTimeMs;
+    if (DEBUG_ENERGY_CPU || elapsedTimeMs >= 100) {
+        Slog.d(TAG, "Reading cpu stats took " + elapsedTimeMs + "ms");
+    }
+    if (numWakelocks > 0) {
+        mTempTotalCpuUserTimeUs = (mTempTotalCpuUserTimeUs * (100 - WAKE_LOCK_WEIGHT)) / 100;
+        mTempTotalCpuSystemTimeUs = (mTempTotalCpuSystemTimeUs * (100 - WAKE_LOCK_WEIGHT)) / 100;
+        for (int i = 0; i < numWakelocks; ++i) {
+            final StopwatchTimer timer = partialTimers.get(i);
+            final int userTimeUs = (int) (mTempTotalCpuUserTimeUs / (numWakelocks - i));
+            final int systemTimeUs = (int) (mTempTotalCpuSystemTimeUs / (numWakelocks - i));
+            if (DEBUG_ENERGY_CPU) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("  Distributing wakelock uid=").append(timer.mUid.mUid).append(": u=");
+                TimeUtils.formatDuration(userTimeUs / 1000, sb);
+                sb.append(" s=");
+                TimeUtils.formatDuration(systemTimeUs / 1000, sb);
+                Slog.d(TAG, sb.toString());
+            }
+            timer.mUid.mUserCpuTime.addCountLocked(userTimeUs, onBattery);
+            timer.mUid.mSystemCpuTime.addCountLocked(systemTimeUs, onBattery);
+            if (updatedUids != null) {
+                final int uid = timer.mUid.getUid();
+                updatedUids.put(uid, updatedUids.get(uid, 0) + userTimeUs + systemTimeUs);
+            }
+            final Uid.Proc proc = timer.mUid.getProcessStatsLocked("*wakelock*");
+            proc.addCpuTimeLocked(userTimeUs / 1000, systemTimeUs / 1000, onBattery);
+            mTempTotalCpuUserTimeUs -= userTimeUs;
+            mTempTotalCpuSystemTimeUs -= systemTimeUs;
+        }
+    }
+}

@@ -1,0 +1,6 @@
+public void DGEMV(@Transpose int TransA, double alpha, Allocation A, Allocation X, int incX, double beta, Allocation Y, int incY){
+    validateGEMV(Element.F64(mRS), TransA, A, X, incX, Y, incY);
+    int M = A.getType().getY();
+    int N = A.getType().getX();
+    mRS.nScriptIntrinsicBLAS_Double(getID(mRS), RsBlas_dgemv, TransA, 0, 0, 0, 0, M, N, 0, alpha, A.getID(mRS), X.getID(mRS), beta, Y.getID(mRS), incX, incY, 0, 0);
+}

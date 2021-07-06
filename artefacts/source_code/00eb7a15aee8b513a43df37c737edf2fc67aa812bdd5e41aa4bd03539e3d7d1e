@@ -1,0 +1,8 @@
+public void moveTaskToFront(IApplicationThread appThread, String callingPackage, int taskId, int flags, Bundle bOptions){
+    mAmInternal.enforceCallingPermission(android.Manifest.permission.REORDER_TASKS, "moveTaskToFront()");
+    if (DEBUG_STACK)
+        Slog.d(TAG_STACK, "moveTaskToFront: moving taskId=" + taskId);
+    synchronized (mGlobalLock) {
+        moveTaskToFrontLocked(appThread, callingPackage, taskId, flags, SafeActivityOptions.fromBundle(bOptions));
+    }
+}

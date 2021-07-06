@@ -1,0 +1,11 @@
+public String getAlwaysOnVpnPackage(@NonNull ComponentName admin){
+    throwIfParentInstance("getAlwaysOnVpnPackage");
+    if (mService != null) {
+        try {
+            return mService.getAlwaysOnVpnPackage(admin);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

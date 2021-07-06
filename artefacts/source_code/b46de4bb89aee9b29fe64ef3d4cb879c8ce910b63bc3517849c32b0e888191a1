@@ -1,0 +1,17 @@
+public static int setPermissions(FileDescriptor fd, int mode, int uid, int gid){
+    try {
+        Os.fchmod(fd, mode);
+    } catch (ErrnoException e) {
+        Slog.w(TAG, "Failed to fchmod(): " + e);
+        return e.errno;
+    }
+    if (uid >= 0 || gid >= 0) {
+        try {
+            Os.fchown(fd, uid, gid);
+        } catch (ErrnoException e) {
+            Slog.w(TAG, "Failed to fchown(): " + e);
+            return e.errno;
+        }
+    }
+    return 0;
+}

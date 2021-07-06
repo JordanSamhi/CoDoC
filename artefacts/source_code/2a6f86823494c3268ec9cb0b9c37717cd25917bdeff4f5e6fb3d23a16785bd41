@@ -1,0 +1,10 @@
+public boolean hasPermission(UsbAccessory accessory){
+    if (mService == null) {
+        return false;
+    }
+    try {
+        return mService.hasAccessoryPermission(accessory);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

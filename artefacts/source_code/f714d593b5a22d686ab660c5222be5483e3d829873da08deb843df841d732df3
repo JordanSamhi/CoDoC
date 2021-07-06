@@ -1,0 +1,14 @@
+public static ScanResultMatchInfo fromScanResult(ScanResult scanResult){
+    ScanResultMatchInfo info = new ScanResultMatchInfo();
+    info.networkSsid = ScanResultUtil.createQuotedSSID(scanResult.SSID);
+    info.networkType = getNetworkType(scanResult);
+    info.oweInTransitionMode = false;
+    info.pskSaeInTransitionMode = false;
+    info.mFromScanResult = true;
+    if (info.networkType == WifiConfiguration.SECURITY_TYPE_SAE) {
+        info.pskSaeInTransitionMode = ScanResultUtil.isScanResultForPskSaeTransitionNetwork(scanResult);
+    } else if (info.networkType == WifiConfiguration.SECURITY_TYPE_OWE) {
+        info.oweInTransitionMode = ScanResultUtil.isScanResultForOweTransitionNetwork(scanResult);
+    }
+    return info;
+}

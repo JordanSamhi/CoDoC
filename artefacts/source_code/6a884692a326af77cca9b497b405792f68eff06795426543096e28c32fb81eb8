@@ -1,0 +1,49 @@
+public void resolvePadding(){
+    final int resolvedLayoutDirection = getLayoutDirection();
+    if (!isRtlCompatibilityMode()) {
+        if (mBackground != null && (!mLeftPaddingDefined || !mRightPaddingDefined)) {
+            Rect padding = sThreadLocal.get();
+            if (padding == null) {
+                padding = new Rect();
+                sThreadLocal.set(padding);
+            }
+            mBackground.getPadding(padding);
+            if (!mLeftPaddingDefined) {
+                mUserPaddingLeftInitial = padding.left;
+            }
+            if (!mRightPaddingDefined) {
+                mUserPaddingRightInitial = padding.right;
+            }
+        }
+        switch(resolvedLayoutDirection) {
+            case LAYOUT_DIRECTION_RTL:
+                if (mUserPaddingStart != UNDEFINED_PADDING) {
+                    mUserPaddingRight = mUserPaddingStart;
+                } else {
+                    mUserPaddingRight = mUserPaddingRightInitial;
+                }
+                if (mUserPaddingEnd != UNDEFINED_PADDING) {
+                    mUserPaddingLeft = mUserPaddingEnd;
+                } else {
+                    mUserPaddingLeft = mUserPaddingLeftInitial;
+                }
+                break;
+            case LAYOUT_DIRECTION_LTR:
+            default:
+                if (mUserPaddingStart != UNDEFINED_PADDING) {
+                    mUserPaddingLeft = mUserPaddingStart;
+                } else {
+                    mUserPaddingLeft = mUserPaddingLeftInitial;
+                }
+                if (mUserPaddingEnd != UNDEFINED_PADDING) {
+                    mUserPaddingRight = mUserPaddingEnd;
+                } else {
+                    mUserPaddingRight = mUserPaddingRightInitial;
+                }
+        }
+        mUserPaddingBottom = (mUserPaddingBottom >= 0) ? mUserPaddingBottom : mPaddingBottom;
+    }
+    internalSetPadding(mUserPaddingLeft, mPaddingTop, mUserPaddingRight, mUserPaddingBottom);
+    onRtlPropertiesChanged(resolvedLayoutDirection);
+    mPrivateFlags2 |= PFLAG2_PADDING_RESOLVED;
+}

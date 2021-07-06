@@ -1,0 +1,41 @@
+public boolean publish(short transactionId, byte publishId, PublishConfig publishConfig){
+    if (mDbg) {
+        Log.d(TAG, "publish: transactionId=" + transactionId + ", publishId=" + publishId + ", config=" + publishConfig);
+    }
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "publish: null interface");
+        return false;
+    }
+    NanPublishRequest req = new NanPublishRequest();
+    req.baseConfigs.sessionId = publishId;
+    req.baseConfigs.ttlSec = (short) publishConfig.mTtlSec;
+    req.baseConfigs.discoveryWindowPeriod = 1;
+    req.baseConfigs.discoveryCount = 0;
+    convertNativeByteArrayToArrayList(publishConfig.mServiceName, req.baseConfigs.serviceName);
+    req.baseConfigs.discoveryMatchIndicator = NanMatchAlg.MATCH_NEVER;
+    convertNativeByteArrayToArrayList(publishConfig.mServiceSpecificInfo, req.baseConfigs.serviceSpecificInfo);
+    convertNativeByteArrayToArrayList(publishConfig.mMatchFilter, publishConfig.mPublishType == PublishConfig.PUBLISH_TYPE_UNSOLICITED ? req.baseConfigs.txMatchFilter : req.baseConfigs.rxMatchFilter);
+    req.baseConfigs.useRssiThreshold = false;
+    req.baseConfigs.disableDiscoveryTerminationIndication = !publishConfig.mEnableTerminateNotification;
+    req.baseConfigs.disableMatchExpirationIndication = true;
+    req.baseConfigs.disableFollowupReceivedIndication = false;
+    req.autoAcceptDataPathRequests = false;
+    req.baseConfigs.rangingRequired = publishConfig.mEnableRanging;
+    req.baseConfigs.securityConfig.securityType = NanDataPathSecurityType.OPEN;
+    req.publishType = publishConfig.mPublishType;
+    req.txType = NanTxType.BROADCAST;
+    try {
+        WifiStatus status = iface.startPublishRequest(transactionId, req);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "publish: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "publish: exception: " + e);
+        return false;
+    }
+}

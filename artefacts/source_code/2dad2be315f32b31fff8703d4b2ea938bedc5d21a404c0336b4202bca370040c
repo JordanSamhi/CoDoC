@@ -1,0 +1,17 @@
+public void onCustomPrinterIconLoadedLocked(PrinterId printerId){
+    if (DEBUG) {
+        Log.i(LOG_TAG, "onCustomPrinterIconLoadedLocked()");
+    }
+    if (mIsDestroyed) {
+        Log.w(LOG_TAG, "Not updating printer - session destroyed");
+        return;
+    }
+    PrinterInfo printer = mPrinters.get(printerId);
+    if (printer != null) {
+        PrinterInfo newPrinter = (new PrinterInfo.Builder(printer)).incCustomPrinterIconGen().build();
+        mPrinters.put(printerId, newPrinter);
+        ArrayList<PrinterInfo> addedPrinters = new ArrayList<>(1);
+        addedPrinters.add(newPrinter);
+        Handler.getMain().sendMessage(obtainMessage(UserState.PrinterDiscoverySessionMediator::handleDispatchPrintersAdded, this, addedPrinters));
+    }
+}

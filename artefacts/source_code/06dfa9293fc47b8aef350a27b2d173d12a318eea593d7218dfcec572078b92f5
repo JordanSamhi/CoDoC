@@ -1,0 +1,14 @@
+public static String getStringValue(BitInputStream bitInputStream, int valueSize, boolean isHashedValue) throws IOException{
+    if (!isHashedValue) {
+        StringBuilder value = new StringBuilder();
+        while (valueSize-- > 0) {
+            value.append((char) bitInputStream.getNext(8));
+        }
+        return value.toString();
+    }
+    ByteBuffer byteBuffer = ByteBuffer.allocate(valueSize);
+    while (valueSize-- > 0) {
+        byteBuffer.put((byte) (bitInputStream.getNext(8) & 0xFF));
+    }
+    return IntegrityUtils.getHexDigest(byteBuffer.array());
+}

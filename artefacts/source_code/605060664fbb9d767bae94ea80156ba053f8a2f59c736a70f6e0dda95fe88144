@@ -1,0 +1,22 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    long identityToken = Binder.clearCallingIdentity();
+    try {
+        if (args != null) {
+            for (String arg : args) {
+                if ("agents".startsWith(arg)) {
+                    dumpAgents(pw);
+                    return;
+                } else if ("transportclients".equals(arg.toLowerCase())) {
+                    mTransportManager.dumpTransportClients(pw);
+                    return;
+                } else if ("transportstats".equals(arg.toLowerCase())) {
+                    mTransportManager.dumpTransportStats(pw);
+                    return;
+                }
+            }
+        }
+        dumpInternal(pw);
+    } finally {
+        Binder.restoreCallingIdentity(identityToken);
+    }
+}

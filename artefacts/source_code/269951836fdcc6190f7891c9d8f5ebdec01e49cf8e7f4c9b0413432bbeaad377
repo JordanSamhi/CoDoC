@@ -1,0 +1,14 @@
+public String format3339(boolean allDay){
+    if (allDay) {
+        return format(Y_M_D);
+    } else if (TIMEZONE_UTC.equals(timezone)) {
+        return format(Y_M_D_T_H_M_S_000_Z);
+    } else {
+        String base = format(Y_M_D_T_H_M_S_000);
+        String sign = (gmtoff < 0) ? "-" : "+";
+        int offset = (int) Math.abs(gmtoff);
+        int minutes = (offset % 3600) / 60;
+        int hours = offset / 3600;
+        return String.format(Locale.US, "%s%s%02d:%02d", base, sign, hours, minutes);
+    }
+}

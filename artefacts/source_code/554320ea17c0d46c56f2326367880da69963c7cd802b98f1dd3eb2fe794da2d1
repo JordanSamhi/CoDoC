@@ -1,0 +1,11 @@
+public void finishAndUninstall(){
+    mParcel.setReadWriteHelper(null);
+    final int poolPosition = mParcel.dataPosition();
+    mParcel.writeStringList(mStrings);
+    mParcel.setDataPosition(mStartPos);
+    mParcel.writeInt(poolPosition);
+    mParcel.setDataPosition(mParcel.dataSize());
+    if (DEBUG) {
+        Log.i(TAG, "Wrote " + mStrings.size() + " strings");
+    }
+}

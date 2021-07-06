@@ -1,0 +1,50 @@
+public static TelephonyTimeZoneSuggestion parseCommandLineArg(@NonNull ShellCommand cmd) throws IllegalArgumentException{
+    Integer slotIndex = null;
+    String zoneId = null;
+    Integer quality = null;
+    Integer matchType = null;
+    String opt;
+    while ((opt = cmd.getNextArg()) != null) {
+        switch(opt) {
+            case "--slot_index":
+                {
+                    slotIndex = Integer.parseInt(cmd.getNextArgRequired());
+                    break;
+                }
+            case "--zone_id":
+                {
+                    zoneId = cmd.getNextArgRequired();
+                    break;
+                }
+            case "--quality":
+                {
+                    quality = parseQualityCommandLineArg(cmd.getNextArgRequired());
+                    break;
+                }
+            case "--match_type":
+                {
+                    matchType = parseMatchTypeCommandLineArg(cmd.getNextArgRequired());
+                    break;
+                }
+            default:
+                {
+                    throw new IllegalArgumentException("Unknown option: " + opt);
+                }
+        }
+    }
+    if (slotIndex == null) {
+        throw new IllegalArgumentException("No slotIndex specified.");
+    }
+    Builder builder = new Builder(slotIndex);
+    if (!(TextUtils.isEmpty(zoneId) || "_".equals(zoneId))) {
+        builder.setZoneId(zoneId);
+    }
+    if (quality != null) {
+        builder.setQuality(quality);
+    }
+    if (matchType != null) {
+        builder.setMatchType(matchType);
+    }
+    builder.addDebugInfo("Command line injection");
+    return builder.build();
+}

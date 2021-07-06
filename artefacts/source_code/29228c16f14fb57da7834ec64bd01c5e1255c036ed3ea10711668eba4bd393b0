@@ -1,0 +1,13 @@
+public SigningDetails mergeLineageWith(SigningDetails otherSigningDetails){
+    if (!hasPastSigningCertificates()) {
+        return otherSigningDetails.hasPastSigningCertificates() && otherSigningDetails.hasAncestorOrSelf(this) ? otherSigningDetails : this;
+    }
+    if (!otherSigningDetails.hasPastSigningCertificates()) {
+        return this;
+    }
+    SigningDetails descendantSigningDetails = getDescendantOrSelf(otherSigningDetails);
+    if (descendantSigningDetails == null) {
+        return this;
+    }
+    return descendantSigningDetails == this ? mergeLineageWithAncestorOrSelf(otherSigningDetails) : otherSigningDetails.mergeLineageWithAncestorOrSelf(this);
+}

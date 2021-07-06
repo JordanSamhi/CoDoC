@@ -1,0 +1,13 @@
+public void clearRestoreSession(ActiveRestoreSession currentSession){
+    synchronized (this) {
+        if (currentSession != mActiveRestoreSession) {
+            Slog.e(TAG, addUserIdToLogMessage(mUserId, "ending non-current restore session"));
+        } else {
+            if (DEBUG) {
+                Slog.v(TAG, addUserIdToLogMessage(mUserId, "Clearing restore session and halting timeout"));
+            }
+            mActiveRestoreSession = null;
+            mBackupHandler.removeMessages(MSG_RESTORE_SESSION_TIMEOUT);
+        }
+    }
+}

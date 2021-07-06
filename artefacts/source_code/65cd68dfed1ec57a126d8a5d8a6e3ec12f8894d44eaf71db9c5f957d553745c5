@@ -1,0 +1,42 @@
+public static int equivalentVP9Level(MediaFormat info){
+    final Map<String, Object> map = info.getMap();
+    Size blockSize = Utils.parseSize(map.get("block-size"), new Size(8, 8));
+    int BS = blockSize.getWidth() * blockSize.getHeight();
+    Range<Integer> counts = Utils.parseIntRange(map.get("block-count-range"), null);
+    int FS = counts == null ? 0 : BS * counts.getUpper();
+    Range<Long> blockRates = Utils.parseLongRange(map.get("blocks-per-second-range"), null);
+    long SR = blockRates == null ? 0 : BS * blockRates.getUpper();
+    Pair<Range<Integer>, Range<Integer>> dimensionRanges = parseWidthHeightRanges(map.get("size-range"));
+    int D = dimensionRanges == null ? 0 : Math.max(dimensionRanges.first.getUpper(), dimensionRanges.second.getUpper());
+    Range<Integer> bitRates = Utils.parseIntRange(map.get("bitrate-range"), null);
+    int BR = bitRates == null ? 0 : Utils.divUp(bitRates.getUpper(), 1000);
+    if (SR <= 829440 && FS <= 36864 && BR <= 200 && D <= 512)
+        return CodecProfileLevel.VP9Level1;
+    if (SR <= 2764800 && FS <= 73728 && BR <= 800 && D <= 768)
+        return CodecProfileLevel.VP9Level11;
+    if (SR <= 4608000 && FS <= 122880 && BR <= 1800 && D <= 960)
+        return CodecProfileLevel.VP9Level2;
+    if (SR <= 9216000 && FS <= 245760 && BR <= 3600 && D <= 1344)
+        return CodecProfileLevel.VP9Level21;
+    if (SR <= 20736000 && FS <= 552960 && BR <= 7200 && D <= 2048)
+        return CodecProfileLevel.VP9Level3;
+    if (SR <= 36864000 && FS <= 983040 && BR <= 12000 && D <= 2752)
+        return CodecProfileLevel.VP9Level31;
+    if (SR <= 83558400 && FS <= 2228224 && BR <= 18000 && D <= 4160)
+        return CodecProfileLevel.VP9Level4;
+    if (SR <= 160432128 && FS <= 2228224 && BR <= 30000 && D <= 4160)
+        return CodecProfileLevel.VP9Level41;
+    if (SR <= 311951360 && FS <= 8912896 && BR <= 60000 && D <= 8384)
+        return CodecProfileLevel.VP9Level5;
+    if (SR <= 588251136 && FS <= 8912896 && BR <= 120000 && D <= 8384)
+        return CodecProfileLevel.VP9Level51;
+    if (SR <= 1176502272 && FS <= 8912896 && BR <= 180000 && D <= 8384)
+        return CodecProfileLevel.VP9Level52;
+    if (SR <= 1176502272 && FS <= 35651584 && BR <= 180000 && D <= 16832)
+        return CodecProfileLevel.VP9Level6;
+    if (SR <= 2353004544L && FS <= 35651584 && BR <= 240000 && D <= 16832)
+        return CodecProfileLevel.VP9Level61;
+    if (SR <= 4706009088L && FS <= 35651584 && BR <= 480000 && D <= 16832)
+        return CodecProfileLevel.VP9Level62;
+    return CodecProfileLevel.VP9Level62;
+}

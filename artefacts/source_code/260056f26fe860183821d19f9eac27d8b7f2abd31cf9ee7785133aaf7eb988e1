@@ -1,0 +1,12 @@
+public CharSequence loadDescription(@NonNull PackageManager pm){
+    if (nonLocalizedDescription != null) {
+        return nonLocalizedDescription;
+    }
+    if (descriptionRes != 0) {
+        CharSequence label = pm.getText(packageName, descriptionRes, null);
+        if (label != null) {
+            return label;
+        }
+    }
+    return null;
+}

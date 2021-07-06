@@ -1,0 +1,43 @@
+public static void throwOnServiceError(int errorFlag){
+    int errorCode = ICameraService.ERROR_INVALID_OPERATION;
+    String errorMsg;
+    if (errorFlag >= NO_ERROR) {
+        return;
+    } else if (errorFlag == PERMISSION_DENIED) {
+        errorCode = ICameraService.ERROR_PERMISSION_DENIED;
+        errorMsg = "Lacking privileges to access camera service";
+    } else if (errorFlag == ALREADY_EXISTS) {
+        return;
+    } else if (errorFlag == BAD_VALUE) {
+        errorCode = ICameraService.ERROR_ILLEGAL_ARGUMENT;
+        errorMsg = "Bad argument passed to camera service";
+    } else if (errorFlag == DEAD_OBJECT) {
+        errorCode = ICameraService.ERROR_DISCONNECTED;
+        errorMsg = "Camera service not available";
+    } else if (errorFlag == TIMED_OUT) {
+        errorCode = ICameraService.ERROR_INVALID_OPERATION;
+        errorMsg = "Operation timed out in camera service";
+    } else if (errorFlag == -EACCES) {
+        errorCode = ICameraService.ERROR_DISABLED;
+        errorMsg = "Camera disabled by policy";
+    } else if (errorFlag == -EBUSY) {
+        errorCode = ICameraService.ERROR_CAMERA_IN_USE;
+        errorMsg = "Camera already in use";
+    } else if (errorFlag == -EUSERS) {
+        errorCode = ICameraService.ERROR_MAX_CAMERAS_IN_USE;
+        errorMsg = "Maximum number of cameras in use";
+    } else if (errorFlag == -ENODEV) {
+        errorCode = ICameraService.ERROR_DISCONNECTED;
+        errorMsg = "Camera device not available";
+    } else if (errorFlag == -EOPNOTSUPP) {
+        errorCode = ICameraService.ERROR_DEPRECATED_HAL;
+        errorMsg = "Deprecated camera HAL does not support this";
+    } else if (errorFlag == INVALID_OPERATION) {
+        errorCode = ICameraService.ERROR_INVALID_OPERATION;
+        errorMsg = "Illegal state encountered in camera service.";
+    } else {
+        errorCode = ICameraService.ERROR_INVALID_OPERATION;
+        errorMsg = "Unknown camera device error " + errorFlag;
+    }
+    throw new ServiceSpecificException(errorCode, errorMsg);
+}

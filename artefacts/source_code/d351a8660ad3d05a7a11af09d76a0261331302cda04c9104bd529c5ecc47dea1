@@ -1,0 +1,8 @@
+public void testAgentConnected_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    IBinder agentBinder = mock(IBinder.class);
+    backupManagerService.agentConnected(mUserTwoId, TEST_PACKAGE, agentBinder);
+    verify(mUserOneService, never()).agentConnected(TEST_PACKAGE, agentBinder);
+}

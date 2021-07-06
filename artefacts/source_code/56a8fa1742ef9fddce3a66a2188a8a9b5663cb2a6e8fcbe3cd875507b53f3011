@@ -1,0 +1,8 @@
+public boolean isClirActivationAndDeactivationPrevented(){
+    CarrierConfigManager configManager = (CarrierConfigManager) getContext().getSystemService(Context.CARRIER_CONFIG_SERVICE);
+    PersistableBundle b = configManager.getConfigForSubId(getSubId());
+    if (b == null) {
+        b = CarrierConfigManager.getDefaultConfig();
+    }
+    return b.getBoolean(CarrierConfigManager.KEY_PREVENT_CLIR_ACTIVATION_AND_DEACTIVATION_CODE_BOOL);
+}

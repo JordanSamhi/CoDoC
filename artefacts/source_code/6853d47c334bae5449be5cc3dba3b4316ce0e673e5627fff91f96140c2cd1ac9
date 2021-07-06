@@ -1,0 +1,26 @@
+public String importKeyWithMetadata(@NonNull String alias, @NonNull byte[] keyBytes, @Nullable byte[] metadata) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    Objects.requireNonNull(alias, "alias is null");
+    Objects.requireNonNull(keyBytes, "keyBytes is null");
+    if (keyBytes.length != RecoverableKeyGenerator.KEY_SIZE_BITS / Byte.SIZE) {
+        Log.e(TAG, "The given key for import doesn't have the required length " + RecoverableKeyGenerator.KEY_SIZE_BITS);
+        throw new ServiceSpecificException(ERROR_INVALID_KEY_FORMAT, "The given key does not contain " + RecoverableKeyGenerator.KEY_SIZE_BITS + " bits.");
+    }
+    int uid = Binder.getCallingUid();
+    int userId = UserHandle.getCallingUserId();
+    PlatformEncryptionKey encryptionKey;
+    try {
+        encryptionKey = mPlatformKeyManager.getEncryptKey(userId);
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(e);
+    } catch (KeyStoreException | UnrecoverableKeyException | IOException e) {
+        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, e.getMessage());
+    }
+    try {
+        mRecoverableKeyGenerator.importKey(encryptionKey, userId, uid, alias, keyBytes, metadata);
+        mApplicationKeyStorage.setSymmetricKeyEntry(userId, uid, alias, keyBytes);
+        return getAlias(userId, uid, alias);
+    } catch (KeyStoreException | InvalidKeyException | RecoverableKeyStorageException e) {
+        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, e.getMessage());
+    }
+}

@@ -1,0 +1,7 @@
+public int read(@NonNull byte[] buffer, @BytesLong long offset, @BytesLong long size){
+    synchronized (mLock) {
+        TunerUtils.checkResourceState(TAG, mIsClosed);
+        size = Math.min(size, buffer.length - offset);
+        return nativeRead(buffer, offset, size);
+    }
+}

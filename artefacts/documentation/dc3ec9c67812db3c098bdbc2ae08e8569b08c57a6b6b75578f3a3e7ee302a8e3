@@ -1,0 +1,14 @@
+
+     * Called by a device owner to request a bugreport.
+     * <p>
+     * If the device contains secondary users or profiles, they must be affiliated with the device.
+     * Otherwise a {@link SecurityException} will be thrown. See {@link #isAffiliatedUser}.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @return {@code true} if the bugreport collection started successfully, or {@code false} if it
+     *         wasn't triggered because a previous bugreport operation is still active (either the
+     *         bugreport is still running or waiting for the user to share or decline)
+     * @throws SecurityException if {@code admin} is not a device owner, or there is at least one
+     *         profile or secondary user that is not affiliated with the device.
+     * @see #isAffiliatedUser
+     

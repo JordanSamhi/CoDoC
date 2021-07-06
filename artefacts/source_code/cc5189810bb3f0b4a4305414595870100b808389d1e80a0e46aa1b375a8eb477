@@ -1,0 +1,62 @@
+public RestorePolicy chooseRestorePolicy(PackageManager packageManager, boolean allowApks, FileMetadata info, Signature[] signatures, PackageManagerInternal pmi, int userId){
+    if (signatures == null) {
+        return RestorePolicy.IGNORE;
+    }
+    RestorePolicy policy = RestorePolicy.IGNORE;
+    try {
+        PackageInfo pkgInfo = packageManager.getPackageInfoAsUser(info.packageName, PackageManager.GET_SIGNING_CERTIFICATES, userId);
+        final int flags = pkgInfo.applicationInfo.flags;
+        if ((flags & ApplicationInfo.FLAG_ALLOW_BACKUP) != 0) {
+            if (!UserHandle.isCore(pkgInfo.applicationInfo.uid) || (pkgInfo.applicationInfo.backupAgentName != null)) {
+                if (AppBackupUtils.signaturesMatch(signatures, pkgInfo, pmi)) {
+                    if ((pkgInfo.applicationInfo.flags & ApplicationInfo.FLAG_RESTORE_ANY_VERSION) != 0) {
+                        Slog.i(TAG, "Package has restoreAnyVersion; taking data");
+                        mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_RESTORE_ANY_VERSION, pkgInfo, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, null);
+                        policy = RestorePolicy.ACCEPT;
+                    } else if (pkgInfo.getLongVersionCode() >= info.version) {
+                        Slog.i(TAG, "Sig + version match; taking data");
+                        policy = RestorePolicy.ACCEPT;
+                        mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_VERSIONS_MATCH, pkgInfo, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, null);
+                    } else {
+                        if (allowApks) {
+                            Slog.i(TAG, "Data version " + info.version + " is newer than installed " + "version " + pkgInfo.getLongVersionCode() + " - requiring apk");
+                            policy = RestorePolicy.ACCEPT_IF_APK;
+                        } else {
+                            Slog.i(TAG, "Data requires newer version " + info.version + "; ignoring");
+                            mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_VERSION_OF_BACKUP_OLDER, pkgInfo, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_OLD_VERSION, info.version));
+                            policy = RestorePolicy.IGNORE;
+                        }
+                    }
+                } else {
+                    Slog.w(TAG, "Restore manifest signatures do not match " + "installed application for " + info.packageName);
+                    mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_FULL_RESTORE_SIGNATURE_MISMATCH, pkgInfo, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, null);
+                }
+            } else {
+                Slog.w(TAG, "Package " + info.packageName + " is system level with no agent");
+                mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_SYSTEM_APP_NO_AGENT, pkgInfo, LOG_EVENT_CATEGORY_AGENT, null);
+            }
+        } else {
+            if (DEBUG) {
+                Slog.i(TAG, "Restore manifest from " + info.packageName + " but allowBackup=false");
+            }
+            mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_FULL_RESTORE_ALLOW_BACKUP_FALSE, pkgInfo, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, null);
+        }
+    } catch (PackageManager.NameNotFoundException e) {
+        if (allowApks) {
+            if (DEBUG) {
+                Slog.i(TAG, "Package " + info.packageName + " not installed; requiring apk in dataset");
+            }
+            policy = RestorePolicy.ACCEPT_IF_APK;
+        } else {
+            policy = RestorePolicy.IGNORE;
+        }
+        Bundle monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName);
+        monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(monitoringExtras, EXTRA_LOG_POLICY_ALLOW_APKS, allowApks);
+        mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_APK_NOT_INSTALLED, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, monitoringExtras);
+    }
+    if (policy == RestorePolicy.ACCEPT_IF_APK && !info.hasApk) {
+        Slog.i(TAG, "Cannot restore package " + info.packageName + " without the matching .apk");
+        mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_CANNOT_RESTORE_WITHOUT_APK, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName));
+    }
+    return policy;
+}

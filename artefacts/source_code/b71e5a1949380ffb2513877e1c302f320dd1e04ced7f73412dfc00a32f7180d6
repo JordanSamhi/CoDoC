@@ -1,0 +1,18 @@
+public static Map<String, String> parseToCertificateToPackageMap(String whitelistSetting){
+    final String pairDelim = "\\s*;\\s*";
+    final String keyValueDelim = "\\s*:\\s*";
+    List<String> keyValuePairList = Arrays.asList(whitelistSetting.split(pairDelim));
+    if (keyValuePairList.isEmpty()) {
+        return Collections.emptyMap();
+    }
+    Map<String, String> map = new ArrayMap<>(keyValuePairList.size());
+    for (String keyValueString : keyValuePairList) {
+        String[] keyValue = keyValueString.split(keyValueDelim);
+        if (keyValue.length == 2) {
+            map.put(keyValue[0].toUpperCase(), keyValue[1]);
+        } else {
+            loge("Incorrect length of key-value pair in carrier app whitelist map.  " + "Length should be exactly 2");
+        }
+    }
+    return map;
+}

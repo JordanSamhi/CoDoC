@@ -1,0 +1,7 @@
+public void chunkify_withLargeChunks_splitsIntoChunksAcrossBoundaries() throws Exception{
+    byte[] input = (CHUNK_1 + CHUNK_BOUNDARY + CHUNK_2 + CHUNK_BOUNDARY + CHUNK_3).getBytes(UTF_8);
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
+    ArrayList<String> result = new ArrayList<>();
+    mChunker.chunkify(inputStream, (chunk) -> result.add(new String(chunk, UTF_8)));
+    assertThat(result).containsExactly(CHUNK_1 + CHUNK_BOUNDARY, CHUNK_2 + CHUNK_BOUNDARY, CHUNK_3).inOrder();
+}

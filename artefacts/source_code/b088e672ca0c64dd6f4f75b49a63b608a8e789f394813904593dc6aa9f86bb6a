@@ -1,0 +1,13 @@
+public void dispatchVolumeKeyEventAsSystemService(@NonNull MediaSession.Token sessionToken, @NonNull KeyEvent keyEvent){
+    if (sessionToken == null) {
+        throw new IllegalArgumentException("sessionToken shouldn't be null");
+    }
+    if (keyEvent == null) {
+        throw new IllegalArgumentException("keyEvent shouldn't be null");
+    }
+    try {
+        mService.dispatchVolumeKeyEventToSessionAsSystemService(mContext.getPackageName(), mContext.getOpPackageName(), sessionToken, keyEvent);
+    } catch (RemoteException e) {
+        Log.wtf(TAG, "Error calling dispatchVolumeKeyEventAsSystemService", e);
+    }
+}

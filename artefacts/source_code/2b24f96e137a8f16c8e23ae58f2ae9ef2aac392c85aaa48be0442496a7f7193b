@@ -1,0 +1,12 @@
+public void testRequestBackup_whenPackageIsFullBackup() throws Exception{
+    setUpForRequestBackup(PACKAGE_1);
+    ShadowAppBackupUtils.setAppGetsFullBackup(PACKAGE_1);
+    UserBackupManagerService backupManagerService = createBackupManagerServiceForRequestBackup();
+    int result = backupManagerService.requestBackup(new String[] { PACKAGE_1 }, mObserver, 0);
+    mShadowBackupLooper.runToEndOfTasks();
+    assertThat(result).isEqualTo(BackupManager.SUCCESS);
+    ShadowKeyValueBackupTask shadowTask = ShadowKeyValueBackupTask.getLastCreated();
+    assertThat(shadowTask.getQueue()).isEmpty();
+    assertThat(shadowTask.getPendingFullBackups()).containsExactly(PACKAGE_1);
+    tearDownForRequestBackup();
+}

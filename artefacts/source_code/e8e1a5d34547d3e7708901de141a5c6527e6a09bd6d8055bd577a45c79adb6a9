@@ -1,0 +1,10 @@
+public Bitmap createAshmemBitmap(){
+    checkRecycled("Can't copy a recycled bitmap");
+    noteHardwareBitmapSlowCall();
+    Bitmap b = nativeCopyAshmem(mNativePtr);
+    if (b != null) {
+        b.setPremultiplied(mRequestPremultiplied);
+        b.mDensity = mDensity;
+    }
+    return b;
+}

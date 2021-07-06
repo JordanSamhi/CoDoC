@@ -1,0 +1,9 @@
+public void write(ByteBuffer buffer, int length) throws IOException{
+    if (buffer.isDirect()) {
+        native_write_direct(buffer, length);
+    } else if (buffer.hasArray()) {
+        native_write_array(buffer.array(), length);
+    } else {
+        throw new IllegalArgumentException("buffer is not direct and has no array");
+    }
+}

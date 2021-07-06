@@ -1,0 +1,28 @@
+
+     * Draw the array of vertices, interpreted as triangles (based on mode). The verts array is
+     * required, and specifies the x,y pairs for each vertex. If texs is non-null, then it is used
+     * to specify the coordinate in shader coordinates to use at each vertex (the paint must have a
+     * shader in this case). If there is no texs array, but there is a color array, then each color
+     * is interpolated across its corresponding triangle in a gradient. If both texs and colors
+     * arrays are present, then they behave as before, but the resulting color at each pixels is the
+     * result of multiplying the colors from the shader and the color-gradient together. The indices
+     * array is optional, but if it is present, then it is used to specify the index of each
+     * triangle, rather than just walking through the arrays in order.
+     *
+     * @param mode How to interpret the array of vertices
+     * @param vertexCount The number of values in the vertices array (and corresponding texs and
+     *            colors arrays if non-null). Each logical vertex is two values (x, y), vertexCount
+     *            must be a multiple of 2.
+     * @param verts Array of vertices for the mesh
+     * @param vertOffset Number of values in the verts to skip before drawing.
+     * @param texs May be null. If not null, specifies the coordinates to sample into the current
+     *            shader (e.g. bitmap tile or gradient)
+     * @param texOffset Number of values in texs to skip before drawing.
+     * @param colors May be null. If not null, specifies a color for each vertex, to be interpolated
+     *            across the triangle.
+     * @param colorOffset Number of values in colors to skip before drawing.
+     * @param indices If not null, array of indices to reference into the vertex (texs, colors)
+     *            array.
+     * @param indexCount number of entries in the indices array (if not null).
+     * @param paint Specifies the shader to use if the texs array is non-null.
+     

@@ -1,0 +1,7 @@
+public static final int getParentPid(int pid){
+    String[] procStatusLabels = { "PPid:" };
+    long[] procStatusValues = new long[1];
+    procStatusValues[0] = -1;
+    Process.readProcLines("/proc/" + pid + "/status", procStatusLabels, procStatusValues);
+    return (int) procStatusValues[0];
+}

@@ -1,0 +1,8 @@
+public void resolve(@NonNull NsdManager nsdManager, @NonNull NsdServiceInfo serviceInfo, @NonNull NsdManager.ResolveListener listener){
+    synchronized (mLock) {
+        mResolveRequests.addLast(new NsdResolveRequest(nsdManager, serviceInfo, new ListenerWrapper(listener)));
+        if (mResolveRequests.size() == 1) {
+            resolveNextRequest();
+        }
+    }
+}

@@ -1,0 +1,29 @@
+
+     * Configures a component.
+     *
+     * @param format The format of the input data (decoder) or the desired
+     *               format of the output data (encoder). Passing {@code null}
+     *               as {@code format} is equivalent to passing an
+     *               {@link MediaFormat#MediaFormat an empty mediaformat}.
+     * @param surface Specify a surface on which to render the output of this
+     *                decoder. Pass {@code null} as {@code surface} if the
+     *                codec does not generate raw video output (e.g. not a video
+     *                decoder) and/or if you want to configure the codec for
+     *                {@link ByteBuffer} output.
+     * @param crypto  Specify a crypto object to facilitate secure decryption
+     *                of the media data. Pass {@code null} as {@code crypto} for
+     *                non-secure codecs.
+     *                Please note that {@link MediaCodec} does NOT take ownership
+     *                of the {@link MediaCrypto} object; it is the application's
+     *                responsibility to properly cleanup the {@link MediaCrypto} object
+     *                when not in use.
+     * @param flags   Specify {@link #CONFIGURE_FLAG_ENCODE} to configure the
+     *                component as an encoder.
+     * @throws IllegalArgumentException if the surface has been released (or is invalid),
+     * or the format is unacceptable (e.g. missing a mandatory key),
+     * or the flags are not set properly
+     * (e.g. missing {@link #CONFIGURE_FLAG_ENCODE} for an encoder).
+     * @throws IllegalStateException if not in the Uninitialized state.
+     * @throws CryptoException upon DRM error.
+     * @throws CodecException upon codec error.
+     

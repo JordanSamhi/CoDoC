@@ -1,0 +1,34 @@
+public long convertTimestampToNanotime(int timestamp, long now){
+    long deltaMillis = timestamp - mPreviousTimestamp;
+    if (deltaMillis < 0) {
+        deltaMillis += RANGE_MILLIS;
+    }
+    mPeripheralTimeMillis += deltaMillis;
+    if ((now - mPreviousNow) > (RANGE_NANOS / 2)) {
+        long minimumTimeNanos = (now - mBaseHostTimeNanos) - (RANGE_NANOS / 2);
+        long minimumTimeMillis = minimumTimeNanos / NANOS_PER_MILLI;
+        while (mPeripheralTimeMillis < minimumTimeMillis) {
+            mPeripheralTimeMillis += RANGE_MILLIS;
+        }
+    }
+    long timestampHostNanos = (mPeripheralTimeMillis * NANOS_PER_MILLI) + mBaseHostTimeNanos;
+    if (timestampHostNanos > now) {
+        mPeripheralTimeMillis = 0;
+        mBaseHostTimeNanos = now;
+        timestampHostNanos = now;
+    } else {
+        long windowBottom = now - mWindowNanos;
+        if (timestampHostNanos < windowBottom) {
+            mPeripheralTimeMillis = 0;
+            mBaseHostTimeNanos = windowBottom;
+            timestampHostNanos = windowBottom;
+        }
+    }
+    if (timestampHostNanos < mPreviousResult) {
+        timestampHostNanos = mPreviousResult;
+    }
+    mPreviousResult = timestampHostNanos;
+    mPreviousTimestamp = timestamp;
+    mPreviousNow = now;
+    return timestampHostNanos;
+}

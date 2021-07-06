@@ -1,0 +1,13 @@
+public int getConnectionState(BluetoothDevice device){
+    final IBluetoothHidDevice service = getService();
+    if (service != null) {
+        try {
+            return service.getConnectionState(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+    }
+    return STATE_DISCONNECTED;
+}

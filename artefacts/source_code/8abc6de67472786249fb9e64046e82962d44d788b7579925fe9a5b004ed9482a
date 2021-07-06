@@ -1,0 +1,12 @@
+public void release(){
+    try {
+        stop();
+    } catch (IllegalStateException ise) {
+    }
+    if (mAudioCapturePolicy != null) {
+        AudioManager.unregisterAudioPolicyAsyncStatic(mAudioCapturePolicy);
+        mAudioCapturePolicy = null;
+    }
+    native_release();
+    mState = STATE_UNINITIALIZED;
+}

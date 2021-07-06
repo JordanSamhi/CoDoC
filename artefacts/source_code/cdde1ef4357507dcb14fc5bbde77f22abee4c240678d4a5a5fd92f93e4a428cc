@@ -1,0 +1,13 @@
+public void setSource(@Nullable View root, int virtualDescendantId){
+    enforceNotSealed();
+    boolean important = true;
+    int rootViewId = AccessibilityNodeInfo.UNDEFINED_ITEM_ID;
+    mSourceWindowId = AccessibilityWindowInfo.UNDEFINED_WINDOW_ID;
+    if (root != null) {
+        important = root.isImportantForAccessibility();
+        rootViewId = root.getAccessibilityViewId();
+        mSourceWindowId = root.getAccessibilityWindowId();
+    }
+    setBooleanProperty(PROPERTY_IMPORTANT_FOR_ACCESSIBILITY, important);
+    mSourceNodeId = AccessibilityNodeInfo.makeNodeId(rootViewId, virtualDescendantId);
+}

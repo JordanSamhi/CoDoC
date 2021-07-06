@@ -1,0 +1,15 @@
+public boolean fullScroll(int direction){
+    boolean right = direction == View.FOCUS_RIGHT;
+    int width = getWidth();
+    mTempRect.left = 0;
+    mTempRect.right = width;
+    if (right) {
+        int count = getChildCount();
+        if (count > 0) {
+            View view = getChildAt(0);
+            mTempRect.right = view.getRight();
+            mTempRect.left = mTempRect.right - width;
+        }
+    }
+    return scrollAndFocus(direction, mTempRect.left, mTempRect.right);
+}

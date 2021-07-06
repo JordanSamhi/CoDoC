@@ -1,0 +1,25 @@
+public void bindViewToPosition(View view, int position){
+    ViewHolder holder = getChildViewHolderInt(view);
+    if (holder == null) {
+        throw new IllegalArgumentException("The view does not have a ViewHolder. You cannot" + " pass arbitrary views to this method, they should be created by the " + "Adapter");
+    }
+    final int offsetPosition = mAdapterHelper.findPositionOffset(position);
+    if (offsetPosition < 0 || offsetPosition >= mAdapter.getItemCount()) {
+        throw new IndexOutOfBoundsException("Inconsistency detected. Invalid item " + "position " + position + "(offset:" + offsetPosition + ")." + "state:" + mState.getItemCount());
+    }
+    tryBindViewHolderByDeadline(holder, offsetPosition, position, FOREVER_NS);
+    final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
+    final LayoutParams rvLayoutParams;
+    if (lp == null) {
+        rvLayoutParams = (LayoutParams) generateDefaultLayoutParams();
+        holder.itemView.setLayoutParams(rvLayoutParams);
+    } else if (!checkLayoutParams(lp)) {
+        rvLayoutParams = (LayoutParams) generateLayoutParams(lp);
+        holder.itemView.setLayoutParams(rvLayoutParams);
+    } else {
+        rvLayoutParams = (LayoutParams) lp;
+    }
+    rvLayoutParams.mInsetsDirty = true;
+    rvLayoutParams.mViewHolder = holder;
+    rvLayoutParams.mPendingInvalidate = holder.itemView.getParent() == null;
+}

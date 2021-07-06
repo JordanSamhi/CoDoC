@@ -1,0 +1,7 @@
+public void testDump_forNonSystemUser_HasUserPrefix() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService service = createUserBackupManagerServiceAndRunTasks();
+    StringWriter dump = new StringWriter();
+    service.dump(new FileDescriptor(), new PrintWriter(dump), new String[0]);
+    assertThat(dump.toString()).startsWith("User " + USER_ID + ":" + "Backup Manager is ");
+}

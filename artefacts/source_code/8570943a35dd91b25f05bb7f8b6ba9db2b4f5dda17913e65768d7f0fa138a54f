@@ -1,0 +1,17 @@
+public void setTooltipText(@Nullable CharSequence tooltipText){
+    if (TextUtils.isEmpty(tooltipText)) {
+        setFlags(0, TOOLTIP);
+        hideTooltip();
+        mTooltipInfo = null;
+    } else {
+        setFlags(TOOLTIP, TOOLTIP);
+        if (mTooltipInfo == null) {
+            mTooltipInfo = new TooltipInfo();
+            mTooltipInfo.mShowTooltipRunnable = this::showHoverTooltip;
+            mTooltipInfo.mHideTooltipRunnable = this::hideTooltip;
+            mTooltipInfo.mHoverSlop = ViewConfiguration.get(mContext).getScaledHoverSlop();
+            mTooltipInfo.clearAnchorPos();
+        }
+        mTooltipInfo.mTooltipText = tooltipText;
+    }
+}

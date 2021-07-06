@@ -1,0 +1,27 @@
+public void writeNdefMessage(NdefMessage msg) throws IOException, FormatException{
+    checkConnected();
+    try {
+        INfcTag tagService = mTag.getTagService();
+        if (tagService == null) {
+            throw new IOException("Mock tags don't support this operation.");
+        }
+        int serviceHandle = mTag.getServiceHandle();
+        if (tagService.isNdef(serviceHandle)) {
+            int errorCode = tagService.ndefWrite(serviceHandle, msg);
+            switch(errorCode) {
+                case ErrorCodes.SUCCESS:
+                    break;
+                case ErrorCodes.ERROR_IO:
+                    throw new IOException();
+                case ErrorCodes.ERROR_INVALID_PARAM:
+                    throw new FormatException();
+                default:
+                    throw new IOException();
+            }
+        } else {
+            throw new IOException("Tag is not ndef");
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "NFC service dead", e);
+    }
+}

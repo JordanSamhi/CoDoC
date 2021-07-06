@@ -1,0 +1,14 @@
+public boolean requestActionMode(@NonNull TextLinks.TextLinkSpan clickedSpan){
+    Preconditions.checkNotNull(clickedSpan);
+    if (!(mText instanceof Spanned)) {
+        return false;
+    }
+    final int start = ((Spanned) mText).getSpanStart(clickedSpan);
+    final int end = ((Spanned) mText).getSpanEnd(clickedSpan);
+    if (start < 0 || end > mText.length() || start >= end) {
+        return false;
+    }
+    createEditorIfNeeded();
+    mEditor.startLinkActionModeAsync(start, end);
+    return true;
+}

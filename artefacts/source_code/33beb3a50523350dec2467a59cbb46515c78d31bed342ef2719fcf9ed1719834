@@ -1,0 +1,30 @@
+public void setMenu(MenuBuilder menu, ActionMenuPresenter outerPresenter){
+    if (menu == null && mMenuView == null) {
+        return;
+    }
+    ensureMenuView();
+    final MenuBuilder oldMenu = mMenuView.peekMenu();
+    if (oldMenu == menu) {
+        return;
+    }
+    if (oldMenu != null) {
+        oldMenu.removeMenuPresenter(mOuterActionMenuPresenter);
+        oldMenu.removeMenuPresenter(mExpandedMenuPresenter);
+    }
+    if (mExpandedMenuPresenter == null) {
+        mExpandedMenuPresenter = new ExpandedActionViewMenuPresenter();
+    }
+    outerPresenter.setExpandedActionViewsExclusive(true);
+    if (menu != null) {
+        menu.addMenuPresenter(outerPresenter, mPopupContext);
+        menu.addMenuPresenter(mExpandedMenuPresenter, mPopupContext);
+    } else {
+        outerPresenter.initForMenu(mPopupContext, null);
+        mExpandedMenuPresenter.initForMenu(mPopupContext, null);
+        outerPresenter.updateMenuView(true);
+        mExpandedMenuPresenter.updateMenuView(true);
+    }
+    mMenuView.setPopupTheme(mPopupTheme);
+    mMenuView.setPresenter(outerPresenter);
+    mOuterActionMenuPresenter = outerPresenter;
+}

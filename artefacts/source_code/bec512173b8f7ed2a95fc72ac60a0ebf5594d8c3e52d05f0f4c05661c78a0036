@@ -1,0 +1,14 @@
+public boolean clearWindowContentFrameStats(int windowId){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "Clearing content frame stats for window: " + windowId);
+        }
+        return mUiAutomationConnection.clearWindowContentFrameStats(windowId);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error clearing window content frame stats!", re);
+    }
+    return false;
+}

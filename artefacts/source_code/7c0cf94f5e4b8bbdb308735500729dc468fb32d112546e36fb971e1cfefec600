@@ -1,0 +1,7 @@
+public void sendDataWithSelfPermissions(String callingPackage, String callingAttributionTag, String destAddr, String scAddr, int destPort, byte[] data, PendingIntent sentIntent, PendingIntent deliveryIntent, boolean isForVvm){
+    if (!mSmsPermissions.checkCallingOrSelfCanSendSms(callingPackage, callingAttributionTag, "Sending SMS message")) {
+        returnUnspecifiedFailure(sentIntent);
+        return;
+    }
+    sendDataInternal(callingPackage, destAddr, scAddr, destPort, data, sentIntent, deliveryIntent, isForVvm);
+}

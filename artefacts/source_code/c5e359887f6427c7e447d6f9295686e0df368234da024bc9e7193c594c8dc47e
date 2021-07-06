@@ -1,0 +1,14 @@
+public static Drawable loadSafeAnimatedImage(@NonNull Context context, @NonNull ApplicationInfo applicationInfo, @StringRes int resId){
+    if (resId == 0) {
+        return null;
+    }
+    final PackageManager packageManager = context.getPackageManager();
+    final String packageName = applicationInfo.packageName;
+    final Drawable bannerDrawable = packageManager.getDrawable(packageName, resId, applicationInfo);
+    if (bannerDrawable == null) {
+        return null;
+    }
+    final boolean isImageWidthOverScreenLength = bannerDrawable.getIntrinsicWidth() > getScreenWidthPixels(context);
+    final boolean isImageHeightOverScreenLength = bannerDrawable.getIntrinsicHeight() > getScreenHeightPixels(context);
+    return (isImageWidthOverScreenLength || isImageHeightOverScreenLength) ? null : bannerDrawable;
+}

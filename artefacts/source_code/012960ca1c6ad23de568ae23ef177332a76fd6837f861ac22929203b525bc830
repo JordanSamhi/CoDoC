@@ -1,0 +1,12 @@
+public boolean await(int timeout, @NonNull TimeUnit timeUnit){
+    if (!mParentGroup.registerLatch(mLatch)) {
+        return false;
+    }
+    try {
+        return mLatch.await(timeout, timeUnit);
+    } catch (InterruptedException e) {
+        return true;
+    } finally {
+        mParentGroup.unregisterLatch(mLatch);
+    }
+}

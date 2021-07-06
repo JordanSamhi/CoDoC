@@ -1,0 +1,13 @@
+public void updateNotification(@NonNull String key, boolean alert){
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+        Log.v(TAG, "updateNotification");
+    }
+    AlertEntry alertEntry = mAlertEntries.get(key);
+    if (alertEntry == null) {
+        return;
+    }
+    alertEntry.mEntry.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    if (alert) {
+        alertEntry.updateEntry(true);
+    }
+}

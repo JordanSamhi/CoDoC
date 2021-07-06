@@ -1,0 +1,6 @@
+public static void writePrinterId(@NonNull DualDumpOutputStream proto, String idName, long id, @NonNull PrinterId printerId){
+    long token = proto.start(idName, id);
+    writeComponentName(proto, "service_name", PrinterIdProto.SERVICE_NAME, printerId.getServiceName());
+    proto.write("local_id", PrinterIdProto.LOCAL_ID, printerId.getLocalId());
+    proto.end(token);
+}

@@ -1,0 +1,17 @@
+public static TextEncodingDetails calcTextEncodingDetails(CharSequence msg, boolean force7BitEncoding, boolean isEntireMsg){
+    TextEncodingDetails ted;
+    int septets = countAsciiSeptets(msg, force7BitEncoding);
+    if (septets != -1 && septets <= SmsConstants.MAX_USER_DATA_SEPTETS) {
+        ted = new TextEncodingDetails();
+        ted.msgCount = 1;
+        ted.codeUnitCount = septets;
+        ted.codeUnitsRemaining = SmsConstants.MAX_USER_DATA_SEPTETS - septets;
+        ted.codeUnitSize = SmsConstants.ENCODING_7BIT;
+    } else {
+        ted = com.android.internal.telephony.gsm.SmsMessage.calculateLength(msg, force7BitEncoding);
+        if (ted.msgCount == 1 && ted.codeUnitSize == SmsConstants.ENCODING_7BIT && isEntireMsg) {
+            return SmsMessageBase.calcUnicodeEncodingDetails(msg);
+        }
+    }
+    return ted;
+}

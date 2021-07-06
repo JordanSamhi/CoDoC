@@ -1,0 +1,16 @@
+public PrintJobInfo getInfo(){
+    PrintService.throwIfNotCalledOnMainThread();
+    if (isInImmutableState()) {
+        return mCachedInfo;
+    }
+    PrintJobInfo info = null;
+    try {
+        info = mPrintServiceClient.getPrintJobInfo(mCachedInfo.getId());
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Couldn't get info for job: " + mCachedInfo.getId(), re);
+    }
+    if (info != null) {
+        mCachedInfo = info;
+    }
+    return mCachedInfo;
+}

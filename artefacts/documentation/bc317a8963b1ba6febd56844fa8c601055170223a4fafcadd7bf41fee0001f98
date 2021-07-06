@@ -1,0 +1,18 @@
+
+     * Like {@link #setBoundsChangeTransaction} but instead queues up a setPosition/WindowCrop
+     * on a container's surface control. This is useful when a boundsChangeTransaction needs to be
+     * queued up on a Task that won't be organized until the end of this window-container
+     * transaction.
+     *
+     * This requires that, at the end of this transaction, `task` will be organized; otherwise
+     * the server will throw an IllegalArgumentException.
+     *
+     * WARNING: Use this carefully. Whatever is set here should match the expected bounds after
+     *          the transaction completes since it will likely be replaced by it. This call is
+     *          intended to pre-emptively set bounds on a surface in sync with a buffer when
+     *          otherwise the new bounds and the new buffer would update on different frames.
+     *
+     * TODO(b/134365562): remove once TaskOrg drives full-screen or BLAST is enabled.
+     *
+     * @hide
+     

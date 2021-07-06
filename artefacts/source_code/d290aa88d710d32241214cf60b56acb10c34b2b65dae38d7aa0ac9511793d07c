@@ -1,0 +1,32 @@
+public void releaseLock(){
+    if (mLockCount.get() <= 0) {
+        throw new IllegalStateException("Cannot release lock that was not acquired by this thread");
+    }
+    int ownedLocks;
+    try {
+        mLock.lock();
+        if (mClosed) {
+            throw new IllegalStateException("Do not release after the lock has been closed");
+        }
+        if (!mExclusive) {
+            mSharedLocks--;
+        } else {
+            if (mSharedLocks != 0) {
+                throw new AssertionError("Too many shared locks " + mSharedLocks);
+            }
+        }
+        ownedLocks = mLockCount.get() - 1;
+        mLockCount.set(ownedLocks);
+        if (ownedLocks == 0 && mExclusive) {
+            mExclusive = false;
+            mCondition.signalAll();
+        } else if (ownedLocks == 0 && mSharedLocks == 0) {
+            mCondition.signalAll();
+        }
+    } finally {
+        mLock.unlock();
+    }
+    if (VERBOSE) {
+        log("released lock (local lock count " + ownedLocks + ")");
+    }
+}

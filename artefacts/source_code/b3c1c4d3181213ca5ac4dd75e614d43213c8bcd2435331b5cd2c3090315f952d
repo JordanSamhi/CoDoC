@@ -1,0 +1,12 @@
+public static boolean isParcelable(@NonNull ColorSpace colorSpace){
+    if (colorSpace.getId() == ColorSpace.MIN_ID) {
+        if (!(colorSpace instanceof ColorSpace.Rgb)) {
+            return false;
+        }
+        ColorSpace.Rgb rgb = (ColorSpace.Rgb) colorSpace;
+        if (rgb.getTransferParameters() == null) {
+            return false;
+        }
+    }
+    return true;
+}

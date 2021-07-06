@@ -1,0 +1,14 @@
+public int update(@NonNull Uri url, @Nullable ContentValues values, @Nullable Bundle extras) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    beforeRemote();
+    try {
+        return mContentProvider.update(mPackageName, mAttributionTag, url, values, extras);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

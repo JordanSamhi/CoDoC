@@ -1,0 +1,17 @@
+public boolean registerPhone(Phone phone){
+    if (phone != null && !mPhones.contains(phone)) {
+        if (DBG) {
+            Rlog.d(LOG_TAG, "registerPhone(" + phone.getPhoneName() + " " + phone + ")");
+        }
+        if (mPhones.isEmpty()) {
+            mDefaultPhone = phone;
+        }
+        mPhones.add(phone);
+        mRingingCalls.add(phone.getRingingCall());
+        mBackgroundCalls.add(phone.getBackgroundCall());
+        mForegroundCalls.add(phone.getForegroundCall());
+        registerForPhoneStates(phone);
+        return true;
+    }
+    return false;
+}

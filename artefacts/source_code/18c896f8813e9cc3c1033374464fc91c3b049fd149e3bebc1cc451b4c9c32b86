@@ -1,0 +1,12 @@
+public final void runOnBinder(BinderRunner runner){
+    mHandler.post(() -> {
+        if (mBinder == null) {
+            return;
+        }
+        try {
+            runner.run(mBinder);
+        } catch (RuntimeException | RemoteException e) {
+            Log.e(TAG, getLogPrefix() + " exception running on " + mServiceInfo, e);
+        }
+    });
+}

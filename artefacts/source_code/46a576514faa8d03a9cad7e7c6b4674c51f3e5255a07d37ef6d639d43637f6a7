@@ -1,0 +1,18 @@
+public static CellInfo create(android.hardware.radio.V1_2.CellInfo ci){
+    if (ci == null)
+        return null;
+    switch(ci.cellInfoType) {
+        case android.hardware.radio.V1_0.CellInfoType.GSM:
+            return new CellInfoGsm(ci);
+        case android.hardware.radio.V1_0.CellInfoType.CDMA:
+            return new CellInfoCdma(ci);
+        case android.hardware.radio.V1_0.CellInfoType.LTE:
+            return new CellInfoLte(ci);
+        case android.hardware.radio.V1_0.CellInfoType.WCDMA:
+            return new CellInfoWcdma(ci);
+        case android.hardware.radio.V1_0.CellInfoType.TD_SCDMA:
+            return new CellInfoTdscdma(ci);
+        default:
+            return null;
+    }
+}

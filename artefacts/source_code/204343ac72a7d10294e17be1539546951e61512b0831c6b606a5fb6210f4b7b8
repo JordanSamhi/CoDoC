@@ -1,0 +1,13 @@
+public void save(String applicationName, SecretKey key) throws IOException, InvalidKeyException, IllegalBlockSizeException, NoSuchPaddingException, NoSuchAlgorithmException{
+    checkApplicationName(applicationName);
+    byte[] keyBytes = getEncodedKey(KeyWrapUtils.wrap(mSecondaryKey.getSecretKey(), key));
+    long pk;
+    try {
+        pk = mDatabase.getTertiaryKeysTable().addKey(new TertiaryKey(mSecondaryKey.getAlias(), applicationName, keyBytes));
+    } finally {
+        mDatabase.close();
+    }
+    if (pk == -1) {
+        throw new IOException("Failed to commit to db");
+    }
+}

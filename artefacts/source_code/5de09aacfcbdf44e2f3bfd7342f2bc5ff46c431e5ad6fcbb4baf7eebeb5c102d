@@ -1,0 +1,17 @@
+public boolean setSelection(int start, int end){
+    if (DEBUG)
+        Log.v(TAG, "setSelection " + start + ", " + end);
+    final Editable content = getEditable();
+    if (content == null)
+        return false;
+    int len = content.length();
+    if (start > len || end > len || start < 0 || end < 0) {
+        return true;
+    }
+    if (start == end && MetaKeyKeyListener.getMetaState(content, MetaKeyKeyListener.META_SELECTING) != 0) {
+        Selection.extendSelection(content, start);
+    } else {
+        Selection.setSelection(content, start, end);
+    }
+    return true;
+}

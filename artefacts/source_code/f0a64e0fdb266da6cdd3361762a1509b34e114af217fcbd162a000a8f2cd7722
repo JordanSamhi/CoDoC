@@ -1,0 +1,13 @@
+public boolean isSupportedAxes(int axis){
+    if (mSupportedAxes == null) {
+        synchronized (this) {
+            if (mSupportedAxes == null) {
+                mSupportedAxes = nativeGetSupportedAxes(native_instance);
+                if (mSupportedAxes == null) {
+                    mSupportedAxes = EMPTY_AXES;
+                }
+            }
+        }
+    }
+    return Arrays.binarySearch(mSupportedAxes, axis) >= 0;
+}

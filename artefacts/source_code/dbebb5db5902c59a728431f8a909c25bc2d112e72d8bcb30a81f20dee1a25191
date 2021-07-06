@@ -1,0 +1,8 @@
+public void unregisterScanListener(@NonNull ScanListener listener){
+    Objects.requireNonNull(listener, "listener cannot be null");
+    int key = removeListener(listener);
+    if (key == INVALID_KEY)
+        return;
+    validateChannel();
+    mAsyncChannel.sendMessage(CMD_DEREGISTER_SCAN_LISTENER, 0, key);
+}

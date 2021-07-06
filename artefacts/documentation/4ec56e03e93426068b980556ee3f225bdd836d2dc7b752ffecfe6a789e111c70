@@ -1,0 +1,25 @@
+
+     * Called by device owner or a profile owner of an organization-owned managed profile to
+     * control the security logging feature.
+     *
+     * <p> Security logs contain various information intended for security auditing purposes.
+     * When security logging is enabled by a profile owner of
+     * an organization-owned managed profile, certain security logs are not visible (for example
+     * personal app launch events) or they will be redacted (for example, details of the physical
+     * volume mount events). Please see {@link SecurityEvent} for details.
+     *
+     * <p><strong>Note:</strong> The device owner won't be able to retrieve security logs if there
+     * are unaffiliated secondary users or profiles on the device, regardless of whether the
+     * feature is enabled. Logs will be discarded if the internal buffer fills up while waiting for
+     * all users to become affiliated. Therefore it's recommended that affiliation ids are set for
+     * new users as soon as possible after provisioning via {@link #setAffiliationIds}. Profile
+     * owner of organization-owned managed profile is not subject to this restriction since all
+     * privacy-sensitive events happening outside the managed profile would have been redacted
+     * already.
+     *
+     * @param admin Which device admin this request is associated with.
+     * @param enabled whether security logging should be enabled or not.
+     * @throws SecurityException if {@code admin} is not allowed to control security logging.
+     * @see #setAffiliationIds
+     * @see #retrieveSecurityLogs
+     

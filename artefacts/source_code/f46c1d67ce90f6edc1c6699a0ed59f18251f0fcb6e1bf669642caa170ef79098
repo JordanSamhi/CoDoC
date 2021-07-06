@@ -1,0 +1,87 @@
+public void cloneInto(Notification that, boolean heavy){
+    that.mWhitelistToken = this.mWhitelistToken;
+    that.when = this.when;
+    that.creationTime = this.creationTime;
+    that.mSmallIcon = this.mSmallIcon;
+    that.number = this.number;
+    that.contentIntent = this.contentIntent;
+    that.deleteIntent = this.deleteIntent;
+    that.fullScreenIntent = this.fullScreenIntent;
+    if (this.tickerText != null) {
+        that.tickerText = this.tickerText.toString();
+    }
+    if (heavy && this.tickerView != null) {
+        that.tickerView = this.tickerView.clone();
+    }
+    if (heavy && this.contentView != null) {
+        that.contentView = this.contentView.clone();
+    }
+    if (heavy && this.mLargeIcon != null) {
+        that.mLargeIcon = this.mLargeIcon;
+    }
+    that.iconLevel = this.iconLevel;
+    that.sound = this.sound;
+    that.audioStreamType = this.audioStreamType;
+    if (this.audioAttributes != null) {
+        that.audioAttributes = new AudioAttributes.Builder(this.audioAttributes).build();
+    }
+    final long[] vibrate = this.vibrate;
+    if (vibrate != null) {
+        final int N = vibrate.length;
+        final long[] vib = that.vibrate = new long[N];
+        System.arraycopy(vibrate, 0, vib, 0, N);
+    }
+    that.ledARGB = this.ledARGB;
+    that.ledOnMS = this.ledOnMS;
+    that.ledOffMS = this.ledOffMS;
+    that.defaults = this.defaults;
+    that.flags = this.flags;
+    that.priority = this.priority;
+    that.category = this.category;
+    that.mGroupKey = this.mGroupKey;
+    that.mSortKey = this.mSortKey;
+    if (this.extras != null) {
+        try {
+            that.extras = new Bundle(this.extras);
+            that.extras.size();
+        } catch (BadParcelableException e) {
+            Log.e(TAG, "could not unparcel extras from notification: " + this, e);
+            that.extras = null;
+        }
+    }
+    if (!ArrayUtils.isEmpty(allPendingIntents)) {
+        that.allPendingIntents = new ArraySet<>(allPendingIntents);
+    }
+    if (this.actions != null) {
+        that.actions = new Action[this.actions.length];
+        for (int i = 0; i < this.actions.length; i++) {
+            if (this.actions[i] != null) {
+                that.actions[i] = this.actions[i].clone();
+            }
+        }
+    }
+    if (heavy && this.bigContentView != null) {
+        that.bigContentView = this.bigContentView.clone();
+    }
+    if (heavy && this.headsUpContentView != null) {
+        that.headsUpContentView = this.headsUpContentView.clone();
+    }
+    that.visibility = this.visibility;
+    if (this.publicVersion != null) {
+        that.publicVersion = new Notification();
+        this.publicVersion.cloneInto(that.publicVersion, heavy);
+    }
+    that.color = this.color;
+    that.mChannelId = this.mChannelId;
+    that.mTimeout = this.mTimeout;
+    that.mShortcutId = this.mShortcutId;
+    that.mLocusId = this.mLocusId;
+    that.mBadgeIcon = this.mBadgeIcon;
+    that.mSettingsText = this.mSettingsText;
+    that.mGroupAlertBehavior = this.mGroupAlertBehavior;
+    that.mBubbleMetadata = this.mBubbleMetadata;
+    that.mAllowSystemGeneratedContextualActions = this.mAllowSystemGeneratedContextualActions;
+    if (!heavy) {
+        that.lightenPayload();
+    }
+}

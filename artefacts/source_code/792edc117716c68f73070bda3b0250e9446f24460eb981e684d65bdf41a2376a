@@ -1,0 +1,9 @@
+public boolean onGesture(AccessibilityGestureEvent gestureEvent){
+    synchronized (mLock) {
+        boolean handled = notifyGestureLocked(gestureEvent, false);
+        if (!handled) {
+            handled = notifyGestureLocked(gestureEvent, true);
+        }
+        return handled;
+    }
+}

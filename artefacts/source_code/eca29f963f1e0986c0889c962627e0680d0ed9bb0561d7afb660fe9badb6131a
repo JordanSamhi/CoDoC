@@ -1,0 +1,96 @@
+public boolean isDataAllowed(ApnContext apnContext, @RequestNetworkType int requestType, DataConnectionReasons dataConnectionReasons){
+    DataConnectionReasons reasons = new DataConnectionReasons();
+    int requestApnType = 0;
+    if (apnContext != null) {
+        requestApnType = apnContext.getApnTypeBitmask();
+    }
+    final boolean internalDataEnabled = mDataEnabledSettings.isInternalDataEnabled();
+    boolean attachedState = mAttached.get();
+    boolean desiredPowerState = mPhone.getServiceStateTracker().getDesiredPowerState();
+    boolean radioStateFromCarrier = mPhone.getServiceStateTracker().getPowerStateFromCarrier();
+    int dataRat = getDataRat();
+    if (dataRat == ServiceState.RIL_RADIO_TECHNOLOGY_IWLAN) {
+        desiredPowerState = true;
+        radioStateFromCarrier = true;
+    }
+    boolean defaultDataSelected = SubscriptionManager.isValidSubscriptionId(SubscriptionManager.getDefaultDataSubscriptionId());
+    boolean isMeteredApnType = apnContext == null || ApnSettingUtils.isMeteredApnType(requestApnType, mPhone);
+    PhoneConstants.State phoneState = PhoneConstants.State.IDLE;
+    if (mPhone.getCallTracker() != null) {
+        phoneState = mPhone.getCallTracker().getState();
+    }
+    if (apnContext != null && requestApnType == ApnSetting.TYPE_EMERGENCY && apnContext.isConnectable()) {
+        if (dataConnectionReasons != null) {
+            dataConnectionReasons.add(DataAllowedReasonType.EMERGENCY_APN);
+        }
+        return true;
+    }
+    if (apnContext != null && !apnContext.isConnectable()) {
+        reasons.add(DataDisallowedReasonType.APN_NOT_CONNECTABLE);
+    }
+    if ((apnContext != null && requestApnType == TYPE_DEFAULT || requestApnType == TYPE_IA) && mPhone.getTransportManager().isInLegacyMode() && dataRat == ServiceState.RIL_RADIO_TECHNOLOGY_IWLAN) {
+        reasons.add(DataDisallowedReasonType.ON_IWLAN);
+    }
+    if (shouldRestrictDataForEcbm() || mPhone.isInEmergencyCall()) {
+        reasons.add(DataDisallowedReasonType.IN_ECBM);
+    }
+    if (!attachedState && !shouldAutoAttach() && requestType != REQUEST_TYPE_HANDOVER) {
+        reasons.add(DataDisallowedReasonType.NOT_ATTACHED);
+    }
+    if (mPhone.getSubId() == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+        reasons.add(DataDisallowedReasonType.SIM_NOT_READY);
+    }
+    if (phoneState != PhoneConstants.State.IDLE && !mPhone.getServiceStateTracker().isConcurrentVoiceAndDataAllowed()) {
+        reasons.add(DataDisallowedReasonType.INVALID_PHONE_STATE);
+        reasons.add(DataDisallowedReasonType.CONCURRENT_VOICE_DATA_NOT_ALLOWED);
+    }
+    if (!internalDataEnabled) {
+        reasons.add(DataDisallowedReasonType.INTERNAL_DATA_DISABLED);
+    }
+    if (!defaultDataSelected) {
+        reasons.add(DataDisallowedReasonType.DEFAULT_DATA_UNSELECTED);
+    }
+    if (mPhone.getServiceState().getDataRoaming() && !getDataRoamingEnabled()) {
+        reasons.add(DataDisallowedReasonType.ROAMING_DISABLED);
+    }
+    if (mIsPsRestricted) {
+        reasons.add(DataDisallowedReasonType.PS_RESTRICTED);
+    }
+    if (!desiredPowerState) {
+        reasons.add(DataDisallowedReasonType.UNDESIRED_POWER_STATE);
+    }
+    if (!radioStateFromCarrier) {
+        reasons.add(DataDisallowedReasonType.RADIO_DISABLED_BY_CARRIER);
+    }
+    if (apnContext != null) {
+        if (mTransportType != mPhone.getTransportManager().getCurrentTransport(apnContext.getApnTypeBitmask()) && requestType != REQUEST_TYPE_HANDOVER) {
+            reasons.add(DataDisallowedReasonType.ON_OTHER_TRANSPORT);
+        }
+    }
+    boolean isDataEnabled = apnContext == null ? mDataEnabledSettings.isDataEnabled() : mDataEnabledSettings.isDataEnabled(requestApnType);
+    if (!isDataEnabled) {
+        reasons.add(DataDisallowedReasonType.DATA_DISABLED);
+    }
+    if (reasons.containsHardDisallowedReasons()) {
+        if (dataConnectionReasons != null) {
+            dataConnectionReasons.copyFrom(reasons);
+        }
+        return false;
+    }
+    if (!reasons.allowed()) {
+        if (mTransportType == AccessNetworkConstants.TRANSPORT_TYPE_WLAN) {
+            reasons.add(DataAllowedReasonType.UNMETERED_APN);
+        } else if (mTransportType == AccessNetworkConstants.TRANSPORT_TYPE_WWAN && !isMeteredApnType && requestApnType != TYPE_DEFAULT) {
+            reasons.add(DataAllowedReasonType.UNMETERED_APN);
+        }
+        if (apnContext != null && apnContext.hasRestrictedRequests(true) && !reasons.allowed()) {
+            reasons.add(DataAllowedReasonType.RESTRICTED_REQUEST);
+        }
+    } else {
+        reasons.add(DataAllowedReasonType.NORMAL);
+    }
+    if (dataConnectionReasons != null) {
+        dataConnectionReasons.copyFrom(reasons);
+    }
+    return reasons.allowed();
+}

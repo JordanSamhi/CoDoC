@@ -1,0 +1,16 @@
+public Builder addKernel(Script.KernelID k){
+    if (mLines.size() != 0) {
+        throw new RSInvalidStateException("Kernels may not be added once connections exist.");
+    }
+    if (findNode(k) != null) {
+        return this;
+    }
+    mKernelCount++;
+    Node n = findNode(k.mScript);
+    if (n == null) {
+        n = new Node(k.mScript);
+        mNodes.add(n);
+    }
+    n.mKernels.add(k);
+    return this;
+}

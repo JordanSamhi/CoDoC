@@ -1,0 +1,17 @@
+public final int readExceptionCode(){
+    int code = readInt();
+    if (code == EX_HAS_NOTED_APPOPS_REPLY_HEADER) {
+        AppOpsManager.readAndLogNotedAppops(this);
+        code = readInt();
+    }
+    if (code == EX_HAS_STRICTMODE_REPLY_HEADER) {
+        int headerSize = readInt();
+        if (headerSize == 0) {
+            Log.e(TAG, "Unexpected zero-sized Parcel reply header.");
+        } else {
+            StrictMode.readAndHandleBinderCallViolations(this);
+        }
+        return 0;
+    }
+    return code;
+}

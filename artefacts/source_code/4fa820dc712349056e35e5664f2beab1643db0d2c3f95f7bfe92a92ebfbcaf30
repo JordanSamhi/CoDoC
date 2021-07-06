@@ -1,0 +1,11 @@
+public void lockScreenSecretAvailable(int storedHashType, @NonNull byte[] credential, int userId){
+    try {
+        mExecutorService.schedule(KeySyncTask.newInstance(mContext, mDatabase, mSnapshotStorage, mListenersStorage, userId, storedHashType, credential, false), SYNC_DELAY_MILLIS, TimeUnit.MILLISECONDS);
+    } catch (NoSuchAlgorithmException e) {
+        Log.wtf(TAG, "Should never happen - algorithm unavailable for KeySync", e);
+    } catch (KeyStoreException e) {
+        Log.e(TAG, "Key store error encountered during recoverable key sync", e);
+    } catch (InsecureUserException e) {
+        Log.wtf(TAG, "Impossible - insecure user, but user just entered lock screen", e);
+    }
+}

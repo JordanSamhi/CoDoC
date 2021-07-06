@@ -1,0 +1,33 @@
+public long addCompletedDownload(String title, String description, boolean isMediaScannerScannable, String mimeType, String path, long length, boolean showNotification, boolean allowWrite, Uri uri, Uri referer){
+    validateArgumentIsNonEmpty("title", title);
+    validateArgumentIsNonEmpty("description", description);
+    validateArgumentIsNonEmpty("path", path);
+    validateArgumentIsNonEmpty("mimeType", mimeType);
+    if (length < 0) {
+        throw new IllegalArgumentException(" invalid value for param: totalBytes");
+    }
+    Request request;
+    if (uri != null) {
+        request = new Request(uri);
+    } else {
+        request = new Request(NON_DOWNLOADMANAGER_DOWNLOAD);
+    }
+    request.setTitle(title).setDescription(description).setMimeType(mimeType);
+    if (referer != null) {
+        request.addRequestHeader("Referer", referer.toString());
+    }
+    ContentValues values = request.toContentValues(null);
+    values.put(Downloads.Impl.COLUMN_DESTINATION, Downloads.Impl.DESTINATION_NON_DOWNLOADMANAGER_DOWNLOAD);
+    values.put(Downloads.Impl._DATA, path);
+    values.put(Downloads.Impl.COLUMN_MIME_TYPE, resolveMimeType(new File(path)));
+    values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_SUCCESS);
+    values.put(Downloads.Impl.COLUMN_TOTAL_BYTES, length);
+    values.put(Downloads.Impl.COLUMN_MEDIA_SCANNED, (isMediaScannerScannable) ? Request.SCANNABLE_VALUE_YES : Request.SCANNABLE_VALUE_NO);
+    values.put(Downloads.Impl.COLUMN_VISIBILITY, (showNotification) ? Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION : Request.VISIBILITY_HIDDEN);
+    values.put(Downloads.Impl.COLUMN_ALLOW_WRITE, allowWrite ? 1 : 0);
+    Uri downloadUri = mResolver.insert(Downloads.Impl.CONTENT_URI, values);
+    if (downloadUri == null) {
+        return -1;
+    }
+    return Long.parseLong(downloadUri.getLastPathSegment());
+}

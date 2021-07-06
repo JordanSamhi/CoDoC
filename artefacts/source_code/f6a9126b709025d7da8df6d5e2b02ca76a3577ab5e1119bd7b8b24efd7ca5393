@@ -1,0 +1,34 @@
+public int computeMaxKeyguardNotifications(int maximum){
+    float minPadding = mClockPositionAlgorithm.getMinStackScrollerPadding();
+    int notificationPadding = Math.max(1, mResources.getDimensionPixelSize(R.dimen.notification_divider_height));
+    NotificationShelf shelf = mNotificationStackScroller.getNotificationShelf();
+    float shelfSize = shelf.getVisibility() == View.GONE ? 0 : shelf.getIntrinsicHeight() + notificationPadding;
+    float availableSpace = mNotificationStackScroller.getHeight() - minPadding - shelfSize - Math.max(mIndicationBottomPadding, mAmbientIndicationBottomPadding) - mKeyguardStatusView.getLogoutButtonHeight();
+    int count = 0;
+    ExpandableView previousView = null;
+    for (int i = 0; i < mNotificationStackScroller.getChildCount(); i++) {
+        ExpandableView child = (ExpandableView) mNotificationStackScroller.getChildAt(i);
+        if (!canShowViewOnLockscreen(child)) {
+            continue;
+        }
+        availableSpace -= child.getMinHeight(true);
+        availableSpace -= count == 0 ? 0 : notificationPadding;
+        availableSpace -= mNotificationStackScroller.calculateGapHeight(previousView, child, count);
+        previousView = child;
+        if (availableSpace >= 0 && count < maximum) {
+            count++;
+        } else if (availableSpace > -shelfSize) {
+            for (int j = i + 1; j < mNotificationStackScroller.getChildCount(); j++) {
+                ExpandableView view = (ExpandableView) mNotificationStackScroller.getChildAt(j);
+                if (view instanceof ExpandableNotificationRow && canShowViewOnLockscreen(view)) {
+                    return count;
+                }
+            }
+            count++;
+            return count;
+        } else {
+            return count;
+        }
+    }
+    return count;
+}

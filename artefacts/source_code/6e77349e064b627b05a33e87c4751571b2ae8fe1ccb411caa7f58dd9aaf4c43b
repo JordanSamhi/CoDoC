@@ -1,0 +1,36 @@
+public void updateCursorAnchorInfo(View view, final CursorAnchorInfo cursorAnchorInfo){
+    if (view == null || cursorAnchorInfo == null) {
+        return;
+    }
+    final InputMethodManager fallbackImm = getFallbackInputMethodManagerIfNecessary(view);
+    if (fallbackImm != null) {
+        fallbackImm.updateCursorAnchorInfo(view, cursorAnchorInfo);
+        return;
+    }
+    checkFocus();
+    synchronized (mH) {
+        if (!hasServedByInputMethodLocked(view) || mCurrentTextBoxAttribute == null || mCurMethod == null) {
+            return;
+        }
+        final boolean isImmediate = (mRequestUpdateCursorAnchorInfoMonitorMode & InputConnection.CURSOR_UPDATE_IMMEDIATE) != 0;
+        if (!isImmediate && Objects.equals(mCursorAnchorInfo, cursorAnchorInfo)) {
+            if (DEBUG) {
+                Log.w(TAG, "Ignoring redundant updateCursorAnchorInfo: info=" + cursorAnchorInfo);
+            }
+            return;
+        }
+        if (DEBUG)
+            Log.v(TAG, "updateCursorAnchorInfo: " + cursorAnchorInfo);
+        try {
+            if (mActivityViewToScreenMatrix != null) {
+                mCurMethod.updateCursorAnchorInfo(CursorAnchorInfo.createForAdditionalParentMatrix(cursorAnchorInfo, mActivityViewToScreenMatrix));
+            } else {
+                mCurMethod.updateCursorAnchorInfo(cursorAnchorInfo);
+            }
+            mCursorAnchorInfo = cursorAnchorInfo;
+            mRequestUpdateCursorAnchorInfoMonitorMode &= ~InputConnection.CURSOR_UPDATE_IMMEDIATE;
+        } catch (RemoteException e) {
+            Log.w(TAG, "IME died: " + mCurId, e);
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public void show(){
+    if (mCurrentWirelessChargingView == null || mCurrentWirelessChargingView.mNextView == null) {
+        throw new RuntimeException("setView must have been called");
+    }
+    if (mPreviousWirelessChargingView != null) {
+        mPreviousWirelessChargingView.hide(0);
+    }
+    mPreviousWirelessChargingView = mCurrentWirelessChargingView;
+    mCurrentWirelessChargingView.show();
+    mCurrentWirelessChargingView.hide(DURATION);
+}

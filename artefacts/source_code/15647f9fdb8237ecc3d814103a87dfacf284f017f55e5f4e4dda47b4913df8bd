@@ -1,0 +1,30 @@
+public void resizeDockedStack(Rect dockedBounds, Rect tempDockedTaskBounds, Rect tempDockedTaskInsetBounds, Rect tempOtherTaskBounds, Rect tempOtherTaskInsetBounds){
+    enforceCallerIsRecentsOrHasPermission(MANAGE_ACTIVITY_STACKS, "resizeDockedStack()");
+    long ident = Binder.clearCallingIdentity();
+    try {
+        synchronized (mGlobalLock) {
+            final TaskDisplayArea tc = mRootWindowContainer.getDefaultTaskDisplayArea();
+            final Task primary = tc.getRootSplitScreenPrimaryTask();
+            final Task secondary = tc.getTask(t -> t.mCreatedByOrganizer && t.isRootTask() && t.inSplitScreenSecondaryWindowingMode());
+            if (primary == null || secondary == null) {
+                return;
+            }
+            final WindowContainerTransaction wct = new WindowContainerTransaction();
+            final Rect primaryRect = tempDockedTaskInsetBounds != null ? tempDockedTaskInsetBounds : (tempDockedTaskBounds != null ? tempDockedTaskBounds : dockedBounds);
+            wct.setBounds(primary.mRemoteToken.toWindowContainerToken(), primaryRect);
+            Rect otherRect = tempOtherTaskInsetBounds != null ? tempOtherTaskInsetBounds : tempOtherTaskBounds;
+            if (otherRect == null) {
+                otherRect = new Rect(secondary.getBounds());
+                if (tc.getBounds().width() > tc.getBounds().height()) {
+                    otherRect.left = primaryRect.right + 6;
+                } else {
+                    otherRect.top = primaryRect.bottom + 6;
+                }
+            }
+            wct.setBounds(secondary.mRemoteToken.toWindowContainerToken(), otherRect);
+            mWindowOrganizerController.applyTransaction(wct);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

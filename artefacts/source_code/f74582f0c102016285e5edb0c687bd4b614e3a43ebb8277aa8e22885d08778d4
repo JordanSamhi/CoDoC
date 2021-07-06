@@ -1,0 +1,504 @@
+public final void dumpCheckinLocked(Context context, PrintWriter pw, int which, int reqUid, boolean wifiOnly){
+    if (which != BatteryStats.STATS_SINCE_CHARGED) {
+        dumpLine(pw, 0, STAT_NAMES[which], "err", "ERROR: BatteryStats.dumpCheckin called for which type " + which + " but only STATS_SINCE_CHARGED is supported.");
+        return;
+    }
+    final long rawUptime = SystemClock.uptimeMillis() * 1000;
+    final long rawRealtimeMs = SystemClock.elapsedRealtime();
+    final long rawRealtime = rawRealtimeMs * 1000;
+    final long batteryUptime = getBatteryUptime(rawUptime);
+    final long whichBatteryUptime = computeBatteryUptime(rawUptime, which);
+    final long whichBatteryRealtime = computeBatteryRealtime(rawRealtime, which);
+    final long whichBatteryScreenOffUptime = computeBatteryScreenOffUptime(rawUptime, which);
+    final long whichBatteryScreenOffRealtime = computeBatteryScreenOffRealtime(rawRealtime, which);
+    final long totalRealtime = computeRealtime(rawRealtime, which);
+    final long totalUptime = computeUptime(rawUptime, which);
+    final long screenOnTime = getScreenOnTime(rawRealtime, which);
+    final long screenDozeTime = getScreenDozeTime(rawRealtime, which);
+    final long interactiveTime = getInteractiveTime(rawRealtime, which);
+    final long powerSaveModeEnabledTime = getPowerSaveModeEnabledTime(rawRealtime, which);
+    final long deviceIdleModeLightTime = getDeviceIdleModeTime(DEVICE_IDLE_MODE_LIGHT, rawRealtime, which);
+    final long deviceIdleModeFullTime = getDeviceIdleModeTime(DEVICE_IDLE_MODE_DEEP, rawRealtime, which);
+    final long deviceLightIdlingTime = getDeviceIdlingTime(DEVICE_IDLE_MODE_LIGHT, rawRealtime, which);
+    final long deviceIdlingTime = getDeviceIdlingTime(DEVICE_IDLE_MODE_DEEP, rawRealtime, which);
+    final int connChanges = getNumConnectivityChange(which);
+    final long phoneOnTime = getPhoneOnTime(rawRealtime, which);
+    final long dischargeCount = getUahDischarge(which);
+    final long dischargeScreenOffCount = getUahDischargeScreenOff(which);
+    final long dischargeScreenDozeCount = getUahDischargeScreenDoze(which);
+    final long dischargeLightDozeCount = getUahDischargeLightDoze(which);
+    final long dischargeDeepDozeCount = getUahDischargeDeepDoze(which);
+    final StringBuilder sb = new StringBuilder(128);
+    final SparseArray<? extends Uid> uidStats = getUidStats();
+    final int NU = uidStats.size();
+    final String category = STAT_NAMES[which];
+    dumpLine(pw, 0, category, BATTERY_DATA, which == STATS_SINCE_CHARGED ? getStartCount() : "N/A", whichBatteryRealtime / 1000, whichBatteryUptime / 1000, totalRealtime / 1000, totalUptime / 1000, getStartClockTime(), whichBatteryScreenOffRealtime / 1000, whichBatteryScreenOffUptime / 1000, getEstimatedBatteryCapacity(), getMinLearnedBatteryCapacity(), getMaxLearnedBatteryCapacity(), screenDozeTime / 1000);
+    long fullWakeLockTimeTotal = 0;
+    long partialWakeLockTimeTotal = 0;
+    for (int iu = 0; iu < NU; iu++) {
+        final Uid u = uidStats.valueAt(iu);
+        final ArrayMap<String, ? extends BatteryStats.Uid.Wakelock> wakelocks = u.getWakelockStats();
+        for (int iw = wakelocks.size() - 1; iw >= 0; iw--) {
+            final Uid.Wakelock wl = wakelocks.valueAt(iw);
+            final Timer fullWakeTimer = wl.getWakeTime(WAKE_TYPE_FULL);
+            if (fullWakeTimer != null) {
+                fullWakeLockTimeTotal += fullWakeTimer.getTotalTimeLocked(rawRealtime, which);
+            }
+            final Timer partialWakeTimer = wl.getWakeTime(WAKE_TYPE_PARTIAL);
+            if (partialWakeTimer != null) {
+                partialWakeLockTimeTotal += partialWakeTimer.getTotalTimeLocked(rawRealtime, which);
+            }
+        }
+    }
+    final long mobileRxTotalBytes = getNetworkActivityBytes(NETWORK_MOBILE_RX_DATA, which);
+    final long mobileTxTotalBytes = getNetworkActivityBytes(NETWORK_MOBILE_TX_DATA, which);
+    final long wifiRxTotalBytes = getNetworkActivityBytes(NETWORK_WIFI_RX_DATA, which);
+    final long wifiTxTotalBytes = getNetworkActivityBytes(NETWORK_WIFI_TX_DATA, which);
+    final long mobileRxTotalPackets = getNetworkActivityPackets(NETWORK_MOBILE_RX_DATA, which);
+    final long mobileTxTotalPackets = getNetworkActivityPackets(NETWORK_MOBILE_TX_DATA, which);
+    final long wifiRxTotalPackets = getNetworkActivityPackets(NETWORK_WIFI_RX_DATA, which);
+    final long wifiTxTotalPackets = getNetworkActivityPackets(NETWORK_WIFI_TX_DATA, which);
+    final long btRxTotalBytes = getNetworkActivityBytes(NETWORK_BT_RX_DATA, which);
+    final long btTxTotalBytes = getNetworkActivityBytes(NETWORK_BT_TX_DATA, which);
+    dumpLine(pw, 0, category, GLOBAL_NETWORK_DATA, mobileRxTotalBytes, mobileTxTotalBytes, wifiRxTotalBytes, wifiTxTotalBytes, mobileRxTotalPackets, mobileTxTotalPackets, wifiRxTotalPackets, wifiTxTotalPackets, btRxTotalBytes, btTxTotalBytes);
+    dumpControllerActivityLine(pw, 0, category, GLOBAL_MODEM_CONTROLLER_DATA, getModemControllerActivity(), which);
+    final long wifiOnTime = getWifiOnTime(rawRealtime, which);
+    final long wifiRunningTime = getGlobalWifiRunningTime(rawRealtime, which);
+    dumpLine(pw, 0, category, GLOBAL_WIFI_DATA, wifiOnTime / 1000, wifiRunningTime / 1000, 0, 0, 0);
+    dumpControllerActivityLine(pw, 0, category, GLOBAL_WIFI_CONTROLLER_DATA, getWifiControllerActivity(), which);
+    dumpControllerActivityLine(pw, 0, category, GLOBAL_BLUETOOTH_CONTROLLER_DATA, getBluetoothControllerActivity(), which);
+    dumpLine(pw, 0, category, MISC_DATA, screenOnTime / 1000, phoneOnTime / 1000, fullWakeLockTimeTotal / 1000, partialWakeLockTimeTotal / 1000, getMobileRadioActiveTime(rawRealtime, which) / 1000, getMobileRadioActiveAdjustedTime(which) / 1000, interactiveTime / 1000, powerSaveModeEnabledTime / 1000, connChanges, deviceIdleModeFullTime / 1000, getDeviceIdleModeCount(DEVICE_IDLE_MODE_DEEP, which), deviceIdlingTime / 1000, getDeviceIdlingCount(DEVICE_IDLE_MODE_DEEP, which), getMobileRadioActiveCount(which), getMobileRadioActiveUnknownTime(which) / 1000, deviceIdleModeLightTime / 1000, getDeviceIdleModeCount(DEVICE_IDLE_MODE_LIGHT, which), deviceLightIdlingTime / 1000, getDeviceIdlingCount(DEVICE_IDLE_MODE_LIGHT, which), getLongestDeviceIdleModeTime(DEVICE_IDLE_MODE_LIGHT), getLongestDeviceIdleModeTime(DEVICE_IDLE_MODE_DEEP));
+    Object[] args = new Object[NUM_SCREEN_BRIGHTNESS_BINS];
+    for (int i = 0; i < NUM_SCREEN_BRIGHTNESS_BINS; i++) {
+        args[i] = getScreenBrightnessTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, SCREEN_BRIGHTNESS_DATA, args);
+    args = new Object[CellSignalStrength.getNumSignalStrengthLevels()];
+    for (int i = 0; i < CellSignalStrength.getNumSignalStrengthLevels(); i++) {
+        args[i] = getPhoneSignalStrengthTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, SIGNAL_STRENGTH_TIME_DATA, args);
+    dumpLine(pw, 0, category, SIGNAL_SCANNING_TIME_DATA, getPhoneSignalScanningTime(rawRealtime, which) / 1000);
+    for (int i = 0; i < CellSignalStrength.getNumSignalStrengthLevels(); i++) {
+        args[i] = getPhoneSignalStrengthCount(i, which);
+    }
+    dumpLine(pw, 0, category, SIGNAL_STRENGTH_COUNT_DATA, args);
+    args = new Object[NUM_DATA_CONNECTION_TYPES];
+    for (int i = 0; i < NUM_DATA_CONNECTION_TYPES; i++) {
+        args[i] = getPhoneDataConnectionTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, DATA_CONNECTION_TIME_DATA, args);
+    for (int i = 0; i < NUM_DATA_CONNECTION_TYPES; i++) {
+        args[i] = getPhoneDataConnectionCount(i, which);
+    }
+    dumpLine(pw, 0, category, DATA_CONNECTION_COUNT_DATA, args);
+    args = new Object[NUM_WIFI_STATES];
+    for (int i = 0; i < NUM_WIFI_STATES; i++) {
+        args[i] = getWifiStateTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, WIFI_STATE_TIME_DATA, args);
+    for (int i = 0; i < NUM_WIFI_STATES; i++) {
+        args[i] = getWifiStateCount(i, which);
+    }
+    dumpLine(pw, 0, category, WIFI_STATE_COUNT_DATA, args);
+    args = new Object[NUM_WIFI_SUPPL_STATES];
+    for (int i = 0; i < NUM_WIFI_SUPPL_STATES; i++) {
+        args[i] = getWifiSupplStateTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, WIFI_SUPPL_STATE_TIME_DATA, args);
+    for (int i = 0; i < NUM_WIFI_SUPPL_STATES; i++) {
+        args[i] = getWifiSupplStateCount(i, which);
+    }
+    dumpLine(pw, 0, category, WIFI_SUPPL_STATE_COUNT_DATA, args);
+    args = new Object[NUM_WIFI_SIGNAL_STRENGTH_BINS];
+    for (int i = 0; i < NUM_WIFI_SIGNAL_STRENGTH_BINS; i++) {
+        args[i] = getWifiSignalStrengthTime(i, rawRealtime, which) / 1000;
+    }
+    dumpLine(pw, 0, category, WIFI_SIGNAL_STRENGTH_TIME_DATA, args);
+    for (int i = 0; i < NUM_WIFI_SIGNAL_STRENGTH_BINS; i++) {
+        args[i] = getWifiSignalStrengthCount(i, which);
+    }
+    dumpLine(pw, 0, category, WIFI_SIGNAL_STRENGTH_COUNT_DATA, args);
+    final long multicastWakeLockTimeTotalMicros = getWifiMulticastWakelockTime(rawRealtime, which);
+    final int multicastWakeLockCountTotal = getWifiMulticastWakelockCount(which);
+    dumpLine(pw, 0, category, WIFI_MULTICAST_TOTAL_DATA, multicastWakeLockTimeTotalMicros / 1000, multicastWakeLockCountTotal);
+    dumpLine(pw, 0, category, BATTERY_DISCHARGE_DATA, getLowDischargeAmountSinceCharge(), getHighDischargeAmountSinceCharge(), getDischargeAmountScreenOnSinceCharge(), getDischargeAmountScreenOffSinceCharge(), dischargeCount / 1000, dischargeScreenOffCount / 1000, getDischargeAmountScreenDozeSinceCharge(), dischargeScreenDozeCount / 1000, dischargeLightDozeCount / 1000, dischargeDeepDozeCount / 1000);
+    if (reqUid < 0) {
+        final Map<String, ? extends Timer> kernelWakelocks = getKernelWakelockStats();
+        if (kernelWakelocks.size() > 0) {
+            for (Map.Entry<String, ? extends Timer> ent : kernelWakelocks.entrySet()) {
+                sb.setLength(0);
+                printWakeLockCheckin(sb, ent.getValue(), rawRealtime, null, which, "");
+                dumpLine(pw, 0, category, KERNEL_WAKELOCK_DATA, "\"" + ent.getKey() + "\"", sb.toString());
+            }
+        }
+        final Map<String, ? extends Timer> wakeupReasons = getWakeupReasonStats();
+        if (wakeupReasons.size() > 0) {
+            for (Map.Entry<String, ? extends Timer> ent : wakeupReasons.entrySet()) {
+                long totalTimeMicros = ent.getValue().getTotalTimeLocked(rawRealtime, which);
+                int count = ent.getValue().getCountLocked(which);
+                dumpLine(pw, 0, category, WAKEUP_REASON_DATA, "\"" + ent.getKey() + "\"", (totalTimeMicros + 500) / 1000, count);
+            }
+        }
+    }
+    final Map<String, ? extends Timer> rpmStats = getRpmStats();
+    final Map<String, ? extends Timer> screenOffRpmStats = getScreenOffRpmStats();
+    if (rpmStats.size() > 0) {
+        for (Map.Entry<String, ? extends Timer> ent : rpmStats.entrySet()) {
+            sb.setLength(0);
+            Timer totalTimer = ent.getValue();
+            long timeMs = (totalTimer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000;
+            int count = totalTimer.getCountLocked(which);
+            Timer screenOffTimer = screenOffRpmStats.get(ent.getKey());
+            long screenOffTimeMs = screenOffTimer != null ? (screenOffTimer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000 : 0;
+            int screenOffCount = screenOffTimer != null ? screenOffTimer.getCountLocked(which) : 0;
+            if (SCREEN_OFF_RPM_STATS_ENABLED) {
+                dumpLine(pw, 0, category, RESOURCE_POWER_MANAGER_DATA, "\"" + ent.getKey() + "\"", timeMs, count, screenOffTimeMs, screenOffCount);
+            } else {
+                dumpLine(pw, 0, category, RESOURCE_POWER_MANAGER_DATA, "\"" + ent.getKey() + "\"", timeMs, count);
+            }
+        }
+    }
+    final BatteryStatsHelper helper = new BatteryStatsHelper(context, false, wifiOnly);
+    helper.create(this);
+    helper.refreshStats(which, UserHandle.USER_ALL);
+    final List<BatterySipper> sippers = helper.getUsageList();
+    if (sippers != null && sippers.size() > 0) {
+        dumpLine(pw, 0, category, POWER_USE_SUMMARY_DATA, BatteryStatsHelper.makemAh(helper.getPowerProfile().getBatteryCapacity()), BatteryStatsHelper.makemAh(helper.getComputedPower()), BatteryStatsHelper.makemAh(helper.getMinDrainedPower()), BatteryStatsHelper.makemAh(helper.getMaxDrainedPower()));
+        int uid = 0;
+        for (int i = 0; i < sippers.size(); i++) {
+            final BatterySipper bs = sippers.get(i);
+            String label;
+            switch(bs.drainType) {
+                case AMBIENT_DISPLAY:
+                    label = "ambi";
+                    break;
+                case IDLE:
+                    label = "idle";
+                    break;
+                case CELL:
+                    label = "cell";
+                    break;
+                case PHONE:
+                    label = "phone";
+                    break;
+                case WIFI:
+                    label = "wifi";
+                    break;
+                case BLUETOOTH:
+                    label = "blue";
+                    break;
+                case SCREEN:
+                    label = "scrn";
+                    break;
+                case FLASHLIGHT:
+                    label = "flashlight";
+                    break;
+                case APP:
+                    uid = bs.uidObj.getUid();
+                    label = "uid";
+                    break;
+                case USER:
+                    uid = UserHandle.getUid(bs.userId, 0);
+                    label = "user";
+                    break;
+                case UNACCOUNTED:
+                    label = "unacc";
+                    break;
+                case OVERCOUNTED:
+                    label = "over";
+                    break;
+                case CAMERA:
+                    label = "camera";
+                    break;
+                case MEMORY:
+                    label = "memory";
+                    break;
+                default:
+                    label = "???";
+            }
+            dumpLine(pw, uid, category, POWER_USE_ITEM_DATA, label, BatteryStatsHelper.makemAh(bs.totalPowerMah), bs.shouldHide ? 1 : 0, BatteryStatsHelper.makemAh(bs.screenPowerMah), BatteryStatsHelper.makemAh(bs.proportionalSmearMah));
+        }
+    }
+    final long[] cpuFreqs = getCpuFreqs();
+    if (cpuFreqs != null) {
+        sb.setLength(0);
+        for (int i = 0; i < cpuFreqs.length; ++i) {
+            sb.append((i == 0 ? "" : ",") + cpuFreqs[i]);
+        }
+        dumpLine(pw, 0, category, GLOBAL_CPU_FREQ_DATA, sb.toString());
+    }
+    for (int iu = 0; iu < NU; iu++) {
+        final int uid = uidStats.keyAt(iu);
+        if (reqUid >= 0 && uid != reqUid) {
+            continue;
+        }
+        final Uid u = uidStats.valueAt(iu);
+        final long mobileBytesRx = u.getNetworkActivityBytes(NETWORK_MOBILE_RX_DATA, which);
+        final long mobileBytesTx = u.getNetworkActivityBytes(NETWORK_MOBILE_TX_DATA, which);
+        final long wifiBytesRx = u.getNetworkActivityBytes(NETWORK_WIFI_RX_DATA, which);
+        final long wifiBytesTx = u.getNetworkActivityBytes(NETWORK_WIFI_TX_DATA, which);
+        final long mobilePacketsRx = u.getNetworkActivityPackets(NETWORK_MOBILE_RX_DATA, which);
+        final long mobilePacketsTx = u.getNetworkActivityPackets(NETWORK_MOBILE_TX_DATA, which);
+        final long mobileActiveTime = u.getMobileRadioActiveTime(which);
+        final int mobileActiveCount = u.getMobileRadioActiveCount(which);
+        final long mobileWakeup = u.getMobileRadioApWakeupCount(which);
+        final long wifiPacketsRx = u.getNetworkActivityPackets(NETWORK_WIFI_RX_DATA, which);
+        final long wifiPacketsTx = u.getNetworkActivityPackets(NETWORK_WIFI_TX_DATA, which);
+        final long wifiWakeup = u.getWifiRadioApWakeupCount(which);
+        final long btBytesRx = u.getNetworkActivityBytes(NETWORK_BT_RX_DATA, which);
+        final long btBytesTx = u.getNetworkActivityBytes(NETWORK_BT_TX_DATA, which);
+        final long mobileBytesBgRx = u.getNetworkActivityBytes(NETWORK_MOBILE_BG_RX_DATA, which);
+        final long mobileBytesBgTx = u.getNetworkActivityBytes(NETWORK_MOBILE_BG_TX_DATA, which);
+        final long wifiBytesBgRx = u.getNetworkActivityBytes(NETWORK_WIFI_BG_RX_DATA, which);
+        final long wifiBytesBgTx = u.getNetworkActivityBytes(NETWORK_WIFI_BG_TX_DATA, which);
+        final long mobilePacketsBgRx = u.getNetworkActivityPackets(NETWORK_MOBILE_BG_RX_DATA, which);
+        final long mobilePacketsBgTx = u.getNetworkActivityPackets(NETWORK_MOBILE_BG_TX_DATA, which);
+        final long wifiPacketsBgRx = u.getNetworkActivityPackets(NETWORK_WIFI_BG_RX_DATA, which);
+        final long wifiPacketsBgTx = u.getNetworkActivityPackets(NETWORK_WIFI_BG_TX_DATA, which);
+        if (mobileBytesRx > 0 || mobileBytesTx > 0 || wifiBytesRx > 0 || wifiBytesTx > 0 || mobilePacketsRx > 0 || mobilePacketsTx > 0 || wifiPacketsRx > 0 || wifiPacketsTx > 0 || mobileActiveTime > 0 || mobileActiveCount > 0 || btBytesRx > 0 || btBytesTx > 0 || mobileWakeup > 0 || wifiWakeup > 0 || mobileBytesBgRx > 0 || mobileBytesBgTx > 0 || wifiBytesBgRx > 0 || wifiBytesBgTx > 0 || mobilePacketsBgRx > 0 || mobilePacketsBgTx > 0 || wifiPacketsBgRx > 0 || wifiPacketsBgTx > 0) {
+            dumpLine(pw, uid, category, NETWORK_DATA, mobileBytesRx, mobileBytesTx, wifiBytesRx, wifiBytesTx, mobilePacketsRx, mobilePacketsTx, wifiPacketsRx, wifiPacketsTx, mobileActiveTime, mobileActiveCount, btBytesRx, btBytesTx, mobileWakeup, wifiWakeup, mobileBytesBgRx, mobileBytesBgTx, wifiBytesBgRx, wifiBytesBgTx, mobilePacketsBgRx, mobilePacketsBgTx, wifiPacketsBgRx, wifiPacketsBgTx);
+        }
+        dumpControllerActivityLine(pw, uid, category, MODEM_CONTROLLER_DATA, u.getModemControllerActivity(), which);
+        final long fullWifiLockOnTime = u.getFullWifiLockTime(rawRealtime, which);
+        final long wifiScanTime = u.getWifiScanTime(rawRealtime, which);
+        final int wifiScanCount = u.getWifiScanCount(which);
+        final int wifiScanCountBg = u.getWifiScanBackgroundCount(which);
+        final long wifiScanActualTimeMs = (u.getWifiScanActualTime(rawRealtime) + 500) / 1000;
+        final long wifiScanActualTimeMsBg = (u.getWifiScanBackgroundTime(rawRealtime) + 500) / 1000;
+        final long uidWifiRunningTime = u.getWifiRunningTime(rawRealtime, which);
+        if (fullWifiLockOnTime != 0 || wifiScanTime != 0 || wifiScanCount != 0 || wifiScanCountBg != 0 || wifiScanActualTimeMs != 0 || wifiScanActualTimeMsBg != 0 || uidWifiRunningTime != 0) {
+            dumpLine(pw, uid, category, WIFI_DATA, fullWifiLockOnTime, wifiScanTime, uidWifiRunningTime, wifiScanCount, 0, 0, 0, wifiScanCountBg, wifiScanActualTimeMs, wifiScanActualTimeMsBg);
+        }
+        dumpControllerActivityLine(pw, uid, category, WIFI_CONTROLLER_DATA, u.getWifiControllerActivity(), which);
+        final Timer bleTimer = u.getBluetoothScanTimer();
+        if (bleTimer != null) {
+            final long totalTime = (bleTimer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000;
+            if (totalTime != 0) {
+                final int count = bleTimer.getCountLocked(which);
+                final Timer bleTimerBg = u.getBluetoothScanBackgroundTimer();
+                final int countBg = bleTimerBg != null ? bleTimerBg.getCountLocked(which) : 0;
+                final long actualTime = bleTimer.getTotalDurationMsLocked(rawRealtimeMs);
+                final long actualTimeBg = bleTimerBg != null ? bleTimerBg.getTotalDurationMsLocked(rawRealtimeMs) : 0;
+                final int resultCount = u.getBluetoothScanResultCounter() != null ? u.getBluetoothScanResultCounter().getCountLocked(which) : 0;
+                final int resultCountBg = u.getBluetoothScanResultBgCounter() != null ? u.getBluetoothScanResultBgCounter().getCountLocked(which) : 0;
+                final Timer unoptimizedScanTimer = u.getBluetoothUnoptimizedScanTimer();
+                final long unoptimizedScanTotalTime = unoptimizedScanTimer != null ? unoptimizedScanTimer.getTotalDurationMsLocked(rawRealtimeMs) : 0;
+                final long unoptimizedScanMaxTime = unoptimizedScanTimer != null ? unoptimizedScanTimer.getMaxDurationMsLocked(rawRealtimeMs) : 0;
+                final Timer unoptimizedScanTimerBg = u.getBluetoothUnoptimizedScanBackgroundTimer();
+                final long unoptimizedScanTotalTimeBg = unoptimizedScanTimerBg != null ? unoptimizedScanTimerBg.getTotalDurationMsLocked(rawRealtimeMs) : 0;
+                final long unoptimizedScanMaxTimeBg = unoptimizedScanTimerBg != null ? unoptimizedScanTimerBg.getMaxDurationMsLocked(rawRealtimeMs) : 0;
+                dumpLine(pw, uid, category, BLUETOOTH_MISC_DATA, totalTime, count, countBg, actualTime, actualTimeBg, resultCount, resultCountBg, unoptimizedScanTotalTime, unoptimizedScanTotalTimeBg, unoptimizedScanMaxTime, unoptimizedScanMaxTimeBg);
+            }
+        }
+        dumpControllerActivityLine(pw, uid, category, BLUETOOTH_CONTROLLER_DATA, u.getBluetoothControllerActivity(), which);
+        if (u.hasUserActivity()) {
+            args = new Object[Uid.NUM_USER_ACTIVITY_TYPES];
+            boolean hasData = false;
+            for (int i = 0; i < Uid.NUM_USER_ACTIVITY_TYPES; i++) {
+                int val = u.getUserActivityCount(i, which);
+                args[i] = val;
+                if (val != 0)
+                    hasData = true;
+            }
+            if (hasData) {
+                dumpLine(pw, uid, category, USER_ACTIVITY_DATA, args);
+            }
+        }
+        if (u.getAggregatedPartialWakelockTimer() != null) {
+            final Timer timer = u.getAggregatedPartialWakelockTimer();
+            final long totTimeMs = timer.getTotalDurationMsLocked(rawRealtimeMs);
+            final Timer bgTimer = timer.getSubTimer();
+            final long bgTimeMs = bgTimer != null ? bgTimer.getTotalDurationMsLocked(rawRealtimeMs) : 0;
+            dumpLine(pw, uid, category, AGGREGATED_WAKELOCK_DATA, totTimeMs, bgTimeMs);
+        }
+        final ArrayMap<String, ? extends Uid.Wakelock> wakelocks = u.getWakelockStats();
+        for (int iw = wakelocks.size() - 1; iw >= 0; iw--) {
+            final Uid.Wakelock wl = wakelocks.valueAt(iw);
+            String linePrefix = "";
+            sb.setLength(0);
+            linePrefix = printWakeLockCheckin(sb, wl.getWakeTime(WAKE_TYPE_FULL), rawRealtime, "f", which, linePrefix);
+            final Timer pTimer = wl.getWakeTime(WAKE_TYPE_PARTIAL);
+            linePrefix = printWakeLockCheckin(sb, pTimer, rawRealtime, "p", which, linePrefix);
+            linePrefix = printWakeLockCheckin(sb, pTimer != null ? pTimer.getSubTimer() : null, rawRealtime, "bp", which, linePrefix);
+            linePrefix = printWakeLockCheckin(sb, wl.getWakeTime(WAKE_TYPE_WINDOW), rawRealtime, "w", which, linePrefix);
+            if (sb.length() > 0) {
+                String name = wakelocks.keyAt(iw);
+                if (name.indexOf(',') >= 0) {
+                    name = name.replace(',', '_');
+                }
+                if (name.indexOf('\n') >= 0) {
+                    name = name.replace('\n', '_');
+                }
+                if (name.indexOf('\r') >= 0) {
+                    name = name.replace('\r', '_');
+                }
+                dumpLine(pw, uid, category, WAKELOCK_DATA, name, sb.toString());
+            }
+        }
+        final Timer mcTimer = u.getMulticastWakelockStats();
+        if (mcTimer != null) {
+            final long totalMcWakelockTimeMs = mcTimer.getTotalTimeLocked(rawRealtime, which) / 1000;
+            final int countMcWakelock = mcTimer.getCountLocked(which);
+            if (totalMcWakelockTimeMs > 0) {
+                dumpLine(pw, uid, category, WIFI_MULTICAST_DATA, totalMcWakelockTimeMs, countMcWakelock);
+            }
+        }
+        final ArrayMap<String, ? extends Timer> syncs = u.getSyncStats();
+        for (int isy = syncs.size() - 1; isy >= 0; isy--) {
+            final Timer timer = syncs.valueAt(isy);
+            final long totalTime = (timer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000;
+            final int count = timer.getCountLocked(which);
+            final Timer bgTimer = timer.getSubTimer();
+            final long bgTime = bgTimer != null ? bgTimer.getTotalDurationMsLocked(rawRealtimeMs) : -1;
+            final int bgCount = bgTimer != null ? bgTimer.getCountLocked(which) : -1;
+            if (totalTime != 0) {
+                dumpLine(pw, uid, category, SYNC_DATA, "\"" + syncs.keyAt(isy) + "\"", totalTime, count, bgTime, bgCount);
+            }
+        }
+        final ArrayMap<String, ? extends Timer> jobs = u.getJobStats();
+        for (int ij = jobs.size() - 1; ij >= 0; ij--) {
+            final Timer timer = jobs.valueAt(ij);
+            final long totalTime = (timer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000;
+            final int count = timer.getCountLocked(which);
+            final Timer bgTimer = timer.getSubTimer();
+            final long bgTime = bgTimer != null ? bgTimer.getTotalDurationMsLocked(rawRealtimeMs) : -1;
+            final int bgCount = bgTimer != null ? bgTimer.getCountLocked(which) : -1;
+            if (totalTime != 0) {
+                dumpLine(pw, uid, category, JOB_DATA, "\"" + jobs.keyAt(ij) + "\"", totalTime, count, bgTime, bgCount);
+            }
+        }
+        final int[] jobStopReasonCodes = JobParameters.getJobStopReasonCodes();
+        final Object[] jobCompletionArgs = new Object[jobStopReasonCodes.length + 1];
+        final ArrayMap<String, SparseIntArray> completions = u.getJobCompletionStats();
+        for (int ic = completions.size() - 1; ic >= 0; ic--) {
+            SparseIntArray types = completions.valueAt(ic);
+            if (types != null) {
+                jobCompletionArgs[0] = "\"" + completions.keyAt(ic) + "\"";
+                for (int i = 0; i < jobStopReasonCodes.length; i++) {
+                    jobCompletionArgs[i + 1] = types.get(jobStopReasonCodes[i], 0);
+                }
+                dumpLine(pw, uid, category, JOB_COMPLETION_DATA, jobCompletionArgs);
+            }
+        }
+        u.getDeferredJobsCheckinLineLocked(sb, which);
+        if (sb.length() > 0) {
+            dumpLine(pw, uid, category, JOBS_DEFERRED_DATA, sb.toString());
+        }
+        dumpTimer(pw, uid, category, FLASHLIGHT_DATA, u.getFlashlightTurnedOnTimer(), rawRealtime, which);
+        dumpTimer(pw, uid, category, CAMERA_DATA, u.getCameraTurnedOnTimer(), rawRealtime, which);
+        dumpTimer(pw, uid, category, VIDEO_DATA, u.getVideoTurnedOnTimer(), rawRealtime, which);
+        dumpTimer(pw, uid, category, AUDIO_DATA, u.getAudioTurnedOnTimer(), rawRealtime, which);
+        final SparseArray<? extends BatteryStats.Uid.Sensor> sensors = u.getSensorStats();
+        final int NSE = sensors.size();
+        for (int ise = 0; ise < NSE; ise++) {
+            final Uid.Sensor se = sensors.valueAt(ise);
+            final int sensorNumber = sensors.keyAt(ise);
+            final Timer timer = se.getSensorTime();
+            if (timer != null) {
+                final long totalTime = (timer.getTotalTimeLocked(rawRealtime, which) + 500) / 1000;
+                if (totalTime != 0) {
+                    final int count = timer.getCountLocked(which);
+                    final Timer bgTimer = se.getSensorBackgroundTime();
+                    final int bgCount = bgTimer != null ? bgTimer.getCountLocked(which) : 0;
+                    final long actualTime = timer.getTotalDurationMsLocked(rawRealtimeMs);
+                    final long bgActualTime = bgTimer != null ? bgTimer.getTotalDurationMsLocked(rawRealtimeMs) : 0;
+                    dumpLine(pw, uid, category, SENSOR_DATA, sensorNumber, totalTime, count, bgCount, actualTime, bgActualTime);
+                }
+            }
+        }
+        dumpTimer(pw, uid, category, VIBRATOR_DATA, u.getVibratorOnTimer(), rawRealtime, which);
+        dumpTimer(pw, uid, category, FOREGROUND_ACTIVITY_DATA, u.getForegroundActivityTimer(), rawRealtime, which);
+        dumpTimer(pw, uid, category, FOREGROUND_SERVICE_DATA, u.getForegroundServiceTimer(), rawRealtime, which);
+        final Object[] stateTimes = new Object[Uid.NUM_PROCESS_STATE];
+        long totalStateTime = 0;
+        for (int ips = 0; ips < Uid.NUM_PROCESS_STATE; ips++) {
+            final long time = u.getProcessStateTime(ips, rawRealtime, which);
+            totalStateTime += time;
+            stateTimes[ips] = (time + 500) / 1000;
+        }
+        if (totalStateTime > 0) {
+            dumpLine(pw, uid, category, STATE_TIME_DATA, stateTimes);
+        }
+        final long userCpuTimeUs = u.getUserCpuTimeUs(which);
+        final long systemCpuTimeUs = u.getSystemCpuTimeUs(which);
+        if (userCpuTimeUs > 0 || systemCpuTimeUs > 0) {
+            dumpLine(pw, uid, category, CPU_DATA, userCpuTimeUs / 1000, systemCpuTimeUs / 1000, 0);
+        }
+        if (cpuFreqs != null) {
+            final long[] cpuFreqTimeMs = u.getCpuFreqTimes(which);
+            if (cpuFreqTimeMs != null && cpuFreqTimeMs.length == cpuFreqs.length) {
+                sb.setLength(0);
+                for (int i = 0; i < cpuFreqTimeMs.length; ++i) {
+                    sb.append((i == 0 ? "" : ",") + cpuFreqTimeMs[i]);
+                }
+                final long[] screenOffCpuFreqTimeMs = u.getScreenOffCpuFreqTimes(which);
+                if (screenOffCpuFreqTimeMs != null) {
+                    for (int i = 0; i < screenOffCpuFreqTimeMs.length; ++i) {
+                        sb.append("," + screenOffCpuFreqTimeMs[i]);
+                    }
+                } else {
+                    for (int i = 0; i < cpuFreqTimeMs.length; ++i) {
+                        sb.append(",0");
+                    }
+                }
+                dumpLine(pw, uid, category, CPU_TIMES_AT_FREQ_DATA, UID_TIMES_TYPE_ALL, cpuFreqTimeMs.length, sb.toString());
+            }
+            for (int procState = 0; procState < Uid.NUM_PROCESS_STATE; ++procState) {
+                final long[] timesMs = u.getCpuFreqTimes(which, procState);
+                if (timesMs != null && timesMs.length == cpuFreqs.length) {
+                    sb.setLength(0);
+                    for (int i = 0; i < timesMs.length; ++i) {
+                        sb.append((i == 0 ? "" : ",") + timesMs[i]);
+                    }
+                    final long[] screenOffTimesMs = u.getScreenOffCpuFreqTimes(which, procState);
+                    if (screenOffTimesMs != null) {
+                        for (int i = 0; i < screenOffTimesMs.length; ++i) {
+                            sb.append("," + screenOffTimesMs[i]);
+                        }
+                    } else {
+                        for (int i = 0; i < timesMs.length; ++i) {
+                            sb.append(",0");
+                        }
+                    }
+                    dumpLine(pw, uid, category, CPU_TIMES_AT_FREQ_DATA, Uid.UID_PROCESS_TYPES[procState], timesMs.length, sb.toString());
+                }
+            }
+        }
+        final ArrayMap<String, ? extends BatteryStats.Uid.Proc> processStats = u.getProcessStats();
+        for (int ipr = processStats.size() - 1; ipr >= 0; ipr--) {
+            final Uid.Proc ps = processStats.valueAt(ipr);
+            final long userMillis = ps.getUserTime(which);
+            final long systemMillis = ps.getSystemTime(which);
+            final long foregroundMillis = ps.getForegroundTime(which);
+            final int starts = ps.getStarts(which);
+            final int numCrashes = ps.getNumCrashes(which);
+            final int numAnrs = ps.getNumAnrs(which);
+            if (userMillis != 0 || systemMillis != 0 || foregroundMillis != 0 || starts != 0 || numAnrs != 0 || numCrashes != 0) {
+                dumpLine(pw, uid, category, PROCESS_DATA, "\"" + processStats.keyAt(ipr) + "\"", userMillis, systemMillis, foregroundMillis, starts, numAnrs, numCrashes);
+            }
+        }
+        final ArrayMap<String, ? extends BatteryStats.Uid.Pkg> packageStats = u.getPackageStats();
+        for (int ipkg = packageStats.size() - 1; ipkg >= 0; ipkg--) {
+            final Uid.Pkg ps = packageStats.valueAt(ipkg);
+            int wakeups = 0;
+            final ArrayMap<String, ? extends Counter> alarms = ps.getWakeupAlarmStats();
+            for (int iwa = alarms.size() - 1; iwa >= 0; iwa--) {
+                int count = alarms.valueAt(iwa).getCountLocked(which);
+                wakeups += count;
+                String name = alarms.keyAt(iwa).replace(',', '_');
+                dumpLine(pw, uid, category, WAKEUP_ALARM_DATA, name, count);
+            }
+            final ArrayMap<String, ? extends Uid.Pkg.Serv> serviceStats = ps.getServiceStats();
+            for (int isvc = serviceStats.size() - 1; isvc >= 0; isvc--) {
+                final BatteryStats.Uid.Pkg.Serv ss = serviceStats.valueAt(isvc);
+                final long startTime = ss.getStartTime(batteryUptime, which);
+                final int starts = ss.getStarts(which);
+                final int launches = ss.getLaunches(which);
+                if (startTime != 0 || starts != 0 || launches != 0) {
+                    dumpLine(pw, uid, category, APK_DATA, wakeups, packageStats.keyAt(ipkg), serviceStats.keyAt(isvc), startTime / 1000, starts, launches);
+                }
+            }
+        }
+    }
+}

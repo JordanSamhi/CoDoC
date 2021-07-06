@@ -1,0 +1,15 @@
+public void addRoute(RouteInfo route){
+    if (route.getGroup() != null) {
+        throw new IllegalStateException("Route " + route + " is already part of a group.");
+    }
+    if (route.getCategory() != mCategory) {
+        throw new IllegalArgumentException("Route cannot be added to a group with a different category. " + "(Route category=" + route.getCategory() + " group category=" + mCategory + ")");
+    }
+    final int at = mRoutes.size();
+    mRoutes.add(route);
+    route.mGroup = this;
+    mUpdateName = true;
+    updateVolume();
+    routeUpdated();
+    dispatchRouteGrouped(route, this, at);
+}

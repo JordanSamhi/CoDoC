@@ -1,0 +1,21 @@
+public void layoutSurface(final int left, final int top, final int right, final int bottom){
+    if (left > right || top > bottom) {
+        throw new IllegalArgumentException("Invalid parameter");
+    }
+    executeOrPostRunnableOnMainThread(new Runnable() {
+
+        @MainThread
+        @Override
+        public void run() {
+            try {
+                if (DEBUG)
+                    Log.d(TAG, "layoutSurface (l=" + left + ", t=" + top + ", r=" + right + ", b=" + bottom + ",)");
+                if (mSessionCallback != null) {
+                    mSessionCallback.onLayoutSurface(left, top, right, bottom);
+                }
+            } catch (RemoteException e) {
+                Log.w(TAG, "error in layoutSurface", e);
+            }
+        }
+    });
+}

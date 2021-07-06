@@ -1,0 +1,8 @@
+public void writeExif(byte[] jpeg, OutputStream exifOutStream) throws IOException{
+    if (jpeg == null || exifOutStream == null) {
+        throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
+    }
+    OutputStream s = getExifWriterStream(exifOutStream);
+    s.write(jpeg, 0, jpeg.length);
+    s.flush();
+}

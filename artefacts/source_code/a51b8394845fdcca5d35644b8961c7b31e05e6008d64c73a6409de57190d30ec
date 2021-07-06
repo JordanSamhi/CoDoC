@@ -1,0 +1,12 @@
+public void setAllowedCarriersResponse_1_4(RadioResponseInfo responseInfo){
+    int ret = TelephonyManager.SET_CARRIER_RESTRICTION_ERROR;
+    RILRequest rr = mRil.processResponse(responseInfo);
+    if (rr != null) {
+        mRil.riljLog("setAllowedCarriersResponse_1_4 - error = " + responseInfo.error);
+        if (responseInfo.error == RadioError.NONE) {
+            ret = TelephonyManager.SET_CARRIER_RESTRICTION_SUCCESS;
+            sendMessageResponse(rr.mResult, ret);
+        }
+        mRil.processResponseDone(rr, responseInfo, ret);
+    }
+}

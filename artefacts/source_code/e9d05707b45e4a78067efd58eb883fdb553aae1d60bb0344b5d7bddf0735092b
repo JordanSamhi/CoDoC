@@ -1,0 +1,14 @@
+public void testFocus_serviceDoesNotAutofill() throws Throwable{
+    MyAutofillService.newCannedResponse().reply();
+    setService();
+    mActivityRule.runOnUiThread(() -> mUsername.requestFocus());
+    MyAutofillService.getLastFillRequest();
+    mActivityRule.runOnUiThread(() -> mPassword.requestFocus());
+    mActivityRule.runOnUiThread(() -> {
+        BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+        while (state.keepRunning()) {
+            mUsername.requestFocus();
+            mPassword.requestFocus();
+        }
+    });
+}

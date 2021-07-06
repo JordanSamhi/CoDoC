@@ -1,0 +1,24 @@
+public static Map<Integer, Map<String, List<Rule>>> splitRulesIntoIndexBuckets(List<Rule> rules){
+    if (rules == null) {
+        throw new IllegalArgumentException("Index buckets cannot be created for null rule list.");
+    }
+    Map<Integer, Map<String, List<Rule>>> typeOrganizedRuleMap = new HashMap();
+    typeOrganizedRuleMap.put(NOT_INDEXED, new HashMap());
+    typeOrganizedRuleMap.put(PACKAGE_NAME_INDEXED, new HashMap<>());
+    typeOrganizedRuleMap.put(APP_CERTIFICATE_INDEXED, new HashMap<>());
+    for (Rule rule : rules) {
+        RuleIndexingDetails indexingDetails;
+        try {
+            indexingDetails = getIndexingDetails(rule.getFormula());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format("Malformed rule identified. [%s]", rule.toString()));
+        }
+        int ruleIndexType = indexingDetails.getIndexType();
+        String ruleKey = indexingDetails.getRuleKey();
+        if (!typeOrganizedRuleMap.get(ruleIndexType).containsKey(ruleKey)) {
+            typeOrganizedRuleMap.get(ruleIndexType).put(ruleKey, new ArrayList());
+        }
+        typeOrganizedRuleMap.get(ruleIndexType).get(ruleKey).add(rule);
+    }
+    return typeOrganizedRuleMap;
+}

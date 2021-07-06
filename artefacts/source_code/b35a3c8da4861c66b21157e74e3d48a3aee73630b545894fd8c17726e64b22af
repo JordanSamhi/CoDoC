@@ -1,0 +1,9 @@
+public void close(){
+    synchronized (this) {
+        if (!mOpen) {
+            return;
+        }
+        mOpen = false;
+        decRefsLocked(hashCode());
+    }
+}

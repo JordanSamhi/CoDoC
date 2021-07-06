@@ -1,0 +1,50 @@
+
+     * Writes the audio data to the audio sink for playback (streaming mode),
+     * or copies audio data for later playback (static buffer mode).
+     * The format specified in the AudioTrack constructor should be
+     * {@link AudioFormat#ENCODING_PCM_FLOAT} to correspond to the data in the array.
+     * <p>
+     * In streaming mode, the blocking behavior depends on the write mode.  If the write mode is
+     * {@link #WRITE_BLOCKING}, the write will normally block until all the data has been enqueued
+     * for playback, and will return a full transfer count.  However, if the write mode is
+     * {@link #WRITE_NON_BLOCKING}, or the track is stopped or paused on entry, or another thread
+     * interrupts the write by calling stop or pause, or an I/O error
+     * occurs during the write, then the write may return a short transfer count.
+     * <p>
+     * In static buffer mode, copies the data to the buffer starting at offset 0,
+     * and the write mode is ignored.
+     * Note that the actual playback of this data might occur after this function returns.
+     *
+     * @param audioData the array that holds the data to write.
+     *     The implementation does not clip for sample values within the nominal range
+     *     [-1.0f, 1.0f], provided that all gains in the audio pipeline are
+     *     less than or equal to unity (1.0f), and in the absence of post-processing effects
+     *     that could add energy, such as reverb.  For the convenience of applications
+     *     that compute samples using filters with non-unity gain,
+     *     sample values +3 dB beyond the nominal range are permitted.
+     *     However such values may eventually be limited or clipped, depending on various gains
+     *     and later processing in the audio path.  Therefore applications are encouraged
+     *     to provide samples values within the nominal range.
+     * @param offsetInFloats the offset, expressed as a number of floats,
+     *     in audioData where the data to write starts.
+     *    Must not be negative, or cause the data access to go out of bounds of the array.
+     * @param sizeInFloats the number of floats to write in audioData after the offset.
+     *    Must not be negative, or cause the data access to go out of bounds of the array.
+     * @param writeMode one of {@link #WRITE_BLOCKING}, {@link #WRITE_NON_BLOCKING}. It has no
+     *     effect in static mode.
+     *     <br>With {@link #WRITE_BLOCKING}, the write will block until all data has been written
+     *         to the audio sink.
+     *     <br>With {@link #WRITE_NON_BLOCKING}, the write will return immediately after
+     *     queuing as much audio data for playback as possible without blocking.
+     * @return zero or the positive number of floats that were written, or one of the following
+     *    error codes. The number of floats will be a multiple of the channel count not to
+     *    exceed sizeInFloats.
+     * <ul>
+     * <li>{@link #ERROR_INVALID_OPERATION} if the track isn't properly initialized</li>
+     * <li>{@link #ERROR_BAD_VALUE} if the parameters don't resolve to valid data and indexes</li>
+     * <li>{@link #ERROR_DEAD_OBJECT} if the AudioTrack is not valid anymore and
+     *    needs to be recreated. The dead object error code is not returned if some data was
+     *    successfully transferred. In this case, the error is returned at the next write()</li>
+     * <li>{@link #ERROR} in case of other error</li>
+     * </ul>
+     

@@ -1,0 +1,29 @@
+public void accept(int callType, ImsStreamMediaProfile profile) throws ImsException{
+    logi("accept :: callType=" + callType + ", profile=" + profile);
+    if (mAnswerWithRtt) {
+        profile.mRttMode = ImsStreamMediaProfile.RTT_MODE_FULL;
+        logi("accept :: changing media profile RTT mode to full");
+    }
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            throw new ImsException("No call to answer", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        try {
+            mSession.accept(callType, profile);
+        } catch (Throwable t) {
+            loge("accept :: ", t);
+            throw new ImsException("accept()", t, 0);
+        }
+        if (mInCall && (mProposedCallProfile != null)) {
+            if (DBG) {
+                logi("accept :: call profile will be updated");
+            }
+            mCallProfile = mProposedCallProfile;
+            trackVideoStateHistory(mCallProfile);
+            mProposedCallProfile = null;
+        }
+        if (mInCall && (mUpdateRequest == UPDATE_UNSPECIFIED)) {
+            mUpdateRequest = UPDATE_NONE;
+        }
+    }
+}

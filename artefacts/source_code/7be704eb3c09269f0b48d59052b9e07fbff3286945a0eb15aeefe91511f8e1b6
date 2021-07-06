@@ -1,0 +1,10 @@
+public Rect getBounds() throws UiObjectNotFoundException{
+    Tracer.trace();
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    Rect nodeRect = new Rect();
+    node.getBoundsInScreen(nodeRect);
+    return nodeRect;
+}

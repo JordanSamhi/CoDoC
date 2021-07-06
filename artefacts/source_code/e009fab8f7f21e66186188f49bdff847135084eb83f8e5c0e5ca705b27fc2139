@@ -1,0 +1,20 @@
+public static boolean setProcessDefaultNetwork(@Nullable Network network){
+    int netId = (network == null) ? NETID_UNSET : network.netId;
+    boolean isSameNetId = (netId == NetworkUtils.getBoundNetworkForProcess());
+    if (netId != NETID_UNSET) {
+        netId = network.getNetIdForResolv();
+    }
+    if (!NetworkUtils.bindProcessToNetwork(netId)) {
+        return false;
+    }
+    if (!isSameNetId) {
+        try {
+            Proxy.setHttpProxySystemProperty(getInstance().getDefaultProxy());
+        } catch (SecurityException e) {
+            Log.e(TAG, "Can't set proxy properties", e);
+        }
+        InetAddress.clearDnsCache();
+        NetworkEventDispatcher.getInstance().onNetworkConfigurationChanged();
+    }
+    return true;
+}

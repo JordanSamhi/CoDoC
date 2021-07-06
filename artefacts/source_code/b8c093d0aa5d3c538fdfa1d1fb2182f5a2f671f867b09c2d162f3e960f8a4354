@@ -1,0 +1,33 @@
+public void dispatchInitialProvideContentCaptureStructure(){
+    AttachInfo ai = mAttachInfo;
+    if (ai == null) {
+        Log.w(CONTENT_CAPTURE_LOG_TAG, "dispatchProvideContentCaptureStructure(): no AttachInfo for " + this);
+        return;
+    }
+    ContentCaptureManager ccm = ai.mContentCaptureManager;
+    if (ccm == null) {
+        Log.w(CONTENT_CAPTURE_LOG_TAG, "dispatchProvideContentCaptureStructure(): " + "no ContentCaptureManager for " + this);
+        return;
+    }
+    ai.mReadyForContentCaptureUpdates = true;
+    if (!isImportantForContentCapture()) {
+        if (Log.isLoggable(CONTENT_CAPTURE_LOG_TAG, Log.DEBUG)) {
+            Log.d(CONTENT_CAPTURE_LOG_TAG, "dispatchProvideContentCaptureStructure(): decorView is not important");
+        }
+        return;
+    }
+    ai.mContentCaptureManager = ccm;
+    ContentCaptureSession session = getContentCaptureSession();
+    if (session == null) {
+        if (Log.isLoggable(CONTENT_CAPTURE_LOG_TAG, Log.DEBUG)) {
+            Log.d(CONTENT_CAPTURE_LOG_TAG, "dispatchProvideContentCaptureStructure(): no session for " + this);
+        }
+        return;
+    }
+    session.internalNotifyViewTreeEvent(true);
+    try {
+        dispatchProvideContentCaptureStructure();
+    } finally {
+        session.internalNotifyViewTreeEvent(false);
+    }
+}

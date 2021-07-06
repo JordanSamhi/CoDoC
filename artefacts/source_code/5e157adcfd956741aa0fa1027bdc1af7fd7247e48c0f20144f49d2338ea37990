@@ -1,0 +1,13 @@
+public void removeSensorPrivacyListener(OnSensorPrivacyChangedListener listener){
+    synchronized (mListeners) {
+        ISensorPrivacyListener iListener = mListeners.get(listener);
+        if (iListener != null) {
+            mListeners.remove(iListener);
+            try {
+                mService.removeSensorPrivacyListener(iListener);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

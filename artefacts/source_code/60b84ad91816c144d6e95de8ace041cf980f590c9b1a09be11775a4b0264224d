@@ -1,0 +1,24 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeInt(mAction);
+    dest.writeFloat(mX);
+    dest.writeFloat(mY);
+    dest.writeInt(mDragResult ? 1 : 0);
+    if (mClipData == null) {
+        dest.writeInt(0);
+    } else {
+        dest.writeInt(1);
+        mClipData.writeToParcel(dest, flags);
+    }
+    if (mClipDescription == null) {
+        dest.writeInt(0);
+    } else {
+        dest.writeInt(1);
+        mClipDescription.writeToParcel(dest, flags);
+    }
+    if (mDragAndDropPermissions == null) {
+        dest.writeInt(0);
+    } else {
+        dest.writeInt(1);
+        dest.writeStrongBinder(mDragAndDropPermissions.asBinder());
+    }
+}

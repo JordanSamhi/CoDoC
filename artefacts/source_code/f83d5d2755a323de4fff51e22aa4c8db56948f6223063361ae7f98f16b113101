@@ -1,0 +1,15 @@
+public boolean setRoamingOverride(List<String> gsmRoamingList, List<String> gsmNonRoamingList, List<String> cdmaRoamingList, List<String> cdmaNonRoamingList){
+    String iccId = getIccSerialNumber();
+    if (TextUtils.isEmpty(iccId)) {
+        return false;
+    }
+    setRoamingOverrideHelper(gsmRoamingList, GSM_ROAMING_LIST_OVERRIDE_PREFIX, iccId);
+    setRoamingOverrideHelper(gsmNonRoamingList, GSM_NON_ROAMING_LIST_OVERRIDE_PREFIX, iccId);
+    setRoamingOverrideHelper(cdmaRoamingList, CDMA_ROAMING_LIST_OVERRIDE_PREFIX, iccId);
+    setRoamingOverrideHelper(cdmaNonRoamingList, CDMA_NON_ROAMING_LIST_OVERRIDE_PREFIX, iccId);
+    ServiceStateTracker tracker = getServiceStateTracker();
+    if (tracker != null) {
+        tracker.pollState();
+    }
+    return true;
+}

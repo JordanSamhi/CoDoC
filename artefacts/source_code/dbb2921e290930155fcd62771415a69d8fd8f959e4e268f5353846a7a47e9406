@@ -1,0 +1,15 @@
+public static int lookUpResourceId(@NonNull Resources res, @Nullable String resourceName, @Nullable String resourceType, String packageName){
+    if (resourceName == null) {
+        return 0;
+    }
+    try {
+        try {
+            return Integer.parseInt(resourceName);
+        } catch (NumberFormatException ignore) {
+        }
+        return res.getIdentifier(resourceName, resourceType, packageName);
+    } catch (NotFoundException e) {
+        Log.e(TAG, "Resource ID for name=" + resourceName + " not found in package " + packageName);
+        return 0;
+    }
+}

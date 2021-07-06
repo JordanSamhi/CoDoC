@@ -1,0 +1,24 @@
+public void setServerParams(@NonNull byte[] serverParams) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    int userId = UserHandle.getCallingUserId();
+    int uid = Binder.getCallingUid();
+    byte[] currentServerParams = mDatabase.getServerParams(userId, uid);
+    if (Arrays.equals(serverParams, currentServerParams)) {
+        Log.v(TAG, "Not updating server params - same as old value.");
+        return;
+    }
+    long updatedRows = mDatabase.setServerParams(userId, uid, serverParams);
+    if (updatedRows < 0) {
+        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, "Database failure trying to set server params.");
+    }
+    if (currentServerParams == null) {
+        Log.i(TAG, "Initialized server params.");
+        return;
+    }
+    if (mDatabase.getSnapshotVersion(userId, uid) != null) {
+        mDatabase.setShouldCreateSnapshot(userId, uid, true);
+        Log.i(TAG, "Updated server params. Snapshot must be updated");
+    } else {
+        Log.i(TAG, "Updated server params. Snapshot didn't exist");
+    }
+}

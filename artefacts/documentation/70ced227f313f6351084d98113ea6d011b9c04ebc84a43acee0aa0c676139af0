@@ -1,0 +1,33 @@
+
+     * The application is having its entire file system contents backed up.  {@code data}
+     * points to the backup destination, and the app has the opportunity to choose which
+     * files are to be stored.  To commit a file as part of the backup, call the
+     * {@link #fullBackupFile(File, FullBackupDataOutput)} helper method.  After all file
+     * data is written to the output, the agent returns from this method and the backup
+     * operation concludes.
+     *
+     * <p>Certain parts of the app's data are never backed up even if the app explicitly
+     * sends them to the output:
+     *
+     * <ul>
+     * <li>The contents of the {@link #getCacheDir()} directory</li>
+     * <li>The contents of the {@link #getCodeCacheDir()} directory</li>
+     * <li>The contents of the {@link #getNoBackupFilesDir()} directory</li>
+     * <li>The contents of the app's shared library directory</li>
+     * </ul>
+     *
+     * <p>The default implementation of this method backs up the entirety of the
+     * application's "owned" file system trees to the output other than the few exceptions
+     * listed above.  Apps only need to override this method if they need to impose special
+     * limitations on which files are being stored beyond the control that
+     * {@link #getNoBackupFilesDir()} offers.
+     * Alternatively they can provide an xml resource to specify what data to include or exclude.
+     *
+     *
+     * @param data A structured wrapper pointing to the backup destination.
+     * @throws IOException
+     *
+     * @see Context#getNoBackupFilesDir()
+     * @see #fullBackupFile(File, FullBackupDataOutput)
+     * @see #onRestoreFile(ParcelFileDescriptor, long, File, int, long, long)
+     

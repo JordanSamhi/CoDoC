@@ -1,0 +1,11 @@
+public int configure(@NonNull FilterConfiguration config){
+    synchronized (mLock) {
+        TunerUtils.checkResourceState(TAG, mIsClosed);
+        Settings s = config.getSettings();
+        int subType = (s == null) ? mSubtype : s.getType();
+        if (mMainType != config.getType() || mSubtype != subType) {
+            throw new IllegalArgumentException("Invalid filter config. filter main type=" + mMainType + ", filter subtype=" + mSubtype + ". config main type=" + config.getType() + ", config subtype=" + subType);
+        }
+        return nativeConfigureFilter(config.getType(), subType, config);
+    }
+}

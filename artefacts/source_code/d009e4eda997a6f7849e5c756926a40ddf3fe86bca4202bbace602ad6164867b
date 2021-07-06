@@ -1,0 +1,22 @@
+public static SoftApCapability updateCapabilityFromResource(@NonNull Context context){
+    long features = 0;
+    if (isAcsSupported(context)) {
+        Log.d(TAG, "Update Softap capability, add acs feature support");
+        features |= SoftApCapability.SOFTAP_FEATURE_ACS_OFFLOAD;
+    }
+    if (isClientForceDisconnectSupported(context)) {
+        Log.d(TAG, "Update Softap capability, add client control feature support");
+        features |= SoftApCapability.SOFTAP_FEATURE_CLIENT_FORCE_DISCONNECT;
+    }
+    if (isWpa3SaeSupported(context)) {
+        Log.d(TAG, "Update Softap capability, add SAE feature support");
+        features |= SoftApCapability.SOFTAP_FEATURE_WPA3_SAE;
+    }
+    SoftApCapability capability = new SoftApCapability(features);
+    int hardwareSupportedMaxClient = context.getResources().getInteger(R.integer.config_wifiHardwareSoftapMaxClientCount);
+    if (hardwareSupportedMaxClient > 0) {
+        Log.d(TAG, "Update Softap capability, max client = " + hardwareSupportedMaxClient);
+        capability.setMaxSupportedClients(hardwareSupportedMaxClient);
+    }
+    return capability;
+}

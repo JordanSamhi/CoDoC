@@ -1,0 +1,24 @@
+public void requestLocationUpdates(@Nullable LocationRequest locationRequest, @NonNull @CallbackExecutor Executor executor, @NonNull LocationListener listener){
+    synchronized (mListeners) {
+        LocationListenerTransport transport = mListeners.get(listener);
+        if (transport != null) {
+            transport.unregister();
+        } else {
+            transport = new LocationListenerTransport(listener);
+            mListeners.put(listener, transport);
+        }
+        transport.register(executor);
+        boolean registered = false;
+        try {
+            mService.requestLocationUpdates(locationRequest, transport, null, mContext.getPackageName(), mContext.getAttributionTag(), transport.getListenerId());
+            registered = true;
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        } finally {
+            if (!registered) {
+                transport.unregister();
+                mListeners.remove(listener);
+            }
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public void startRtt(@NonNull Connection.RttTextStream rttTextStream){
+    Log.startSession("RC.sR", getActiveOwnerInfo());
+    try {
+        if (mConnected) {
+            mConnectionService.startRtt(mConnectionId, rttTextStream.getFdFromInCall(), rttTextStream.getFdToInCall(), null);
+        }
+    } catch (RemoteException ignored) {
+    } finally {
+        Log.endSession();
+    }
+}

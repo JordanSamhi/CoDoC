@@ -1,0 +1,41 @@
+public void setBackupServiceActive(int userId, boolean makeActive){
+    enforcePermissionsOnUser(userId);
+    if (userId != UserHandle.USER_SYSTEM) {
+        try {
+            File rememberFile = getRememberActivatedFileForNonSystemUser(userId);
+            createFile(rememberFile);
+            RandomAccessFileUtils.writeBoolean(rememberFile, makeActive);
+        } catch (IOException e) {
+            Slog.e(TAG, "Unable to persist backup service activity", e);
+        }
+    }
+    if (mGlobalDisable) {
+        Slog.i(TAG, "Backup service not supported");
+        return;
+    }
+    synchronized (mStateLock) {
+        Slog.i(TAG, "Making backup " + (makeActive ? "" : "in") + "active");
+        if (makeActive) {
+            try {
+                activateBackupForUserLocked(userId);
+            } catch (IOException e) {
+                Slog.e(TAG, "Unable to persist backup service activity");
+            }
+            if (getUserManager().isUserUnlocked(userId)) {
+                long oldId = Binder.clearCallingIdentity();
+                try {
+                    startServiceForUser(userId);
+                } finally {
+                    Binder.restoreCallingIdentity(oldId);
+                }
+            }
+        } else {
+            try {
+                deactivateBackupForUserLocked(userId);
+            } catch (IOException e) {
+                Slog.e(TAG, "Unable to persist backup service inactivity");
+            }
+            onStopUser(userId);
+        }
+    }
+}

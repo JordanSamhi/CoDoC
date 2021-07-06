@@ -1,0 +1,15 @@
+public void setKeyListener(KeyListener input){
+    mListenerChanged = true;
+    setKeyListenerOnly(input);
+    fixFocusableAndClickableSettings();
+    if (input != null) {
+        createEditorIfNeeded();
+        setInputTypeFromEditor();
+    } else {
+        if (mEditor != null)
+            mEditor.mInputType = EditorInfo.TYPE_NULL;
+    }
+    InputMethodManager imm = getInputMethodManager();
+    if (imm != null)
+        imm.restartInput(this);
+}

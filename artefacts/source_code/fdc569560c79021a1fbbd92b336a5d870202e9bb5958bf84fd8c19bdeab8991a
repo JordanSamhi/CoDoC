@@ -1,0 +1,12 @@
+public void add(T proto){
+    int protoLength = mProtoProvider.getItemSize(proto);
+    if (protoLength > mBufferCapacity) {
+        throw new IllegalStateException("Trace object too large for the buffer. Buffer size:" + mBufferCapacity + " Object size: " + protoLength);
+    }
+    synchronized (mBufferLock) {
+        discardOldest(protoLength);
+        mBuffer.add(proto);
+        mBufferUsedSize += protoLength;
+        mBufferLock.notify();
+    }
+}

@@ -1,0 +1,13 @@
+public boolean networkTypeEquals(@NonNull ScanResultMatchInfo other, boolean saeAutoUpgradeEnabled){
+    boolean networkTypeEquals;
+    if (other.pskSaeInTransitionMode && networkType == WifiConfiguration.SECURITY_TYPE_PSK || (pskSaeInTransitionMode && other.networkType == WifiConfiguration.SECURITY_TYPE_PSK)) {
+        networkTypeEquals = true;
+    } else if ((networkType == WifiConfiguration.SECURITY_TYPE_OPEN && other.oweInTransitionMode) || (oweInTransitionMode && other.networkType == WifiConfiguration.SECURITY_TYPE_OPEN)) {
+        networkTypeEquals = true;
+    } else if ((saeAutoUpgradeEnabled) && ((mFromScanResult && networkType == WifiConfiguration.SECURITY_TYPE_SAE && other.networkType == WifiConfiguration.SECURITY_TYPE_PSK) || (other.mFromScanResult && other.networkType == WifiConfiguration.SECURITY_TYPE_SAE && networkType == WifiConfiguration.SECURITY_TYPE_PSK))) {
+        networkTypeEquals = true;
+    } else {
+        networkTypeEquals = networkType == other.networkType;
+    }
+    return networkTypeEquals;
+}

@@ -1,0 +1,21 @@
+public boolean applyChildOrder(List<? extends NotificationListItem> childOrder, VisualStabilityManager visualStabilityManager, VisualStabilityManager.Callback callback){
+    if (childOrder == null) {
+        return false;
+    }
+    boolean result = false;
+    for (int i = 0; i < mAttachedChildren.size() && i < childOrder.size(); i++) {
+        ExpandableNotificationRow child = mAttachedChildren.get(i);
+        ExpandableNotificationRow desiredChild = (ExpandableNotificationRow) childOrder.get(i);
+        if (child != desiredChild) {
+            if (visualStabilityManager.canReorderNotification(desiredChild)) {
+                mAttachedChildren.remove(desiredChild);
+                mAttachedChildren.add(i, desiredChild);
+                result = true;
+            } else {
+                visualStabilityManager.addReorderingAllowedCallback(callback, false);
+            }
+        }
+    }
+    updateExpansionStates();
+    return result;
+}

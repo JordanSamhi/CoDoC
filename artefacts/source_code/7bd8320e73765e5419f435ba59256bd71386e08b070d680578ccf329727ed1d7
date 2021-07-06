@@ -1,0 +1,9 @@
+public void adbBackup(@UserIdInt int userId, ParcelFileDescriptor fd, boolean includeApks, boolean includeObbs, boolean includeShared, boolean doWidgets, boolean doAllApps, boolean includeSystem, boolean doCompress, boolean doKeyValue, String[] packageNames){
+    if (!isUserReadyForBackup(userId)) {
+        return;
+    }
+    UserBackupManagerService userBackupManagerService = getServiceForUserIfCallerHasPermission(userId, "adbBackup()");
+    if (userBackupManagerService != null) {
+        userBackupManagerService.adbBackup(fd, includeApks, includeObbs, includeShared, doWidgets, doAllApps, includeSystem, doCompress, doKeyValue, packageNames);
+    }
+}

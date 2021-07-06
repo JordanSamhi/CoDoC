@@ -1,0 +1,14 @@
+public ParcelFileDescriptor executeForBlobFileDescriptor(String sql, Object[] bindArgs, int connectionFlags, CancellationSignal cancellationSignal){
+    if (sql == null) {
+        throw new IllegalArgumentException("sql must not be null.");
+    }
+    if (executeSpecial(sql, bindArgs, connectionFlags, cancellationSignal)) {
+        return null;
+    }
+    acquireConnection(sql, connectionFlags, cancellationSignal);
+    try {
+        return mConnection.executeForBlobFileDescriptor(sql, bindArgs, cancellationSignal);
+    } finally {
+        releaseConnection();
+    }
+}

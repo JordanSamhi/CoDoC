@@ -1,0 +1,43 @@
+public final void onKeyUpPanel(int featureId, KeyEvent event){
+    if (mPanelChordingKey != 0) {
+        mPanelChordingKey = 0;
+        final PanelFeatureState st = getPanelState(featureId, false);
+        if (event.isCanceled() || (mDecor != null && mDecor.mPrimaryActionMode != null) || (st == null)) {
+            return;
+        }
+        boolean playSoundEffect = false;
+        if (featureId == FEATURE_OPTIONS_PANEL && mDecorContentParent != null && mDecorContentParent.canShowOverflowMenu() && !ViewConfiguration.get(getContext()).hasPermanentMenuKey()) {
+            if (!mDecorContentParent.isOverflowMenuShowing()) {
+                if (!isDestroyed() && preparePanel(st, event)) {
+                    playSoundEffect = mDecorContentParent.showOverflowMenu();
+                }
+            } else {
+                playSoundEffect = mDecorContentParent.hideOverflowMenu();
+            }
+        } else {
+            if (st.isOpen || st.isHandled) {
+                playSoundEffect = st.isOpen;
+                closePanel(st, true);
+            } else if (st.isPrepared) {
+                boolean show = true;
+                if (st.refreshMenuContent) {
+                    st.isPrepared = false;
+                    show = preparePanel(st, event);
+                }
+                if (show) {
+                    EventLog.writeEvent(50001, 0);
+                    openPanel(st, event);
+                    playSoundEffect = true;
+                }
+            }
+        }
+        if (playSoundEffect) {
+            AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+            } else {
+                Log.w(TAG, "Couldn't get audio manager");
+            }
+        }
+    }
+}

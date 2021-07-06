@@ -1,0 +1,11 @@
+public String loadDescription(PackageManager packageManager){
+    if (mDescriptionResId == 0) {
+        return mNonLocalizedDescription;
+    }
+    ServiceInfo serviceInfo = mResolveInfo.serviceInfo;
+    CharSequence description = packageManager.getText(serviceInfo.packageName, mDescriptionResId, serviceInfo.applicationInfo);
+    if (description != null) {
+        return description.toString().trim();
+    }
+    return null;
+}

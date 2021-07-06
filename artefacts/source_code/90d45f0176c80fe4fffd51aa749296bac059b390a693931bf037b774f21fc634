@@ -1,0 +1,15 @@
+public boolean removeUser(@UserIdInt int userId){
+    Slog.i(LOG_TAG, "removeUser u" + userId);
+    checkManageOrCreateUsersPermission("Only the system can remove users");
+    final boolean isManagedProfile;
+    synchronized (mUsersLock) {
+        UserInfo userInfo = getUserInfoLU(userId);
+        isManagedProfile = userInfo != null && userInfo.isManagedProfile();
+    }
+    String restriction = isManagedProfile ? UserManager.DISALLOW_REMOVE_MANAGED_PROFILE : UserManager.DISALLOW_REMOVE_USER;
+    if (getUserRestrictions(UserHandle.getCallingUserId()).getBoolean(restriction, false)) {
+        Slog.w(LOG_TAG, "Cannot remove user. " + restriction + " is enabled.");
+        return false;
+    }
+    return removeUserUnchecked(userId);
+}

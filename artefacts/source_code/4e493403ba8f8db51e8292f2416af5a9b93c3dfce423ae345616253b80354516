@@ -1,0 +1,11 @@
+public void assertCalled(){
+    try {
+        final boolean updated = mLatch.await(mTimeoutMs, TimeUnit.MILLISECONDS);
+        if (!updated) {
+            throw new IllegalStateException("Settings " + mKey + " not called in " + mTimeoutMs + "ms");
+        }
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new IllegalStateException("Interrupted", e);
+    }
+}

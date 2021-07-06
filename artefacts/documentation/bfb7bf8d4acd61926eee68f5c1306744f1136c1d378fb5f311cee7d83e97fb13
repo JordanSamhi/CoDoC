@@ -1,0 +1,64 @@
+
+         * Defines whether the layout should be measured by the RecyclerView or the LayoutManager
+         * wants to handle the layout measurements itself.
+         * <p>
+         * This method is usually called by the LayoutManager with value {@code true} if it wants
+         * to support WRAP_CONTENT. If you are using a public LayoutManager but want to customize
+         * the measurement logic, you can call this method with {@code false} and override
+         * {@link LayoutManager#onMeasure(int, int)} to implement your custom measurement logic.
+         * <p>
+         * AutoMeasure is a convenience mechanism for LayoutManagers to easily wrap their content or
+         * handle various specs provided by the RecyclerView's parent.
+         * It works by calling {@link LayoutManager#onLayoutChildren(Recycler, State)} during an
+         * {@link RecyclerView#onMeasure(int, int)} call, then calculating desired dimensions based
+         * on children's positions. It does this while supporting all existing animation
+         * capabilities of the RecyclerView.
+         * <p>
+         * AutoMeasure works as follows:
+         * <ol>
+         * <li>LayoutManager should call {@code setAutoMeasureEnabled(true)} to enable it. All of
+         * the framework LayoutManagers use {@code auto-measure}.</li>
+         * <li>When {@link RecyclerView#onMeasure(int, int)} is called, if the provided specs are
+         * exact, RecyclerView will only call LayoutManager's {@code onMeasure} and return without
+         * doing any layout calculation.</li>
+         * <li>If one of the layout specs is not {@code EXACT}, the RecyclerView will start the
+         * layout process in {@code onMeasure} call. It will process all pending Adapter updates and
+         * decide whether to run a predictive layout or not. If it decides to do so, it will first
+         * call {@link #onLayoutChildren(Recycler, State)} with {@link State#isPreLayout()} set to
+         * {@code true}. At this stage, {@link #getWidth()} and {@link #getHeight()} will still
+         * return the width and height of the RecyclerView as of the last layout calculation.
+         * <p>
+         * After handling the predictive case, RecyclerView will call
+         * {@link #onLayoutChildren(Recycler, State)} with {@link State#isMeasuring()} set to
+         * {@code true} and {@link State#isPreLayout()} set to {@code false}. The LayoutManager can
+         * access the measurement specs via {@link #getHeight()}, {@link #getHeightMode()},
+         * {@link #getWidth()} and {@link #getWidthMode()}.</li>
+         * <li>After the layout calculation, RecyclerView sets the measured width & height by
+         * calculating the bounding box for the children (+ RecyclerView's padding). The
+         * LayoutManagers can override {@link #setMeasuredDimension(Rect, int, int)} to choose
+         * different values. For instance, GridLayoutManager overrides this value to handle the case
+         * where if it is vertical and has 3 columns but only 2 items, it should still measure its
+         * width to fit 3 items, not 2.</li>
+         * <li>Any following on measure call to the RecyclerView will run
+         * {@link #onLayoutChildren(Recycler, State)} with {@link State#isMeasuring()} set to
+         * {@code true} and {@link State#isPreLayout()} set to {@code false}. RecyclerView will
+         * take care of which views are actually added / removed / moved / changed for animations so
+         * that the LayoutManager should not worry about them and handle each
+         * {@link #onLayoutChildren(Recycler, State)} call as if it is the last one.
+         * </li>
+         * <li>When measure is complete and RecyclerView's
+         * {@link #onLayout(boolean, int, int, int, int)} method is called, RecyclerView checks
+         * whether it already did layout calculations during the measure pass and if so, it re-uses
+         * that information. It may still decide to call {@link #onLayoutChildren(Recycler, State)}
+         * if the last measure spec was different from the final dimensions or adapter contents
+         * have changed between the measure call and the layout call.</li>
+         * <li>Finally, animations are calculated and run as usual.</li>
+         * </ol>
+         *
+         * @param enabled <code>True</code> if the Layout should be measured by the
+         *                             RecyclerView, <code>false</code> if the LayoutManager wants
+         *                             to measure itself.
+         *
+         * @see #setMeasuredDimension(Rect, int, int)
+         * @see #isAutoMeasureEnabled()
+         

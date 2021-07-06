@@ -1,0 +1,8 @@
+public void uninstall(@NonNull VersionedPackage versionedPackage, @DeleteFlags int flags, @NonNull IntentSender statusReceiver){
+    Objects.requireNonNull(versionedPackage, "versionedPackage cannot be null");
+    try {
+        mInstaller.uninstall(versionedPackage, mInstallerPackageName, flags, statusReceiver, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

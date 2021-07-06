@@ -1,0 +1,11 @@
+public boolean isContentCaptureEnabled(){
+    if (mOptions.lite)
+        return false;
+    final MainContentCaptureSession mainSession;
+    synchronized (mLock) {
+        mainSession = mMainSession;
+    }
+    if (mainSession != null && mainSession.isDisabled())
+        return false;
+    return true;
+}

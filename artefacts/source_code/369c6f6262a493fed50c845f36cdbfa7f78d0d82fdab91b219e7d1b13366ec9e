@@ -1,0 +1,14 @@
+public int getActivityIndex(ResolveInfo activity){
+    synchronized (mInstanceLock) {
+        ensureConsistentState();
+        List<ActivityResolveInfo> activities = mActivities;
+        final int activityCount = activities.size();
+        for (int i = 0; i < activityCount; i++) {
+            ActivityResolveInfo currentActivity = activities.get(i);
+            if (currentActivity.resolveInfo == activity) {
+                return i;
+            }
+        }
+        return INVALID_INDEX;
+    }
+}

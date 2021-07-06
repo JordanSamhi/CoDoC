@@ -1,0 +1,12 @@
+public Set<String> getCrossProfileCalendarPackages(@NonNull ComponentName admin){
+    throwIfParentInstance("getCrossProfileCalendarPackages");
+    if (mService != null) {
+        try {
+            final List<String> packageNames = mService.getCrossProfileCalendarPackages(admin);
+            return packageNames == null ? null : new ArraySet<>(packageNames);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return Collections.emptySet();
+}

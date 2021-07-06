@@ -1,0 +1,10 @@
+public void onScreenStateChanged(boolean isScreenOn){
+    mScreenOn = isScreenOn;
+    if (isScreenOn) {
+        if (isGesturalModeOnDefaultDisplay(getContext(), mNavBarMode)) {
+            mRegionSamplingHelper.start(mSamplingBounds);
+        }
+    } else {
+        mRegionSamplingHelper.stop();
+    }
+}

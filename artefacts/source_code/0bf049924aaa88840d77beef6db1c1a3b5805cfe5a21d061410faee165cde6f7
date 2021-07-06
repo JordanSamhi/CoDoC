@@ -1,0 +1,13 @@
+public float getBaseScore(DisplayResolveInfo target, @ChooserActivity.ShareTargetType int targetType){
+    if (target == null) {
+        return CALLER_TARGET_SCORE_BOOST;
+    }
+    if (targetType == TARGET_TYPE_SHORTCUTS_FROM_PREDICTION_SERVICE) {
+        return SHORTCUT_TARGET_SCORE_BOOST;
+    }
+    float score = super.getScore(target);
+    if (targetType == TARGET_TYPE_SHORTCUTS_FROM_SHORTCUT_MANAGER) {
+        return score * SHORTCUT_TARGET_SCORE_BOOST;
+    }
+    return score;
+}

@@ -1,0 +1,22 @@
+public void finishedGoingToSleep(int why){
+    EventLogTags.writeScreenToggled(0);
+    if (DEBUG_WAKEUP) {
+        Slog.i(TAG, "Finished going to sleep... (why=" + WindowManagerPolicyConstants.offReasonToString(why) + ")");
+    }
+    MetricsLogger.histogram(mContext, "screen_timeout", mLockScreenTimeout / 1000);
+    mGoingToSleep = false;
+    mRequestedOrGoingToSleep = false;
+    mDefaultDisplayPolicy.setAwake(false);
+    synchronized (mLock) {
+        updateWakeGestureListenerLp();
+        updateLockScreenTimeout();
+    }
+    mDefaultDisplayRotation.updateOrientationListener();
+    if (mKeyguardDelegate != null) {
+        mKeyguardDelegate.onFinishedGoingToSleep(why, mCameraGestureTriggeredDuringGoingToSleep);
+    }
+    if (mDisplayFoldController != null) {
+        mDisplayFoldController.finishedGoingToSleep();
+    }
+    mCameraGestureTriggeredDuringGoingToSleep = false;
+}

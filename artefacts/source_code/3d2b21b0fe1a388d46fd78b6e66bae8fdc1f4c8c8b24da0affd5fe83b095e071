@@ -1,0 +1,9 @@
+public void stopByPid(int pid){
+    synchronized (mLocalOnlyHotspotRequests) {
+        LocalOnlyHotspotRequestInfo requestInfo = mLocalOnlyHotspotRequests.remove(pid);
+        if (requestInfo == null)
+            return;
+        requestInfo.unlinkDeathRecipient();
+        stopIfEmptyLocked();
+    }
+}

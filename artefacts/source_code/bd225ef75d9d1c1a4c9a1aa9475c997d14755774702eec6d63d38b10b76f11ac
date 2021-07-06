@@ -1,0 +1,11 @@
+public String getUserDataId(){
+    try {
+        final SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+        mService.getUserDataId(receiver);
+        return receiver.getStringResult();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get user data id for field classification.");
+    }
+}

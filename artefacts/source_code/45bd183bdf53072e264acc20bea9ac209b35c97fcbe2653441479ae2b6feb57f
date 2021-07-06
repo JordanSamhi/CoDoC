@@ -1,0 +1,10 @@
+public Builder setConnectionHints(@NonNull Bundle connectionHints){
+    if (connectionHints == null) {
+        throw new IllegalArgumentException("connectionHints shouldn't be null");
+    }
+    if (MediaSession2.hasCustomParcelable(connectionHints)) {
+        throw new IllegalArgumentException("connectionHints shouldn't contain any custom " + "parcelables");
+    }
+    mConnectionHints = new Bundle(connectionHints);
+    return this;
+}

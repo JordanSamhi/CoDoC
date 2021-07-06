@@ -1,0 +1,11 @@
+public List<String> getKeepUninstalledPackages(@Nullable ComponentName admin){
+    throwIfParentInstance("getKeepUninstalledPackages");
+    if (mService != null) {
+        try {
+            return mService.getKeepUninstalledPackages(admin, mContext.getPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

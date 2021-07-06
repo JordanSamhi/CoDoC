@@ -1,0 +1,14 @@
+public List<WifiNetworkSuggestion> get(@NonNull String packageName){
+    List<WifiNetworkSuggestion> networkSuggestionList = new ArrayList<>();
+    if (!mUserDataLoaded) {
+        Log.e(TAG, "Get Network suggestion before boot complete is not allowed.");
+        return networkSuggestionList;
+    }
+    PerAppInfo perAppInfo = mActiveNetworkSuggestionsPerApp.get(packageName);
+    if (perAppInfo == null)
+        return networkSuggestionList;
+    for (ExtendedWifiNetworkSuggestion extendedSuggestion : perAppInfo.extNetworkSuggestions) {
+        networkSuggestionList.add(extendedSuggestion.wns);
+    }
+    return networkSuggestionList;
+}

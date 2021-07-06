@@ -1,0 +1,15 @@
+public void close() throws java.io.IOException{
+    checkOpen();
+    if (mOwn) {
+        try {
+            for (FileDescriptor fd : mFds) {
+                Os.close(fd);
+            }
+        } catch (ErrnoException e) {
+            e.rethrowAsIOException();
+        }
+        mOwn = false;
+    }
+    mFds = null;
+    mInts = null;
+}

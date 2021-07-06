@@ -1,0 +1,14 @@
+public SerialPort openSerialPort(String name, int speed) throws IOException{
+    try {
+        ParcelFileDescriptor pfd = mService.openSerialPort(name);
+        if (pfd != null) {
+            SerialPort port = new SerialPort(name);
+            port.open(pfd, speed);
+            return port;
+        } else {
+            throw new IOException("Could not open serial port " + name);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

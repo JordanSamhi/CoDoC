@@ -1,0 +1,16 @@
+public static BarringInfo create(@NonNull android.hardware.radio.V1_5.CellIdentity halBarringCellId, @NonNull List<android.hardware.radio.V1_5.BarringInfo> halBarringInfos){
+    CellIdentity ci = CellIdentity.create(halBarringCellId);
+    SparseArray<BarringServiceInfo> serviceInfos = new SparseArray<>();
+    for (android.hardware.radio.V1_5.BarringInfo halBarringInfo : halBarringInfos) {
+        if (halBarringInfo.barringType == android.hardware.radio.V1_5.BarringInfo.BarringType.CONDITIONAL) {
+            if (halBarringInfo.barringTypeSpecificInfo.getDiscriminator() != android.hardware.radio.V1_5.BarringInfo.BarringTypeSpecificInfo.hidl_discriminator.conditional) {
+                continue;
+            }
+            android.hardware.radio.V1_5.BarringInfo.BarringTypeSpecificInfo.Conditional conditionalInfo = halBarringInfo.barringTypeSpecificInfo.conditional();
+            serviceInfos.put(halBarringInfo.serviceType, new BarringServiceInfo(halBarringInfo.barringType, conditionalInfo.isBarred, conditionalInfo.factor, conditionalInfo.timeSeconds));
+        } else {
+            serviceInfos.put(halBarringInfo.serviceType, new BarringServiceInfo(halBarringInfo.barringType, false, 0, 0));
+        }
+    }
+    return new BarringInfo(ci, serviceInfos);
+}

@@ -1,0 +1,15 @@
+public static void setDefaultValues(Context context, String sharedPreferencesName, int sharedPreferencesMode, int resId, boolean readAgain){
+    final SharedPreferences defaultValueSp = context.getSharedPreferences(KEY_HAS_SET_DEFAULT_VALUES, Context.MODE_PRIVATE);
+    if (readAgain || !defaultValueSp.getBoolean(KEY_HAS_SET_DEFAULT_VALUES, false)) {
+        final PreferenceManager pm = new PreferenceManager(context);
+        pm.setSharedPreferencesName(sharedPreferencesName);
+        pm.setSharedPreferencesMode(sharedPreferencesMode);
+        pm.inflateFromResource(context, resId, null);
+        SharedPreferences.Editor editor = defaultValueSp.edit().putBoolean(KEY_HAS_SET_DEFAULT_VALUES, true);
+        try {
+            editor.apply();
+        } catch (AbstractMethodError unused) {
+            editor.commit();
+        }
+    }
+}

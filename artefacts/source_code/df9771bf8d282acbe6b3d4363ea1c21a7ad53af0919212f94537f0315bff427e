@@ -1,0 +1,22 @@
+public static int getAbsoluteGravity(int gravity, int layoutDirection){
+    int result = gravity;
+    if ((result & RELATIVE_LAYOUT_DIRECTION) > 0) {
+        if ((result & Gravity.START) == Gravity.START) {
+            result &= ~START;
+            if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                result |= RIGHT;
+            } else {
+                result |= LEFT;
+            }
+        } else if ((result & Gravity.END) == Gravity.END) {
+            result &= ~END;
+            if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                result |= LEFT;
+            } else {
+                result |= RIGHT;
+            }
+        }
+        result &= ~RELATIVE_LAYOUT_DIRECTION;
+    }
+    return result;
+}

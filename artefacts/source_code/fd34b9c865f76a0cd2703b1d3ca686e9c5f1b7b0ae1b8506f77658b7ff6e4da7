@@ -1,0 +1,23 @@
+public void getCurrentLocation(@NonNull LocationRequest locationRequest, @Nullable CancellationSignal cancellationSignal, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Location> consumer){
+    LocationRequest currentLocationRequest = new LocationRequest(locationRequest).setNumUpdates(1);
+    if (currentLocationRequest.getExpireIn() > GET_CURRENT_LOCATION_MAX_TIMEOUT_MS) {
+        currentLocationRequest.setExpireIn(GET_CURRENT_LOCATION_MAX_TIMEOUT_MS);
+    }
+    GetCurrentLocationTransport transport = new GetCurrentLocationTransport(executor, consumer);
+    if (cancellationSignal != null) {
+        cancellationSignal.throwIfCanceled();
+    }
+    ICancellationSignal remoteCancellationSignal = CancellationSignal.createTransport();
+    try {
+        if (mService.getCurrentLocation(currentLocationRequest, remoteCancellationSignal, transport, mContext.getPackageName(), mContext.getAttributionTag(), transport.getListenerId())) {
+            transport.register(mContext.getSystemService(AlarmManager.class), remoteCancellationSignal);
+            if (cancellationSignal != null) {
+                cancellationSignal.setOnCancelListener(transport::cancel);
+            }
+        } else {
+            transport.fail();
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

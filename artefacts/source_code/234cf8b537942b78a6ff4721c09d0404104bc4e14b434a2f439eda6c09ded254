@@ -1,0 +1,11 @@
+public boolean unregisterGnssBatchedLocationCallback(@NonNull BatchedLocationCallback callback){
+    synchronized (mBatchedLocationCallbackManager) {
+        try {
+            mBatchedLocationCallbackManager.removeListener(callback);
+            mService.stopGnssBatch();
+            return true;
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

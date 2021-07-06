@@ -1,0 +1,11 @@
+public void testSelectBackupTransportAsync_whenRegistrationFails() throws Exception{
+    setUpForSelectTransport();
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    when(mTransportManager.registerAndSelectTransport(eq(mNewTransportComponent))).thenReturn(BackupManager.ERROR_TRANSPORT_UNAVAILABLE);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    ISelectBackupTransportCallback callback = mock(ISelectBackupTransportCallback.class);
+    backupManagerService.selectBackupTransportAsync(mNewTransportComponent, callback);
+    mShadowBackupLooper.runToEndOfTasks();
+    assertThat(getSettingsTransport()).isNotEqualTo(mNewTransport.transportName);
+    verify(callback).onFailure(anyInt());
+}

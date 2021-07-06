@@ -1,0 +1,19 @@
+public Object sendSessionCommand(@NonNull ControllerInfo controller, @NonNull Session2Command command, @Nullable Bundle args){
+    if (controller == null) {
+        throw new IllegalArgumentException("controller shouldn't be null");
+    }
+    if (command == null) {
+        throw new IllegalArgumentException("command shouldn't be null");
+    }
+    ResultReceiver resultReceiver = new ResultReceiver(mResultHandler) {
+
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            controller.receiveCommandResult(this);
+            mCallbackExecutor.execute(() -> {
+                mCallback.onCommandResult(MediaSession2.this, controller, this, command, new Session2Command.Result(resultCode, resultData));
+            });
+        }
+    };
+    controller.sendSessionCommand(command, args, resultReceiver);
+    return resultReceiver;
+}

@@ -1,0 +1,11 @@
+public static IFullBackupRestoreObserver sendStartRestore(IFullBackupRestoreObserver observer){
+    if (observer != null) {
+        try {
+            observer.onStartRestore();
+        } catch (RemoteException e) {
+            Slog.w(TAG, "full restore observer went away: startRestore");
+            observer = null;
+        }
+    }
+    return observer;
+}

@@ -1,0 +1,11 @@
+public void pullExternalCall(String number, int videoState, int dialogId){
+    Bundle extras = new Bundle();
+    extras.putBoolean(ImsCallProfile.EXTRA_IS_CALL_PULL, true);
+    extras.putInt(ImsExternalCallTracker.EXTRA_IMS_EXTERNAL_CALL_ID, dialogId);
+    try {
+        Connection connection = dial(number, videoState, extras);
+        mPhone.notifyUnknownConnection(connection);
+    } catch (CallStateException e) {
+        loge("pullExternalCall failed - " + e);
+    }
+}

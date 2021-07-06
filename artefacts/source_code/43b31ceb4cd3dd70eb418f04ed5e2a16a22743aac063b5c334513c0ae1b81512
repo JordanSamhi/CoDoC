@@ -1,0 +1,7 @@
+public void dump(@NonNull FileDescriptor fd, @Nullable String[] args){
+    try {
+        mRemoteService.post(service -> service.asBinder().dump(fd, args)).get(REQUEST_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+    } catch (Exception e) {
+        Log.e(TAG, "Could not get dump", e);
+    }
+}

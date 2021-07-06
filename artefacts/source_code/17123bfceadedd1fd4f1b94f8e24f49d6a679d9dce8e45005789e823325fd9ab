@@ -1,0 +1,40 @@
+public int startLocalOnlyHotspot(ILocalOnlyHotspotCallback callback, String packageName, String featureId, SoftApConfiguration customConfig){
+    final int uid = Binder.getCallingUid();
+    final int pid = Binder.getCallingPid();
+    mLog.info("start uid=% pid=%").c(uid).c(pid).flush();
+    if (customConfig == null) {
+        if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+            return LocalOnlyHotspotCallback.ERROR_GENERIC;
+        }
+        enforceLocationPermission(packageName, featureId, uid);
+        long ident = Binder.clearCallingIdentity();
+        try {
+            if (!mWifiPermissionsUtil.isLocationModeEnabled()) {
+                throw new SecurityException("Location mode is not enabled.");
+            }
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    } else {
+        if (!isSettingsOrSuw(Binder.getCallingPid(), Binder.getCallingUid())) {
+            throw new SecurityException(TAG + ": Permission denied");
+        }
+    }
+    if (mUserManager.hasUserRestrictionForUser(UserManager.DISALLOW_CONFIG_TETHERING, UserHandle.getUserHandleForUid(uid))) {
+        return LocalOnlyHotspotCallback.ERROR_TETHERING_DISALLOWED;
+    }
+    long ident = Binder.clearCallingIdentity();
+    try {
+        if (!mFrameworkFacade.isAppForeground(mContext, uid)) {
+            return LocalOnlyHotspotCallback.ERROR_INCOMPATIBLE_MODE;
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    if (!mActiveModeWarden.canRequestMoreSoftApManagers() && mTetheredSoftApTracker.getState() == WIFI_AP_STATE_ENABLED) {
+        mLog.info("Cannot start localOnlyHotspot when WiFi Tethering is active.").flush();
+        return LocalOnlyHotspotCallback.ERROR_INCOMPATIBLE_MODE;
+    }
+    LocalOnlyHotspotRequestInfo request = new LocalOnlyHotspotRequestInfo(callback, new LocalOnlyRequestorCallback(), customConfig);
+    return mLohsSoftApTracker.start(pid, request);
+}

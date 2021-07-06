@@ -1,0 +1,11 @@
+public Set<ContentCaptureCondition> getContentCaptureConditions(){
+    if (!isContentCaptureEnabled() && !mOptions.lite)
+        return null;
+    final SyncResultReceiver resultReceiver = syncRun((r) -> mService.getContentCaptureConditions(mContext.getPackageName(), r));
+    try {
+        final ArrayList<ContentCaptureCondition> result = resultReceiver.getParcelableListResult();
+        return toSet(result);
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get content capture conditions.");
+    }
+}

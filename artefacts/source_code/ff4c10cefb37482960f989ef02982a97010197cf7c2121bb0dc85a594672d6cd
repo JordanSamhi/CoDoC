@@ -1,0 +1,18 @@
+public void addDeferredBroadcast(final int uid, BroadcastRecord br){
+    if (DEBUG_BROADCAST_DEFERRAL) {
+        Slog.i(TAG, "Enqueuing deferred broadcast " + br);
+    }
+    synchronized (mLock) {
+        Deferrals d = findUidLocked(uid);
+        if (d == null) {
+            Slog.wtf(TAG, "Adding deferred broadcast but not tracking " + uid);
+        } else {
+            if (br == null) {
+                Slog.wtf(TAG, "Deferring null broadcast to " + uid);
+            } else {
+                br.deferred = true;
+                d.add(br);
+            }
+        }
+    }
+}

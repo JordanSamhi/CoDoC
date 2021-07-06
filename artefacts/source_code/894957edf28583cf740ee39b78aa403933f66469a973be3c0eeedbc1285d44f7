@@ -1,0 +1,26 @@
+public void registerSoftApCallback(IBinder binder, ISoftApCallback callback, int callbackIdentifier){
+    if (binder == null) {
+        throw new IllegalArgumentException("Binder must not be null");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Callback must not be null");
+    }
+    enforceNetworkStackOrSettingsPermission();
+    if (mVerboseLoggingEnabled) {
+        mLog.info("registerSoftApCallback uid=%").c(Binder.getCallingUid()).flush();
+    }
+    mWifiThreadRunner.post(() -> {
+        if (!mTetheredSoftApTracker.registerSoftApCallback(binder, callback, callbackIdentifier)) {
+            Log.e(TAG, "registerSoftApCallback: Failed to add callback");
+            return;
+        }
+        try {
+            callback.onStateChanged(mTetheredSoftApTracker.getState(), 0);
+            callback.onConnectedClientsChanged(mTetheredSoftApTracker.getConnectedClients());
+            callback.onInfoChanged(mTetheredSoftApTracker.getSoftApInfo());
+            callback.onCapabilityChanged(mTetheredSoftApTracker.getSoftApCapability());
+        } catch (RemoteException e) {
+            Log.e(TAG, "registerSoftApCallback: remote exception -- " + e);
+        }
+    });
+}

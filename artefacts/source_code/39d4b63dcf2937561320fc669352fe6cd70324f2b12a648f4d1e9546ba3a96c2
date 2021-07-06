@@ -1,0 +1,9 @@
+public boolean hasCommonAncestor(SigningDetails otherSigningDetails){
+    if (!hasPastSigningCertificates()) {
+        return otherSigningDetails.hasAncestorOrSelf(this);
+    }
+    if (!otherSigningDetails.hasPastSigningCertificates()) {
+        return hasAncestorOrSelf(otherSigningDetails);
+    }
+    return getDescendantOrSelf(otherSigningDetails) != null;
+}

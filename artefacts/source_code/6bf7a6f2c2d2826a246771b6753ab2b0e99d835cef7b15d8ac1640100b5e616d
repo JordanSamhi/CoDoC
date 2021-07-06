@@ -1,0 +1,12 @@
+public boolean setTag(@NonNull String tag){
+    PrintService.throwIfNotCalledOnMainThread();
+    if (isInImmutableState()) {
+        return false;
+    }
+    try {
+        return mPrintServiceClient.setPrintJobTag(mCachedInfo.getId(), tag);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error setting tag for job: " + mCachedInfo.getId(), re);
+    }
+    return false;
+}

@@ -1,0 +1,15 @@
+public ParsedPackage getCachedResult(File packageFile, int flags){
+    final String cacheKey = getCacheKey(packageFile, flags);
+    final File cacheFile = new File(mCacheDir, cacheKey);
+    try {
+        if (!isCacheUpToDate(packageFile, cacheFile)) {
+            return null;
+        }
+        final byte[] bytes = IoUtils.readFileAsByteArray(cacheFile.getAbsolutePath());
+        return fromCacheEntry(bytes);
+    } catch (Throwable e) {
+        Slog.w(TAG, "Error reading package cache: ", e);
+        cacheFile.delete();
+        return null;
+    }
+}

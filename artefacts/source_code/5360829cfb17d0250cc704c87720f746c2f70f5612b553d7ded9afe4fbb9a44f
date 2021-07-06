@@ -1,0 +1,15 @@
+public void unregisterStorageVolumeCallback(@NonNull StorageVolumeCallback callback){
+    synchronized (mDelegates) {
+        for (Iterator<StorageEventListenerDelegate> i = mDelegates.iterator(); i.hasNext(); ) {
+            final StorageEventListenerDelegate delegate = i.next();
+            if (delegate.mCallback == callback) {
+                try {
+                    mStorageManager.unregisterListener(delegate);
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+                i.remove();
+            }
+        }
+    }
+}

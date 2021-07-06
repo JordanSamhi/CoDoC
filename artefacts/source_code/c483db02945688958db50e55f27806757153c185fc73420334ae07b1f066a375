@@ -1,0 +1,29 @@
+public static void dumpCacheInfo(FileDescriptor fd, String[] args){
+    ArrayList<PropertyInvalidatedCache> activeCaches;
+    ArrayList<Map.Entry<String, Integer>> activeCorks;
+    try (FileOutputStream fout = new FileOutputStream(fd);
+        PrintWriter pw = new FastPrintWriter(fout)) {
+        if (!sEnabled) {
+            pw.println("  Caching is disabled in this process.");
+            return;
+        }
+        synchronized (sCorkLock) {
+            activeCaches = getActiveCaches();
+            activeCorks = getActiveCorks();
+            if (activeCorks.size() > 0) {
+                pw.println("  Corking Status:");
+                for (int i = 0; i < activeCorks.size(); i++) {
+                    Map.Entry<String, Integer> entry = activeCorks.get(i);
+                    pw.println(String.format("    Property Name: %s Count: %d", entry.getKey(), entry.getValue()));
+                }
+            }
+        }
+        for (int i = 0; i < activeCaches.size(); i++) {
+            PropertyInvalidatedCache currentCache = activeCaches.get(i);
+            currentCache.dumpContents(pw, args);
+            pw.flush();
+        }
+    } catch (IOException e) {
+        Log.e(TAG, "Failed to dump PropertyInvalidatedCache instances");
+    }
+}

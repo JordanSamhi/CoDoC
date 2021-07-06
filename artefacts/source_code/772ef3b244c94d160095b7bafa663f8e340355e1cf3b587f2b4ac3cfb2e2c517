@@ -1,0 +1,11 @@
+public static String getSerial(){
+    IDeviceIdentifiersPolicyService service = IDeviceIdentifiersPolicyService.Stub.asInterface(ServiceManager.getService(Context.DEVICE_IDENTIFIERS_SERVICE));
+    try {
+        Application application = ActivityThread.currentApplication();
+        String callingPackage = application != null ? application.getPackageName() : null;
+        return service.getSerialForPackage(callingPackage, null);
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    return UNKNOWN;
+}

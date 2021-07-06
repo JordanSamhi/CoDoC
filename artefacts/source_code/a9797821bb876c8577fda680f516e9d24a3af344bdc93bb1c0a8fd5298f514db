@@ -1,0 +1,24 @@
+public EncryptedData encrypt(byte[] data){
+    EncryptedData encryptedData = null;
+    try {
+        Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
+        SecretKey secretKeyReference = getOrCreateSecretKey(getKeyAlias());
+        if (secretKeyReference != null) {
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeyReference);
+            encryptedData = new EncryptedData(cipher.doFinal(data), cipher.getIV());
+        } else {
+            reportException(new Exception("secretKeyReference is null."), "secretKeyReference is null.");
+        }
+    } catch (NoSuchAlgorithmException e) {
+        reportException(e, "encrypt could not find the algorithm: " + CIPHER_ALGORITHM);
+    } catch (NoSuchPaddingException e) {
+        reportException(e, "encrypt had a padding exception");
+    } catch (InvalidKeyException e) {
+        reportException(e, "encrypt received an invalid key");
+    } catch (BadPaddingException e) {
+        reportException(e, "encrypt had a padding problem");
+    } catch (IllegalBlockSizeException e) {
+        reportException(e, "encrypt had an illegal block size");
+    }
+    return encryptedData;
+}

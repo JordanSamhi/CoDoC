@@ -1,0 +1,8 @@
+public boolean getPageMediaBox(int pageIndex, @NonNull Rect outMediaBox){
+    throwIfClosed();
+    throwIfOutMediaBoxNull(outMediaBox);
+    throwIfPageNotInDocument(pageIndex);
+    synchronized (PdfRenderer.sPdfiumLock) {
+        return nativeGetPageMediaBox(mNativeDocument, pageIndex, outMediaBox);
+    }
+}

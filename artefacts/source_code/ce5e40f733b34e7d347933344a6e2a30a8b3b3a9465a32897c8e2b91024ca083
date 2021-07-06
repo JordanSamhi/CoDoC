@@ -1,0 +1,11 @@
+public View keyboardNavigationClusterSearch(View currentCluster, @FocusDirection int direction){
+    if (isKeyboardNavigationCluster()) {
+        currentCluster = this;
+    }
+    if (isRootNamespace()) {
+        return FocusFinder.getInstance().findNextKeyboardNavigationCluster(this, currentCluster, direction);
+    } else if (mParent != null) {
+        return mParent.keyboardNavigationClusterSearch(currentCluster, direction);
+    }
+    return null;
+}

@@ -1,0 +1,7 @@
+public ISession createSession(@NonNull MediaSession.CallbackStub cbStub, @NonNull String tag, @Nullable Bundle sessionInfo){
+    try {
+        return mService.createSession(mContext.getPackageName(), cbStub, tag, sessionInfo, UserHandle.myUserId());
+    } catch (RemoteException e) {
+        throw new RuntimeException(e);
+    }
+}

@@ -1,0 +1,15 @@
+public void onCharacteristicReadRequest(String address, int transId, int offset, boolean isLong, int handle){
+    if (VDBG)
+        Log.d(TAG, "onCharacteristicReadRequest() - handle=" + handle);
+    BluetoothDevice device = mAdapter.getRemoteDevice(address);
+    BluetoothGattCharacteristic characteristic = getCharacteristicByHandle(handle);
+    if (characteristic == null) {
+        Log.w(TAG, "onCharacteristicReadRequest() no char for handle " + handle);
+        return;
+    }
+    try {
+        mCallback.onCharacteristicReadRequest(device, transId, offset, characteristic);
+    } catch (Exception ex) {
+        Log.w(TAG, "Unhandled exception in callback", ex);
+    }
+}

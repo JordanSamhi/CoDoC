@@ -1,0 +1,17 @@
+public List<CapabilityInfo> getCapabilityInfos(Context context){
+    if (mCapabilities == 0) {
+        return Collections.emptyList();
+    }
+    int capabilities = mCapabilities;
+    List<CapabilityInfo> capabilityInfos = new ArrayList<CapabilityInfo>();
+    SparseArray<CapabilityInfo> capabilityInfoSparseArray = getCapabilityInfoSparseArray(context);
+    while (capabilities != 0) {
+        final int capabilityBit = 1 << Integer.numberOfTrailingZeros(capabilities);
+        capabilities &= ~capabilityBit;
+        CapabilityInfo capabilityInfo = capabilityInfoSparseArray.get(capabilityBit);
+        if (capabilityInfo != null) {
+            capabilityInfos.add(capabilityInfo);
+        }
+    }
+    return capabilityInfos;
+}

@@ -1,0 +1,11 @@
+public WifiConfiguration getConfiguredNetworkForScanDetailAndCache(ScanDetail scanDetail){
+    WifiConfiguration network = getConfiguredNetworkForScanDetail(scanDetail);
+    if (network == null) {
+        return null;
+    }
+    saveToScanDetailCacheForNetwork(network, scanDetail);
+    if (scanDetail.getNetworkDetail() != null && scanDetail.getNetworkDetail().getDtimInterval() > 0) {
+        network.dtimInterval = scanDetail.getNetworkDetail().getDtimInterval();
+    }
+    return createExternalWifiConfiguration(network, true, Process.WIFI_UID);
+}

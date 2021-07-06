@@ -1,0 +1,7 @@
+public boolean setNightDisplayCustomStartTime(@NonNull LocalTime startTime){
+    if (startTime == null) {
+        throw new IllegalArgumentException("startTime cannot be null");
+    }
+    getMetricsLogger().write(new LogMaker(MetricsEvent.ACTION_NIGHT_DISPLAY_AUTO_MODE_CUSTOM_TIME_CHANGED).setType(MetricsEvent.TYPE_ACTION).setSubtype(0));
+    return mManager.setNightDisplayCustomStartTime(new Time(startTime));
+}

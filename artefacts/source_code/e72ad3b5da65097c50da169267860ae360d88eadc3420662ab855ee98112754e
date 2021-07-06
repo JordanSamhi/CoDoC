@@ -1,0 +1,9 @@
+public void setVpnPackageAuthorization(String packageName, int userId, @VpnManager.VpnType int vpnType){
+    enforceCrossUserPermission(userId);
+    synchronized (mVpns) {
+        Vpn vpn = mVpns.get(userId);
+        if (vpn != null) {
+            vpn.setPackageAuthorization(packageName, vpnType);
+        }
+    }
+}

@@ -1,0 +1,13 @@
+public void findViewsWithText(ArrayList<View> outViews, CharSequence searched, @FindViewFlags int flags){
+    if (getAccessibilityNodeProvider() != null) {
+        if ((flags & FIND_VIEWS_WITH_ACCESSIBILITY_NODE_PROVIDERS) != 0) {
+            outViews.add(this);
+        }
+    } else if ((flags & FIND_VIEWS_WITH_CONTENT_DESCRIPTION) != 0 && (searched != null && searched.length() > 0) && (mContentDescription != null && mContentDescription.length() > 0)) {
+        String searchedLowerCase = searched.toString().toLowerCase();
+        String contentDescriptionLowerCase = mContentDescription.toString().toLowerCase();
+        if (contentDescriptionLowerCase.contains(searchedLowerCase)) {
+            outViews.add(this);
+        }
+    }
+}

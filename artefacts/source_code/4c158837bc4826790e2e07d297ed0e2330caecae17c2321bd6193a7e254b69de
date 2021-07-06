@@ -1,0 +1,21 @@
+public int[] getSuppServiceInfoCompat(){
+    if (mSsInfo != null) {
+        return mSsInfo;
+    }
+    int[] result = new int[2];
+    if (mImsSsInfo == null || mImsSsInfo.size() == 0) {
+        Rlog.e(TAG, "getSuppServiceInfoCompat: Could not parse mImsSsInfo, returning empty " + "int[]");
+        return result;
+    }
+    if (isTypeClir()) {
+        result[0] = mImsSsInfo.get(0).getClirOutgoingState();
+        result[1] = mImsSsInfo.get(0).getClirInterrogationStatus();
+        return result;
+    }
+    if (isTypeColr()) {
+        result[0] = mImsSsInfo.get(0).getProvisionStatus();
+    }
+    result[0] = mImsSsInfo.get(0).getStatus();
+    result[1] = mImsSsInfo.get(0).getProvisionStatus();
+    return result;
+}

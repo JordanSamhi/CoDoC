@@ -1,0 +1,10 @@
+public static void calculatePopFragments(BackStackRecord transaction, SparseArray<FragmentContainerTransition> transitioningFragments, boolean isReordered){
+    if (!transaction.mManager.mContainer.onHasView()) {
+        return;
+    }
+    final int numOps = transaction.mOps.size();
+    for (int opNum = numOps - 1; opNum >= 0; opNum--) {
+        final BackStackRecord.Op op = transaction.mOps.get(opNum);
+        addToFirstInLastOut(transaction, op, transitioningFragments, true, isReordered);
+    }
+}

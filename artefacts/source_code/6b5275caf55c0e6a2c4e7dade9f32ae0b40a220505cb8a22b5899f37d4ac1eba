@@ -1,0 +1,11 @@
+public void setEnabled(boolean enabled){
+    synchronized (mLock) {
+        if (enabled != mEnabled) {
+            mEnabled = enabled;
+            if (!mEnabled) {
+                mSentMagnificationSpec.clear();
+                mControllerCtx.getWindowManager().setMagnificationSpec(mDisplayId, mSentMagnificationSpec);
+            }
+        }
+    }
+}

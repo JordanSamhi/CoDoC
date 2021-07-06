@@ -1,0 +1,12 @@
+public void postInvalidateOnAnimation(int left, int top, int right, int bottom){
+    final AttachInfo attachInfo = mAttachInfo;
+    if (attachInfo != null) {
+        final AttachInfo.InvalidateInfo info = AttachInfo.InvalidateInfo.obtain();
+        info.target = this;
+        info.left = left;
+        info.top = top;
+        info.right = right;
+        info.bottom = bottom;
+        attachInfo.mViewRootImpl.dispatchInvalidateRectOnAnimation(info);
+    }
+}

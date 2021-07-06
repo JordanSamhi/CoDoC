@@ -1,0 +1,15 @@
+public int getInputType(){
+    int contentType;
+    if (mNeedsAdvancedInput) {
+        contentType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL;
+    } else {
+        contentType = InputType.TYPE_CLASS_NUMBER;
+        if (mSign) {
+            contentType |= InputType.TYPE_NUMBER_FLAG_SIGNED;
+        }
+        if (mDecimal) {
+            contentType |= InputType.TYPE_NUMBER_FLAG_DECIMAL;
+        }
+    }
+    return contentType;
+}

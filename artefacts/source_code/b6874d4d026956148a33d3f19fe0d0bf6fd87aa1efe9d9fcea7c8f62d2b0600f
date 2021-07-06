@@ -1,0 +1,18 @@
+public Bundle resolveExtrasBackReferences(@NonNull ContentProviderResult[] backRefs, int numBackRefs){
+    if (mExtras != null) {
+        final Bundle extras = new Bundle();
+        for (int i = 0; i < mExtras.size(); i++) {
+            final Object value = mExtras.valueAt(i);
+            final Object resolved;
+            if (value instanceof BackReference) {
+                resolved = ((BackReference) value).resolve(backRefs, numBackRefs);
+            } else {
+                resolved = value;
+            }
+            extras.putObject(mExtras.keyAt(i), resolved);
+        }
+        return extras;
+    } else {
+        return null;
+    }
+}

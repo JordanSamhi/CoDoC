@@ -1,0 +1,16 @@
+public boolean convertToTranslucent(TranslucentConversionListener callback, ActivityOptions options){
+    boolean drawComplete;
+    try {
+        mTranslucentCallback = callback;
+        mChangeCanvasToTranslucent = ActivityTaskManager.getService().convertToTranslucent(mToken, options == null ? null : options.toBundle());
+        WindowManagerGlobal.getInstance().changeCanvasOpacity(mToken, false);
+        drawComplete = true;
+    } catch (RemoteException e) {
+        mChangeCanvasToTranslucent = false;
+        drawComplete = false;
+    }
+    if (!mChangeCanvasToTranslucent && mTranslucentCallback != null) {
+        mTranslucentCallback.onTranslucentConversionComplete(drawComplete);
+    }
+    return mChangeCanvasToTranslucent;
+}

@@ -1,0 +1,8 @@
+public void maybeStopTrackingJobLocked(JobStatus job, JobStatus incomingJob, boolean forUpdate){
+    if (job.clearTrackingController(JobStatus.TRACKING_TIME)) {
+        if (mTrackedJobs.remove(job)) {
+            checkExpiredDelaysAndResetAlarm();
+            checkExpiredDeadlinesAndResetAlarm();
+        }
+    }
+}

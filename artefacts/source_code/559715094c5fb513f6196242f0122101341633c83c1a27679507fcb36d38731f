@@ -1,0 +1,11 @@
+public void transfer(@NonNull String packageName) throws PackageManager.NameNotFoundException{
+    Objects.requireNonNull(packageName);
+    try {
+        mSession.transfer(packageName);
+    } catch (ParcelableException e) {
+        e.maybeRethrow(PackageManager.NameNotFoundException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

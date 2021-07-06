@@ -1,0 +1,19 @@
+public void retrieveNotificationList(String cardId, @EuiccNotification.Event int events, @CallbackExecutor Executor executor, ResultCallback<EuiccNotification[]> callback){
+    try {
+        getIEuiccCardController().retrieveNotificationList(mContext.getOpPackageName(), cardId, events, new IRetrieveNotificationListCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, EuiccNotification[] notifications) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, notifications));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling retrieveNotificationList", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

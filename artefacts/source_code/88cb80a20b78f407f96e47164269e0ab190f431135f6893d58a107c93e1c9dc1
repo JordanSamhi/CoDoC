@@ -1,0 +1,26 @@
+public List<PnoSettings.PnoNetwork> retrievePnoNetworkList(){
+    List<WifiConfiguration> networks = getAllScanOptimizationNetworks();
+    if (networks.isEmpty()) {
+        return Collections.EMPTY_LIST;
+    }
+    Collections.sort(networks, mConfigManager.getScanListComparator());
+    boolean pnoFrequencyCullingEnabled = mContext.getResources().getBoolean(R.bool.config_wifiPnoFrequencyCullingEnabled);
+    List<PnoSettings.PnoNetwork> pnoList = new ArrayList<>();
+    Set<WifiScanner.PnoSettings.PnoNetwork> pnoSet = new HashSet<>();
+    for (WifiConfiguration config : networks) {
+        WifiScanner.PnoSettings.PnoNetwork pnoNetwork = WifiConfigurationUtil.createPnoNetwork(config);
+        if (pnoSet.contains(pnoNetwork)) {
+            continue;
+        }
+        pnoList.add(pnoNetwork);
+        pnoSet.add(pnoNetwork);
+        if (!pnoFrequencyCullingEnabled) {
+            continue;
+        }
+        Set<Integer> channelList = new HashSet<>();
+        addChannelFromWifiScoreCard(channelList, config, 0, MAX_PNO_SCAN_FREQUENCY_AGE_MS);
+        pnoNetwork.frequencies = channelList.stream().mapToInt(Integer::intValue).toArray();
+        localLog("retrievePnoNetworkList " + pnoNetwork.ssid + ":" + Arrays.toString(pnoNetwork.frequencies));
+    }
+    return pnoList;
+}

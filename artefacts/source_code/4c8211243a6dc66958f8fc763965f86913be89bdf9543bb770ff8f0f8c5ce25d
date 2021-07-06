@@ -1,0 +1,8 @@
+public void clearWifiConnectedNetworkScorer(){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.WIFI_UPDATE_USABILITY_STATS_SCORE, "WifiService");
+    if (mVerboseLoggingEnabled) {
+        mLog.info("clearWifiConnectedNetworkScorer uid=%").c(Binder.getCallingUid()).flush();
+    }
+    WifiScoreReport wifiScoreReport = mClientModeImpl.getWifiScoreReport();
+    mWifiThreadRunner.post(() -> wifiScoreReport.clearWifiConnectedNetworkScorer());
+}

@@ -1,0 +1,7 @@
+public static int makeMeasureSpec(@IntRange(from = 0, to = (1 << MeasureSpec.MODE_SHIFT) - 1) int size, @MeasureSpecMode int mode){
+    if (sUseBrokenMakeMeasureSpec) {
+        return size + mode;
+    } else {
+        return (size & ~MODE_MASK) | (mode & MODE_MASK);
+    }
+}

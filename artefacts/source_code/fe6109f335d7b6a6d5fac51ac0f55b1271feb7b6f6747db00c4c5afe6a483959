@@ -1,0 +1,36 @@
+public final void setTop(int top){
+    if (top != mTop) {
+        final boolean matrixIsIdentity = hasIdentityMatrix();
+        if (matrixIsIdentity) {
+            if (mAttachInfo != null) {
+                int minTop;
+                int yLoc;
+                if (top < mTop) {
+                    minTop = top;
+                    yLoc = top - mTop;
+                } else {
+                    minTop = mTop;
+                    yLoc = 0;
+                }
+                invalidate(0, yLoc, mRight - mLeft, mBottom - minTop);
+            }
+        } else {
+            invalidate(true);
+        }
+        int width = mRight - mLeft;
+        int oldHeight = mBottom - mTop;
+        mTop = top;
+        mRenderNode.setTop(mTop);
+        sizeChange(width, mBottom - mTop, width, oldHeight);
+        if (!matrixIsIdentity) {
+            mPrivateFlags |= PFLAG_DRAWN;
+            invalidate(true);
+        }
+        mBackgroundSizeChanged = true;
+        mDefaultFocusHighlightSizeChanged = true;
+        if (mForegroundInfo != null) {
+            mForegroundInfo.mBoundsChanged = true;
+        }
+        invalidateParentIfNeeded();
+    }
+}

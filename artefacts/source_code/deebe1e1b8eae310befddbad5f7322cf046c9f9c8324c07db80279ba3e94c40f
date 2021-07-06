@@ -1,0 +1,30 @@
+public boolean requestChildRectangleOnScreen(RecyclerView parent, View child, Rect rect, boolean immediate){
+    final int parentLeft = getPaddingLeft();
+    final int parentTop = getPaddingTop();
+    final int parentRight = getWidth() - getPaddingRight();
+    final int parentBottom = getHeight() - getPaddingBottom();
+    final int childLeft = child.getLeft() + rect.left - child.getScrollX();
+    final int childTop = child.getTop() + rect.top - child.getScrollY();
+    final int childRight = childLeft + rect.width();
+    final int childBottom = childTop + rect.height();
+    final int offScreenLeft = Math.min(0, childLeft - parentLeft);
+    final int offScreenTop = Math.min(0, childTop - parentTop);
+    final int offScreenRight = Math.max(0, childRight - parentRight);
+    final int offScreenBottom = Math.max(0, childBottom - parentBottom);
+    final int dx;
+    if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+        dx = offScreenRight != 0 ? offScreenRight : Math.max(offScreenLeft, childRight - parentRight);
+    } else {
+        dx = offScreenLeft != 0 ? offScreenLeft : Math.min(childLeft - parentLeft, offScreenRight);
+    }
+    final int dy = offScreenTop != 0 ? offScreenTop : Math.min(childTop - parentTop, offScreenBottom);
+    if (dx != 0 || dy != 0) {
+        if (immediate) {
+            parent.scrollBy(dx, dy);
+        } else {
+            parent.smoothScrollBy(dx, dy);
+        }
+        return true;
+    }
+    return false;
+}

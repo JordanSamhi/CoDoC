@@ -1,0 +1,7 @@
+public int syncAndDraw(){
+    int syncResult = syncAndDrawFrame(mFrameInfo);
+    if (mWaitForPresent && (syncResult & SYNC_FRAME_DROPPED) == 0) {
+        fence();
+    }
+    return syncResult;
+}

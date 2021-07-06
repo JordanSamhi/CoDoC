@@ -1,0 +1,14 @@
+public Builder add(@CapabilityFlag long type, @NonNull Uri serviceUri){
+    mCapabilities.mCapabilities |= type;
+    for (long shift = 0; shift < Integer.SIZE; shift++) {
+        long cap = type & (1 << shift);
+        if (cap != 0) {
+            mCapabilities.mServiceMap.put(cap, serviceUri);
+            type &= ~cap;
+        }
+        if (type == 0) {
+            break;
+        }
+    }
+    return this;
+}

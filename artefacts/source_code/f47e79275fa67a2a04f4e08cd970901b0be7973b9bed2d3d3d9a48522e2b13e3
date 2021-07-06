@@ -1,0 +1,8 @@
+public void rewrap_canBeUnwrappedWithNewSecondaryKey() throws Exception{
+    SecretKey tertiaryKey = generateAesKey();
+    SecretKey oldSecondaryKey = generateAesKey();
+    SecretKey newSecondaryKey = generateAesKey();
+    WrappedKeyProto.WrappedKey wrappedWithOld = KeyWrapUtils.wrap(oldSecondaryKey, tertiaryKey);
+    WrappedKeyProto.WrappedKey wrappedWithNew = KeyWrapUtils.rewrap(oldSecondaryKey, newSecondaryKey, wrappedWithOld);
+    assertThat(KeyWrapUtils.unwrap(newSecondaryKey, wrappedWithNew)).isEqualTo(tertiaryKey);
+}

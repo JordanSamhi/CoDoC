@@ -1,0 +1,44 @@
+public void onVisibilityAggregated(boolean isVisible){
+    boolean oldVisible = isAggregatedVisible();
+    mPrivateFlags3 = isVisible ? (mPrivateFlags3 | PFLAG3_AGGREGATED_VISIBLE) : (mPrivateFlags3 & ~PFLAG3_AGGREGATED_VISIBLE);
+    if (isVisible && mAttachInfo != null) {
+        initialAwakenScrollBars();
+    }
+    final Drawable dr = mBackground;
+    if (dr != null && isVisible != dr.isVisible()) {
+        dr.setVisible(isVisible, false);
+    }
+    final Drawable hl = mDefaultFocusHighlight;
+    if (hl != null && isVisible != hl.isVisible()) {
+        hl.setVisible(isVisible, false);
+    }
+    final Drawable fg = mForegroundInfo != null ? mForegroundInfo.mDrawable : null;
+    if (fg != null && isVisible != fg.isVisible()) {
+        fg.setVisible(isVisible, false);
+    }
+    if (isAutofillable()) {
+        AutofillManager afm = getAutofillManager();
+        if (afm != null && getAutofillViewId() > LAST_APP_AUTOFILL_ID) {
+            if (mVisibilityChangeForAutofillHandler != null) {
+                mVisibilityChangeForAutofillHandler.removeMessages(0);
+            }
+            if (isVisible) {
+                afm.notifyViewVisibilityChanged(this, true);
+            } else {
+                if (mVisibilityChangeForAutofillHandler == null) {
+                    mVisibilityChangeForAutofillHandler = new VisibilityChangeForAutofillHandler(afm, this);
+                }
+                mVisibilityChangeForAutofillHandler.obtainMessage(0, this).sendToTarget();
+            }
+        }
+    }
+    if (isVisible != oldVisible) {
+        if (isAccessibilityPane()) {
+            notifyViewAccessibilityStateChangedIfNeeded(isVisible ? AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED : AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
+        }
+        notifyAppearedOrDisappearedForContentCaptureIfNeeded(isVisible);
+        if (!getSystemGestureExclusionRects().isEmpty()) {
+            postUpdateSystemGestureExclusionRects();
+        }
+    }
+}

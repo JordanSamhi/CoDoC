@@ -1,0 +1,11 @@
+public boolean isMasterVolumeMuted(@NonNull ComponentName admin){
+    throwIfParentInstance("isMasterVolumeMuted");
+    if (mService != null) {
+        try {
+            return mService.isMasterVolumeMuted(admin);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public int getEnum(int tag, int defaultValue){
+    if (KeymasterDefs.getTagType(tag) != KeymasterDefs.KM_ENUM) {
+        throw new IllegalArgumentException("Not an enum tag: " + tag);
+    }
+    KeymasterArgument arg = getArgumentByTag(tag);
+    if (arg == null) {
+        return defaultValue;
+    }
+    return getEnumTagValue(arg);
+}

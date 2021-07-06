@@ -1,0 +1,11 @@
+public void startSearch(String initialQuery, boolean selectInitialQuery, ComponentName launchActivity, Bundle appSearchData, boolean globalSearch, Rect sourceBounds){
+    if (globalSearch) {
+        startGlobalSearch(initialQuery, selectInitialQuery, appSearchData, sourceBounds);
+        return;
+    }
+    final UiModeManager uiModeManager = mContext.getSystemService(UiModeManager.class);
+    if (uiModeManager.getCurrentModeType() != Configuration.UI_MODE_TYPE_TELEVISION) {
+        ensureSearchDialog();
+        mSearchDialog.show(initialQuery, selectInitialQuery, launchActivity, appSearchData);
+    }
+}

@@ -1,0 +1,27 @@
+
+     * Register a callback to be notified about camera device availability.
+     *
+     * <p>Registering the same callback again will replace the handler with the
+     * new one provided.</p>
+     *
+     * <p>The first time a callback is registered, it is immediately called
+     * with the availability status of all currently known camera devices.</p>
+     *
+     * <p>{@link AvailabilityCallback#onCameraUnavailable(String)} will be called whenever a camera
+     * device is opened by any camera API client. As of API level 23, other camera API clients may
+     * still be able to open such a camera device, evicting the existing client if they have higher
+     * priority than the existing client of a camera device. See open() for more details.</p>
+     *
+     * <p>Since this callback will be registered with the camera service, remember to unregister it
+     * once it is no longer needed; otherwise the callback will continue to receive events
+     * indefinitely and it may prevent other resources from being released. Specifically, the
+     * callbacks will be invoked independently of the general activity lifecycle and independently
+     * of the state of individual CameraManager instances.</p>
+     *
+     * @param callback the new callback to send camera availability notices to
+     * @param handler The handler on which the callback should be invoked, or {@code null} to use
+     *             the current thread's {@link android.os.Looper looper}.
+     *
+     * @throws IllegalArgumentException if the handler is {@code null} but the current thread has
+     *             no looper.
+     

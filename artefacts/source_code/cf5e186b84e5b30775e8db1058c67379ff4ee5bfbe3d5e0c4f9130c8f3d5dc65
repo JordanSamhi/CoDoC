@@ -1,0 +1,15 @@
+public static boolean scheduleAsFifoPriority(int tid, boolean suppressLogs){
+    try {
+        Process.setThreadScheduler(tid, Process.SCHED_FIFO | Process.SCHED_RESET_ON_FORK, 1);
+        return true;
+    } catch (IllegalArgumentException e) {
+        if (!suppressLogs) {
+            Slog.w(TAG, "Failed to set scheduling policy, thread does not exist:\n" + e);
+        }
+    } catch (SecurityException e) {
+        if (!suppressLogs) {
+            Slog.w(TAG, "Failed to set scheduling policy, not allowed:\n" + e);
+        }
+    }
+    return false;
+}

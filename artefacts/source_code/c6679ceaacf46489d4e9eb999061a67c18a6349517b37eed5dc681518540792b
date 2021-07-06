@@ -1,0 +1,30 @@
+public void getPendingUpdatesForId(int appWidgetId, LongSparseArray<PendingHostUpdate> outUpdates){
+    long updateSequenceNo = lastWidgetUpdateSequenceNo;
+    int N = widgets.size();
+    for (int i = 0; i < N; i++) {
+        Widget widget = widgets.get(i);
+        if (widget.appWidgetId == appWidgetId) {
+            for (int j = widget.updateSequenceNos.size() - 1; j >= 0; j--) {
+                long requestId = widget.updateSequenceNos.valueAt(j);
+                if (requestId <= updateSequenceNo) {
+                    continue;
+                }
+                int id = widget.updateSequenceNos.keyAt(j);
+                final PendingHostUpdate update;
+                switch(id) {
+                    case ID_PROVIDER_CHANGED:
+                        update = PendingHostUpdate.providerChanged(appWidgetId, widget.provider.info);
+                        break;
+                    case ID_VIEWS_UPDATE:
+                        update = PendingHostUpdate.updateAppWidget(appWidgetId, cloneIfLocalBinder(widget.getEffectiveViewsLocked()));
+                        break;
+                    default:
+                        update = PendingHostUpdate.viewDataChanged(appWidgetId, id);
+                }
+                outUpdates.put(requestId, update);
+            }
+            return;
+        }
+    }
+    outUpdates.put(lastWidgetUpdateSequenceNo, PendingHostUpdate.appWidgetRemoved(appWidgetId));
+}

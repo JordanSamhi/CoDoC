@@ -1,0 +1,9 @@
+public void setWFDInfo(@NonNull Channel c, @NonNull WifiP2pWfdInfo wfdInfo, @Nullable ActionListener listener){
+    checkChannel(c);
+    try {
+        mService.checkConfigureWifiDisplayPermission();
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    c.mAsyncChannel.sendMessage(SET_WFD_INFO, 0, c.putListener(listener), wfdInfo);
+}

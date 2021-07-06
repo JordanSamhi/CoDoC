@@ -1,0 +1,8 @@
+public boolean isRegistered(String localProfileUri) throws SipException{
+    try {
+        checkSipServiceConnection();
+        return mSipService.isRegistered(localProfileUri, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw new SipException("isRegistered()", e);
+    }
+}

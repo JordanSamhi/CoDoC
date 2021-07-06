@@ -1,0 +1,10 @@
+public void reportFullyDrawn(){
+    if (mDoReportFullyDrawn) {
+        mDoReportFullyDrawn = false;
+        try {
+            ActivityTaskManager.getService().reportActivityFullyDrawn(mToken, mRestoredFromBundle);
+            VMRuntime.getRuntime().notifyStartupCompleted();
+        } catch (RemoteException e) {
+        }
+    }
+}

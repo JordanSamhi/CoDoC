@@ -1,0 +1,38 @@
+public void setDataSource(@NonNull Context context, @NonNull Uri uri, @Nullable Map<String, String> headers, @Nullable List<HttpCookie> cookies) throws IOException{
+    if (context == null) {
+        throw new NullPointerException("context param can not be null.");
+    }
+    if (uri == null) {
+        throw new NullPointerException("uri param can not be null.");
+    }
+    if (cookies != null) {
+        CookieHandler cookieHandler = CookieHandler.getDefault();
+        if (cookieHandler != null && !(cookieHandler instanceof CookieManager)) {
+            throw new IllegalArgumentException("The cookie handler has to be of CookieManager " + "type when cookies are provided.");
+        }
+    }
+    final ContentResolver resolver = context.getContentResolver();
+    final String scheme = uri.getScheme();
+    final String authority = ContentProvider.getAuthorityWithoutUserId(uri.getAuthority());
+    if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+        setDataSource(uri.getPath());
+        return;
+    } else if (ContentResolver.SCHEME_CONTENT.equals(scheme) && Settings.AUTHORITY.equals(authority)) {
+        final int type = RingtoneManager.getDefaultType(uri);
+        final Uri cacheUri = RingtoneManager.getCacheForType(type, context.getUserId());
+        final Uri actualUri = RingtoneManager.getActualDefaultRingtoneUri(context, type);
+        if (attemptDataSource(resolver, cacheUri)) {
+            return;
+        } else if (attemptDataSource(resolver, actualUri)) {
+            return;
+        } else {
+            setDataSource(uri.toString(), headers, cookies);
+        }
+    } else {
+        if (attemptDataSource(resolver, uri)) {
+            return;
+        } else {
+            setDataSource(uri.toString(), headers, cookies);
+        }
+    }
+}

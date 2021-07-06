@@ -1,0 +1,12 @@
+public boolean setMulticastFilter(boolean enabled){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.setMulticastFilter(enabled);
+        return true;
+    } catch (RemoteException e) {
+        log("Error setting multicast filter", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,45 @@
+public final boolean isImportantForAutofill(){
+    ViewParent parent = mParent;
+    while (parent instanceof View) {
+        final int parentImportance = ((View) parent).getImportantForAutofill();
+        if (parentImportance == IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS || parentImportance == IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS) {
+            if (Log.isLoggable(AUTOFILL_LOG_TAG, Log.VERBOSE)) {
+                Log.v(AUTOFILL_LOG_TAG, "View (" + this + ") is not important for autofill " + "because parent " + parent + "'s importance is " + parentImportance);
+            }
+            return false;
+        }
+        parent = parent.getParent();
+    }
+    final int importance = getImportantForAutofill();
+    if (importance == IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS || importance == IMPORTANT_FOR_AUTOFILL_YES) {
+        return true;
+    }
+    if (importance == IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS || importance == IMPORTANT_FOR_AUTOFILL_NO) {
+        if (Log.isLoggable(AUTOFILL_LOG_TAG, Log.VERBOSE)) {
+            Log.v(AUTOFILL_LOG_TAG, "View (" + this + ") is not important for autofill " + "because its importance is " + importance);
+        }
+        return false;
+    }
+    if (importance != IMPORTANT_FOR_AUTOFILL_AUTO) {
+        Log.w(AUTOFILL_LOG_TAG, "invalid autofill importance (" + importance + " on view " + this);
+        return false;
+    }
+    final int id = mID;
+    if (id != NO_ID && !isViewIdGenerated(id)) {
+        final Resources res = getResources();
+        String entry = null;
+        String pkg = null;
+        try {
+            entry = res.getResourceEntryName(id);
+            pkg = res.getResourcePackageName(id);
+        } catch (Resources.NotFoundException e) {
+        }
+        if (entry != null && pkg != null && pkg.equals(mContext.getPackageName())) {
+            return true;
+        }
+    }
+    if (getAutofillHints() != null) {
+        return true;
+    }
+    return false;
+}

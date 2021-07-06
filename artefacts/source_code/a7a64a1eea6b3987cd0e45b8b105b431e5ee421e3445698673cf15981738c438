@@ -1,0 +1,15 @@
+public void attachToRecyclerView(@Nullable RecyclerView recyclerView){
+    if (mRecyclerView == recyclerView) {
+        return;
+    }
+    if (mRecyclerView != null) {
+        destroyCallbacks();
+    }
+    mRecyclerView = recyclerView;
+    if (mRecyclerView != null) {
+        final Resources resources = recyclerView.getResources();
+        mSwipeEscapeVelocity = resources.getDimension(R.dimen.item_touch_helper_swipe_escape_velocity);
+        mMaxSwipeVelocity = resources.getDimension(R.dimen.item_touch_helper_swipe_escape_max_velocity);
+        setupCallbacks();
+    }
+}

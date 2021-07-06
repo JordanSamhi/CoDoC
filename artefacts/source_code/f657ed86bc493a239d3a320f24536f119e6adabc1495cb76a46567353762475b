@@ -1,0 +1,9 @@
+public String getKeyId(WifiEnterpriseConfig current){
+    if (mEapMethod == Eap.NONE) {
+        return (current != null) ? current.getKeyId(null) : EMPTY_VALUE;
+    }
+    if (!isEapMethodValid()) {
+        return EMPTY_VALUE;
+    }
+    return Eap.strings[mEapMethod] + "_" + Phase2.strings[mPhase2Method];
+}

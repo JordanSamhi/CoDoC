@@ -1,0 +1,7 @@
+public Cursor query(Query query, String[] projection){
+    Cursor underlyingCursor = query.runQuery(mResolver, projection, mBaseUri);
+    if (underlyingCursor == null) {
+        return null;
+    }
+    return new CursorTranslator(underlyingCursor, mBaseUri, mAccessFilename);
+}

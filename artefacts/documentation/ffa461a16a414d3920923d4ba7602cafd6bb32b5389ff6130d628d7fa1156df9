@@ -1,0 +1,19 @@
+
+     * This method should be triggered by the IMS providers when the status report of the sent
+     * message is received. The platform will handle the report and notify the IMS provider of the
+     * result by calling {@link #acknowledgeSmsReport(int, int, int)}.
+     *
+     * This method must not be called before {@link #onReady()} is called or the call will fail. If
+     * the platform is not available, {@link #acknowledgeSmsReport(int, int, int)} will be called
+     * with the {@link #STATUS_REPORT_STATUS_ERROR} result code.
+     * @param token token provided in {@link #sendSms(int, int, String, String, boolean, byte[])}
+     * @param messageRef the message reference, which may be 1 byte if it is in
+     *     {@link SmsMessage#FORMAT_3GPP} format or 2 bytes if it is in
+     *     {@link SmsMessage#FORMAT_3GPP2} format (see 3GPP2 C.S0015-B).
+     * @param format the format of the message.
+     * @param pdu PDU representing the content of the status report.
+     * @throws RuntimeException if called before {@link #onReady()} is triggered
+     *
+     * @deprecated Use {@link #onSmsStatusReportReceived(int, String, byte[])} instead without the
+     * message reference.
+     

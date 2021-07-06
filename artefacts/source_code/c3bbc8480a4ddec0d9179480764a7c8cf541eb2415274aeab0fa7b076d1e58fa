@@ -1,0 +1,15 @@
+public static void beginDelayedTransition(final ViewGroup sceneRoot, Transition transition){
+    if (!sPendingTransitions.contains(sceneRoot) && sceneRoot.isLaidOut()) {
+        if (Transition.DBG) {
+            Log.d(LOG_TAG, "beginDelayedTransition: root, transition = " + sceneRoot + ", " + transition);
+        }
+        sPendingTransitions.add(sceneRoot);
+        if (transition == null) {
+            transition = sDefaultTransition;
+        }
+        final Transition transitionClone = transition.clone();
+        sceneChangeSetup(sceneRoot, transitionClone);
+        Scene.setCurrentScene(sceneRoot, null);
+        sceneChangeRunTransition(sceneRoot, transitionClone);
+    }
+}

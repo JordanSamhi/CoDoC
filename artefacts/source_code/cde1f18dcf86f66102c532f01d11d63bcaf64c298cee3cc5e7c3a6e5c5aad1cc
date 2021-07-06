@@ -1,0 +1,10 @@
+public boolean isInScrollingContainer(){
+    ViewParent p = getParent();
+    while (p != null && p instanceof ViewGroup) {
+        if (((ViewGroup) p).shouldDelayChildPressedState()) {
+            return true;
+        }
+        p = p.getParent();
+    }
+    return false;
+}

@@ -1,0 +1,6 @@
+public void requestSingleUpdate(@NonNull Criteria criteria, @NonNull PendingIntent pendingIntent){
+    Preconditions.checkArgument(criteria != null, "invalid null criteria");
+    LocationRequest request = LocationRequest.createFromDeprecatedCriteria(criteria, 0, 0, true);
+    request.setExpireIn(GET_CURRENT_LOCATION_MAX_TIMEOUT_MS);
+    requestLocationUpdates(request, pendingIntent);
+}

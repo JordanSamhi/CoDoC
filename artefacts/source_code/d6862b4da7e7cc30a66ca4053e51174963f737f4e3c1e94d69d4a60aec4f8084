@@ -1,0 +1,39 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (super.performAccessibilityActionInternal(action, arguments)) {
+        return true;
+    }
+    if (!isEnabled()) {
+        return false;
+    }
+    switch(action) {
+        case R.id.accessibilityActionSetProgress:
+            {
+                if (!canUserSetProgress()) {
+                    return false;
+                }
+                if (arguments == null || !arguments.containsKey(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE)) {
+                    return false;
+                }
+                float value = arguments.getFloat(AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE);
+                return setProgressInternal((int) value, true, true);
+            }
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+            {
+                if (!canUserSetProgress()) {
+                    return false;
+                }
+                int range = getMax() - getMin();
+                int increment = Math.max(1, Math.round((float) range / 20));
+                if (action == AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD) {
+                    increment = -increment;
+                }
+                if (setProgressInternal(getProgress() + increment, true, true)) {
+                    onKeyChange();
+                    return true;
+                }
+                return false;
+            }
+    }
+    return false;
+}

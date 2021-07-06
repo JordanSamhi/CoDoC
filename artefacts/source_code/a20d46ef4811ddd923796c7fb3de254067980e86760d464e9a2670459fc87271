@@ -1,0 +1,9 @@
+public Builder setInsetsIgnoringVisibility(@InsetsType int typeMask, @NonNull Insets insets) throws IllegalArgumentException{
+    if (typeMask == IME) {
+        throw new IllegalArgumentException("Maximum inset not available for IME");
+    }
+    Preconditions.checkNotNull(insets);
+    WindowInsets.setInsets(mTypeMaxInsetsMap, typeMask, insets);
+    mStableInsetsConsumed = false;
+    return this;
+}

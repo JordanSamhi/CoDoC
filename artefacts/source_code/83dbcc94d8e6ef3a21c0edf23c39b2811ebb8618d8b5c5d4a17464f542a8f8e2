@@ -1,0 +1,8 @@
+public void checkValidPattern(byte[] pattern){
+    logVerbose("checkValidPattern");
+    if (mCurrentValidateLockTask != null && mCurrentValidateLockTask.getStatus() != AsyncTask.Status.FINISHED) {
+        mCurrentValidateLockTask.cancel(true);
+    }
+    mCurrentValidateLockTask = new ValidateLockAsyncTask(mInitialLockListener, mInitialLockSetupService, LockTypes.PATTERN);
+    mCurrentValidateLockTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, pattern);
+}

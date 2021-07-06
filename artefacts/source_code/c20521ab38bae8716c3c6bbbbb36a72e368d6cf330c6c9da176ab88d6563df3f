@@ -1,0 +1,9 @@
+public static void prepareForUnattendedUpdate(@NonNull Context context, @NonNull String updateToken, @Nullable IntentSender intentSender) throws IOException{
+    if (updateToken == null) {
+        throw new NullPointerException("updateToken == null");
+    }
+    RecoverySystem rs = (RecoverySystem) context.getSystemService(Context.RECOVERY_SERVICE);
+    if (!rs.requestLskf(updateToken, intentSender)) {
+        throw new IOException("preparation for update failed");
+    }
+}

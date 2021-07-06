@@ -1,0 +1,15 @@
+public Cursor getCursor(){
+    if (mCursor != null && mCursor.requery()) {
+        return mCursor;
+    }
+    ArrayList<Cursor> ringtoneCursors = new ArrayList<Cursor>();
+    ringtoneCursors.add(getInternalRingtones());
+    ringtoneCursors.add(getMediaRingtones());
+    if (mIncludeParentRingtones) {
+        Cursor parentRingtonesCursor = getParentProfileRingtones();
+        if (parentRingtonesCursor != null) {
+            ringtoneCursors.add(parentRingtonesCursor);
+        }
+    }
+    return mCursor = new SortCursor(ringtoneCursors.toArray(new Cursor[ringtoneCursors.size()]), MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+}

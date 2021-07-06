@@ -1,0 +1,19 @@
+public void dispatchKeyEventFromInputMethod(@Nullable View targetView, @NonNull KeyEvent event){
+    final InputMethodManager fallbackImm = getFallbackInputMethodManagerIfNecessary(targetView);
+    if (fallbackImm != null) {
+        fallbackImm.dispatchKeyEventFromInputMethod(targetView, event);
+        return;
+    }
+    synchronized (mH) {
+        ViewRootImpl viewRootImpl = targetView != null ? targetView.getViewRootImpl() : null;
+        if (viewRootImpl == null) {
+            final View servedView = getServedViewLocked();
+            if (servedView != null) {
+                viewRootImpl = servedView.getViewRootImpl();
+            }
+        }
+        if (viewRootImpl != null) {
+            viewRootImpl.dispatchKeyFromIme(event);
+        }
+    }
+}

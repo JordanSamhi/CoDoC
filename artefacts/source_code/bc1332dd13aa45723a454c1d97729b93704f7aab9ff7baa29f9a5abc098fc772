@@ -1,0 +1,16 @@
+public UiAutomation getUiAutomation(@UiAutomationFlags int flags){
+    boolean mustCreateNewAutomation = (mUiAutomation == null) || (mUiAutomation.isDestroyed());
+    if (mUiAutomationConnection != null) {
+        if (!mustCreateNewAutomation && (mUiAutomation.getFlags() == flags)) {
+            return mUiAutomation;
+        }
+        if (mustCreateNewAutomation) {
+            mUiAutomation = new UiAutomation(getTargetContext().getMainLooper(), mUiAutomationConnection);
+        } else {
+            mUiAutomation.disconnect();
+        }
+        mUiAutomation.connect(flags);
+        return mUiAutomation;
+    }
+    return null;
+}

@@ -1,0 +1,9 @@
+public String createAppSpecificSmsTokenWithPackageInfo(@Nullable String prefixes, @NonNull PendingIntent intent){
+    try {
+        ISms iccSms = getISmsServiceOrThrow();
+        return iccSms.createAppSpecificSmsTokenWithPackageInfo(getSubscriptionId(), null, prefixes, intent);
+    } catch (RemoteException ex) {
+        ex.rethrowFromSystemServer();
+        return null;
+    }
+}

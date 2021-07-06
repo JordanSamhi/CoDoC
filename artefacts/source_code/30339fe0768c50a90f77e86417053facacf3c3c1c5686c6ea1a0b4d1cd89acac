@@ -1,0 +1,58 @@
+public int requestBackup(String[] packages, IBackupObserver observer, IBackupManagerMonitor monitor, int flags){
+    mContext.enforceCallingPermission(android.Manifest.permission.BACKUP, "requestBackup");
+    if (packages == null || packages.length < 1) {
+        Slog.e(TAG, addUserIdToLogMessage(mUserId, "No packages named for backup request"));
+        BackupObserverUtils.sendBackupFinished(observer, BackupManager.ERROR_TRANSPORT_ABORTED);
+        monitor = BackupManagerMonitorUtils.monitorEvent(monitor, BackupManagerMonitor.LOG_EVENT_ID_NO_PACKAGES, null, BackupManagerMonitor.LOG_EVENT_CATEGORY_TRANSPORT, null);
+        throw new IllegalArgumentException("No packages are provided for backup");
+    }
+    if (!mEnabled || !mSetupComplete) {
+        Slog.i(TAG, addUserIdToLogMessage(mUserId, "Backup requested but enabled=" + mEnabled + " setupComplete=" + mSetupComplete));
+        BackupObserverUtils.sendBackupFinished(observer, BackupManager.ERROR_BACKUP_NOT_ALLOWED);
+        final int logTag = mSetupComplete ? BackupManagerMonitor.LOG_EVENT_ID_BACKUP_DISABLED : BackupManagerMonitor.LOG_EVENT_ID_DEVICE_NOT_PROVISIONED;
+        monitor = BackupManagerMonitorUtils.monitorEvent(monitor, logTag, null, BackupManagerMonitor.LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, null);
+        return BackupManager.ERROR_BACKUP_NOT_ALLOWED;
+    }
+    final TransportClient transportClient;
+    final String transportDirName;
+    try {
+        transportDirName = mTransportManager.getTransportDirName(mTransportManager.getCurrentTransportName());
+        transportClient = mTransportManager.getCurrentTransportClientOrThrow("BMS.requestBackup()");
+    } catch (TransportNotRegisteredException e) {
+        BackupObserverUtils.sendBackupFinished(observer, BackupManager.ERROR_TRANSPORT_ABORTED);
+        monitor = BackupManagerMonitorUtils.monitorEvent(monitor, BackupManagerMonitor.LOG_EVENT_ID_TRANSPORT_IS_NULL, null, BackupManagerMonitor.LOG_EVENT_CATEGORY_TRANSPORT, null);
+        return BackupManager.ERROR_TRANSPORT_ABORTED;
+    }
+    OnTaskFinishedListener listener = caller -> mTransportManager.disposeOfTransportClient(transportClient, caller);
+    ArrayList<String> fullBackupList = new ArrayList<>();
+    ArrayList<String> kvBackupList = new ArrayList<>();
+    for (String packageName : packages) {
+        if (PACKAGE_MANAGER_SENTINEL.equals(packageName)) {
+            kvBackupList.add(packageName);
+            continue;
+        }
+        try {
+            PackageInfo packageInfo = mPackageManager.getPackageInfoAsUser(packageName, PackageManager.GET_SIGNING_CERTIFICATES, mUserId);
+            if (!AppBackupUtils.appIsEligibleForBackup(packageInfo.applicationInfo, mUserId)) {
+                BackupObserverUtils.sendBackupOnPackageResult(observer, packageName, BackupManager.ERROR_BACKUP_NOT_ALLOWED);
+                continue;
+            }
+            if (AppBackupUtils.appGetsFullBackup(packageInfo)) {
+                fullBackupList.add(packageInfo.packageName);
+            } else {
+                kvBackupList.add(packageInfo.packageName);
+            }
+        } catch (NameNotFoundException e) {
+            BackupObserverUtils.sendBackupOnPackageResult(observer, packageName, BackupManager.ERROR_PACKAGE_NOT_FOUND);
+        }
+    }
+    EventLog.writeEvent(EventLogTags.BACKUP_REQUESTED, packages.length, kvBackupList.size(), fullBackupList.size());
+    if (MORE_DEBUG) {
+        Slog.i(TAG, addUserIdToLogMessage(mUserId, "Backup requested for " + packages.length + " packages, of them: " + fullBackupList.size() + " full backups, " + kvBackupList.size() + " k/v backups"));
+    }
+    boolean nonIncrementalBackup = (flags & BackupManager.FLAG_NON_INCREMENTAL_BACKUP) != 0;
+    Message msg = mBackupHandler.obtainMessage(MSG_REQUEST_BACKUP);
+    msg.obj = new BackupParams(transportClient, transportDirName, kvBackupList, fullBackupList, observer, monitor, listener, true, nonIncrementalBackup);
+    mBackupHandler.sendMessage(msg);
+    return BackupManager.SUCCESS;
+}

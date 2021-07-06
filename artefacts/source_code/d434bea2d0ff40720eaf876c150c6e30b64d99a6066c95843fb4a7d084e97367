@@ -1,0 +1,11 @@
+public static WebViewProviderInfo[] getAllWebViewPackages(){
+    IWebViewUpdateService service = getUpdateService();
+    if (service == null) {
+        return new WebViewProviderInfo[0];
+    }
+    try {
+        return service.getAllWebViewPackages();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

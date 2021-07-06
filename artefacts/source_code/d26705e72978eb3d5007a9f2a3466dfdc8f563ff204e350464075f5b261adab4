@@ -1,0 +1,12 @@
+public void setVoiceMessageWaiting(int line, int countWaiting){
+    if (isPhoneTypeGsm()) {
+        IccRecords r = mIccRecords.get();
+        if (r != null) {
+            r.setVoiceMessageWaiting(line, countWaiting);
+        } else {
+            logd("SIM Records not found, MWI not updated");
+        }
+    } else {
+        setVoiceMessageCount(countWaiting);
+    }
+}

@@ -1,0 +1,10 @@
+public void dropShellPermissionIdentity(){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        mUiAutomationConnection.dropShellPermissionIdentity();
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error executing dropping shell permission identity!", re);
+    }
+}

@@ -1,0 +1,16 @@
+public void setRemote(ICancellationSignal remote){
+    synchronized (this) {
+        waitForCancelFinishedLocked();
+        if (mRemote == remote) {
+            return;
+        }
+        mRemote = remote;
+        if (!mIsCanceled || remote == null) {
+            return;
+        }
+    }
+    try {
+        remote.cancel();
+    } catch (RemoteException ex) {
+    }
+}

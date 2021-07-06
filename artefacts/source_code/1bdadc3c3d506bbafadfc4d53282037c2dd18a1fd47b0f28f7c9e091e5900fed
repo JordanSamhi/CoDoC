@@ -1,0 +1,11 @@
+public void startAndUnlockUser() throws Exception{
+    while (mRunner.keepRunning()) {
+        mRunner.pauseTiming();
+        final int userId = createUserNoFlags();
+        mRunner.resumeTiming();
+        startUserInBackgroundAndWaitForUnlock(userId);
+        mRunner.pauseTiming();
+        removeUser(userId);
+        mRunner.resumeTiming();
+    }
+}

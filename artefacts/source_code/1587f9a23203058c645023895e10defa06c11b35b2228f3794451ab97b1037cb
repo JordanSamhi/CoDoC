@@ -1,0 +1,9 @@
+public static Runnable handleExceptions(ThrowingRunnable r, Consumer<Throwable> handler){
+    return () -> {
+        try {
+            r.run();
+        } catch (Throwable t) {
+            handler.accept(t);
+        }
+    };
+}

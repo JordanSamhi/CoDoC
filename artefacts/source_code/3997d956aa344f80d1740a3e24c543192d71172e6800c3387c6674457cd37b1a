@@ -1,0 +1,27 @@
+public boolean hasInput(){
+    if (DEBUG) {
+        Log.d(TAG, "---- hasInput()");
+    }
+    ArrayList<UsbDescriptor> acDescriptors = getACInterfaceDescriptors(UsbACInterface.ACI_INPUT_TERMINAL, UsbACInterface.AUDIO_AUDIOCONTROL);
+    boolean hasInput = false;
+    for (UsbDescriptor descriptor : acDescriptors) {
+        if (descriptor instanceof UsbACTerminal) {
+            UsbACTerminal inDescr = (UsbACTerminal) descriptor;
+            int type = inDescr.getTerminalType();
+            if (DEBUG) {
+                Log.d(TAG, "  type:0x" + Integer.toHexString(type));
+            }
+            int terminalCategory = type & ~0xFF;
+            if (terminalCategory != UsbTerminalTypes.TERMINAL_USB_UNDEFINED && terminalCategory != UsbTerminalTypes.TERMINAL_OUT_UNDEFINED) {
+                hasInput = true;
+                break;
+            }
+        } else {
+            Log.w(TAG, "Undefined Audio Input terminal l: " + descriptor.getLength() + " t:0x" + Integer.toHexString(descriptor.getType()));
+        }
+    }
+    if (DEBUG) {
+        Log.d(TAG, "hasInput() = " + hasInput);
+    }
+    return hasInput;
+}

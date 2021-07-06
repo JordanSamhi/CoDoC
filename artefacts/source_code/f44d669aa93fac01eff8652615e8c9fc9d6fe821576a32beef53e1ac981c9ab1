@@ -1,0 +1,20 @@
+public synchronized void notifyCallbacks(T sender, int arg, A arg2){
+    mNotificationLevel++;
+    notifyRecurseLocked(sender, arg, arg2);
+    mNotificationLevel--;
+    if (mNotificationLevel == 0) {
+        if (mRemainderRemoved != null) {
+            for (int i = mRemainderRemoved.length - 1; i >= 0; i--) {
+                final long removedBits = mRemainderRemoved[i];
+                if (removedBits != 0) {
+                    removeRemovedCallbacks((i + 1) * Long.SIZE, removedBits);
+                    mRemainderRemoved[i] = 0;
+                }
+            }
+        }
+        if (mFirst64Removed != 0) {
+            removeRemovedCallbacks(0, mFirst64Removed);
+            mFirst64Removed = 0;
+        }
+    }
+}

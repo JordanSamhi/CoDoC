@@ -1,0 +1,8 @@
+public void alertListeners(){
+    if (mAlerting.getAndSet(true)) {
+        return;
+    }
+    List<ProximitySensorListener> listeners = new ArrayList<>(mListeners);
+    listeners.forEach(proximitySensorListener -> proximitySensorListener.onSensorEvent(mLastEvent));
+    mAlerting.set(false);
+}

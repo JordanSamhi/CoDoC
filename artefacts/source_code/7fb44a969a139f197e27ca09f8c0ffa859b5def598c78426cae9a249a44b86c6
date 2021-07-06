@@ -1,0 +1,76 @@
+public int dispatchWapPdu(byte[] pdu, BroadcastReceiver receiver, InboundSmsHandler handler, String address, int subId, long messageId){
+    DecodedResult result = decodeWapPdu(pdu, handler);
+    if (result.statusCode != Activity.RESULT_OK) {
+        return result.statusCode;
+    }
+    if (result.wapAppId != null) {
+        try {
+            boolean processFurther = true;
+            IWapPushManager wapPushMan = mWapPushManager;
+            if (wapPushMan == null) {
+                if (DBG)
+                    Rlog.w(TAG, "wap push manager not found!");
+            } else {
+                synchronized (this) {
+                    mPowerWhitelistManager.whitelistAppTemporarilyForEvent(mWapPushManagerPackage, PowerWhitelistManager.EVENT_MMS, "mms-mgr");
+                }
+                Intent intent = new Intent();
+                intent.putExtra("transactionId", result.transactionId);
+                intent.putExtra("pduType", result.pduType);
+                intent.putExtra("header", result.header);
+                intent.putExtra("data", result.intentData);
+                intent.putExtra("contentTypeParameters", result.contentTypeParameters);
+                SubscriptionManager.putPhoneIdAndSubIdExtra(intent, result.phoneId);
+                if (!TextUtils.isEmpty(address)) {
+                    intent.putExtra("address", address);
+                }
+                int procRet = wapPushMan.processMessage(result.wapAppId, result.contentType, intent);
+                if (DBG)
+                    Rlog.v(TAG, "procRet:" + procRet);
+                if ((procRet & WapPushManagerParams.MESSAGE_HANDLED) > 0 && (procRet & WapPushManagerParams.FURTHER_PROCESSING) == 0) {
+                    processFurther = false;
+                }
+            }
+            if (!processFurther) {
+                return Intents.RESULT_SMS_HANDLED;
+            }
+        } catch (RemoteException e) {
+            if (DBG)
+                Rlog.w(TAG, "remote func failed...");
+        }
+    }
+    if (DBG)
+        Rlog.v(TAG, "fall back to existing handler");
+    if (result.mimeType == null) {
+        if (DBG)
+            Rlog.w(TAG, "Header Content-Type error.");
+        return Intents.RESULT_SMS_GENERIC_ERROR;
+    }
+    Intent intent = new Intent(Intents.WAP_PUSH_DELIVER_ACTION);
+    intent.setType(result.mimeType);
+    intent.putExtra("transactionId", result.transactionId);
+    intent.putExtra("pduType", result.pduType);
+    intent.putExtra("header", result.header);
+    intent.putExtra("data", result.intentData);
+    intent.putExtra("contentTypeParameters", result.contentTypeParameters);
+    SubscriptionManager.putPhoneIdAndSubIdExtra(intent, result.phoneId);
+    if (!TextUtils.isEmpty(address)) {
+        intent.putExtra("address", address);
+    }
+    if (messageId != 0L) {
+        intent.putExtra("messageId", messageId);
+    }
+    ComponentName componentName = SmsApplication.getDefaultMmsApplication(mContext, true);
+    Bundle options = null;
+    if (componentName != null) {
+        intent.setComponent(componentName);
+        if (DBG)
+            Rlog.v(TAG, "Delivering MMS to: " + componentName.getPackageName() + " " + componentName.getClassName());
+        long duration = mPowerWhitelistManager.whitelistAppTemporarilyForEvent(componentName.getPackageName(), PowerWhitelistManager.EVENT_MMS, "mms-app");
+        BroadcastOptions bopts = BroadcastOptions.makeBasic();
+        bopts.setTemporaryAppWhitelistDuration(duration);
+        options = bopts.toBundle();
+    }
+    handler.dispatchIntent(intent, getPermissionForType(result.mimeType), getAppOpsStringPermissionForIntent(result.mimeType), options, receiver, UserHandle.SYSTEM, subId);
+    return Activity.RESULT_OK;
+}

@@ -1,0 +1,7 @@
+public static Pair<PublicKey, Long> getKeyInformation(byte[] certificate) throws Exception{
+    InputStream inStream = new ByteArrayInputStream(certificate);
+    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+    X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
+    Pair<PublicKey, Long> keyInformation = new Pair(cert.getPublicKey(), cert.getNotAfter().getTime());
+    return keyInformation;
+}

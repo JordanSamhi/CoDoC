@@ -1,0 +1,8 @@
+public String getCurrentNetworkEapAnonymousIdentity(@NonNull String ifaceName){
+    synchronized (mLock) {
+        SupplicantStaNetworkHal networkHandle = checkSupplicantStaNetworkAndLogFailure(ifaceName, "getCurrentNetworkEapAnonymousIdentity");
+        if (networkHandle == null)
+            return null;
+        return networkHandle.fetchEapAnonymousIdentity();
+    }
+}

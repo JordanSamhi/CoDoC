@@ -1,0 +1,9 @@
+public void setAutoTimeEnabled(ComponentName who, boolean enabled){
+    if (!mHasFeature) {
+        return;
+    }
+    Objects.requireNonNull(who, "ComponentName is null");
+    enforceProfileOwnerOnUser0OrProfileOwnerOrganizationOwned();
+    mInjector.binderWithCleanCallingIdentity(() -> mInjector.settingsGlobalPutInt(Settings.Global.AUTO_TIME, enabled ? 1 : 0));
+    DevicePolicyEventLogger.createEvent(DevicePolicyEnums.SET_AUTO_TIME).setAdmin(who).setBoolean(enabled).write();
+}

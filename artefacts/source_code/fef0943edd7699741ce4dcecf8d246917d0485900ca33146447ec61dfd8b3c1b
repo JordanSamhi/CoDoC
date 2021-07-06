@@ -1,0 +1,17 @@
+public void setAddressLine(int index, String line){
+    if (index < 0) {
+        throw new IllegalArgumentException("index = " + index + " < 0");
+    }
+    if (mAddressLines == null) {
+        mAddressLines = new HashMap<Integer, String>();
+    }
+    mAddressLines.put(index, line);
+    if (line == null) {
+        mMaxAddressLineIndex = -1;
+        for (Integer i : mAddressLines.keySet()) {
+            mMaxAddressLineIndex = Math.max(mMaxAddressLineIndex, i);
+        }
+    } else {
+        mMaxAddressLineIndex = Math.max(mMaxAddressLineIndex, index);
+    }
+}

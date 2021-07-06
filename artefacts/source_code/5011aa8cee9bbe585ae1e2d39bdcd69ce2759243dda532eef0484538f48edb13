@@ -1,0 +1,23 @@
+public void setRoleNames(@NonNull List<String> roleNames){
+    synchronized (mLock) {
+        boolean changed = false;
+        for (int i = mRoles.size() - 1; i >= 0; i--) {
+            String roleName = mRoles.keyAt(i);
+            if (!roleNames.contains(roleName)) {
+                ArraySet<String> packageNames = mRoles.valueAt(i);
+                if (!packageNames.isEmpty()) {
+                    Slog.e(LOG_TAG, "Holders of a removed role should have been cleaned up," + " role: " + roleName + ", holders: " + packageNames);
+                }
+                mRoles.removeAt(i);
+                changed = true;
+            }
+        }
+        int roleNamesSize = roleNames.size();
+        for (int i = 0; i < roleNamesSize; i++) {
+            changed |= addRoleName(roleNames.get(i));
+        }
+        if (changed) {
+            scheduleWriteFileLocked();
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public void getMultiplicand_withDifferentKey_returnsDifferentResult() throws Exception{
+    int iterations = 100_000;
+    HashSet<Long> returnedMultiplicands = new HashSet<>();
+    byte[] salt = randomSalt();
+    for (int i = 0; i < iterations; i++) {
+        FingerprintMixer fingerprintMixer = new FingerprintMixer(randomKey(), salt);
+        long multiplicand = fingerprintMixer.getMultiplicand();
+        returnedMultiplicands.add(multiplicand);
+    }
+    assertThat(returnedMultiplicands).containsNoDuplicates();
+}

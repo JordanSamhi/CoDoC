@@ -1,0 +1,11 @@
+public String getSubscriptionProperty(int subId, String propKey, String callingPackage, String callingFeatureId){
+    if (!TelephonyPermissions.checkCallingOrSelfReadPhoneState(mContext, subId, callingPackage, callingFeatureId, "getSubscriptionProperty")) {
+        return null;
+    }
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        return getSubscriptionProperty(subId, propKey);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

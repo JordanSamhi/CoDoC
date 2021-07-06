@@ -1,0 +1,33 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (super.performAccessibilityActionInternal(action, arguments)) {
+        return true;
+    }
+    if (!isEnabled()) {
+        return false;
+    }
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+        case R.id.accessibilityActionScrollDown:
+            {
+                final int viewportHeight = getHeight() - mPaddingBottom - mPaddingTop;
+                final int targetScrollY = Math.min(mScrollY + viewportHeight, getScrollRange());
+                if (targetScrollY != mScrollY) {
+                    smoothScrollTo(0, targetScrollY);
+                    return true;
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+        case R.id.accessibilityActionScrollUp:
+            {
+                final int viewportHeight = getHeight() - mPaddingBottom - mPaddingTop;
+                final int targetScrollY = Math.max(mScrollY - viewportHeight, 0);
+                if (targetScrollY != mScrollY) {
+                    smoothScrollTo(0, targetScrollY);
+                    return true;
+                }
+            }
+            return false;
+    }
+    return false;
+}

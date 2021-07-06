@@ -1,0 +1,15 @@
+public int getNextSubIdForState(int state){
+    List<SubscriptionInfo> list = getSubscriptionInfo(false);
+    int resultId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+    int bestSlotId = Integer.MAX_VALUE;
+    for (int i = 0; i < list.size(); i++) {
+        final SubscriptionInfo info = list.get(i);
+        final int id = info.getSubscriptionId();
+        int slotId = getSlotId(id);
+        if (state == getSimState(id) && bestSlotId > slotId) {
+            resultId = id;
+            bestSlotId = slotId;
+        }
+    }
+    return resultId;
+}

@@ -1,0 +1,11 @@
+public void continueCall(int timeout) throws SipException{
+    if (DBG)
+        log("continueCall: mSipSession" + mSipSession + " timeout=" + timeout);
+    synchronized (mLock) {
+        if (!mHold)
+            return;
+        mSipSession.changeCall(createContinueOffer().encode(), timeout);
+        mHold = false;
+        setAudioGroupMode();
+    }
+}

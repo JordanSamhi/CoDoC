@@ -1,0 +1,20 @@
+
+     * Request a PNO (Preferred Network Offload). The offload request and the scans are asynchronous
+     * operations. The result of the request are returned in the {@code callback} parameter which
+     * is an {@link PnoScanRequestCallback}. The scan results are are return in the
+     * {@link ScanEventCallback} which is registered when setting up an interface using
+     * {@link #setupInterfaceForClientMode(String, Executor, ScanEventCallback, ScanEventCallback)}.
+     * The latest PNO scans can be obtained using {@link #getScanResults(String, int)} with the
+     * {@code scanType} set to {@link #SCAN_TYPE_PNO_SCAN}.
+     *
+     * Note: The interface must have been already set up using
+     * {@link #setupInterfaceForClientMode(String, Executor, ScanEventCallback, ScanEventCallback)}
+     * or {@link #setupInterfaceForSoftApMode(String)}.
+     *
+     * @param ifaceName Name of the interface on which to request a PNO.
+     * @param pnoSettings PNO scan configuration.
+     * @param executor The Executor on which to execute the callback.
+     * @param callback Callback for the results of the offload request.
+     * @return true on success, false on failure (e.g. when called before the interface has been set
+     * up).
+     

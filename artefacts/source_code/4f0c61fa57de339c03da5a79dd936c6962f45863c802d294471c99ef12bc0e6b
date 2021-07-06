@@ -1,0 +1,50 @@
+public void setKeyguardEnabled(boolean enabled){
+    synchronized (this) {
+        if (DEBUG)
+            Log.d(TAG, "setKeyguardEnabled(" + enabled + ")");
+        mExternallyEnabled = enabled;
+        if (!enabled && mShowing) {
+            if (mExitSecureCallback != null) {
+                if (DEBUG)
+                    Log.d(TAG, "in process of verifyUnlock request, ignoring");
+                return;
+            }
+            if (DEBUG)
+                Log.d(TAG, "remembering to reshow, hiding keyguard, " + "disabling status bar expansion");
+            mNeedToReshowWhenReenabled = true;
+            updateInputRestrictedLocked();
+            hideLocked();
+        } else if (enabled && mNeedToReshowWhenReenabled) {
+            if (DEBUG)
+                Log.d(TAG, "previously hidden, reshowing, reenabling " + "status bar expansion");
+            mNeedToReshowWhenReenabled = false;
+            updateInputRestrictedLocked();
+            if (mExitSecureCallback != null) {
+                if (DEBUG)
+                    Log.d(TAG, "onKeyguardExitResult(false), resetting");
+                try {
+                    mExitSecureCallback.onKeyguardExitResult(false);
+                } catch (RemoteException e) {
+                    Slog.w(TAG, "Failed to call onKeyguardExitResult(false)", e);
+                }
+                mExitSecureCallback = null;
+                resetStateLocked();
+            } else {
+                showLocked(null);
+                mWaitingUntilKeyguardVisible = true;
+                mHandler.sendEmptyMessageDelayed(KEYGUARD_DONE_DRAWING, KEYGUARD_DONE_DRAWING_TIMEOUT_MS);
+                if (DEBUG)
+                    Log.d(TAG, "waiting until mWaitingUntilKeyguardVisible is false");
+                while (mWaitingUntilKeyguardVisible) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                if (DEBUG)
+                    Log.d(TAG, "done waiting for mWaitingUntilKeyguardVisible");
+            }
+        }
+    }
+}

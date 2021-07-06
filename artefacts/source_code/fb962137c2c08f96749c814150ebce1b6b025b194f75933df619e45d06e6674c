@@ -1,0 +1,11 @@
+public static void writePrintDocumentInfo(@NonNull DualDumpOutputStream proto, String idName, long id, @NonNull PrintDocumentInfo info){
+    long token = proto.start(idName, id);
+    proto.write("name", PrintDocumentInfoProto.NAME, info.getName());
+    int pageCount = info.getPageCount();
+    if (pageCount != PrintDocumentInfo.PAGE_COUNT_UNKNOWN) {
+        proto.write("page_count", PrintDocumentInfoProto.PAGE_COUNT, pageCount);
+    }
+    proto.write("content_type", PrintDocumentInfoProto.CONTENT_TYPE, info.getContentType());
+    proto.write("data_size", PrintDocumentInfoProto.DATA_SIZE, info.getDataSize());
+    proto.end(token);
+}

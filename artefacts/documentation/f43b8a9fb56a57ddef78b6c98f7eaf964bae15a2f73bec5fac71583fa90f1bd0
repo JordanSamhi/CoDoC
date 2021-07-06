@@ -1,0 +1,37 @@
+
+     * Begin the process of sending an application's full-data archive to the backend.
+     * The description of the package whose data will be delivered is provided, as well as
+     * the socket file descriptor on which the transport will receive the data itself.
+     *
+     * <p>If the package is not eligible for backup, the transport should return
+     * {@link BackupTransport#TRANSPORT_PACKAGE_REJECTED}.  In this case the system will
+     * simply proceed with the next candidate if any, or finish the full backup operation
+     * if all apps have been processed.
+     *
+     * <p>After the transport returns {@link BackupTransport#TRANSPORT_OK} from this
+     * method, the OS will proceed to call {@link #sendBackupData()} one or more times
+     * to deliver the application's data as a streamed tarball.  The transport should not
+     * read() from the socket except as instructed to via the {@link #sendBackupData(int)}
+     * method.
+     *
+     * <p>After all data has been delivered to the transport, the system will call
+     * {@link #finishBackup()}.  At this point the transport should commit the data to
+     * its datastore, if appropriate, and close the socket that had been provided in
+     * {@link #performFullBackup(PackageInfo, ParcelFileDescriptor)}.
+     *
+     * <p class="note">If the transport returns TRANSPORT_OK from this method, then the
+     * OS will always provide a matching call to {@link #finishBackup()} even if sending
+     * data via {@link #sendBackupData(int)} failed at some point.
+     *
+     * @param targetPackage The package whose data is to follow.
+     * @param socket The socket file descriptor through which the data will be provided.
+     *    If the transport returns {@link #TRANSPORT_PACKAGE_REJECTED} here, it must still
+     *    close this file descriptor now; otherwise it should be cached for use during
+     *    succeeding calls to {@link #sendBackupData(int)}, and closed in response to
+     *    {@link #finishBackup()}.
+     * @param flags {@link BackupTransport#FLAG_USER_INITIATED} or 0.
+     * @return TRANSPORT_PACKAGE_REJECTED to indicate that the stated application is not
+     *    to be backed up; TRANSPORT_OK to indicate that the OS may proceed with delivering
+     *    backup data; TRANSPORT_ERROR to indicate a fatal error condition that precludes
+     *    performing a backup at this time.
+     

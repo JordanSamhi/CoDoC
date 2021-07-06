@@ -1,0 +1,58 @@
+
+     * Called by an application that is administering the device to disable keyguard customizations,
+     * such as widgets. After setting this, keyguard features will be disabled according to the
+     * provided feature list.
+     * <p>
+     * The calling device admin must have requested
+     * {@link DeviceAdminInfo#USES_POLICY_DISABLE_KEYGUARD_FEATURES} to be able to call this method;
+     * if it has not, a security exception will be thrown.
+     * <p>
+     * Calling this from a managed profile before version {@link android.os.Build.VERSION_CODES#M}
+     * will throw a security exception. From version {@link android.os.Build.VERSION_CODES#M} the
+     * profile owner of a managed profile can set:
+     * <ul>
+     * <li>{@link #KEYGUARD_DISABLE_TRUST_AGENTS}, which affects the parent user, but only if there
+     * is no separate challenge set on the managed profile.
+     * <li>{@link #KEYGUARD_DISABLE_FINGERPRINT}, {@link #KEYGUARD_DISABLE_FACE} or
+     * {@link #KEYGUARD_DISABLE_IRIS} which affects the managed profile challenge if
+     * there is one, or the parent user otherwise.
+     * <li>{@link #KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS} which affects notifications generated
+     * by applications in the managed profile.
+     * </ul>
+     * <p>
+     * From version {@link android.os.Build.VERSION_CODES#R} the profile owner of an
+     * organization-owned managed profile can set:
+     * <ul>
+     * <li>{@link #KEYGUARD_DISABLE_SECURE_CAMERA} which affects the parent user when called on the
+     * parent profile.
+     * <li>{@link #KEYGUARD_DISABLE_SECURE_NOTIFICATIONS} which affects the parent user when called
+     * on the parent profile.
+     * </ul>
+     * {@link #KEYGUARD_DISABLE_TRUST_AGENTS}, {@link #KEYGUARD_DISABLE_FINGERPRINT},
+     * {@link #KEYGUARD_DISABLE_FACE}, {@link #KEYGUARD_DISABLE_IRIS},
+     * {@link #KEYGUARD_DISABLE_SECURE_CAMERA} and {@link #KEYGUARD_DISABLE_SECURE_NOTIFICATIONS}
+     * can also be set on the {@link DevicePolicyManager} instance returned by
+     * {@link #getParentProfileInstance(ComponentName)} in order to set restrictions on the parent
+     * profile. {@link #KEYGUARD_DISABLE_SECURE_CAMERA} can only be set on the parent profile
+     * instance if the calling device admin is the profile owner of an organization-owned
+     * managed profile.
+     * <p>
+     * Requests to disable other features on a managed profile will be ignored.
+     * <p>
+     * The admin can check which features have been disabled by calling
+     * {@link #getKeyguardDisabledFeatures(ComponentName)}
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param which The disabled features flag which can be either
+     *            {@link #KEYGUARD_DISABLE_FEATURES_NONE} (default),
+     *            {@link #KEYGUARD_DISABLE_FEATURES_ALL}, or a combination of
+     *            {@link #KEYGUARD_DISABLE_WIDGETS_ALL}, {@link #KEYGUARD_DISABLE_SECURE_CAMERA},
+     *            {@link #KEYGUARD_DISABLE_SECURE_NOTIFICATIONS},
+     *            {@link #KEYGUARD_DISABLE_TRUST_AGENTS},
+     *            {@link #KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS},
+     *            {@link #KEYGUARD_DISABLE_FINGERPRINT},
+     *            {@link #KEYGUARD_DISABLE_FACE},
+     *            {@link #KEYGUARD_DISABLE_IRIS}.
+     * @throws SecurityException if {@code admin} is not an active administrator or does not user
+     *             {@link DeviceAdminInfo#USES_POLICY_DISABLE_KEYGUARD_FEATURES}
+     

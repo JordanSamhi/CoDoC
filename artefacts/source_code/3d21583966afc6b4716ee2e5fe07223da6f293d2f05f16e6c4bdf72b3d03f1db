@@ -1,0 +1,23 @@
+public void openDevice(MidiDeviceInfo deviceInfo, OnDeviceOpenedListener listener, Handler handler){
+    final MidiDeviceInfo deviceInfoF = deviceInfo;
+    final OnDeviceOpenedListener listenerF = listener;
+    final Handler handlerF = handler;
+    IMidiDeviceOpenCallback callback = new IMidiDeviceOpenCallback.Stub() {
+
+        @Override
+        public void onDeviceOpened(IMidiDeviceServer server, IBinder deviceToken) {
+            MidiDevice device;
+            if (server != null) {
+                device = new MidiDevice(deviceInfoF, server, mService, mToken, deviceToken);
+            } else {
+                device = null;
+            }
+            sendOpenDeviceResponse(device, listenerF, handlerF);
+        }
+    };
+    try {
+        mService.openDevice(mToken, deviceInfo, callback);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

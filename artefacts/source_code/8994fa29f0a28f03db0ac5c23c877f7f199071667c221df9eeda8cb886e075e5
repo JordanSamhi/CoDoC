@@ -1,0 +1,13 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeString(mNetworkName);
+    dest.writeParcelable(mOwner, flags);
+    dest.writeByte(mIsGroupOwner ? (byte) 1 : (byte) 0);
+    dest.writeInt(mClients.size());
+    for (WifiP2pDevice client : mClients) {
+        dest.writeParcelable(client, flags);
+    }
+    dest.writeString(mPassphrase);
+    dest.writeString(mInterface);
+    dest.writeInt(mNetId);
+    dest.writeInt(mFrequency);
+}

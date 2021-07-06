@@ -1,0 +1,80 @@
+public void onFullBackup(FullBackupDataOutput data) throws IOException{
+    FullBackup.BackupScheme backupScheme = FullBackup.getBackupScheme(this);
+    if (!backupScheme.isFullBackupContentEnabled()) {
+        return;
+    }
+    Map<String, Set<PathWithRequiredFlags>> manifestIncludeMap;
+    ArraySet<PathWithRequiredFlags> manifestExcludeSet;
+    try {
+        manifestIncludeMap = backupScheme.maybeParseAndGetCanonicalIncludePaths();
+        manifestExcludeSet = backupScheme.maybeParseAndGetCanonicalExcludePaths();
+    } catch (IOException | XmlPullParserException e) {
+        if (Log.isLoggable(FullBackup.TAG_XML_PARSER, Log.VERBOSE)) {
+            Log.v(FullBackup.TAG_XML_PARSER, "Exception trying to parse fullBackupContent xml file!" + " Aborting full backup.", e);
+        }
+        return;
+    }
+    final String packageName = getPackageName();
+    final ApplicationInfo appInfo = getApplicationInfo();
+    final Context ceContext = createCredentialProtectedStorageContext();
+    final String rootDir = ceContext.getDataDir().getCanonicalPath();
+    final String filesDir = ceContext.getFilesDir().getCanonicalPath();
+    final String noBackupDir = ceContext.getNoBackupFilesDir().getCanonicalPath();
+    final String databaseDir = ceContext.getDatabasePath("foo").getParentFile().getCanonicalPath();
+    final String sharedPrefsDir = ceContext.getSharedPreferencesPath("foo").getParentFile().getCanonicalPath();
+    final String cacheDir = ceContext.getCacheDir().getCanonicalPath();
+    final String codeCacheDir = ceContext.getCodeCacheDir().getCanonicalPath();
+    final Context deContext = createDeviceProtectedStorageContext();
+    final String deviceRootDir = deContext.getDataDir().getCanonicalPath();
+    final String deviceFilesDir = deContext.getFilesDir().getCanonicalPath();
+    final String deviceNoBackupDir = deContext.getNoBackupFilesDir().getCanonicalPath();
+    final String deviceDatabaseDir = deContext.getDatabasePath("foo").getParentFile().getCanonicalPath();
+    final String deviceSharedPrefsDir = deContext.getSharedPreferencesPath("foo").getParentFile().getCanonicalPath();
+    final String deviceCacheDir = deContext.getCacheDir().getCanonicalPath();
+    final String deviceCodeCacheDir = deContext.getCodeCacheDir().getCanonicalPath();
+    final String libDir = (appInfo.nativeLibraryDir != null) ? new File(appInfo.nativeLibraryDir).getCanonicalPath() : null;
+    final ArraySet<String> traversalExcludeSet = new ArraySet<String>();
+    traversalExcludeSet.add(filesDir);
+    traversalExcludeSet.add(noBackupDir);
+    traversalExcludeSet.add(databaseDir);
+    traversalExcludeSet.add(sharedPrefsDir);
+    traversalExcludeSet.add(cacheDir);
+    traversalExcludeSet.add(codeCacheDir);
+    traversalExcludeSet.add(deviceFilesDir);
+    traversalExcludeSet.add(deviceNoBackupDir);
+    traversalExcludeSet.add(deviceDatabaseDir);
+    traversalExcludeSet.add(deviceSharedPrefsDir);
+    traversalExcludeSet.add(deviceCacheDir);
+    traversalExcludeSet.add(deviceCodeCacheDir);
+    if (libDir != null) {
+        traversalExcludeSet.add(libDir);
+    }
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.ROOT_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(rootDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.DEVICE_ROOT_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(deviceRootDir);
+    traversalExcludeSet.remove(filesDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.FILES_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(filesDir);
+    traversalExcludeSet.remove(deviceFilesDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.DEVICE_FILES_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(deviceFilesDir);
+    traversalExcludeSet.remove(databaseDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.DATABASE_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(databaseDir);
+    traversalExcludeSet.remove(deviceDatabaseDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.DEVICE_DATABASE_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(deviceDatabaseDir);
+    traversalExcludeSet.remove(sharedPrefsDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.SHAREDPREFS_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(sharedPrefsDir);
+    traversalExcludeSet.remove(deviceSharedPrefsDir);
+    applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.DEVICE_SHAREDPREFS_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+    traversalExcludeSet.add(deviceSharedPrefsDir);
+    if (Process.myUid() != Process.SYSTEM_UID) {
+        File efLocation = getExternalFilesDir(null);
+        if (efLocation != null) {
+            applyXmlFiltersAndDoFullBackupForDomain(packageName, FullBackup.MANAGED_EXTERNAL_TREE_TOKEN, manifestIncludeMap, manifestExcludeSet, traversalExcludeSet, data);
+        }
+    }
+}

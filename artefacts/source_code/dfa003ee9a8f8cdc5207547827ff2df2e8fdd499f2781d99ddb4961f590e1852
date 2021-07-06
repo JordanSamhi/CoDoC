@@ -1,0 +1,13 @@
+public Resources getResources(@Nullable IBinder activityToken, @Nullable String resDir, @Nullable String[] splitResDirs, @Nullable String[] overlayDirs, @Nullable String[] libDirs, int displayId, @Nullable Configuration overrideConfig, @NonNull CompatibilityInfo compatInfo, @Nullable ClassLoader classLoader, @Nullable List<ResourcesLoader> loaders){
+    try {
+        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "ResourcesManager#getResources");
+        final ResourcesKey key = new ResourcesKey(resDir, splitResDirs, overlayDirs, libDirs, displayId, overrideConfig != null ? new Configuration(overrideConfig) : null, compatInfo, loaders == null ? null : loaders.toArray(new ResourcesLoader[0]));
+        classLoader = classLoader != null ? classLoader : ClassLoader.getSystemClassLoader();
+        if (activityToken != null) {
+            rebaseKeyForActivity(activityToken, key);
+        }
+        return createResources(activityToken, key, classLoader);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    }
+}

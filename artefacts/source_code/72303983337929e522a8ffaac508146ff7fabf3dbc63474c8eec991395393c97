@@ -1,0 +1,7 @@
+public Insets getSystemWindowInsets(){
+    Insets result = mCompatIgnoreVisibility ? getInsetsIgnoringVisibility(mCompatInsetsTypes & ~ime()) : getInsets(mCompatInsetsTypes);
+    if ((mCompatInsetsTypes & ime()) != 0 && mCompatIgnoreVisibility) {
+        result = Insets.max(result, getInsets(ime()));
+    }
+    return result;
+}

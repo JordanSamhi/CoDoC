@@ -1,0 +1,31 @@
+public List<SubscriptionInfo> getSubInfo(String selection, Object queryKey){
+    if (VDBG)
+        logd("selection:" + selection + ", querykey: " + queryKey);
+    String[] selectionArgs = null;
+    if (queryKey != null) {
+        selectionArgs = new String[] { queryKey.toString() };
+    }
+    ArrayList<SubscriptionInfo> subList = null;
+    Cursor cursor = mContext.getContentResolver().query(SubscriptionManager.CONTENT_URI, null, selection, selectionArgs, null);
+    try {
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                SubscriptionInfo subInfo = getSubInfoRecord(cursor);
+                if (subInfo != null) {
+                    if (subList == null) {
+                        subList = new ArrayList<SubscriptionInfo>();
+                    }
+                    subList.add(subInfo);
+                }
+            }
+        } else {
+            if (DBG)
+                logd("Query fail");
+        }
+    } finally {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    return subList;
+}

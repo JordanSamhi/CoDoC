@@ -1,0 +1,10 @@
+public boolean isTrusted(String controllerPackageName, int controllerPid, int controllerUid) throws RemoteException{
+    final int uid = Binder.getCallingUid();
+    final int userId = UserHandle.getUserId(uid);
+    final long token = Binder.clearCallingIdentity();
+    try {
+        return hasMediaControlPermission(controllerPid, controllerUid) || hasEnabledNotificationListener(userId, controllerPackageName);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

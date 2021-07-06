@@ -1,0 +1,15 @@
+public static boolean isInternationalNumber(String phoneNumber, String defaultCountryIso){
+    if (TextUtils.isEmpty(phoneNumber)) {
+        return false;
+    }
+    if (phoneNumber.startsWith("#") || phoneNumber.startsWith("*")) {
+        return false;
+    }
+    PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+    try {
+        PhoneNumber pn = util.parseAndKeepRawInput(phoneNumber, defaultCountryIso);
+        return pn.getCountryCode() != util.getCountryCodeForRegion(defaultCountryIso);
+    } catch (NumberParseException e) {
+        return false;
+    }
+}

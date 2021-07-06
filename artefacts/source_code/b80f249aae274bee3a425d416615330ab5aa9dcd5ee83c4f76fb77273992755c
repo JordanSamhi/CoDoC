@@ -1,0 +1,14 @@
+public void setString(String str) throws IllegalArgumentException{
+    mValues.clear();
+    if (str != null) {
+        mSplitter.setString(str);
+        for (String pair : mSplitter) {
+            int sep = pair.indexOf('=');
+            if (sep < 0) {
+                mValues.clear();
+                throw new IllegalArgumentException("'" + pair + "' in '" + str + "' is not a valid key-value pair");
+            }
+            mValues.put(pair.substring(0, sep).trim(), pair.substring(sep + 1).trim());
+        }
+    }
+}

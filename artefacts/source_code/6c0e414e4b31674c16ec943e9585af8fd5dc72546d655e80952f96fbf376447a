@@ -1,0 +1,15 @@
+public int[] getChannelCounts(){
+    TreeSet<Integer> countSet = new TreeSet<Integer>();
+    for (int mask : getChannelMasks()) {
+        countSet.add(isSink() ? AudioFormat.channelCountFromOutChannelMask(mask) : AudioFormat.channelCountFromInChannelMask(mask));
+    }
+    for (int index_mask : getChannelIndexMasks()) {
+        countSet.add(Integer.bitCount(index_mask));
+    }
+    int[] counts = new int[countSet.size()];
+    int index = 0;
+    for (int count : countSet) {
+        counts[index++] = count;
+    }
+    return counts;
+}

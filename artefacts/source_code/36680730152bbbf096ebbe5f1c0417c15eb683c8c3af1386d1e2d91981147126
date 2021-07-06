@@ -1,0 +1,9 @@
+public void areUiccApplicationsEnabledResponse(RadioResponseInfo responseInfo, boolean enabled){
+    RILRequest rr = mRil.processResponse(responseInfo);
+    if (rr != null) {
+        if (responseInfo.error == RadioError.NONE) {
+            sendMessageResponse(rr.mResult, enabled);
+        }
+        mRil.processResponseDone(rr, responseInfo, enabled);
+    }
+}

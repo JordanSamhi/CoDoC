@@ -1,0 +1,35 @@
+
+     * Decodes a string field that's formatted like the EF[ADN] alpha
+     * identifier
+     *
+     * From TS 51.011 10.5.1:
+     *   Coding:
+     *       this alpha tagging shall use either
+     *      -    the SMS default 7 bit coded alphabet as defined in
+     *          TS 23.038 [12] with bit 8 set to 0. The alpha identifier
+     *          shall be left justified. Unused bytes shall be set to 'FF'; or
+     *      -    one of the UCS2 coded options as defined in annex B.
+     *
+     * Annex B from TS 11.11 V8.13.0:
+     *      1)  If the first octet in the alpha string is '80', then the
+     *          remaining octets are 16 bit UCS2 characters ...
+     *      2)  if the first octet in the alpha string is '81', then the
+     *          second octet contains a value indicating the number of
+     *          characters in the string, and the third octet contains an
+     *          8 bit number which defines bits 15 to 8 of a 16 bit
+     *          base pointer, where bit 16 is set to zero and bits 7 to 1
+     *          are also set to zero.  These sixteen bits constitute a
+     *          base pointer to a "half page" in the UCS2 code space, to be
+     *          used with some or all of the remaining octets in the string.
+     *          The fourth and subsequent octets contain codings as follows:
+     *          If bit 8 of the octet is set to zero, the remaining 7 bits
+     *          of the octet contain a GSM Default Alphabet character,
+     *          whereas if bit 8 of the octet is set to one, then the
+     *          remaining seven bits are an offset value added to the
+     *          16 bit base pointer defined earlier...
+     *      3)  If the first octet of the alpha string is set to '82', then
+     *          the second octet contains a value indicating the number of
+     *          characters in the string, and the third and fourth octets
+     *          contain a 16 bit number which defines the complete 16 bit
+     *          base pointer to a "half page" in the UCS2 code space...
+     

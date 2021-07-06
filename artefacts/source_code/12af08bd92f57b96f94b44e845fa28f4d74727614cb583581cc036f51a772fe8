@@ -1,0 +1,39 @@
+public void connect() throws IOException{
+    if (mDevice == null)
+        throw new IOException("Connect is called on null device");
+    try {
+        if (mSocketState == SocketState.CLOSED)
+            throw new IOException("socket closed");
+        IBluetooth bluetoothProxy = BluetoothAdapter.getDefaultAdapter().getBluetoothService(null);
+        if (bluetoothProxy == null)
+            throw new IOException("Bluetooth is off");
+        mPfd = bluetoothProxy.getSocketManager().connectSocket(mDevice, mType, mUuid, mPort, getSecurityFlags());
+        synchronized (this) {
+            if (DBG)
+                Log.d(TAG, "connect(), SocketState: " + mSocketState + ", mPfd: " + mPfd);
+            if (mSocketState == SocketState.CLOSED)
+                throw new IOException("socket closed");
+            if (mPfd == null)
+                throw new IOException("bt socket connect failed");
+            FileDescriptor fd = mPfd.getFileDescriptor();
+            mSocket = LocalSocket.createConnectedLocalSocket(fd);
+            mSocketIS = mSocket.getInputStream();
+            mSocketOS = mSocket.getOutputStream();
+        }
+        int channel = readInt(mSocketIS);
+        if (channel <= 0) {
+            throw new IOException("bt socket connect failed");
+        }
+        mPort = channel;
+        waitSocketSignal(mSocketIS);
+        synchronized (this) {
+            if (mSocketState == SocketState.CLOSED) {
+                throw new IOException("bt socket closed");
+            }
+            mSocketState = SocketState.CONNECTED;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, Log.getStackTraceString(new Throwable()));
+        throw new IOException("unable to send RPC: " + e.getMessage());
+    }
+}

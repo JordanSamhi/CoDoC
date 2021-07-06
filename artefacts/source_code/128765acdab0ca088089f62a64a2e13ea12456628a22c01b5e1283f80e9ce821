@@ -1,0 +1,9 @@
+public static Uri buildChannelsUriForInput(@Nullable String inputId, @Nullable String genre, boolean browsableOnly){
+    if (genre == null) {
+        return buildChannelsUriForInput(inputId, browsableOnly);
+    }
+    if (!Programs.Genres.isCanonical(genre)) {
+        throw new IllegalArgumentException("Not a canonical genre: '" + genre + "'");
+    }
+    return buildChannelsUriForInput(inputId, browsableOnly).buildUpon().appendQueryParameter(PARAM_CANONICAL_GENRE, genre).build();
+}

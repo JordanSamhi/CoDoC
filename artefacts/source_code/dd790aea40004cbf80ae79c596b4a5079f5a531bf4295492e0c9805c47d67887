@@ -1,0 +1,12 @@
+public void unregisterSection(int id){
+    try {
+        final IIncidentManager service = getIIncidentManagerLocked();
+        if (service == null) {
+            Slog.e(TAG, "unregisterSection can't find incident binder service");
+            return;
+        }
+        service.unregisterSection(id);
+    } catch (RemoteException ex) {
+        Slog.e(TAG, "unregisterSection failed", ex);
+    }
+}

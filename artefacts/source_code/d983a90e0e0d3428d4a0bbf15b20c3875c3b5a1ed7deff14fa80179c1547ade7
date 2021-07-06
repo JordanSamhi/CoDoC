@@ -1,0 +1,17 @@
+public void addHdmiControlStatusChangeListener(HdmiControlStatusChangeListener listener){
+    if (mService == null) {
+        Log.e(TAG, "HdmiControlService is not available");
+        return;
+    }
+    if (mHdmiControlStatusChangeListeners.containsKey(listener)) {
+        Log.e(TAG, "listener is already registered");
+        return;
+    }
+    IHdmiControlStatusChangeListener wrappedListener = getHdmiControlStatusChangeListenerWrapper(listener);
+    mHdmiControlStatusChangeListeners.put(listener, wrappedListener);
+    try {
+        mService.addHdmiControlStatusChangeListener(wrappedListener);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

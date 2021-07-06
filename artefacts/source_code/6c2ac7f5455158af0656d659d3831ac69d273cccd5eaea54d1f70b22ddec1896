@@ -1,0 +1,27 @@
+public Cursor getSuggestions(SearchableInfo searchable, String query, int limit){
+    if (searchable == null) {
+        return null;
+    }
+    String authority = searchable.getSuggestAuthority();
+    if (authority == null) {
+        return null;
+    }
+    Uri.Builder uriBuilder = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority).query("").fragment("");
+    final String contentPath = searchable.getSuggestPath();
+    if (contentPath != null) {
+        uriBuilder.appendEncodedPath(contentPath);
+    }
+    uriBuilder.appendPath(SearchManager.SUGGEST_URI_PATH_QUERY);
+    String selection = searchable.getSuggestSelection();
+    String[] selArgs = null;
+    if (selection != null) {
+        selArgs = new String[] { query };
+    } else {
+        uriBuilder.appendPath(query);
+    }
+    if (limit > 0) {
+        uriBuilder.appendQueryParameter(SUGGEST_PARAMETER_LIMIT, String.valueOf(limit));
+    }
+    Uri uri = uriBuilder.build();
+    return mContext.getContentResolver().query(uri, null, selection, selArgs, null);
+}

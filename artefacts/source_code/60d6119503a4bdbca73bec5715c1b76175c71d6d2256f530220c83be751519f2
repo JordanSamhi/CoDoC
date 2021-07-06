@@ -1,0 +1,71 @@
+public int checkDataStallAndThroughputSufficiency(WifiLinkLayerStats oldStats, WifiLinkLayerStats newStats, WifiInfo wifiInfo){
+    int currFrequency = wifiInfo.getFrequency();
+    mWifiChannelUtilization.refreshChannelStatsAndChannelUtilization(newStats, currFrequency);
+    int ccaLevel = mWifiChannelUtilization.getUtilizationRatio(currFrequency);
+    mWifiMetrics.incrementChannelUtilizationCount(ccaLevel, currFrequency);
+    if (oldStats == null || newStats == null) {
+        if (wifiInfo.getRssi() != WifiInfo.INVALID_RSSI && mConnectionCapabilities != null) {
+            mTxTputKbps = mThroughputPredictor.predictTxThroughput(mConnectionCapabilities, wifiInfo.getRssi(), currFrequency, ccaLevel) * 1000;
+            mRxTputKbps = mThroughputPredictor.predictRxThroughput(mConnectionCapabilities, wifiInfo.getRssi(), currFrequency, ccaLevel) * 1000;
+        }
+        mIsThroughputSufficient = true;
+        mWifiMetrics.resetWifiIsUnusableLinkLayerStats();
+        mWifiMetrics.incrementThroughputKbpsCount(mTxTputKbps, mRxTputKbps, currFrequency);
+        return WifiIsUnusableEvent.TYPE_UNKNOWN;
+    }
+    long txSuccessDelta = (newStats.txmpdu_be + newStats.txmpdu_bk + newStats.txmpdu_vi + newStats.txmpdu_vo) - (oldStats.txmpdu_be + oldStats.txmpdu_bk + oldStats.txmpdu_vi + oldStats.txmpdu_vo);
+    long txRetriesDelta = (newStats.retries_be + newStats.retries_bk + newStats.retries_vi + newStats.retries_vo) - (oldStats.retries_be + oldStats.retries_bk + oldStats.retries_vi + oldStats.retries_vo);
+    long txBadDelta = (newStats.lostmpdu_be + newStats.lostmpdu_bk + newStats.lostmpdu_vi + newStats.lostmpdu_vo) - (oldStats.lostmpdu_be + oldStats.lostmpdu_bk + oldStats.lostmpdu_vi + oldStats.lostmpdu_vo);
+    long rxSuccessDelta = (newStats.rxmpdu_be + newStats.rxmpdu_bk + newStats.rxmpdu_vi + newStats.rxmpdu_vo) - (oldStats.rxmpdu_be + oldStats.rxmpdu_bk + oldStats.rxmpdu_vi + oldStats.rxmpdu_vo);
+    int timeDeltaLastTwoPollsMs = (int) (newStats.timeStampInMs - oldStats.timeStampInMs);
+    long totalTxDelta = txSuccessDelta + txRetriesDelta;
+    boolean isTxTrafficHigh = (totalTxDelta * 1000) > (mDeviceConfigFacade.getTxPktPerSecondThr() * timeDeltaLastTwoPollsMs);
+    boolean isRxTrafficHigh = (rxSuccessDelta * 1000) > (mDeviceConfigFacade.getRxPktPerSecondThr() * timeDeltaLastTwoPollsMs);
+    if (timeDeltaLastTwoPollsMs < 0 || txSuccessDelta < 0 || txRetriesDelta < 0 || txBadDelta < 0 || rxSuccessDelta < 0) {
+        mIsThroughputSufficient = true;
+        mWifiMetrics.resetWifiIsUnusableLinkLayerStats();
+        return WifiIsUnusableEvent.TYPE_UNKNOWN;
+    }
+    mWifiMetrics.updateWifiIsUnusableLinkLayerStats(txSuccessDelta, txRetriesDelta, txBadDelta, rxSuccessDelta, timeDeltaLastTwoPollsMs);
+    int txLinkSpeedMbps = wifiInfo.getLinkSpeed();
+    int rxLinkSpeedMbps = wifiInfo.getRxLinkSpeedMbps();
+    boolean isSameBssidAndFreq = mLastBssid == null || mLastFrequency == -1 || (mLastBssid.equals(wifiInfo.getBSSID()) && mLastFrequency == currFrequency);
+    mLastFrequency = currFrequency;
+    mLastBssid = wifiInfo.getBSSID();
+    if (ccaLevel == BssLoad.INVALID) {
+        ccaLevel = wifiInfo.is24GHz() ? DEFAULT_CCA_LEVEL_2G : DEFAULT_CCA_LEVEL_ABOVE_2G;
+        logd(" use default cca Level");
+    }
+    logd(" ccaLevel = " + ccaLevel);
+    int txPer = updateTxPer(txSuccessDelta, txRetriesDelta, isSameBssidAndFreq, isTxTrafficHigh);
+    boolean isTxTputLow = false;
+    boolean isRxTputLow = false;
+    if (txLinkSpeedMbps > 0) {
+        if (isTxTrafficHigh || txLinkSpeedMbps > mDeviceConfigFacade.getTxLinkSpeedLowThresholdMbps()) {
+            mTxTputKbps = (int) ((long) txLinkSpeedMbps * 1000 * (100 - txPer) / 100 * (CHANNEL_UTILIZATION_SCALE - ccaLevel) / CHANNEL_UTILIZATION_SCALE);
+        }
+        isTxTputLow = mTxTputKbps < mDeviceConfigFacade.getDataStallTxTputThrKbps();
+    } else {
+        mTxTputKbps = INVALID_THROUGHPUT;
+    }
+    if (rxLinkSpeedMbps > 0) {
+        if (isRxTrafficHigh || rxLinkSpeedMbps > mDeviceConfigFacade.getRxLinkSpeedLowThresholdMbps()) {
+            mRxTputKbps = (int) ((long) rxLinkSpeedMbps * 1000 * (CHANNEL_UTILIZATION_SCALE - ccaLevel) / CHANNEL_UTILIZATION_SCALE);
+        }
+        isRxTputLow = mRxTputKbps < mDeviceConfigFacade.getDataStallRxTputThrKbps();
+    } else {
+        mRxTputKbps = INVALID_THROUGHPUT;
+    }
+    mWifiMetrics.incrementThroughputKbpsCount(mTxTputKbps, mRxTputKbps, currFrequency);
+    mIsThroughputSufficient = isThroughputSufficientInternal(mTxTputKbps, mRxTputKbps, isTxTrafficHigh, isRxTrafficHigh, timeDeltaLastTwoPollsMs);
+    int maxTimeDeltaMs = mContext.getResources().getInteger(R.integer.config_wifiPollRssiIntervalMilliseconds) + MAX_TIME_MARGIN_LAST_TWO_POLLS_MS;
+    if (timeDeltaLastTwoPollsMs > 0 && timeDeltaLastTwoPollsMs <= maxTimeDeltaMs) {
+        mWifiMetrics.incrementConnectionDuration(timeDeltaLastTwoPollsMs, mIsThroughputSufficient, mIsCellularDataAvailable);
+        reportWifiHealthStat(currFrequency, timeDeltaLastTwoPollsMs, mIsThroughputSufficient, mIsCellularDataAvailable);
+    }
+    boolean possibleDataStallTx = isTxTputLow || ccaLevel >= mDeviceConfigFacade.getDataStallCcaLevelThr() || txPer >= mDeviceConfigFacade.getDataStallTxPerThr();
+    boolean possibleDataStallRx = isRxTputLow || ccaLevel >= mDeviceConfigFacade.getDataStallCcaLevelThr();
+    boolean dataStallTx = isTxTrafficHigh ? possibleDataStallTx : mDataStallTx;
+    boolean dataStallRx = isRxTrafficHigh ? possibleDataStallRx : mDataStallRx;
+    return detectConsecutiveTwoDataStalls(timeDeltaLastTwoPollsMs, dataStallTx, dataStallRx);
+}

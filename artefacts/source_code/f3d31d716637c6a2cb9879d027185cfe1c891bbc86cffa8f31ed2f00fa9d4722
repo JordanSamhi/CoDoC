@@ -1,0 +1,52 @@
+public int getResourceId(int index, int defValue){
+    if (index < 0 || index >= mResourceData.length) {
+        return defValue;
+    }
+    ResourceValue resValue = mResourceData[index];
+    if (resValue == null) {
+        return defValue;
+    }
+    if (resValue instanceof StyleResourceValue) {
+        return mContext.getDynamicIdByStyle((StyleResourceValue) resValue);
+    }
+    if (!(resValue instanceof UnresolvedResourceValue)) {
+        return mContext.getResourceId(resValue.asReference(), defValue);
+    }
+    String value = resValue.getValue();
+    if (value == null) {
+        return defValue;
+    }
+    value = value.trim();
+    ResourceNamespace contextNamespace = resValue.getNamespace();
+    Resolver namespaceResolver = resValue.getNamespaceResolver();
+    if (value.startsWith("#")) {
+        return defValue;
+    }
+    if (Typeface_Accessor.isSystemFont(value)) {
+        return defValue;
+    }
+    ResourceUrl resourceUrl = ResourceUrl.parse(value);
+    if (resourceUrl != null) {
+        if (resourceUrl.type == ResourceType.ID) {
+            ResourceReference referencedId = resourceUrl.resolve(contextNamespace, namespaceResolver);
+            if (resourceUrl.isCreate()) {
+                int idValue;
+                if (referencedId.getNamespace() == ResourceNamespace.ANDROID) {
+                    idValue = Bridge.getResourceId(ResourceType.ID, resourceUrl.name);
+                } else {
+                    idValue = mContext.getLayoutlibCallback().getOrGenerateResourceId(referencedId);
+                }
+                return idValue;
+            }
+            return mContext.getResourceId(referencedId, defValue);
+        } else if (resourceUrl.type == ResourceType.AAPT) {
+            ResourceReference referencedId = resourceUrl.resolve(contextNamespace, namespaceResolver);
+            return mContext.getLayoutlibCallback().getOrGenerateResourceId(referencedId);
+        }
+    }
+    Integer enumValue = resolveEnumAttribute(index);
+    if (enumValue != null) {
+        return enumValue;
+    }
+    return defValue;
+}

@@ -1,0 +1,29 @@
+public void handleVolumeKey(@NonNull KeyEvent event, boolean isOnTv, @NonNull String callingPackage, @NonNull String caller){
+    int keyEventMode = VOL_ADJUST_NORMAL;
+    if (isOnTv) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            keyEventMode = VOL_ADJUST_START;
+        } else {
+            keyEventMode = VOL_ADJUST_END;
+        }
+    } else if (event.getAction() != KeyEvent.ACTION_DOWN) {
+        return;
+    }
+    int flags = AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_FROM_KEY;
+    switch(event.getKeyCode()) {
+        case KeyEvent.KEYCODE_VOLUME_UP:
+            adjustSuggestedStreamVolume(AudioManager.ADJUST_RAISE, AudioManager.USE_DEFAULT_STREAM_TYPE, flags, callingPackage, caller, Binder.getCallingUid(), true, keyEventMode);
+            break;
+        case KeyEvent.KEYCODE_VOLUME_DOWN:
+            adjustSuggestedStreamVolume(AudioManager.ADJUST_LOWER, AudioManager.USE_DEFAULT_STREAM_TYPE, flags, callingPackage, caller, Binder.getCallingUid(), true, keyEventMode);
+            break;
+        case KeyEvent.KEYCODE_VOLUME_MUTE:
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                adjustSuggestedStreamVolume(AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.USE_DEFAULT_STREAM_TYPE, flags, callingPackage, caller, Binder.getCallingUid(), true, VOL_ADJUST_NORMAL);
+            }
+            break;
+        default:
+            Log.e(TAG, "Invalid key code " + event.getKeyCode() + " sent by " + callingPackage);
+            return;
+    }
+}

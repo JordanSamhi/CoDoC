@@ -1,0 +1,12 @@
+public static List<InetAddress> rfc6724Sort(@Nullable Network network, @NonNull List<InetAddress> answers){
+    final ArrayList<SortableAddress> sortableAnswerList = new ArrayList<>();
+    for (InetAddress addr : answers) {
+        sortableAnswerList.add(new SortableAddress(addr, findSrcAddress(network, addr)));
+    }
+    Collections.sort(sortableAnswerList, sRfc6724Comparator);
+    final List<InetAddress> sortedAnswers = new ArrayList<>();
+    for (SortableAddress ans : sortableAnswerList) {
+        sortedAnswers.add(ans.address);
+    }
+    return sortedAnswers;
+}

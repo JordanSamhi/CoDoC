@@ -1,0 +1,9 @@
+public void setPlaybackParams(@NonNull PlaybackParams params){
+    synchronized (mAudioLock) {
+        mPlaybackRate = native_setPlaybackParams(params);
+        ;
+    }
+    if (mPlaybackRate != 0.0 && mAudioThread != null) {
+        postRenderAudio(0);
+    }
+}

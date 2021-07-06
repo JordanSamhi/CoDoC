@@ -1,0 +1,17 @@
+public void setContentCaptureEnabled(boolean enabled){
+    if (sDebug) {
+        Log.d(TAG, "setContentCaptureEnabled(): setting to " + enabled + " for " + mContext);
+    }
+    MainContentCaptureSession mainSession;
+    synchronized (mLock) {
+        if (enabled) {
+            mFlags &= ~ContentCaptureContext.FLAG_DISABLED_BY_APP;
+        } else {
+            mFlags |= ContentCaptureContext.FLAG_DISABLED_BY_APP;
+        }
+        mainSession = mMainSession;
+    }
+    if (mainSession != null) {
+        mainSession.setDisabled(!enabled);
+    }
+}

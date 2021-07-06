@@ -1,0 +1,31 @@
+public void onUserChangedBubble(@NonNull final NotificationEntry entry, boolean shouldBubble){
+    NotificationChannel channel = entry.getChannel();
+    final String appPkg = entry.getSbn().getPackageName();
+    final int appUid = entry.getSbn().getUid();
+    if (channel == null || appPkg == null) {
+        return;
+    }
+    try {
+        int flags = Notification.BubbleMetadata.FLAG_SUPPRESS_NOTIFICATION;
+        flags |= Notification.BubbleMetadata.FLAG_AUTO_EXPAND_BUBBLE;
+        mBarService.onNotificationBubbleChanged(entry.getKey(), shouldBubble, flags);
+    } catch (RemoteException e) {
+    }
+    channel = NotificationChannelHelper.createConversationChannelIfNeeded(mContext, mINotificationManager, entry, channel);
+    channel.setAllowBubbles(shouldBubble);
+    try {
+        int currentPref = mINotificationManager.getBubblePreferenceForPackage(appPkg, appUid);
+        if (shouldBubble && currentPref == BUBBLE_PREFERENCE_NONE) {
+            mINotificationManager.setBubblesAllowed(appPkg, appUid, BUBBLE_PREFERENCE_SELECTED);
+        }
+        mINotificationManager.updateNotificationChannelForPackage(appPkg, appUid, channel);
+    } catch (RemoteException e) {
+        Log.e(TAG, e.getMessage());
+    }
+    if (shouldBubble) {
+        mShadeController.collapsePanel(true);
+        if (entry.getRow() != null) {
+            entry.getRow().updateBubbleButton();
+        }
+    }
+}

@@ -1,0 +1,6 @@
+public void testGetServiceForUser_withoutPermission_throwsSecurityExceptionForNonCallingUser(){
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    expectThrows(SecurityException.class, () -> backupManagerService.getServiceForUserIfCallerHasPermission(mUserOneId, "test"));
+}

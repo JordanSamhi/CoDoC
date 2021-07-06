@@ -1,0 +1,21 @@
+public void setSystemAppState(String packageName, @SystemAppState int state){
+    try {
+        switch(state) {
+            case SYSTEM_APP_STATE_HIDDEN_UNTIL_INSTALLED_HIDDEN:
+                mPM.setSystemAppHiddenUntilInstalled(packageName, true);
+                break;
+            case SYSTEM_APP_STATE_HIDDEN_UNTIL_INSTALLED_VISIBLE:
+                mPM.setSystemAppHiddenUntilInstalled(packageName, false);
+                break;
+            case SYSTEM_APP_STATE_INSTALLED:
+                mPM.setSystemAppInstallState(packageName, true, getUserId());
+                break;
+            case SYSTEM_APP_STATE_UNINSTALLED:
+                mPM.setSystemAppInstallState(packageName, false, getUserId());
+                break;
+            default:
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

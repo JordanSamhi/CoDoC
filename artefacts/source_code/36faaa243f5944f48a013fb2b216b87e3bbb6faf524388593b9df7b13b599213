@@ -1,0 +1,17 @@
+public synchronized int loadSoundModel(@NonNull SoundTrigger.SoundModel model, @NonNull int[] soundModelHandle){
+    try {
+        if (model instanceof SoundTrigger.GenericSoundModel) {
+            SoundModel aidlModel = ConversionUtil.api2aidlGenericSoundModel((SoundTrigger.GenericSoundModel) model);
+            soundModelHandle[0] = mService.loadModel(aidlModel);
+            return SoundTrigger.STATUS_OK;
+        }
+        if (model instanceof SoundTrigger.KeyphraseSoundModel) {
+            PhraseSoundModel aidlModel = ConversionUtil.api2aidlPhraseSoundModel((SoundTrigger.KeyphraseSoundModel) model);
+            soundModelHandle[0] = mService.loadPhraseModel(aidlModel);
+            return SoundTrigger.STATUS_OK;
+        }
+        return SoundTrigger.STATUS_BAD_VALUE;
+    } catch (Exception e) {
+        return SoundTrigger.handleException(e);
+    }
+}

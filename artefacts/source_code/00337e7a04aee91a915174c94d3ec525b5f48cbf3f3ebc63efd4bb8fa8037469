@@ -1,0 +1,16 @@
+public boolean waitForPreviewsEmpty(long timeout, TimeUnit unit) throws InterruptedException{
+    long nanos = unit.toNanos(timeout);
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        while (mInFlightPreviews > 0) {
+            if (nanos <= 0) {
+                return false;
+            }
+            nanos = mPreviewsEmpty.awaitNanos(nanos);
+        }
+        return true;
+    } finally {
+        lock.unlock();
+    }
+}

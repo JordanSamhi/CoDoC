@@ -1,0 +1,13 @@
+public QueueRequest setLinearBlock(@NonNull LinearBlock block, int offset, int size){
+    if (!isAccessible()) {
+        throw new IllegalStateException("The request is stale");
+    }
+    if (mLinearBlock != null || mHardwareBuffer != null) {
+        throw new IllegalStateException("Cannot set block twice");
+    }
+    mLinearBlock = block;
+    mOffset = offset;
+    mSize = size;
+    mCryptoInfo = null;
+    return this;
+}

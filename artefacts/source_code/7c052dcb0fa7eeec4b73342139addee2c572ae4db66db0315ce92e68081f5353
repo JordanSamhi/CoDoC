@@ -1,0 +1,14 @@
+public List<Asn1Node> getChildren() throws InvalidAsn1DataException{
+    if (!mConstructed) {
+        return EMPTY_NODE_LIST;
+    }
+    if (mDataBytes != null) {
+        Asn1Decoder subDecoder = new Asn1Decoder(mDataBytes, mDataOffset, mDataLength);
+        while (subDecoder.hasNextNode()) {
+            mChildren.add(subDecoder.nextNode());
+        }
+        mDataBytes = null;
+        mDataOffset = 0;
+    }
+    return mChildren;
+}

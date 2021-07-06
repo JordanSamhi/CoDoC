@@ -1,0 +1,8 @@
+public Cursor queryRecentDocuments(@NonNull String rootId, @Nullable String[] projection, @Nullable Bundle queryArgs, @Nullable CancellationSignal signal) throws FileNotFoundException{
+    Preconditions.checkNotNull(rootId, "rootId can not be null");
+    Cursor c = queryRecentDocuments(rootId, projection);
+    Bundle extras = new Bundle();
+    c.setExtras(extras);
+    extras.putStringArray(ContentResolver.EXTRA_HONORED_ARGS, new String[0]);
+    return c;
+}

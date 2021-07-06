@@ -1,0 +1,15 @@
+public void writePackedSInt64(long fieldId, @Nullable long[] val){
+    assertNotCompacted();
+    final int id = checkFieldId(fieldId, FIELD_COUNT_PACKED | FIELD_TYPE_SINT64);
+    final int N = val != null ? val.length : 0;
+    if (N > 0) {
+        int size = 0;
+        for (int i = 0; i < N; i++) {
+            size += EncodedBuffer.getRawZigZag64Size(val[i]);
+        }
+        writeKnownLengthHeader(id, size);
+        for (int i = 0; i < N; i++) {
+            mBuffer.writeRawZigZag64(val[i]);
+        }
+    }
+}

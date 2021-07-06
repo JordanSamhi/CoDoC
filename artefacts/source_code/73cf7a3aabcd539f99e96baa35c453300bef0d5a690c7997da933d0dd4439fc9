@@ -1,0 +1,13 @@
+public boolean enoughToFilter(){
+    Editable text = getText();
+    int end = getSelectionEnd();
+    if (end < 0 || mTokenizer == null) {
+        return false;
+    }
+    int start = mTokenizer.findTokenStart(text, end);
+    if (end - start >= getThreshold()) {
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -1,0 +1,12 @@
+public void addWebViewAssetPath(Context context){
+    final String[] newAssetPaths = WebViewFactory.getLoadedPackageInfo().applicationInfo.getAllApkPaths();
+    final ApplicationInfo appInfo = context.getApplicationInfo();
+    String[] newLibAssets = appInfo.sharedLibraryFiles;
+    for (String newAssetPath : newAssetPaths) {
+        newLibAssets = ArrayUtils.appendElement(String.class, newLibAssets, newAssetPath);
+    }
+    if (newLibAssets != appInfo.sharedLibraryFiles) {
+        appInfo.sharedLibraryFiles = newLibAssets;
+        ResourcesManager.getInstance().appendLibAssetsForMainAssetPath(appInfo.getBaseResourcePath(), newAssetPaths);
+    }
+}

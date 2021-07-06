@@ -1,0 +1,10 @@
+public void abandonSession(@IntRange(from = 1) long sessionId) throws IOException{
+    try {
+        mService.abandonSession(sessionId, mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

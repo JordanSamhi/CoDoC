@@ -1,0 +1,16 @@
+public void appendExtRecord(byte[] extRecord){
+    try {
+        if (extRecord.length != EXT_RECORD_LENGTH_BYTES) {
+            return;
+        }
+        if ((extRecord[0] & EXT_RECORD_TYPE_MASK) != EXT_RECORD_TYPE_ADDITIONAL_DATA) {
+            return;
+        }
+        if ((0xff & extRecord[1]) > MAX_EXT_CALLED_PARTY_LENGTH) {
+            return;
+        }
+        mNumber += PhoneNumberUtils.calledPartyBCDFragmentToString(extRecord, 2, 0xff & extRecord[1], PhoneNumberUtils.BCD_EXTENDED_TYPE_EF_ADN);
+    } catch (RuntimeException ex) {
+        Rlog.w(LOG_TAG, "Error parsing AdnRecord ext record", ex);
+    }
+}

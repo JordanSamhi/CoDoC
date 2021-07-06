@@ -1,0 +1,14 @@
+public void utConfigurationQueried(IImsUt ut, int id, Bundle ssInfo){
+    int[] clirResponse = ssInfo.getIntArray(ImsUtListener.BUNDLE_KEY_CLIR);
+    if (clirResponse != null && clirResponse.length == 2) {
+        ImsSsInfo info = new ImsSsInfo.Builder(ImsSsInfo.NOT_REGISTERED).setClirOutgoingState(clirResponse[0]).setClirInterrogationStatus(clirResponse[1]).build();
+        lineIdentificationSupplementaryServiceResponse(id, info);
+        return;
+    }
+    ImsSsInfo info = ssInfo.getParcelable(ImsUtListener.BUNDLE_KEY_SSINFO);
+    if (info != null) {
+        lineIdentificationSupplementaryServiceResponse(id, info);
+        return;
+    }
+    Rlog.w(TAG, "Invalid utConfigurationQueried response received for Bundle " + ssInfo);
+}

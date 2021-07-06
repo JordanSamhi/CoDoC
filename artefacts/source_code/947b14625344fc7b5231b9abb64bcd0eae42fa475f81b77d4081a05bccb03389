@@ -1,0 +1,16 @@
+public boolean setKeyPairCertificate(@Nullable ComponentName admin, @NonNull String alias, @NonNull List<Certificate> certs, boolean isUserSelectable){
+    throwIfParentInstance("setKeyPairCertificate");
+    try {
+        final byte[] pemCert = Credentials.convertToPem(certs.get(0));
+        byte[] pemChain = null;
+        if (certs.size() > 1) {
+            pemChain = Credentials.convertToPem(certs.subList(1, certs.size()).toArray(new Certificate[0]));
+        }
+        return mService.setKeyPairCertificate(admin, mContext.getPackageName(), alias, pemCert, pemChain, isUserSelectable);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (CertificateException | IOException e) {
+        Log.w(TAG, "Could not pem-encode certificate", e);
+    }
+    return false;
+}

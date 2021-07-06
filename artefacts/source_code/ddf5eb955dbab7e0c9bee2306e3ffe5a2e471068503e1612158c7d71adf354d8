@@ -1,0 +1,14 @@
+public void transform(Matrix_Delegate matrix, Path_Delegate dst){
+    if (matrix.hasPerspective()) {
+        assert false;
+        Bridge.getLog().fidelityWarning(LayoutLog.TAG_MATRIX_AFFINE, "android.graphics.Path#transform() only " + "supports affine transformations.", null, null, null);
+    }
+    GeneralPath newPath = new GeneralPath();
+    PathIterator iterator = mPath.getPathIterator(matrix.getAffineTransform());
+    newPath.append(iterator, false);
+    if (dst != null) {
+        dst.mPath = newPath;
+    } else {
+        mPath = newPath;
+    }
+}

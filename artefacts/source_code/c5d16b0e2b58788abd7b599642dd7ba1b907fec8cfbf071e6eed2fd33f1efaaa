@@ -1,0 +1,15 @@
+public void addApprovedService(ComponentName serviceToAdd){
+    synchronized (sLock) {
+        Set<String> oldApprovedServices = mPreferences.getStringSet(APPROVED_SERVICES_PREFERENCE, null);
+        Set<String> newApprovedServices;
+        if (oldApprovedServices == null) {
+            newApprovedServices = new ArraySet<String>(1);
+        } else {
+            newApprovedServices = new ArraySet<String>(oldApprovedServices);
+        }
+        newApprovedServices.add(serviceToAdd.flattenToShortString());
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putStringSet(APPROVED_SERVICES_PREFERENCE, newApprovedServices);
+        editor.apply();
+    }
+}

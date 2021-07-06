@@ -1,0 +1,20 @@
+public void initializeDefaultsForSystemApps(int userId){
+    if (!mSystemServicesReady) {
+        mPendingInitializeDefaults = true;
+        return;
+    }
+    Slog.d(TAG, "Initializing defaults for system apps on user " + userId + ", " + "appIdleEnabled=" + mAppIdleEnabled);
+    final long elapsedRealtime = mInjector.elapsedRealtime();
+    List<PackageInfo> packages = mPackageManager.getInstalledPackagesAsUser(PackageManager.MATCH_DISABLED_COMPONENTS, userId);
+    final int packageCount = packages.size();
+    synchronized (mAppIdleLock) {
+        for (int i = 0; i < packageCount; i++) {
+            final PackageInfo pi = packages.get(i);
+            String packageName = pi.packageName;
+            if (pi.applicationInfo != null && pi.applicationInfo.isSystemApp()) {
+                mAppIdleHistory.reportUsage(packageName, userId, STANDBY_BUCKET_ACTIVE, REASON_SUB_USAGE_SYSTEM_UPDATE, 0, elapsedRealtime + mSystemUpdateUsageTimeoutMillis);
+            }
+        }
+        mAppIdleHistory.writeAppIdleTimes(userId);
+    }
+}

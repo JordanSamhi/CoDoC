@@ -1,0 +1,10 @@
+public void removeRequest(int requestId){
+    NetworkRequest existing = mNetworkRequests.get(requestId);
+    if (existing == null)
+        return;
+    updateRequestCounts(REMOVE, existing);
+    mNetworkRequests.remove(requestId);
+    if (existing.isRequest()) {
+        unlingerRequest(existing);
+    }
+}

@@ -1,0 +1,17 @@
+public void registerClientGroupId(IMediaRouterClient client, String groupId){
+    if (client == null) {
+        throw new NullPointerException("client must not be null");
+    }
+    if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.CONFIGURE_WIFI_DISPLAY) != PackageManager.PERMISSION_GRANTED) {
+        Log.w(TAG, "Ignoring client group request because " + "the client doesn't have the CONFIGURE_WIFI_DISPLAY permission.");
+        return;
+    }
+    final long token = Binder.clearCallingIdentity();
+    try {
+        synchronized (mLock) {
+            registerClientGroupIdLocked(client, groupId);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

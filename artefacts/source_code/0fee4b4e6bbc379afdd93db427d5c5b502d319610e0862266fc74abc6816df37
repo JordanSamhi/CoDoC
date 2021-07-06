@@ -1,0 +1,10 @@
+public void updateView(int[] containerLocationOnScreen){
+    if (DEBUG_BUBBLE_EXPANDED_VIEW) {
+        Log.d(TAG, "updateView: bubble=" + getBubbleKey());
+    }
+    mExpandedViewContainerLocation = containerLocationOnScreen;
+    if (usingActivityView() && mActivityView.getVisibility() == VISIBLE && mActivityView.isAttachedToWindow()) {
+        mActivityView.onLocationChanged();
+        updateHeight();
+    }
+}

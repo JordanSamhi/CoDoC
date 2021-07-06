@@ -1,0 +1,19 @@
+public String getMacAddress(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final String methodStr = "getMacAddress";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return null;
+        Mutable<String> gotMac = new Mutable<>();
+        try {
+            iface.getMacAddress((SupplicantStatus status, byte[] macAddr) -> {
+                if (checkStatusAndLogFailure(status, methodStr)) {
+                    gotMac.value = NativeUtil.macAddressFromByteArray(macAddr);
+                }
+            });
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+        }
+        return gotMac.value;
+    }
+}

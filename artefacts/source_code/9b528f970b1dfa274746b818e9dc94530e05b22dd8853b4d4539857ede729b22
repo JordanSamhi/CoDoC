@@ -1,0 +1,19 @@
+public void bindSocket(FileDescriptor fd) throws IOException{
+    try {
+        final SocketAddress peer = Os.getpeername(fd);
+        final InetAddress inetPeer = ((InetSocketAddress) peer).getAddress();
+        if (!inetPeer.isAnyLocalAddress()) {
+            throw new SocketException("Socket is connected");
+        }
+    } catch (ErrnoException e) {
+        if (e.errno != OsConstants.ENOTCONN) {
+            throw e.rethrowAsSocketException();
+        }
+    } catch (ClassCastException e) {
+        throw new SocketException("Only AF_INET/AF_INET6 sockets supported");
+    }
+    final int err = NetworkUtils.bindSocketToNetwork(fd.getInt$(), netId);
+    if (err != 0) {
+        throw new ErrnoException("Binding socket to network " + netId, -err).rethrowAsSocketException();
+    }
+}

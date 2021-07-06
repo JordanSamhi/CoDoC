@@ -1,0 +1,19 @@
+public int[] getDisplayIds(){
+    try {
+        synchronized (mLock) {
+            if (USE_CACHE) {
+                if (mDisplayIdCache != null) {
+                    return mDisplayIdCache;
+                }
+            }
+            int[] displayIds = mDm.getDisplayIds();
+            if (USE_CACHE) {
+                mDisplayIdCache = displayIds;
+            }
+            registerCallbackIfNeededLocked();
+            return displayIds;
+        }
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

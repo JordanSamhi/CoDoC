@@ -1,0 +1,16 @@
+public List<BluetoothDevice> getActiveDevices(){
+    if (VDBG)
+        log("getActiveDevices()");
+    final IBluetoothHearingAid service = getService();
+    try {
+        if (service != null && isEnabled()) {
+            return service.getActiveDevices();
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return new ArrayList<>();
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return new ArrayList<>();
+    }
+}

@@ -1,0 +1,10 @@
+public static SslError SslErrorFromChromiumErrorCode(int error, SslCertificate cert, String url){
+    assert (error >= -299 && error <= -200);
+    if (error == -200)
+        return new SslError(SSL_IDMISMATCH, cert, url);
+    if (error == -201)
+        return new SslError(SSL_DATE_INVALID, cert, url);
+    if (error == -202)
+        return new SslError(SSL_UNTRUSTED, cert, url);
+    return new SslError(SSL_INVALID, cert, url);
+}

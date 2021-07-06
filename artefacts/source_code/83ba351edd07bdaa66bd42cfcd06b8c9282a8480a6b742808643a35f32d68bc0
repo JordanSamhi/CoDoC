@@ -1,0 +1,8 @@
+public boolean wallpaperSupportsWcg(int which){
+    if (!shouldEnableWideColorGamut()) {
+        return false;
+    }
+    final ColorManagementProxy cmProxy = getColorManagementProxy();
+    Bitmap bitmap = sGlobals.peekWallpaperBitmap(mContext, false, which, cmProxy);
+    return bitmap != null && bitmap.getColorSpace() != null && bitmap.getColorSpace() != ColorSpace.get(ColorSpace.Named.SRGB) && cmProxy.isSupportedColorSpace(bitmap.getColorSpace());
+}

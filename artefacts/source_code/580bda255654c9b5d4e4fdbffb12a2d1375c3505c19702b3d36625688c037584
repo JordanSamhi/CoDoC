@@ -1,0 +1,11 @@
+public boolean isWhitelisted(@NonNull String packageName, boolean includingIdle){
+    try {
+        if (includingIdle) {
+            return mService.isPowerSaveWhitelistApp(packageName);
+        } else {
+            return mService.isPowerSaveWhitelistExceptIdleApp(packageName);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

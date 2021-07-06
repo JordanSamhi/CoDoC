@@ -1,0 +1,17 @@
+public void writeInputStream(@NonNull OutputStream dngOutput, @NonNull Size size, @NonNull InputStream pixels, @IntRange(from = 0) long offset) throws IOException{
+    if (dngOutput == null) {
+        throw new IllegalArgumentException("Null dngOutput passed to writeInputStream");
+    } else if (size == null) {
+        throw new IllegalArgumentException("Null size passed to writeInputStream");
+    } else if (pixels == null) {
+        throw new IllegalArgumentException("Null pixels passed to writeInputStream");
+    } else if (offset < 0) {
+        throw new IllegalArgumentException("Negative offset passed to writeInputStream");
+    }
+    int width = size.getWidth();
+    int height = size.getHeight();
+    if (width <= 0 || height <= 0) {
+        throw new IllegalArgumentException("Size with invalid width, height: (" + width + "," + height + ") passed to writeInputStream");
+    }
+    nativeWriteInputStream(dngOutput, pixels, width, height, offset);
+}

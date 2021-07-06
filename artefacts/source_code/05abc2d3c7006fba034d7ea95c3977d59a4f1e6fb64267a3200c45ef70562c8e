@@ -1,0 +1,13 @@
+public static List<Partition> getFingerprintedPartitions(){
+    ArrayList<Partition> partitions = new ArrayList();
+    String[] names = new String[] { "bootimage", "odm", "product", "system_ext", Partition.PARTITION_NAME_SYSTEM, "vendor" };
+    for (String name : names) {
+        String fingerprint = SystemProperties.get("ro." + name + ".build.fingerprint");
+        if (TextUtils.isEmpty(fingerprint)) {
+            continue;
+        }
+        long time = getLong("ro." + name + ".build.date.utc") * 1000;
+        partitions.add(new Partition(name, fingerprint, time));
+    }
+    return partitions;
+}

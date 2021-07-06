@@ -1,0 +1,16 @@
+public boolean setValue(Rational[] value){
+    if (checkBadComponentCount(value.length)) {
+        return false;
+    }
+    if (mDataType != TYPE_UNSIGNED_RATIONAL && mDataType != TYPE_RATIONAL) {
+        return false;
+    }
+    if (mDataType == TYPE_UNSIGNED_RATIONAL && checkOverflowForUnsignedRational(value)) {
+        return false;
+    } else if (mDataType == TYPE_RATIONAL && checkOverflowForRational(value)) {
+        return false;
+    }
+    mValue = value;
+    mComponentCountActual = value.length;
+    return true;
+}

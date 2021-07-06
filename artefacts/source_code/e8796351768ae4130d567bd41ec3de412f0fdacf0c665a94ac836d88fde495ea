@@ -1,0 +1,21 @@
+public void setPlaybackToRemote(@NonNull VolumeProvider volumeProvider){
+    if (volumeProvider == null) {
+        throw new IllegalArgumentException("volumeProvider may not be null!");
+    }
+    synchronized (mLock) {
+        mVolumeProvider = volumeProvider;
+    }
+    volumeProvider.setCallback(new VolumeProvider.Callback() {
+
+        @Override
+        public void onVolumeChanged(VolumeProvider volumeProvider) {
+            notifyRemoteVolumeChanged(volumeProvider);
+        }
+    });
+    try {
+        mBinder.setPlaybackToRemote(volumeProvider.getVolumeControl(), volumeProvider.getMaxVolume(), volumeProvider.getVolumeControlId());
+        mBinder.setCurrentVolume(volumeProvider.getCurrentVolume());
+    } catch (RemoteException e) {
+        Log.wtf(TAG, "Failure in setPlaybackToRemote.", e);
+    }
+}

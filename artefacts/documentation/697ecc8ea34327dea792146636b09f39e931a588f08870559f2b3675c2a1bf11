@@ -1,0 +1,26 @@
+
+     * Allocate the requested number of bytes for your application to use on the
+     * given storage volume. This will cause the system to delete any cached
+     * files necessary to satisfy your request.
+     * <p>
+     * Attempts to allocate disk space beyond the value returned by
+     * {@link #getAllocatableBytes(UUID)} will fail.
+     * <p>
+     * Since multiple apps can be running simultaneously, this method may be
+     * subject to race conditions. If possible, consider using
+     * {@link #allocateBytes(FileDescriptor, long)} which will guarantee
+     * that bytes are allocated to an opened file.
+     * <p>
+     * If you're progressively allocating an unbounded amount of storage space
+     * (such as when recording a video) you should avoid calling this method
+     * more than once every 60 seconds.
+     *
+     * @param storageUuid the UUID of the storage volume where you'd like to
+     *            allocate disk space. The UUID for a specific path can be
+     *            obtained using {@link #getUuidForPath(File)}.
+     * @param bytes the number of bytes to allocate.
+     * @throws IOException when the storage device isn't present, or when it
+     *             doesn't support allocating space, or if the device had
+     *             trouble allocating the requested space.
+     * @see #getAllocatableBytes(UUID)
+     

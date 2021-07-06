@@ -1,0 +1,92 @@
+public void registerCallback(@NonNull Callback cb, @Nullable Handler handler){
+    ILowpanInterfaceListener.Stub listenerBinder = new ILowpanInterfaceListener.Stub() {
+
+        private Handler mHandler;
+
+        {
+            if (handler != null) {
+                mHandler = handler;
+            } else if (mLooper != null) {
+                mHandler = new Handler(mLooper);
+            } else {
+                mHandler = new Handler();
+            }
+        }
+
+        @Override
+        public void onEnabledChanged(boolean value) {
+            mHandler.post(() -> cb.onEnabledChanged(value));
+        }
+
+        @Override
+        public void onConnectedChanged(boolean value) {
+            mHandler.post(() -> cb.onConnectedChanged(value));
+        }
+
+        @Override
+        public void onUpChanged(boolean value) {
+            mHandler.post(() -> cb.onUpChanged(value));
+        }
+
+        @Override
+        public void onRoleChanged(String value) {
+            mHandler.post(() -> cb.onRoleChanged(value));
+        }
+
+        @Override
+        public void onStateChanged(String value) {
+            mHandler.post(() -> cb.onStateChanged(value));
+        }
+
+        @Override
+        public void onLowpanIdentityChanged(LowpanIdentity value) {
+            mHandler.post(() -> cb.onLowpanIdentityChanged(value));
+        }
+
+        @Override
+        public void onLinkNetworkAdded(IpPrefix value) {
+            mHandler.post(() -> cb.onLinkNetworkAdded(value));
+        }
+
+        @Override
+        public void onLinkNetworkRemoved(IpPrefix value) {
+            mHandler.post(() -> cb.onLinkNetworkRemoved(value));
+        }
+
+        @Override
+        public void onLinkAddressAdded(String value) {
+            LinkAddress la;
+            try {
+                la = new LinkAddress(value);
+            } catch (IllegalArgumentException x) {
+                Log.e(TAG, "onLinkAddressAdded: Bad LinkAddress \"" + value + "\", " + x);
+                return;
+            }
+            mHandler.post(() -> cb.onLinkAddressAdded(la));
+        }
+
+        @Override
+        public void onLinkAddressRemoved(String value) {
+            LinkAddress la;
+            try {
+                la = new LinkAddress(value);
+            } catch (IllegalArgumentException x) {
+                Log.e(TAG, "onLinkAddressRemoved: Bad LinkAddress \"" + value + "\", " + x);
+                return;
+            }
+            mHandler.post(() -> cb.onLinkAddressRemoved(la));
+        }
+
+        @Override
+        public void onReceiveFromCommissioner(byte[] packet) {
+        }
+    };
+    try {
+        mBinder.addListener(listenerBinder);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    }
+    synchronized (mListenerMap) {
+        mListenerMap.put(System.identityHashCode(cb), listenerBinder);
+    }
+}

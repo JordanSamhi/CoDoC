@@ -1,0 +1,21 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    pw.println("UiccCarrierPrivilegeRules: " + this);
+    pw.println(" mState=" + getStateString(mState.get()));
+    pw.println(" mStatusMessage=");
+    mStatusMessage.dump(fd, pw, args);
+    if (mAccessRules != null) {
+        pw.println(" mAccessRules: ");
+        for (UiccAccessRule ar : mAccessRules) {
+            pw.println("  rule='" + ar + "'");
+        }
+    } else {
+        pw.println(" mAccessRules: null");
+    }
+    if (mUiccPkcs15 != null) {
+        pw.println(" mUiccPkcs15: " + mUiccPkcs15);
+        mUiccPkcs15.dump(fd, pw, args);
+    } else {
+        pw.println(" mUiccPkcs15: null");
+    }
+    pw.flush();
+}

@@ -1,0 +1,17 @@
+public float getStreamVolumeDb(@PublicStreamTypes int streamType, int index, @AudioDeviceInfo.AudioDeviceTypeOut int deviceType){
+    if (!isPublicStreamType(streamType)) {
+        throw new IllegalArgumentException("Invalid stream type " + streamType);
+    }
+    if (index > getStreamMaxVolume(streamType) || index < getStreamMinVolume(streamType)) {
+        throw new IllegalArgumentException("Invalid stream volume index " + index);
+    }
+    if (!AudioDeviceInfo.isValidAudioDeviceTypeOut(deviceType)) {
+        throw new IllegalArgumentException("Invalid audio output device type " + deviceType);
+    }
+    final float gain = AudioSystem.getStreamVolumeDB(streamType, index, AudioDeviceInfo.convertDeviceTypeToInternalDevice(deviceType));
+    if (gain <= VOLUME_MIN_DB) {
+        return Float.NEGATIVE_INFINITY;
+    } else {
+        return gain;
+    }
+}

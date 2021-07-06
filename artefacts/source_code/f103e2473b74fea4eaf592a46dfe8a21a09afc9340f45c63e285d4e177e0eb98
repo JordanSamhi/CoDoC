@@ -1,0 +1,15 @@
+public Intent getAssistIntent(boolean inclContext){
+    try {
+        Intent intent = new Intent(Intent.ACTION_ASSIST);
+        if (inclContext) {
+            IActivityTaskManager am = ActivityTaskManager.getService();
+            Bundle extras = am.getAssistContextExtras(ActivityManager.ASSIST_CONTEXT_BASIC);
+            if (extras != null) {
+                intent.replaceExtras(extras);
+            }
+        }
+        return intent;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

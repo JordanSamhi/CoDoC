@@ -1,0 +1,29 @@
+public void closeCamera(CameraProxy camera, boolean synced){
+    try {
+        if (synced) {
+            if (getCameraState().isInvalid()) {
+                return;
+            }
+            final WaitDoneBundle bundle = new WaitDoneBundle();
+            getDispatchThread().runJobSync(new Runnable() {
+
+                @Override
+                public void run() {
+                    getCameraHandler().obtainMessage(CameraActions.RELEASE).sendToTarget();
+                    getCameraHandler().post(bundle.mUnlockRunnable);
+                }
+            }, bundle.mWaitLock, CAMERA_OPERATION_TIMEOUT_MS, "camera release");
+        } else {
+            getDispatchThread().runJob(new Runnable() {
+
+                @Override
+                public void run() {
+                    getCameraHandler().removeCallbacksAndMessages(null);
+                    getCameraHandler().obtainMessage(CameraActions.RELEASE).sendToTarget();
+                }
+            });
+        }
+    } catch (final RuntimeException ex) {
+        getCameraExceptionHandler().onDispatchThreadException(ex);
+    }
+}

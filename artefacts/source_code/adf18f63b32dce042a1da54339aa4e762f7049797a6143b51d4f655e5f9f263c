@@ -1,0 +1,25 @@
+public boolean restoreFocusNotInCluster(){
+    if (mFocusedInCluster != null) {
+        return restoreFocusInCluster(View.FOCUS_DOWN);
+    }
+    if (isKeyboardNavigationCluster() || (mViewFlags & VISIBILITY_MASK) != VISIBLE) {
+        return false;
+    }
+    int descendentFocusability = getDescendantFocusability();
+    if (descendentFocusability == FOCUS_BLOCK_DESCENDANTS) {
+        return super.requestFocus(FOCUS_DOWN, null);
+    }
+    if (descendentFocusability == FOCUS_BEFORE_DESCENDANTS && super.requestFocus(FOCUS_DOWN, null)) {
+        return true;
+    }
+    for (int i = 0; i < mChildrenCount; ++i) {
+        View child = mChildren[i];
+        if (!child.isKeyboardNavigationCluster() && child.restoreFocusNotInCluster()) {
+            return true;
+        }
+    }
+    if (descendentFocusability == FOCUS_AFTER_DESCENDANTS && !hasFocusableChild(false)) {
+        return super.requestFocus(FOCUS_DOWN, null);
+    }
+    return false;
+}

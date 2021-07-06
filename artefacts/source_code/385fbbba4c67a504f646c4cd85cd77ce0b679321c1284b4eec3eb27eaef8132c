@@ -1,0 +1,24 @@
+public static Bitmap createVideoThumbnail(@NonNull File file, @NonNull Size size, @Nullable CancellationSignal signal) throws IOException{
+    if (signal != null)
+        signal.throwIfCanceled();
+    final Resizer resizer = new Resizer(size, signal);
+    try (MediaMetadataRetriever mmr = new MediaMetadataRetriever()) {
+        mmr.setDataSource(file.getAbsolutePath());
+        final byte[] raw = mmr.getEmbeddedPicture();
+        if (raw != null) {
+            return ImageDecoder.decodeBitmap(ImageDecoder.createSource(raw), resizer);
+        }
+        final BitmapParams params = new BitmapParams();
+        params.setPreferredConfig(Bitmap.Config.ARGB_8888);
+        final int width = Integer.parseInt(mmr.extractMetadata(METADATA_KEY_VIDEO_WIDTH));
+        final int height = Integer.parseInt(mmr.extractMetadata(METADATA_KEY_VIDEO_HEIGHT));
+        final long thumbnailTimeUs = Long.parseLong(mmr.extractMetadata(METADATA_KEY_DURATION)) * 1000 / 2;
+        if (size.getWidth() > width && size.getHeight() > height) {
+            return Objects.requireNonNull(mmr.getFrameAtTime(thumbnailTimeUs, OPTION_CLOSEST_SYNC, params));
+        } else {
+            return Objects.requireNonNull(mmr.getScaledFrameAtTime(thumbnailTimeUs, OPTION_CLOSEST_SYNC, size.getWidth(), size.getHeight(), params));
+        }
+    } catch (RuntimeException e) {
+        throw new IOException("Failed to create thumbnail", e);
+    }
+}

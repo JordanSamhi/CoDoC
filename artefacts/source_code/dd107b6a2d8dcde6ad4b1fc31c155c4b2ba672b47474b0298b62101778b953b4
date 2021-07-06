@@ -1,0 +1,20 @@
+public static String getCarrierImsPackageForIntent(Context context, Phone phone, Intent intent){
+    String carrierImsPackage = getCarrierImsPackage(context, phone);
+    if (carrierImsPackage == null) {
+        if (VDBG)
+            Rlog.v(TAG, "No CarrierImsPackage override found");
+        return null;
+    }
+    PackageManager packageManager = context.getPackageManager();
+    List<ResolveInfo> receivers = packageManager.queryIntentServices(intent, 0);
+    for (ResolveInfo info : receivers) {
+        if (info.serviceInfo == null) {
+            Rlog.e(TAG, "Can't get service information from " + info);
+            continue;
+        }
+        if (carrierImsPackage.equals(info.serviceInfo.packageName)) {
+            return carrierImsPackage;
+        }
+    }
+    return null;
+}

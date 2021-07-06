@@ -1,0 +1,21 @@
+public static long pack(float red, float green, float blue, float alpha, @NonNull ColorSpace colorSpace){
+    if (colorSpace.isSrgb()) {
+        int argb = ((int) (alpha * 255.0f + 0.5f) << 24) | ((int) (red * 255.0f + 0.5f) << 16) | ((int) (green * 255.0f + 0.5f) << 8) | (int) (blue * 255.0f + 0.5f);
+        return (argb & 0xffffffffL) << 32;
+    }
+    int id = colorSpace.getId();
+    if (id == ColorSpace.MIN_ID) {
+        throw new IllegalArgumentException("Unknown color space, please use a color space returned by ColorSpace.get()");
+    }
+    if (colorSpace.getComponentCount() > 3) {
+        throw new IllegalArgumentException("The color space must use a color model with at most 3 components");
+    }
+    @HalfFloat
+    short r = Half.toHalf(red);
+    @HalfFloat
+    short g = Half.toHalf(green);
+    @HalfFloat
+    short b = Half.toHalf(blue);
+    int a = (int) (Math.max(0.0f, Math.min(alpha, 1.0f)) * 1023.0f + 0.5f);
+    return (r & 0xffffL) << 48 | (g & 0xffffL) << 32 | (b & 0xffffL) << 16 | (a & 0x3ffL) << 6 | id & 0x3fL;
+}

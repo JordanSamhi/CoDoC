@@ -1,0 +1,18 @@
+public void run(){
+    while (Thread.currentThread() == mThread) {
+        try {
+            Socket client = mServer.accept();
+            if (mThreadPool != null) {
+                mThreadPool.submit(new ViewServerWorker(client));
+            } else {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Slog.w(LOG_TAG, "Connection error: ", e);
+        }
+    }
+}

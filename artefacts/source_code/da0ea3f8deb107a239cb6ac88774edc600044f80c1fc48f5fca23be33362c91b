@@ -1,0 +1,8 @@
+public static void beginSection(@NonNull String sectionName){
+    if (isTagEnabled(TRACE_TAG_APP)) {
+        if (sectionName.length() > MAX_SECTION_NAME_LEN) {
+            throw new IllegalArgumentException("sectionName is too long");
+        }
+        nativeTraceBegin(TRACE_TAG_APP, sectionName);
+    }
+}

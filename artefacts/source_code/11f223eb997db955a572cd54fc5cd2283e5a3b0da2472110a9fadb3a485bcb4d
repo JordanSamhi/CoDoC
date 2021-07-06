@@ -1,0 +1,10 @@
+public final void updateNotificationChannel(@NonNull String pkg, @NonNull UserHandle user, @NonNull NotificationChannel channel){
+    if (!isBound())
+        return;
+    try {
+        getNotificationInterface().updateNotificationChannelFromPrivilegedListener(mWrapper, pkg, user, channel);
+    } catch (RemoteException e) {
+        Log.v(TAG, "Unable to contact notification manager", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public void addTemperatureViewToController(View v){
+    if (v instanceof TemperatureView) {
+        addHvacTextView((TemperatureView) v);
+    } else if (v instanceof ViewGroup) {
+        ViewGroup viewGroup = (ViewGroup) v;
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            addTemperatureViewToController(viewGroup.getChildAt(i));
+        }
+    }
+}

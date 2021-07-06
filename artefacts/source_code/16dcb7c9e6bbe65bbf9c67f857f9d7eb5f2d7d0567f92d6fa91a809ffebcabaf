@@ -1,0 +1,13 @@
+public boolean dispatchMediaButtonEvent(@NonNull KeyEvent keyEvent){
+    if (keyEvent == null) {
+        throw new IllegalArgumentException("KeyEvent may not be null");
+    }
+    if (!KeyEvent.isMediaSessionKey(keyEvent.getKeyCode())) {
+        return false;
+    }
+    try {
+        return mSessionBinder.sendMediaButton(mContext.getPackageName(), keyEvent);
+    } catch (RemoteException e) {
+    }
+    return false;
+}

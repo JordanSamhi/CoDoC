@@ -1,0 +1,26 @@
+public void setStartDelay(long startDelay){
+    if (startDelay < 0) {
+        Log.w(TAG, "Start delay should always be non-negative");
+        startDelay = 0;
+    }
+    long delta = startDelay - mStartDelay;
+    if (delta == 0) {
+        return;
+    }
+    mStartDelay = startDelay;
+    if (!mDependencyDirty) {
+        int size = mNodes.size();
+        for (int i = 0; i < size; i++) {
+            Node node = mNodes.get(i);
+            if (node == mRootNode) {
+                node.mEndTime = mStartDelay;
+            } else {
+                node.mStartTime = node.mStartTime == DURATION_INFINITE ? DURATION_INFINITE : node.mStartTime + delta;
+                node.mEndTime = node.mEndTime == DURATION_INFINITE ? DURATION_INFINITE : node.mEndTime + delta;
+            }
+        }
+        if (mTotalDuration != DURATION_INFINITE) {
+            mTotalDuration += delta;
+        }
+    }
+}

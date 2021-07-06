@@ -1,0 +1,14 @@
+public static String getUserLabel(Context context, UserInfo info){
+    String name = info != null ? info.name : null;
+    if (info.isManagedProfile()) {
+        return context.getString(R.string.managed_user_title);
+    } else if (info.isGuest()) {
+        name = context.getString(R.string.user_guest);
+    }
+    if (name == null && info != null) {
+        name = Integer.toString(info.id);
+    } else if (info == null) {
+        name = context.getString(R.string.unknown);
+    }
+    return context.getResources().getString(R.string.running_process_item_user_label, name);
+}

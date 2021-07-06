@@ -1,0 +1,12 @@
+public long[] getAuthenticatorIds(){
+    if (mService != null) {
+        try {
+            return mService.getAuthenticatorIds();
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        Slog.w(TAG, "getAuthenticatorIds(): Service not connected");
+        return new long[0];
+    }
+}

@@ -1,0 +1,8 @@
+public Slice.Builder addAction(@NonNull PendingIntent action, @NonNull Slice s, @Nullable @SliceSubtype String subType){
+    Objects.requireNonNull(action);
+    Objects.requireNonNull(s);
+    List<String> hints = s.getHints();
+    s.mSpec = null;
+    mItems.add(new SliceItem(action, s, SliceItem.FORMAT_ACTION, subType, hints.toArray(new String[hints.size()])));
+    return this;
+}

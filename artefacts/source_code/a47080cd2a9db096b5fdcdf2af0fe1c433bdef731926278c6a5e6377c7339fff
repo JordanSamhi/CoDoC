@@ -1,0 +1,12 @@
+public V set(@Nullable V newValue){
+    if (mValues == null) {
+        mValues = new ArrayDeque<>(mMaxHistorySize);
+    }
+    if (mValues.size() >= mMaxHistorySize) {
+        mValues.removeLast();
+    }
+    V previous = get();
+    Object nullSafeValue = packNullIfRequired(newValue);
+    mValues.addFirst(nullSafeValue);
+    return previous;
+}

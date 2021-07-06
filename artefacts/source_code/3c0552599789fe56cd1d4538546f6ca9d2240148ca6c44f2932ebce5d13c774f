@@ -1,0 +1,11 @@
+public void setEnabled(@NonNull final String packageName, final boolean enable, @NonNull UserHandle user) throws SecurityException, IllegalStateException{
+    try {
+        if (!mService.setEnabled(packageName, enable, user.getIdentifier())) {
+            throw new IllegalStateException("setEnabled failed");
+        }
+    } catch (SecurityException e) {
+        rethrowSecurityException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

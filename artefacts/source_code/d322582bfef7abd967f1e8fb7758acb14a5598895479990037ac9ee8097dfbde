@@ -1,0 +1,12 @@
+public void stopManagingCursor(Cursor c){
+    synchronized (mManagedCursors) {
+        final int N = mManagedCursors.size();
+        for (int i = 0; i < N; i++) {
+            ManagedCursor mc = mManagedCursors.get(i);
+            if (mc.mCursor == c) {
+                mManagedCursors.remove(i);
+                break;
+            }
+        }
+    }
+}

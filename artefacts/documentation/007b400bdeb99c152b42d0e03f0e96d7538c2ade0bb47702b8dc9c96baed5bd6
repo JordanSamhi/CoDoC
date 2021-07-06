@@ -1,0 +1,27 @@
+
+         * Commit the file that was written so far to this session to the blob store maintained by
+         * the system.
+         *
+         * <p> Once this method is called, the session is finalized and no additional
+         * mutations can be performed on the session. If the device reboots
+         * before the session has been finalized, you may commit the session again.
+         *
+         * <p> Note that this commit operation will fail if the hash of the data written so far
+         * to this session does not match with the one used for
+         * {@link BlobHandle#createWithSha256(byte[], CharSequence, long, String)}  BlobHandle}
+         * associated with this session.
+         *
+         * <p> Committing the same data more than once will result in replacing the corresponding
+         * access mode (via calling one of {@link #allowPackageAccess(String, byte[])},
+         * {@link #allowSameSignatureAccess()}, etc) with the latest one.
+         *
+         * @param executor the executor on which result callback will be invoked.
+         * @param resultCallback a callback to receive the commit result. when the result is
+         *                       {@code 0}, it indicates success. Otherwise, failure.
+         *
+         * @throws IOException when there is an I/O error while committing the session.
+         * @throws SecurityException when the caller is not the owner of the session.
+         * @throws IllegalArgumentException when the passed parameters are not valid.
+         * @throws IllegalStateException when the caller tries to commit a session which was
+         *                               already finalized.
+         

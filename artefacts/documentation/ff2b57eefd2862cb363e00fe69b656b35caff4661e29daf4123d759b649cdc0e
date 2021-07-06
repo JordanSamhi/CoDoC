@@ -1,0 +1,13 @@
+
+     * Continue an operation which failed with a user-resolvable error.
+     *
+     * <p>The implementation here makes a key assumption that the resolutionIntent has not been
+     * tampered with. This is guaranteed because:
+     * <UL>
+     * <LI>The intent is wrapped in a PendingIntent created by the phone process which is created
+     * with {@link #EXTRA_OPERATION} already present. This means that the operation cannot be
+     * overridden on the PendingIntent - a caller can only add new extras.
+     * <LI>The resolution activity is restricted by a privileged permission; unprivileged apps
+     * cannot start it directly. So the PendingIntent is the only way to start it.
+     * </UL>
+     

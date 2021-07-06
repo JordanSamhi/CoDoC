@@ -1,0 +1,11 @@
+public boolean checkCallingCanSendText(boolean persistMessageForNonDefaultSmsApp, String callingPackage, String callingAttributionTag, String message){
+    if (!persistMessageForNonDefaultSmsApp) {
+        try {
+            enforceCallerIsImsAppOrCarrierApp(message);
+            return true;
+        } catch (SecurityException e) {
+            mContext.enforceCallingPermission(android.Manifest.permission.MODIFY_PHONE_STATE, message);
+        }
+    }
+    return checkCallingCanSendSms(callingPackage, callingAttributionTag, message);
+}

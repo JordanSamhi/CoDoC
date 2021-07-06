@@ -1,0 +1,21 @@
+public void endFullBackup(){
+    Runnable endFullBackupRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            PerformFullTransportBackupTask pftbt = null;
+            synchronized (mQueueLock) {
+                if (mRunningFullBackupTask != null) {
+                    pftbt = mRunningFullBackupTask;
+                }
+            }
+            if (pftbt != null) {
+                if (DEBUG_SCHEDULING) {
+                    Slog.i(TAG, addUserIdToLogMessage(mUserId, "Telling running backup to stop"));
+                }
+                pftbt.handleCancel(true);
+            }
+        }
+    };
+    new Thread(endFullBackupRunnable, "end-full-backup").start();
+}

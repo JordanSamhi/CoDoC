@@ -1,0 +1,23 @@
+public void getBarringInfo(Message result){
+    IRadio radioProxy = getRadioProxy(result);
+    if (radioProxy == null)
+        return;
+    if (mRadioVersion.less(RADIO_HAL_VERSION_1_5)) {
+        if (result != null) {
+            AsyncResult.forMessage(result, null, CommandException.fromRilErrno(REQUEST_NOT_SUPPORTED));
+            result.sendToTarget();
+        }
+        return;
+    }
+    android.hardware.radio.V1_5.IRadio radioProxy15 = (android.hardware.radio.V1_5.IRadio) radioProxy;
+    if (radioProxy15 != null) {
+        RILRequest rr = obtainRequest(RIL_REQUEST_GET_BARRING_INFO, result, mRILDefaultWorkSource);
+        if (RILJ_LOGD)
+            riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+        try {
+            radioProxy15.getBarringInfo(rr.mSerial);
+        } catch (RemoteException | RuntimeException e) {
+            handleRadioProxyExceptionForRR(rr, "getBarringInfo", e);
+        }
+    }
+}

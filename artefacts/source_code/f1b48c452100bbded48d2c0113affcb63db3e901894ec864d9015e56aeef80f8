@@ -1,0 +1,9 @@
+public void currentSignalStrength_1_2(int indicationType, android.hardware.radio.V1_2.SignalStrength signalStrength){
+    mRil.processIndication(indicationType);
+    SignalStrength ss = new SignalStrength(signalStrength);
+    if (RIL.RILJ_LOGV)
+        mRil.unsljLogvRet(RIL_UNSOL_SIGNAL_STRENGTH, ss);
+    if (mRil.mSignalStrengthRegistrant != null) {
+        mRil.mSignalStrengthRegistrant.notifyRegistrant(new AsyncResult(null, ss, null));
+    }
+}

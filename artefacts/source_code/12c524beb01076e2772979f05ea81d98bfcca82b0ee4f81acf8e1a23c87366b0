@@ -1,0 +1,14 @@
+public WifiMetricsProto.WifiRttLog consolidateProto(){
+    WifiMetricsProto.WifiRttLog log = new WifiMetricsProto.WifiRttLog();
+    log.rttToAp = new WifiMetricsProto.WifiRttLog.RttToPeerLog();
+    log.rttToAware = new WifiMetricsProto.WifiRttLog.RttToPeerLog();
+    synchronized (mLock) {
+        log.numRequests = mNumStartRangingCalls;
+        log.histogramOverallStatus = consolidateOverallStatus(mOverallStatusHistogram);
+        log.histogramMeasurementDurationApOnly = genericBucketsToRttBuckets(linearHistogramToGenericBuckets(mMeasurementDurationApOnlyHistogram, MEASUREMENT_DURATION_HISTOGRAM_AP));
+        log.histogramMeasurementDurationWithAware = genericBucketsToRttBuckets(linearHistogramToGenericBuckets(mMeasurementDurationWithAwareHistogram, MEASUREMENT_DURATION_HISTOGRAM_AWARE));
+        consolidatePeerType(log.rttToAp, mPerPeerTypeInfo[PEER_AP]);
+        consolidatePeerType(log.rttToAware, mPerPeerTypeInfo[PEER_AWARE]);
+    }
+    return log;
+}

@@ -1,0 +1,17 @@
+public boolean setWpsDeviceName(String name){
+    if (name == null) {
+        return false;
+    }
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("setWpsDeviceName"))
+            return false;
+        SupplicantResult<Void> result = new SupplicantResult("setWpsDeviceName(" + name + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.setWpsDeviceName(name));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

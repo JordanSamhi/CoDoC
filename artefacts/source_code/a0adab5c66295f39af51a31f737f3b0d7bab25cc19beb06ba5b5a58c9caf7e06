@@ -1,0 +1,11 @@
+public Builder setParent(Builder parent){
+    Builder current = parent;
+    while (current != null) {
+        if (current == this) {
+            throw new IllegalArgumentException("Loops are not allowed in Builder parents");
+        }
+        current = current.getParent();
+    }
+    mParentBuilder = parent;
+    return this;
+}

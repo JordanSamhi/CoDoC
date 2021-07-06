@@ -1,0 +1,27 @@
+public StreamingService startStreaming(StreamingServiceInfo serviceInfo, @NonNull Executor executor, StreamingServiceCallback callback){
+    IMbmsStreamingService streamingService = mService.get();
+    if (streamingService == null) {
+        throw new IllegalStateException("Middleware not yet bound");
+    }
+    InternalStreamingServiceCallback serviceCallback = new InternalStreamingServiceCallback(callback, executor);
+    StreamingService serviceForApp = new StreamingService(mSubscriptionId, streamingService, this, serviceInfo, serviceCallback);
+    mKnownActiveStreamingServices.add(serviceForApp);
+    try {
+        int returnCode = streamingService.startStreaming(mSubscriptionId, serviceInfo.getServiceId(), serviceCallback);
+        if (returnCode == MbmsErrors.UNKNOWN) {
+            close();
+            throw new IllegalStateException("Middleware must not return an unknown error code");
+        }
+        if (returnCode != MbmsErrors.SUCCESS) {
+            sendErrorToApp(returnCode, null);
+            return null;
+        }
+    } catch (RemoteException e) {
+        Log.w(LOG_TAG, "Remote process died");
+        mService.set(null);
+        sIsInitialized.set(false);
+        sendErrorToApp(MbmsErrors.ERROR_MIDDLEWARE_LOST, null);
+        return null;
+    }
+    return serviceForApp;
+}

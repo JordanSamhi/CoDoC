@@ -1,0 +1,13 @@
+public static AccessibilityRecord obtain(){
+    synchronized (sPoolLock) {
+        if (sPool != null) {
+            AccessibilityRecord record = sPool;
+            sPool = sPool.mNext;
+            sPoolSize--;
+            record.mNext = null;
+            record.mIsInPool = false;
+            return record;
+        }
+        return new AccessibilityRecord();
+    }
+}

@@ -1,0 +1,32 @@
+public void onFailed(Context context, int error, int errorCode){
+    if (mAnyPartFailed != null) {
+        mAnyPartFailed.set(true);
+    }
+    boolean isSinglePartOrLastPart = true;
+    if (mUnsentPartCount != null) {
+        isSinglePartOrLastPart = mUnsentPartCount.decrementAndGet() == 0;
+    }
+    if (isSinglePartOrLastPart) {
+        persistOrUpdateMessage(context, Sms.MESSAGE_TYPE_FAILED, errorCode);
+    }
+    if (mSentIntent != null) {
+        try {
+            Intent fillIn = new Intent();
+            if (mMessageUri != null) {
+                fillIn.putExtra("uri", mMessageUri.toString());
+            }
+            if (errorCode != NO_ERROR_CODE) {
+                fillIn.putExtra("errorCode", errorCode);
+            }
+            if (mUnsentPartCount != null && isSinglePartOrLastPart) {
+                fillIn.putExtra(SEND_NEXT_MSG_EXTRA, true);
+            }
+            if (mMessageId != 0L) {
+                fillIn.putExtra(MESSAGE_ID_EXTRA, mMessageId);
+            }
+            mSentIntent.send(context, error, fillIn);
+        } catch (CanceledException ex) {
+            Rlog.e(TAG, "Failed to send result" + " id: " + mMessageId);
+        }
+    }
+}

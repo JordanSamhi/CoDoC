@@ -1,0 +1,12 @@
+public void logLocationApiUsage(int usageType, int apiInUse, String packageName, LocationRequest locationRequest, boolean hasListener, boolean hasIntent, Geofence geofence, int activityImportance){
+    try {
+        if (hitApiUsageLogCap()) {
+            return;
+        }
+        boolean isLocationRequestNull = locationRequest == null;
+        boolean isGeofenceNull = geofence == null;
+        FrameworkStatsLog.write(FrameworkStatsLog.LOCATION_MANAGER_API_USAGE_REPORTED, usageType, apiInUse, packageName, isLocationRequestNull ? LocationStatsEnums.PROVIDER_UNKNOWN : bucketizeProvider(locationRequest.getProvider()), isLocationRequestNull ? LocationStatsEnums.QUALITY_UNKNOWN : locationRequest.getQuality(), isLocationRequestNull ? LocationStatsEnums.INTERVAL_UNKNOWN : bucketizeInterval(locationRequest.getInterval()), isLocationRequestNull ? LocationStatsEnums.DISTANCE_UNKNOWN : bucketizeDistance(locationRequest.getSmallestDisplacement()), isLocationRequestNull ? 0 : locationRequest.getNumUpdates(), isLocationRequestNull || usageType == LocationStatsEnums.USAGE_ENDED ? LocationStatsEnums.EXPIRATION_UNKNOWN : bucketizeExpireIn(locationRequest.getExpireIn()), getCallbackType(apiInUse, hasListener, hasIntent), isGeofenceNull ? LocationStatsEnums.RADIUS_UNKNOWN : bucketizeRadius(geofence.getRadius()), categorizeActivityImportance(activityImportance));
+    } catch (Exception e) {
+        Log.w(TAG, "Failed to log API usage to statsd.", e);
+    }
+}

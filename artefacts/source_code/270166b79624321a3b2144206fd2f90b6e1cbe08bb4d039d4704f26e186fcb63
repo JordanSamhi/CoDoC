@@ -1,0 +1,32 @@
+public static int getNumPlanesForFormat(int format){
+    switch(format) {
+        case ImageFormat.YV12:
+        case ImageFormat.YUV_420_888:
+        case ImageFormat.NV21:
+            return 3;
+        case ImageFormat.NV16:
+            return 2;
+        case PixelFormat.RGB_565:
+        case PixelFormat.RGBA_8888:
+        case PixelFormat.RGBX_8888:
+        case PixelFormat.RGB_888:
+        case ImageFormat.JPEG:
+        case ImageFormat.YUY2:
+        case ImageFormat.Y8:
+        case ImageFormat.Y16:
+        case ImageFormat.RAW_SENSOR:
+        case ImageFormat.RAW_PRIVATE:
+        case ImageFormat.RAW10:
+        case ImageFormat.RAW12:
+        case ImageFormat.DEPTH16:
+        case ImageFormat.DEPTH_POINT_CLOUD:
+        case ImageFormat.RAW_DEPTH:
+        case ImageFormat.DEPTH_JPEG:
+        case ImageFormat.HEIC:
+            return 1;
+        case ImageFormat.PRIVATE:
+            return 0;
+        default:
+            throw new UnsupportedOperationException(String.format("Invalid format specified %d", format));
+    }
+}

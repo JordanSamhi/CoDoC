@@ -1,0 +1,32 @@
+public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("[");
+    boolean first = true;
+    for (TlvElement tlv : this) {
+        if (!first) {
+            builder.append(",");
+        }
+        first = false;
+        builder.append(" (");
+        if (mTypeSize != 0) {
+            builder.append("T=" + tlv.type + ",");
+        }
+        builder.append("L=" + tlv.length + ") ");
+        if (tlv.length == 0) {
+            builder.append("<null>");
+        } else if (tlv.length == 1) {
+            builder.append(tlv.getByte());
+        } else if (tlv.length == 2) {
+            builder.append(tlv.getShort());
+        } else if (tlv.length == 4) {
+            builder.append(tlv.getInt());
+        } else {
+            builder.append("<bytes>");
+        }
+        if (tlv.length != 0) {
+            builder.append(" (S='" + tlv.getString() + "')");
+        }
+    }
+    builder.append("]");
+    return builder.toString();
+}

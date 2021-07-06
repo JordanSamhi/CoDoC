@@ -1,0 +1,9 @@
+public Canvas lockHardwareCanvas(){
+    synchronized (mLock) {
+        checkNotReleasedLocked();
+        if (mHwuiContext == null) {
+            mHwuiContext = new HwuiContext(false);
+        }
+        return mHwuiContext.lockCanvas(nativeGetWidth(mNativeObject), nativeGetHeight(mNativeObject));
+    }
+}

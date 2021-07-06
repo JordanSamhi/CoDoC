@@ -1,0 +1,27 @@
+public int getIndentAdjust(int line, Alignment align){
+    if (align == Alignment.ALIGN_LEFT) {
+        if (mLeftIndents == null) {
+            return 0;
+        } else {
+            return mLeftIndents[Math.min(line, mLeftIndents.length - 1)];
+        }
+    } else if (align == Alignment.ALIGN_RIGHT) {
+        if (mRightIndents == null) {
+            return 0;
+        } else {
+            return -mRightIndents[Math.min(line, mRightIndents.length - 1)];
+        }
+    } else if (align == Alignment.ALIGN_CENTER) {
+        int left = 0;
+        if (mLeftIndents != null) {
+            left = mLeftIndents[Math.min(line, mLeftIndents.length - 1)];
+        }
+        int right = 0;
+        if (mRightIndents != null) {
+            right = mRightIndents[Math.min(line, mRightIndents.length - 1)];
+        }
+        return (left - right) >> 1;
+    } else {
+        throw new AssertionError("unhandled alignment " + align);
+    }
+}

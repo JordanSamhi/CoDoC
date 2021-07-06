@@ -1,0 +1,9 @@
+public void writeToStream(@NonNull OutputStream stream){
+    verifyValid();
+    if (stream == null) {
+        throw new IllegalArgumentException("stream cannot be null");
+    }
+    if (!nativeWriteToStream(mNativePicture, stream, new byte[WORKING_STREAM_STORAGE])) {
+        throw new RuntimeException();
+    }
+}

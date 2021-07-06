@@ -1,0 +1,10 @@
+public void setTimeout(int timeout){
+    try {
+        int err = mTag.getTagService().setTimeout(TagTechnology.MIFARE_ULTRALIGHT, timeout);
+        if (err != ErrorCodes.SUCCESS) {
+            throw new IllegalArgumentException("The supplied timeout is not valid");
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "NFC service dead", e);
+    }
+}

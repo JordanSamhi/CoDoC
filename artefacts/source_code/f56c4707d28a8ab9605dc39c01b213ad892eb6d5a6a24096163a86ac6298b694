@@ -1,0 +1,7 @@
+public BitmapInfo badgeBitmap(Bitmap source, BitmapInfo badgeInfo){
+    Bitmap icon = BitmapRenderer.createHardwareBitmap(mIconBitmapSize, mIconBitmapSize, (c) -> {
+        getShadowGenerator().recreateIcon(source, c);
+        badgeWithDrawable(c, new FixedSizeBitmapDrawable(badgeInfo.icon));
+    });
+    return BitmapInfo.of(icon, badgeInfo.color);
+}

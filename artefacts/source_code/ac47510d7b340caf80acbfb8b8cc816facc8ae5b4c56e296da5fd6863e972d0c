@@ -1,0 +1,8 @@
+public static HidlMemory fileDescriptorToHidlMemory(@Nullable FileDescriptor fd, int size){
+    Preconditions.checkArgument(fd != null || size == 0);
+    if (fd == null) {
+        return new HidlMemory("ashmem", 0, null);
+    }
+    NativeHandle handle = new NativeHandle(fd, true);
+    return new HidlMemory("ashmem", size, handle);
+}

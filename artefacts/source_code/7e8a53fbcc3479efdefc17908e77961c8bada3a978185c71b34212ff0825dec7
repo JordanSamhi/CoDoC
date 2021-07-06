@@ -1,0 +1,13 @@
+public int getCallWaitingStatus(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getCallWaitingStatus(getSubId());
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getCallWaitingStatus RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "getCallWaitingStatus NPE", ex);
+    }
+    return CALL_WAITING_STATUS_UNKNOWN_ERROR;
+}

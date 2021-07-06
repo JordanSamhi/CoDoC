@@ -1,0 +1,12 @@
+public void setUiccApplicationsEnabled(int subscriptionId, boolean enabled){
+    if (VDBG) {
+        logd("setUiccApplicationsEnabled subId= " + subscriptionId + " enable " + enabled);
+    }
+    try {
+        ISub iSub = ISub.Stub.asInterface(TelephonyFrameworkInitializer.getTelephonyServiceManager().getSubscriptionServiceRegisterer().get());
+        if (iSub != null) {
+            iSub.setUiccApplicationsEnabled(enabled, subscriptionId);
+        }
+    } catch (RemoteException ex) {
+    }
+}

@@ -1,0 +1,16 @@
+public void fixupLinkProperties(@NonNull LinkProperties oldLp, @NonNull LinkProperties lp){
+    lp.setNat64Prefix(selectNat64Prefix());
+    if (!isRunning()) {
+        return;
+    }
+    if (lp.getAllInterfaceNames().contains(mIface)) {
+        return;
+    }
+    Slog.d(TAG, "clatd running, updating NAI for " + mIface);
+    for (LinkProperties stacked : oldLp.getStackedLinks()) {
+        if (Objects.equals(mIface, stacked.getInterfaceName())) {
+            lp.addStackedLink(stacked);
+            return;
+        }
+    }
+}

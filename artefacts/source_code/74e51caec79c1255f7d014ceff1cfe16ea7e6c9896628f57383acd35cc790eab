@@ -1,0 +1,17 @@
+public void setEmphasizedMode(boolean emphasizedMode){
+    mEmphasizedMode = emphasizedMode;
+    int height;
+    if (emphasizedMode) {
+        int paddingTop = getResources().getDimensionPixelSize(com.android.internal.R.dimen.notification_content_margin);
+        int paddingBottom = getResources().getDimensionPixelSize(com.android.internal.R.dimen.notification_content_margin_end);
+        height = mEmphasizedHeight;
+        int buttonPaddingInternal = getResources().getDimensionPixelSize(com.android.internal.R.dimen.button_inset_vertical_material);
+        setPaddingRelative(getPaddingStart(), paddingTop - buttonPaddingInternal, getPaddingEnd(), paddingBottom - buttonPaddingInternal);
+    } else {
+        setPaddingRelative(getPaddingStart(), mDefaultPaddingTop, getPaddingEnd(), mDefaultPaddingBottom);
+        height = mRegularHeight;
+    }
+    ViewGroup.LayoutParams layoutParams = getLayoutParams();
+    layoutParams.height = height;
+    setLayoutParams(layoutParams);
+}

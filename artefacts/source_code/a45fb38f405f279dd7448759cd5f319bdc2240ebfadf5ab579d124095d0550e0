@@ -1,0 +1,12 @@
+public static int shouldSystemBlockNumber(Context context, String phoneNumber, Bundle extras){
+    try {
+        String caller = context.getOpPackageName();
+        final Bundle res = context.getContentResolver().call(AUTHORITY_URI, METHOD_SHOULD_SYSTEM_BLOCK_NUMBER, phoneNumber, extras);
+        int blockResult = res != null ? res.getInt(RES_BLOCK_STATUS, STATUS_NOT_BLOCKED) : BlockedNumberContract.STATUS_NOT_BLOCKED;
+        Log.d(LOG_TAG, "shouldSystemBlockNumber: number=%s, caller=%s, result=%s", Log.piiHandle(phoneNumber), caller, blockStatusToString(blockResult));
+        return blockResult;
+    } catch (NullPointerException | IllegalArgumentException ex) {
+        Log.w(null, "shouldSystemBlockNumber: provider not ready.");
+        return BlockedNumberContract.STATUS_NOT_BLOCKED;
+    }
+}

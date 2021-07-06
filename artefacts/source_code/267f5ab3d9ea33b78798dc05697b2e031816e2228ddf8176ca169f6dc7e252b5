@@ -1,0 +1,14 @@
+public void setAdapter(@Nullable ListAdapter adapter){
+    if (mObserver == null) {
+        mObserver = new PopupDataSetObserver();
+    } else if (mAdapter != null) {
+        mAdapter.unregisterDataSetObserver(mObserver);
+    }
+    mAdapter = adapter;
+    if (mAdapter != null) {
+        adapter.registerDataSetObserver(mObserver);
+    }
+    if (mDropDownList != null) {
+        mDropDownList.setAdapter(mAdapter);
+    }
+}

@@ -1,0 +1,14 @@
+public void onStartedWakingUp(){
+    Trace.beginSection("KeyguardViewMediator#onStartedWakingUp");
+    synchronized (this) {
+        mDeviceInteractive = true;
+        cancelDoKeyguardLaterLocked();
+        cancelDoKeyguardForChildProfilesLocked();
+        if (DEBUG)
+            Log.d(TAG, "onStartedWakingUp, seq = " + mDelayedShowingSequence);
+        notifyStartedWakingUp();
+    }
+    mUpdateMonitor.dispatchStartedWakingUp();
+    maybeSendUserPresentBroadcast();
+    Trace.endSection();
+}

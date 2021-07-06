@@ -1,0 +1,11 @@
+public Phone getPhoneInCall(){
+    Phone phone = null;
+    if (!getFirstActiveRingingCall().isIdle()) {
+        phone = getFirstActiveRingingCall().getPhone();
+    } else if (!getActiveFgCall().isIdle()) {
+        phone = getActiveFgCall().getPhone();
+    } else {
+        phone = getFirstActiveBgCall().getPhone();
+    }
+    return phone;
+}

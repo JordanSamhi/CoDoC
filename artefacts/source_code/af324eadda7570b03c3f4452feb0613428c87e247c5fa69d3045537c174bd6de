@@ -1,0 +1,14 @@
+public boolean isEnabled(){
+    if (mService == null) {
+        return false;
+    }
+    SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        mService.isEnabled(mUser, receiver);
+        return receiver.getIntResult() != 0;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get the enable status.");
+    }
+}

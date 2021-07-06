@@ -1,0 +1,14 @@
+
+         * Get sentence suggestions for specified texts in an array of TextInfo.
+         * The default implementation splits the input text to words and returns
+         * {@link SentenceSuggestionsInfo} which contains suggestions for each word.
+         * This function will run on the incoming IPC thread.
+         * So, this is not called on the main thread,
+         * but will be called in series on another thread.
+         * When you override this method, make sure that suggestionsLimit is applied to suggestions
+         * that share the same start position and length.
+         * @param textInfos an array of the text metadata
+         * @param suggestionsLimit the maximum number of suggestions to be returned
+         * @return an array of {@link SentenceSuggestionsInfo} returned by
+         * {@link SpellCheckerService.Session#onGetSuggestions(TextInfo, int)}
+         

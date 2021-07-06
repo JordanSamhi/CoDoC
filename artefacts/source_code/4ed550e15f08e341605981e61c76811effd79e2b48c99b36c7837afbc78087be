@@ -1,0 +1,34 @@
+public boolean prepare(Context context, int mode){
+    if (DEBUG) {
+        Slog.d(TAG, "prepare: mode=" + mode);
+    }
+    mMode = mode;
+    DisplayInfo displayInfo = mDisplayManagerInternal.getDisplayInfo(mDisplayId);
+    mDisplayLayerStack = displayInfo.layerStack;
+    mDisplayWidth = displayInfo.getNaturalWidth();
+    mDisplayHeight = displayInfo.getNaturalHeight();
+    if (!(createSurface() && createEglContext() && createEglSurface() && captureScreenshotTextureAndSetViewport())) {
+        dismiss();
+        return false;
+    }
+    if (!attachEglContext()) {
+        return false;
+    }
+    try {
+        if (!initGLShaders(context) || !initGLBuffers() || checkGlErrors("prepare")) {
+            detachEglContext();
+            dismiss();
+            return false;
+        }
+    } finally {
+        detachEglContext();
+    }
+    mCreatedResources = true;
+    mPrepared = true;
+    if (mode == MODE_COOL_DOWN) {
+        for (int i = 0; i < DEJANK_FRAMES; i++) {
+            draw(1.0f);
+        }
+    }
+    return true;
+}

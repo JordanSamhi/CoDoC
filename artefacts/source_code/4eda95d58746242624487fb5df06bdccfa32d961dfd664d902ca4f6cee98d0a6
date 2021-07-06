@@ -1,0 +1,22 @@
+public boolean sendMessage(short transactionId, int peerId, byte[] message, int messageId){
+    PeerInfo peerInfo = mPeerInfoByRequestorInstanceId.get(peerId);
+    if (peerInfo == null) {
+        Log.e(TAG, "sendMessage: attempting to send a message to an address which didn't " + "match/contact us");
+        try {
+            mCallback.onMessageSendFail(messageId, NanStatusType.INTERNAL_FAILURE);
+        } catch (RemoteException e) {
+            Log.e(TAG, "sendMessage: RemoteException=" + e);
+        }
+        return false;
+    }
+    boolean success = mWifiAwareNativeApi.sendMessage(transactionId, mPubSubId, peerInfo.mInstanceId, peerInfo.mMac, message, messageId);
+    if (!success) {
+        try {
+            mCallback.onMessageSendFail(messageId, NanStatusType.INTERNAL_FAILURE);
+        } catch (RemoteException e) {
+            Log.e(TAG, "sendMessage: RemoteException=" + e);
+        }
+        return false;
+    }
+    return success;
+}

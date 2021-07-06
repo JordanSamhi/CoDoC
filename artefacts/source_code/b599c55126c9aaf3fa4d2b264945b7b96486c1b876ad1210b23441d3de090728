@@ -1,0 +1,10 @@
+public boolean unregisterForMonitorStateChangeCallback(int monitoringType, GeofenceHardwareMonitorCallback callback){
+    boolean result = false;
+    try {
+        result = mService.unregisterForMonitorStateChangeCallback(monitoringType, getMonitorCallbackWrapper(callback));
+        if (result)
+            removeMonitorCallback(callback);
+    } catch (RemoteException e) {
+    }
+    return result;
+}

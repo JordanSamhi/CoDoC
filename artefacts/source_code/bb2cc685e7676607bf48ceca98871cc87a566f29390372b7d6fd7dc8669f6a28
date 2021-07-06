@@ -1,0 +1,20 @@
+public static boolean isNanp(String dialStr){
+    boolean retVal = false;
+    if (dialStr != null) {
+        if (dialStr.length() == NANP_LENGTH) {
+            if (isTwoToNine(dialStr.charAt(0)) && isTwoToNine(dialStr.charAt(3))) {
+                retVal = true;
+                for (int i = 1; i < NANP_LENGTH; i++) {
+                    char c = dialStr.charAt(i);
+                    if (!PhoneNumberUtils.isISODigit(c)) {
+                        retVal = false;
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        Rlog.e("isNanp: null dialStr passed in", dialStr);
+    }
+    return retVal;
+}

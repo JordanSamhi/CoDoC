@@ -1,0 +1,13 @@
+public void addPkg(AndroidPackage pkg, Map<String, AndroidPackage> otherPkgs){
+    synchronized (mLock) {
+        if (!pkg.getOverlayables().isEmpty()) {
+            addTarget(pkg, otherPkgs);
+        }
+        if (!mProvider.getTargetToOverlayables(pkg).isEmpty()) {
+            addOverlay(pkg, otherPkgs);
+        }
+        if (!mDeferRebuild) {
+            rebuild();
+        }
+    }
+}

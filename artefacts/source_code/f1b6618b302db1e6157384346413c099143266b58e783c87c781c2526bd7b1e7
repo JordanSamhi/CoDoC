@@ -1,0 +1,8 @@
+public synchronized String printActiveSessions(){
+    StringBuilder message = new StringBuilder();
+    for (ConcurrentHashMap.Entry<Integer, Session> entry : mSessionMapper.entrySet()) {
+        message.append(entry.getValue().printFullSessionTree());
+        message.append("\n");
+    }
+    return message.toString();
+}

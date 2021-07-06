@@ -1,0 +1,14 @@
+public boolean isProjected(){
+    if (super.isProjected()) {
+        return true;
+    }
+    final ChildDrawable[] layers = mLayerState.mChildren;
+    final int N = mLayerState.mNumChildren;
+    for (int i = 0; i < N; i++) {
+        Drawable childDrawable = layers[i].mDrawable;
+        if (childDrawable != null && childDrawable.isProjected()) {
+            return true;
+        }
+    }
+    return false;
+}

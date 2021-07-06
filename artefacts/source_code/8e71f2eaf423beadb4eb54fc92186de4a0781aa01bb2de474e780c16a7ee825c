@@ -1,0 +1,33 @@
+public final void setRight(int right){
+    if (right != mRight) {
+        final boolean matrixIsIdentity = hasIdentityMatrix();
+        if (matrixIsIdentity) {
+            if (mAttachInfo != null) {
+                int maxRight;
+                if (right < mRight) {
+                    maxRight = mRight;
+                } else {
+                    maxRight = right;
+                }
+                invalidate(0, 0, maxRight - mLeft, mBottom - mTop);
+            }
+        } else {
+            invalidate(true);
+        }
+        int oldWidth = mRight - mLeft;
+        int height = mBottom - mTop;
+        mRight = right;
+        mRenderNode.setRight(mRight);
+        sizeChange(mRight - mLeft, height, oldWidth, height);
+        if (!matrixIsIdentity) {
+            mPrivateFlags |= PFLAG_DRAWN;
+            invalidate(true);
+        }
+        mBackgroundSizeChanged = true;
+        mDefaultFocusHighlightSizeChanged = true;
+        if (mForegroundInfo != null) {
+            mForegroundInfo.mBoundsChanged = true;
+        }
+        invalidateParentIfNeeded();
+    }
+}

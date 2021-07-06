@@ -1,0 +1,17 @@
+
+     * Gets the GPS receiver internal clock value in nanoseconds.
+     * This can be either the 'local hardware clock' value ({@link #TYPE_LOCAL_HW_TIME}), or the
+     * current GPS time derived inside GPS receiver ({@link #TYPE_GPS_TIME}).
+     * {@link #getType()} defines the time reported.
+     *
+     * For 'local hardware clock' this value is expected to be monotonically increasing during the
+     * reporting session. The real GPS time can be derived by compensating
+     * {@link #getFullBiasInNs()} (when it is available) from this value.
+     *
+     * For 'GPS time' this value is expected to be the best estimation of current GPS time that GPS
+     * receiver can achieve. {@link #getTimeUncertaintyInNs()} should be available when GPS time is
+     * specified.
+     *
+     * Sub-nanosecond accuracy can be provided by means of {@link #getBiasInNs()}.
+     * The reported time includes {@link #getTimeUncertaintyInNs()}.
+     

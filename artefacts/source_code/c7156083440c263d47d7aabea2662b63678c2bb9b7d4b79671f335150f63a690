@@ -1,0 +1,18 @@
+public static int gluUnProject(float winX, float winY, float winZ, float[] model, int modelOffset, float[] project, int projectOffset, int[] view, int viewOffset, float[] obj, int objOffset){
+    float[] scratch = sScratch;
+    synchronized (scratch) {
+        final int PM_OFFSET = 0;
+        final int INVPM_OFFSET = 16;
+        final int V_OFFSET = 0;
+        Matrix.multiplyMM(scratch, PM_OFFSET, project, projectOffset, model, modelOffset);
+        if (!Matrix.invertM(scratch, INVPM_OFFSET, scratch, PM_OFFSET)) {
+            return GL10.GL_FALSE;
+        }
+        scratch[V_OFFSET + 0] = 2.0f * (winX - view[viewOffset + 0]) / view[viewOffset + 2] - 1.0f;
+        scratch[V_OFFSET + 1] = 2.0f * (winY - view[viewOffset + 1]) / view[viewOffset + 3] - 1.0f;
+        scratch[V_OFFSET + 2] = 2.0f * winZ - 1.0f;
+        scratch[V_OFFSET + 3] = 1.0f;
+        Matrix.multiplyMV(obj, objOffset, scratch, INVPM_OFFSET, scratch, V_OFFSET);
+    }
+    return GL10.GL_TRUE;
+}

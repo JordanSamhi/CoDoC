@@ -1,0 +1,29 @@
+public void setNotificationPolicy(String pkg, Policy policy){
+    enforcePolicyAccess(pkg, "setNotificationPolicy");
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        final ApplicationInfo applicationInfo = mPackageManager.getApplicationInfo(pkg, 0, UserHandle.getUserId(MY_UID));
+        Policy currPolicy = mZenModeHelper.getNotificationPolicy();
+        if (applicationInfo.targetSdkVersion < Build.VERSION_CODES.P) {
+            int priorityCategories = policy.priorityCategories;
+            priorityCategories &= ~Policy.PRIORITY_CATEGORY_ALARMS;
+            priorityCategories &= ~Policy.PRIORITY_CATEGORY_MEDIA;
+            priorityCategories &= ~Policy.PRIORITY_CATEGORY_SYSTEM;
+            priorityCategories |= currPolicy.priorityCategories & Policy.PRIORITY_CATEGORY_ALARMS;
+            priorityCategories |= currPolicy.priorityCategories & Policy.PRIORITY_CATEGORY_MEDIA;
+            priorityCategories |= currPolicy.priorityCategories & Policy.PRIORITY_CATEGORY_SYSTEM;
+            policy = new Policy(priorityCategories, policy.priorityCallSenders, policy.priorityMessageSenders, policy.suppressedVisualEffects);
+        }
+        if (applicationInfo.targetSdkVersion < Build.VERSION_CODES.R) {
+            int priorityCategories = correctCategory(policy.priorityCategories, Policy.PRIORITY_CATEGORY_CONVERSATIONS, currPolicy.priorityCategories);
+            policy = new Policy(priorityCategories, policy.priorityCallSenders, policy.priorityMessageSenders, policy.suppressedVisualEffects, currPolicy.priorityConversationSenders);
+        }
+        int newVisualEffects = calculateSuppressedVisualEffects(policy, currPolicy, applicationInfo.targetSdkVersion);
+        policy = new Policy(policy.priorityCategories, policy.priorityCallSenders, policy.priorityMessageSenders, newVisualEffects, policy.priorityConversationSenders);
+        ZenLog.traceSetNotificationPolicy(pkg, applicationInfo.targetSdkVersion, policy);
+        mZenModeHelper.setNotificationPolicy(policy);
+    } catch (RemoteException e) {
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

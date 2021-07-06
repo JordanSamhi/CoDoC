@@ -1,0 +1,22 @@
+public void startRecentsActivity(Intent intent, @Deprecated IAssistDataReceiver unused, @Nullable IRecentsAnimationRunner recentsAnimationRunner){
+    enforceCallerIsRecentsOrHasPermission(MANAGE_ACTIVITY_STACKS, "startRecentsActivity()");
+    final int callingPid = Binder.getCallingPid();
+    final int callingUid = Binder.getCallingUid();
+    final long origId = Binder.clearCallingIdentity();
+    try {
+        synchronized (mGlobalLock) {
+            final ComponentName recentsComponent = mRecentTasks.getRecentsComponent();
+            final String recentsFeatureId = mRecentTasks.getRecentsComponentFeatureId();
+            final int recentsUid = mRecentTasks.getRecentsComponentUid();
+            final WindowProcessController caller = getProcessController(callingPid, callingUid);
+            final RecentsAnimation anim = new RecentsAnimation(this, mStackSupervisor, getActivityStartController(), mWindowManager, intent, recentsComponent, recentsFeatureId, recentsUid, caller);
+            if (recentsAnimationRunner == null) {
+                anim.preloadRecentsActivity();
+            } else {
+                anim.startRecentsActivity(recentsAnimationRunner);
+            }
+        }
+    } finally {
+        Binder.restoreCallingIdentity(origId);
+    }
+}

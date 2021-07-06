@@ -1,0 +1,12 @@
+public void recordDiscoveryStatus(int uid, int status, boolean isPublish){
+    synchronized (mLock) {
+        if (isPublish) {
+            addNanHalStatusToHistogram(status, mPublishStatusData);
+        } else {
+            addNanHalStatusToHistogram(status, mSubscribeStatusData);
+        }
+        if (status == NanStatusType.NO_RESOURCES_AVAILABLE) {
+            mAppsWithDiscoverySessionResourceFailure.add(uid);
+        }
+    }
+}

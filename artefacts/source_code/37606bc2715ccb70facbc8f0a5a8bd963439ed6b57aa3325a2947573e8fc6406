@@ -1,0 +1,13 @@
+public Loader<D> getLoader(int id){
+    if (mCreatingLoader) {
+        throw new IllegalStateException("Called while creating a loader");
+    }
+    LoaderInfo loaderInfo = mLoaders.get(id);
+    if (loaderInfo != null) {
+        if (loaderInfo.mPendingLoader != null) {
+            return (Loader<D>) loaderInfo.mPendingLoader.mLoader;
+        }
+        return (Loader<D>) loaderInfo.mLoader;
+    }
+    return null;
+}

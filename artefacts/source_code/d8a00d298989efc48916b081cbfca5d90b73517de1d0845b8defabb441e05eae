@@ -1,0 +1,25 @@
+public void startWatchingActive(int[] ops, IAppOpsActiveCallback callback){
+    int watchedUid = Process.INVALID_UID;
+    final int callingUid = Binder.getCallingUid();
+    final int callingPid = Binder.getCallingPid();
+    if (mContext.checkCallingOrSelfPermission(Manifest.permission.WATCH_APPOPS) != PackageManager.PERMISSION_GRANTED) {
+        watchedUid = callingUid;
+    }
+    if (ops != null) {
+        Preconditions.checkArrayElementsInRange(ops, 0, AppOpsManager._NUM_OP - 1, "Invalid op code in: " + Arrays.toString(ops));
+    }
+    if (callback == null) {
+        return;
+    }
+    synchronized (this) {
+        SparseArray<ActiveCallback> callbacks = mActiveWatchers.get(callback.asBinder());
+        if (callbacks == null) {
+            callbacks = new SparseArray<>();
+            mActiveWatchers.put(callback.asBinder(), callbacks);
+        }
+        final ActiveCallback activeCallback = new ActiveCallback(callback, watchedUid, callingUid, callingPid);
+        for (int op : ops) {
+            callbacks.put(op, activeCallback);
+        }
+    }
+}

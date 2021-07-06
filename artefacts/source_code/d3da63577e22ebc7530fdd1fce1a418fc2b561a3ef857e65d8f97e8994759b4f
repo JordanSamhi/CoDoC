@@ -1,0 +1,20 @@
+public void recordRequest(WorkSource ws, RangingRequest requests){
+    mNumStartRangingCalls++;
+    int numApRequests = 0;
+    int numAwareRequests = 0;
+    for (ResponderConfig request : requests.mRttPeers) {
+        if (request == null) {
+            continue;
+        }
+        if (request.responderType == ResponderConfig.RESPONDER_AWARE) {
+            numAwareRequests++;
+        } else if (request.responderType == ResponderConfig.RESPONDER_AP) {
+            numApRequests++;
+        } else {
+            if (mDbg)
+                Log.d(TAG, "Unexpected Responder type: " + request.responderType);
+        }
+    }
+    updatePeerInfoWithRequestInfo(mPerPeerTypeInfo[PEER_AP], ws, numApRequests);
+    updatePeerInfoWithRequestInfo(mPerPeerTypeInfo[PEER_AWARE], ws, numAwareRequests);
+}

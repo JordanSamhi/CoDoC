@@ -1,0 +1,12 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    int[] currentUserProfiles = getCurrentUserIds();
+    pw.println("current users: " + Arrays.toString(currentUserProfiles));
+    UserManager userManager = mContext.getSystemService(UserManager.class);
+    if (userManager != null) {
+        for (int userId : currentUserProfiles) {
+            if (userManager.hasUserRestrictionForUser(DISALLOW_SHARE_LOCATION, UserHandle.of(userId))) {
+                pw.println("  u" + userId + " restricted");
+            }
+        }
+    }
+}

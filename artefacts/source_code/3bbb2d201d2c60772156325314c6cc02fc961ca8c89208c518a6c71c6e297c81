@@ -1,0 +1,8 @@
+public synchronized boolean setAlwaysOnPackage(@Nullable String packageName, boolean lockdown, @Nullable List<String> lockdownWhitelist, @NonNull KeyStore keyStore){
+    enforceControlPermissionOrInternalCaller();
+    if (setAlwaysOnPackageInternal(packageName, lockdown, lockdownWhitelist, keyStore)) {
+        saveAlwaysOnPackage();
+        return true;
+    }
+    return false;
+}

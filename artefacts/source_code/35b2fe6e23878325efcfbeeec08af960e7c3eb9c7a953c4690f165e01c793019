@@ -1,0 +1,9 @@
+public void setStatus(@NonNull PrintJobId printJobId, @StringRes int status, @Nullable CharSequence appPackageName){
+    synchronized (mLock) {
+        PrintJobInfo printJob = getPrintJobInfo(printJobId, PrintManager.APP_ID_ANY);
+        if (printJob != null) {
+            printJob.setStatus(status, appPackageName);
+            notifyPrintJobUpdated(printJob);
+        }
+    }
+}

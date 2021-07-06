@@ -1,0 +1,27 @@
+public void onStatusBarMotionEvent(MotionEvent event){
+    if (!verifyCaller("onStatusBarMotionEvent")) {
+        return;
+    }
+    long token = Binder.clearCallingIdentity();
+    try {
+        mStatusBarOptionalLazy.ifPresent(statusBarLazy -> {
+            mHandler.post(() -> {
+                StatusBar statusBar = statusBarLazy.get();
+                int action = event.getActionMasked();
+                if (action == ACTION_DOWN) {
+                    mInputFocusTransferStarted = true;
+                    mInputFocusTransferStartY = event.getY();
+                    mInputFocusTransferStartMillis = event.getEventTime();
+                    statusBar.onInputFocusTransfer(mInputFocusTransferStarted, false, 0);
+                }
+                if (action == ACTION_UP || action == ACTION_CANCEL) {
+                    mInputFocusTransferStarted = false;
+                    statusBar.onInputFocusTransfer(mInputFocusTransferStarted, action == ACTION_CANCEL, (event.getY() - mInputFocusTransferStartY) / (event.getEventTime() - mInputFocusTransferStartMillis));
+                }
+                event.recycle();
+            });
+        });
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,12 @@
+public Builder setStyle(Style style){
+    if (mStyle != style) {
+        mStyle = style;
+        if (mStyle != null) {
+            mStyle.setBuilder(this);
+            mN.extras.putString(EXTRA_TEMPLATE, style.getClass().getName());
+        } else {
+            mN.extras.remove(EXTRA_TEMPLATE);
+        }
+    }
+    return this;
+}

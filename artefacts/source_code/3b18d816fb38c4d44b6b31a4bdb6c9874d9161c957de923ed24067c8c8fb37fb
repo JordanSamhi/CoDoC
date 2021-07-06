@@ -1,0 +1,15 @@
+public void setVendorCommandListener(@NonNull VendorCommandListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener cannot be null");
+    }
+    if (mIHdmiVendorCommandListener != null) {
+        throw new IllegalStateException("listener was already set");
+    }
+    try {
+        IHdmiVendorCommandListener wrappedListener = getListenerWrapper(listener);
+        mService.addVendorCommandListener(wrappedListener, getDeviceType());
+        mIHdmiVendorCommandListener = wrappedListener;
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to set vendor command listener: ", e);
+    }
+}

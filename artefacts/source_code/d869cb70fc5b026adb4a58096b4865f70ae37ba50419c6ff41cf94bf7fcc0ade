@@ -1,0 +1,13 @@
+public String createAppSpecificSmsToken(String callingPkg, PendingIntent intent){
+    AppOpsManager appOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
+    appOps.checkPackage(Binder.getCallingUid(), callingPkg);
+    String token = generateNonce();
+    synchronized (mLock) {
+        if (mPackageMap.containsKey(callingPkg)) {
+            removeRequestLocked(mPackageMap.get(callingPkg));
+        }
+        AppRequestInfo info = new AppRequestInfo(callingPkg, intent, token);
+        addRequestLocked(info);
+    }
+    return token;
+}

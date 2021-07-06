@@ -1,0 +1,10 @@
+public void setRequestedOrientation(@ActivityInfo.ScreenOrientation int requestedOrientation){
+    if (mParent == null) {
+        try {
+            ActivityTaskManager.getService().setRequestedOrientation(mToken, requestedOrientation);
+        } catch (RemoteException e) {
+        }
+    } else {
+        mParent.setRequestedOrientation(requestedOrientation);
+    }
+}

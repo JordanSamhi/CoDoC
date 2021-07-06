@@ -1,0 +1,17 @@
+public static synchronized void recycle(CameraApi api){
+    api = validateApiChoice(api);
+    if (api == CameraApi.API_1) {
+        if (--sAndroidCameraAgentClientCount == 0 && sAndroidCameraAgent != null) {
+            sAndroidCameraAgent.recycle();
+            sAndroidCameraAgent = null;
+        }
+    } else {
+        if (highestSupportedApi() == CameraApi.API_1) {
+            throw new UnsupportedOperationException("Camera API_2 unavailable on this device");
+        }
+        if (--sAndroidCamera2AgentClientCount == 0 && sAndroidCamera2Agent != null) {
+            sAndroidCamera2Agent.recycle();
+            sAndroidCamera2Agent = null;
+        }
+    }
+}

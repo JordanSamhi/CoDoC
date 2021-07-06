@@ -1,0 +1,16 @@
+public void unregisterCancelListener(CancelListener cancelListener){
+    synchronized (this) {
+        if (mCancelListeners == null) {
+            return;
+        }
+        boolean wasEmpty = mCancelListeners.isEmpty();
+        mCancelListeners.remove(cancelListener);
+        if (mCancelListeners.isEmpty() && !wasEmpty) {
+            try {
+                ActivityManager.getService().unregisterIntentSenderCancelListener(mTarget, mCancelReceiver);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

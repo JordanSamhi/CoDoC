@@ -1,0 +1,6 @@
+public void injectTestConferenceState(@NonNull ImsConferenceState state){
+    List<ConferenceParticipant> participants = ImsCall.parseConferenceState(state);
+    for (ImsPhoneConnection connection : getConnections()) {
+        connection.updateConferenceParticipants(participants);
+    }
+}

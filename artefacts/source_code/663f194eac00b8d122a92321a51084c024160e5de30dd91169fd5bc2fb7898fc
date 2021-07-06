@@ -1,0 +1,33 @@
+public void restart(){
+    disconnect();
+    Bundle rootHints = new Bundle();
+    rootHints.putBoolean(MediaBrowserService.BrowserRoot.EXTRA_RECENT, true);
+    mMediaBrowser = new MediaBrowser(mContext, mComponentName, new MediaBrowser.ConnectionCallback() {
+
+        @Override
+        public void onConnected() {
+            Log.d(TAG, "Connected for restart " + mMediaBrowser.isConnected());
+            if (mMediaBrowser == null || !mMediaBrowser.isConnected()) {
+                mCallback.onError();
+                return;
+            }
+            MediaSession.Token token = mMediaBrowser.getSessionToken();
+            MediaController controller = new MediaController(mContext, token);
+            controller.getTransportControls();
+            controller.getTransportControls().prepare();
+            controller.getTransportControls().play();
+            mCallback.onConnected();
+        }
+
+        @Override
+        public void onConnectionFailed() {
+            mCallback.onError();
+        }
+
+        @Override
+        public void onConnectionSuspended() {
+            mCallback.onError();
+        }
+    }, rootHints);
+    mMediaBrowser.connect();
+}

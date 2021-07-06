@@ -1,0 +1,32 @@
+public static boolean isCombinationValid(@Nullable List<ParsedAttribution> attributions){
+    if (attributions == null) {
+        return true;
+    }
+    ArraySet<String> attributionTags = new ArraySet<>(attributions.size());
+    ArraySet<String> inheritFromAttributionTags = new ArraySet<>();
+    int numAttributions = attributions.size();
+    if (numAttributions > MAX_NUM_ATTRIBUTIONS) {
+        return false;
+    }
+    for (int attributionNum = 0; attributionNum < numAttributions; attributionNum++) {
+        boolean wasAdded = attributionTags.add(attributions.get(attributionNum).tag);
+        if (!wasAdded) {
+            return false;
+        }
+    }
+    for (int attributionNum = 0; attributionNum < numAttributions; attributionNum++) {
+        ParsedAttribution feature = attributions.get(attributionNum);
+        int numInheritFrom = feature.inheritFrom.size();
+        for (int inheritFromNum = 0; inheritFromNum < numInheritFrom; inheritFromNum++) {
+            String inheritFrom = feature.inheritFrom.get(inheritFromNum);
+            if (attributionTags.contains(inheritFrom)) {
+                return false;
+            }
+            boolean wasAdded = inheritFromAttributionTags.add(inheritFrom);
+            if (!wasAdded) {
+                return false;
+            }
+        }
+    }
+    return true;
+}

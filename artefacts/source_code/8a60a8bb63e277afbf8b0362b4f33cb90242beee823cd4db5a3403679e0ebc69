@@ -1,0 +1,17 @@
+public void onWakeLockChanging(int flags, String tag, String packageName, int ownerUid, int ownerPid, WorkSource workSource, String historyTag, int newFlags, String newTag, String newPackageName, int newOwnerUid, int newOwnerPid, WorkSource newWorkSource, String newHistoryTag){
+    final int monitorType = getBatteryStatsWakeLockMonitorType(flags);
+    final int newMonitorType = getBatteryStatsWakeLockMonitorType(newFlags);
+    if (workSource != null && newWorkSource != null && monitorType >= 0 && newMonitorType >= 0) {
+        if (DEBUG) {
+            Slog.d(TAG, "onWakeLockChanging: flags=" + newFlags + ", tag=\"" + newTag + "\", packageName=" + newPackageName + ", ownerUid=" + newOwnerUid + ", ownerPid=" + newOwnerPid + ", workSource=" + newWorkSource);
+        }
+        final boolean unimportantForLogging = newOwnerUid == Process.SYSTEM_UID && (newFlags & PowerManager.UNIMPORTANT_FOR_LOGGING) != 0;
+        try {
+            mBatteryStats.noteChangeWakelockFromSource(workSource, ownerPid, tag, historyTag, monitorType, newWorkSource, newOwnerPid, newTag, newHistoryTag, newMonitorType, unimportantForLogging);
+        } catch (RemoteException ex) {
+        }
+    } else {
+        onWakeLockReleased(flags, tag, packageName, ownerUid, ownerPid, workSource, historyTag);
+        onWakeLockAcquired(newFlags, newTag, newPackageName, newOwnerUid, newOwnerPid, newWorkSource, newHistoryTag);
+    }
+}

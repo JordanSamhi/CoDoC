@@ -1,0 +1,41 @@
+public static String getNumberFromIntent(Intent intent, Context context){
+    String number = null;
+    Uri uri = intent.getData();
+    if (uri == null) {
+        return null;
+    }
+    String scheme = uri.getScheme();
+    if (scheme == null) {
+        return null;
+    }
+    if (scheme.equals("tel") || scheme.equals("sip")) {
+        return uri.getSchemeSpecificPart();
+    }
+    if (context == null) {
+        return null;
+    }
+    String type = intent.resolveType(context);
+    String phoneColumn = null;
+    final String authority = uri.getAuthority();
+    if (Contacts.AUTHORITY.equals(authority)) {
+        phoneColumn = Contacts.People.Phones.NUMBER;
+    } else if (ContactsContract.AUTHORITY.equals(authority)) {
+        phoneColumn = ContactsContract.CommonDataKinds.Phone.NUMBER;
+    }
+    Cursor c = null;
+    try {
+        c = context.getContentResolver().query(uri, new String[] { phoneColumn }, null, null, null);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                number = c.getString(c.getColumnIndex(phoneColumn));
+            }
+        }
+    } catch (RuntimeException e) {
+        Rlog.e(LOG_TAG, "Error getting phone number.", e);
+    } finally {
+        if (c != null) {
+            c.close();
+        }
+    }
+    return number;
+}

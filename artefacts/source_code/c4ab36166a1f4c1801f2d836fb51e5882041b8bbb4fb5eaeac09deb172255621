@@ -1,0 +1,11 @@
+public void requestSetVolume(int volume){
+    if (mPlaybackType == PLAYBACK_TYPE_LOCAL) {
+        try {
+            sStatic.mAudioService.setStreamVolume(mPlaybackStream, volume, 0, ActivityThread.currentPackageName());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error setting local stream volume", e);
+        }
+    } else {
+        sStatic.requestSetVolume(this, volume);
+    }
+}

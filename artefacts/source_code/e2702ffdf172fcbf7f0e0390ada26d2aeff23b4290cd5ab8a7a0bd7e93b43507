@@ -1,0 +1,10 @@
+public synchronized void onUserAdded(int user){
+    if (user < 0) {
+        loge("Invalid user in onUserAdded: " + user);
+        return;
+    }
+    mUsers.add(user);
+    Set<Integer> users = new HashSet<>();
+    users.add(user);
+    update(users, mApps, true);
+}

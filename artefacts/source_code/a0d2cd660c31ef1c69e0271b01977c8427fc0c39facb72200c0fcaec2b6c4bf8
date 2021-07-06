@@ -1,0 +1,18 @@
+public static String getName(IWifiIface iface){
+    if (iface == null) {
+        return "<null>";
+    }
+    Mutable<String> nameResp = new Mutable<>();
+    try {
+        iface.getName((WifiStatus status, String name) -> {
+            if (status.code == WifiStatusCode.SUCCESS) {
+                nameResp.value = name;
+            } else {
+                Log.e(TAG, "Error on getName: " + statusString(status));
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Exception on getName: " + e);
+    }
+    return nameResp.value;
+}

@@ -1,0 +1,11 @@
+public static String getUsernameFromUriNumber(@NonNull String number){
+    int delimiterIndex = number.indexOf('@');
+    if (delimiterIndex < 0) {
+        delimiterIndex = number.indexOf("%40");
+    }
+    if (delimiterIndex < 0) {
+        Rlog.w(LOG_TAG, "getUsernameFromUriNumber: no delimiter found in SIP addr '" + number + "'");
+        delimiterIndex = number.length();
+    }
+    return number.substring(0, delimiterIndex);
+}

@@ -1,0 +1,21 @@
+public NetworkStats insertEntry(Entry entry){
+    if (size >= capacity) {
+        final int newLength = Math.max(size, 10) * 3 / 2;
+        iface = Arrays.copyOf(iface, newLength);
+        uid = Arrays.copyOf(uid, newLength);
+        set = Arrays.copyOf(set, newLength);
+        tag = Arrays.copyOf(tag, newLength);
+        metered = Arrays.copyOf(metered, newLength);
+        roaming = Arrays.copyOf(roaming, newLength);
+        defaultNetwork = Arrays.copyOf(defaultNetwork, newLength);
+        rxBytes = Arrays.copyOf(rxBytes, newLength);
+        rxPackets = Arrays.copyOf(rxPackets, newLength);
+        txBytes = Arrays.copyOf(txBytes, newLength);
+        txPackets = Arrays.copyOf(txPackets, newLength);
+        operations = Arrays.copyOf(operations, newLength);
+        capacity = newLength;
+    }
+    setValues(size, entry);
+    size++;
+    return this;
+}

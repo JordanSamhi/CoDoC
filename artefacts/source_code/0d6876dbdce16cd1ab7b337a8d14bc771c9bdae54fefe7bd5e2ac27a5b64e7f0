@@ -1,0 +1,11 @@
+public int setParameter(@ModelParams int modelParam, int value){
+    if (DBG) {
+        Slog.d(TAG, "setParameter(" + modelParam + ", " + value + ")");
+    }
+    synchronized (mLock) {
+        if (mAvailability == STATE_INVALID) {
+            throw new IllegalStateException("setParameter called on an invalid detector");
+        }
+        return setParameterLocked(modelParam, value);
+    }
+}

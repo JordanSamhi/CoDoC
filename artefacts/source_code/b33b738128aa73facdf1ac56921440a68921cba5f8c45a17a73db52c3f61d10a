@@ -1,0 +1,9 @@
+public Uri getContentUri(String packageName, int resId){
+    Objects.requireNonNull(packageName);
+    synchronized (mPackageIds) {
+        if (!mPackageIds.containsKey(packageName)) {
+            mPackageIds.put(packageName, mIdSupplier.get());
+        }
+        return new Uri.Builder().scheme("content").authority(AUTHORITY).path(mPackageIds.get(packageName)).appendPath(Integer.toString(resId)).build();
+    }
+}

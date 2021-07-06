@@ -1,0 +1,15 @@
+public static DigitalServiceSource ofAtsc(int atscType, AtscData data){
+    if (data == null) {
+        throw new IllegalArgumentException("data should not be null.");
+    }
+    switch(atscType) {
+        case DIGITAL_BROADCAST_TYPE_ATSC:
+        case DIGITAL_BROADCAST_TYPE_ATSC_CABLE:
+        case DIGITAL_BROADCAST_TYPE_ATSC_SATELLITE:
+        case DIGITAL_BROADCAST_TYPE_ATSC_TERRESTRIAL:
+            return new DigitalServiceSource(DigitalServiceSource.DIGITAL_SERVICE_IDENTIFIED_BY_DIGITAL_ID, atscType, data);
+        default:
+            Log.w(TAG, "Invalid ATSC type:" + atscType);
+            throw new IllegalArgumentException("Invalid ATSC type:" + atscType);
+    }
+}

@@ -1,0 +1,11 @@
+public final void sendResponseApdu(byte[] responseApdu){
+    Message responseMsg = Message.obtain(null, MSG_RESPONSE_APDU);
+    Bundle dataBundle = new Bundle();
+    dataBundle.putByteArray(KEY_DATA, responseApdu);
+    responseMsg.setData(dataBundle);
+    try {
+        mMessenger.send(responseMsg);
+    } catch (RemoteException e) {
+        Log.e("TAG", "Local messenger has died.");
+    }
+}

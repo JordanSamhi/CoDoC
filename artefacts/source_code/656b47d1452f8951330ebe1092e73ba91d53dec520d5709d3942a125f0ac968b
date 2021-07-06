@@ -1,0 +1,24 @@
+public String onGetDefaultVoiceNameFor(String lang, String country, String variant){
+    int localeStatus = onIsLanguageAvailable(lang, country, variant);
+    Locale iso3Locale = null;
+    switch(localeStatus) {
+        case TextToSpeech.LANG_AVAILABLE:
+            iso3Locale = new Locale(lang);
+            break;
+        case TextToSpeech.LANG_COUNTRY_AVAILABLE:
+            iso3Locale = new Locale(lang, country);
+            break;
+        case TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE:
+            iso3Locale = new Locale(lang, country, variant);
+            break;
+        default:
+            return null;
+    }
+    Locale properLocale = TtsEngines.normalizeTTSLocale(iso3Locale);
+    String voiceName = properLocale.toLanguageTag();
+    if (onIsValidVoiceName(voiceName) == TextToSpeech.SUCCESS) {
+        return voiceName;
+    } else {
+        return null;
+    }
+}

@@ -1,0 +1,12 @@
+public int getNetworkSelectionMode(){
+    int mode = NETWORK_SELECTION_MODE_UNKNOWN;
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            mode = telephony.getNetworkSelectionMode(getSubId());
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getNetworkSelectionMode RemoteException", ex);
+    }
+    return mode;
+}

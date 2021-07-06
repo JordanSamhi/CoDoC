@@ -1,0 +1,16 @@
+public static void appendStringRepresentationOfBitMaskToStringBuilder(@NonNull StringBuilder sb, long bitMask, @NonNull NameOf nameFetcher, @NonNull String separator){
+    int bitPos = 0;
+    boolean firstElementAdded = false;
+    while (bitMask != 0) {
+        if ((bitMask & 1) != 0) {
+            if (firstElementAdded) {
+                sb.append(separator);
+            } else {
+                firstElementAdded = true;
+            }
+            sb.append(nameFetcher.nameOf(bitPos));
+        }
+        bitMask >>= 1;
+        ++bitPos;
+    }
+}

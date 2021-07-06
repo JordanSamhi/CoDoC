@@ -1,0 +1,12 @@
+public boolean set(Key<T> key, T value){
+    if (key == null) {
+        throw new NullPointerException("Received a null key");
+    }
+    Object currentValue = get(key);
+    if (!mDictionary.containsKey(key) || !Objects.equals(value, currentValue)) {
+        mDictionary.put(key, value);
+        ++mRevision;
+        return true;
+    }
+    return false;
+}

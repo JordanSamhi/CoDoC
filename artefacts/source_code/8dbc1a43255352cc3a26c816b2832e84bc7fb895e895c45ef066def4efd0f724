@@ -1,0 +1,10 @@
+public static EuiccCardController init(Context context){
+    synchronized (EuiccCardController.class) {
+        if (sInstance == null) {
+            sInstance = new EuiccCardController(context);
+        } else {
+            Log.wtf(TAG, "init() called multiple times! sInstance = " + sInstance);
+        }
+    }
+    return sInstance;
+}

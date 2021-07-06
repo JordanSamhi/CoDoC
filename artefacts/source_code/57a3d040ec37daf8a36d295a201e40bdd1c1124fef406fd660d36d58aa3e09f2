@@ -1,0 +1,23 @@
+public boolean checkPasswordHistory(byte[] passwordToCheck, byte[] hashFactor, int userId){
+    if (passwordToCheck == null || passwordToCheck.length == 0) {
+        Log.e(TAG, "checkPasswordHistory: empty password");
+        return false;
+    }
+    String passwordHistory = getString(PASSWORD_HISTORY_KEY, userId);
+    if (TextUtils.isEmpty(passwordHistory)) {
+        return false;
+    }
+    int passwordHistoryLength = getRequestedPasswordHistoryLength(userId);
+    if (passwordHistoryLength == 0) {
+        return false;
+    }
+    String legacyHash = legacyPasswordToHash(passwordToCheck, userId);
+    String passwordHash = passwordToHistoryHash(passwordToCheck, hashFactor, userId);
+    String[] history = passwordHistory.split(HISTORY_DELIMITER);
+    for (int i = 0; i < Math.min(passwordHistoryLength, history.length); i++) {
+        if (history[i].equals(legacyHash) || history[i].equals(passwordHash)) {
+            return true;
+        }
+    }
+    return false;
+}

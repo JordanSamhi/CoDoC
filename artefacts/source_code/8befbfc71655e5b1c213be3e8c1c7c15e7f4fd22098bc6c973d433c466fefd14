@@ -1,0 +1,6 @@
+public boolean deduceRestrictedCapability(){
+    final boolean forceRestrictedCapability = (mNetworkCapabilities & FORCE_RESTRICTED_CAPABILITIES) != 0;
+    final boolean hasUnrestrictedCapabilities = (mNetworkCapabilities & UNRESTRICTED_CAPABILITIES) != 0;
+    final boolean hasRestrictedCapabilities = (mNetworkCapabilities & RESTRICTED_CAPABILITIES) != 0;
+    return forceRestrictedCapability || (hasRestrictedCapabilities && !hasUnrestrictedCapabilities);
+}

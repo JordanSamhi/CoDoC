@@ -1,0 +1,55 @@
+public boolean selectDrawable(int index){
+    if (index == mCurIndex) {
+        return false;
+    }
+    final long now = SystemClock.uptimeMillis();
+    if (DEBUG)
+        android.util.Log.i(TAG, toString() + " from " + mCurIndex + " to " + index + ": exit=" + mDrawableContainerState.mExitFadeDuration + " enter=" + mDrawableContainerState.mEnterFadeDuration);
+    if (mDrawableContainerState.mExitFadeDuration > 0) {
+        if (mLastDrawable != null) {
+            mLastDrawable.setVisible(false, false);
+        }
+        if (mCurrDrawable != null) {
+            mLastDrawable = mCurrDrawable;
+            mLastIndex = mCurIndex;
+            mExitAnimationEnd = now + mDrawableContainerState.mExitFadeDuration;
+        } else {
+            mLastDrawable = null;
+            mLastIndex = -1;
+            mExitAnimationEnd = 0;
+        }
+    } else if (mCurrDrawable != null) {
+        mCurrDrawable.setVisible(false, false);
+    }
+    if (index >= 0 && index < mDrawableContainerState.mNumChildren) {
+        final Drawable d = mDrawableContainerState.getChild(index);
+        mCurrDrawable = d;
+        mCurIndex = index;
+        if (d != null) {
+            if (mDrawableContainerState.mEnterFadeDuration > 0) {
+                mEnterAnimationEnd = now + mDrawableContainerState.mEnterFadeDuration;
+            }
+            initializeDrawableForDisplay(d);
+        }
+    } else {
+        mCurrDrawable = null;
+        mCurIndex = -1;
+    }
+    if (mEnterAnimationEnd != 0 || mExitAnimationEnd != 0) {
+        if (mAnimationRunnable == null) {
+            mAnimationRunnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    animate(true);
+                    invalidateSelf();
+                }
+            };
+        } else {
+            unscheduleSelf(mAnimationRunnable);
+        }
+        animate(true);
+    }
+    invalidateSelf();
+    return true;
+}

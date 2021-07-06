@@ -1,0 +1,13 @@
+public void unregisterScanResultsCallback(@NonNull ScanResultsCallback callback){
+    if (callback == null)
+        throw new IllegalArgumentException("callback cannot be null");
+    Log.v(TAG, "unregisterScanResultsCallback: Callback=" + callback);
+    ScanResultsCallback.ScanResultsCallbackProxy proxy = callback.getProxy();
+    try {
+        mService.unregisterScanResultsCallback(proxy);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } finally {
+        proxy.cleanUpProxy();
+    }
+}

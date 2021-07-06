@@ -1,0 +1,20 @@
+public void setScreenCaptureDisabled(ComponentName who, boolean disabled, boolean parent){
+    if (!mHasFeature) {
+        return;
+    }
+    Objects.requireNonNull(who, "ComponentName is null");
+    final int userHandle = UserHandle.getCallingUserId();
+    synchronized (getLockObject()) {
+        ActiveAdmin ap = getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER, parent);
+        if (parent) {
+            enforceProfileOwnerOfOrganizationOwnedDevice(ap);
+        }
+        if (ap.disableScreenCapture != disabled) {
+            ap.disableScreenCapture = disabled;
+            saveSettingsLocked(userHandle);
+            final int affectedUserId = parent ? getProfileParentId(userHandle) : userHandle;
+            updateScreenCaptureDisabled(affectedUserId, disabled);
+        }
+    }
+    DevicePolicyEventLogger.createEvent(DevicePolicyEnums.SET_SCREEN_CAPTURE_DISABLED).setAdmin(who).setBoolean(disabled).write();
+}

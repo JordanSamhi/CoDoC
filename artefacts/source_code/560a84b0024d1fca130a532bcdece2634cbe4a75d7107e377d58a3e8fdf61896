@@ -1,0 +1,13 @@
+public String getMatchedSeInfo(AndroidPackage pkg){
+    Signature[] certs = mCerts.toArray(new Signature[0]);
+    if (pkg.getSigningDetails() != SigningDetails.UNKNOWN && !Signature.areExactMatch(certs, pkg.getSigningDetails().signatures)) {
+        if (certs.length > 1 || !pkg.getSigningDetails().hasCertificate(certs[0])) {
+            return null;
+        }
+    }
+    String seinfoValue = mPkgMap.get(pkg.getPackageName());
+    if (seinfoValue != null) {
+        return seinfoValue;
+    }
+    return mSeinfo;
+}

@@ -1,0 +1,13 @@
+public static String getFilteredHtmlText(@NonNull String text){
+    final String replacementStart = "<invalidtag ";
+    final String replacementEnd = "</invalidtag>";
+    for (String tag : UNSUPPORTED_TAG_LIST) {
+        final String regexStart = "(?i)<" + tag + "(\\s+|>)";
+        final String regexEnd = "(?i)</" + tag + "\\s*>";
+        text = Pattern.compile(regexStart).matcher(text).replaceAll(replacementStart);
+        text = Pattern.compile(regexEnd).matcher(text).replaceAll(replacementEnd);
+    }
+    final String regexInvalidImgTag = "(?i)<img\\s+(?!src\\s*=\\s*\"(?-i)" + IMG_PREFIX + ")";
+    text = Pattern.compile(regexInvalidImgTag).matcher(text).replaceAll(replacementStart);
+    return text;
+}

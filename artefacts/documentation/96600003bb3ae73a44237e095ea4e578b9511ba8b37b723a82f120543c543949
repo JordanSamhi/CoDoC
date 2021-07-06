@@ -1,0 +1,24 @@
+
+     * Reads audio data from the audio hardware for recording into a direct buffer. If this buffer
+     * is not a direct buffer, this method will always return 0.
+     * Note that the value returned by {@link java.nio.Buffer#position()} on this buffer is
+     * unchanged after a call to this method.
+     * The representation of the data in the buffer will depend on the format specified in
+     * the AudioRecord constructor, and will be native endian.
+     * @param audioBuffer the direct buffer to which the recorded audio data is written.
+     * Data is written to audioBuffer.position().
+     * @param sizeInBytes the number of requested bytes. It is recommended but not enforced
+     *    that the number of bytes requested be a multiple of the frame size (sample size in
+     *    bytes multiplied by the channel count).
+     * @return zero or the positive number of bytes that were read, or one of the following
+     *    error codes. The number of bytes will not exceed sizeInBytes and will be truncated to be
+     *    a multiple of the frame size.
+     * <ul>
+     * <li>{@link #ERROR_INVALID_OPERATION} if the object isn't properly initialized</li>
+     * <li>{@link #ERROR_BAD_VALUE} if the parameters don't resolve to valid data and indexes</li>
+     * <li>{@link #ERROR_DEAD_OBJECT} if the object is not valid anymore and
+     *    needs to be recreated. The dead object error code is not returned if some data was
+     *    successfully transferred. In this case, the error is returned at the next read()</li>
+     * <li>{@link #ERROR} in case of other error</li>
+     * </ul>
+     

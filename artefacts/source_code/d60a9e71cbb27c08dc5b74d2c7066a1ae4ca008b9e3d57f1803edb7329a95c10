@@ -1,0 +1,20 @@
+public void setWfcMode(int wfcMode, boolean roaming){
+    int subId = getSubId();
+    if (isSubIdValid(subId)) {
+        if (!roaming) {
+            if (DBG)
+                log("setWfcMode(i,b) - setting=" + wfcMode);
+            SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_MODE, Integer.toString(wfcMode));
+        } else {
+            if (DBG)
+                log("setWfcMode(i,b) (roaming) - setting=" + wfcMode);
+            SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_ROAMING_MODE, Integer.toString(wfcMode));
+        }
+    } else {
+        loge("setWfcMode(i,b): invalid sub id, skip setting setting in siminfo db; subId=" + subId);
+    }
+    TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+    if (roaming == tm.isNetworkRoaming(getSubId())) {
+        setWfcModeInternal(wfcMode);
+    }
+}

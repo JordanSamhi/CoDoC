@@ -1,0 +1,19 @@
+public void requestEuiccInfo1(String cardId, @CallbackExecutor Executor executor, ResultCallback<byte[]> callback){
+    try {
+        getIEuiccCardController().getEuiccInfo1(mContext.getOpPackageName(), cardId, new IGetEuiccInfo1Callback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, byte[] info) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, info));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling getEuiccInfo1", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

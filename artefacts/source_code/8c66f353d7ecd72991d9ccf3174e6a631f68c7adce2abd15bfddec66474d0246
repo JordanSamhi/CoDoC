@@ -1,0 +1,16 @@
+public String getSimOperatorNumeric(){
+    int subId = mSubId;
+    if (!SubscriptionManager.isUsableSubIdValue(subId)) {
+        subId = SubscriptionManager.getDefaultDataSubscriptionId();
+        if (!SubscriptionManager.isUsableSubIdValue(subId)) {
+            subId = SubscriptionManager.getDefaultSmsSubscriptionId();
+            if (!SubscriptionManager.isUsableSubIdValue(subId)) {
+                subId = SubscriptionManager.getDefaultVoiceSubscriptionId();
+                if (!SubscriptionManager.isUsableSubIdValue(subId)) {
+                    subId = SubscriptionManager.getDefaultSubscriptionId();
+                }
+            }
+        }
+    }
+    return getSimOperatorNumeric(subId);
+}

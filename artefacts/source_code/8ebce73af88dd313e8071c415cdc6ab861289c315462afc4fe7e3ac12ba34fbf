@@ -1,0 +1,14 @@
+public void clear(){
+    if (mSize != 0) {
+        final int[] ohashes = mHashes;
+        final Object[] oarray = mArray;
+        final int osize = mSize;
+        mHashes = EmptyArray.INT;
+        mArray = EmptyArray.OBJECT;
+        mSize = 0;
+        freeArrays(ohashes, oarray, osize);
+    }
+    if (mSize != 0) {
+        throw new ConcurrentModificationException();
+    }
+}

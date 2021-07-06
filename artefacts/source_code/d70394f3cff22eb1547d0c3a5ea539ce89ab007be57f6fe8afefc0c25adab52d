@@ -1,0 +1,10 @@
+public int checkPermission(String permission, int pid, int uid, IBinder callerToken){
+    if (permission == null) {
+        throw new IllegalArgumentException("permission is null");
+    }
+    try {
+        return ActivityManager.getService().checkPermissionWithToken(permission, pid, uid, callerToken);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

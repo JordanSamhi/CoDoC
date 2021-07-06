@@ -1,0 +1,11 @@
+public void rename(int fpId, int userId, String newName){
+    if (mService != null) {
+        try {
+            mService.rename(fpId, userId, newName);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        Slog.w(TAG, "rename(): Service not connected!");
+    }
+}

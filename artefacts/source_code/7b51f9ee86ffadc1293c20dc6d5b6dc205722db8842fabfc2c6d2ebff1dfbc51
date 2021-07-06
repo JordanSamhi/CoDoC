@@ -1,0 +1,20 @@
+public final void setStatus(@NonNull PrintJobId printJobId, @Nullable CharSequence status){
+    throwIfCalledOnMainThread();
+    synchronized (mLock) {
+        throwIfDestroyedLocked();
+        mCanUnbind = false;
+    }
+    try {
+        getRemoteInstanceLazy().setStatus(printJobId, status);
+    } catch (RemoteException | TimeoutException | InterruptedException e) {
+        Slog.e(LOG_TAG, "Error setting status.", e);
+    } finally {
+        if (DEBUG) {
+            Slog.i(LOG_TAG, "[user: " + mUserHandle.getIdentifier() + "] setStatus()");
+        }
+        synchronized (mLock) {
+            mCanUnbind = true;
+            mLock.notifyAll();
+        }
+    }
+}

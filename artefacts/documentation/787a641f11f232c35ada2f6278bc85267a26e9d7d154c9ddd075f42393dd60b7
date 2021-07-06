@@ -1,0 +1,23 @@
+
+         * Add a rule by exclusion for the selection of which streams are mixed together.
+         * <br>For instance the following code
+         * <br><pre>
+         * AudioAttributes mediaAttr = new AudioAttributes.Builder()
+         *         .setUsage(AudioAttributes.USAGE_MEDIA)
+         *         .build();
+         * AudioMixingRule noMediaRule = new AudioMixingRule.Builder()
+         *         .addMixRule(AudioMixingRule.RULE_MATCH_ATTRIBUTE_USAGE, mediaAttr)
+         *         .excludeMixRule(AudioMixingRule.RULE_MATCH_UID, new Integer(uidToExclude)
+         *         .build();
+         * </pre>
+         * <br>will create a rule which maps to usage USAGE_MEDIA, but excludes any stream
+         * coming from the specified UID.
+         * @param rule one of {@link AudioMixingRule#RULE_MATCH_ATTRIBUTE_USAGE},
+         *     {@link AudioMixingRule#RULE_MATCH_ATTRIBUTE_CAPTURE_PRESET} or
+         *     {@link AudioMixingRule#RULE_MATCH_UID} or
+         *     {@link AudioMixingRule#RULE_MATCH_USERID}.
+         * @param property see the definition of each rule for the type to use (either an
+         *     {@link AudioAttributes} or an {@link java.lang.Integer}).
+         * @return the same Builder instance.
+         * @throws IllegalArgumentException
+         

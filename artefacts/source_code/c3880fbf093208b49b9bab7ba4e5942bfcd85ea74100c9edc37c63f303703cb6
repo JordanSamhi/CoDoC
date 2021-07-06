@@ -1,0 +1,8 @@
+public ChunksMetadataProto.ChunkListing performIncrementalBackup(SecretKey tertiaryKey, WrappedKeyProto.WrappedKey wrappedTertiaryKey, ChunksMetadataProto.ChunkListing oldChunkListing) throws IOException, GeneralSecurityException{
+    ChunksMetadataProto.ChunkListing newChunkListing = performBackup(tertiaryKey, oldChunkListing.fingerprintMixerSalt, BackupFileBuilder.createForIncremental(mBackupDataOutput, oldChunkListing), getChunkHashes(oldChunkListing));
+    throwIfCancelled();
+    String oldDocumentId = oldChunkListing.documentId;
+    Slog.v(TAG, "Old doc id: " + oldDocumentId);
+    newChunkListing.documentId = mCryptoBackupServer.uploadIncrementalBackup(mPackageName, oldDocumentId, mBackupDataOutput.toByteArray(), wrappedTertiaryKey);
+    return newChunkListing;
+}

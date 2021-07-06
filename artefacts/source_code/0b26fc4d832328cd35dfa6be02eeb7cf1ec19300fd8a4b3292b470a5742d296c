@@ -1,0 +1,21 @@
+public void getAllProfiles(AsyncResultCallback<EuiccProfileInfo[]> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_GET_PROFILES).addChildAsBytes(Tags.TAG_TAG_LIST, Tags.EUICC_PROFILE_TAGS).build().toHex())), response -> {
+        List<Asn1Node> profileNodes = new Asn1Decoder(response).nextNode().getChild(Tags.TAG_CTX_COMP_0).getChildren(Tags.TAG_PROFILE_INFO);
+        int size = profileNodes.size();
+        EuiccProfileInfo[] profiles = new EuiccProfileInfo[size];
+        int profileCount = 0;
+        for (int i = 0; i < size; i++) {
+            Asn1Node profileNode = profileNodes.get(i);
+            if (!profileNode.hasChild(Tags.TAG_ICCID)) {
+                loge("Profile must have an ICCID.");
+                continue;
+            }
+            String strippedIccIdString = stripTrailingFs(profileNode.getChild(Tags.TAG_ICCID).asBytes());
+            EuiccProfileInfo.Builder profileBuilder = new EuiccProfileInfo.Builder(strippedIccIdString);
+            buildProfile(profileNode, profileBuilder);
+            EuiccProfileInfo profile = profileBuilder.build();
+            profiles[profileCount++] = profile;
+        }
+        return profiles;
+    }, callback, handler);
+}

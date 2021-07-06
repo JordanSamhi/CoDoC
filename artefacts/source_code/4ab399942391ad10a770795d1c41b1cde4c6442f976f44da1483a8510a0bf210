@@ -1,0 +1,18 @@
+public void onUserRemoved(int userHandle){
+    UserInfo user = UserManager.get(mContext).getUserInfo(userHandle);
+    if (user.isRestricted() && user.restrictedProfileParentId == mUserHandle) {
+        synchronized (Vpn.this) {
+            final Set<UidRange> existingRanges = mNetworkCapabilities.getUids();
+            if (existingRanges != null) {
+                try {
+                    final List<UidRange> removedRanges = uidRangesForUser(userHandle, existingRanges);
+                    existingRanges.removeAll(removedRanges);
+                    mNetworkCapabilities.setUids(existingRanges);
+                } catch (Exception e) {
+                    Log.wtf(TAG, "Failed to remove restricted user to owner", e);
+                }
+            }
+            setVpnForcedLocked(mLockdown);
+        }
+    }
+}

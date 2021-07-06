@@ -1,0 +1,27 @@
+public boolean setValue(int mantissa, int exponent, int formatType, int offset){
+    int len = offset + getTypeLen(formatType);
+    if (mValue == null)
+        mValue = new byte[len];
+    if (len > mValue.length)
+        return false;
+    switch(formatType) {
+        case FORMAT_SFLOAT:
+            mantissa = intToSignedBits(mantissa, 12);
+            exponent = intToSignedBits(exponent, 4);
+            mValue[offset++] = (byte) (mantissa & 0xFF);
+            mValue[offset] = (byte) ((mantissa >> 8) & 0x0F);
+            mValue[offset] += (byte) ((exponent & 0x0F) << 4);
+            break;
+        case FORMAT_FLOAT:
+            mantissa = intToSignedBits(mantissa, 24);
+            exponent = intToSignedBits(exponent, 8);
+            mValue[offset++] = (byte) (mantissa & 0xFF);
+            mValue[offset++] = (byte) ((mantissa >> 8) & 0xFF);
+            mValue[offset++] = (byte) ((mantissa >> 16) & 0xFF);
+            mValue[offset] += (byte) (exponent & 0xFF);
+            break;
+        default:
+            return false;
+    }
+    return true;
+}

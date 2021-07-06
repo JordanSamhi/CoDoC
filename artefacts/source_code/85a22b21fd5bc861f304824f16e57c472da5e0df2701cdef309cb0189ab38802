@@ -1,0 +1,23 @@
+public final void notifySessionUpdated(@NonNull RoutingSessionInfo sessionInfo){
+    Objects.requireNonNull(sessionInfo, "sessionInfo must not be null");
+    if (DEBUG) {
+        Log.d(TAG, "notifySessionUpdated: Updating session id=" + sessionInfo);
+    }
+    String sessionId = sessionInfo.getId();
+    synchronized (mSessionLock) {
+        if (mSessionInfo.containsKey(sessionId)) {
+            mSessionInfo.put(sessionId, sessionInfo);
+        } else {
+            Log.w(TAG, "notifySessionUpdated: Ignoring unknown session info.");
+            return;
+        }
+        if (mRemoteCallback == null) {
+            return;
+        }
+        try {
+            mRemoteCallback.notifySessionUpdated(sessionInfo);
+        } catch (RemoteException ex) {
+            Log.w(TAG, "Failed to notify session info changed.");
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public ModelParamRange queryParameter(@ModelParams int modelParam){
+    if (DBG) {
+        Slog.d(TAG, "queryParameter(" + modelParam + ")");
+    }
+    synchronized (mLock) {
+        if (mAvailability == STATE_INVALID) {
+            throw new IllegalStateException("queryParameter called on an invalid detector");
+        }
+        return queryParameterLocked(modelParam);
+    }
+}

@@ -1,0 +1,79 @@
+public boolean configureStreamsChecked(InputConfiguration inputConfig, List<OutputConfiguration> outputs, int operatingMode, CaptureRequest sessionParams) throws CameraAccessException{
+    if (outputs == null) {
+        outputs = new ArrayList<OutputConfiguration>();
+    }
+    if (outputs.size() == 0 && inputConfig != null) {
+        throw new IllegalArgumentException("cannot configure an input stream without " + "any output streams");
+    }
+    checkInputConfiguration(inputConfig);
+    boolean success = false;
+    synchronized (mInterfaceLock) {
+        checkIfCameraClosedOrInError();
+        HashSet<OutputConfiguration> addSet = new HashSet<OutputConfiguration>(outputs);
+        List<Integer> deleteList = new ArrayList<Integer>();
+        for (int i = 0; i < mConfiguredOutputs.size(); ++i) {
+            int streamId = mConfiguredOutputs.keyAt(i);
+            OutputConfiguration outConfig = mConfiguredOutputs.valueAt(i);
+            if (!outputs.contains(outConfig) || outConfig.isDeferredConfiguration()) {
+                deleteList.add(streamId);
+            } else {
+                addSet.remove(outConfig);
+            }
+        }
+        mDeviceExecutor.execute(mCallOnBusy);
+        stopRepeating();
+        try {
+            waitUntilIdle();
+            mRemoteDevice.beginConfigure();
+            InputConfiguration currentInputConfig = mConfiguredInput.getValue();
+            if (inputConfig != currentInputConfig && (inputConfig == null || !inputConfig.equals(currentInputConfig))) {
+                if (currentInputConfig != null) {
+                    mRemoteDevice.deleteStream(mConfiguredInput.getKey());
+                    mConfiguredInput = new SimpleEntry<Integer, InputConfiguration>(REQUEST_ID_NONE, null);
+                }
+                if (inputConfig != null) {
+                    int streamId = mRemoteDevice.createInputStream(inputConfig.getWidth(), inputConfig.getHeight(), inputConfig.getFormat());
+                    mConfiguredInput = new SimpleEntry<Integer, InputConfiguration>(streamId, inputConfig);
+                }
+            }
+            for (Integer streamId : deleteList) {
+                mRemoteDevice.deleteStream(streamId);
+                mConfiguredOutputs.delete(streamId);
+            }
+            for (OutputConfiguration outConfig : outputs) {
+                if (addSet.contains(outConfig)) {
+                    int streamId = mRemoteDevice.createStream(outConfig);
+                    mConfiguredOutputs.put(streamId, outConfig);
+                }
+            }
+            int[] offlineStreamIds;
+            if (sessionParams != null) {
+                offlineStreamIds = mRemoteDevice.endConfigure(operatingMode, sessionParams.getNativeCopy());
+            } else {
+                offlineStreamIds = mRemoteDevice.endConfigure(operatingMode, null);
+            }
+            mOfflineSupport.clear();
+            if ((offlineStreamIds != null) && (offlineStreamIds.length > 0)) {
+                for (int offlineStreamId : offlineStreamIds) {
+                    mOfflineSupport.add(offlineStreamId);
+                }
+            }
+            success = true;
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Stream configuration failed due to: " + e.getMessage());
+            return false;
+        } catch (CameraAccessException e) {
+            if (e.getReason() == CameraAccessException.CAMERA_IN_USE) {
+                throw new IllegalStateException("The camera is currently busy." + " You must wait until the previous operation completes.", e);
+            }
+            throw e;
+        } finally {
+            if (success && outputs.size() > 0) {
+                mDeviceExecutor.execute(mCallOnIdle);
+            } else {
+                mDeviceExecutor.execute(mCallOnUnconfigured);
+            }
+        }
+    }
+    return success;
+}

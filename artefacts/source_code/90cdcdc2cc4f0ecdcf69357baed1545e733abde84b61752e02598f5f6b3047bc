@@ -1,0 +1,9 @@
+public byte[] serialize(List<Rule> rules, Optional<Integer> formatVersion) throws RuleSerializeException{
+    try {
+        ByteArrayOutputStream rulesOutputStream = new ByteArrayOutputStream();
+        serialize(rules, formatVersion, rulesOutputStream, new ByteArrayOutputStream());
+        return rulesOutputStream.toByteArray();
+    } catch (Exception e) {
+        throw new RuleSerializeException(e.getMessage(), e);
+    }
+}

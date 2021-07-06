@@ -1,0 +1,11 @@
+public void registerEnabledOnKeyguardCallback(IBiometricEnabledOnKeyguardCallback callback){
+    if (mService != null) {
+        try {
+            mService.registerEnabledOnKeyguardCallback(callback);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        Slog.w(TAG, "registerEnabledOnKeyguardCallback(): Service not connected");
+    }
+}

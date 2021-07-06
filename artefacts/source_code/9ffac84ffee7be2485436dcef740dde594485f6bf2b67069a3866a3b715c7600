@@ -1,0 +1,9 @@
+public static float brightnessIntToFloat(int brightnessInt, int minInt, int maxInt, float minFloat, float maxFloat){
+    if (brightnessInt == PowerManager.BRIGHTNESS_OFF) {
+        return PowerManager.BRIGHTNESS_OFF_FLOAT;
+    } else if (brightnessInt == PowerManager.BRIGHTNESS_INVALID) {
+        return PowerManager.BRIGHTNESS_INVALID_FLOAT;
+    } else {
+        return MathUtils.constrainedMap(minFloat, maxFloat, (float) minInt, (float) maxInt, brightnessInt);
+    }
+}

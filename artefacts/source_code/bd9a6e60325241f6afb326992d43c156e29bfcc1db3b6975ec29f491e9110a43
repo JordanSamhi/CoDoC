@@ -1,0 +1,38 @@
+public static final void writeExceptionToParcel(Parcel reply, Exception e){
+    int code = 0;
+    boolean logException = true;
+    if (e instanceof FileNotFoundException) {
+        code = 1;
+        logException = false;
+    } else if (e instanceof IllegalArgumentException) {
+        code = 2;
+    } else if (e instanceof UnsupportedOperationException) {
+        code = 3;
+    } else if (e instanceof SQLiteAbortException) {
+        code = 4;
+    } else if (e instanceof SQLiteConstraintException) {
+        code = 5;
+    } else if (e instanceof SQLiteDatabaseCorruptException) {
+        code = 6;
+    } else if (e instanceof SQLiteFullException) {
+        code = 7;
+    } else if (e instanceof SQLiteDiskIOException) {
+        code = 8;
+    } else if (e instanceof SQLiteException) {
+        code = 9;
+    } else if (e instanceof OperationApplicationException) {
+        code = 10;
+    } else if (e instanceof OperationCanceledException) {
+        code = 11;
+        logException = false;
+    } else {
+        reply.writeException(e);
+        Log.e(TAG, "Writing exception to parcel", e);
+        return;
+    }
+    reply.writeInt(code);
+    reply.writeString(e.getMessage());
+    if (logException) {
+        Log.e(TAG, "Writing exception to parcel", e);
+    }
+}

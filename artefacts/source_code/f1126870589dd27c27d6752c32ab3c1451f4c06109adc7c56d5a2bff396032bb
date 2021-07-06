@@ -1,0 +1,55 @@
+public int setDisplayNameUsingSrc(String displayName, int subId, @SimDisplayNameSource int nameSource){
+    if (DBG) {
+        logd("[setDisplayName]+  displayName:" + displayName + " subId:" + subId + " nameSource:" + nameSource);
+    }
+    enforceModifyPhoneState("setDisplayNameUsingSrc");
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        validateSubId(subId);
+        List<SubscriptionInfo> allSubInfo = getSubInfo(null, null);
+        if (allSubInfo == null || allSubInfo.isEmpty())
+            return 0;
+        for (SubscriptionInfo subInfo : allSubInfo) {
+            if (subInfo.getSubscriptionId() == subId && (getNameSourcePriority(subInfo.getNameSource()) > getNameSourcePriority(nameSource) || (displayName != null && displayName.equals(subInfo.getDisplayName())))) {
+                logd("Name source " + subInfo.getNameSource() + "'s priority " + getNameSourcePriority(subInfo.getNameSource()) + " is greater than " + "name source " + nameSource + "'s priority " + getNameSourcePriority(nameSource) + ", return now.");
+                return 0;
+            }
+        }
+        String nameToSet;
+        if (TextUtils.isEmpty(displayName) || displayName.trim().length() == 0) {
+            nameToSet = mTelephonyManager.getSimOperatorName(subId);
+            if (TextUtils.isEmpty(nameToSet)) {
+                if (nameSource == SubscriptionManager.NAME_SOURCE_USER_INPUT && SubscriptionManager.isValidSlotIndex(getSlotIndex(subId))) {
+                    nameToSet = "CARD " + (getSlotIndex(subId) + 1);
+                } else {
+                    nameToSet = mContext.getString(SubscriptionManager.DEFAULT_NAME_RES);
+                }
+            }
+        } else {
+            nameToSet = displayName;
+        }
+        ContentValues value = new ContentValues(1);
+        value.put(SubscriptionManager.DISPLAY_NAME, nameToSet);
+        if (nameSource >= SubscriptionManager.NAME_SOURCE_CARRIER_ID) {
+            if (DBG)
+                logd("Set nameSource=" + nameSource);
+            value.put(SubscriptionManager.NAME_SOURCE, nameSource);
+        }
+        if (DBG)
+            logd("[setDisplayName]- mDisplayName:" + nameToSet + " set");
+        SubscriptionInfo sub = getSubscriptionInfo(subId);
+        if (sub != null && sub.isEmbedded()) {
+            int cardId = sub.getCardId();
+            if (DBG)
+                logd("Updating embedded sub nickname on cardId: " + cardId);
+            EuiccManager euiccManager = ((EuiccManager) mContext.getSystemService(Context.EUICC_SERVICE)).createForCardId(cardId);
+            euiccManager.updateSubscriptionNickname(subId, displayName, PendingIntent.getService(mContext, 0, new Intent(), 0));
+        }
+        int result = updateDatabase(value, subId, true);
+        refreshCachedActiveSubscriptionInfoList();
+        notifySubscriptionInfoChanged();
+        return result;
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

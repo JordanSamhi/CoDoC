@@ -1,0 +1,21 @@
+public Slice bindSlice(@NonNull Uri uri, @NonNull Set<SliceSpec> supportedSpecs){
+    Objects.requireNonNull(uri, "uri");
+    ContentResolver resolver = mContext.getContentResolver();
+    try (ContentProviderClient provider = resolver.acquireUnstableContentProviderClient(uri)) {
+        if (provider == null) {
+            Log.w(TAG, String.format("Unknown URI: %s", uri));
+            return null;
+        }
+        Bundle extras = new Bundle();
+        extras.putParcelable(SliceProvider.EXTRA_BIND_URI, uri);
+        extras.putParcelableArrayList(SliceProvider.EXTRA_SUPPORTED_SPECS, new ArrayList<>(supportedSpecs));
+        final Bundle res = provider.call(SliceProvider.METHOD_SLICE, null, extras);
+        Bundle.setDefusable(res, true);
+        if (res == null) {
+            return null;
+        }
+        return res.getParcelable(SliceProvider.EXTRA_SLICE);
+    } catch (RemoteException e) {
+        return null;
+    }
+}

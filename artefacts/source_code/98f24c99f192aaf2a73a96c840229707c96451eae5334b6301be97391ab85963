@@ -1,0 +1,19 @@
+public void sendKeyChar(char charCode){
+    switch(charCode) {
+        case '\n':
+            if (!sendDefaultEditorAction(true)) {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+            }
+            break;
+        default:
+            if (charCode >= '0' && charCode <= '9') {
+                sendDownUpKeyEvents(charCode - '0' + KeyEvent.KEYCODE_0);
+            } else {
+                InputConnection ic = getCurrentInputConnection();
+                if (ic != null) {
+                    ic.commitText(String.valueOf(charCode), 1);
+                }
+            }
+            break;
+    }
+}

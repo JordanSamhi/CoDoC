@@ -1,0 +1,11 @@
+public void setLocationProviderAllowed(String provider, boolean enabled, int userId){
+    if (FUSED_PROVIDER.equals(provider) || PASSIVE_PROVIDER.equals(provider)) {
+        return;
+    }
+    long identity = Binder.clearCallingIdentity();
+    try {
+        Settings.Secure.putStringForUser(mContext.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED, (enabled ? "+" : "-") + provider, userId);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

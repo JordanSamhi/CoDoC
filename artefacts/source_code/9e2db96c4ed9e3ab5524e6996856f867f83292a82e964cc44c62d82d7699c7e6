@@ -1,0 +1,18 @@
+public int nextInt() throws IOException{
+    peek();
+    if (token != JsonToken.STRING && token != JsonToken.NUMBER) {
+        throw new IllegalStateException("Expected an int but was " + token);
+    }
+    int result;
+    try {
+        result = Integer.parseInt(value);
+    } catch (NumberFormatException ignored) {
+        double asDouble = Double.parseDouble(value);
+        result = (int) asDouble;
+        if ((double) result != asDouble) {
+            throw new NumberFormatException(value);
+        }
+    }
+    advance();
+    return result;
+}

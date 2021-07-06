@@ -1,0 +1,10 @@
+public void managedProfileCreate() throws Exception{
+    assumeTrue(mHasManagedUserFeature);
+    while (mRunner.keepRunning()) {
+        final int userId = createManagedProfile();
+        mRunner.pauseTiming();
+        attestTrue("Failed creating profile " + userId, mUm.isManagedProfile(userId));
+        removeUser(userId);
+        mRunner.resumeTiming();
+    }
+}

@@ -1,0 +1,11 @@
+public static float getFloatForUser(ContentResolver cr, String name, int userHandle) throws SettingNotFoundException{
+    String v = getStringForUser(cr, name, userHandle);
+    if (v == null) {
+        throw new SettingNotFoundException(name);
+    }
+    try {
+        return Float.parseFloat(v);
+    } catch (NumberFormatException e) {
+        throw new SettingNotFoundException(name);
+    }
+}

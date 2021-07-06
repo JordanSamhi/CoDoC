@@ -1,0 +1,13 @@
+public void setAutoRestore(boolean doAutoRestore){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "setAutoRestore");
+    Slog.i(TAG, addUserIdToLogMessage(mUserId, "Auto restore => " + doAutoRestore));
+    final long oldId = Binder.clearCallingIdentity();
+    try {
+        synchronized (this) {
+            Settings.Secure.putIntForUser(mContext.getContentResolver(), Settings.Secure.BACKUP_AUTO_RESTORE, doAutoRestore ? 1 : 0, mUserId);
+            mAutoRestore = doAutoRestore;
+        }
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+}

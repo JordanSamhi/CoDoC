@@ -1,0 +1,13 @@
+public int setForbiddenPlmns(@NonNull List<String> fplmns){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return -1;
+        return telephony.setForbiddenPlmns(getSubId(), APPTYPE_USIM, fplmns, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "setForbiddenPlmns RemoteException: " + ex.getMessage());
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "setForbiddenPlmns NullPointerException: " + ex.getMessage());
+    }
+    return -1;
+}

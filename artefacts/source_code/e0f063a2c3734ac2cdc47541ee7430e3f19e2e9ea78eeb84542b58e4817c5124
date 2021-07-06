@@ -1,0 +1,10 @@
+public void generateRandom(long start, long end, long bytes){
+    final Random r = new Random();
+    final float fractionRx = r.nextFloat();
+    final long rxBytes = (long) (bytes * fractionRx);
+    final long txBytes = (long) (bytes * (1 - fractionRx));
+    final long rxPackets = rxBytes / 1024;
+    final long txPackets = txBytes / 1024;
+    final long operations = rxBytes / 2048;
+    generateRandom(start, end, rxBytes, rxPackets, txBytes, txPackets, operations, r);
+}

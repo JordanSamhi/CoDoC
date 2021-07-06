@@ -1,0 +1,11 @@
+public static ParsedPackage fromCacheEntryStatic(byte[] bytes){
+    final Parcel p = Parcel.obtain();
+    p.unmarshall(bytes, 0, bytes.length);
+    p.setDataPosition(0);
+    final PackageParserCacheHelper.ReadHelper helper = new PackageParserCacheHelper.ReadHelper(p);
+    helper.startAndInstall();
+    ParsedPackage pkg = new PackageImpl(p);
+    p.recycle();
+    sCachedPackageReadCount.incrementAndGet();
+    return pkg;
+}

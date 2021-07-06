@@ -1,0 +1,7 @@
+public void testCreateAndInitializeService_registersPackageTrackingReceiver() throws Exception{
+    Context contextSpy = Mockito.spy(mContext);
+    UserBackupManagerService service = UserBackupManagerService.createAndInitializeService(USER_ID, contextSpy, new BackupManagerService(mContext), mBackupThread, mBaseStateDir, mDataDir, mTransportManager);
+    BroadcastReceiver packageTrackingReceiver = service.getPackageTrackingReceiver();
+    assertThat(packageTrackingReceiver).isNotNull();
+    verify(contextSpy, times(2)).registerReceiverAsUser(eq(packageTrackingReceiver), eq(UserHandle.of(USER_ID)), any(), any(), any());
+}

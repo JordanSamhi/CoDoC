@@ -1,0 +1,24 @@
+public String getNonConfigurationString(@StyleableRes int index, @Config int allowedChangingConfigs){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    final int type = data[index + STYLE_TYPE];
+    @Config
+    final int changingConfigs = ActivityInfo.activityInfoConfigNativeToJava(data[index + STYLE_CHANGING_CONFIGURATIONS]);
+    if ((changingConfigs & ~allowedChangingConfigs) != 0) {
+        return null;
+    }
+    if (type == TypedValue.TYPE_NULL) {
+        return null;
+    } else if (type == TypedValue.TYPE_STRING) {
+        return loadStringValueAt(index).toString();
+    }
+    final TypedValue v = mValue;
+    if (getValueAt(index, v)) {
+        final CharSequence cs = v.coerceToString();
+        return cs != null ? cs.toString() : null;
+    }
+    throw new RuntimeException("getNonConfigurationString of bad type: 0x" + Integer.toHexString(type));
+}

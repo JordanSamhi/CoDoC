@@ -1,0 +1,19 @@
+public void loadFromSupplicant(SupplicantLoader loader){
+    for (String key : SUPPLICANT_CONFIG_KEYS) {
+        String value = loader.loadValue(key);
+        if (value == null) {
+            mFields.put(key, EMPTY_VALUE);
+        } else {
+            mFields.put(key, value);
+        }
+    }
+    String eapMethod = loader.loadValue(EAP_KEY);
+    mEapMethod = getStringIndex(Eap.strings, eapMethod, Eap.NONE);
+    String phase2Method = removeDoubleQuotes(loader.loadValue(PHASE2_KEY));
+    if (phase2Method.startsWith(Phase2.AUTH_PREFIX)) {
+        phase2Method = phase2Method.substring(Phase2.AUTH_PREFIX.length());
+    } else if (phase2Method.startsWith(Phase2.AUTHEAP_PREFIX)) {
+        phase2Method = phase2Method.substring(Phase2.AUTHEAP_PREFIX.length());
+    }
+    mPhase2Method = getStringIndex(Phase2.strings, phase2Method, Phase2.NONE);
+}

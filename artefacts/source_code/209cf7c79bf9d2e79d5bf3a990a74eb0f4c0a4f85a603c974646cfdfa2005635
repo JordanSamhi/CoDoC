@@ -1,0 +1,27 @@
+public void holdActiveCall() throws CallStateException{
+    if (mForegroundCall.getState() == ImsPhoneCall.State.ACTIVE) {
+        if (mHoldSwitchingState == HoldSwapState.PENDING_SINGLE_CALL_HOLD || mHoldSwitchingState == HoldSwapState.SWAPPING_ACTIVE_AND_HELD) {
+            logi("Ignoring hold request while already holding or swapping");
+            return;
+        }
+        HoldSwapState oldHoldState = mHoldSwitchingState;
+        ImsCall callToHold = mForegroundCall.getImsCall();
+        if (mBackgroundCall.getState().isAlive()) {
+            mCallExpectedToResume = mBackgroundCall.getImsCall();
+            mHoldSwitchingState = HoldSwapState.SWAPPING_ACTIVE_AND_HELD;
+        } else {
+            mHoldSwitchingState = HoldSwapState.PENDING_SINGLE_CALL_HOLD;
+        }
+        logHoldSwapState("holdActiveCall");
+        mForegroundCall.switchWith(mBackgroundCall);
+        try {
+            callToHold.hold();
+            mMetrics.writeOnImsCommand(mPhone.getPhoneId(), callToHold.getSession(), ImsCommand.IMS_CMD_HOLD);
+        } catch (ImsException e) {
+            mForegroundCall.switchWith(mBackgroundCall);
+            mHoldSwitchingState = oldHoldState;
+            logHoldSwapState("holdActiveCall - fail");
+            throw new CallStateException(e.getMessage());
+        }
+    }
+}

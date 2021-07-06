@@ -1,0 +1,12 @@
+public boolean runBackgroundDexoptJob(@Nullable List<String> packageNames){
+    if (getInstantAppPackageName(Binder.getCallingUid()) != null) {
+        return false;
+    }
+    enforceSystemOrRootOrShell("runBackgroundDexoptJob");
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        return BackgroundDexOptService.runIdleOptimizationsNow(this, mContext, packageNames);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

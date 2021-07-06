@@ -1,0 +1,13 @@
+public double getDouble(String key, double defaultValue){
+    unparcel();
+    Object o = mMap.get(key);
+    if (o == null) {
+        return defaultValue;
+    }
+    try {
+        return (Double) o;
+    } catch (ClassCastException e) {
+        typeWarning(key, o, "Double", defaultValue, e);
+        return defaultValue;
+    }
+}

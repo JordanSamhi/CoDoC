@@ -1,0 +1,15 @@
+public BluetoothHeadsetClientCall dial(BluetoothDevice device, String number){
+    if (DBG)
+        log("dial()");
+    final IBluetoothHeadsetClient service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.dial(device, number);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return null;
+}

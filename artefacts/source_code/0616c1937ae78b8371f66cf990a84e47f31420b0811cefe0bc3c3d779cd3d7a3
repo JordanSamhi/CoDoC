@@ -1,0 +1,16 @@
+public static String buildValidExtFilename(String name){
+    if (TextUtils.isEmpty(name) || ".".equals(name) || "..".equals(name)) {
+        return "(invalid)";
+    }
+    final StringBuilder res = new StringBuilder(name.length());
+    for (int i = 0; i < name.length(); i++) {
+        final char c = name.charAt(i);
+        if (isValidExtFilenameChar(c)) {
+            res.append(c);
+        } else {
+            res.append('_');
+        }
+    }
+    trimFilename(res, 255);
+    return res.toString();
+}

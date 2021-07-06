@@ -1,0 +1,36 @@
+public final void setLeft(int left){
+    if (left != mLeft) {
+        final boolean matrixIsIdentity = hasIdentityMatrix();
+        if (matrixIsIdentity) {
+            if (mAttachInfo != null) {
+                int minLeft;
+                int xLoc;
+                if (left < mLeft) {
+                    minLeft = left;
+                    xLoc = left - mLeft;
+                } else {
+                    minLeft = mLeft;
+                    xLoc = 0;
+                }
+                invalidate(xLoc, 0, mRight - minLeft, mBottom - mTop);
+            }
+        } else {
+            invalidate(true);
+        }
+        int oldWidth = mRight - mLeft;
+        int height = mBottom - mTop;
+        mLeft = left;
+        mRenderNode.setLeft(left);
+        sizeChange(mRight - mLeft, height, oldWidth, height);
+        if (!matrixIsIdentity) {
+            mPrivateFlags |= PFLAG_DRAWN;
+            invalidate(true);
+        }
+        mBackgroundSizeChanged = true;
+        mDefaultFocusHighlightSizeChanged = true;
+        if (mForegroundInfo != null) {
+            mForegroundInfo.mBoundsChanged = true;
+        }
+        invalidateParentIfNeeded();
+    }
+}

@@ -1,0 +1,26 @@
+public Chunk handleChunk(Chunk request){
+    if (false)
+        Log.v("ddm-heap", "Handling " + name(request.type) + " chunk");
+    int type = request.type;
+    if (type == CHUNK_HPIF) {
+        return handleHPIF(request);
+    } else if (type == CHUNK_HPSG) {
+        return handleHPSGNHSG(request, false);
+    } else if (type == CHUNK_HPDU) {
+        return handleHPDU(request);
+    } else if (type == CHUNK_HPDS) {
+        return handleHPDS(request);
+    } else if (type == CHUNK_NHSG) {
+        return handleHPSGNHSG(request, true);
+    } else if (type == CHUNK_HPGC) {
+        return handleHPGC(request);
+    } else if (type == CHUNK_REAE) {
+        return handleREAE(request);
+    } else if (type == CHUNK_REAQ) {
+        return handleREAQ(request);
+    } else if (type == CHUNK_REAL) {
+        return handleREAL(request);
+    } else {
+        throw new RuntimeException("Unknown packet " + ChunkHandler.name(type));
+    }
+}

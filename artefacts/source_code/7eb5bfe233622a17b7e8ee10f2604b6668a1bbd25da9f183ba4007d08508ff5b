@@ -1,0 +1,9 @@
+public void testRequestBackup_withoutPermission_throwsSecurityExceptionForNonCallingUser(){
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    String[] packages = { TEST_PACKAGE };
+    IBackupObserver observer = mock(IBackupObserver.class);
+    IBackupManagerMonitor monitor = mock(IBackupManagerMonitor.class);
+    expectThrows(SecurityException.class, () -> backupManagerService.requestBackup(mUserTwoId, packages, observer, monitor, 0));
+}

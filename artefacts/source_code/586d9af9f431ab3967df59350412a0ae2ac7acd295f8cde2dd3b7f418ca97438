@@ -1,0 +1,14 @@
+public void changeCursor(int partition, Cursor cursor){
+    Cursor prevCursor = mPartitions.get(partition).cursor;
+    if (prevCursor != cursor) {
+        if (prevCursor != null && !prevCursor.isClosed()) {
+            prevCursor.close();
+        }
+        mPartitions.get(partition).cursor = cursor;
+        if (cursor != null && !cursor.isClosed()) {
+            mPartitions.get(partition).idColumnIndex = cursor.getColumnIndex("_id");
+        }
+        invalidate();
+        notifyDataSetChanged();
+    }
+}

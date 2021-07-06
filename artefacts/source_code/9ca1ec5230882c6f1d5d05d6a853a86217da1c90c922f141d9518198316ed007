@@ -1,0 +1,28 @@
+public void noteAppWidgetTapped(String callingPackage, int appWidgetId){
+    mSecurityPolicy.enforceCallFromPackage(callingPackage);
+    final int callingUid = Binder.getCallingUid();
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        final int procState = mActivityManagerInternal.getUidProcessState(callingUid);
+        if (procState > ActivityManager.PROCESS_STATE_TOP) {
+            return;
+        }
+        synchronized (mLock) {
+            final Widget widget = lookupWidgetLocked(appWidgetId, callingUid, callingPackage);
+            if (widget == null) {
+                return;
+            }
+            final ProviderId providerId = widget.provider.id;
+            final String packageName = providerId.componentName.getPackageName();
+            if (packageName == null) {
+                return;
+            }
+            final SparseArray<String> uid2PackageName = new SparseArray<String>();
+            uid2PackageName.put(providerId.uid, packageName);
+            mAppOpsManagerInternal.updateAppWidgetVisibility(uid2PackageName, true);
+            mUsageStatsManagerInternal.reportEvent(packageName, UserHandle.getUserId(providerId.uid), UsageEvents.Event.USER_INTERACTION);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

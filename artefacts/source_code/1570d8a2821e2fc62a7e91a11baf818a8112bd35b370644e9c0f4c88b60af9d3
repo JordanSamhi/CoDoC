@@ -1,0 +1,35 @@
+public void adjustRanks(){
+    final ShortcutService s = mShortcutUser.mService;
+    final long now = s.injectCurrentTimeMillis();
+    for (int i = mShortcuts.size() - 1; i >= 0; i--) {
+        final ShortcutInfo si = mShortcuts.valueAt(i);
+        if (si.isFloating()) {
+            if (si.getRank() != 0) {
+                si.setTimestamp(now);
+                si.setRank(0);
+            }
+        }
+    }
+    final ArrayMap<ComponentName, ArrayList<ShortcutInfo>> all = sortShortcutsToActivities();
+    for (int outer = all.size() - 1; outer >= 0; outer--) {
+        final ArrayList<ShortcutInfo> list = all.valueAt(outer);
+        Collections.sort(list, mShortcutRankComparator);
+        int rank = 0;
+        final int size = list.size();
+        for (int i = 0; i < size; i++) {
+            final ShortcutInfo si = list.get(i);
+            if (si.isManifestShortcut()) {
+                continue;
+            }
+            if (!si.isDynamic()) {
+                s.wtf("Non-dynamic shortcut found.");
+                continue;
+            }
+            final int thisRank = rank++;
+            if (si.getRank() != thisRank) {
+                si.setTimestamp(now);
+                si.setRank(thisRank);
+            }
+        }
+    }
+}

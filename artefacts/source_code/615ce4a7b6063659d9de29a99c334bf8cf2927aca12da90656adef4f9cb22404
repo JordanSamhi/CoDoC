@@ -1,0 +1,10 @@
+public void resetWhitelist(@NonNull int userId){
+    synchronized (mGlobalWhitelistStateLock) {
+        if (mWhitelisterHelpers == null)
+            return;
+        mWhitelisterHelpers.remove(userId);
+        if (mWhitelisterHelpers.size() == 0) {
+            mWhitelisterHelpers = null;
+        }
+    }
+}

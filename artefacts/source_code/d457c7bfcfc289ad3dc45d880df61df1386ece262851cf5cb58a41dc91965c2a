@@ -1,0 +1,10 @@
+public void setCallbacks(Consumer<String> passedConsumer, Consumer<List<PackageConfig>> supportedConsumer, Runnable notifySyncRunnable){
+    synchronized (mLock) {
+        if (mPassedConsumer != null || mSupportedConsumer != null || mNotifySyncRunnable != null) {
+            Slog.wtf(TAG, "Resetting health check controller callbacks");
+        }
+        mPassedConsumer = Objects.requireNonNull(passedConsumer);
+        mSupportedConsumer = Objects.requireNonNull(supportedConsumer);
+        mNotifySyncRunnable = Objects.requireNonNull(notifySyncRunnable);
+    }
+}

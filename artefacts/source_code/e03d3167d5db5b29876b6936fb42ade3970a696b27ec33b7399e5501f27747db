@@ -1,0 +1,16 @@
+public boolean groupRemove(String groupName){
+    if (TextUtils.isEmpty(groupName))
+        return false;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("groupRemove"))
+            return false;
+        SupplicantResult<Void> result = new SupplicantResult("groupRemove(" + groupName + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.removeGroup(groupName));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

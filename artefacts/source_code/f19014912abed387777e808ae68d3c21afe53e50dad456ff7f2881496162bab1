@@ -1,0 +1,15 @@
+public int findIndexHinted(String iface, int uid, int set, int tag, int metered, int roaming, int defaultNetwork, int hintIndex){
+    for (int offset = 0; offset < size; offset++) {
+        final int halfOffset = offset / 2;
+        final int i;
+        if (offset % 2 == 0) {
+            i = (hintIndex + halfOffset) % size;
+        } else {
+            i = (size + hintIndex - halfOffset - 1) % size;
+        }
+        if (uid == this.uid[i] && set == this.set[i] && tag == this.tag[i] && metered == this.metered[i] && roaming == this.roaming[i] && defaultNetwork == this.defaultNetwork[i] && Objects.equals(iface, this.iface[i])) {
+            return i;
+        }
+    }
+    return -1;
+}

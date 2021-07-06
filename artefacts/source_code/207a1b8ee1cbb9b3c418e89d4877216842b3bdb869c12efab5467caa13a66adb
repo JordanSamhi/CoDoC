@@ -1,0 +1,9 @@
+public static UiccController make(Context c){
+    synchronized (mLock) {
+        if (mInstance != null) {
+            throw new RuntimeException("UiccController.make() should only be called once");
+        }
+        mInstance = new UiccController(c);
+        return mInstance;
+    }
+}

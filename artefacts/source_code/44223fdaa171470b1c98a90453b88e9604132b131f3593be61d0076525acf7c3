@@ -1,0 +1,9 @@
+public synchronized void startListening(Context context){
+    if (!mListening) {
+        mContext = context;
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        context.registerReceiver(mReceiver, filter);
+        mListening = true;
+    }
+}

@@ -1,0 +1,23 @@
+public ApfCapabilities getApfCapabilities(@NonNull String ifaceName){
+    class AnswerBox {
+
+        public ApfCapabilities value = sNoApfCapabilities;
+    }
+    synchronized (sLock) {
+        try {
+            IWifiStaIface iface = getStaIface(ifaceName);
+            if (iface == null)
+                return sNoApfCapabilities;
+            AnswerBox box = new AnswerBox();
+            iface.getApfPacketFilterCapabilities((status, capabilities) -> {
+                if (!ok(status))
+                    return;
+                box.value = new ApfCapabilities(capabilities.version, capabilities.maxLength, android.system.OsConstants.ARPHRD_ETHER);
+            });
+            return box.value;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return sNoApfCapabilities;
+        }
+    }
+}

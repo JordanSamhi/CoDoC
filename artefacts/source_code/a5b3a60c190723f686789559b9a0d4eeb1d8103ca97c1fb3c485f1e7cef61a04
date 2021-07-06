@@ -1,0 +1,9 @@
+public Movie getMovie(@RawRes int id) throws NotFoundException{
+    final InputStream is = openRawResource(id);
+    final Movie movie = Movie.decodeStream(is);
+    try {
+        is.close();
+    } catch (IOException e) {
+    }
+    return movie;
+}

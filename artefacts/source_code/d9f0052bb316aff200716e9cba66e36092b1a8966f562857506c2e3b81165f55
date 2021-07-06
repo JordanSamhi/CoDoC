@@ -1,0 +1,14 @@
+public boolean getUnreadMessages(BluetoothDevice device){
+    if (DBG)
+        Log.d(TAG, "getUnreadMessages(" + device + ")");
+    final IBluetoothMapClient service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.getUnreadMessages(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return false;
+        }
+    }
+    return false;
+}

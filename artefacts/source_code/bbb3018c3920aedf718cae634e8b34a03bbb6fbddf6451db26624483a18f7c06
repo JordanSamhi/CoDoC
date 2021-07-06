@@ -1,0 +1,11 @@
+public FileInputStream openRead() throws FileNotFoundException{
+    if (mLegacyBackupName.exists()) {
+        rename(mLegacyBackupName, mBaseName);
+    }
+    if (mNewName.exists() && mBaseName.exists()) {
+        if (!mNewName.delete()) {
+            Log.e(LOG_TAG, "Failed to delete outdated new file " + mNewName);
+        }
+    }
+    return new FileInputStream(mBaseName);
+}

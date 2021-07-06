@@ -1,0 +1,15 @@
+public void rebuildAll(){
+    synchronized (mLock) {
+        mInstalledSet.clear();
+        mEnabledSet.clear();
+        final int[] userIds = getCurrentProfileIds();
+        for (int i : userIds) {
+            ArraySet<ComponentName> implementingPackages = loadComponentNamesForUser(i);
+            ArraySet<ComponentName> packagesFromSettings = loadComponentNamesFromSetting(mSettingName, i);
+            packagesFromSettings.retainAll(implementingPackages);
+            mInstalledSet.put(i, implementingPackages);
+            mEnabledSet.put(i, packagesFromSettings);
+        }
+    }
+    sendSettingChanged();
+}

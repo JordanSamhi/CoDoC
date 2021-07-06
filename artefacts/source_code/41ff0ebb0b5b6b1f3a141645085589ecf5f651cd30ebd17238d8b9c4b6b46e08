@@ -1,0 +1,10 @@
+public Bundle getAppWidgetOptions(int appWidgetId){
+    if (mService == null) {
+        return Bundle.EMPTY;
+    }
+    try {
+        return mService.getAppWidgetOptions(mPackageName, appWidgetId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

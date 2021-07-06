@@ -1,0 +1,11 @@
+public boolean requestANQPElements(long bssid, ANQPNetworkKey anqpNetworkKey, boolean rcOIs, NetworkDetail.HSRelease hsReleaseVer){
+    if (!canSendRequestNow(bssid)) {
+        return false;
+    }
+    if (!mPasspointHandler.requestANQP(bssid, getRequestElementIDs(rcOIs, hsReleaseVer))) {
+        return false;
+    }
+    updateHoldOffInfo(bssid);
+    mPendingQueries.put(bssid, anqpNetworkKey);
+    return true;
+}

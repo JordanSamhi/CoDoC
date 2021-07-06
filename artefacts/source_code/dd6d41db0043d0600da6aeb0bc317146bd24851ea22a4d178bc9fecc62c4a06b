@@ -1,0 +1,10 @@
+public void setCrossProfilePackages(@NonNull ComponentName admin, @NonNull Set<String> packageNames){
+    throwIfParentInstance("setCrossProfilePackages");
+    if (mService != null) {
+        try {
+            mService.setCrossProfilePackages(admin, new ArrayList<>(packageNames));
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

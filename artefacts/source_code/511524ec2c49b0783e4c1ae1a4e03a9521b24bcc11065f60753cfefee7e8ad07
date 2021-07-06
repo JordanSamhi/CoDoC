@@ -1,0 +1,11 @@
+public Uri getAdnUriForPhoneAccount(PhoneAccountHandle accountHandle){
+    ITelecomService service = getTelecomService();
+    if (service != null && accountHandle != null) {
+        try {
+            return service.getAdnUriForPhoneAccount(accountHandle, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error calling ITelecomService#getAdnUriForPhoneAccount", e);
+        }
+    }
+    return Uri.parse("content://icc/adn");
+}

@@ -1,0 +1,17 @@
+
+     * Check whether the caller (or self, if not processing an IPC) can read device identifiers.
+     *
+     * <p>This method behaves in one of the following ways:
+     * <ul>
+     *   <li>return true: if the caller has the READ_PRIVILEGED_PHONE_STATE permission, the calling
+     *       package passes a DevicePolicyManager Device Owner / Profile Owner device identifier
+     *       access check, or the calling package has carrier privileges on any active subscription.
+     *   <li>throw SecurityException: if the caller does not meet any of the requirements and is
+     *       targeting Q or is targeting pre-Q and does not have the READ_PHONE_STATE permission
+     *       or carrier privileges of any active subscription.
+     *   <li>return false: if the caller is targeting pre-Q and does have the READ_PHONE_STATE
+     *       permission or carrier privileges. In this case the caller would expect to have access
+     *       to the device identifiers so false is returned instead of throwing a SecurityException
+     *       to indicate the calling function should return dummy data.
+     * </ul>
+     

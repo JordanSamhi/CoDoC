@@ -1,0 +1,14 @@
+public synchronized void run(){
+    if (mLogVerbose)
+        Log.v(TAG, "Running graph.");
+    setException(null);
+    if (isRunning()) {
+        throw new RuntimeException("Graph is already running!");
+    }
+    if (mRunner == null) {
+        throw new RuntimeException("Cannot run before a graph is set!");
+    }
+    mRunTask = this.new AsyncRunnerTask();
+    setRunning(true);
+    mRunTask.execute(mRunner);
+}

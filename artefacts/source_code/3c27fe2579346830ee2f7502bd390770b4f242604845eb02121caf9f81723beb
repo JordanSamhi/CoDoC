@@ -1,0 +1,10 @@
+public UiObject getChildByDescription(UiSelector childPattern, String text, boolean allowScrollSearch) throws UiObjectNotFoundException{
+    Tracer.trace(childPattern, text, allowScrollSearch);
+    if (text != null) {
+        if (allowScrollSearch) {
+            scrollIntoView(new UiSelector().descriptionContains(text));
+        }
+        return super.getChildByDescription(childPattern, text);
+    }
+    throw new UiObjectNotFoundException("for description= \"" + text + "\"");
+}

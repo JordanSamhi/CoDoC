@@ -1,0 +1,27 @@
+public static void validateDexPaths(String[] paths){
+    ArrayList<String> apks = new ArrayList<>();
+    for (int i = 0; i < paths.length; i++) {
+        if (PackageParser.isApkPath(paths[i])) {
+            apks.add(paths[i]);
+        }
+    }
+    ArrayList<String> unmatchedDmFiles = new ArrayList<>();
+    for (int i = 0; i < paths.length; i++) {
+        String dmPath = paths[i];
+        if (isDexMetadataPath(dmPath)) {
+            boolean valid = false;
+            for (int j = apks.size() - 1; j >= 0; j--) {
+                if (dmPath.equals(buildDexMetadataPathForFile(new File(apks.get(j))))) {
+                    valid = true;
+                    break;
+                }
+            }
+            if (!valid) {
+                unmatchedDmFiles.add(dmPath);
+            }
+        }
+    }
+    if (!unmatchedDmFiles.isEmpty()) {
+        throw new IllegalStateException("Unmatched .dm files: " + unmatchedDmFiles);
+    }
+}

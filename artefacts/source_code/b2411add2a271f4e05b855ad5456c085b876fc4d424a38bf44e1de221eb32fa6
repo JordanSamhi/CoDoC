@@ -1,0 +1,10 @@
+public void onRestoreInstanceState(Bundle savedInstanceState){
+    if (savedInstanceState == null)
+        return;
+    ComponentName launchComponent = savedInstanceState.getParcelable(INSTANCE_KEY_COMPONENT);
+    Bundle appSearchData = savedInstanceState.getBundle(INSTANCE_KEY_APPDATA);
+    String userQuery = savedInstanceState.getString(INSTANCE_KEY_USER_QUERY);
+    if (!doShow(userQuery, false, launchComponent, appSearchData)) {
+        return;
+    }
+}

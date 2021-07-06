@@ -1,0 +1,44 @@
+public DesiredDisplayModeSpecs getDesiredDisplayModeSpecs(int displayId){
+    synchronized (mLock) {
+        SparseArray<Vote> votes = getVotesLocked(displayId);
+        Display.Mode[] modes = mSupportedModesByDisplay.get(displayId);
+        Display.Mode defaultMode = mDefaultModeByDisplay.get(displayId);
+        if (modes == null || defaultMode == null) {
+            Slog.e(TAG, "Asked about unknown display, returning empty display mode specs!" + "(id=" + displayId + ")");
+            return new DesiredDisplayModeSpecs();
+        }
+        int[] availableModes = new int[] { defaultMode.getModeId() };
+        VoteSummary primarySummary = new VoteSummary();
+        int lowestConsideredPriority = Vote.MIN_PRIORITY;
+        while (lowestConsideredPriority <= Vote.MAX_PRIORITY) {
+            summarizeVotes(votes, lowestConsideredPriority, primarySummary);
+            if (primarySummary.height == Vote.INVALID_SIZE || primarySummary.width == Vote.INVALID_SIZE) {
+                primarySummary.width = defaultMode.getPhysicalWidth();
+                primarySummary.height = defaultMode.getPhysicalHeight();
+            }
+            availableModes = filterModes(modes, primarySummary);
+            if (availableModes.length > 0) {
+                if (DEBUG) {
+                    Slog.w(TAG, "Found available modes=" + Arrays.toString(availableModes) + " with lowest priority considered " + Vote.priorityToString(lowestConsideredPriority) + " and constraints: " + "width=" + primarySummary.width + ", height=" + primarySummary.height + ", minRefreshRate=" + primarySummary.minRefreshRate + ", maxRefreshRate=" + primarySummary.maxRefreshRate);
+                }
+                break;
+            }
+            if (DEBUG) {
+                Slog.w(TAG, "Couldn't find available modes with lowest priority set to " + Vote.priorityToString(lowestConsideredPriority) + " and with the following constraints: " + "width=" + primarySummary.width + ", height=" + primarySummary.height + ", minRefreshRate=" + primarySummary.minRefreshRate + ", maxRefreshRate=" + primarySummary.maxRefreshRate);
+            }
+            lowestConsideredPriority++;
+        }
+        VoteSummary appRequestSummary = new VoteSummary();
+        summarizeVotes(votes, Vote.APP_REQUEST_REFRESH_RATE_RANGE_PRIORITY_CUTOFF, appRequestSummary);
+        appRequestSummary.minRefreshRate = Math.min(appRequestSummary.minRefreshRate, primarySummary.minRefreshRate);
+        appRequestSummary.maxRefreshRate = Math.max(appRequestSummary.maxRefreshRate, primarySummary.maxRefreshRate);
+        if (DEBUG) {
+            Slog.i(TAG, String.format("App request range: [%.0f %.0f]", appRequestSummary.minRefreshRate, appRequestSummary.maxRefreshRate));
+        }
+        int baseModeId = defaultMode.getModeId();
+        if (availableModes.length > 0) {
+            baseModeId = availableModes[0];
+        }
+        return new DesiredDisplayModeSpecs(baseModeId, new RefreshRateRange(primarySummary.minRefreshRate, primarySummary.maxRefreshRate), new RefreshRateRange(appRequestSummary.minRefreshRate, appRequestSummary.maxRefreshRate));
+    }
+}

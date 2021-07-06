@@ -1,0 +1,41 @@
+public void offsetLeftAndRight(int offset){
+    if (offset != 0) {
+        final boolean matrixIsIdentity = hasIdentityMatrix();
+        if (matrixIsIdentity) {
+            if (isHardwareAccelerated()) {
+                invalidateViewProperty(false, false);
+            } else {
+                final ViewParent p = mParent;
+                if (p != null && mAttachInfo != null) {
+                    final Rect r = mAttachInfo.mTmpInvalRect;
+                    int minLeft;
+                    int maxRight;
+                    if (offset < 0) {
+                        minLeft = mLeft + offset;
+                        maxRight = mRight;
+                    } else {
+                        minLeft = mLeft;
+                        maxRight = mRight + offset;
+                    }
+                    r.set(0, 0, maxRight - minLeft, mBottom - mTop);
+                    p.invalidateChild(this, r);
+                }
+            }
+        } else {
+            invalidateViewProperty(false, false);
+        }
+        mLeft += offset;
+        mRight += offset;
+        mRenderNode.offsetLeftAndRight(offset);
+        if (isHardwareAccelerated()) {
+            invalidateViewProperty(false, false);
+            invalidateParentIfNeededAndWasQuickRejected();
+        } else {
+            if (!matrixIsIdentity) {
+                invalidateViewProperty(false, true);
+            }
+            invalidateParentIfNeeded();
+        }
+        notifySubtreeAccessibilityStateChangedIfNeeded();
+    }
+}

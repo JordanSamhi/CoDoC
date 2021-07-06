@@ -1,0 +1,33 @@
+
+     * Query the user’s setting for “Advanced Calling” or "Enhanced 4G LTE", which is used to
+     * enable MmTel IMS features, depending on the carrier configuration for the current
+     * subscription. If this setting is enabled, IMS voice and video telephony over IWLAN/LTE will
+     * be enabled as long as the carrier has provisioned these services for the specified
+     * subscription. Other IMS services (SMS/UT) are not affected by this user setting and depend on
+     * carrier requirements.
+     * <p>
+     * Note: If the carrier configuration for advanced calling is not editable or hidden, this
+     * method will always return the default value.
+     * <p>This API requires one of the following:
+     * <ul>
+     *     <li>The caller holds the READ_PRECISE_PHONE_STATE permission.</li>
+     *     <li>If the caller is the device or profile owner, the caller holds the
+     *     {@link Manifest.permission#READ_PRECISE_PHONE_STATE} permission.</li>
+     *     <li>The caller has carrier privileges (see
+     *     {@link android.telephony.TelephonyManager#hasCarrierPrivileges}) on any
+     *     active subscription.</li>
+     *     <li>The caller is the default SMS app for the device.</li>
+     * </ul>
+     * <p>The profile owner is an app that owns a managed profile on the device; for more details
+     * see <a href="https://developer.android.com/work/managed-profiles">Work profiles</a>.
+     * Access by profile owners is deprecated and will be removed in a future release.
+     *
+     * @see android.telephony.CarrierConfigManager#KEY_CARRIER_VOLTE_PROVISIONING_REQUIRED_BOOL
+     * @see android.telephony.CarrierConfigManager#KEY_EDITABLE_ENHANCED_4G_LTE_BOOL
+     * @see android.telephony.CarrierConfigManager#KEY_HIDE_ENHANCED_4G_LTE_BOOL
+     * @see android.telephony.CarrierConfigManager#KEY_ENHANCED_4G_LTE_ON_BY_DEFAULT_BOOL
+     * @see android.telephony.CarrierConfigManager#KEY_CARRIER_VOLTE_AVAILABLE_BOOL
+     * @throws IllegalArgumentException if the subscription associated with this operation is not
+     * active (SIM is not inserted, ESIM inactive) or invalid.
+     * @return true if the user's setting for advanced calling is enabled, false otherwise.
+     

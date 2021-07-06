@@ -1,0 +1,38 @@
+public Parcelable onCaptureSharedElementSnapshot(View sharedElement, Matrix viewToGlobalMatrix, RectF screenBounds){
+    if (sharedElement instanceof ImageView) {
+        ImageView imageView = ((ImageView) sharedElement);
+        Drawable d = imageView.getDrawable();
+        Drawable bg = imageView.getBackground();
+        if (d != null && (bg == null || bg.getAlpha() == 0)) {
+            Bitmap bitmap = TransitionUtils.createDrawableBitmap(d, imageView);
+            if (bitmap != null) {
+                Bundle bundle = new Bundle();
+                if (bitmap.getConfig() != Bitmap.Config.HARDWARE) {
+                    bundle.putParcelable(BUNDLE_SNAPSHOT_BITMAP, bitmap);
+                } else {
+                    HardwareBuffer hardwareBuffer = bitmap.getHardwareBuffer();
+                    bundle.putParcelable(BUNDLE_SNAPSHOT_HARDWARE_BUFFER, hardwareBuffer);
+                    ColorSpace cs = bitmap.getColorSpace();
+                    if (cs != null) {
+                        bundle.putInt(BUNDLE_SNAPSHOT_COLOR_SPACE, cs.getId());
+                    }
+                }
+                bundle.putString(BUNDLE_SNAPSHOT_IMAGE_SCALETYPE, imageView.getScaleType().toString());
+                if (imageView.getScaleType() == ScaleType.MATRIX) {
+                    Matrix matrix = imageView.getImageMatrix();
+                    float[] values = new float[9];
+                    matrix.getValues(values);
+                    bundle.putFloatArray(BUNDLE_SNAPSHOT_IMAGE_MATRIX, values);
+                }
+                return bundle;
+            }
+        }
+    }
+    if (mTempMatrix == null) {
+        mTempMatrix = new Matrix(viewToGlobalMatrix);
+    } else {
+        mTempMatrix.set(viewToGlobalMatrix);
+    }
+    ViewGroup parent = (ViewGroup) sharedElement.getParent();
+    return TransitionUtils.createViewBitmap(sharedElement, mTempMatrix, screenBounds, parent);
+}

@@ -1,0 +1,23 @@
+public void addAnnouncementListener(@NonNull @CallbackExecutor Executor executor, @NonNull Set<Integer> enabledAnnouncementTypes, @NonNull Announcement.OnListUpdatedListener listener){
+    Objects.requireNonNull(executor);
+    Objects.requireNonNull(listener);
+    int[] types = enabledAnnouncementTypes.stream().mapToInt(Integer::intValue).toArray();
+    IAnnouncementListener listenerIface = new IAnnouncementListener.Stub() {
+
+        public void onListUpdated(List<Announcement> activeAnnouncements) {
+            executor.execute(() -> listener.onListUpdated(activeAnnouncements));
+        }
+    };
+    synchronized (mAnnouncementListeners) {
+        ICloseHandle closeHandle = null;
+        try {
+            closeHandle = mService.addAnnouncementListener(types, listenerIface);
+        } catch (RemoteException ex) {
+            ex.rethrowFromSystemServer();
+        }
+        Objects.requireNonNull(closeHandle);
+        ICloseHandle oldCloseHandle = mAnnouncementListeners.put(listener, closeHandle);
+        if (oldCloseHandle != null)
+            Utils.close(oldCloseHandle);
+    }
+}

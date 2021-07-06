@@ -1,0 +1,36 @@
+public void notifyNetworkPolicyRulesUpdated(int uid, long procStateSeq){
+    if (DEBUG_NETWORK) {
+        Slog.d(TAG_NETWORK, "Got update from NPMS for uid: " + uid + " seq: " + procStateSeq);
+    }
+    UidRecord record;
+    synchronized (ActivityManagerService.this) {
+        record = mProcessList.getUidRecordLocked(uid);
+        if (record == null) {
+            if (DEBUG_NETWORK) {
+                Slog.d(TAG_NETWORK, "No active uidRecord for uid: " + uid + " procStateSeq: " + procStateSeq);
+            }
+            return;
+        }
+    }
+    synchronized (record.networkStateLock) {
+        if (record.lastNetworkUpdatedProcStateSeq >= procStateSeq) {
+            if (DEBUG_NETWORK) {
+                Slog.d(TAG_NETWORK, "procStateSeq: " + procStateSeq + " has already" + " been handled for uid: " + uid);
+            }
+            return;
+        }
+        record.lastNetworkUpdatedProcStateSeq = procStateSeq;
+        if (record.curProcStateSeq > procStateSeq) {
+            if (DEBUG_NETWORK) {
+                Slog.d(TAG_NETWORK, "No need to handle older seq no., Uid: " + uid + ", curProcstateSeq: " + record.curProcStateSeq + ", procStateSeq: " + procStateSeq);
+            }
+            return;
+        }
+        if (record.waitingForNetwork) {
+            if (DEBUG_NETWORK) {
+                Slog.d(TAG_NETWORK, "Notifying all blocking threads for uid: " + uid + ", procStateSeq: " + procStateSeq);
+            }
+            record.networkStateLock.notifyAll();
+        }
+    }
+}

@@ -1,0 +1,7 @@
+public void removeOnWifiUsabilityStatsListener(int listenerIdentifier){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.WIFI_UPDATE_USABILITY_STATS_SCORE, "WifiService");
+    if (mVerboseLoggingEnabled) {
+        mLog.info("removeOnWifiUsabilityStatsListener uid=%").c(Binder.getCallingUid()).flush();
+    }
+    mWifiThreadRunner.post(() -> mWifiMetrics.removeOnWifiUsabilityListener(listenerIdentifier));
+}

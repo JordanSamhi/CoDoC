@@ -1,0 +1,13 @@
+public void unregisterShortcutChangeCallback(@NonNull ShortcutChangeCallback callback){
+    Objects.requireNonNull(callback, "Callback cannot be null");
+    synchronized (mShortcutChangeCallbacks) {
+        if (mShortcutChangeCallbacks.containsKey(callback)) {
+            IShortcutChangeCallback proxy = mShortcutChangeCallbacks.remove(callback).second;
+            try {
+                mService.unregisterShortcutChangeCallback(mContext.getPackageName(), proxy);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

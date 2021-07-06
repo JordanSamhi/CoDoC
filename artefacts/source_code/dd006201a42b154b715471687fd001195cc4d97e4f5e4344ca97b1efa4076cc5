@@ -1,0 +1,62 @@
+public final AssetFileDescriptor openTypedAssetFileDescriptor(@NonNull Uri uri, @NonNull String mimeType, @Nullable Bundle opts, @Nullable CancellationSignal cancellationSignal) throws FileNotFoundException{
+    Objects.requireNonNull(uri, "uri");
+    Objects.requireNonNull(mimeType, "mimeType");
+    try {
+        if (mWrapped != null)
+            return mWrapped.openTypedAssetFile(uri, mimeType, opts, cancellationSignal);
+    } catch (RemoteException e) {
+        return null;
+    }
+    IContentProvider unstableProvider = acquireUnstableProvider(uri);
+    if (unstableProvider == null) {
+        throw new FileNotFoundException("No content provider: " + uri);
+    }
+    IContentProvider stableProvider = null;
+    AssetFileDescriptor fd = null;
+    try {
+        ICancellationSignal remoteCancellationSignal = null;
+        if (cancellationSignal != null) {
+            cancellationSignal.throwIfCanceled();
+            remoteCancellationSignal = unstableProvider.createCancellationSignal();
+            cancellationSignal.setRemote(remoteCancellationSignal);
+        }
+        try {
+            fd = unstableProvider.openTypedAssetFile(mPackageName, mAttributionTag, uri, mimeType, opts, remoteCancellationSignal);
+            if (fd == null) {
+                return null;
+            }
+        } catch (DeadObjectException e) {
+            unstableProviderDied(unstableProvider);
+            stableProvider = acquireProvider(uri);
+            if (stableProvider == null) {
+                throw new FileNotFoundException("No content provider: " + uri);
+            }
+            fd = stableProvider.openTypedAssetFile(mPackageName, mAttributionTag, uri, mimeType, opts, remoteCancellationSignal);
+            if (fd == null) {
+                return null;
+            }
+        }
+        if (stableProvider == null) {
+            stableProvider = acquireProvider(uri);
+        }
+        releaseUnstableProvider(unstableProvider);
+        unstableProvider = null;
+        ParcelFileDescriptor pfd = new ParcelFileDescriptorInner(fd.getParcelFileDescriptor(), stableProvider);
+        stableProvider = null;
+        return new AssetFileDescriptor(pfd, fd.getStartOffset(), fd.getDeclaredLength(), fd.getExtras());
+    } catch (RemoteException e) {
+        throw new FileNotFoundException("Failed opening content provider: " + uri);
+    } catch (FileNotFoundException e) {
+        throw e;
+    } finally {
+        if (cancellationSignal != null) {
+            cancellationSignal.setRemote(null);
+        }
+        if (stableProvider != null) {
+            releaseProvider(stableProvider);
+        }
+        if (unstableProvider != null) {
+            releaseUnstableProvider(unstableProvider);
+        }
+    }
+}

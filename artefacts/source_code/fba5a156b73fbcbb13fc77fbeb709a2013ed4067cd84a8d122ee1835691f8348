@@ -1,0 +1,10 @@
+public void binderDied(){
+    mEventHandler.post(() -> {
+        Log.e(TAG, "Wificond died!");
+        clearState();
+        mWificond = null;
+        if (mDeathEventHandler != null) {
+            mDeathEventHandler.run();
+        }
+    });
+}

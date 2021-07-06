@@ -1,0 +1,17 @@
+public boolean isConnected(BluetoothDevice device){
+    if (VDBG)
+        log("isConnected(" + device + ")");
+    final IBluetoothSap service = getService();
+    if (service != null) {
+        try {
+            return service.isConnected(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+        if (DBG)
+            log(Log.getStackTraceString(new Throwable()));
+    }
+    return false;
+}

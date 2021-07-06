@@ -1,0 +1,12 @@
+public void stop(){
+    Log.d(TAG, " currentstate: " + getCurrentStateName());
+    mTargetRole = ROLE_UNSPECIFIED;
+    if (mApInterfaceName != null) {
+        if (mIfaceIsUp) {
+            updateApState(WifiManager.WIFI_AP_STATE_DISABLING, WifiManager.WIFI_AP_STATE_ENABLED, 0);
+        } else {
+            updateApState(WifiManager.WIFI_AP_STATE_DISABLING, WifiManager.WIFI_AP_STATE_ENABLING, 0);
+        }
+    }
+    mStateMachine.quitNow();
+}

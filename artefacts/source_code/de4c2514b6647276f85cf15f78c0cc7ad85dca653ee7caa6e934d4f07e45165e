@@ -1,0 +1,12 @@
+public ScanData getLatestSingleScanResults(){
+    ScanData consolidatedScanData = null;
+    for (WifiScannerImpl impl : mScannerImpls.values()) {
+        ScanData scanData = impl.getLatestSingleScanResults();
+        if (consolidatedScanData == null) {
+            consolidatedScanData = new ScanData(scanData);
+        } else {
+            consolidatedScanData.addResults(scanData.getResults());
+        }
+    }
+    return consolidatedScanData;
+}

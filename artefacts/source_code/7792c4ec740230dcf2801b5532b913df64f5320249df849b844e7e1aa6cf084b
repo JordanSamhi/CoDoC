@@ -1,0 +1,16 @@
+public boolean setSoftApConfiguration(@NonNull SoftApConfiguration softApConfig, @NonNull String packageName){
+    enforceNetworkSettingsPermission();
+    int uid = Binder.getCallingUid();
+    boolean privileged = mWifiPermissionsUtil.checkNetworkSettingsPermission(uid);
+    mLog.info("setSoftApConfiguration uid=%").c(uid).flush();
+    if (softApConfig == null)
+        return false;
+    if (WifiApConfigStore.validateApWifiConfiguration(softApConfig, privileged)) {
+        mActiveModeWarden.updateSoftApConfiguration(softApConfig);
+        mWifiThreadRunner.post(() -> mWifiApConfigStore.setApConfiguration(softApConfig));
+        return true;
+    } else {
+        Log.e(TAG, "Invalid SoftAp Configuration");
+        return false;
+    }
+}

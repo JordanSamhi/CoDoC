@@ -1,0 +1,26 @@
+public void updateEmbeddedSubscriptions(List<Integer> cardIds, @Nullable UpdateEmbeddedSubsCallback callback){
+    if (!mEuiccManager.isEnabled()) {
+        callback.run(false);
+        return;
+    }
+    mBackgroundHandler.post(() -> {
+        List<Pair<Integer, GetEuiccProfileInfoListResult>> results = new ArrayList<>();
+        for (int cardId : cardIds) {
+            GetEuiccProfileInfoListResult result = EuiccController.get().blockingGetEuiccProfileInfoList(cardId);
+            if (DBG)
+                logd("blockingGetEuiccProfileInfoList cardId " + cardId);
+            results.add(Pair.create(cardId, result));
+        }
+        this.post(() -> {
+            boolean hasChanges = false;
+            for (Pair<Integer, GetEuiccProfileInfoListResult> cardIdAndResult : results) {
+                if (updateEmbeddedSubscriptionsCache(cardIdAndResult.first, cardIdAndResult.second)) {
+                    hasChanges = true;
+                }
+            }
+            if (callback != null) {
+                callback.run(hasChanges);
+            }
+        });
+    });
+}

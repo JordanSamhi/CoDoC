@@ -1,0 +1,23 @@
+public void setZoom(float zoom){
+    if (DEBUG) {
+        Log.v(TAG, "set zoom received: " + zoom);
+    }
+    boolean updated = false;
+    synchronized (mLock) {
+        if (DEBUG) {
+            Log.v(TAG, "mZoom: " + mZoom + " updated: " + zoom);
+        }
+        if (mIsInAmbientMode) {
+            mZoom = 0;
+        }
+        if (Float.compare(zoom, mZoom) != 0) {
+            mZoom = zoom;
+            updated = true;
+        }
+    }
+    if (DEBUG)
+        Log.v(TAG, "setZoom updated? " + updated);
+    if (updated && !mDestroyed) {
+        onZoomChanged(mZoom);
+    }
+}

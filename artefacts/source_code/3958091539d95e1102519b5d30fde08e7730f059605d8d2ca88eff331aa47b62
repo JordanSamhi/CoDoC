@@ -1,0 +1,25 @@
+public boolean updateState(CellSignalState state){
+    if (Objects.equals(state, mLastSignalState))
+        return false;
+    mLastSignalState = state;
+    mMobileGroup.setVisibility(state.visible ? View.VISIBLE : View.GONE);
+    if (state.visible) {
+        mMobileRoaming.setVisibility(state.roaming ? View.VISIBLE : View.GONE);
+        ColorStateList colorStateList = ColorStateList.valueOf(mDualToneHandler.getSingleColor(mColorForegroundIntensity));
+        mMobileRoaming.setImageTintList(colorStateList);
+        mMobileSignal.setImageTintList(colorStateList);
+        mMobileSignal.setImageLevel(state.mobileSignalIconId);
+        StringBuilder contentDescription = new StringBuilder();
+        if (state.contentDescription != null) {
+            contentDescription.append(state.contentDescription).append(", ");
+        }
+        if (state.roaming) {
+            contentDescription.append(mContext.getString(R.string.data_connection_roaming)).append(", ");
+        }
+        if (hasValidTypeContentDescription(state.typeContentDescription)) {
+            contentDescription.append(state.typeContentDescription);
+        }
+        mMobileSignal.setContentDescription(contentDescription);
+    }
+    return true;
+}

@@ -1,0 +1,12 @@
+public Set<String> getAlwaysOnVpnLockdownWhitelist(@NonNull ComponentName admin){
+    throwIfParentInstance("getAlwaysOnVpnLockdownWhitelist");
+    if (mService != null) {
+        try {
+            final List<String> whitelist = mService.getAlwaysOnVpnLockdownWhitelist(admin);
+            return whitelist == null ? null : new HashSet<>(whitelist);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

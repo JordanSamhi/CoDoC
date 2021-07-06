@@ -1,0 +1,10 @@
+public static InlineFillUi forAutofill(@NonNull InlineSuggestionsRequest request, @NonNull FillResponse response, @NonNull AutofillId focusedViewId, @Nullable String filterText, @NonNull AutoFillUI.AutoFillUiCallback uiCallback, @NonNull Runnable onErrorCallback, @Nullable RemoteInlineSuggestionRenderService remoteRenderService, int userId, int sessionId){
+    if (InlineSuggestionFactory.responseNeedAuthentication(response)) {
+        InlineSuggestion inlineAuthentication = InlineSuggestionFactory.createInlineAuthentication(request, response, uiCallback, onErrorCallback, remoteRenderService, userId, sessionId);
+        return new InlineFillUi(focusedViewId, inlineAuthentication, filterText);
+    } else if (response.getDatasets() != null) {
+        SparseArray<Pair<Dataset, InlineSuggestion>> inlineSuggestions = InlineSuggestionFactory.createAutofillInlineSuggestions(request, response.getRequestId(), response.getDatasets(), focusedViewId, uiCallback, onErrorCallback, remoteRenderService, userId, sessionId);
+        return new InlineFillUi(focusedViewId, inlineSuggestions, filterText);
+    }
+    return new InlineFillUi(focusedViewId, new SparseArray<>(), filterText);
+}

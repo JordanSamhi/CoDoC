@@ -1,0 +1,39 @@
+public void requestNumberVerification(@NonNull PhoneNumberRange range, long timeoutMillis, @NonNull @CallbackExecutor Executor executor, @NonNull NumberVerificationCallback callback){
+    if (executor == null) {
+        throw new NullPointerException("Executor must be non-null");
+    }
+    if (callback == null) {
+        throw new NullPointerException("Callback must be non-null");
+    }
+    INumberVerificationCallback internalCallback = new INumberVerificationCallback.Stub() {
+
+        @Override
+        public void onCallReceived(String phoneNumber) {
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                executor.execute(() -> callback.onCallReceived(phoneNumber));
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+        }
+
+        @Override
+        public void onVerificationFailed(int reason) {
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                executor.execute(() -> callback.onVerificationFailed(reason));
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+        }
+    };
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            telephony.requestNumberVerification(range, timeoutMillis, internalCallback, getOpPackageName());
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "requestNumberVerification RemoteException", ex);
+        executor.execute(() -> callback.onVerificationFailed(NumberVerificationCallback.REASON_UNSPECIFIED));
+    }
+}

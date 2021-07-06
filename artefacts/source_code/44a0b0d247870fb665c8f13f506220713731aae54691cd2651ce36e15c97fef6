@@ -1,0 +1,5 @@
+public void recordData(NetworkIdentitySet ident, int uid, int set, int tag, long start, long end, NetworkStats.Entry entry){
+    final NetworkStatsHistory history = findOrCreateHistory(ident, uid, set, tag);
+    history.recordData(start, end, entry);
+    noteRecordedHistory(history.getStart(), history.getEnd(), entry.rxBytes + entry.txBytes);
+}

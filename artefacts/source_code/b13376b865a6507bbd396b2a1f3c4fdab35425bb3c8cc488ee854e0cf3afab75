@@ -1,0 +1,20 @@
+public boolean refresh(Uri url, @Nullable Bundle extras, @Nullable CancellationSignal cancellationSignal) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    beforeRemote();
+    try {
+        ICancellationSignal remoteCancellationSignal = null;
+        if (cancellationSignal != null) {
+            cancellationSignal.throwIfCanceled();
+            remoteCancellationSignal = mContentProvider.createCancellationSignal();
+            cancellationSignal.setRemote(remoteCancellationSignal);
+        }
+        return mContentProvider.refresh(mPackageName, mAttributionTag, url, extras, remoteCancellationSignal);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

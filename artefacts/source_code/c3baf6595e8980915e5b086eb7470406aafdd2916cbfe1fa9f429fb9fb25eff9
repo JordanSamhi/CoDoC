@@ -1,0 +1,9 @@
+public List<RuleIndexRange> identifyRulesToEvaluate(AppInstallMetadata appInstallMetadata){
+    List<RuleIndexRange> indexRanges = new ArrayList<>();
+    indexRanges.add(searchIndexingKeysRangeContainingKey(sPackageNameBasedIndexes, appInstallMetadata.getPackageName()));
+    for (String appCertificate : appInstallMetadata.getAppCertificates()) {
+        indexRanges.add(searchIndexingKeysRangeContainingKey(sAppCertificateBasedIndexes, appCertificate));
+    }
+    indexRanges.add(new RuleIndexRange(sUnindexedRuleIndexes.get(START_INDEXING_KEY), sUnindexedRuleIndexes.get(END_INDEXING_KEY)));
+    return indexRanges;
+}

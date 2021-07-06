@@ -1,0 +1,13 @@
+public static File getEmbmsTempFileDir(Context context){
+    SharedPreferences prefs = context.getSharedPreferences(TEMP_FILE_ROOT_PREF_FILE_NAME, 0);
+    String storedTempFileRoot = prefs.getString(TEMP_FILE_ROOT_PREF_NAME, null);
+    try {
+        if (storedTempFileRoot != null) {
+            return new File(storedTempFileRoot).getCanonicalFile();
+        } else {
+            return new File(context.getFilesDir(), MbmsDownloadSession.DEFAULT_TOP_LEVEL_TEMP_DIRECTORY).getCanonicalFile();
+        }
+    } catch (IOException e) {
+        throw new RuntimeException("Unable to canonicalize temp file root path " + e);
+    }
+}

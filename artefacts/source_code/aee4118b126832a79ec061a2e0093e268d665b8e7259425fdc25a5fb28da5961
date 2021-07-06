@@ -1,0 +1,9 @@
+public static void ensureFingerprintProperty(){
+    if (TextUtils.isEmpty(SystemProperties.get("ro.build.fingerprint"))) {
+        try {
+            SystemProperties.set("ro.build.fingerprint", FINGERPRINT);
+        } catch (IllegalArgumentException e) {
+            Slog.e(TAG, "Failed to set fingerprint property", e);
+        }
+    }
+}

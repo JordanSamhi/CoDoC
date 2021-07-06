@@ -1,0 +1,23 @@
+
+     * Temporarily override the billing relationship plan between a carrier and
+     * a specific subscriber to be considered unmetered. This will be reflected
+     * to apps via {@link NetworkCapabilities#NET_CAPABILITY_NOT_METERED}.
+     * <p>
+     * This method is only accessible to the following narrow set of apps:
+     * <ul>
+     * <li>The carrier app for this subscriberId, as determined by
+     * {@link TelephonyManager#hasCarrierPrivileges()}.
+     * <li>The carrier app explicitly delegated access through
+     * {@link CarrierConfigManager#KEY_CONFIG_PLANS_PACKAGE_OVERRIDE_STRING}.
+     * </ul>
+     *
+     * @param subId the subscriber this override applies to.
+     * @param overrideUnmetered set if the billing relationship should be
+     *            considered unmetered.
+     * @param timeoutMillis the timeout after which the requested override will
+     *            be automatically cleared, or {@code 0} to leave in the
+     *            requested state until explicitly cleared, or the next reboot,
+     *            whichever happens first.
+     * @throws SecurityException if the caller doesn't meet the requirements
+     *             outlined above.
+     

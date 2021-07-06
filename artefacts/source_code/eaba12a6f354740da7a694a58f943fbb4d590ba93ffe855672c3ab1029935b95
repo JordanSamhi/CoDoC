@@ -1,0 +1,10 @@
+public static EnforcedAdmin checkIfApplicationIsSuspended(Context context, String packageName, int userId){
+    IPackageManager ipm = AppGlobals.getPackageManager();
+    try {
+        if (ipm.isPackageSuspendedForUser(packageName, userId)) {
+            return getProfileOrDeviceOwner(context, getUserHandleOf(userId));
+        }
+    } catch (RemoteException | IllegalArgumentException e) {
+    }
+    return null;
+}

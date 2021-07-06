@@ -1,0 +1,8 @@
+public void onOriginalSelection(CharSequence text, int selectionStart, int selectionEnd, boolean isLink){
+    mDelayedLogAbandon.flush();
+    mOriginalStart = mSelectionStart = selectionStart;
+    mOriginalEnd = mSelectionEnd = selectionEnd;
+    mAllowReset = false;
+    maybeInvalidateLogger();
+    mLogger.logSelectionStarted(mTextView.getTextClassificationSession(), mTextView.getTextClassificationContext(), text, selectionStart, isLink ? SelectionEvent.INVOCATION_LINK : SelectionEvent.INVOCATION_MANUAL);
+}

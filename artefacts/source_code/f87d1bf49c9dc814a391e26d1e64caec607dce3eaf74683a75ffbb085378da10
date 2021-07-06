@@ -1,0 +1,15 @@
+public AccessibilityNodeInfo getChild(int index){
+    enforceSealed();
+    if (mChildNodeIds == null) {
+        return null;
+    }
+    if (!canPerformRequestOverConnection(mConnectionId, mWindowId, mSourceNodeId)) {
+        return null;
+    }
+    final long childId = mChildNodeIds.get(index);
+    final AccessibilityInteractionClient client = AccessibilityInteractionClient.getInstance();
+    if (mLeashedChild != null && childId == LEASHED_NODE_ID) {
+        return client.findAccessibilityNodeInfoByAccessibilityId(mConnectionId, mLeashedChild, ROOT_NODE_ID, false, FLAG_PREFETCH_DESCENDANTS, null);
+    }
+    return client.findAccessibilityNodeInfoByAccessibilityId(mConnectionId, mWindowId, childId, false, FLAG_PREFETCH_DESCENDANTS, null);
+}

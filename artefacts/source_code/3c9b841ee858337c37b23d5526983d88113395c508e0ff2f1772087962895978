@@ -1,0 +1,12 @@
+public static P getOrCreate(Class<P> clazz){
+    P cached = get(clazz);
+    if (cached != null) {
+        return cached;
+    } else {
+        try {
+            return put(clazz.newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

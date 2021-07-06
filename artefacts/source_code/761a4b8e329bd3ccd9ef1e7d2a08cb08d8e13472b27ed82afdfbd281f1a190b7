@@ -1,0 +1,11 @@
+public int compareTo(PackageProviderKey other){
+    final int providerCompare = mProviderName.compareTo(other.mProviderName);
+    if (providerCompare != 0) {
+        return providerCompare;
+    }
+    final int packageCompare = mPackageName.compareTo(other.mPackageName);
+    if (packageCompare != 0) {
+        return packageCompare;
+    }
+    return Objects.compare(mFeatureId, other.mFeatureId, Comparator.nullsFirst(String::compareTo));
+}

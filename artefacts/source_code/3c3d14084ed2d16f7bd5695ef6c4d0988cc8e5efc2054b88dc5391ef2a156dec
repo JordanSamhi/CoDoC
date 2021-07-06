@@ -1,0 +1,54 @@
+public int findTokenEnd(CharSequence text, int cursor){
+    int len = text.length();
+    int i = cursor;
+    while (i < len) {
+        char c = text.charAt(i);
+        if (c == ',' || c == ';') {
+            return i;
+        } else if (c == '"') {
+            i++;
+            while (i < len) {
+                c = text.charAt(i);
+                if (c == '"') {
+                    i++;
+                    break;
+                } else if (c == '\\' && i + 1 < len) {
+                    i += 2;
+                } else {
+                    i++;
+                }
+            }
+        } else if (c == '(') {
+            int level = 1;
+            i++;
+            while (i < len && level > 0) {
+                c = text.charAt(i);
+                if (c == ')') {
+                    level--;
+                    i++;
+                } else if (c == '(') {
+                    level++;
+                    i++;
+                } else if (c == '\\' && i + 1 < len) {
+                    i += 2;
+                } else {
+                    i++;
+                }
+            }
+        } else if (c == '<') {
+            i++;
+            while (i < len) {
+                c = text.charAt(i);
+                if (c == '>') {
+                    i++;
+                    break;
+                } else {
+                    i++;
+                }
+            }
+        } else {
+            i++;
+        }
+    }
+    return i;
+}

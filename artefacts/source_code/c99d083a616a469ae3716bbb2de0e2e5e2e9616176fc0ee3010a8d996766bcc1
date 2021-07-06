@@ -1,0 +1,9 @@
+public static State getState(String service){
+    final String rawState = SystemProperties.get("init.svc." + service);
+    final State state = sStates.get(rawState);
+    if (state != null) {
+        return state;
+    } else {
+        return State.STOPPED;
+    }
+}

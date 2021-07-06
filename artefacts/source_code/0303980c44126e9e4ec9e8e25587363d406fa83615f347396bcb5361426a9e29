@@ -1,0 +1,11 @@
+public float getFraction(int index, int base, int pbase, float defValue){
+    String value = getString(index);
+    if (value == null) {
+        return defValue;
+    }
+    if (ResourceHelper.parseFloatAttribute(mNames[index], value, mValue, false)) {
+        return mValue.getFraction(base, pbase);
+    }
+    Bridge.getLog().warning(LayoutLog.TAG_RESOURCES_FORMAT, String.format("\"%1$s\" in attribute \"%2$s\" cannot be converted to a fraction.", value, mNames[index]), null, null);
+    return defValue;
+}

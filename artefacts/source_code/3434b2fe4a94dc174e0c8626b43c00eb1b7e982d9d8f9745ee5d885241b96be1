@@ -1,0 +1,10 @@
+public void copy2DRangeFrom(int xoff, int yoff, int w, int h, Allocation data, int dataXoff, int dataYoff){
+    try {
+        Trace.traceBegin(RenderScript.TRACE_TAG, "copy2DRangeFrom");
+        mRS.validate();
+        validate2DRange(xoff, yoff, w, h);
+        mRS.nAllocationData2D(getIDSafe(), xoff, yoff, mSelectedLOD, mSelectedFace.mID, w, h, data.getID(mRS), dataXoff, dataYoff, data.mSelectedLOD, data.mSelectedFace.mID);
+    } finally {
+        Trace.traceEnd(RenderScript.TRACE_TAG);
+    }
+}

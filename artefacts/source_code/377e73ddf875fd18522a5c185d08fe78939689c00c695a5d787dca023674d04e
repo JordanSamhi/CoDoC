@@ -1,0 +1,43 @@
+public byte[] getThumbnailBytes(){
+    if (!mHasThumbnail) {
+        return null;
+    }
+    if (mThumbnailBytes != null) {
+        return mThumbnailBytes;
+    }
+    InputStream in = null;
+    try {
+        if (mAssetInputStream != null) {
+            in = mAssetInputStream;
+            if (in.markSupported()) {
+                in.reset();
+            } else {
+                Log.d(TAG, "Cannot read thumbnail from inputstream without mark/reset support");
+                return null;
+            }
+        } else if (mFilename != null) {
+            in = new FileInputStream(mFilename);
+        } else if (mSeekableFileDescriptor != null) {
+            FileDescriptor fileDescriptor = Os.dup(mSeekableFileDescriptor);
+            Os.lseek(fileDescriptor, 0, OsConstants.SEEK_SET);
+            in = new FileInputStream(fileDescriptor, true);
+        }
+        if (in == null) {
+            throw new FileNotFoundException();
+        }
+        if (in.skip(mThumbnailOffset) != mThumbnailOffset) {
+            throw new IOException("Corrupted image");
+        }
+        byte[] buffer = new byte[mThumbnailLength];
+        if (in.read(buffer) != mThumbnailLength) {
+            throw new IOException("Corrupted image");
+        }
+        mThumbnailBytes = buffer;
+        return buffer;
+    } catch (IOException | ErrnoException e) {
+        Log.d(TAG, "Encountered exception while getting thumbnail", e);
+    } finally {
+        IoUtils.closeQuietly(in);
+    }
+    return null;
+}

@@ -1,0 +1,9 @@
+public ICameraService getCameraService(){
+    synchronized (mLock) {
+        connectCameraServiceLocked();
+        if (mCameraService == null && !sCameraServiceDisabled) {
+            Log.e(TAG, "Camera service is unavailable");
+        }
+        return mCameraService;
+    }
+}

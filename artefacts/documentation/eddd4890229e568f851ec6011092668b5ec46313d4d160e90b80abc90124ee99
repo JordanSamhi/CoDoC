@@ -1,0 +1,18 @@
+
+     * Attempt to cancel the current load task.
+     * Must be called on the main thread of the process.
+     *
+     * <p>Cancellation is not an immediate operation, since the load is performed
+     * in a background thread.  If there is currently a load in progress, this
+     * method requests that the load be canceled, and notes this is the case;
+     * once the background thread has completed its work its remaining state
+     * will be cleared.  If another load request comes in during this time,
+     * it will be held until the canceled load is complete.
+     *
+     * @return Returns <tt>false</tt> if the task could not be canceled,
+     * typically because it has already completed normally, or
+     * because {@link #startLoading()} hasn't been called; returns
+     * <tt>true</tt> otherwise.  When <tt>true</tt> is returned, the task
+     * is still running and the {@link OnLoadCanceledListener} will be called
+     * when the task completes.
+     

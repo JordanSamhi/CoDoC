@@ -1,0 +1,13 @@
+public void uninstallCaCert(@Nullable ComponentName admin, byte[] certBuffer){
+    throwIfParentInstance("uninstallCaCert");
+    if (mService != null) {
+        try {
+            final String alias = getCaCertAlias(certBuffer);
+            mService.uninstallCaCerts(admin, mContext.getPackageName(), new String[] { alias });
+        } catch (CertificateException e) {
+            Log.w(TAG, "Unable to parse certificate", e);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

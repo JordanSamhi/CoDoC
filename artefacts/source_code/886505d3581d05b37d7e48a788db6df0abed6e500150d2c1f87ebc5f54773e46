@@ -1,0 +1,23 @@
+public MidiConnection connectPorts(MidiInputPort inputPort, int outputPortNumber){
+    if (outputPortNumber < 0 || outputPortNumber >= mDeviceInfo.getOutputPortCount()) {
+        throw new IllegalArgumentException("outputPortNumber out of range");
+    }
+    if (mIsDeviceClosed) {
+        return null;
+    }
+    FileDescriptor fd = inputPort.claimFileDescriptor();
+    if (fd == null) {
+        return null;
+    }
+    try {
+        IBinder token = new Binder();
+        int calleePid = mDeviceServer.connectPorts(token, fd, outputPortNumber);
+        if (calleePid != Process.myPid()) {
+            IoUtils.closeQuietly(fd);
+        }
+        return new MidiConnection(token, inputPort);
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException in connectPorts");
+        return null;
+    }
+}

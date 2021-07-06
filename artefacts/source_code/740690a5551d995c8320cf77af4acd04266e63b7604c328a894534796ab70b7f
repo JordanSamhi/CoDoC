@@ -1,0 +1,15 @@
+public View findViewByPosition(int position){
+    final int childCount = getChildCount();
+    if (childCount == 0) {
+        return null;
+    }
+    final int firstChild = getPosition(getChildAt(0));
+    final int viewPosition = position - firstChild;
+    if (viewPosition >= 0 && viewPosition < childCount) {
+        final View child = getChildAt(viewPosition);
+        if (getPosition(child) == position) {
+            return child;
+        }
+    }
+    return super.findViewByPosition(position);
+}

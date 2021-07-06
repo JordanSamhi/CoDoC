@@ -1,0 +1,22 @@
+public void subtractObscuredTouchableRegion(Region touchableRegion, View view){
+    final int childrenCount = mChildrenCount;
+    final ArrayList<View> preorderedList = buildTouchDispatchChildList();
+    final boolean customOrder = preorderedList == null && isChildrenDrawingOrderEnabled();
+    final View[] children = mChildren;
+    for (int i = childrenCount - 1; i >= 0; i--) {
+        final int childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);
+        final View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);
+        if (child == view) {
+            break;
+        }
+        if (!child.canReceivePointerEvents()) {
+            continue;
+        }
+        applyOpToRegionByBounds(touchableRegion, child, Region.Op.DIFFERENCE);
+    }
+    applyOpToRegionByBounds(touchableRegion, this, Region.Op.INTERSECT);
+    final ViewParent parent = getParent();
+    if (parent != null) {
+        parent.subtractObscuredTouchableRegion(touchableRegion, this);
+    }
+}

@@ -1,0 +1,9 @@
+public PasswordMetrics getPasswordMetrics(AuthenticationToken authToken, long handle, int userId){
+    final byte[] encrypted = loadState(PASSWORD_METRICS_NAME, handle, userId);
+    if (encrypted == null)
+        return null;
+    final byte[] decrypted = SyntheticPasswordCrypto.decrypt(authToken.deriveMetricsKey(), new byte[0], encrypted);
+    if (decrypted == null)
+        return null;
+    return VersionedPasswordMetrics.deserialize(decrypted).getMetrics();
+}

@@ -1,0 +1,12 @@
+public final boolean requestAutofill(@NonNull ComponentName activityComponent, @NonNull AutofillId autofillId){
+    final AutofillProxy proxy = mAutofillProxyForLastRequest;
+    if (proxy == null || !proxy.mComponentName.equals(activityComponent) || !proxy.mFocusedId.equals(autofillId)) {
+        return false;
+    }
+    try {
+        return proxy.requestAutofill();
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    return false;
+}

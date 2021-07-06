@@ -1,0 +1,31 @@
+public final void destroy(){
+    synchronized (mLock) {
+        if (mDestroyed) {
+            if (sDebug)
+                Log.d(TAG, "destroy(" + mId + "): already destroyed");
+            return;
+        }
+        mDestroyed = true;
+        if (sVerbose) {
+            Log.v(TAG, "destroy(): state=" + getStateAsString(mState) + ", mId=" + mId);
+        }
+        if (mChildren != null) {
+            final int numberChildren = mChildren.size();
+            if (sVerbose)
+                Log.v(TAG, "Destroying " + numberChildren + " children first");
+            for (int i = 0; i < numberChildren; i++) {
+                final ContentCaptureSession child = mChildren.get(i);
+                try {
+                    child.destroy();
+                } catch (Exception e) {
+                    Log.w(TAG, "exception destroying child session #" + i + ": " + e);
+                }
+            }
+        }
+    }
+    try {
+        flush(FLUSH_REASON_SESSION_FINISHED);
+    } finally {
+        onDestroy();
+    }
+}

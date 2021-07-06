@@ -1,0 +1,30 @@
+public void sendUssdRequest(String ussdRequest, final UssdResponseCallback callback, Handler handler){
+    checkNotNull(callback, "UssdResponseCallback cannot be null.");
+    final TelephonyManager telephonyManager = this;
+    ResultReceiver wrappedCallback = new ResultReceiver(handler) {
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle ussdResponse) {
+            Rlog.d(TAG, "USSD:" + resultCode);
+            checkNotNull(ussdResponse, "ussdResponse cannot be null.");
+            UssdResponse response = ussdResponse.getParcelable(USSD_RESPONSE);
+            if (resultCode == USSD_RETURN_SUCCESS) {
+                callback.onReceiveUssdResponse(telephonyManager, response.getUssdRequest(), response.getReturnMessage());
+            } else {
+                callback.onReceiveUssdResponseFailed(telephonyManager, response.getUssdRequest(), resultCode);
+            }
+        }
+    };
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            telephony.handleUssdRequest(getSubId(), ussdRequest, wrappedCallback);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#sendUSSDCode", e);
+        UssdResponse response = new UssdResponse(ussdRequest, "");
+        Bundle returnData = new Bundle();
+        returnData.putParcelable(USSD_RESPONSE, response);
+        wrappedCallback.send(USSD_ERROR_SERVICE_UNAVAIL, returnData);
+    }
+}

@@ -1,0 +1,9 @@
+public void onGoNegotiationCompleted(int status){
+    logd("Group Owner negotiation completed with status: " + status);
+    P2pStatus result = halStatusToP2pStatus(status);
+    if (result == P2pStatus.SUCCESS) {
+        mMonitor.broadcastP2pGoNegotiationSuccess(mInterface);
+    } else {
+        mMonitor.broadcastP2pGoNegotiationFailure(mInterface, result);
+    }
+}

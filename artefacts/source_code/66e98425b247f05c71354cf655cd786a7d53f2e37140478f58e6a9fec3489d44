@@ -1,0 +1,9 @@
+public void startLegacyVpn(VpnProfile profile, KeyStore keyStore, LinkProperties egress){
+    enforceControlPermission();
+    long token = Binder.clearCallingIdentity();
+    try {
+        startLegacyVpnPrivileged(profile, keyStore, egress);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

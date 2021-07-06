@@ -1,0 +1,18 @@
+
+     * Read the available logs into a new session.
+     *
+     * The session will contain events starting from the oldest available
+     * log on the system up to the most recent at the time of this call.
+     *
+     * A call to {@link #checkpoint()} will cause the session to contain
+     * only events that occured after that call.
+     *
+     * This call will not return until the system buffer overflows the
+     * specified timestamp. If the specified timestamp is 0, then the
+     * call will return immediately since any logs 1970 have already been
+     * overwritten (n.b. if the underlying system has the capability to
+     * store many decades of system logs, this call may fail in
+     * interesting ways.)
+     *
+     * @param horizonMs block until this timestamp is overwritten, 0 for non-blocking read.
+     

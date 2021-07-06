@@ -1,0 +1,27 @@
+public boolean equals(Object o){
+    if (o == this) {
+        return true;
+    }
+    if (!(o instanceof MediaMetadata)) {
+        return false;
+    }
+    final MediaMetadata m = (MediaMetadata) o;
+    for (int i = 0; i < METADATA_KEYS_TYPE.size(); i++) {
+        String key = METADATA_KEYS_TYPE.keyAt(i);
+        switch(METADATA_KEYS_TYPE.valueAt(i)) {
+            case METADATA_TYPE_TEXT:
+                if (!Objects.equals(getString(key), m.getString(key))) {
+                    return false;
+                }
+                break;
+            case METADATA_TYPE_LONG:
+                if (getLong(key) != m.getLong(key)) {
+                    return false;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return true;
+}

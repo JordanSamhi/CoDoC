@@ -1,0 +1,23 @@
+public byte[] readFully() throws IOException{
+    FileInputStream stream = openRead();
+    try {
+        int pos = 0;
+        int avail = stream.available();
+        byte[] data = new byte[avail];
+        while (true) {
+            int amt = stream.read(data, pos, data.length - pos);
+            if (amt <= 0) {
+                return data;
+            }
+            pos += amt;
+            avail = stream.available();
+            if (avail > data.length - pos) {
+                byte[] newData = new byte[pos + avail];
+                System.arraycopy(data, 0, newData, 0, pos);
+                data = newData;
+            }
+        }
+    } finally {
+        stream.close();
+    }
+}

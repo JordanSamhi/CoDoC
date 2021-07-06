@@ -1,0 +1,13 @@
+public AccountManagerFuture<Bundle> removeAccountAsUser(final Account account, final Activity activity, AccountManagerCallback<Bundle> callback, Handler handler, final UserHandle userHandle){
+    if (account == null)
+        throw new IllegalArgumentException("account is null");
+    if (userHandle == null)
+        throw new IllegalArgumentException("userHandle is null");
+    return new AmsTask(activity, handler, callback) {
+
+        @Override
+        public void doWork() throws RemoteException {
+            mService.removeAccountAsUser(mResponse, account, activity != null, userHandle.getIdentifier());
+        }
+    }.start();
+}

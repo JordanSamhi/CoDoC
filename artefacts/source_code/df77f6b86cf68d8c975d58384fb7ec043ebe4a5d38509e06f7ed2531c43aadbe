@@ -1,0 +1,17 @@
+public void onClick(View view){
+    if (view == mDefaultActivityButton) {
+        dismissPopup();
+        ResolveInfo defaultActivity = mAdapter.getDefaultActivity();
+        final int index = mAdapter.getDataModel().getActivityIndex(defaultActivity);
+        Intent launchIntent = mAdapter.getDataModel().chooseActivity(index);
+        if (launchIntent != null) {
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            startActivity(launchIntent, defaultActivity);
+        }
+    } else if (view == mExpandActivityOverflowButton) {
+        mIsSelectingDefaultActivity = false;
+        showPopupUnchecked(mInitialActivityCount);
+    } else {
+        throw new IllegalArgumentException();
+    }
+}

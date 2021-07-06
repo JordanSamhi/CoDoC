@@ -1,0 +1,20 @@
+public void close(){
+    try {
+        IMbmsStreamingService streamingService = mService.get();
+        if (streamingService == null || mServiceConnection == null) {
+            return;
+        }
+        streamingService.dispose(mSubscriptionId);
+        for (StreamingService s : mKnownActiveStreamingServices) {
+            s.getCallback().stop();
+        }
+        mKnownActiveStreamingServices.clear();
+        mContext.unbindService(mServiceConnection);
+    } catch (RemoteException e) {
+    } finally {
+        mService.set(null);
+        sIsInitialized.set(false);
+        mServiceConnection = null;
+        mInternalCallback.stop();
+    }
+}

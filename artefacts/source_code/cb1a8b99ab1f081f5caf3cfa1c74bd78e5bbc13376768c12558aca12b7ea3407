@@ -1,0 +1,16 @@
+public String getOperatorNumeric(){
+    String imsi = getIMSI();
+    if (imsi == null) {
+        log("getOperatorNumeric: IMSI == null");
+        return null;
+    }
+    if (mMncLength == UNINITIALIZED || mMncLength == UNKNOWN) {
+        log("getSIMOperatorNumeric: bad mncLength");
+        return null;
+    }
+    if (imsi.length() >= 3 + mMncLength) {
+        return imsi.substring(0, 3 + mMncLength);
+    } else {
+        return null;
+    }
+}

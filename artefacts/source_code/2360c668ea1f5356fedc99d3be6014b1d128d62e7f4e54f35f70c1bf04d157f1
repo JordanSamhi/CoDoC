@@ -1,0 +1,7 @@
+public void requestPermission(UsbAccessory accessory, PendingIntent pi){
+    try {
+        mService.requestAccessoryPermission(new android.hardware.usb.UsbAccessory(accessory.getManufacturer(), accessory.getModel(), accessory.getDescription(), accessory.getVersion(), accessory.getUri(), accessory.getSerial()), mContext.getPackageName(), pi);
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException in requestPermission", e);
+    }
+}

@@ -1,0 +1,35 @@
+
+     * Returns a list of {@link Locale} in the order of appropriateness for the default spell
+     * checker service.
+     *
+     * <p>If the system language is English, and the region is also explicitly specified in the
+     * system locale, the following fallback order will be applied.</p>
+     * <ul>
+     * <li>(system-locale-language, system-locale-region, system-locale-variant) (if exists)</li>
+     * <li>(system-locale-language, system-locale-region)</li>
+     * <li>("en", "US")</li>
+     * <li>("en", "GB")</li>
+     * <li>("en")</li>
+     * </ul>
+     *
+     * <p>If the system language is English, but no region is specified in the system locale,
+     * the following fallback order will be applied.</p>
+     * <ul>
+     * <li>("en")</li>
+     * <li>("en", "US")</li>
+     * <li>("en", "GB")</li>
+     * </ul>
+     *
+     * <p>If the system language is not English, the following fallback order will be applied.</p>
+     * <ul>
+     * <li>(system-locale-language, system-locale-region, system-locale-variant) (if exists)</li>
+     * <li>(system-locale-language, system-locale-region) (if exists)</li>
+     * <li>(system-locale-language) (if exists)</li>
+     * <li>("en", "US")</li>
+     * <li>("en", "GB")</li>
+     * <li>("en")</li>
+     * </ul>
+     *
+     * @param systemLocale the current system locale to be taken into consideration.
+     * @return a list of {@link Locale}. The first one is considered to be most appropriate.
+     

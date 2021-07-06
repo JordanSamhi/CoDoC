@@ -1,0 +1,42 @@
+public void handleActivityConfigurationChanged(IBinder activityToken, @NonNull Configuration overrideConfig, int displayId){
+    ActivityClientRecord r = mActivities.get(activityToken);
+    if (r == null || r.activity == null) {
+        if (DEBUG_CONFIGURATION)
+            Slog.w(TAG, "Not found target activity to report to: " + r);
+        return;
+    }
+    final boolean movedToDifferentDisplay = displayId != INVALID_DISPLAY && displayId != r.activity.getDisplayId();
+    synchronized (r) {
+        if (overrideConfig.isOtherSeqNewer(r.mPendingOverrideConfig)) {
+            if (DEBUG_CONFIGURATION) {
+                Slog.v(TAG, "Activity has newer configuration pending so drop this" + " transaction. overrideConfig=" + overrideConfig + " r.mPendingOverrideConfig=" + r.mPendingOverrideConfig);
+            }
+            return;
+        }
+        r.mPendingOverrideConfig = null;
+    }
+    if (r.overrideConfig != null && !r.overrideConfig.isOtherSeqNewer(overrideConfig) && !movedToDifferentDisplay) {
+        if (DEBUG_CONFIGURATION) {
+            Slog.v(TAG, "Activity already handled newer configuration so drop this" + " transaction. overrideConfig=" + overrideConfig + " r.overrideConfig=" + r.overrideConfig);
+        }
+        return;
+    }
+    r.overrideConfig = overrideConfig;
+    final ViewRootImpl viewRoot = r.activity.mDecor != null ? r.activity.mDecor.getViewRootImpl() : null;
+    if (movedToDifferentDisplay) {
+        if (DEBUG_CONFIGURATION)
+            Slog.v(TAG, "Handle activity moved to display, activity:" + r.activityInfo.name + ", displayId=" + displayId + ", config=" + overrideConfig);
+        final Configuration reportedConfig = performConfigurationChangedForActivity(r, mCompatConfiguration, displayId, true);
+        if (viewRoot != null) {
+            viewRoot.onMovedToDisplay(displayId, reportedConfig);
+        }
+    } else {
+        if (DEBUG_CONFIGURATION)
+            Slog.v(TAG, "Handle activity config changed: " + r.activityInfo.name + ", config=" + overrideConfig);
+        performConfigurationChangedForActivity(r, mCompatConfiguration);
+    }
+    if (viewRoot != null) {
+        viewRoot.updateConfiguration(displayId);
+    }
+    mSomeActivitiesChanged = true;
+}

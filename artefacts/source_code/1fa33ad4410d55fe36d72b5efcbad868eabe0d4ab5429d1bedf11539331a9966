@@ -1,0 +1,10 @@
+public String[] getNames() throws IOException{
+    try {
+        return mSession.getNames();
+    } catch (RuntimeException e) {
+        ExceptionUtils.maybeUnwrapIOException(e);
+        throw e;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

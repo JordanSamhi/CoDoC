@@ -1,0 +1,29 @@
+public static Predicate<TRec> filterRecord(@Nullable String filterString){
+    if (TextUtils.isEmpty(filterString)) {
+        return rec -> false;
+    }
+    if ("all".equals(filterString)) {
+        return Objects::nonNull;
+    }
+    if ("all-platform".equals(filterString)) {
+        return DumpUtils::isPlatformPackage;
+    }
+    if ("all-non-platform".equals(filterString)) {
+        return DumpUtils::isNonPlatformPackage;
+    }
+    if ("all-platform-critical".equals(filterString)) {
+        return DumpUtils::isPlatformCriticalPackage;
+    }
+    if ("all-platform-non-critical".equals(filterString)) {
+        return DumpUtils::isPlatformNonCriticalPackage;
+    }
+    final ComponentName filterCname = ComponentName.unflattenFromString(filterString);
+    if (filterCname != null) {
+        return rec -> (rec != null) && filterCname.equals(rec.getComponentName());
+    }
+    final int id = ParseUtils.parseIntWithBase(filterString, 16, -1);
+    return rec -> {
+        final ComponentName cn = rec.getComponentName();
+        return ((id != -1) && (System.identityHashCode(rec) == id)) || cn.flattenToString().toLowerCase().contains(filterString.toLowerCase());
+    };
+}

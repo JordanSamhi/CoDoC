@@ -1,0 +1,12 @@
+public String getCdmaEriText(int subId){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return null;
+        return telephony.getCdmaEriTextForSubscriber(subId, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

@@ -1,0 +1,25 @@
+public boolean updatePackage(String x_app_id, String content_type, String package_name, String class_name, int app_type, boolean need_signature, boolean further_processing){
+    if (!appTypeCheck(app_type)) {
+        Log.w(LOG_TAG, "invalid app_type " + app_type + ". app_type must be " + WapPushManagerParams.APP_TYPE_ACTIVITY + " or " + WapPushManagerParams.APP_TYPE_SERVICE);
+        return false;
+    }
+    WapPushManDBHelper dbh = getDatabase(mContext);
+    SQLiteDatabase db = dbh.getWritableDatabase();
+    WapPushManDBHelper.queryData lastapp = dbh.queryLastApp(db, x_app_id, content_type);
+    if (lastapp == null) {
+        db.close();
+        return false;
+    }
+    ContentValues values = new ContentValues();
+    String where = "x_wap_application=\'" + x_app_id + "\'" + " and content_type=\'" + content_type + "\'" + " and install_order=" + lastapp.installOrder;
+    values.put("package_name", package_name);
+    values.put("class_name", class_name);
+    values.put("app_type", app_type);
+    values.put("need_signature", need_signature ? 1 : 0);
+    values.put("further_processing", further_processing ? 1 : 0);
+    int num = db.update(APPID_TABLE_NAME, values, where, null);
+    if (LOCAL_LOGV)
+        Log.v(LOG_TAG, "update:" + x_app_id + ":" + content_type + " " + package_name + "." + class_name + ", sq:" + lastapp.installOrder);
+    db.close();
+    return num > 0;
+}

@@ -1,0 +1,17 @@
+public GpsStatus getGpsStatus(@Nullable GpsStatus status){
+    if (Compatibility.isChangeEnabled(GPS_STATUS_USAGE)) {
+        throw new UnsupportedOperationException("GpsStatus APIs not supported, please use GnssStatus APIs instead");
+    }
+    GnssStatus gnssStatus = mGnssStatusListenerManager.getGnssStatus();
+    int ttff = mGnssStatusListenerManager.getTtff();
+    if (gnssStatus != null) {
+        if (status == null) {
+            status = GpsStatus.create(gnssStatus, ttff);
+        } else {
+            status.setStatus(gnssStatus, ttff);
+        }
+    } else if (status == null) {
+        status = GpsStatus.createEmpty();
+    }
+    return status;
+}

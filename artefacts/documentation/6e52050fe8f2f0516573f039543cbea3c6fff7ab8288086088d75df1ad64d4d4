@@ -1,0 +1,15 @@
+
+             * Detect any network traffic from the calling app which is not wrapped in SSL/TLS. This
+             * can help you detect places that your app is inadvertently sending cleartext data
+             * across the network.
+             *
+             * <p>Using {@link #penaltyDeath()} or {@link #penaltyDeathOnCleartextNetwork()} will
+             * block further traffic on that socket to prevent accidental data leakage, in addition
+             * to crashing your process.
+             *
+             * <p>Using {@link #penaltyDropBox()} will log the raw contents of the packet that
+             * triggered the violation.
+             *
+             * <p>This inspects both IPv4/IPv6 and TCP/UDP network traffic, but it may be subject to
+             * false positives, such as when STARTTLS protocols or HTTP proxies are used.
+             

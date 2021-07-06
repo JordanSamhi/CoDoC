@@ -1,0 +1,20 @@
+public void clearCustomPrinterIconCache(){
+    throwIfCalledOnMainThread();
+    synchronized (mLock) {
+        throwIfDestroyedLocked();
+        mCanUnbind = false;
+    }
+    try {
+        mClearCustomPrinterIconCache.clearCustomPrinterIconCache(getRemoteInstanceLazy());
+    } catch (RemoteException | TimeoutException | InterruptedException e) {
+        Slog.e(LOG_TAG, "Error clearing custom printer icon cache.", e);
+    } finally {
+        if (DEBUG) {
+            Slog.i(LOG_TAG, "[user: " + mUserHandle.getIdentifier() + "] clearCustomPrinterIconCache()");
+        }
+        synchronized (mLock) {
+            mCanUnbind = true;
+            mLock.notifyAll();
+        }
+    }
+}

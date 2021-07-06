@@ -1,0 +1,19 @@
+public static int mapToInternalProcessState(int procState){
+    if (procState == ActivityManager.PROCESS_STATE_NONEXISTENT) {
+        return ActivityManager.PROCESS_STATE_NONEXISTENT;
+    } else if (procState == ActivityManager.PROCESS_STATE_TOP) {
+        return Uid.PROCESS_STATE_TOP;
+    } else if (ActivityManager.isForegroundService(procState)) {
+        return Uid.PROCESS_STATE_FOREGROUND_SERVICE;
+    } else if (procState <= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND) {
+        return Uid.PROCESS_STATE_FOREGROUND;
+    } else if (procState <= ActivityManager.PROCESS_STATE_RECEIVER) {
+        return Uid.PROCESS_STATE_BACKGROUND;
+    } else if (procState <= ActivityManager.PROCESS_STATE_TOP_SLEEPING) {
+        return Uid.PROCESS_STATE_TOP_SLEEPING;
+    } else if (procState <= ActivityManager.PROCESS_STATE_HEAVY_WEIGHT) {
+        return Uid.PROCESS_STATE_HEAVY_WEIGHT;
+    } else {
+        return Uid.PROCESS_STATE_CACHED;
+    }
+}

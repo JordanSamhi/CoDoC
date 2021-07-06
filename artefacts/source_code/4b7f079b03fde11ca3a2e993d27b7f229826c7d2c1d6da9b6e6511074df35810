@@ -1,0 +1,14 @@
+public void writeRilCallList(int phoneId, ArrayList<GsmCdmaConnection> connections, String countryIso){
+    logv("Logging CallList Changed Connections Size = " + connections.size());
+    InProgressCallSession callSession = startNewCallSessionIfNeeded(phoneId);
+    if (callSession == null) {
+        Rlog.e(TAG, "writeRilCallList: Call session is missing");
+    } else {
+        RilCall[] calls = convertConnectionsToRilCalls(connections, countryIso);
+        callSession.addEvent(new CallSessionEventBuilder(TelephonyCallSession.Event.Type.RIL_CALL_LIST_CHANGED).setRilCalls(calls));
+        logv("Logged Call list changed");
+        if (callSession.isPhoneIdle() && disconnectReasonsKnown(calls)) {
+            finishCallSession(callSession);
+        }
+    }
+}

@@ -1,0 +1,15 @@
+public boolean kindofEquals(BaseBundle other){
+    if (other == null) {
+        return false;
+    }
+    if (isDefinitelyEmpty() && other.isDefinitelyEmpty()) {
+        return true;
+    }
+    if (isParcelled() != other.isParcelled()) {
+        return false;
+    } else if (isParcelled()) {
+        return mParcelledData.compareData(other.mParcelledData) == 0;
+    } else {
+        return mMap.equals(other.mMap);
+    }
+}

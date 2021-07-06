@@ -1,0 +1,12 @@
+public int registerNetworkProvider(@NonNull NetworkProvider provider){
+    if (provider.getProviderId() != NetworkProvider.ID_NONE) {
+        throw new IllegalStateException("NetworkProviders can only be registered once");
+    }
+    try {
+        int providerId = mService.registerNetworkProvider(provider.getMessenger(), provider.getName());
+        provider.setProviderId(providerId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return provider.getProviderId();
+}

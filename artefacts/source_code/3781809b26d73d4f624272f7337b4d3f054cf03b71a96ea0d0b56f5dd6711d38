@@ -1,0 +1,11 @@
+public long seekTo(long pos) throws IOException{
+    if (mWrapped != null) {
+        return mWrapped.seekTo(pos);
+    } else {
+        try {
+            return Os.lseek(mFd, pos, SEEK_SET);
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+    }
+}

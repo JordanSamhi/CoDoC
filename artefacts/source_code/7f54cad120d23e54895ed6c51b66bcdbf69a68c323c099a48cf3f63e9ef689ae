@@ -1,0 +1,9 @@
+public void temporarilyAllowReordering(){
+    mHandler.removeCallbacks(mOnTemporaryReorderingExpired);
+    mHandler.postDelayed(mOnTemporaryReorderingExpired, TEMPORARY_REORDERING_ALLOWED_DURATION);
+    if (!mIsTemporaryReorderingAllowed) {
+        mTemporaryReorderingStart = SystemClock.elapsedRealtime();
+    }
+    mIsTemporaryReorderingAllowed = true;
+    updateAllowedStates();
+}

@@ -1,0 +1,11 @@
+public void setNdefPushMessage(NdefMessage message, Activity activity, int flags){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+    }
+    if (activity == null) {
+        throw new NullPointerException("activity cannot be null");
+    }
+    mNfcActivityManager.setNdefPushMessage(activity, message, flags);
+}

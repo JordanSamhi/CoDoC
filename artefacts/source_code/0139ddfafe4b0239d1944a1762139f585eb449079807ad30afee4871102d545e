@@ -1,0 +1,14 @@
+public final TestSuiteBuilder includeAllPackagesUnderHere(){
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    String callingClassName = null;
+    String thisClassName = TestSuiteBuilder.class.getName();
+    for (int i = 0; i < stackTraceElements.length; i++) {
+        StackTraceElement element = stackTraceElements[i];
+        if (thisClassName.equals(element.getClassName()) && "includeAllPackagesUnderHere".equals(element.getMethodName())) {
+            callingClassName = stackTraceElements[i + 1].getClassName();
+            break;
+        }
+    }
+    String packageName = parsePackageNameFromClassName(callingClassName);
+    return includePackages(packageName);
+}

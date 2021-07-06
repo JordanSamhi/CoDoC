@@ -1,0 +1,21 @@
+
+     * Requests a Tuner Demux resource.
+     *
+     * <p>There are three possible scenarios:
+     * <ul>
+     * <li>If there is Demux available, the API would send the handle back.
+     *
+     * <li>If no Demux is available but the current request has a higher priority than other uses of
+     * demuxes, the API will send {@link IResourcesReclaimListener#onReclaimResources()} to the
+     * {@link Tuner}. Tuner would handle the resource reclaim on the holder of lower priority and
+     * notify the holder of its resource loss.
+     *
+     * <li>If no Demux system can be granted, the API would return false.
+     * <ul>
+     *
+     * @param request {@link TunerDemuxRequest} information of the current request.
+     * @param demuxHandle a one-element array to return the granted Demux handle.
+     *                    If no Demux granted, this will return {@link #INVALID_RESOURCE_HANDLE}.
+     *
+     * @return true if there is Demux granted.
+     

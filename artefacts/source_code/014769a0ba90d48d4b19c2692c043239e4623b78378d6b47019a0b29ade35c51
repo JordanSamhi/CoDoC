@@ -1,0 +1,11 @@
+public Builder addStroke(@NonNull StrokeDescription strokeDescription){
+    if (mStrokes.size() >= MAX_STROKE_COUNT) {
+        throw new IllegalStateException("Attempting to add too many strokes to a gesture. Maximum is " + MAX_STROKE_COUNT + ", got " + mStrokes.size());
+    }
+    mStrokes.add(strokeDescription);
+    if (getTotalDuration(mStrokes) > MAX_GESTURE_DURATION_MS) {
+        mStrokes.remove(strokeDescription);
+        throw new IllegalStateException("Gesture would exceed maximum duration with new stroke");
+    }
+    return this;
+}

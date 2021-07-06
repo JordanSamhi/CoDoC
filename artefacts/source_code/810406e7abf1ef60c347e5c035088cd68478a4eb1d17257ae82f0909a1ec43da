@@ -1,0 +1,26 @@
+public void showSoftInput(int flags, ResultReceiver resultReceiver){
+    if (DEBUG)
+        Log.v(TAG, "showSoftInput()");
+    if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R && !mSystemCallingShowSoftInput) {
+        Log.e(TAG, " IME shouldn't call showSoftInput on itself." + " Use requestShowSelf(int) itself");
+        return;
+    }
+    final boolean wasVisible = mIsPreRendered ? mDecorViewVisible && mWindowVisible : isInputViewShown();
+    if (dispatchOnShowInputRequested(flags, false)) {
+        if (mIsPreRendered) {
+            if (DEBUG) {
+                Log.v(TAG, "Making IME window visible");
+            }
+            onPreRenderedWindowVisibilityChanged(true);
+        } else {
+            showWindow(true);
+        }
+        applyVisibilityInInsetsConsumerIfNecessary(true);
+    }
+    setImeWindowStatus(mapToImeWindowStatus(), mBackDisposition);
+    final boolean isVisible = mIsPreRendered ? mDecorViewVisible && mWindowVisible : isInputViewShown();
+    final boolean visibilityChanged = isVisible != wasVisible;
+    if (resultReceiver != null) {
+        resultReceiver.send(visibilityChanged ? InputMethodManager.RESULT_SHOWN : (wasVisible ? InputMethodManager.RESULT_UNCHANGED_SHOWN : InputMethodManager.RESULT_UNCHANGED_HIDDEN), null);
+    }
+}

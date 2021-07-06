@@ -1,0 +1,18 @@
+public void pullRules(List<StatsEvent> events){
+    synchronized (mConfig) {
+        final int numConfigs = mConfigs.size();
+        int id = 0;
+        for (int i = 0; i < numConfigs; i++) {
+            final int user = mConfigs.keyAt(i);
+            final ZenModeConfig config = mConfigs.valueAt(i);
+            SysUiStatsEvent.Builder data = mStatsEventBuilderFactory.newBuilder().setAtomId(DND_MODE_RULE).writeInt(user).writeBoolean(config.manualRule != null).writeBoolean(config.areChannelsBypassingDnd).writeInt(ROOT_CONFIG).writeString("").writeInt(Process.SYSTEM_UID).addBooleanAnnotation(ANNOTATION_ID_IS_UID, true).writeByteArray(config.toZenPolicy().toProto());
+            events.add(data.build());
+            if (config.manualRule != null && config.manualRule.enabler != null) {
+                ruleToProto(user, config.manualRule, events);
+            }
+            for (ZenRule rule : config.automaticRules.values()) {
+                ruleToProto(user, rule, events);
+            }
+        }
+    }
+}

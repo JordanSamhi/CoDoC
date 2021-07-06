@@ -1,0 +1,15 @@
+public final void setServiceInfo(AccessibilityServiceInfo info){
+    final IAccessibilityServiceConnection connection;
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+        AccessibilityInteractionClient.getInstance().clearCache();
+        connection = AccessibilityInteractionClient.getInstance().getConnection(mConnectionId);
+    }
+    if (connection != null) {
+        try {
+            connection.setServiceInfo(info);
+        } catch (RemoteException re) {
+            Log.w(LOG_TAG, "Error while setting AccessibilityServiceInfo", re);
+        }
+    }
+}

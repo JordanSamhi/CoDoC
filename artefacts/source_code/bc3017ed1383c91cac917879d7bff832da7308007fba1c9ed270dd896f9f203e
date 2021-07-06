@@ -1,0 +1,13 @@
+public ServiceState getServiceState(){
+    if (mSST == null || mSST.mSS.getState() != ServiceState.STATE_IN_SERVICE) {
+        final boolean isImsEnabled = mImsPhone != null && (mImsPhone.isVolteEnabled() || mImsPhone.isVideoEnabled() || mImsPhone.isWifiCallingEnabled());
+        if (isImsEnabled) {
+            return ServiceState.mergeServiceStates(((mSST == null) ? new ServiceState() : mSST.mSS), mImsPhone.getServiceState());
+        }
+    }
+    if (mSST != null) {
+        return mSST.mSS;
+    } else {
+        return new ServiceState();
+    }
+}

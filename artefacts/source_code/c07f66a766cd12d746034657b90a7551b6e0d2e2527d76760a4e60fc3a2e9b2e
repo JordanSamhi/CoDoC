@@ -1,0 +1,8 @@
+public void testFullTransportBackup_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    String[] packages = { TEST_PACKAGE };
+    backupManagerService.fullTransportBackup(mUserTwoId, packages);
+    verify(mUserOneService, never()).fullTransportBackup(packages);
+}

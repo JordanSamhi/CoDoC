@@ -1,0 +1,8 @@
+public List<TimeZoneMapping> getEffectiveTimeZoneMappingsAt(long whenMillis){
+    List<libcore.timezone.CountryTimeZones.TimeZoneMapping> delegateList = mDelegate.getEffectiveTimeZoneMappingsAt(whenMillis);
+    List<TimeZoneMapping> toReturn = new ArrayList<>(delegateList.size());
+    for (libcore.timezone.CountryTimeZones.TimeZoneMapping delegateMapping : delegateList) {
+        toReturn.add(new TimeZoneMapping(delegateMapping));
+    }
+    return Collections.unmodifiableList(toReturn);
+}

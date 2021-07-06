@@ -1,0 +1,11 @@
+public void dismiss(){
+    if (mCallback == null) {
+        Log.w(TAG, "KeyguardCallback was unexpectedly null");
+        return;
+    }
+    try {
+        mCallback.onDismiss();
+    } catch (RemoteException e) {
+        Log.e(TAG, "onDismiss failed", e);
+    }
+}

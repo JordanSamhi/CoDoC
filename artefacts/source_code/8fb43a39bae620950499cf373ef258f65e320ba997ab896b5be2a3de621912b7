@@ -1,0 +1,12 @@
+public void registerFocusObserver(FocusObserver observer){
+    synchronized (observer.mRegistrations) {
+        if (observer.mRegistrations.containsKey(mToken.asBinder())) {
+            throw new IllegalStateException("Focus observer already registered with input token");
+        }
+        observer.mRegistrations.put(mToken.asBinder(), this);
+        try {
+            mToken.registerFocusObserver(observer.mIObserver);
+        } catch (RemoteException e) {
+        }
+    }
+}

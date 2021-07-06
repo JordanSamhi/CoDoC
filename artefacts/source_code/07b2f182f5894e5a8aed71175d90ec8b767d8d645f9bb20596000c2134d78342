@@ -1,0 +1,10 @@
+public static MotionEvent obtain(long downTime, long eventTime, int action, int pointerCount, PointerProperties[] pointerProperties, PointerCoords[] pointerCoords, int metaState, int buttonState, float xPrecision, float yPrecision, int deviceId, int edgeFlags, int source, int displayId, int flags){
+    MotionEvent ev = obtain();
+    final boolean success = ev.initialize(deviceId, source, displayId, action, flags, edgeFlags, metaState, buttonState, CLASSIFICATION_NONE, 0, 0, xPrecision, yPrecision, downTime * NS_PER_MS, eventTime * NS_PER_MS, pointerCount, pointerProperties, pointerCoords);
+    if (!success) {
+        Log.e(TAG, "Could not initialize MotionEvent");
+        ev.recycle();
+        return null;
+    }
+    return ev;
+}

@@ -1,0 +1,18 @@
+public String getMimeTypeForDownloadedFile(long id){
+    Query query = new Query().setFilterById(id);
+    Cursor cursor = null;
+    try {
+        cursor = query(query);
+        if (cursor == null) {
+            return null;
+        }
+        while (cursor.moveToFirst()) {
+            return cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MEDIA_TYPE));
+        }
+    } finally {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    return null;
+}

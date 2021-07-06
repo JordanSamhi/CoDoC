@@ -1,0 +1,6 @@
+public Intent createOpenDocumentTreeIntent(){
+    final String rootId = isEmulated() ? DocumentsContract.EXTERNAL_STORAGE_PRIMARY_EMULATED_ROOT_ID : mFsUuid;
+    final Uri rootUri = DocumentsContract.buildRootUri(DocumentsContract.EXTERNAL_STORAGE_PROVIDER_AUTHORITY, rootId);
+    final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).putExtra(DocumentsContract.EXTRA_INITIAL_URI, rootUri).putExtra(DocumentsContract.EXTRA_SHOW_ADVANCED, true);
+    return intent;
+}

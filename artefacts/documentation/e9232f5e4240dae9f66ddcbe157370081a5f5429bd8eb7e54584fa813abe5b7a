@@ -1,0 +1,37 @@
+
+     * Determine whether or not the {@code surface} in its current state is suitable to be included
+     * in a {@link CameraDevice#createCaptureSession capture session} as an output.
+     *
+     * <p>Not all surfaces are usable with the {@link CameraDevice}, and not all configurations
+     * of that {@code surface} are compatible. Some classes that provide the {@code surface} are
+     * compatible with the {@link CameraDevice} in general
+     * (see {@link #isOutputSupportedFor(Class)}, but it is the caller's responsibility to put the
+     * {@code surface} into a state that will be compatible with the {@link CameraDevice}.</p>
+     *
+     * <p>Reasons for a {@code surface} being specifically incompatible might be:
+     * <ul>
+     * <li>Using a format that's not listed by {@link #getOutputFormats}
+     * <li>Using a format/size combination that's not listed by {@link #getOutputSizes}
+     * <li>The {@code surface} itself is not in a state where it can service a new producer.</p>
+     * </li>
+     * </ul>
+     *
+     * <p>Surfaces from flexible sources will return true even if the exact size of the Surface does
+     * not match a camera-supported size, as long as the format (or class) is supported and the
+     * camera device supports a size that is equal to or less than 1080p in that format. If such as
+     * Surface is used to create a capture session, it will have its size rounded to the nearest
+     * supported size, below or equal to 1080p. Flexible sources include SurfaceView, SurfaceTexture,
+     * and ImageReader.</p>
+     *
+     * <p>This is not an exhaustive list; see the particular class's documentation for further
+     * possible reasons of incompatibility.</p>
+     *
+     * @param surface a non-{@code null} {@link Surface} object reference
+     * @return {@code true} if this is supported, {@code false} otherwise
+     *
+     * @throws NullPointerException if {@code surface} was {@code null}
+     * @throws IllegalArgumentException if the Surface endpoint is no longer valid
+     *
+     * @see CameraDevice#createCaptureSession
+     * @see #isOutputSupportedFor(Class)
+     

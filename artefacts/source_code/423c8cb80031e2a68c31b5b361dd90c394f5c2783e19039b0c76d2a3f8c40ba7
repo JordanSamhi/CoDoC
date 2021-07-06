@@ -1,0 +1,10 @@
+public boolean hasBadge(@UserIdInt int userId){
+    if (!isProfile(userId)) {
+        return false;
+    }
+    try {
+        return mService.hasBadge(userId);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

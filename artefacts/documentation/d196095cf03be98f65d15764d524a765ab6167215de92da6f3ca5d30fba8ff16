@@ -1,0 +1,40 @@
+
+         * Triggers a custom UI before before autofilling the screen with any data set in this
+         * response.
+         *
+         * <p><b>Note:</b> Although the name of this method suggests that it should be used just for
+         * authentication flow, it can be used for other advanced flows; see {@link AutofillService}
+         * for examples.
+         *
+         * <p>This method is similar to
+         * {@link #setAuthentication(AutofillId[], IntentSender, RemoteViews)}, but also accepts
+         * an {@link InlinePresentation} presentation which is required for authenticating through
+         * the inline autofill flow.
+         *
+         * <p><b>Note:</b> {@link #setHeader(RemoteViews)} or {@link #setFooter(RemoteViews)} does
+         * not work with {@link InlinePresentation}.</p>
+         *
+         * @param authentication Intent to an activity with your authentication flow.
+         * @param presentation The presentation to visualize the response.
+         * @param inlinePresentation The inlinePresentation to visualize the response inline.
+         * @param ids id of Views that when focused will display the authentication UI.
+         *
+         * @return This builder.
+         *
+         * @throws IllegalArgumentException if any of the following occurs:
+         * <ul>
+         *   <li>{@code ids} is {@code null}</li>
+         *   <li>{@code ids} is empty</li>
+         *   <li>{@code ids} contains a {@code null} element</li>
+         *   <li>both {@code authentication} and {@code presentation} are {@code null}</li>
+         *   <li>both {@code authentication} and {@code presentation} are non-{@code null}</li>
+         *   <li>both {@code authentication} and {@code inlinePresentation} are {@code null}</li>
+         *   <li>both {@code authentication} and {@code inlinePresentation} are
+         *   non-{@code null}</li>
+         * </ul>
+         *
+         * @throws IllegalStateException if a {@link #setHeader(RemoteViews) header} or a
+         * {@link #setFooter(RemoteViews) footer} are already set for this builder.
+         *
+         * @see android.app.PendingIntent#getIntentSender()
+         

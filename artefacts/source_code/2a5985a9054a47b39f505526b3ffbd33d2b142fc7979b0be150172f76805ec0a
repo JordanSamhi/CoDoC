@@ -1,0 +1,14 @@
+public void clearTextField() throws UiObjectNotFoundException{
+    Tracer.trace();
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    Rect rect = getVisibleBounds(node);
+    getInteractionController().longTapNoSync(rect.left + 20, rect.centerY());
+    UiObject selectAll = new UiObject(new UiSelector().descriptionContains("Select all"));
+    if (selectAll.waitForExists(50))
+        selectAll.click();
+    SystemClock.sleep(250);
+    getInteractionController().sendKey(KeyEvent.KEYCODE_DEL, 0);
+}

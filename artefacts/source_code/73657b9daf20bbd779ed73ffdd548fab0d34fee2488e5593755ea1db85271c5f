@@ -1,0 +1,9 @@
+public void unregisterSuggestionConnectionStatusListener(int listenerIdentifier, String packageName){
+    ExternalCallbackTracker<ISuggestionConnectionStatusListener> listenersTracker = mSuggestionStatusListenerPerApp.get(packageName);
+    if (listenersTracker == null || listenersTracker.remove(listenerIdentifier) == null) {
+        Log.w(TAG, "unregisterSuggestionConnectionStatusListener: Listener[" + listenerIdentifier + "] from " + packageName + " already unregister.");
+    }
+    if (listenersTracker != null && listenersTracker.getNumCallbacks() == 0) {
+        mSuggestionStatusListenerPerApp.remove(packageName);
+    }
+}

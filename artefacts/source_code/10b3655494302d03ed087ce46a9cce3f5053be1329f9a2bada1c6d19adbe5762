@@ -1,0 +1,19 @@
+public static void writePrintAttributes(@NonNull Context context, @NonNull DualDumpOutputStream proto, String idName, long id, @NonNull PrintAttributes attributes){
+    long token = proto.start(idName, id);
+    PrintAttributes.MediaSize mediaSize = attributes.getMediaSize();
+    if (mediaSize != null) {
+        writeMediaSize(context, proto, "media_size", PrintAttributesProto.MEDIA_SIZE, mediaSize);
+        proto.write("is_portrait", PrintAttributesProto.IS_PORTRAIT, attributes.isPortrait());
+    }
+    PrintAttributes.Resolution res = attributes.getResolution();
+    if (res != null) {
+        writeResolution(proto, "resolution", PrintAttributesProto.RESOLUTION, res);
+    }
+    PrintAttributes.Margins minMargins = attributes.getMinMargins();
+    if (minMargins != null) {
+        writeMargins(proto, "min_margings", PrintAttributesProto.MIN_MARGINS, minMargins);
+    }
+    proto.write("color_mode", PrintAttributesProto.COLOR_MODE, attributes.getColorMode());
+    proto.write("duplex_mode", PrintAttributesProto.DUPLEX_MODE, attributes.getDuplexMode());
+    proto.end(token);
+}

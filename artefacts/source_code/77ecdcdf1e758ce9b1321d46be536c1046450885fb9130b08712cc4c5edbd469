@@ -1,0 +1,23 @@
+public int getFailureCount(String bssid, int reason){
+    AvailableNetworkFailureCount availableNetworkFailureCount = mRecentAvailableNetworks.get(bssid);
+    if (availableNetworkFailureCount == null) {
+        return 0;
+    }
+    String ssid = availableNetworkFailureCount.ssid;
+    Pair<AvailableNetworkFailureCount, Integer> ssidFails = mSsidFailureCount.get(ssid);
+    if (ssidFails == null) {
+        Log.d(TAG, "getFailureCount: Could not find SSID count for " + ssid);
+        return 0;
+    }
+    final AvailableNetworkFailureCount failCount = ssidFails.first;
+    switch(reason) {
+        case FAILURE_CODE_ASSOCIATION:
+            return failCount.associationRejection;
+        case FAILURE_CODE_AUTHENTICATION:
+            return failCount.authenticationFailure;
+        case FAILURE_CODE_DHCP:
+            return failCount.dhcpFailure;
+        default:
+            return 0;
+    }
+}

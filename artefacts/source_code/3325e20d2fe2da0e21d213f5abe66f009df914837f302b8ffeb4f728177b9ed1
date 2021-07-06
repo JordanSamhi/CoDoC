@@ -1,0 +1,30 @@
+public static void decrementExpectedActivityCount(Class klass){
+    if (klass == null) {
+        return;
+    }
+    final int limit;
+    synchronized (StrictMode.class) {
+        if ((sVmPolicy.mask & DETECT_VM_ACTIVITY_LEAKS) == 0) {
+            return;
+        }
+        Integer expected = sExpectedActivityInstanceCount.get(klass);
+        int newExpected = (expected == null || expected == 0) ? 0 : expected - 1;
+        if (newExpected == 0) {
+            sExpectedActivityInstanceCount.remove(klass);
+        } else {
+            sExpectedActivityInstanceCount.put(klass, newExpected);
+        }
+        limit = newExpected + 1;
+    }
+    int actual = InstanceTracker.getInstanceCount(klass);
+    if (actual <= limit) {
+        return;
+    }
+    System.gc();
+    System.runFinalization();
+    System.gc();
+    long instances = VMDebug.countInstancesOfClass(klass, false);
+    if (instances > limit) {
+        onVmPolicyViolation(new InstanceCountViolation(klass, instances, limit));
+    }
+}

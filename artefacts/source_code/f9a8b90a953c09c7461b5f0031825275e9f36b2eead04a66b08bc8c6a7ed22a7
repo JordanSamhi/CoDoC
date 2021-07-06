@@ -1,0 +1,21 @@
+public void setForegroundGravity(int foregroundGravity){
+    if (getForegroundGravity() != foregroundGravity) {
+        super.setForegroundGravity(foregroundGravity);
+        final Drawable foreground = getForeground();
+        if (getForegroundGravity() == Gravity.FILL && foreground != null) {
+            Rect padding = new Rect();
+            if (foreground.getPadding(padding)) {
+                mForegroundPaddingLeft = padding.left;
+                mForegroundPaddingTop = padding.top;
+                mForegroundPaddingRight = padding.right;
+                mForegroundPaddingBottom = padding.bottom;
+            }
+        } else {
+            mForegroundPaddingLeft = 0;
+            mForegroundPaddingTop = 0;
+            mForegroundPaddingRight = 0;
+            mForegroundPaddingBottom = 0;
+        }
+        requestLayout();
+    }
+}

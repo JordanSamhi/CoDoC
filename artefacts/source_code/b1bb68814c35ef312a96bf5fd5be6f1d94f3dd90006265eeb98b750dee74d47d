@@ -1,0 +1,8 @@
+public void injectGnssMeasurementCorrections(@NonNull GnssMeasurementCorrections measurementCorrections){
+    Preconditions.checkArgument(measurementCorrections != null);
+    try {
+        mService.injectGnssMeasurementCorrections(measurementCorrections, mContext.getPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

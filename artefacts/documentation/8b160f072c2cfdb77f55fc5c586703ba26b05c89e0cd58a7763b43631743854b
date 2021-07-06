@@ -1,0 +1,13 @@
+
+     * Pauses Watchdog action for the currently running thread. Useful before executing long running
+     * operations that could falsely trigger the watchdog. Each call to this will require a matching
+     * call to {@link #resumeWatchingCurrentThread}.
+     *
+     * <p>If the current thread has not been added to the Watchdog, this call is a no-op.
+     *
+     * <p>If the Watchdog is already paused for the current thread, this call adds
+     * adds another pause and will require an additional {@link #resumeCurrentThread} to resume.
+     *
+     * <p>Note: Use with care, as any deadlocks on the current thread will be undetected until all
+     * pauses have been resumed.
+     

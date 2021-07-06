@@ -1,0 +1,23 @@
+public Map<Integer, List<Preference>> getInjectedSettings(Context prefContext, final int profileId){
+    final UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+    final List<UserHandle> profiles = um.getUserProfiles();
+    final ArrayMap<Integer, List<Preference>> result = new ArrayMap<>();
+    mSettings.clear();
+    for (UserHandle userHandle : profiles) {
+        if (profileId == UserHandle.USER_CURRENT || profileId == userHandle.getIdentifier()) {
+            final List<Preference> prefs = new ArrayList<>();
+            Iterable<InjectedSetting> settings = getSettings(userHandle);
+            for (InjectedSetting setting : settings) {
+                Preference preference = createPreference(prefContext, setting);
+                populatePreference(preference, setting);
+                prefs.add(preference);
+                mSettings.add(new Setting(setting, preference));
+            }
+            if (!prefs.isEmpty()) {
+                result.put(userHandle.getIdentifier(), prefs);
+            }
+        }
+    }
+    reloadStatusMessages();
+    return result;
+}

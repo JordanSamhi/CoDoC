@@ -1,0 +1,22 @@
+public boolean checkIsSetupRestricted(){
+    if (mMonitorStartedCount <= 0 && (mCar == null || !mCar.isConnected())) {
+        if (isVerboseLoggable()) {
+            Log.v(TAG, "Starting monitor to perform restriction check, returning false for " + "restrictions in the meantime");
+        }
+        mStopMonitorAfterUxCheck = true;
+        startMonitor();
+        return false;
+    }
+    if (mRestrictionsManager == null) {
+        if (isVerboseLoggable()) {
+            Log.v(TAG, "Restrictions manager null in checkIsSetupRestricted, returning false");
+        }
+        return false;
+    }
+    try {
+        return checkIsSetupRestricted(mRestrictionsManager.getCurrentCarUxRestrictions());
+    } catch (CarNotConnectedException e) {
+        Log.e(TAG, "CarNotConnected in checkIsSetupRestricted, returning false", e);
+    }
+    return false;
+}

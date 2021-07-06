@@ -1,0 +1,7 @@
+public void clear_withNonEmptyTertiaryKeysTable_clearsTertiaryKeysTable() throws Exception{
+    String secondaryKeyAlias = "secondaryKeyAlias";
+    TertiaryKeysTable tertiaryKeysTable = mBackupEncryptionDb.getTertiaryKeysTable();
+    tertiaryKeysTable.addKey(new TertiaryKey(secondaryKeyAlias, "packageName", new byte[0]));
+    mBackupEncryptionDb.clear();
+    assertThat(tertiaryKeysTable.getAllKeys(secondaryKeyAlias)).isEmpty();
+}

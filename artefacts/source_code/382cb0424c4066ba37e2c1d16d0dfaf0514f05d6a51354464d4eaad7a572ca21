@@ -1,0 +1,15 @@
+public void setWakeLockScreenSensorActive(boolean active){
+    for (ScrimState state : ScrimState.values()) {
+        state.setWakeLockScreenSensorActive(active);
+    }
+    if (mState == ScrimState.PULSING) {
+        float newBehindAlpha = mState.getBehindAlpha();
+        if (mBehindAlpha != newBehindAlpha) {
+            mBehindAlpha = newBehindAlpha;
+            if (isNaN(mBehindAlpha)) {
+                throw new IllegalStateException("Scrim opacity is NaN for state: " + mState + ", back: " + mBehindAlpha);
+            }
+            updateScrims();
+        }
+    }
+}

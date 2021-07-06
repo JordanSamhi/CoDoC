@@ -1,0 +1,16 @@
+public static T[] appendElement(Class<T> kind, @Nullable T[] array, T element, boolean allowDuplicates){
+    final T[] result;
+    final int end;
+    if (array != null) {
+        if (!allowDuplicates && contains(array, element))
+            return array;
+        end = array.length;
+        result = (T[]) Array.newInstance(kind, end + 1);
+        System.arraycopy(array, 0, result, 0, end);
+    } else {
+        end = 0;
+        result = (T[]) Array.newInstance(kind, 1);
+    }
+    result[end] = element;
+    return result;
+}

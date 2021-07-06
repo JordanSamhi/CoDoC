@@ -1,0 +1,59 @@
+public synchronized void onCaptureCompleted(CaptureResult result){
+    if (result == null) {
+        Log.w(TAG, "onCaptureCompleted - missing result, skipping AF update");
+        return;
+    }
+    Key<Integer> keyAfState = CaptureResult.CONTROL_AF_STATE;
+    if (keyAfState == null) {
+        Log.e(TAG, "onCaptureCompleted - missing android.control.afState key, " + "skipping AF update");
+        return;
+    }
+    Key<Integer> keyAfMode = CaptureResult.CONTROL_AF_MODE;
+    if (keyAfMode == null) {
+        Log.e(TAG, "onCaptureCompleted - missing android.control.afMode key, " + "skipping AF update");
+        return;
+    }
+    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+    Integer afMode = result.get(CaptureResult.CONTROL_AF_MODE);
+    if (afState == null) {
+        Log.w(TAG, "onCaptureCompleted - missing android.control.afState !");
+        return;
+    } else if (afMode == null) {
+        Log.w(TAG, "onCaptureCompleted - missing android.control.afMode !");
+        return;
+    }
+    if (DEBUG_LOGGING)
+        Log.d(TAG, "onCaptureCompleted - new AF mode = " + afMode + " new AF state = " + afState);
+    if (mLastAfState == afState && afMode == mLastAfMode) {
+        return;
+    }
+    if (VERBOSE_LOGGING)
+        Log.v(TAG, "onCaptureCompleted - new AF mode = " + afMode + " new AF state = " + afState);
+    mLastAfState = afState;
+    mLastAfMode = afMode;
+    switch(afState) {
+        case CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED:
+            mListener.onAutoFocusSuccess(result, true);
+            endTraceAsync();
+            break;
+        case CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED:
+            mListener.onAutoFocusFail(result, true);
+            endTraceAsync();
+            break;
+        case CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED:
+            mListener.onAutoFocusSuccess(result, false);
+            break;
+        case CaptureResult.CONTROL_AF_STATE_PASSIVE_UNFOCUSED:
+            mListener.onAutoFocusFail(result, false);
+            break;
+        case CaptureResult.CONTROL_AF_STATE_ACTIVE_SCAN:
+            mListener.onAutoFocusScan(result);
+            break;
+        case CaptureResult.CONTROL_AF_STATE_PASSIVE_SCAN:
+            mListener.onAutoFocusScan(result);
+            break;
+        case CaptureResult.CONTROL_AF_STATE_INACTIVE:
+            mListener.onAutoFocusInactive(result);
+            break;
+    }
+}

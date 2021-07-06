@@ -1,0 +1,9 @@
+public void registerApIfaceAvailabilityListener(@NonNull WifiNative.InterfaceAvailableForRequestListener listener){
+    synchronized (sLock) {
+        Preconditions.checkState(mApIfaceAvailableForRequestListener == null);
+        mApIfaceAvailableForRequestListener = (isAvailable) -> listener.onAvailabilityChanged(isAvailable);
+        if (mHalDeviceManager.isStarted()) {
+            mHalDeviceManager.registerInterfaceAvailableForRequestListener(IfaceType.AP, mApIfaceAvailableForRequestListener, mHalEventHandler);
+        }
+    }
+}

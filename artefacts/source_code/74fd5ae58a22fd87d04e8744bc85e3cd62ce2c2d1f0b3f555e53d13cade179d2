@@ -1,0 +1,44 @@
+public Intent build(){
+    mIntent.setAction(Intent.ACTION_VIEW);
+    mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    if (mPhotoIndex != null) {
+        mIntent.putExtra(EXTRA_PHOTO_INDEX, (int) mPhotoIndex);
+    }
+    if (mInitialPhotoUri != null) {
+        mIntent.putExtra(EXTRA_INITIAL_PHOTO_URI, mInitialPhotoUri);
+    }
+    if (mInitialPhotoUri != null && mPhotoIndex != null) {
+        throw new IllegalStateException("specified both photo index and photo uri");
+    }
+    if (mPhotosUri != null) {
+        mIntent.putExtra(EXTRA_PHOTOS_URI, mPhotosUri);
+        mIntent.setData(Uri.parse(mPhotosUri));
+    }
+    if (mResolvedPhotoUri != null) {
+        mIntent.putExtra(EXTRA_RESOLVED_PHOTO_URI, mResolvedPhotoUri);
+    }
+    if (mProjection != null) {
+        mIntent.putExtra(EXTRA_PROJECTION, mProjection);
+    }
+    if (mThumbnailUri != null) {
+        mIntent.putExtra(EXTRA_THUMBNAIL_URI, mThumbnailUri);
+    }
+    if (mContentDescription != null) {
+        mIntent.putExtra(EXTRA_CONTENT_DESCRIPTION, mContentDescription);
+    }
+    if (mMaxInitialScale != null) {
+        mIntent.putExtra(EXTRA_MAX_INITIAL_SCALE, mMaxInitialScale);
+    }
+    mIntent.putExtra(EXTRA_WATCH_NETWORK, mWatchNetwork);
+    mIntent.putExtra(EXTRA_SCALE_UP_ANIMATION, mScaleAnimation);
+    if (mScaleAnimation) {
+        mIntent.putExtra(EXTRA_ANIMATION_START_X, mStartX);
+        mIntent.putExtra(EXTRA_ANIMATION_START_Y, mStartY);
+        mIntent.putExtra(EXTRA_ANIMATION_START_WIDTH, mStartWidth);
+        mIntent.putExtra(EXTRA_ANIMATION_START_HEIGHT, mStartHeight);
+    }
+    mIntent.putExtra(EXTRA_ACTION_BAR_HIDDEN_INITIALLY, mActionBarHiddenInitially);
+    mIntent.putExtra(EXTRA_DISPLAY_THUMBS_FULLSCREEN, mDisplayFullScreenThumbs);
+    mIntent.putExtra(EXTRA_ENABLE_TIMER_LIGHTS_OUT, mEnableTimerLightsOut);
+    return mIntent;
+}

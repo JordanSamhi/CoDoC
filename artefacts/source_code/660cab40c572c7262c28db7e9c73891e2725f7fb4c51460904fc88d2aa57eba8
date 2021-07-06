@@ -1,0 +1,24 @@
+public void removeSubscriptionsFromGroup(@NonNull List<Integer> subIdList, @NonNull ParcelUuid groupUuid){
+    Preconditions.checkNotNull(subIdList, "subIdList can't be null.");
+    Preconditions.checkNotNull(groupUuid, "groupUuid can't be null.");
+    String pkgForDebug = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    if (VDBG) {
+        logd("[removeSubscriptionsFromGroup]");
+    }
+    int[] subIdArray = subIdList.stream().mapToInt(i -> i).toArray();
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            iSub.removeSubscriptionsFromGroup(subIdArray, groupUuid, pkgForDebug);
+        } else {
+            if (!isSystemProcess()) {
+                throw new IllegalStateException("telephony service is null.");
+            }
+        }
+    } catch (RemoteException ex) {
+        loge("removeSubscriptionsFromGroup RemoteException " + ex);
+        if (!isSystemProcess()) {
+            ex.rethrowAsRuntimeException();
+        }
+    }
+}

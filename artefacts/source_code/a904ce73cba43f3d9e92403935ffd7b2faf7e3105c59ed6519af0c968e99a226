@@ -1,0 +1,26 @@
+public ArrayList<AdnRecord> loadEfFilesFromUsim(){
+    synchronized (mLock) {
+        if (!mPhoneBookRecords.isEmpty()) {
+            if (mRefreshCache) {
+                mRefreshCache = false;
+                refreshCache();
+            }
+            return mPhoneBookRecords;
+        }
+        if (!mIsPbrPresent)
+            return null;
+        if (mPbrRecords == null) {
+            readPbrFileAndWait();
+        }
+        if (mPbrRecords == null)
+            return null;
+        int numRecs = mPbrRecords.size();
+        log("loadEfFilesFromUsim: Loading adn and emails");
+        for (int i = 0; i < numRecs; i++) {
+            readAdnFileAndWait(i);
+            readEmailFileAndWait(i);
+        }
+        updatePhoneAdnRecord();
+    }
+    return mPhoneBookRecords;
+}

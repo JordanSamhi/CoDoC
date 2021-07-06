@@ -1,0 +1,45 @@
+
+     * Start a new activity running in the group.  Every activity you start
+     * must have a unique string ID associated with it -- this is used to keep
+     * track of the activity, so that if you later call startActivity() again
+     * on it the same activity object will be retained.
+     * 
+     * <p>When there had previously been an activity started under this id,
+     * it may either be destroyed and a new one started, or the current
+     * one re-used, based on these conditions, in order:</p>
+     * 
+     * <ul>
+     * <li> If the Intent maps to a different activity component than is
+     * currently running, the current activity is finished and a new one
+     * started.
+     * <li> If the current activity uses a non-multiple launch mode (such
+     * as singleTop), or the Intent has the
+     * {@link Intent#FLAG_ACTIVITY_SINGLE_TOP} flag set, then the current
+     * activity will remain running and its
+     * {@link Activity#onNewIntent(Intent) Activity.onNewIntent()} method
+     * called.
+     * <li> If the new Intent is the same (excluding extras) as the previous
+     * one, and the new Intent does not have the
+     * {@link Intent#FLAG_ACTIVITY_CLEAR_TOP} set, then the current activity
+     * will remain running as-is.
+     * <li> Otherwise, the current activity will be finished and a new
+     * one started.
+     * </ul>
+     * 
+     * <p>If the given Intent can not be resolved to an available Activity,
+     * this method throws {@link android.content.ActivityNotFoundException}.
+     * 
+     * <p>Warning: There is an issue where, if the Intent does not
+     * include an explicit component, we can restore the state for a different
+     * activity class than was previously running when the state was saved (if
+     * the set of available activities changes between those points).
+     * 
+     * @param id Unique identifier of the activity to be started
+     * @param intent The Intent describing the activity to be started
+     * 
+     * @return Returns the window of the activity.  The caller needs to take
+     * care of adding this window to a view hierarchy, and likewise dealing
+     * with removing the old window if the activity has changed.
+     * 
+     * @throws android.content.ActivityNotFoundException
+     

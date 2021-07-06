@@ -1,0 +1,15 @@
+public static MeasurementResult getMeasurementResult(Context context){
+    MeasurementResult result = new MeasurementResult();
+    StorageStatsManager ssm = (StorageStatsManager) context.getSystemService(Context.STORAGE_STATS_SERVICE);
+    ExternalStorageStats stats = null;
+    try {
+        stats = ssm.queryExternalStatsForUser(StorageManager.UUID_PRIVATE_INTERNAL, UserHandle.of(context.getUserId()));
+        result.imagesSize = stats.getImageBytes();
+        result.videosSize = stats.getVideoBytes();
+        result.audioSize = stats.getAudioBytes();
+        result.miscSize = stats.getTotalBytes() - result.imagesSize - result.videosSize - result.audioSize;
+    } catch (IOException e) {
+        throw new IllegalStateException("Could not query storage");
+    }
+    return result;
+}

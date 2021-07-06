@@ -1,0 +1,15 @@
+public ScanResult recommendNetwork(@NonNull List<ScanDetail> networks){
+    ScanResult result = null;
+    int highestRssi = Integer.MIN_VALUE;
+    for (ScanDetail scanDetail : networks) {
+        ScanResult scanResult = scanDetail.getScanResult();
+        if (scanResult.level > highestRssi) {
+            result = scanResult;
+            highestRssi = scanResult.level;
+        }
+    }
+    if (result != null && mBlacklistedSsids.contains(result.SSID)) {
+        result = null;
+    }
+    return result;
+}

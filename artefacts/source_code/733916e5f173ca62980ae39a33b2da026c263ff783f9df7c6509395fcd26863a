@@ -1,0 +1,16 @@
+public void createFrom(SurfaceControl other){
+    if (other == null) {
+        throw new IllegalArgumentException("other must not be null");
+    }
+    long surfaceControlPtr = other.mNativeObject;
+    if (surfaceControlPtr == 0) {
+        throw new NullPointerException("null SurfaceControl native object. Are you using a released SurfaceControl?");
+    }
+    long newNativeObject = nativeCreateFromSurfaceControl(surfaceControlPtr);
+    synchronized (mLock) {
+        if (mNativeObject != 0) {
+            nativeRelease(mNativeObject);
+        }
+        setNativeObjectLocked(newNativeObject);
+    }
+}

@@ -1,0 +1,12 @@
+public static ParcelFileDescriptor fromFd(int fd) throws IOException{
+    final FileDescriptor original = new FileDescriptor();
+    original.setInt$(fd);
+    try {
+        final FileDescriptor dup = new FileDescriptor();
+        int intfd = Os.fcntlInt(original, (isAtLeastQ() ? F_DUPFD_CLOEXEC : F_DUPFD), 0);
+        dup.setInt$(intfd);
+        return new ParcelFileDescriptor(dup);
+    } catch (ErrnoException e) {
+        throw e.rethrowAsIOException();
+    }
+}

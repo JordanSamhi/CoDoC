@@ -1,0 +1,39 @@
+public int waitForAnyOfStates(Collection<Integer> states, final long timeoutMs){
+    checkStateCollectionInRange(states);
+    if (mWaiting.getAndSet(true)) {
+        throw new IllegalStateException("Only one waiter allowed at a time");
+    }
+    Integer nextState = null;
+    try {
+        if (VERBOSE) {
+            StringBuilder s = new StringBuilder("Waiting for state(s) ");
+            appendStateNames(s, states);
+            Log.v(TAG, s.toString());
+        }
+        long timeoutLeft = timeoutMs;
+        long startMs = SystemClock.elapsedRealtime();
+        while ((nextState = mQueuedStates.poll(timeoutLeft, TimeUnit.MILLISECONDS)) != null) {
+            if (VERBOSE) {
+                Log.v(TAG, "  Saw transition to " + getStateName(nextState));
+            }
+            if (states.contains(nextState)) {
+                break;
+            }
+            long endMs = SystemClock.elapsedRealtime();
+            timeoutLeft -= (endMs - startMs);
+            startMs = endMs;
+        }
+    } catch (InterruptedException e) {
+        throw new UnsupportedOperationException("Does not support interrupts on waits", e);
+    } finally {
+        mWaiting.set(false);
+    }
+    if (!states.contains(nextState)) {
+        StringBuilder s = new StringBuilder("Timed out after ");
+        s.append(timeoutMs);
+        s.append(" ms waiting for state(s) ");
+        appendStateNames(s, states);
+        throw new TimeoutRuntimeException(s.toString());
+    }
+    return nextState;
+}

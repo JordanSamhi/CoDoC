@@ -1,0 +1,14 @@
+public List<PackageInfo> filterUserFacingPackages(List<PackageInfo> packages){
+    if (!shouldSkipUserFacingData()) {
+        return packages;
+    }
+    List<PackageInfo> filteredPackages = new ArrayList<>(packages.size());
+    for (PackageInfo packageInfo : packages) {
+        if (!shouldSkipPackage(packageInfo.packageName)) {
+            filteredPackages.add(packageInfo);
+        } else {
+            Slog.i(TAG, "Will skip backup/restore for " + packageInfo.packageName);
+        }
+    }
+    return filteredPackages;
+}

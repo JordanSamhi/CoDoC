@@ -1,0 +1,13 @@
+public int findCookieForPath(@NonNull String path){
+    Objects.requireNonNull(path, "path");
+    synchronized (this) {
+        ensureValidLocked();
+        final int count = mApkAssets.length;
+        for (int i = 0; i < count; i++) {
+            if (path.equals(mApkAssets[i].getAssetPath())) {
+                return i + 1;
+            }
+        }
+    }
+    return 0;
+}

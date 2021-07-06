@@ -1,0 +1,20 @@
+public boolean setBtCoexistenceMode(@NonNull String ifaceName, int mode){
+    synchronized (mLock) {
+        byte halMode;
+        switch(mode) {
+            case WifiNative.BLUETOOTH_COEXISTENCE_MODE_ENABLED:
+                halMode = ISupplicantStaIface.BtCoexistenceMode.ENABLED;
+                break;
+            case WifiNative.BLUETOOTH_COEXISTENCE_MODE_DISABLED:
+                halMode = ISupplicantStaIface.BtCoexistenceMode.DISABLED;
+                break;
+            case WifiNative.BLUETOOTH_COEXISTENCE_MODE_SENSE:
+                halMode = ISupplicantStaIface.BtCoexistenceMode.SENSE;
+                break;
+            default:
+                Log.e(TAG, "Invalid Bt Coex mode: " + mode);
+                return false;
+        }
+        return setBtCoexistenceMode(ifaceName, halMode);
+    }
+}

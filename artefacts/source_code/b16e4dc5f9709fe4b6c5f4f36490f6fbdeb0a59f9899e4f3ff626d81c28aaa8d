@@ -1,0 +1,12 @@
+public static Uri createPersonInMyContactsGroup(ContentResolver resolver, ContentValues values){
+    Uri contactUri = resolver.insert(People.CONTENT_URI, values);
+    if (contactUri == null) {
+        Log.e(TAG, "Failed to create the contact");
+        return null;
+    }
+    if (addToMyContactsGroup(resolver, ContentUris.parseId(contactUri)) == null) {
+        resolver.delete(contactUri, null, null);
+        return null;
+    }
+    return contactUri;
+}

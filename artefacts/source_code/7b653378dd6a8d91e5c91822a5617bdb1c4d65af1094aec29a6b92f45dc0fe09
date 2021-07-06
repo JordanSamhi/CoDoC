@@ -1,0 +1,16 @@
+public Map<String, Key> recoverKeyChainSnapshot(@NonNull byte[] recoveryKeyBlob, @NonNull List<WrappedApplicationKey> applicationKeys) throws SessionExpiredException, DecryptionFailedException, InternalRecoveryServiceException{
+    try {
+        Map<String, String> grantAliases = mRecoveryController.getBinder().recoverKeyChainSnapshot(mSessionId, recoveryKeyBlob, applicationKeys);
+        return getKeysFromGrants(grantAliases);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == RecoveryController.ERROR_DECRYPTION_FAILED) {
+            throw new DecryptionFailedException(e.getMessage());
+        }
+        if (e.errorCode == RecoveryController.ERROR_SESSION_EXPIRED) {
+            throw new SessionExpiredException(e.getMessage());
+        }
+        throw mRecoveryController.wrapUnexpectedServiceSpecificException(e);
+    }
+}

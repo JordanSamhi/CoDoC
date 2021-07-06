@@ -1,0 +1,11 @@
+public void reportPreRendered(EditorInfo info){
+    final IInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.reportPreRendered(info);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

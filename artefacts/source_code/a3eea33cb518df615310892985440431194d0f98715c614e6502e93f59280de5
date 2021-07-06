@@ -1,0 +1,11 @@
+public void onLoadFinished(Loader<List<PrinterInfo>> loader, List<PrinterInfo> printers){
+    mPrinters.clear();
+    mPrinters.addAll(printers);
+    mHandler.obtainMessage(MyHandler.MSG_PRINTERS_CHANGED, printers).sendToTarget();
+    if (!mReady) {
+        mReady = true;
+        if (mReadyCallback != null) {
+            mReadyCallback.run();
+        }
+    }
+}

@@ -1,0 +1,20 @@
+public boolean setFirmwareRoamingConfiguration(ArrayList<String> blacklistBssids, ArrayList<String> whitelistSsids){
+    if (!mFirmwareRoamingSupported) {
+        Log.e(TAG, "Firmware roaming is not supported");
+        return false;
+    }
+    if (blacklistBssids == null || whitelistSsids == null) {
+        Log.e(TAG, "Invalid firmware roaming configuration settings");
+        return false;
+    }
+    int blacklistSize = blacklistBssids.size();
+    int whitelistSize = whitelistSsids.size();
+    if (blacklistSize > mMaxNumBlacklistBssid || whitelistSize > mMaxNumWhitelistSsid) {
+        Log.e(TAG, "Invalid BSSID blacklist size " + blacklistSize + " SSID whitelist size " + whitelistSize + ". Max blacklist size: " + mMaxNumBlacklistBssid + ", max whitelist size: " + mMaxNumWhitelistSsid);
+        return false;
+    }
+    WifiNative.RoamingConfig roamConfig = new WifiNative.RoamingConfig();
+    roamConfig.blacklistBssids = blacklistBssids;
+    roamConfig.whitelistSsids = whitelistSsids;
+    return mWifiNative.configureRoaming(mWifiNative.getClientInterfaceName(), roamConfig);
+}

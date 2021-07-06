@@ -1,0 +1,18 @@
+public boolean resetSettingLocked(String name){
+    if (TextUtils.isEmpty(name) || !hasSettingLocked(name)) {
+        return false;
+    }
+    Setting setting = mSettings.get(name);
+    Setting oldSetting = new Setting(setting);
+    String oldValue = setting.getValue();
+    String oldDefaultValue = setting.getDefaultValue();
+    if (!setting.reset()) {
+        return false;
+    }
+    String newValue = setting.getValue();
+    String newDefaultValue = setting.getDefaultValue();
+    updateMemoryUsagePerPackageLocked(setting.packageName, oldValue, newValue, oldDefaultValue, newDefaultValue);
+    addHistoricalOperationLocked(HISTORICAL_OPERATION_RESET, oldSetting);
+    scheduleWriteIfNeededLocked();
+    return true;
+}

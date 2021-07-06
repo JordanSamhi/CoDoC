@@ -1,0 +1,15 @@
+public Matrix dot(Matrix that, Matrix result){
+    if (!(this.n == result.n && this.m == that.n && that.m == result.m)) {
+        throw new IllegalArgumentException();
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < that.m; j++) {
+            double s = 0.0;
+            for (int k = 0; k < m; k++) {
+                s += this.get(i, k) * that.get(k, j);
+            }
+            result.put(i, j, s);
+        }
+    }
+    return result;
+}

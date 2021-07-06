@@ -1,0 +1,33 @@
+public X509Certificate getProviderCert(){
+    if (mServerCerts == null || mServerCerts.size() <= 0) {
+        return null;
+    }
+    X509Certificate providerCert = null;
+    String fqdn = mUrl.getHost();
+    try {
+        for (X509Certificate certificate : mServerCerts) {
+            Collection<List<?>> col = certificate.getSubjectAlternativeNames();
+            if (col == null) {
+                continue;
+            }
+            for (List<?> name : col) {
+                if (name == null) {
+                    continue;
+                }
+                if (name.size() >= DNS_NAME && name.get(0).getClass() == Integer.class && name.get(1).toString().equals(fqdn)) {
+                    providerCert = certificate;
+                    if (mVerboseLoggingEnabled) {
+                        Log.v(TAG, "OsuCert found");
+                    }
+                    break;
+                }
+            }
+        }
+    } catch (CertificateParsingException e) {
+        Log.e(TAG, "Unable to match certificate to " + fqdn);
+        if (mVerboseLoggingEnabled) {
+            e.printStackTrace();
+        }
+    }
+    return providerCert;
+}

@@ -1,0 +1,24 @@
+
+     * Call to initialize a particular ID with a Loader.  If this ID already
+     * has a Loader associated with it, it is left unchanged and any previous
+     * callbacks replaced with the newly provided ones.  If there is not currently
+     * a Loader for the ID, a new one is created and started.
+     * 
+     * <p>This function should generally be used when a component is initializing,
+     * to ensure that a Loader it relies on is created.  This allows it to re-use
+     * an existing Loader's data if there already is one, so that for example
+     * when an {@link Activity} is re-created after a configuration change it
+     * does not need to re-create its loaders.
+     * 
+     * <p>Note that in the case where an existing Loader is re-used, the
+     * <var>args</var> given here <em>will be ignored</em> because you will
+     * continue using the previous Loader.
+     * 
+     * @param id A unique (to this LoaderManager instance) identifier under
+     * which to manage the new Loader.
+     * @param args Optional arguments that will be propagated to
+     * {@link LoaderCallbacks#onCreateLoader(int, Bundle) LoaderCallbacks.onCreateLoader()}.
+     * @param callback Interface implementing management of this Loader.  Required.
+     * Its onCreateLoader() method will be called while inside of the function to
+     * instantiate the Loader object.
+     

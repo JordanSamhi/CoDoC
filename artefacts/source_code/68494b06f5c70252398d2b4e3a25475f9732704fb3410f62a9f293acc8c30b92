@@ -1,0 +1,13 @@
+public boolean isEmpty(){
+    if (getBeginTimeMillis() >= getEndTimeMillis()) {
+        return true;
+    }
+    final int uidCount = getUidCount();
+    for (int i = uidCount - 1; i >= 0; i--) {
+        final HistoricalUidOps uidOp = mHistoricalUidOps.valueAt(i);
+        if (!uidOp.isEmpty()) {
+            return false;
+        }
+    }
+    return true;
+}

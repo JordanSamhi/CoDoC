@@ -1,0 +1,18 @@
+public boolean incrementAndTest(){
+    final long now = android.os.SystemClock.elapsedRealtime();
+    if (now - getStart() < 0) {
+        Slog.e(TAG, "Window was less than zero. Resetting start to current time.");
+        setStart(now);
+    }
+    final long window = now - getStart();
+    if (window >= mTriggerWindow) {
+        setCount(1);
+        setStart(now);
+        return false;
+    } else {
+        int count = getCount() + 1;
+        setCount(count);
+        EventLogTags.writeRescueNote(Process.ROOT_UID, count, window);
+        return count >= mBootTriggerCount;
+    }
+}

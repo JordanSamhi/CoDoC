@@ -1,0 +1,33 @@
+public boolean set(StatusBarIcon icon){
+    final boolean iconEquals = mIcon != null && equalIcons(mIcon.icon, icon.icon);
+    final boolean levelEquals = iconEquals && mIcon.iconLevel == icon.iconLevel;
+    final boolean visibilityEquals = mIcon != null && mIcon.visible == icon.visible;
+    final boolean numberEquals = mIcon != null && mIcon.number == icon.number;
+    mIcon = icon.clone();
+    setContentDescription(icon.contentDescription);
+    if (!iconEquals) {
+        if (!updateDrawable(false))
+            return false;
+        setTag(R.id.icon_is_grayscale, null);
+        maybeUpdateIconScaleDimens();
+    }
+    if (!levelEquals) {
+        setImageLevel(icon.iconLevel);
+    }
+    if (!numberEquals) {
+        if (icon.number > 0 && getContext().getResources().getBoolean(R.bool.config_statusBarShowNumber)) {
+            if (mNumberBackground == null) {
+                mNumberBackground = getContext().getResources().getDrawable(R.drawable.ic_notification_overlay);
+            }
+            placeNumber();
+        } else {
+            mNumberBackground = null;
+            mNumberText = null;
+        }
+        invalidate();
+    }
+    if (!visibilityEquals) {
+        setVisibility(icon.visible && !mBlocked ? VISIBLE : GONE);
+    }
+    return true;
+}

@@ -1,0 +1,24 @@
+public void parse(UsbDescriptorParser parser){
+    ArrayList<UsbDescriptor> descriptors = parser.getDescriptors();
+    for (int descrIndex = 0; descrIndex < descriptors.size(); descrIndex++) {
+        UsbDescriptor descriptor = descriptors.get(descrIndex);
+        switch(descriptor.getType()) {
+            case UsbDescriptor.DESCRIPTORTYPE_DEVICE:
+                addDeviceDescriptor((UsbDeviceDescriptor) descriptor);
+                break;
+            case UsbDescriptor.DESCRIPTORTYPE_CONFIG:
+                addConfigDescriptor((UsbConfigDescriptor) descriptor);
+                break;
+            case UsbDescriptor.DESCRIPTORTYPE_INTERFACE:
+                addInterfaceDescriptor((UsbInterfaceDescriptor) descriptor);
+                break;
+            case UsbDescriptor.DESCRIPTORTYPE_ENDPOINT:
+                addEndpointDescriptor((UsbEndpointDescriptor) descriptor);
+                break;
+            case UsbDescriptor.DESCRIPTORTYPE_CLASSSPECIFIC_INTERFACE:
+                break;
+            case UsbDescriptor.DESCRIPTORTYPE_CLASSSPECIFIC_ENDPOINT:
+                break;
+        }
+    }
+}

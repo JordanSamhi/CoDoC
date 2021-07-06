@@ -1,0 +1,30 @@
+public static SetupResult generateApkVeritySetupData(@NonNull String apkPath){
+    if (DEBUG) {
+        Slog.d(TAG, "Trying to install legacy apk verity to " + apkPath);
+    }
+    SharedMemory shm = null;
+    try {
+        final byte[] signedVerityHash = ApkSignatureVerifier.getVerityRootHash(apkPath);
+        if (signedVerityHash == null) {
+            if (DEBUG) {
+                Slog.d(TAG, "Skip verity tree generation since there is no signed root hash");
+            }
+            return SetupResult.skipped();
+        }
+        Pair<SharedMemory, Integer> result = generateFsVerityIntoSharedMemory(apkPath, signedVerityHash);
+        shm = result.first;
+        int contentSize = result.second;
+        FileDescriptor rfd = shm.getFileDescriptor();
+        if (rfd == null || !rfd.valid()) {
+            return SetupResult.failed();
+        }
+        return SetupResult.ok(Os.dup(rfd), contentSize);
+    } catch (IOException | SecurityException | DigestException | NoSuchAlgorithmException | SignatureNotFoundException | ErrnoException e) {
+        Slog.e(TAG, "Failed to set up apk verity: ", e);
+        return SetupResult.failed();
+    } finally {
+        if (shm != null) {
+            shm.close();
+        }
+    }
+}

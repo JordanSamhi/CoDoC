@@ -1,0 +1,75 @@
+public static String protectionToString(int level){
+    String protLevel = "????";
+    switch(level & PROTECTION_MASK_BASE) {
+        case PermissionInfo.PROTECTION_DANGEROUS:
+            protLevel = "dangerous";
+            break;
+        case PermissionInfo.PROTECTION_NORMAL:
+            protLevel = "normal";
+            break;
+        case PermissionInfo.PROTECTION_SIGNATURE:
+            protLevel = "signature";
+            break;
+        case PermissionInfo.PROTECTION_SIGNATURE_OR_SYSTEM:
+            protLevel = "signatureOrSystem";
+            break;
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_PRIVILEGED) != 0) {
+        protLevel += "|privileged";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0) {
+        protLevel += "|development";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_APPOP) != 0) {
+        protLevel += "|appop";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_PRE23) != 0) {
+        protLevel += "|pre23";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_INSTALLER) != 0) {
+        protLevel += "|installer";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_VERIFIER) != 0) {
+        protLevel += "|verifier";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_PREINSTALLED) != 0) {
+        protLevel += "|preinstalled";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_SETUP) != 0) {
+        protLevel += "|setup";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_INSTANT) != 0) {
+        protLevel += "|instant";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_RUNTIME_ONLY) != 0) {
+        protLevel += "|runtime";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_OEM) != 0) {
+        protLevel += "|oem";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_VENDOR_PRIVILEGED) != 0) {
+        protLevel += "|vendorPrivileged";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_SYSTEM_TEXT_CLASSIFIER) != 0) {
+        protLevel += "|textClassifier";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_WELLBEING) != 0) {
+        protLevel += "|wellbeing";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_DOCUMENTER) != 0) {
+        protLevel += "|documenter";
+    }
+    if ((level & PROTECTION_FLAG_CONFIGURATOR) != 0) {
+        protLevel += "|configurator";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_INCIDENT_REPORT_APPROVER) != 0) {
+        protLevel += "|incidentReportApprover";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_APP_PREDICTOR) != 0) {
+        protLevel += "|appPredictor";
+    }
+    if ((level & PermissionInfo.PROTECTION_FLAG_RETAIL_DEMO) != 0) {
+        protLevel += "|retailDemo";
+    }
+    return protLevel;
+}

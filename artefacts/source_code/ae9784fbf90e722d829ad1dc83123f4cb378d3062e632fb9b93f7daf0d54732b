@@ -1,0 +1,498 @@
+public void handleMessage(Message msg){
+    AsyncResult ar;
+    AdnRecord adn;
+    byte[] data;
+    boolean isRecordLoadResponse = false;
+    if (mDestroyed.get()) {
+        loge("Received message " + msg + "[" + msg.what + "] " + " while being destroyed. Ignoring.");
+        return;
+    }
+    try {
+        switch(msg.what) {
+            case EVENT_GET_IMSI_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    loge("Exception querying IMSI, Exception:" + ar.exception);
+                    break;
+                }
+                setImsi((String) ar.result);
+                break;
+            case EVENT_GET_MBI_DONE:
+                boolean isValidMbdn;
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                isValidMbdn = false;
+                if (ar.exception == null) {
+                    log("EF_MBI: " + IccUtils.bytesToHexString(data));
+                    mMailboxIndex = data[0] & 0xff;
+                    if (mMailboxIndex != 0 && mMailboxIndex != 0xff) {
+                        log("Got valid mailbox number for MBDN");
+                        isValidMbdn = true;
+                    }
+                }
+                mRecordsToLoad += 1;
+                if (isValidMbdn) {
+                    new AdnRecordLoader(mFh).loadFromEF(EF_MBDN, EF_EXT6, mMailboxIndex, obtainMessage(EVENT_GET_MBDN_DONE));
+                } else {
+                    new AdnRecordLoader(mFh).loadFromEF(EF_MAILBOX_CPHS, EF_EXT1, 1, obtainMessage(EVENT_GET_CPHS_MAILBOX_DONE));
+                }
+                break;
+            case EVENT_GET_CPHS_MAILBOX_DONE:
+            case EVENT_GET_MBDN_DONE:
+                mVoiceMailNum = null;
+                mVoiceMailTag = null;
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    log("Invalid or missing EF" + ((msg.what == EVENT_GET_CPHS_MAILBOX_DONE) ? "[MAILBOX]" : "[MBDN]"));
+                    if (msg.what == EVENT_GET_MBDN_DONE) {
+                        mRecordsToLoad += 1;
+                        new AdnRecordLoader(mFh).loadFromEF(EF_MAILBOX_CPHS, EF_EXT1, 1, obtainMessage(EVENT_GET_CPHS_MAILBOX_DONE));
+                    }
+                    break;
+                }
+                adn = (AdnRecord) ar.result;
+                log("VM: " + adn + ((msg.what == EVENT_GET_CPHS_MAILBOX_DONE) ? " EF[MAILBOX]" : " EF[MBDN]"));
+                if (adn.isEmpty() && msg.what == EVENT_GET_MBDN_DONE) {
+                    mRecordsToLoad += 1;
+                    new AdnRecordLoader(mFh).loadFromEF(EF_MAILBOX_CPHS, EF_EXT1, 1, obtainMessage(EVENT_GET_CPHS_MAILBOX_DONE));
+                    break;
+                }
+                mVoiceMailNum = adn.getNumber();
+                mVoiceMailTag = adn.getAlphaTag();
+                break;
+            case EVENT_GET_MSISDN_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    log("Invalid or missing EF[MSISDN]");
+                    break;
+                }
+                adn = (AdnRecord) ar.result;
+                mMsisdn = adn.getNumber();
+                mMsisdnTag = adn.getAlphaTag();
+                log("MSISDN: " + Rlog.pii(LOG_TAG, mMsisdn));
+                break;
+            case EVENT_SET_MSISDN_DONE:
+                isRecordLoadResponse = false;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception == null) {
+                    mMsisdn = mNewMsisdn;
+                    mMsisdnTag = mNewMsisdnTag;
+                    log("Success to update EF[MSISDN]");
+                }
+                if (ar.userObj != null) {
+                    AsyncResult.forMessage(((Message) ar.userObj)).exception = ar.exception;
+                    ((Message) ar.userObj).sendToTarget();
+                }
+                break;
+            case EVENT_GET_MWIS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (DBG)
+                    log("EF_MWIS : " + IccUtils.bytesToHexString(data));
+                if (ar.exception != null) {
+                    if (DBG)
+                        log("EVENT_GET_MWIS_DONE exception = " + ar.exception);
+                    break;
+                }
+                if ((data[0] & 0xff) == 0xff) {
+                    if (DBG)
+                        log("SIMRecords: Uninitialized record MWIS");
+                    break;
+                }
+                mEfMWIS = data;
+                break;
+            case EVENT_GET_VOICE_MAIL_INDICATOR_CPHS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (DBG)
+                    log("EF_CPHS_MWI: " + IccUtils.bytesToHexString(data));
+                if (ar.exception != null) {
+                    if (DBG) {
+                        log("EVENT_GET_VOICE_MAIL_INDICATOR_CPHS_DONE exception = " + ar.exception);
+                    }
+                    break;
+                }
+                mEfCPHS_MWI = data;
+                break;
+            case EVENT_GET_ICCID_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    break;
+                }
+                mIccId = IccUtils.bcdToString(data, 0, data.length);
+                mFullIccId = IccUtils.bchToString(data, 0, data.length);
+                log("iccid: " + SubscriptionInfo.givePrintableIccid(mFullIccId));
+                break;
+            case EVENT_GET_AD_DONE:
+                isRecordLoadResponse = true;
+                mMncLength = UNKNOWN;
+                try {
+                    if (!mCarrierTestOverride.isInTestMode()) {
+                        ar = (AsyncResult) msg.obj;
+                        data = (byte[]) ar.result;
+                        if (ar.exception != null) {
+                            break;
+                        }
+                        log("EF_AD: " + IccUtils.bytesToHexString(data));
+                        if (data.length < 3) {
+                            log("Corrupt AD data on SIM");
+                            break;
+                        }
+                        if (data.length == 3) {
+                            log("MNC length not present in EF_AD");
+                            break;
+                        }
+                        int len = data[3] & 0xf;
+                        if (len == 2 || len == 3) {
+                            mMncLength = len;
+                        } else {
+                            log("Received invalid or unset MNC Length=" + len);
+                        }
+                    }
+                } finally {
+                    updateOperatorPlmn();
+                }
+                break;
+            case EVENT_GET_SPN_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                getSpnFsm(false, ar);
+                break;
+            case EVENT_GET_CFF_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    mEfCff = null;
+                } else {
+                    log("EF_CFF_CPHS: " + IccUtils.bytesToHexString(data));
+                    mEfCff = data;
+                }
+                break;
+            case EVENT_GET_SPDI_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    break;
+                }
+                parseEfSpdi(data);
+                break;
+            case EVENT_UPDATE_DONE:
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    logw("update failed. ", ar.exception);
+                }
+                break;
+            case EVENT_GET_PNN_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    break;
+                }
+                SimTlv tlv = new SimTlv(data, 0, data.length);
+                for (; tlv.isValidObject(); tlv.nextObject()) {
+                    if (tlv.getTag() == TAG_FULL_NETWORK_NAME) {
+                        mPnnHomeName = IccUtils.networkNameToString(tlv.getData(), 0, tlv.getData().length);
+                        log("PNN: " + mPnnHomeName);
+                        break;
+                    }
+                }
+                break;
+            case EVENT_GET_ALL_SMS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    break;
+                }
+                handleSmses((ArrayList<byte[]>) ar.result);
+                break;
+            case EVENT_MARK_SMS_READ_DONE:
+                log("marked read: sms " + msg.arg1);
+                break;
+            case EVENT_SMS_ON_SIM:
+                isRecordLoadResponse = false;
+                ar = (AsyncResult) msg.obj;
+                Integer index = (Integer) ar.result;
+                if (ar.exception != null || index == null) {
+                    loge("Error on SMS_ON_SIM with exp " + ar.exception + " index " + index);
+                } else {
+                    log("READ EF_SMS RECORD index=" + index);
+                    mFh.loadEFLinearFixed(EF_SMS, index, obtainMessage(EVENT_GET_SMS_DONE));
+                }
+                break;
+            case EVENT_GET_SMS_DONE:
+                isRecordLoadResponse = false;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception == null) {
+                    handleSms((byte[]) ar.result);
+                } else {
+                    loge("Error on GET_SMS with exp " + ar.exception);
+                }
+                break;
+            case EVENT_GET_SST_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    break;
+                }
+                mUsimServiceTable = new UsimServiceTable(data);
+                if (DBG)
+                    log("SST: " + mUsimServiceTable);
+                break;
+            case EVENT_GET_INFO_CPHS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    break;
+                }
+                mCphsInfo = (byte[]) ar.result;
+                if (DBG)
+                    log("iCPHS: " + IccUtils.bytesToHexString(mCphsInfo));
+                break;
+            case EVENT_SET_MBDN_DONE:
+                isRecordLoadResponse = false;
+                ar = (AsyncResult) msg.obj;
+                if (DBG)
+                    log("EVENT_SET_MBDN_DONE ex:" + ar.exception);
+                if (ar.exception == null) {
+                    mVoiceMailNum = mNewVoiceMailNum;
+                    mVoiceMailTag = mNewVoiceMailTag;
+                }
+                if (isCphsMailboxEnabled()) {
+                    adn = new AdnRecord(mVoiceMailTag, mVoiceMailNum);
+                    Message onCphsCompleted = (Message) ar.userObj;
+                    if (ar.exception == null && ar.userObj != null) {
+                        AsyncResult.forMessage(((Message) ar.userObj)).exception = null;
+                        ((Message) ar.userObj).sendToTarget();
+                        if (DBG)
+                            log("Callback with MBDN successful.");
+                        onCphsCompleted = null;
+                    }
+                    new AdnRecordLoader(mFh).updateEF(adn, EF_MAILBOX_CPHS, EF_EXT1, 1, null, obtainMessage(EVENT_SET_CPHS_MAILBOX_DONE, onCphsCompleted));
+                } else {
+                    if (ar.userObj != null) {
+                        CarrierConfigManager configManager = (CarrierConfigManager) mContext.getSystemService(Context.CARRIER_CONFIG_SERVICE);
+                        if (ar.exception != null && configManager != null) {
+                            PersistableBundle b = configManager.getConfigForSubId(SubscriptionController.getInstance().getSubIdUsingPhoneId(mParentApp.getPhoneId()));
+                            if (b != null && b.getBoolean(CarrierConfigManager.KEY_EDITABLE_VOICEMAIL_NUMBER_BOOL)) {
+                                AsyncResult.forMessage(((Message) ar.userObj)).exception = new IccVmNotSupportedException("Update SIM voice mailbox error");
+                            } else {
+                                AsyncResult.forMessage(((Message) ar.userObj)).exception = ar.exception;
+                            }
+                        } else {
+                            AsyncResult.forMessage(((Message) ar.userObj)).exception = ar.exception;
+                        }
+                        ((Message) ar.userObj).sendToTarget();
+                    }
+                }
+                break;
+            case EVENT_SET_CPHS_MAILBOX_DONE:
+                isRecordLoadResponse = false;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception == null) {
+                    mVoiceMailNum = mNewVoiceMailNum;
+                    mVoiceMailTag = mNewVoiceMailTag;
+                } else {
+                    if (DBG)
+                        log("Set CPHS MailBox with exception: " + ar.exception);
+                }
+                if (ar.userObj != null) {
+                    if (DBG)
+                        log("Callback with CPHS MB successful.");
+                    AsyncResult.forMessage(((Message) ar.userObj)).exception = ar.exception;
+                    ((Message) ar.userObj).sendToTarget();
+                }
+                break;
+            case EVENT_GET_CFIS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    mEfCfis = null;
+                } else {
+                    log("EF_CFIS: " + IccUtils.bytesToHexString(data));
+                    mEfCfis = data;
+                }
+                break;
+            case EVENT_GET_CSP_CPHS_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    loge("Exception in fetching EF_CSP data " + ar.exception);
+                    break;
+                }
+                data = (byte[]) ar.result;
+                log("EF_CSP: " + IccUtils.bytesToHexString(data));
+                handleEfCspData(data);
+                break;
+            case EVENT_GET_GID1_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    loge("Exception in get GID1 " + ar.exception);
+                    mGid1 = null;
+                    break;
+                }
+                mGid1 = IccUtils.bytesToHexString(data);
+                log("GID1: " + mGid1);
+                break;
+            case EVENT_GET_GID2_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null) {
+                    loge("Exception in get GID2 " + ar.exception);
+                    mGid2 = null;
+                    break;
+                }
+                mGid2 = IccUtils.bytesToHexString(data);
+                log("GID2: " + mGid2);
+                break;
+            case EVENT_GET_PLMN_W_ACT_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null || data == null) {
+                    loge("Failed getting User PLMN with Access Tech Records: " + ar.exception);
+                    break;
+                } else {
+                    log("Received a PlmnActRecord, raw=" + IccUtils.bytesToHexString(data));
+                    mPlmnActRecords = PlmnActRecord.getRecords(data);
+                    if (VDBG)
+                        log("PlmnActRecords=" + Arrays.toString(mPlmnActRecords));
+                }
+                break;
+            case EVENT_GET_OPLMN_W_ACT_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null || data == null) {
+                    loge("Failed getting Operator PLMN with Access Tech Records: " + ar.exception);
+                    break;
+                } else {
+                    log("Received a PlmnActRecord, raw=" + IccUtils.bytesToHexString(data));
+                    mOplmnActRecords = PlmnActRecord.getRecords(data);
+                    if (VDBG)
+                        log("OplmnActRecord[]=" + Arrays.toString(mOplmnActRecords));
+                }
+                break;
+            case EVENT_GET_HPLMN_W_ACT_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null || data == null) {
+                    loge("Failed getting Home PLMN with Access Tech Records: " + ar.exception);
+                    break;
+                } else {
+                    log("Received a PlmnActRecord, raw=" + IccUtils.bytesToHexString(data));
+                    mHplmnActRecords = PlmnActRecord.getRecords(data);
+                    log("HplmnActRecord[]=" + Arrays.toString(mHplmnActRecords));
+                }
+                break;
+            case EVENT_GET_EHPLMN_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null || data == null) {
+                    loge("Failed getting Equivalent Home PLMNs: " + ar.exception);
+                    break;
+                } else {
+                    mEhplmns = parseBcdPlmnList(data, "Equivalent Home");
+                }
+                break;
+            case EVENT_GET_FPLMN_DONE:
+                isRecordLoadResponse = true;
+                ar = (AsyncResult) msg.obj;
+                data = (byte[]) ar.result;
+                if (ar.exception != null || data == null) {
+                    loge("Failed getting Forbidden PLMNs: " + ar.exception);
+                } else {
+                    mFplmns = parseBcdPlmnList(data, "Forbidden");
+                }
+                if (msg.arg1 == HANDLER_ACTION_SEND_RESPONSE) {
+                    if (VDBG)
+                        logv("getForbiddenPlmns(): send async response");
+                    isRecordLoadResponse = false;
+                    int key = msg.arg2;
+                    Message response = retrievePendingTransaction(key).first;
+                    if (response != null) {
+                        if (ar.exception == null && data != null && mFplmns != null) {
+                            AsyncResult.forMessage(response, Arrays.copyOf(mFplmns, mFplmns.length), null);
+                        } else {
+                            AsyncResult.forMessage(response, null, ar.exception);
+                        }
+                        response.sendToTarget();
+                    } else {
+                        loge("Failed to retrieve a response message for FPLMN");
+                        break;
+                    }
+                }
+                break;
+            case EVENT_GET_FPLMN_SIZE_DONE:
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    Message response = (Message) ar.userObj;
+                    AsyncResult.forMessage(response).exception = ar.exception;
+                    response.sendToTarget();
+                    break;
+                }
+                int key = msg.arg2;
+                Pair<Message, Object> transaction = retrievePendingTransaction(key);
+                Message response = transaction.first;
+                List<String> fplmns = (List<String>) transaction.second;
+                int dataLength = (int) ar.result;
+                if (dataLength < 0 || dataLength % FPLMN_BYTE_SIZE != 0) {
+                    loge("Failed to retrieve a correct fplmn size: " + dataLength);
+                    AsyncResult.forMessage(response, -1, null);
+                    response.sendToTarget();
+                    break;
+                }
+                int maxWritebaleFplmns = dataLength / FPLMN_BYTE_SIZE;
+                List<String> fplmnsToWrite;
+                if (fplmns.size() <= maxWritebaleFplmns) {
+                    fplmnsToWrite = fplmns;
+                } else {
+                    fplmnsToWrite = fplmns.subList(0, maxWritebaleFplmns);
+                }
+                key = storePendingTransaction(response, fplmnsToWrite);
+                byte[] encodededFplmns = IccUtils.encodeFplmns(fplmns, dataLength);
+                mFh.updateEFTransparent(EF_FPLMN, encodededFplmns, obtainMessage(EVENT_SET_FPLMN_DONE, msg.arg1, key));
+                break;
+            case EVENT_SET_FPLMN_DONE:
+                ar = (AsyncResult) msg.obj;
+                if (ar.exception != null) {
+                    loge("Failed setting Forbidden PLMNs: " + ar.exception);
+                } else {
+                    transaction = retrievePendingTransaction(msg.arg2);
+                    response = transaction.first;
+                    mFplmns = ((List<String>) transaction.second).toArray(new String[0]);
+                    if (msg.arg1 == HANDLER_ACTION_SEND_RESPONSE) {
+                        AsyncResult.forMessage(response, mFplmns.length, null);
+                        response.sendToTarget();
+                    }
+                    log("Successfully setted fplmns " + ar.result);
+                }
+                break;
+            default:
+                super.handleMessage(msg);
+        }
+    } catch (RuntimeException exc) {
+        logw("Exception parsing SIM record", exc);
+    } finally {
+        if (isRecordLoadResponse) {
+            onRecordLoaded();
+        }
+    }
+}

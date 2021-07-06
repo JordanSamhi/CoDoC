@@ -1,0 +1,9 @@
+public void setPackagesHash(@Nullable String packagesHash){
+    synchronized (mLock) {
+        if (Objects.equals(mPackagesHash, packagesHash)) {
+            return;
+        }
+        mPackagesHash = packagesHash;
+        scheduleWriteFileLocked();
+    }
+}

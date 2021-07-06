@@ -1,0 +1,10 @@
+public static int aggregateCurrentProcessState(int curState){
+    int screenStateIndex = curState / (ADJ_SCREEN_MOD * STATE_COUNT);
+    int procStateIndex = curState % STATE_COUNT;
+    try {
+        procStateIndex = PROCESS_STATS_STATE_TO_AGGREGATED_STATE[procStateIndex];
+    } catch (IndexOutOfBoundsException e) {
+        procStateIndex = ProcessStatsEnums.AGGREGATED_PROCESS_STATE_UNKNOWN;
+    }
+    return (procStateIndex << 0xf) | screenStateIndex;
+}

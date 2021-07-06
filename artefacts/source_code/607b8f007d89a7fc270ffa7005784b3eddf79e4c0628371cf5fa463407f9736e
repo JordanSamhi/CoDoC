@@ -1,0 +1,9 @@
+public void dispatchEnterAnimationComplete(){
+    mEnterAnimationComplete = true;
+    mInstrumentation.onEnterAnimationComplete();
+    onEnterAnimationComplete();
+    if (getWindow() != null && getWindow().getDecorView() != null) {
+        View decorView = getWindow().getDecorView();
+        decorView.getViewTreeObserver().dispatchOnEnterAnimationComplete();
+    }
+}

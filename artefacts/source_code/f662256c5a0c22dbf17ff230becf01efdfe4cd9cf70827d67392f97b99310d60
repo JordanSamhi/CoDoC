@@ -1,0 +1,16 @@
+public boolean getKeyData(int keyCode, KeyData results){
+    if (results.meta.length < KeyData.META_LENGTH) {
+        throw new IndexOutOfBoundsException("results.meta.length must be >= " + KeyData.META_LENGTH);
+    }
+    char displayLabel = nativeGetDisplayLabel(mPtr, keyCode);
+    if (displayLabel == 0) {
+        return false;
+    }
+    results.displayLabel = displayLabel;
+    results.number = nativeGetNumber(mPtr, keyCode);
+    results.meta[0] = nativeGetCharacter(mPtr, keyCode, 0);
+    results.meta[1] = nativeGetCharacter(mPtr, keyCode, KeyEvent.META_SHIFT_ON);
+    results.meta[2] = nativeGetCharacter(mPtr, keyCode, KeyEvent.META_ALT_ON);
+    results.meta[3] = nativeGetCharacter(mPtr, keyCode, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON);
+    return true;
+}

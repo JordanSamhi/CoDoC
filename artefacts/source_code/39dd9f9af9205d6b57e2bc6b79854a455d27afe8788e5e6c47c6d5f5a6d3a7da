@@ -1,0 +1,33 @@
+public byte[] getNetworkListByteArray(boolean obfuscate){
+    Map<String, Network.Builder> networks = new ArrayMap<>();
+    for (PerBssid perBssid : mApForBssid.values()) {
+        String key = perBssid.ssid;
+        Network.Builder network = networks.get(key);
+        if (network == null) {
+            network = Network.newBuilder();
+            networks.put(key, network);
+            if (!obfuscate) {
+                network.setSsid(perBssid.ssid);
+            }
+        }
+        if (perBssid.mNetworkAgentId >= network.getNetworkAgentId()) {
+            network.setNetworkAgentId(perBssid.mNetworkAgentId);
+        }
+        if (perBssid.mNetworkConfigId >= network.getNetworkConfigId()) {
+            network.setNetworkConfigId(perBssid.mNetworkConfigId);
+        }
+        network.addAccessPoints(perBssid.toAccessPoint(obfuscate));
+    }
+    for (PerNetwork perNetwork : mApForNetwork.values()) {
+        String key = perNetwork.ssid;
+        Network.Builder network = networks.get(key);
+        if (network != null) {
+            network.setNetworkStats(perNetwork.toNetworkStats());
+        }
+    }
+    NetworkList.Builder builder = NetworkList.newBuilder();
+    for (Network.Builder network : networks.values()) {
+        builder.addNetworks(network);
+    }
+    return builder.build().toByteArray();
+}

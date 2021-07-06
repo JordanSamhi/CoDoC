@@ -1,0 +1,8 @@
+public void handleMessage(Message msg){
+    Message msgCopy = Message.obtain();
+    msgCopy.copyFrom(msg);
+    synchronized (mLockObject) {
+        mResultMsg = msgCopy;
+        mLockObject.notify();
+    }
+}

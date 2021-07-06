@@ -1,0 +1,14 @@
+public String buildUnionQuery(String[] subQueries, String sortOrder, String limit){
+    StringBuilder query = new StringBuilder(128);
+    int subQueryCount = subQueries.length;
+    String unionOperator = mDistinct ? " UNION " : " UNION ALL ";
+    for (int i = 0; i < subQueryCount; i++) {
+        if (i > 0) {
+            query.append(unionOperator);
+        }
+        query.append(subQueries[i]);
+    }
+    appendClause(query, " ORDER BY ", sortOrder);
+    appendClause(query, " LIMIT ", limit);
+    return query.toString();
+}

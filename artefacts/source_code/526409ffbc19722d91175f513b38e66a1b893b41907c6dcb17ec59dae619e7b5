@@ -1,0 +1,12 @@
+public boolean isAnyRadioPoweredOn(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.needMobileRadioShutdown();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#isAnyRadioPoweredOn", e);
+        e.rethrowAsRuntimeException();
+    }
+    return false;
+}

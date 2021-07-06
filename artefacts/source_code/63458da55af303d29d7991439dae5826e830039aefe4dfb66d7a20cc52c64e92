@@ -1,0 +1,9 @@
+public final void setConnectionProperties(int connectionProperties){
+    checkImmutable();
+    if (mConnectionProperties != connectionProperties) {
+        mConnectionProperties = connectionProperties;
+        for (Listener l : mListeners) {
+            l.onConnectionPropertiesChanged(this, mConnectionProperties);
+        }
+    }
+}

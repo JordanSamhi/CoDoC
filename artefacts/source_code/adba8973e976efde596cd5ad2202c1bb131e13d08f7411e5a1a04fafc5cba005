@@ -1,0 +1,82 @@
+public final AssetFileDescriptor openAssetFileDescriptor(@NonNull Uri uri, @NonNull String mode, @Nullable CancellationSignal cancellationSignal) throws FileNotFoundException{
+    Objects.requireNonNull(uri, "uri");
+    Objects.requireNonNull(mode, "mode");
+    try {
+        if (mWrapped != null)
+            return mWrapped.openAssetFile(uri, mode, cancellationSignal);
+    } catch (RemoteException e) {
+        return null;
+    }
+    String scheme = uri.getScheme();
+    if (SCHEME_ANDROID_RESOURCE.equals(scheme)) {
+        if (!"r".equals(mode)) {
+            throw new FileNotFoundException("Can't write resources: " + uri);
+        }
+        OpenResourceIdResult r = getResourceId(uri);
+        try {
+            return r.r.openRawResourceFd(r.id);
+        } catch (Resources.NotFoundException ex) {
+            throw new FileNotFoundException("Resource does not exist: " + uri);
+        }
+    } else if (SCHEME_FILE.equals(scheme)) {
+        ParcelFileDescriptor pfd = ParcelFileDescriptor.open(new File(uri.getPath()), ParcelFileDescriptor.parseMode(mode));
+        return new AssetFileDescriptor(pfd, 0, -1);
+    } else {
+        if ("r".equals(mode)) {
+            return openTypedAssetFileDescriptor(uri, "*/*", null, cancellationSignal);
+        } else {
+            IContentProvider unstableProvider = acquireUnstableProvider(uri);
+            if (unstableProvider == null) {
+                throw new FileNotFoundException("No content provider: " + uri);
+            }
+            IContentProvider stableProvider = null;
+            AssetFileDescriptor fd = null;
+            try {
+                ICancellationSignal remoteCancellationSignal = null;
+                if (cancellationSignal != null) {
+                    cancellationSignal.throwIfCanceled();
+                    remoteCancellationSignal = unstableProvider.createCancellationSignal();
+                    cancellationSignal.setRemote(remoteCancellationSignal);
+                }
+                try {
+                    fd = unstableProvider.openAssetFile(mPackageName, mAttributionTag, uri, mode, remoteCancellationSignal);
+                    if (fd == null) {
+                        return null;
+                    }
+                } catch (DeadObjectException e) {
+                    unstableProviderDied(unstableProvider);
+                    stableProvider = acquireProvider(uri);
+                    if (stableProvider == null) {
+                        throw new FileNotFoundException("No content provider: " + uri);
+                    }
+                    fd = stableProvider.openAssetFile(mPackageName, mAttributionTag, uri, mode, remoteCancellationSignal);
+                    if (fd == null) {
+                        return null;
+                    }
+                }
+                if (stableProvider == null) {
+                    stableProvider = acquireProvider(uri);
+                }
+                releaseUnstableProvider(unstableProvider);
+                unstableProvider = null;
+                ParcelFileDescriptor pfd = new ParcelFileDescriptorInner(fd.getParcelFileDescriptor(), stableProvider);
+                stableProvider = null;
+                return new AssetFileDescriptor(pfd, fd.getStartOffset(), fd.getDeclaredLength());
+            } catch (RemoteException e) {
+                throw new FileNotFoundException("Failed opening content provider: " + uri);
+            } catch (FileNotFoundException e) {
+                throw e;
+            } finally {
+                if (cancellationSignal != null) {
+                    cancellationSignal.setRemote(null);
+                }
+                if (stableProvider != null) {
+                    releaseProvider(stableProvider);
+                }
+                if (unstableProvider != null) {
+                    releaseUnstableProvider(unstableProvider);
+                }
+            }
+        }
+    }
+}

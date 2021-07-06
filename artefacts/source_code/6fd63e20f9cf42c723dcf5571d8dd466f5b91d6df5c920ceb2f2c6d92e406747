@@ -1,0 +1,52 @@
+public synchronized void startMonitoring(){
+    log("Monitoring");
+    PackageManagerInternal pmi = LocalServices.getService(PackageManagerInternal.class);
+    if (pmi != null) {
+        pmi.getPackageList(new PackageListObserver());
+    } else {
+        loge("failed to get the PackageManagerInternal service");
+    }
+    List<PackageInfo> apps = mPackageManager.getInstalledPackages(GET_PERMISSIONS | MATCH_ANY_USER);
+    if (apps == null) {
+        loge("No apps");
+        return;
+    }
+    SparseIntArray netdPermsUids = new SparseIntArray();
+    for (PackageInfo app : apps) {
+        int uid = app.applicationInfo != null ? app.applicationInfo.uid : INVALID_UID;
+        if (uid < 0) {
+            continue;
+        }
+        mAllApps.add(UserHandle.getAppId(uid));
+        boolean isNetwork = hasNetworkPermission(app);
+        boolean hasRestrictedPermission = hasRestrictedNetworkPermission(app);
+        if (isNetwork || hasRestrictedPermission) {
+            Boolean permission = mApps.get(uid);
+            if (permission == null || permission == NETWORK) {
+                mApps.put(uid, hasRestrictedPermission);
+            }
+        }
+        int otherNetdPerms = getNetdPermissionMask(app.requestedPermissions, app.requestedPermissionsFlags);
+        netdPermsUids.put(uid, netdPermsUids.get(uid) | otherNetdPerms);
+    }
+    List<UserInfo> users = mUserManager.getUsers(true);
+    if (users != null) {
+        for (UserInfo user : users) {
+            mUsers.add(user.id);
+        }
+    }
+    final SparseArray<ArraySet<String>> systemPermission = SystemConfig.getInstance().getSystemPermissions();
+    for (int i = 0; i < systemPermission.size(); i++) {
+        ArraySet<String> perms = systemPermission.valueAt(i);
+        int uid = systemPermission.keyAt(i);
+        int netdPermission = 0;
+        if (perms != null) {
+            netdPermission |= perms.contains(UPDATE_DEVICE_STATS) ? INetd.PERMISSION_UPDATE_DEVICE_STATS : 0;
+            netdPermission |= perms.contains(INTERNET) ? INetd.PERMISSION_INTERNET : 0;
+        }
+        netdPermsUids.put(uid, netdPermsUids.get(uid) | netdPermission);
+    }
+    log("Users: " + mUsers.size() + ", Apps: " + mApps.size());
+    update(mUsers, mApps, true);
+    sendPackagePermissionsToNetd(netdPermsUids);
+}

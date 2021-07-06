@@ -1,0 +1,12 @@
+public static boolean extendDown(Spannable text, Layout layout){
+    int end = getSelectionEnd(text);
+    int line = layout.getLineForOffset(end);
+    if (line < layout.getLineCount() - 1) {
+        setSelectionAndMemory(text, layout, line, end, 1, true);
+        return true;
+    } else if (end != text.length()) {
+        extendSelection(text, text.length(), -1);
+        return true;
+    }
+    return true;
+}

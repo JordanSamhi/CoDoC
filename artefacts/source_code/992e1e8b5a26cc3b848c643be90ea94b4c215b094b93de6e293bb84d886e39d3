@@ -1,0 +1,32 @@
+public static Bitmap loadThumbnail(@NonNull ContentInterface content, @NonNull Uri uri, @NonNull Size size, @Nullable CancellationSignal signal, int allocator) throws IOException{
+    Objects.requireNonNull(content);
+    Objects.requireNonNull(uri);
+    Objects.requireNonNull(size);
+    final Bundle opts = new Bundle();
+    opts.putParcelable(EXTRA_SIZE, Point.convert(size));
+    final Int32Ref orientation = new Int32Ref(0);
+    Bitmap bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(() -> {
+        final AssetFileDescriptor afd = content.openTypedAssetFile(uri, "image/*", opts, signal);
+        final Bundle extras = afd.getExtras();
+        orientation.value = (extras != null) ? extras.getInt(EXTRA_ORIENTATION, 0) : 0;
+        return afd;
+    }), (ImageDecoder decoder, ImageInfo info, Source source) -> {
+        decoder.setAllocator(allocator);
+        if (signal != null)
+            signal.throwIfCanceled();
+        final int widthSample = info.getSize().getWidth() / size.getWidth();
+        final int heightSample = info.getSize().getHeight() / size.getHeight();
+        final int sample = Math.max(widthSample, heightSample);
+        if (sample > 1) {
+            decoder.setTargetSampleSize(sample);
+        }
+    });
+    if (orientation.value != 0) {
+        final int width = bitmap.getWidth();
+        final int height = bitmap.getHeight();
+        final Matrix m = new Matrix();
+        m.setRotate(orientation.value, width / 2, height / 2);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, m, false);
+    }
+    return bitmap;
+}

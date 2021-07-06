@@ -1,0 +1,40 @@
+public int updateWithOnConflict(String table, ContentValues values, String whereClause, String[] whereArgs, int conflictAlgorithm){
+    if (values == null || values.isEmpty()) {
+        throw new IllegalArgumentException("Empty values");
+    }
+    acquireReference();
+    try {
+        StringBuilder sql = new StringBuilder(120);
+        sql.append("UPDATE ");
+        sql.append(CONFLICT_VALUES[conflictAlgorithm]);
+        sql.append(table);
+        sql.append(" SET ");
+        int setValuesSize = values.size();
+        int bindArgsSize = (whereArgs == null) ? setValuesSize : (setValuesSize + whereArgs.length);
+        Object[] bindArgs = new Object[bindArgsSize];
+        int i = 0;
+        for (String colName : values.keySet()) {
+            sql.append((i > 0) ? "," : "");
+            sql.append(colName);
+            bindArgs[i++] = values.get(colName);
+            sql.append("=?");
+        }
+        if (whereArgs != null) {
+            for (i = setValuesSize; i < bindArgsSize; i++) {
+                bindArgs[i] = whereArgs[i - setValuesSize];
+            }
+        }
+        if (!TextUtils.isEmpty(whereClause)) {
+            sql.append(" WHERE ");
+            sql.append(whereClause);
+        }
+        SQLiteStatement statement = new SQLiteStatement(this, sql.toString(), bindArgs);
+        try {
+            return statement.executeUpdateDelete();
+        } finally {
+            statement.close();
+        }
+    } finally {
+        releaseReference();
+    }
+}

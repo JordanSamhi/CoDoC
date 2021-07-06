@@ -1,0 +1,33 @@
+public StatsEvent build(){
+    if (0L == mTimestampNs) {
+        mErrorMask |= ERROR_NO_TIMESTAMP;
+    }
+    if (0 == mAtomId) {
+        mErrorMask |= ERROR_NO_ATOM_ID;
+    }
+    if (mBuffer.hasOverflowed()) {
+        mErrorMask |= ERROR_OVERFLOW;
+    }
+    if (mNumElements > MAX_NUM_ELEMENTS) {
+        mErrorMask |= ERROR_TOO_MANY_FIELDS;
+    }
+    if (0 == mErrorMask) {
+        mBuffer.putByte(POS_NUM_ELEMENTS, (byte) mNumElements);
+    } else {
+        mPos = POS_ATOM_ID;
+        mPos += mBuffer.putByte(mPos, TYPE_INT);
+        mPos += mBuffer.putInt(mPos, mAtomId);
+        mPos += mBuffer.putByte(mPos, TYPE_ERRORS);
+        mPos += mBuffer.putInt(mPos, mErrorMask);
+        mBuffer.putByte(POS_NUM_ELEMENTS, (byte) 3);
+    }
+    final int size = mPos;
+    if (mUsePooledBuffer) {
+        return new StatsEvent(mAtomId, mBuffer, mBuffer.getBytes(), size);
+    } else {
+        final byte[] payload = new byte[size];
+        System.arraycopy(mBuffer.getBytes(), 0, payload, 0, size);
+        mBuffer.release();
+        return new StatsEvent(mAtomId, null, payload, size);
+    }
+}

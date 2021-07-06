@@ -1,0 +1,10 @@
+public void disconnect(){
+    synchronized (mLock) {
+        if (mConnection == null) {
+            return;
+        }
+        mContext.unbindService(mConnection);
+        mConnection = null;
+        mBoundInterface = null;
+    }
+}

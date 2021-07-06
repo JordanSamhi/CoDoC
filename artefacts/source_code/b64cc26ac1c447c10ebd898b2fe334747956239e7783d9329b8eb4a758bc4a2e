@@ -1,0 +1,15 @@
+public long getCredstoreOperationHandle(){
+    if (!mOperationHandleSet) {
+        try {
+            mOperationHandle = mBinder.selectAuthKey(mAllowUsingExhaustedKeys);
+            mOperationHandleSet = true;
+        } catch (android.os.RemoteException e) {
+            throw new RuntimeException("Unexpected RemoteException ", e);
+        } catch (android.os.ServiceSpecificException e) {
+            if (e.errorCode == ICredentialStore.ERROR_NO_AUTHENTICATION_KEY_AVAILABLE) {
+            }
+            throw new RuntimeException("Unexpected ServiceSpecificException with code " + e.errorCode, e);
+        }
+    }
+    return mOperationHandle;
+}

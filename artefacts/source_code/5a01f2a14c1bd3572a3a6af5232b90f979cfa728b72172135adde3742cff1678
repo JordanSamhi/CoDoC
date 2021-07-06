@@ -1,0 +1,13 @@
+public void enableShutterSound(final boolean enable){
+    try {
+        getDispatchThread().runJob(new Runnable() {
+
+            @Override
+            public void run() {
+                getCameraHandler().obtainMessage(CameraActions.ENABLE_SHUTTER_SOUND, (enable ? 1 : 0), 0).sendToTarget();
+            }
+        });
+    } catch (final RuntimeException ex) {
+        getAgent().getCameraExceptionHandler().onDispatchThreadException(ex);
+    }
+}

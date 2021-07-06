@@ -1,0 +1,32 @@
+public final int match(String action, String type, String scheme, Uri data, Set<String> categories, String logTag, boolean supportWildcards, @Nullable Collection<String> ignoreActions){
+    if (action != null && !matchAction(action, supportWildcards, ignoreActions)) {
+        if (false)
+            Log.v(logTag, "No matching action " + action + " for " + this);
+        return NO_MATCH_ACTION;
+    }
+    int dataMatch = matchData(type, scheme, data, supportWildcards);
+    if (dataMatch < 0) {
+        if (false) {
+            if (dataMatch == NO_MATCH_TYPE) {
+                Log.v(logTag, "No matching type " + type + " for " + this);
+            }
+            if (dataMatch == NO_MATCH_DATA) {
+                Log.v(logTag, "No matching scheme/path " + data + " for " + this);
+            }
+        }
+        return dataMatch;
+    }
+    String categoryMismatch = matchCategories(categories);
+    if (categoryMismatch != null) {
+        if (false) {
+            Log.v(logTag, "No matching category " + categoryMismatch + " for " + this);
+        }
+        return NO_MATCH_CATEGORY;
+    }
+    if (false) {
+        if (categories != null) {
+            dataMatch -= mCategories.size() - categories.size();
+        }
+    }
+    return dataMatch;
+}

@@ -1,0 +1,17 @@
+public static boolean syncExtrasEquals(Bundle b1, Bundle b2){
+    if (b1.size() != b2.size()) {
+        return false;
+    }
+    if (b1.isEmpty()) {
+        return true;
+    }
+    for (String key : b1.keySet()) {
+        if (!b2.containsKey(key)) {
+            return false;
+        }
+        if (!Objects.equals(b1.get(key), b2.get(key))) {
+            return false;
+        }
+    }
+    return true;
+}

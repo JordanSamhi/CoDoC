@@ -1,0 +1,14 @@
+public boolean hasCaCertInstalled(@Nullable ComponentName admin, byte[] certBuffer){
+    throwIfParentInstance("hasCaCertInstalled");
+    if (mService != null) {
+        try {
+            mService.enforceCanManageCaCerts(admin, mContext.getPackageName());
+            return getCaCertAlias(certBuffer) != null;
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        } catch (CertificateException ce) {
+            Log.w(TAG, "Could not parse certificate", ce);
+        }
+    }
+    return false;
+}

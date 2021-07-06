@@ -1,0 +1,15 @@
+public void suppress(@NonNull String token, int callingUid, boolean suppress){
+    Pair<String, Integer> suppressionToken = Pair.create(requireNonNull(token), callingUid);
+    if (suppress) {
+        mSuppressionTokens.add(suppressionToken);
+    } else {
+        mSuppressionTokens.remove(suppressionToken);
+    }
+    try {
+        synchronized (mSuppressionTokens) {
+            getStatusBar().suppressAmbientDisplay(isSuppressed());
+        }
+    } catch (RemoteException e) {
+        Slog.e(TAG, "Failed to suppress ambient display", e);
+    }
+}

@@ -1,0 +1,24 @@
+public int getLauncherLargeIconDensity(){
+    final Resources res = mContext.getResources();
+    final int density = res.getDisplayMetrics().densityDpi;
+    final int sw = res.getConfiguration().smallestScreenWidthDp;
+    if (sw < 600) {
+        return density;
+    }
+    switch(density) {
+        case DisplayMetrics.DENSITY_LOW:
+            return DisplayMetrics.DENSITY_MEDIUM;
+        case DisplayMetrics.DENSITY_MEDIUM:
+            return DisplayMetrics.DENSITY_HIGH;
+        case DisplayMetrics.DENSITY_TV:
+            return DisplayMetrics.DENSITY_XHIGH;
+        case DisplayMetrics.DENSITY_HIGH:
+            return DisplayMetrics.DENSITY_XHIGH;
+        case DisplayMetrics.DENSITY_XHIGH:
+            return DisplayMetrics.DENSITY_XXHIGH;
+        case DisplayMetrics.DENSITY_XXHIGH:
+            return DisplayMetrics.DENSITY_XHIGH * 2;
+        default:
+            return (int) ((density * 1.5f) + .5f);
+    }
+}

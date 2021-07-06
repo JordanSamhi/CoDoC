@@ -1,0 +1,6 @@
+public static String buildDexMetadataPathForApk(String codePath){
+    if (!PackageParser.isApkPath(codePath)) {
+        throw new IllegalStateException("Corrupted package. Code path is not an apk " + codePath);
+    }
+    return codePath.substring(0, codePath.length() - APK_FILE_EXTENSION.length()) + DEX_METADATA_FILE_EXTENSION;
+}

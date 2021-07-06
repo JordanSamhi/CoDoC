@@ -1,0 +1,10 @@
+public void setRestrictionsProvider(@NonNull ComponentName admin, @Nullable ComponentName provider){
+    throwIfParentInstance("setRestrictionsProvider");
+    if (mService != null) {
+        try {
+            mService.setRestrictionsProvider(admin, provider);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

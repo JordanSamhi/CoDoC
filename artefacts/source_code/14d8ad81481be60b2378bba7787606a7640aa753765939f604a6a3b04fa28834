@@ -1,0 +1,10 @@
+public IImsRcsFeature getRcsFeature(int slotId){
+    synchronized (mLock) {
+        ImsFeatureContainer f = getImsFeatureContainer(slotId, ImsFeature.FEATURE_RCS);
+        if (f == null) {
+            Log.w(LOG_TAG, "Requested null RcsFeature on slot " + slotId);
+            return null;
+        }
+        return f.resolve(IImsRcsFeature.class);
+    }
+}

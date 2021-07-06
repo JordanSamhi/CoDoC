@@ -1,0 +1,11 @@
+public void cancelCountdown(){
+    if (mCountDownTimer != null) {
+        mCountDownTimer.cancel();
+    } else {
+        Log.e(TAG, "Timer was null");
+    }
+    mIsStarting = false;
+    for (RecordingStateChangeCallback cb : mListeners) {
+        cb.onCountdownEnd();
+    }
+}

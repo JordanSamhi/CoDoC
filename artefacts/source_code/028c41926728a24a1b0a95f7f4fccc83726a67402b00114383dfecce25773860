@@ -1,0 +1,12 @@
+public Pair<String, String[]> getExactMatchDupDetectQuery(){
+    String address = getAddress();
+    String refNumber = Integer.toString(getReferenceNumber());
+    String count = Integer.toString(getMessageCount());
+    String seqNumber = Integer.toString(getSequenceNumber());
+    String date = Long.toString(getTimestamp());
+    String messageBody = getMessageBody();
+    String where = "address=? AND reference_number=? AND count=? AND sequence=? AND " + "date=? AND message_body=?";
+    where = addDestPortQuery(where);
+    String[] whereArgs = new String[] { address, refNumber, count, seqNumber, date, messageBody };
+    return new Pair<>(where, whereArgs);
+}

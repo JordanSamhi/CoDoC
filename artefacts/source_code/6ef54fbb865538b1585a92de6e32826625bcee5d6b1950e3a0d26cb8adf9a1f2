@@ -1,0 +1,10 @@
+public void removeNetwork(String ssid){
+    if (ssid == null || WifiManager.UNKNOWN_SSID.equals(ssid)) {
+        return;
+    }
+    mApForNetwork.remove(ssid);
+    mApForBssid.entrySet().removeIf(entry -> ssid.equals(entry.getValue().ssid));
+    if (mMemoryStore == null)
+        return;
+    mMemoryStore.removeCluster(groupHintFromSsid(ssid));
+}

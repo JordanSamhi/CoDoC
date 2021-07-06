@@ -1,0 +1,12 @@
+public boolean setValue(byte[] value, int offset, int length){
+    if (checkBadComponentCount(length)) {
+        return false;
+    }
+    if (mDataType != TYPE_UNSIGNED_BYTE && mDataType != TYPE_UNDEFINED) {
+        return false;
+    }
+    mValue = new byte[length];
+    System.arraycopy(value, offset, mValue, 0, length);
+    mComponentCountActual = length;
+    return true;
+}

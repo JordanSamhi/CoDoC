@@ -1,0 +1,27 @@
+
+     * Copies a raw SMS PDU to the ICC.
+     * ICC (Integrated Circuit Card) is the card of the device.
+     * For example, this can be the SIM or USIM for GSM.
+     *
+     * <p class="note"><strong>Note:</strong> This method is intended for internal use by carrier
+     * applications or the Telephony framework and will never trigger an SMS disambiguation
+     * dialog. If this method is called on a device that has multiple active subscriptions, this
+     * {@link SmsManager} instance has been created with {@link #getDefault()}, and no user-defined
+     * default subscription is defined, the subscription ID associated with this message will be
+     * INVALID, which will result in the operation being completed on the subscription associated
+     * with logical slot 0. Use {@link #getSmsManagerForSubscriptionId(int)} to ensure the
+     * operation is performed on the correct subscription.
+     * </p>
+     *
+     * @param smsc the SMSC for this messag or null for the default SMSC.
+     * @param pdu the raw PDU to store.
+     * @param status message status. One of these status:
+     *               <code>STATUS_ON_ICC_READ</code>
+     *               <code>STATUS_ON_ICC_UNREAD</code>
+     *               <code>STATUS_ON_ICC_SENT</code>
+     *               <code>STATUS_ON_ICC_UNSENT</code>
+     * @return true for success. Otherwise false.
+     *
+     * @throws IllegalArgumentException if pdu is null.
+     * @hide
+     

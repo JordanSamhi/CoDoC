@@ -1,0 +1,12 @@
+public boolean addOrUpdatePasspointConfiguration(PasspointConfiguration config, String packageName){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return false;
+    }
+    int callingUid = Binder.getCallingUid();
+    if (!isTargetSdkLessThanROrPrivileged(packageName, Binder.getCallingPid(), callingUid)) {
+        mLog.info("addOrUpdatePasspointConfiguration not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return false;
+    }
+    mLog.info("addorUpdatePasspointConfiguration uid=%").c(callingUid).flush();
+    return mWifiThreadRunner.call(() -> mPasspointManager.addOrUpdateProvider(config, callingUid, packageName, false, true), false);
+}

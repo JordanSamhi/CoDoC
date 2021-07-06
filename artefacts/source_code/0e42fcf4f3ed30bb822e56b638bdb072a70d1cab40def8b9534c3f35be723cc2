@@ -1,0 +1,9 @@
+public byte[] getFileMetadata(@NonNull UUID id){
+    try {
+        final byte[] rawId = idToBytes(id);
+        return mService.getMetadataById(mId, rawId);
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+        return null;
+    }
+}

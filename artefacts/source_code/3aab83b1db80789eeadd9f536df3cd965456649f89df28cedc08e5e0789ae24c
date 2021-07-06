@@ -1,0 +1,18 @@
+public static Uri lookupContact(ContentResolver resolver, Uri lookupUri){
+    if (lookupUri == null) {
+        return null;
+    }
+    Cursor c = resolver.query(lookupUri, new String[] { Contacts._ID }, null, null, null);
+    if (c == null) {
+        return null;
+    }
+    try {
+        if (c.moveToFirst()) {
+            long contactId = c.getLong(0);
+            return ContentUris.withAppendedId(Contacts.CONTENT_URI, contactId);
+        }
+    } finally {
+        c.close();
+    }
+    return null;
+}

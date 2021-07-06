@@ -1,0 +1,22 @@
+public void onTouchEvent(MotionEvent ev){
+    if (ev.getAction() == MotionEvent.ACTION_UP) {
+        Rect viewRect = new Rect();
+        int[] leftTop = new int[2];
+        view.getLocationOnScreen(leftTop);
+        viewRect.set(leftTop[0], leftTop[1], leftTop[0] + view.getWidth(), leftTop[1] + view.getHeight());
+        if (viewRect.contains((int) ev.getX(), (int) ev.getY())) {
+            if (isConsecutiveTap(ev)) {
+                consecutiveTapsCounter++;
+            } else {
+                consecutiveTapsCounter = 1;
+            }
+            listener.onConsecutiveTaps(consecutiveTapsCounter);
+        } else {
+            consecutiveTapsCounter = 0;
+        }
+        if (previousTapEvent != null) {
+            previousTapEvent.recycle();
+        }
+        previousTapEvent = MotionEvent.obtain(ev);
+    }
+}

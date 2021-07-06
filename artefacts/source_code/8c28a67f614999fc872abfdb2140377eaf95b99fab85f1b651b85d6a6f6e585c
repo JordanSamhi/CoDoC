@@ -1,0 +1,13 @@
+public void add(@NonNull AttributedOp opToAdd){
+    if (opToAdd.mInProgressEvents != null) {
+        Slog.w(TAG, "Ignoring " + opToAdd.mInProgressEvents.size() + " running app-ops");
+        int numInProgressEvents = opToAdd.mInProgressEvents.size();
+        for (int i = 0; i < numInProgressEvents; i++) {
+            InProgressStartOpEvent event = opToAdd.mInProgressEvents.valueAt(i);
+            event.finish();
+            mInProgressStartOpEventPool.release(event);
+        }
+    }
+    mAccessEvents = add(mAccessEvents, opToAdd.mAccessEvents);
+    mRejectEvents = add(mRejectEvents, opToAdd.mRejectEvents);
+}

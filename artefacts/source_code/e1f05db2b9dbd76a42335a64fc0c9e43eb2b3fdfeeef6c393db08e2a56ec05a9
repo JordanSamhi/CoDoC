@@ -1,0 +1,32 @@
+public static final void setHttpProxySystemProperty(String host, String port, String exclList, Uri pacFileUrl){
+    if (exclList != null)
+        exclList = exclList.replace(",", "|");
+    if (false)
+        Log.d(TAG, "setHttpProxySystemProperty :" + host + ":" + port + " - " + exclList);
+    if (host != null) {
+        System.setProperty("http.proxyHost", host);
+        System.setProperty("https.proxyHost", host);
+    } else {
+        System.clearProperty("http.proxyHost");
+        System.clearProperty("https.proxyHost");
+    }
+    if (port != null) {
+        System.setProperty("http.proxyPort", port);
+        System.setProperty("https.proxyPort", port);
+    } else {
+        System.clearProperty("http.proxyPort");
+        System.clearProperty("https.proxyPort");
+    }
+    if (exclList != null) {
+        System.setProperty("http.nonProxyHosts", exclList);
+        System.setProperty("https.nonProxyHosts", exclList);
+    } else {
+        System.clearProperty("http.nonProxyHosts");
+        System.clearProperty("https.nonProxyHosts");
+    }
+    if (!Uri.EMPTY.equals(pacFileUrl)) {
+        ProxySelector.setDefault(new PacProxySelector());
+    } else {
+        ProxySelector.setDefault(sDefaultProxySelector);
+    }
+}

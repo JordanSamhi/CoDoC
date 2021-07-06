@@ -1,0 +1,20 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    if (KeyEvent.isConfirmKey(keyCode)) {
+        if ((mViewFlags & ENABLED_MASK) == DISABLED) {
+            return true;
+        }
+        if (event.getRepeatCount() == 0) {
+            final boolean clickable = (mViewFlags & CLICKABLE) == CLICKABLE || (mViewFlags & LONG_CLICKABLE) == LONG_CLICKABLE;
+            if (clickable || (mViewFlags & TOOLTIP) == TOOLTIP) {
+                final float x = getWidth() / 2f;
+                final float y = getHeight() / 2f;
+                if (clickable) {
+                    setPressed(true, x, y);
+                }
+                checkForLongClick(ViewConfiguration.getLongPressTimeout(), x, y, TOUCH_GESTURE_CLASSIFIED__CLASSIFICATION__UNKNOWN_CLASSIFICATION);
+                return true;
+            }
+        }
+    }
+    return false;
+}

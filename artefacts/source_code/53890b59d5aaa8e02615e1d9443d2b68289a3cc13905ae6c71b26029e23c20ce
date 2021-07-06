@@ -1,0 +1,11 @@
+public Socket createSocket(Socket k, String host, int port, boolean close) throws IOException{
+    OpenSSLSocketImpl s = (OpenSSLSocketImpl) getDelegate().createSocket(k, host, port, close);
+    s.setNpnProtocols(mNpnProtocols);
+    s.setAlpnProtocols(mAlpnProtocols);
+    s.setHandshakeTimeout(mHandshakeTimeoutMillis);
+    s.setChannelIdPrivateKey(mChannelIdPrivateKey);
+    if (mSecure) {
+        verifyHostname(s, host);
+    }
+    return s;
+}

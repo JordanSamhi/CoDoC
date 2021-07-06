@@ -1,0 +1,13 @@
+public static String matches(@Nullable String mimeType, @NonNull String[] filters){
+    if (mimeType == null) {
+        return null;
+    }
+    final String[] mimeTypeParts = mimeType.split("/");
+    for (String filter : filters) {
+        final String[] filterParts = filter.split("/");
+        if (mimeTypeAgainstFilter(mimeTypeParts, filterParts)) {
+            return filter;
+        }
+    }
+    return null;
+}

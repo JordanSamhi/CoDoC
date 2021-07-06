@@ -1,0 +1,66 @@
+public final boolean finishActivity(IBinder token, int resultCode, Intent resultData, int finishTask){
+    if (resultData != null && resultData.hasFileDescriptors()) {
+        throw new IllegalArgumentException("File descriptors passed in Intent");
+    }
+    final ActivityRecord r;
+    synchronized (mGlobalLock) {
+        r = ActivityRecord.isInStackLocked(token);
+        if (r == null) {
+            return true;
+        }
+    }
+    final NeededUriGrants resultGrants = collectGrants(resultData, r.resultTo);
+    synchronized (mGlobalLock) {
+        if (!r.isInHistory()) {
+            return true;
+        }
+        final Task tr = r.getTask();
+        final ActivityRecord rootR = tr.getRootActivity();
+        if (rootR == null) {
+            Slog.w(TAG, "Finishing task with all activities already finished");
+        }
+        if (getLockTaskController().activityBlockedFromFinish(r)) {
+            return false;
+        }
+        if (mController != null) {
+            final ActivityRecord next = r.getRootTask().topRunningActivity(token, INVALID_TASK_ID);
+            if (next != null) {
+                boolean resumeOK = true;
+                try {
+                    resumeOK = mController.activityResuming(next.packageName);
+                } catch (RemoteException e) {
+                    mController = null;
+                    Watchdog.getInstance().setActivityController(null);
+                }
+                if (!resumeOK) {
+                    Slog.i(TAG, "Not finishing activity because controller resumed");
+                    return false;
+                }
+            }
+        }
+        if (r.app != null) {
+            r.app.setLastActivityFinishTimeIfNeeded(SystemClock.uptimeMillis());
+        }
+        final long origId = Binder.clearCallingIdentity();
+        Trace.traceBegin(TRACE_TAG_WINDOW_MANAGER, "finishActivity");
+        try {
+            boolean res;
+            final boolean finishWithRootActivity = finishTask == Activity.FINISH_TASK_WITH_ROOT_ACTIVITY;
+            if (finishTask == Activity.FINISH_TASK_WITH_ACTIVITY || (finishWithRootActivity && r == rootR)) {
+                mStackSupervisor.removeTask(tr, false, finishWithRootActivity, "finish-activity");
+                res = true;
+                r.mRelaunchReason = RELAUNCH_REASON_NONE;
+            } else {
+                r.finishIfPossible(resultCode, resultData, resultGrants, "app-request", true);
+                res = r.finishing;
+                if (!res) {
+                    Slog.i(TAG, "Failed to finish by app-request");
+                }
+            }
+            return res;
+        } finally {
+            Trace.traceEnd(TRACE_TAG_WINDOW_MANAGER);
+            Binder.restoreCallingIdentity(origId);
+        }
+    }
+}

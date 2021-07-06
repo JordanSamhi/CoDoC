@@ -1,0 +1,10 @@
+public void connect(){
+    synchronized (this) {
+        if (mProvider == null) {
+            mProvider = mContext.getContentResolver().acquireContentProviderClient(MediaStore.AUTHORITY);
+            if (mClient != null) {
+                mClient.onMediaScannerConnected();
+            }
+        }
+    }
+}

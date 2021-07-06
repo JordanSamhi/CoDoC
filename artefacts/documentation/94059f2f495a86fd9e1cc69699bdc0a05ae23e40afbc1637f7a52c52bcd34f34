@@ -1,0 +1,40 @@
+
+     * Set a callback on successful Android Beam (TM).
+     *
+     * <p>This method may be called at any time before {@link Activity#onDestroy},
+     * but the callback can only occur when the
+     * specified activity(s) are in resumed (foreground) state. The recommended
+     * approach is to call this method during your Activity's
+     * {@link Activity#onCreate} - see sample
+     * code below. This method does not immediately perform any I/O or blocking work,
+     * so is safe to call on your main thread.
+     *
+     * <p>The API allows for multiple activities to be specified at a time,
+     * but it is strongly recommended to just register one at a time,
+     * and to do so during the activity's {@link Activity#onCreate}. For example:
+     * <pre>
+     * protected void onCreate(Bundle savedInstanceState) {
+     *     super.onCreate(savedInstanceState);
+     *     NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+     *     if (nfcAdapter == null) return;  // NFC not available on this device
+     *     nfcAdapter.setOnNdefPushCompleteCallback(callback, this);
+     * }</pre>
+     * And that is it. Only one call per activity is necessary. The Android
+     * OS will automatically release its references to the callback and the
+     * Activity object when it is destroyed if you follow this pattern.
+     *
+     * <p class="note">Do not pass in an Activity that has already been through
+     * {@link Activity#onDestroy}. This is guaranteed if you call this API
+     * during {@link Activity#onCreate}.
+     *
+     * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
+     *
+     * @param callback callback, or null to disable
+     * @param activity activity for which the NDEF message will be pushed
+     * @param activities optional additional activities, however we strongly recommend
+     *        to only register one at a time, and to do so in that activity's
+     *        {@link Activity#onCreate}
+     * @throws UnsupportedOperationException if FEATURE_NFC is unavailable.
+     * @deprecated this feature is deprecated. File sharing can work using other technology like
+     * Bluetooth.
+     

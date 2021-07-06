@@ -1,0 +1,24 @@
+public boolean equals(final Object obj){
+    if (obj == null) {
+        return false;
+    }
+    if (this == obj) {
+        return true;
+    }
+    if (obj instanceof ColorSpaceTransform) {
+        final ColorSpaceTransform other = (ColorSpaceTransform) obj;
+        for (int i = 0, j = 0; i < COUNT; ++i, j += RATIONAL_SIZE) {
+            int numerator = mElements[j + OFFSET_NUMERATOR];
+            int denominator = mElements[j + OFFSET_DENOMINATOR];
+            int numeratorOther = other.mElements[j + OFFSET_NUMERATOR];
+            int denominatorOther = other.mElements[j + OFFSET_DENOMINATOR];
+            Rational r = new Rational(numerator, denominator);
+            Rational rOther = new Rational(numeratorOther, denominatorOther);
+            if (!r.equals(rOther)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}

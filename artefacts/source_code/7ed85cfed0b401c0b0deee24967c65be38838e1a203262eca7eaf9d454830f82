@@ -1,0 +1,12 @@
+public void restoreSupplicantBackupData(byte[] supplicantData, byte[] ipConfigData){
+    enforceNetworkSettingsPermission();
+    mLog.trace("restoreSupplicantBackupData uid=%").c(Binder.getCallingUid()).flush();
+    if (mClientModeImplChannel == null) {
+        Log.e(TAG, "mClientModeImplChannel is not initialized");
+        return;
+    }
+    Log.d(TAG, "Restoring supplicant backup data");
+    List<WifiConfiguration> wifiConfigurations = mWifiBackupRestore.retrieveConfigurationsFromSupplicantBackupData(supplicantData, ipConfigData);
+    restoreNetworks(wifiConfigurations);
+    Log.d(TAG, "Restored supplicant backup data");
+}

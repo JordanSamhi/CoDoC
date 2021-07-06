@@ -1,0 +1,10 @@
+public void binderDied(){
+    Iterator<IConnectionServiceAdapter> it = mAdapters.iterator();
+    while (it.hasNext()) {
+        IConnectionServiceAdapter adapter = it.next();
+        if (!adapter.asBinder().isBinderAlive()) {
+            it.remove();
+            adapter.asBinder().unlinkToDeath(this, 0);
+        }
+    }
+}

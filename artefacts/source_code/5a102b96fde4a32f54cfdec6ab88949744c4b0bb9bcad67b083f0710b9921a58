@@ -1,0 +1,17 @@
+public boolean removeActiveDevice(@ActiveDeviceUse int profiles){
+    if (profiles != ACTIVE_DEVICE_AUDIO && profiles != ACTIVE_DEVICE_PHONE_CALL && profiles != ACTIVE_DEVICE_ALL) {
+        Log.e(TAG, "Invalid profiles param value in removeActiveDevice");
+        throw new IllegalArgumentException("Profiles must be one of " + "BluetoothAdapter.ACTIVE_DEVICE_AUDIO, " + "BluetoothAdapter.ACTIVE_DEVICE_PHONE_CALL, or " + "BluetoothAdapter.ACTIVE_DEVICE_ALL");
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.removeActiveDevice(profiles);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return false;
+}

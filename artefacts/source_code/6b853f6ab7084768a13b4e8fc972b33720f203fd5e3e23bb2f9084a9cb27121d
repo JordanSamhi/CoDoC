@@ -1,0 +1,10 @@
+public void notifyRcsAutoConfigurationReceived(@NonNull byte[] config, boolean isCompressed){
+    if (config == null) {
+        throw new IllegalArgumentException("Must include a non-null config XML file.");
+    }
+    try {
+        getITelephony().notifyRcsAutoConfigurationReceived(mSubId, config, isCompressed);
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

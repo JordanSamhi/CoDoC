@@ -1,0 +1,22 @@
+public boolean startServer(@NonNull RedirectCallback callback, @NonNull Handler startHandler){
+    if (callback == null) {
+        return false;
+    }
+    if (startHandler == null) {
+        return false;
+    }
+    if (isAlive()) {
+        Log.e(TAG, "redirect listener is already running");
+        return false;
+    }
+    mRedirectCallback = callback;
+    startHandler.post(() -> {
+        try {
+            start();
+        } catch (IOException e) {
+            Log.e(TAG, "unable to start redirect listener: " + e);
+        }
+    });
+    mHandler.postDelayed(mTimeOutTask, USER_TIMEOUT_MILLIS);
+    return true;
+}

@@ -1,0 +1,21 @@
+public static MediaButtonReceiverHolder create(Context context, int userId, PendingIntent pendingIntent){
+    if (pendingIntent == null) {
+        return null;
+    }
+    ComponentName componentName = (pendingIntent != null && pendingIntent.getIntent() != null) ? pendingIntent.getIntent().getComponent() : null;
+    if (componentName != null) {
+        return new MediaButtonReceiverHolder(userId, pendingIntent, componentName, getComponentType(context, componentName));
+    }
+    PackageManager pm = context.getPackageManager();
+    Intent intent = pendingIntent.getIntent();
+    if ((componentName = resolveImplicitServiceIntent(pm, intent)) != null) {
+        return new MediaButtonReceiverHolder(userId, pendingIntent, componentName, COMPONENT_TYPE_SERVICE);
+    } else if ((componentName = resolveManifestDeclaredBroadcastReceiverIntent(pm, intent)) != null) {
+        return new MediaButtonReceiverHolder(userId, pendingIntent, componentName, COMPONENT_TYPE_BROADCAST);
+    } else if ((componentName = resolveImplicitActivityIntent(pm, intent)) != null) {
+        return new MediaButtonReceiverHolder(userId, pendingIntent, componentName, COMPONENT_TYPE_ACTIVITY);
+    }
+    Log.w(TAG, "Unresolvable implicit intent is set, pi=" + pendingIntent);
+    String packageName = (pendingIntent != null && pendingIntent.getIntent() != null) ? pendingIntent.getIntent().getPackage() : null;
+    return new MediaButtonReceiverHolder(userId, pendingIntent, packageName != null ? packageName : "");
+}

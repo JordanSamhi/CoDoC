@@ -1,0 +1,18 @@
+public final void unlockUserWithToken(long handle, byte[] token, UserHandle user){
+    UserManager um = (UserManager) getSystemService(Context.USER_SERVICE);
+    if (um.isUserUnlocked(user)) {
+        Slog.i(TAG, "User already unlocked");
+        return;
+    }
+    synchronized (mLock) {
+        if (mCallback == null) {
+            Slog.w(TAG, "Cannot add escrow token if the agent is not connecting to framework");
+            throw new IllegalStateException("Trust agent is not connected");
+        }
+        try {
+            mCallback.unlockUserWithToken(handle, token, user.getIdentifier());
+        } catch (RemoteException e) {
+            onError("calling unlockUserWithToken");
+        }
+    }
+}

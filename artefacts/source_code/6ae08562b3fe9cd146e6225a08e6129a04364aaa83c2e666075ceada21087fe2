@@ -1,0 +1,20 @@
+public final void pruneApprovedPrintServices(List<ComponentName> servicesToKeep){
+    throwIfCalledOnMainThread();
+    synchronized (mLock) {
+        throwIfDestroyedLocked();
+        mCanUnbind = false;
+    }
+    try {
+        getRemoteInstanceLazy().pruneApprovedPrintServices(servicesToKeep);
+    } catch (RemoteException | TimeoutException | InterruptedException e) {
+        Slog.e(LOG_TAG, "Error pruning approved print services.", e);
+    } finally {
+        if (DEBUG) {
+            Slog.i(LOG_TAG, "[user: " + mUserHandle.getIdentifier() + "] pruneApprovedPrintServices()");
+        }
+        synchronized (mLock) {
+            mCanUnbind = true;
+            mLock.notifyAll();
+        }
+    }
+}

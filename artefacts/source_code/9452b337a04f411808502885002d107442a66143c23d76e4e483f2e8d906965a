@@ -1,0 +1,10 @@
+public void adoptShellPermissionIdentity(){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        mUiAutomationConnection.adoptShellPermissionIdentity(Process.myUid(), null);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error executing adopting shell permission identity!", re);
+    }
+}

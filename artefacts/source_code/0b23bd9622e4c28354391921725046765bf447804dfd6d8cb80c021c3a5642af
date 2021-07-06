@@ -1,0 +1,27 @@
+public void deleteIncidentReports(Uri uri){
+    if (uri == null) {
+        try {
+            getCompanionServiceLocked().deleteAllIncidentReports(mContext.getPackageName());
+        } catch (RemoteException ex) {
+            throw new RuntimeException("System server or incidentd going down", ex);
+        }
+    } else {
+        final String pkg = uri.getQueryParameter(URI_PARAM_CALLING_PACKAGE);
+        if (pkg == null) {
+            throw new RuntimeException("Invalid URI: No " + URI_PARAM_CALLING_PACKAGE + " parameter. " + uri);
+        }
+        final String cls = uri.getQueryParameter(URI_PARAM_RECEIVER_CLASS);
+        if (cls == null) {
+            throw new RuntimeException("Invalid URI: No " + URI_PARAM_RECEIVER_CLASS + " parameter. " + uri);
+        }
+        final String id = uri.getQueryParameter(URI_PARAM_REPORT_ID);
+        if (id == null) {
+            throw new RuntimeException("Invalid URI: No " + URI_PARAM_REPORT_ID + " parameter. " + uri);
+        }
+        try {
+            getCompanionServiceLocked().deleteIncidentReports(pkg, cls, id);
+        } catch (RemoteException ex) {
+            throw new RuntimeException("System server or incidentd going down", ex);
+        }
+    }
+}

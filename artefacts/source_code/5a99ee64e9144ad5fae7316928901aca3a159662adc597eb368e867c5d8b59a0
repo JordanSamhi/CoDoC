@@ -1,0 +1,10 @@
+public void updateSystemUpdateInfo(PersistableBundle infoBundle){
+    if (infoBundle == null || !infoBundle.containsKey(KEY_STATUS)) {
+        throw new IllegalArgumentException("Missing status in the bundle");
+    }
+    try {
+        mService.updateSystemUpdateInfo(infoBundle);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

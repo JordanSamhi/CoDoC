@@ -1,0 +1,19 @@
+public void start(Handler uiHandler, long timeLimitMillis, Consumer<ScrollCaptureTarget> resultConsumer){
+    synchronized (mLock) {
+        if (mStarted) {
+            throw new IllegalStateException("already started!");
+        }
+        if (timeLimitMillis < 0) {
+            throw new IllegalArgumentException("Time limit must be positive");
+        }
+        mHandler = uiHandler;
+        mTimeLimitMillis = timeLimitMillis;
+        mWhenComplete = resultConsumer;
+        if (mTargets.isEmpty()) {
+            mHandler.post(() -> supplyResult(null));
+            return;
+        }
+        mStarted = true;
+        uiHandler.post(() -> run(timeLimitMillis, resultConsumer));
+    }
+}

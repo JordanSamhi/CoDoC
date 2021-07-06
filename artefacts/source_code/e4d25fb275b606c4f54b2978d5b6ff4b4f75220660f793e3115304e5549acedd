@@ -1,0 +1,16 @@
+public void incrementLinkSpeedCount(int linkSpeed, int rssi){
+    if (!(mContext.getResources().getBoolean(R.bool.config_wifiLinkSpeedMetricsEnabled) && linkSpeed >= MIN_LINK_SPEED_MBPS && rssi >= MIN_RSSI_POLL && rssi <= MAX_RSSI_POLL)) {
+        return;
+    }
+    synchronized (mLock) {
+        LinkSpeedCount linkSpeedCount = mLinkSpeedCounts.get(linkSpeed);
+        if (linkSpeedCount == null) {
+            linkSpeedCount = new LinkSpeedCount();
+            linkSpeedCount.linkSpeedMbps = linkSpeed;
+            mLinkSpeedCounts.put(linkSpeed, linkSpeedCount);
+        }
+        linkSpeedCount.count++;
+        linkSpeedCount.rssiSumDbm += Math.abs(rssi);
+        linkSpeedCount.rssiSumOfSquaresDbmSq += rssi * rssi;
+    }
+}

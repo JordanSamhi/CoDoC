@@ -1,0 +1,17 @@
+public void updateCLIP(boolean enable, Message result){
+    if (DBG) {
+        log("updateCLIP :: Ut=" + miUt + ", enable=" + enable);
+    }
+    synchronized (mLockObj) {
+        try {
+            int id = miUt.updateCLIP(enable);
+            if (id < 0) {
+                sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+                return;
+            }
+            mPendingCmds.put(Integer.valueOf(id), result);
+        } catch (RemoteException e) {
+            sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+        }
+    }
+}

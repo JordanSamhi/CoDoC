@@ -1,0 +1,16 @@
+public void onActivityFinishing(){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    synchronized (mLock) {
+        if (mSaveOnFinish) {
+            if (sDebug)
+                Log.d(TAG, "onActivityFinishing(): calling commitLocked()");
+            commitLocked();
+        } else {
+            if (sDebug)
+                Log.d(TAG, "onActivityFinishing(): calling cancelLocked()");
+            cancelLocked();
+        }
+    }
+}

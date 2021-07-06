@@ -1,0 +1,15 @@
+public void onTaskVanished(ActivityManager.RunningTaskInfo info){
+    if (!mInPip) {
+        return;
+    }
+    final WindowContainerToken token = info.token;
+    Objects.requireNonNull(token, "Requires valid WindowContainerToken");
+    if (token.asBinder() != mToken.asBinder()) {
+        Log.wtf(TAG, "Unrecognized token: " + token);
+        return;
+    }
+    mShouldDeferEnteringPip = false;
+    mPictureInPictureParams = null;
+    mInPip = false;
+    mExitingPip = false;
+}

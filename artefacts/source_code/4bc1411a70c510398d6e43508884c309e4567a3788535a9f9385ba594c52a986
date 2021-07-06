@@ -1,0 +1,10 @@
+public WebViewProviderResponse waitForAndGetProvider(){
+    if (Binder.getCallingPid() == Process.myPid()) {
+        throw new IllegalStateException("Cannot create a WebView from the SystemServer");
+    }
+    final WebViewProviderResponse webViewProviderResponse = WebViewUpdateService.this.mImpl.waitForAndGetProvider();
+    if (webViewProviderResponse.packageInfo != null) {
+        grantVisibilityToCaller(webViewProviderResponse.packageInfo.packageName, Binder.getCallingUid());
+    }
+    return webViewProviderResponse;
+}

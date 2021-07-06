@@ -1,0 +1,19 @@
+public boolean setMacAddress(@NonNull String ifaceName, @NonNull MacAddress mac){
+    byte[] macByteArray = mac.toByteArray();
+    synchronized (sLock) {
+        try {
+            android.hardware.wifi.V1_2.IWifiStaIface sta12 = getWifiStaIfaceForV1_2Mockable(ifaceName);
+            if (sta12 != null) {
+                return ok(sta12.setMacAddress(macByteArray));
+            }
+            android.hardware.wifi.V1_4.IWifiApIface ap14 = getWifiApIfaceForV1_4Mockable(ifaceName);
+            if (ap14 != null) {
+                return ok(ap14.setMacAddress(macByteArray));
+            }
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+    return boolResult(false);
+}

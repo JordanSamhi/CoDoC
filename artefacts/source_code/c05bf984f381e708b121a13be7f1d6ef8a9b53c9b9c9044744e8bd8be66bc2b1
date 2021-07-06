@@ -1,0 +1,24 @@
+public void updateRecommendations(List<RecommendationInfo> recommendations){
+    if (recommendations != null) {
+        final Collator collator = Collator.getInstance();
+        Collections.sort(recommendations, new Comparator<RecommendationInfo>() {
+
+            @Override
+            public int compare(RecommendationInfo o1, RecommendationInfo o2) {
+                if (o1.getNumDiscoveredPrinters() != o2.getNumDiscoveredPrinters()) {
+                    return o2.getNumDiscoveredPrinters() - o1.getNumDiscoveredPrinters();
+                } else if (o1.recommendsMultiVendorService() != o2.recommendsMultiVendorService()) {
+                    if (o1.recommendsMultiVendorService()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                } else {
+                    return collator.compare(o1.getName().toString(), o2.getName().toString());
+                }
+            }
+        });
+    }
+    mRecommendations = recommendations;
+    filterRecommendations();
+}

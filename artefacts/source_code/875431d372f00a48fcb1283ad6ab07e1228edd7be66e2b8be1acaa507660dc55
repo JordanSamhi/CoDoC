@@ -1,0 +1,27 @@
+public void onImeWindowSetOnDisplay(final int pid, final int displayId){
+    if (InputMethodSystemProperty.MULTI_CLIENT_IME_ENABLED)
+        return;
+    if (pid == MY_PID || pid < 0) {
+        if (DEBUG_CONFIGURATION) {
+            Slog.w(TAG, "Trying to update display configuration for system/invalid process.");
+        }
+        return;
+    }
+    synchronized (mGlobalLock) {
+        final DisplayContent displayContent = mRootWindowContainer.getDisplayContent(displayId);
+        if (displayContent == null) {
+            if (DEBUG_CONFIGURATION) {
+                Slog.w(TAG, "Trying to update display configuration for non-existing " + "displayId=" + displayId);
+            }
+            return;
+        }
+        final WindowProcessController process = mProcessMap.getProcess(pid);
+        if (process == null) {
+            if (DEBUG_CONFIGURATION) {
+                Slog.w(TAG, "Trying to update display configuration for invalid " + "process, pid=" + pid);
+            }
+            return;
+        }
+        process.registerDisplayConfigurationListener(displayContent);
+    }
+}

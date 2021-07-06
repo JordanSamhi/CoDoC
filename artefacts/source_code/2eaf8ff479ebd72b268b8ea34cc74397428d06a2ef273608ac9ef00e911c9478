@@ -1,0 +1,10 @@
+public void writeNow(){
+    synchronized (mLock) {
+        if (!mAllObservers.isEmpty()) {
+            mLongTaskHandler.removeCallbacks(mSaveToFile);
+            pruneObserversLocked();
+            saveToFile();
+            Slog.i(TAG, "Last write to update package durations");
+        }
+    }
+}

@@ -1,0 +1,13 @@
+public void setChannelTo(int channelIndex, Channel channel){
+    checkChannel(channelIndex);
+    if (mMbcBandCount != channel.getMbc().getBandCount()) {
+        throw new IllegalArgumentException("MbcBandCount changed from " + mMbcBandCount + " to " + channel.getPreEq().getBandCount());
+    }
+    if (mPreEqBandCount != channel.getPreEq().getBandCount()) {
+        throw new IllegalArgumentException("PreEqBandCount changed from " + mPreEqBandCount + " to " + channel.getPreEq().getBandCount());
+    }
+    if (mPostEqBandCount != channel.getPostEq().getBandCount()) {
+        throw new IllegalArgumentException("PostEqBandCount changed from " + mPostEqBandCount + " to " + channel.getPostEq().getBandCount());
+    }
+    mChannel[channelIndex] = new Channel(channel);
+}

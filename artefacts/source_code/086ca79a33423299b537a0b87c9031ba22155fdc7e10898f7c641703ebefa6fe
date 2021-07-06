@@ -1,0 +1,7 @@
+public void onNetworkConnectivityReported(@NonNull Network network, boolean hasConnectivity){
+    Binder.withCleanCallingIdentity(() -> {
+        mExecutor.execute(() -> {
+            mCb.onNetworkConnectivityReported(network, hasConnectivity);
+        });
+    });
+}

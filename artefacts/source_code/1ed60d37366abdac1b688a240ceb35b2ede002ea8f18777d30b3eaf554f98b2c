@@ -1,0 +1,18 @@
+public Uri validateIncomingUri(Uri uri) throws SecurityException{
+    String auth = uri.getAuthority();
+    if (!mSingleUser) {
+        int userId = getUserIdFromAuthority(auth, UserHandle.USER_CURRENT);
+        if (userId != UserHandle.USER_CURRENT && userId != mContext.getUserId()) {
+            throw new SecurityException("trying to query a ContentProvider in user " + mContext.getUserId() + " with a uri belonging to user " + userId);
+        }
+    }
+    validateIncomingAuthority(auth);
+    final String encodedPath = uri.getEncodedPath();
+    if (encodedPath != null && encodedPath.indexOf("//") != -1) {
+        final Uri normalized = uri.buildUpon().encodedPath(encodedPath.replaceAll("//+", "/")).build();
+        Log.w(TAG, "Normalized " + uri + " to " + normalized + " to avoid possible security issues");
+        return normalized;
+    } else {
+        return uri;
+    }
+}

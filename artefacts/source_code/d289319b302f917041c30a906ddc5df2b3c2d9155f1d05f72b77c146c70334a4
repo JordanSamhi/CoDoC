@@ -1,0 +1,9 @@
+public void setUserIcon(@UserIdInt int userId, @NonNull Bitmap icon){
+    try {
+        mService.setUserIcon(userId, icon);
+    } catch (ServiceSpecificException e) {
+        return;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

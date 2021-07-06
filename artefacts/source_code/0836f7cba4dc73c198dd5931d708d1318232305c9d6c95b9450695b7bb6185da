@@ -1,0 +1,7 @@
+public static boolean is16BitUuid(ParcelUuid parcelUuid){
+    UUID uuid = parcelUuid.getUuid();
+    if (uuid.getLeastSignificantBits() != BASE_UUID.getUuid().getLeastSignificantBits()) {
+        return false;
+    }
+    return ((uuid.getMostSignificantBits() & 0xFFFF0000FFFFFFFFL) == 0x1000L);
+}

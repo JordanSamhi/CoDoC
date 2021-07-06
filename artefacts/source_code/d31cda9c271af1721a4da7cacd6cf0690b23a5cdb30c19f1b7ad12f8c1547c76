@@ -1,0 +1,19 @@
+public void getVoiceRegistrationStateResponse_1_5(RadioResponseInfo responseInfo, android.hardware.radio.V1_5.RegStateResult voiceRegResponse){
+    RILRequest rr = mRil.processResponse(responseInfo);
+    if (rr == null) {
+        return;
+    }
+    if (responseInfo.error == RadioError.REQUEST_NOT_SUPPORTED) {
+        final int request = rr.getRequest();
+        final Message result = rr.getResult();
+        mRil.mRilHandler.post(() -> {
+            mRil.setCompatVersion(request, RIL.RADIO_HAL_VERSION_1_4);
+            mRil.getVoiceRegistrationState(result);
+        });
+        mRil.processResponseFallback(rr, responseInfo, voiceRegResponse);
+        return;
+    } else if (responseInfo.error == RadioError.NONE) {
+        sendMessageResponse(rr.mResult, voiceRegResponse);
+    }
+    mRil.processResponseDone(rr, responseInfo, voiceRegResponse);
+}

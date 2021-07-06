@@ -1,0 +1,21 @@
+
+     * Stop the service if the most recent time it was started was 
+     * <var>startId</var>.  This is the same as calling {@link 
+     * android.content.Context#stopService} for this particular service but allows you to 
+     * safely avoid stopping if there is a start request from a client that you 
+     * haven't yet seen in {@link #onStart}. 
+     * 
+     * <p><em>Be careful about ordering of your calls to this function.</em>.
+     * If you call this function with the most-recently received ID before
+     * you have called it for previously received IDs, the service will be
+     * immediately stopped anyway.  If you may end up processing IDs out
+     * of order (such as by dispatching them on separate threads), then you
+     * are responsible for stopping them in the same order you received them.</p>
+     * 
+     * @param startId The most recent start identifier received in {@link 
+     *                #onStart}.
+     * @return Returns true if the startId matches the last start request
+     * and the service will be stopped, else false.
+     *  
+     * @see #stopSelf()
+     

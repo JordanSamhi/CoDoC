@@ -1,0 +1,13 @@
+public void setBluetoothTethering(boolean value){
+    String pkgName = mContext.getOpPackageName();
+    if (DBG)
+        log("setBluetoothTethering(" + value + "), calling package:" + pkgName);
+    final IBluetoothPan service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            service.setBluetoothTethering(value, pkgName);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        }
+    }
+}

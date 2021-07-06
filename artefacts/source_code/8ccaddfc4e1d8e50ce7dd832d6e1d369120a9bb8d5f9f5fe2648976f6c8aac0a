@@ -1,0 +1,28 @@
+public Map<OsuProvider, PasspointConfiguration> getMatchingPasspointConfigsForOsuProviders(List<OsuProvider> osuProviders){
+    Map<OsuProvider, PasspointConfiguration> matchingPasspointConfigs = new HashMap<>();
+    for (OsuProvider osuProvider : osuProviders) {
+        Map<String, String> friendlyNamesForOsuProvider = osuProvider.getFriendlyNameList();
+        if (friendlyNamesForOsuProvider == null)
+            continue;
+        for (PasspointProvider provider : mProviders.values()) {
+            PasspointConfiguration passpointConfiguration = provider.getConfig();
+            Map<String, String> serviceFriendlyNamesForPpsMo = passpointConfiguration.getServiceFriendlyNames();
+            if (serviceFriendlyNamesForPpsMo == null)
+                continue;
+            for (Map.Entry<String, String> entry : serviceFriendlyNamesForPpsMo.entrySet()) {
+                String lang = entry.getKey();
+                String friendlyName = entry.getValue();
+                if (friendlyName == null)
+                    continue;
+                String osuFriendlyName = friendlyNamesForOsuProvider.get(lang);
+                if (osuFriendlyName == null)
+                    continue;
+                if (friendlyName.equals(osuFriendlyName)) {
+                    matchingPasspointConfigs.put(osuProvider, passpointConfiguration);
+                    break;
+                }
+            }
+        }
+    }
+    return matchingPasspointConfigs;
+}

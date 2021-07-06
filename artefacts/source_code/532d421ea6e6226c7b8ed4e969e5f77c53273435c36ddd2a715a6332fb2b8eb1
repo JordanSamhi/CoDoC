@@ -1,0 +1,35 @@
+public int getActualMaximum(int field){
+    switch(field) {
+        case SECOND:
+            return 59;
+        case MINUTE:
+            return 59;
+        case HOUR:
+            return 23;
+        case MONTH_DAY:
+            {
+                int n = DAYS_PER_MONTH[this.month];
+                if (n != 28) {
+                    return n;
+                } else {
+                    int y = this.year;
+                    return ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0)) ? 29 : 28;
+                }
+            }
+        case MONTH:
+            return 11;
+        case YEAR:
+            return 2037;
+        case WEEK_DAY:
+            return 6;
+        case YEAR_DAY:
+            {
+                int y = this.year;
+                return ((y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0)) ? 365 : 364;
+            }
+        case WEEK_NUM:
+            throw new RuntimeException("WEEK_NUM not implemented");
+        default:
+            throw new RuntimeException("bad field=" + field);
+    }
+}

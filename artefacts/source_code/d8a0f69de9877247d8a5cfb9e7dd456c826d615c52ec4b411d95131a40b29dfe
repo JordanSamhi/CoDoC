@@ -1,0 +1,15 @@
+public synchronized void resize(int dimX){
+    if (mRS.getApplicationContext().getApplicationInfo().targetSdkVersion >= 21) {
+        throw new RSRuntimeException("Resize is not allowed in API 21+.");
+    }
+    if ((mType.getY() > 0) || (mType.getZ() > 0) || mType.hasFaces() || mType.hasMipmaps()) {
+        throw new RSInvalidStateException("Resize only support for 1D allocations at this time.");
+    }
+    mRS.nAllocationResize1D(getID(mRS), dimX);
+    mRS.finish();
+    long typeID = mRS.nAllocationGetType(getID(mRS));
+    mType.setID(0);
+    mType = new Type(typeID, mRS);
+    mType.updateFromNative();
+    updateCacheInfo(mType);
+}

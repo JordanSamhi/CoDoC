@@ -1,0 +1,6 @@
+public Builder excludeUsage(@AttributeUsage int usage){
+    Preconditions.checkState(mUsageMatchType != MATCH_TYPE_INCLUSIVE, ERROR_MESSAGE_MISMATCHED_RULES);
+    mAudioMixingRuleBuilder.excludeRule(new AudioAttributes.Builder().setUsage(usage).build(), AudioMixingRule.RULE_MATCH_ATTRIBUTE_USAGE);
+    mUsageMatchType = MATCH_TYPE_EXCLUSIVE;
+    return this;
+}

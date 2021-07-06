@@ -1,0 +1,17 @@
+public ExifTag buildTag(int tagId, int ifdId, Object val){
+    int info = getTagInfo().get(tagId);
+    if (info == 0 || val == null) {
+        return null;
+    }
+    short type = getTypeFromInfo(info);
+    int definedCount = getComponentCountFromInfo(info);
+    boolean hasDefinedCount = (definedCount != ExifTag.SIZE_UNDEFINED);
+    if (!ExifInterface.isIfdAllowed(info, ifdId)) {
+        return null;
+    }
+    ExifTag t = new ExifTag(getTrueTagKey(tagId), type, definedCount, ifdId, hasDefinedCount);
+    if (!t.setValue(val)) {
+        return null;
+    }
+    return t;
+}

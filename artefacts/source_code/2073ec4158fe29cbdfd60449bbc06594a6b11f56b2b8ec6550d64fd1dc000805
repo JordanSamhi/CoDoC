@@ -1,0 +1,11 @@
+public AccountManagerFuture<Bundle> updateCredentials(final Account account, final String authTokenType, final Bundle options, final Activity activity, final AccountManagerCallback<Bundle> callback, final Handler handler){
+    if (account == null)
+        throw new IllegalArgumentException("account is null");
+    return new AmsTask(activity, handler, callback) {
+
+        @Override
+        public void doWork() throws RemoteException {
+            mService.updateCredentials(mResponse, account, authTokenType, activity != null, options);
+        }
+    }.start();
+}

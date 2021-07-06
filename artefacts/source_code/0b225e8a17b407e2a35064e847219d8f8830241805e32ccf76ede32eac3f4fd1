@@ -1,0 +1,23 @@
+public boolean getBoolean(@NonNull Context context, PartnerConfig partnerConfig, boolean defaultValue){
+    if (partnerConfig.getResourceType() != PartnerConfig.ResourceType.BOOLEAN) {
+        throw new IllegalArgumentException("Not a boolean resource");
+    }
+    if (mPartnerResourceCache.containsKey(partnerConfig)) {
+        return (boolean) mPartnerResourceCache.get(partnerConfig);
+    }
+    boolean result = defaultValue;
+    try {
+        String resourceName = partnerConfig.getResourceName();
+        ResourceEntry resourceEntry = getResourceEntryFromKey(resourceName);
+        if (resourceEntry == null) {
+            Log.w(TAG, "Resource not found: " + resourceName);
+            return defaultValue;
+        }
+        Resources resource = getResourcesByPackageName(context, resourceEntry.getPackageName());
+        result = resource.getBoolean(resourceEntry.getResourceId());
+        mPartnerResourceCache.put(partnerConfig, result);
+    } catch (PackageManager.NameNotFoundException exception) {
+        Log.e(TAG, exception.getMessage());
+    }
+    return result;
+}

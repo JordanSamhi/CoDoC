@@ -1,0 +1,11 @@
+public int getEmergencyServiceCategories(String emergencyNumber){
+    emergencyNumber = PhoneNumberUtils.stripSeparators(emergencyNumber);
+    for (EmergencyNumber num : getEmergencyNumberList()) {
+        if (num.getNumber().equals(emergencyNumber)) {
+            if (num.isFromSources(EmergencyNumber.EMERGENCY_NUMBER_SOURCE_NETWORK_SIGNALING) || num.isFromSources(EmergencyNumber.EMERGENCY_NUMBER_SOURCE_SIM)) {
+                return num.getEmergencyServiceCategoryBitmask();
+            }
+        }
+    }
+    return EmergencyNumber.EMERGENCY_SERVICE_CATEGORY_UNSPECIFIED;
+}

@@ -1,0 +1,9 @@
+public static void disableSyncFromParent(Context userContext){
+    IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
+    IAudioService audioService = IAudioService.Stub.asInterface(b);
+    try {
+        audioService.disableRingtoneSync(userContext.getUserId());
+    } catch (RemoteException e) {
+        Log.e(TAG, "Unable to disable ringtone sync.");
+    }
+}

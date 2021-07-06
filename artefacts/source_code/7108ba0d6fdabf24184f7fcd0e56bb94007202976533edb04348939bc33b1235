@@ -1,0 +1,11 @@
+public final void writeTypedArray(@Nullable T[] val, int parcelableFlags){
+    if (val != null) {
+        int N = val.length;
+        writeInt(N);
+        for (int i = 0; i < N; i++) {
+            writeTypedObject(val[i], parcelableFlags);
+        }
+    } else {
+        writeInt(-1);
+    }
+}

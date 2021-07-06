@@ -1,0 +1,19 @@
+public void startActivityForResult(@RequiresPermission Intent intent, int requestCode, @Nullable Bundle options){
+    if (mParent == null) {
+        options = transferSpringboardActivityOptions(options);
+        Instrumentation.ActivityResult ar = mInstrumentation.execStartActivity(this, mMainThread.getApplicationThread(), mToken, this, intent, requestCode, options);
+        if (ar != null) {
+            mMainThread.sendActivityResult(mToken, mEmbeddedID, requestCode, ar.getResultCode(), ar.getResultData());
+        }
+        if (requestCode >= 0) {
+            mStartedActivity = true;
+        }
+        cancelInputsAndStartExitTransition(options);
+    } else {
+        if (options != null) {
+            mParent.startActivityFromChild(this, intent, requestCode, options);
+        } else {
+            mParent.startActivityFromChild(this, intent, requestCode);
+        }
+    }
+}

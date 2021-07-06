@@ -1,0 +1,24 @@
+public void applyStagedRuntimePermissionBackup(@NonNull String packageName, @NonNull UserHandle user, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
+    checkNotNull(packageName);
+    checkNotNull(user);
+    checkNotNull(executor);
+    checkNotNull(callback);
+    enforceSomePermissionsGrantedToSelf(Manifest.permission.GRANT_RUNTIME_PERMISSIONS, Manifest.permission.RESTORE_RUNTIME_PERMISSIONS);
+    mRemoteService.postAsync(service -> {
+        AndroidFuture<Boolean> applyStagedRuntimePermissionBackupResult = new AndroidFuture<>();
+        service.applyStagedRuntimePermissionBackup(packageName, user, applyStagedRuntimePermissionBackupResult);
+        return applyStagedRuntimePermissionBackupResult;
+    }).whenCompleteAsync((applyStagedRuntimePermissionBackupResult, err) -> {
+        long token = Binder.clearCallingIdentity();
+        try {
+            if (err != null) {
+                Log.e(TAG, "Error restoring delayed permissions for " + packageName, err);
+                callback.accept(true);
+            } else {
+                callback.accept(Boolean.TRUE.equals(applyStagedRuntimePermissionBackupResult));
+            }
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+    }, executor);
+}

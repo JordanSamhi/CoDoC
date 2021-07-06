@@ -1,0 +1,38 @@
+public int addAccessibilityInteractionConnection(@NonNull IWindow window, @NonNull IBinder leashToken, @NonNull IAccessibilityInteractionConnection connection, @NonNull String packageName, int userId) throws RemoteException{
+    final int windowId;
+    boolean shouldComputeWindows = false;
+    final IBinder token = window.asBinder();
+    final int displayId = mWindowManagerInternal.getDisplayIdForWindow(token);
+    synchronized (mLock) {
+        final int resolvedUserId = mSecurityPolicy.resolveCallingUserIdEnforcingPermissionsLocked(userId);
+        final int resolvedUid = UserHandle.getUid(resolvedUserId, UserHandle.getCallingAppId());
+        packageName = mSecurityPolicy.resolveValidReportedPackageLocked(packageName, UserHandle.getCallingAppId(), resolvedUserId, Binder.getCallingPid());
+        windowId = sNextWindowId++;
+        if (mSecurityPolicy.isCallerInteractingAcrossUsers(userId)) {
+            RemoteAccessibilityConnection wrapper = new RemoteAccessibilityConnection(windowId, connection, packageName, resolvedUid, UserHandle.USER_ALL);
+            wrapper.linkToDeath();
+            mGlobalInteractionConnections.put(windowId, wrapper);
+            mGlobalWindowTokens.put(windowId, token);
+            if (DEBUG) {
+                Slog.i(LOG_TAG, "Added global connection for pid:" + Binder.getCallingPid() + " with windowId: " + windowId + " and token: " + token);
+            }
+        } else {
+            RemoteAccessibilityConnection wrapper = new RemoteAccessibilityConnection(windowId, connection, packageName, resolvedUid, resolvedUserId);
+            wrapper.linkToDeath();
+            getInteractionConnectionsForUserLocked(resolvedUserId).put(windowId, wrapper);
+            getWindowTokensForUserLocked(resolvedUserId).put(windowId, token);
+            if (DEBUG) {
+                Slog.i(LOG_TAG, "Added user connection for pid:" + Binder.getCallingPid() + " with windowId: " + windowId + " and  token: " + token);
+            }
+        }
+        if (isTrackingWindowsLocked(displayId)) {
+            shouldComputeWindows = true;
+        }
+        registerIdLocked(leashToken, windowId);
+    }
+    if (shouldComputeWindows) {
+        mWindowManagerInternal.computeWindowsForAccessibility(displayId);
+    }
+    mWindowManagerInternal.setAccessibilityIdToSurfaceMetadata(token, windowId);
+    return windowId;
+}

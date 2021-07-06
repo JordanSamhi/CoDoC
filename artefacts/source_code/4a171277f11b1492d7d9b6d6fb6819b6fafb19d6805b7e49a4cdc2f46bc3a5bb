@@ -1,0 +1,12 @@
+public void killProcessesWhenImperceptible(int[] pids, String reason){
+    if (checkCallingPermission(android.Manifest.permission.FORCE_STOP_PACKAGES) != PackageManager.PERMISSION_GRANTED) {
+        throw new SecurityException("Requires permission " + android.Manifest.permission.FORCE_STOP_PACKAGES);
+    }
+    int callerUid = Binder.getCallingUid();
+    long iden = Binder.clearCallingIdentity();
+    try {
+        mProcessList.killProcessesWhenImperceptible(pids, reason, callerUid);
+    } finally {
+        Binder.restoreCallingIdentity(iden);
+    }
+}

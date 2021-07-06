@@ -1,0 +1,11 @@
+public static final void writeMapXml(Map val, XmlSerializer out, WriteMapCallback callback) throws XmlPullParserException, java.io.IOException{
+    if (val == null) {
+        return;
+    }
+    Set s = val.entrySet();
+    Iterator i = s.iterator();
+    while (i.hasNext()) {
+        Map.Entry e = (Map.Entry) i.next();
+        writeValueXml(e.getValue(), (String) e.getKey(), out, callback);
+    }
+}

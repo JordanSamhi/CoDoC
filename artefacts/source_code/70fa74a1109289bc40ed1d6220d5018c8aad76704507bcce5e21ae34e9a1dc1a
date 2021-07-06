@@ -1,0 +1,9 @@
+public List<TestMethod> getTests(){
+    List<TestMethod> testMethods = new ArrayList<TestMethod>();
+    for (Class<? extends TestCase> testCase : testCaseClasses) {
+        for (Method testMethod : getTestMethods(testCase)) {
+            testMethods.add(new TestMethod(testMethod, testCase));
+        }
+    }
+    return testMethods;
+}

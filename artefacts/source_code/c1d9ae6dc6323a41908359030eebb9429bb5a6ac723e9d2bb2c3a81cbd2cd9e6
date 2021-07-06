@@ -1,0 +1,17 @@
+public void getAppPermissions(@NonNull String packageName, @NonNull OnGetAppPermissionResultCallback callback, @Nullable Handler handler){
+    checkNotNull(packageName);
+    checkNotNull(callback);
+    Handler finalHandler = handler != null ? handler : mHandler;
+    mRemoteService.postAsync(service -> {
+        AndroidFuture<List<RuntimePermissionPresentationInfo>> getAppPermissionsResult = new AndroidFuture<>();
+        service.getAppPermissions(packageName, getAppPermissionsResult);
+        return getAppPermissionsResult;
+    }).whenComplete((getAppPermissionsResult, err) -> finalHandler.post(() -> {
+        if (err != null) {
+            Log.e(TAG, "Error getting app permission", err);
+            callback.onGetAppPermissions(Collections.emptyList());
+        } else {
+            callback.onGetAppPermissions(CollectionUtils.emptyIfNull(getAppPermissionsResult));
+        }
+    }));
+}

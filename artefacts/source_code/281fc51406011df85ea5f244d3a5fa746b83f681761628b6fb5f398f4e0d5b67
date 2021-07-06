@@ -1,0 +1,14 @@
+public void registerShortcutChangeCallback(@NonNull ShortcutChangeCallback callback, @NonNull ShortcutQuery query, @NonNull @CallbackExecutor Executor executor){
+    Objects.requireNonNull(callback, "Callback cannot be null");
+    Objects.requireNonNull(query, "Query cannot be null");
+    Objects.requireNonNull(executor, "Executor cannot be null");
+    synchronized (mShortcutChangeCallbacks) {
+        IShortcutChangeCallback proxy = new ShortcutChangeCallbackProxy(executor, callback);
+        mShortcutChangeCallbacks.put(callback, new Pair<>(executor, proxy));
+        try {
+            mService.registerShortcutChangeCallback(mContext.getPackageName(), new ShortcutQueryWrapper(query), proxy);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

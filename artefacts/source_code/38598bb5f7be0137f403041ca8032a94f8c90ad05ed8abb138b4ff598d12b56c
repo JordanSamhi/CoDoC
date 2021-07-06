@@ -1,0 +1,10 @@
+public void launchAssist(@Nullable Bundle args){
+    try {
+        if (mService == null) {
+            return;
+        }
+        mService.launchAssist(mContext.getUserId(), args);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public String toString(){
+    StringBuilder str = new StringBuilder(128);
+    str.append(" callId: " + getTelecomCallId());
+    str.append(" isExternal: " + (((mConnectionCapabilities & Capability.IS_EXTERNAL_CONNECTION) == Capability.IS_EXTERNAL_CONNECTION) ? "Y" : "N"));
+    if (Rlog.isLoggable(LOG_TAG, Log.DEBUG)) {
+        str.append("addr: " + getAddress()).append(" pres.: " + getNumberPresentation()).append(" dial: " + getOrigDialString()).append(" postdial: " + getRemainingPostDialString()).append(" cnap name: " + getCnapName()).append("(" + getCnapNamePresentation() + ")");
+    }
+    str.append(" incoming: " + isIncoming()).append(" state: " + getState()).append(" post dial state: " + getPostDialState());
+    return str.toString();
+}

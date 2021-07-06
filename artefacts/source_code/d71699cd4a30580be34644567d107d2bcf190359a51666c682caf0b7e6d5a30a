@@ -1,0 +1,9 @@
+public void testRunTask_whenNoDataToBackupOnFirstBackup_doesNotTellTransportOfBackup() throws Exception{
+    TransportMock transportMock = setUpInitializedTransport(mTransport);
+    mBackupManagerService.setCurrentToken(0L);
+    when(transportMock.transport.getCurrentRestoreSet()).thenReturn(1234L);
+    setUpAgent(PACKAGE_1);
+    KeyValueBackupTask task = createKeyValueBackupTask(transportMock, true, PACKAGE_1);
+    runTask(task);
+    verify(transportMock.transport, never()).performBackup(argThat(packageInfo(PACKAGE_1)), any(ParcelFileDescriptor.class), anyInt());
+}

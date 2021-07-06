@@ -1,0 +1,66 @@
+public static int fixFsckFsStat(String partition, int statOrg, String[] lines, int startLineNumber, int endLineNumber){
+    int stat = statOrg;
+    if ((stat & FS_STAT_FS_FIXED) != 0) {
+        Pattern passPattern = Pattern.compile(FSCK_PASS_PATTERN);
+        Pattern treeOptPattern = Pattern.compile(FSCK_TREE_OPTIMIZATION_PATTERN);
+        String currentPass = "";
+        boolean foundTreeOptimization = false;
+        boolean foundQuotaFix = false;
+        boolean foundTimestampAdjustment = false;
+        boolean foundOtherFix = false;
+        String otherFixLine = null;
+        for (int i = startLineNumber; i < endLineNumber; i++) {
+            String line = lines[i];
+            if (line.contains(FSCK_FS_MODIFIED)) {
+                break;
+            } else if (line.startsWith("Pass ")) {
+                Matcher matcher = passPattern.matcher(line);
+                if (matcher.find()) {
+                    currentPass = matcher.group(1);
+                }
+            } else if (line.startsWith("Inode ")) {
+                Matcher matcher = treeOptPattern.matcher(line);
+                if (matcher.find() && currentPass.equals("1")) {
+                    foundTreeOptimization = true;
+                    Slog.i(TAG, "fs_stat, partition:" + partition + " found tree optimization:" + line);
+                } else {
+                    foundOtherFix = true;
+                    otherFixLine = line;
+                    break;
+                }
+            } else if (line.startsWith("[QUOTA WARNING]") && currentPass.equals("5")) {
+                Slog.i(TAG, "fs_stat, partition:" + partition + " found quota warning:" + line);
+                foundQuotaFix = true;
+                if (!foundTreeOptimization) {
+                    otherFixLine = line;
+                    break;
+                }
+            } else if (line.startsWith("Update quota info") && currentPass.equals("5")) {
+            } else if (line.startsWith("Timestamp(s) on inode") && line.contains("beyond 2310-04-04 are likely pre-1970") && currentPass.equals("1")) {
+                Slog.i(TAG, "fs_stat, partition:" + partition + " found timestamp adjustment:" + line);
+                if (lines[i + 1].contains("Fix? yes")) {
+                    i++;
+                }
+                foundTimestampAdjustment = true;
+            } else {
+                line = line.trim();
+                if (!line.isEmpty() && !currentPass.isEmpty()) {
+                    foundOtherFix = true;
+                    otherFixLine = line;
+                    break;
+                }
+            }
+        }
+        if (foundOtherFix) {
+            if (otherFixLine != null) {
+                Slog.i(TAG, "fs_stat, partition:" + partition + " fix:" + otherFixLine);
+            }
+        } else if (foundQuotaFix && !foundTreeOptimization) {
+            Slog.i(TAG, "fs_stat, got quota fix without tree optimization, partition:" + partition);
+        } else if ((foundTreeOptimization && foundQuotaFix) || foundTimestampAdjustment) {
+            Slog.i(TAG, "fs_stat, partition:" + partition + " fix ignored");
+            stat &= ~FS_STAT_FS_FIXED;
+        }
+    }
+    return stat;
+}

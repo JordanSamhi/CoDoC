@@ -1,0 +1,44 @@
+public void decodePacket(byte[] buffer, MidiReceiver receiver){
+    if (mTimeTracker == null) {
+        mTimeTracker = new MidiBtleTimeTracker(System.nanoTime());
+    }
+    int length = buffer.length;
+    if (length < 1) {
+        Log.e(TAG, "empty packet");
+        return;
+    }
+    byte header = buffer[0];
+    if ((header & 0x80) != 0x80) {
+        Log.e(TAG, "packet does not start with header");
+        return;
+    }
+    int highTimestamp = (header & HEADER_TIMESTAMP_MASK) << 7;
+    boolean lastWasTimestamp = false;
+    int previousLowTimestamp = 0;
+    int currentTimestamp = highTimestamp | mLowTimestamp;
+    for (int i = 1; i < buffer.length; i++) {
+        byte b = buffer[i];
+        if ((b & 0x80) != 0 && !lastWasTimestamp) {
+            lastWasTimestamp = true;
+            mLowTimestamp = b & TIMESTAMP_MASK_LOW;
+            if (mLowTimestamp < previousLowTimestamp) {
+                highTimestamp = (highTimestamp + 0x0080) & TIMESTAMP_MASK_HIGH;
+            }
+            previousLowTimestamp = mLowTimestamp;
+            int newTimestamp = highTimestamp | mLowTimestamp;
+            if (newTimestamp != currentTimestamp) {
+                flushOutput(receiver);
+                currentTimestamp = newTimestamp;
+            }
+            long now = System.nanoTime();
+            mNanoTimestamp = mTimeTracker.convertTimestampToNanotime(currentTimestamp, now);
+        } else {
+            lastWasTimestamp = false;
+            if (mBytesInBuffer == mBuffer.length) {
+                flushOutput(receiver);
+            }
+            mBuffer[mBytesInBuffer++] = b;
+        }
+    }
+    flushOutput(receiver);
+}

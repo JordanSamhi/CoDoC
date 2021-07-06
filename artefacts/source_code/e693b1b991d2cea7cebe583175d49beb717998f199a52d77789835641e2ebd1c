@@ -1,0 +1,10 @@
+public synchronized void addAddressToTunnelInterface(int tunnelResourceId, LinkAddress localAddr, String callingPackage){
+    enforceTunnelFeatureAndPermissions(callingPackage);
+    UserRecord userRecord = mUserResourceTracker.getUserRecord(Binder.getCallingUid());
+    TunnelInterfaceRecord tunnelInterfaceInfo = userRecord.mTunnelInterfaceRecords.getResourceOrThrow(tunnelResourceId);
+    try {
+        mSrvConfig.getNetdInstance().interfaceAddAddress(tunnelInterfaceInfo.mInterfaceName, localAddr.getAddress().getHostAddress(), localAddr.getPrefixLength());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

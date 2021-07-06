@@ -1,0 +1,12 @@
+public void setOrientation(int orientation){
+    if (orientation != HORIZONTAL && orientation != VERTICAL) {
+        throw new IllegalArgumentException("invalid orientation:" + orientation);
+    }
+    assertNotInLayoutOrScroll(null);
+    if (orientation == mOrientation) {
+        return;
+    }
+    mOrientation = orientation;
+    mOrientationHelper = null;
+    requestLayout();
+}

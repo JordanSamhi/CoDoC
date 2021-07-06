@@ -1,0 +1,10 @@
+public int getPackageId(Resources resources, String packageName){
+    SparseArray<String> packageIdentifiers = resources.getAssets().getAssignedPackageIdentifiers();
+    for (int i = 0; i < packageIdentifiers.size(); i++) {
+        final String name = packageIdentifiers.valueAt(i);
+        if (packageName.equals(name)) {
+            return packageIdentifiers.keyAt(i);
+        }
+    }
+    throw new RuntimeException("Package not found: " + packageName);
+}

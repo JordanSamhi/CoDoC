@@ -1,0 +1,22 @@
+public boolean isValidDownload(String mccMnc){
+    String mccCurrent = "";
+    String mncCurrent = "";
+    String mccSource = "";
+    String mncSource = "";
+    String simOperator = getSimOperator();
+    if (TextUtils.isEmpty(simOperator) || TextUtils.isEmpty(mccMnc)) {
+        Log.e(LOG_TAG, "simOperator or mcc/mnc is empty");
+        return false;
+    }
+    String[] splitValue = mccMnc.split(SEPARATOR);
+    mccSource = splitValue[0];
+    mncSource = splitValue[1];
+    Log.d(LOG_TAG, "values from sharedPrefs mcc, mnc: " + mccSource + "," + mncSource);
+    mccCurrent = simOperator.substring(0, 3);
+    mncCurrent = simOperator.substring(3);
+    Log.d(LOG_TAG, "using values for mcc, mnc: " + mccCurrent + "," + mncCurrent);
+    if (TextUtils.equals(mncSource, mncCurrent) && TextUtils.equals(mccSource, mccCurrent)) {
+        return true;
+    }
+    return false;
+}

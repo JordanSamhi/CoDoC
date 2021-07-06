@@ -1,0 +1,12 @@
+public void registerAvailabilityCallback(AvailabilityCallback callback, Executor executor){
+    synchronized (mLock) {
+        connectCameraServiceLocked();
+        Executor oldExecutor = mCallbackMap.put(callback, executor);
+        if (oldExecutor == null) {
+            updateCallbackLocked(callback, executor);
+        }
+        if (mCameraService == null) {
+            scheduleCameraServiceReconnectionLocked();
+        }
+    }
+}

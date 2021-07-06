@@ -1,0 +1,8 @@
+public void testStartServiceForUser_registersUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    backupManagerService.setBackupServiceActive(mUserOneId, true);
+    backupManagerService.startServiceForUser(mUserOneId);
+    SparseArray<UserBackupManagerService> serviceUsers = backupManagerService.getUserServices();
+    assertThat(serviceUsers.size()).isEqualTo(1);
+    assertThat(serviceUsers.get(mUserOneId)).isNotNull();
+}

@@ -1,0 +1,15 @@
+public void timeCreate() throws Exception{
+    final BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+    state.pauseTiming();
+    Canvas.freeTextLayoutCaches();
+    final CharSequence text = createRandomText(mLength);
+    createLayout(text);
+    state.resumeTiming();
+    while (state.keepRunning()) {
+        state.pauseTiming();
+        if (!mCached)
+            Canvas.freeTextLayoutCaches();
+        state.resumeTiming();
+        createLayout(text);
+    }
+}

@@ -1,0 +1,23 @@
+
+     * Make note of an application performing an operation.  Note that you must pass
+     * in both the uid and name of the application to be checked; this function will verify
+     * that these two match, and if not, return {@link #MODE_IGNORED}.  If this call
+     * succeeds, the last execution time of the operation for this app will be updated to
+     * the current time.
+     *
+     * <p>If this is a check that is not preceding the protected operation, use
+     * {@link #unsafeCheckOp} instead.
+     *
+     * @param op The operation to note.  One of the OPSTR_* constants.
+     * @param uid The user id of the application attempting to perform the operation.
+     * @param packageName The name of the application attempting to perform the operation.
+     * @param attributionTag The {@link Context#createAttributionContext attribution tag} or {@code
+     * null} for default attribution
+     * @param message A message describing the reason the op was noted
+     *
+     * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or
+     * {@link #MODE_IGNORED} if it is not allowed and should be silently ignored (without
+     * causing the app to crash).
+     *
+     * @throws SecurityException If the app has been configured to crash on this op.
+     

@@ -1,0 +1,11 @@
+public static boolean restrictionsChanged(Bundle oldRestrictions, Bundle newRestrictions, String... restrictions){
+    if (restrictions.length == 0) {
+        return areEqual(oldRestrictions, newRestrictions);
+    }
+    for (final String restriction : restrictions) {
+        if (oldRestrictions.getBoolean(restriction, false) != newRestrictions.getBoolean(restriction, false)) {
+            return true;
+        }
+    }
+    return false;
+}

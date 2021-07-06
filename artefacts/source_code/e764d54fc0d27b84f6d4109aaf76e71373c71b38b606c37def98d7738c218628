@@ -1,0 +1,18 @@
+public void stopResetEventTracker(){
+    if (DBG)
+        log("stopResetTimer");
+    try {
+        mPreviousRAT = 0;
+        mPreviousLocation = null;
+        if (mPhoneStateListener != null) {
+            mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
+        }
+        mPhone.getServiceStateTracker().unregisterForDataRegStateOrRatChanged(mTransportType, mHandler);
+        mPhone.mCi.unregisterForOffOrNotAvailable(mHandler);
+        mContext.unregisterReceiver(mSimStateReceiver);
+    } catch (Exception e) {
+        if (DBG)
+            log("error:" + e.getMessage());
+        e.printStackTrace();
+    }
+}

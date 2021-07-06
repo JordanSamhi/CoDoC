@@ -1,0 +1,21 @@
+public final void smoothScrollBy(int dx, int dy){
+    if (getChildCount() == 0) {
+        return;
+    }
+    long duration = AnimationUtils.currentAnimationTimeMillis() - mLastScroll;
+    if (duration > ANIMATED_SCROLL_GAP) {
+        final int width = getWidth() - mPaddingRight - mPaddingLeft;
+        final int right = getChildAt(0).getWidth();
+        final int maxX = Math.max(0, right - width);
+        final int scrollX = mScrollX;
+        dx = Math.max(0, Math.min(scrollX + dx, maxX)) - scrollX;
+        mScroller.startScroll(scrollX, mScrollY, dx, 0);
+        postInvalidateOnAnimation();
+    } else {
+        if (!mScroller.isFinished()) {
+            mScroller.abortAnimation();
+        }
+        scrollBy(dx, dy);
+    }
+    mLastScroll = AnimationUtils.currentAnimationTimeMillis();
+}

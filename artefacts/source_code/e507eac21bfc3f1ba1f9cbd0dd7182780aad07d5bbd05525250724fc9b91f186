@@ -1,0 +1,12 @@
+public static Spanned fromHtml(String source, int flags, ImageGetter imageGetter, TagHandler tagHandler){
+    Parser parser = new Parser();
+    try {
+        parser.setProperty(Parser.schemaProperty, HtmlParser.schema);
+    } catch (org.xml.sax.SAXNotRecognizedException e) {
+        throw new RuntimeException(e);
+    } catch (org.xml.sax.SAXNotSupportedException e) {
+        throw new RuntimeException(e);
+    }
+    HtmlToSpannedConverter converter = new HtmlToSpannedConverter(source, imageGetter, tagHandler, parser, flags);
+    return converter.convert();
+}

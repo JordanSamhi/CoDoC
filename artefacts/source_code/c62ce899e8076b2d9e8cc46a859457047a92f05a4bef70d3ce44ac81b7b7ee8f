@@ -1,0 +1,19 @@
+public final boolean setDefaultServiceEnabled(@UserIdInt int userId, boolean enabled){
+    Slog.i(mTag, "setDefaultServiceEnabled() for userId " + userId + ": " + enabled);
+    enforceCallingPermissionForManagement();
+    synchronized (mLock) {
+        final boolean changed = mServiceNameResolver.setDefaultServiceEnabled(userId, enabled);
+        if (!changed) {
+            if (verbose) {
+                Slog.v(mTag, "setDefaultServiceEnabled(" + userId + "): already " + enabled);
+            }
+            return false;
+        }
+        final S oldService = peekServiceForUserLocked(userId);
+        if (oldService != null) {
+            oldService.removeSelfFromCacheLocked();
+        }
+        updateCachedServiceLocked(userId);
+    }
+    return true;
+}

@@ -1,0 +1,13 @@
+public boolean shouldForceDisplayNoService(){
+    String[] countriesWithNoService = mPhone.getContext().getResources().getStringArray(com.android.internal.R.array.config_display_no_service_when_sim_unready);
+    if (ArrayUtils.isEmpty(countriesWithNoService)) {
+        return false;
+    }
+    String currentCountry = mLocaleTracker.getCurrentCountry();
+    for (String country : countriesWithNoService) {
+        if (country.equalsIgnoreCase(currentCountry)) {
+            return true;
+        }
+    }
+    return false;
+}

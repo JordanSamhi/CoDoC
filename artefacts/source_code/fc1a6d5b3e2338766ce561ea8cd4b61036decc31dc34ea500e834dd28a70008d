@@ -1,0 +1,9 @@
+public void draw(Canvas canvas){
+    if (!canvas.isHardwareAccelerated() && mAnimatorSet instanceof VectorDrawableAnimatorRT) {
+        if (!mAnimatorSet.isRunning() && ((VectorDrawableAnimatorRT) mAnimatorSet).mPendingAnimationActions.size() > 0) {
+            fallbackOntoUI();
+        }
+    }
+    mAnimatorSet.onDraw(canvas);
+    mAnimatedVectorState.mVectorDrawable.draw(canvas);
+}

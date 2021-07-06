@@ -1,0 +1,45 @@
+public void setPreferredOpportunisticDataSubscription(int subId, boolean needValidation, @Nullable @CallbackExecutor Executor executor, @Nullable Consumer<Integer> callback){
+    String pkgForDebug = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    try {
+        IOns iOpportunisticNetworkService = getIOns();
+        if (iOpportunisticNetworkService == null) {
+            if (executor == null || callback == null) {
+                return;
+            }
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                executor.execute(() -> {
+                    if (Compatibility.isChangeEnabled(CALLBACK_ON_MORE_ERROR_CODE_CHANGE)) {
+                        callback.accept(SET_OPPORTUNISTIC_SUB_REMOTE_SERVICE_EXCEPTION);
+                    } else {
+                        callback.accept(SET_OPPORTUNISTIC_SUB_INACTIVE_SUBSCRIPTION);
+                    }
+                });
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+            return;
+        }
+        ISetOpportunisticDataCallback callbackStub = new ISetOpportunisticDataCallback.Stub() {
+
+            @Override
+            public void onComplete(int result) {
+                if (executor == null || callback == null) {
+                    return;
+                }
+                final long identity = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> {
+                        callback.accept(result);
+                    });
+                } finally {
+                    Binder.restoreCallingIdentity(identity);
+                }
+            }
+        };
+        iOpportunisticNetworkService.setPreferredDataSubscriptionId(subId, needValidation, callbackStub, pkgForDebug);
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "setPreferredDataSubscriptionId RemoteException", ex);
+    }
+    return;
+}

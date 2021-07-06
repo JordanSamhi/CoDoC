@@ -1,0 +1,6 @@
+public void testExcludeKeysFromRestore_withoutPermission() throws Exception{
+    mShadowContext.denyPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    expectThrows(SecurityException.class, () -> backupManagerService.excludeKeysFromRestore(PACKAGE_1, new ArrayList<String>() {
+    }));
+}

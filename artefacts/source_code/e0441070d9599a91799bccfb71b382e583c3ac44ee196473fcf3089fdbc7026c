@@ -1,0 +1,19 @@
+public Uri getCanonicalUri(){
+    if ("file".equals(getScheme())) {
+        final String canonicalPath;
+        try {
+            canonicalPath = new File(getPath()).getCanonicalPath();
+        } catch (IOException e) {
+            return this;
+        }
+        if (Environment.isExternalStorageEmulated()) {
+            final String legacyPath = Environment.getLegacyExternalStorageDirectory().toString();
+            if (canonicalPath.startsWith(legacyPath)) {
+                return Uri.fromFile(new File(Environment.getExternalStorageDirectory().toString(), canonicalPath.substring(legacyPath.length() + 1)));
+            }
+        }
+        return Uri.fromFile(new File(canonicalPath));
+    } else {
+        return this;
+    }
+}

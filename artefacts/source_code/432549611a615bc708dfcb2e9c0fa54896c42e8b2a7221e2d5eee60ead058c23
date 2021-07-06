@@ -1,0 +1,13 @@
+public static ByteBuffer toByteBuffer(BaseMap data, ByteOrder order){
+    DataPackage dataPackage = DATA_PACKAGES.get(AUDIO_METADATA_OBJ_TYPE_BASEMAP);
+    if (dataPackage == null) {
+        Log.e(TAG, "Cannot find DataPackage for BaseMap");
+        return null;
+    }
+    AutoGrowByteBuffer output = new AutoGrowByteBuffer();
+    output.order(order);
+    if (dataPackage.pack(output, data)) {
+        return output.getRawByteBuffer();
+    }
+    return null;
+}

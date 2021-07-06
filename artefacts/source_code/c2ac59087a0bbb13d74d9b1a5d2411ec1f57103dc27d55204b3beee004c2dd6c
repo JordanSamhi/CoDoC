@@ -1,0 +1,17 @@
+public static int charToGsm(char c, boolean throwException) throws EncodeException{
+    int ret;
+    ret = sCharsToGsmTables[0].get(c, -1);
+    if (ret == -1) {
+        ret = sCharsToShiftTables[0].get(c, -1);
+        if (ret == -1) {
+            if (throwException) {
+                throw new EncodeException(c);
+            } else {
+                return sCharsToGsmTables[0].get(' ', ' ');
+            }
+        } else {
+            return GSM_EXTENDED_ESCAPE;
+        }
+    }
+    return ret;
+}

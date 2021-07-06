@@ -1,0 +1,22 @@
+public boolean shouldBeIgnoredBySecureSuggestionFromSameCarrier(@NonNull WifiConfiguration configuration, List<ScanDetail> scanDetails){
+    if (!mResources.getBoolean(R.bool.config_wifiIgnoreOpenSavedNetworkWhenSecureSuggestionAvailable)) {
+        return false;
+    }
+    if (configuration == null || scanDetails == null || !configuration.isOpenNetwork()) {
+        return false;
+    }
+    Set<ExtendedWifiNetworkSuggestion> matchedExtSuggestions = getNetworkSuggestionsForWifiConfiguration(configuration, null);
+    if (matchedExtSuggestions == null || matchedExtSuggestions.isEmpty()) {
+        return false;
+    }
+    matchedExtSuggestions = matchedExtSuggestions.stream().filter(ewns -> mWifiPermissionsUtil.checkNetworkCarrierProvisioningPermission(ewns.perAppInfo.uid)).collect(Collectors.toSet());
+    if (matchedExtSuggestions.isEmpty()) {
+        return false;
+    }
+    for (ExtendedWifiNetworkSuggestion ewns : matchedExtSuggestions) {
+        if (hasSecureSuggestionFromSameCarrierAvailable(ewns, scanDetails)) {
+            return true;
+        }
+    }
+    return false;
+}

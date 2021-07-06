@@ -1,0 +1,8 @@
+public void setRegistrationListener(String localProfileUri, SipRegistrationListener listener) throws SipException{
+    try {
+        checkSipServiceConnection();
+        mSipService.setRegistrationListener(localProfileUri, createRelay(listener, localProfileUri), mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw new SipException("setRegistrationListener()", e);
+    }
+}

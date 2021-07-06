@@ -1,0 +1,9 @@
+public static InputStream convert(InputStream fis){
+    SoftApConfiguration softApConf = loadFromLegacyFile(fis);
+    if (softApConf == null)
+        return null;
+    byte[] xmlBytes = convertConfToXml(softApConf);
+    if (xmlBytes == null)
+        return null;
+    return new ByteArrayInputStream(xmlBytes);
+}

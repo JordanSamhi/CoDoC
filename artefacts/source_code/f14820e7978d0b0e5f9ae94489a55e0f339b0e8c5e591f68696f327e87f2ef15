@@ -1,0 +1,13 @@
+public void registerMediaButtonEventReceiver(ComponentName eventReceiver){
+    if (eventReceiver == null) {
+        return;
+    }
+    if (!eventReceiver.getPackageName().equals(getContext().getPackageName())) {
+        Log.e(TAG, "registerMediaButtonEventReceiver() error: " + "receiver and context package names don't match");
+        return;
+    }
+    Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+    mediaButtonIntent.setComponent(eventReceiver);
+    PendingIntent pi = PendingIntent.getBroadcast(getContext(), 0, mediaButtonIntent, 0);
+    registerMediaButtonIntent(pi, eventReceiver);
+}

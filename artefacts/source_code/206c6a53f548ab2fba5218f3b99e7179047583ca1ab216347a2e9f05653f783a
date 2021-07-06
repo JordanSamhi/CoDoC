@@ -1,0 +1,15 @@
+public void draw(Drawable drawable, Paint_Delegate paint, boolean compositeOnly, boolean forceSrcMode){
+    int forceMode = forceSrcMode ? AlphaComposite.SRC : 0;
+    if (mLayers.size() == 1) {
+        drawInLayer(mLayers.get(0), drawable, paint, compositeOnly, forceMode);
+    } else {
+        int flags;
+        int i = mLayers.size() - 1;
+        do {
+            Layer layer = mLayers.get(i);
+            drawInLayer(layer, drawable, paint, compositeOnly, forceMode);
+            i--;
+            flags = layer.getFlags();
+        } while (i >= 0 && (flags & Canvas.CLIP_TO_LAYER_SAVE_FLAG) == 0);
+    }
+}

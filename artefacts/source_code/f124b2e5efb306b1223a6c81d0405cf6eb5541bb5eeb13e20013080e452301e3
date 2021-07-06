@@ -1,0 +1,10 @@
+public static ExternalCallbackHolder<T> createAndLinkToDeath(@NonNull IBinder binder, @NonNull T callbackObject, @NonNull DeathCallback deathCallback){
+    ExternalCallbackHolder<T> externalCallback = new ExternalCallbackHolder<>(binder, callbackObject, deathCallback);
+    try {
+        binder.linkToDeath(externalCallback, 0);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error on linkToDeath - " + e);
+        return null;
+    }
+    return externalCallback;
+}

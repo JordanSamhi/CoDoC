@@ -1,0 +1,15 @@
+public long whitelistAppTemporarilyForEvent(@NonNull String packageName, @WhitelistEvent int event, @NonNull String reason){
+    try {
+        switch(event) {
+            case EVENT_MMS:
+                return mService.addPowerSaveTempWhitelistAppForMms(packageName, mContext.getUserId(), reason);
+            case EVENT_SMS:
+                return mService.addPowerSaveTempWhitelistAppForSms(packageName, mContext.getUserId(), reason);
+            case EVENT_UNSPECIFIED:
+            default:
+                return mService.whitelistAppTemporarily(packageName, mContext.getUserId(), reason);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

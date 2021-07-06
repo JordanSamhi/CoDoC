@@ -1,0 +1,43 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeInt(mNetworkId);
+    dest.writeInt(mRssi);
+    dest.writeInt(mLinkSpeed);
+    dest.writeInt(mTxLinkSpeed);
+    dest.writeInt(mRxLinkSpeed);
+    dest.writeInt(mFrequency);
+    if (mIpAddress != null) {
+        dest.writeByte((byte) 1);
+        dest.writeByteArray(mIpAddress.getAddress());
+    } else {
+        dest.writeByte((byte) 0);
+    }
+    if (mWifiSsid != null) {
+        dest.writeInt(1);
+        mWifiSsid.writeToParcel(dest, flags);
+    } else {
+        dest.writeInt(0);
+    }
+    dest.writeString(mBSSID);
+    dest.writeString(mMacAddress);
+    dest.writeInt(mMeteredHint ? 1 : 0);
+    dest.writeInt(mEphemeral ? 1 : 0);
+    dest.writeInt(mTrusted ? 1 : 0);
+    dest.writeInt(score);
+    dest.writeLong(txSuccess);
+    dest.writeDouble(mSuccessfulTxPacketsPerSecond);
+    dest.writeLong(txRetries);
+    dest.writeDouble(mTxRetriedTxPacketsPerSecond);
+    dest.writeLong(txBad);
+    dest.writeDouble(mLostTxPacketsPerSecond);
+    dest.writeLong(rxSuccess);
+    dest.writeDouble(mSuccessfulRxPacketsPerSecond);
+    mSupplicantState.writeToParcel(dest, flags);
+    dest.writeInt(mOsuAp ? 1 : 0);
+    dest.writeString(mRequestingPackageName);
+    dest.writeString(mFqdn);
+    dest.writeString(mProviderFriendlyName);
+    dest.writeInt(mWifiStandard);
+    dest.writeInt(mMaxSupportedTxLinkSpeed);
+    dest.writeInt(mMaxSupportedRxLinkSpeed);
+    dest.writeString(mPasspointUniqueId);
+}

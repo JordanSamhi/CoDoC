@@ -1,0 +1,15 @@
+public static List<ApplicationInfo> getDefaultCarrierApps(TelephonyManager telephonyManager, int userId, Context context){
+    List<ApplicationInfo> candidates = getDefaultCarrierAppCandidates(userId, context);
+    if (candidates == null || candidates.isEmpty()) {
+        return null;
+    }
+    for (int i = candidates.size() - 1; i >= 0; i--) {
+        ApplicationInfo ai = candidates.get(i);
+        String packageName = ai.packageName;
+        boolean hasPrivileges = telephonyManager.checkCarrierPrivilegesForPackageAnyPhone(packageName) == TelephonyManager.CARRIER_PRIVILEGE_STATUS_HAS_ACCESS;
+        if (!hasPrivileges) {
+            candidates.remove(i);
+        }
+    }
+    return candidates;
+}

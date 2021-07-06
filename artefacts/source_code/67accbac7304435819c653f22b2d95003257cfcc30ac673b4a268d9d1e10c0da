@@ -1,0 +1,30 @@
+public void setSwitchTextAppearance(Context context, @StyleRes int resid){
+    TypedArray appearance = context.obtainStyledAttributes(resid, com.android.internal.R.styleable.TextAppearance);
+    ColorStateList colors;
+    int ts;
+    colors = appearance.getColorStateList(com.android.internal.R.styleable.TextAppearance_textColor);
+    if (colors != null) {
+        mTextColors = colors;
+    } else {
+        mTextColors = getTextColors();
+    }
+    ts = appearance.getDimensionPixelSize(com.android.internal.R.styleable.TextAppearance_textSize, 0);
+    if (ts != 0) {
+        if (ts != mTextPaint.getTextSize()) {
+            mTextPaint.setTextSize(ts);
+            requestLayout();
+        }
+    }
+    int typefaceIndex, styleIndex;
+    typefaceIndex = appearance.getInt(com.android.internal.R.styleable.TextAppearance_typeface, -1);
+    styleIndex = appearance.getInt(com.android.internal.R.styleable.TextAppearance_textStyle, -1);
+    setSwitchTypefaceByIndex(typefaceIndex, styleIndex);
+    boolean allCaps = appearance.getBoolean(com.android.internal.R.styleable.TextAppearance_textAllCaps, false);
+    if (allCaps) {
+        mSwitchTransformationMethod = new AllCapsTransformationMethod(getContext());
+        mSwitchTransformationMethod.setLengthChangesAllowed(true);
+    } else {
+        mSwitchTransformationMethod = null;
+    }
+    appearance.recycle();
+}

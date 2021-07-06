@@ -1,0 +1,12 @@
+public int getForegroundColor(int pos){
+    if (pos < 0 || pos > getText().length()) {
+        return DEFAULT_FOREGROUND_COLOR;
+    } else {
+        ForegroundColorSpan[] spans = getText().getSpans(pos, pos, ForegroundColorSpan.class);
+        if (spans.length > 0) {
+            return spans[0].getForegroundColor();
+        } else {
+            return DEFAULT_FOREGROUND_COLOR;
+        }
+    }
+}

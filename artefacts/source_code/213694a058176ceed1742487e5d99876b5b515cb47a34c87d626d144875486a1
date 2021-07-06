@@ -1,0 +1,8 @@
+public void onSuccess(@NonNull GetWalletCardsResponse response){
+    if (isValidResponse(response)) {
+        mHandler.post(() -> onSuccessInternal(response));
+    } else {
+        Log.w(TAG, "Invalid GetWalletCards response");
+        mHandler.post(() -> onFailureInternal(new GetWalletCardsError(null, null)));
+    }
+}

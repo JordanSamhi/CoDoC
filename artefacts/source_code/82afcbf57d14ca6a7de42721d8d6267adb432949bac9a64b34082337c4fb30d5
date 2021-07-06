@@ -1,0 +1,16 @@
+public boolean startTetheredHotspot(@Nullable SoftApConfiguration softApConfig){
+    enforceNetworkStackPermission();
+    mLog.info("startTetheredHotspot uid=%").c(Binder.getCallingUid()).flush();
+    if (!mTetheredSoftApTracker.setEnablingIfAllowed()) {
+        mLog.err("Tethering is already active.").flush();
+        return false;
+    }
+    if (!mWifiThreadRunner.call(() -> mActiveModeWarden.canRequestMoreSoftApManagers(), false)) {
+        mLohsSoftApTracker.stopAll();
+    }
+    if (!startSoftApInternal(new SoftApModeConfiguration(WifiManager.IFACE_IP_MODE_TETHERED, softApConfig, mTetheredSoftApTracker.getSoftApCapability()))) {
+        mTetheredSoftApTracker.setFailedWhileEnabling();
+        return false;
+    }
+    return true;
+}

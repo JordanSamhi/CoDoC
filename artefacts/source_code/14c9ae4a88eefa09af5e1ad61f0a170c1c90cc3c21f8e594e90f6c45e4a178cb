@@ -1,0 +1,32 @@
+public Builder add(Element element, String name, int arraySize){
+    if (arraySize < 1) {
+        throw new RSIllegalArgumentException("Array size cannot be less than 1.");
+    }
+    if (mSkipPadding != 0) {
+        if (name.startsWith("#padding_")) {
+            mSkipPadding = 0;
+            return this;
+        }
+    }
+    if (element.mVectorSize == 3) {
+        mSkipPadding = 1;
+    } else {
+        mSkipPadding = 0;
+    }
+    if (mCount == mElements.length) {
+        Element[] e = new Element[mCount + 8];
+        String[] s = new String[mCount + 8];
+        int[] as = new int[mCount + 8];
+        System.arraycopy(mElements, 0, e, 0, mCount);
+        System.arraycopy(mElementNames, 0, s, 0, mCount);
+        System.arraycopy(mArraySizes, 0, as, 0, mCount);
+        mElements = e;
+        mElementNames = s;
+        mArraySizes = as;
+    }
+    mElements[mCount] = element;
+    mElementNames[mCount] = name;
+    mArraySizes[mCount] = arraySize;
+    mCount++;
+    return this;
+}

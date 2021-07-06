@@ -1,0 +1,23 @@
+public int read(byte[] buf) throws IOException{
+    if (!mIsSparse) {
+        return mIn.read(buf);
+    }
+    if (prepareChunk())
+        return -1;
+    int n = -1;
+    switch(mCur.mChunkType) {
+        case SparseChunk.RAW:
+            n = mIn.read(buf, 0, (int) min(mLeft, buf.length));
+            mLeft -= n;
+            return n;
+        case SparseChunk.DONTCARE:
+            n = (int) min(mLeft, buf.length);
+            Arrays.fill(buf, 0, n - 1, (byte) 0);
+            mLeft -= n;
+            return n;
+        case SparseChunk.FILL:
+            return super.read(buf);
+        default:
+            throw new IOException("Unsupported Chunk:" + mCur.toString());
+    }
+}

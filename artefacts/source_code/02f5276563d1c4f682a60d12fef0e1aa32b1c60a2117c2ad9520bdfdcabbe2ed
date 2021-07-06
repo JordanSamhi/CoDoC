@@ -1,0 +1,22 @@
+public AnimatorListenerAdapter getAnimationFinishListener(Property property){
+    if (mAnimationEndAction == null) {
+        return null;
+    }
+    Consumer<Property> endAction = mAnimationEndAction;
+    return new AnimatorListenerAdapter() {
+
+        private boolean mCancelled;
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            mCancelled = true;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            if (!mCancelled) {
+                endAction.accept(property);
+            }
+        }
+    };
+}

@@ -1,0 +1,30 @@
+public void releasePersistableUriPermission(Uri uri, final int modeFlags, @Nullable String toPackage, int userId){
+    final int uid;
+    if (toPackage != null) {
+        mAmInternal.enforceCallingPermission(FORCE_PERSISTABLE_URI_PERMISSIONS, "releasePersistableUriPermission");
+        uid = mPmInternal.getPackageUidInternal(toPackage, 0, userId);
+    } else {
+        enforceNotIsolatedCaller("releasePersistableUriPermission");
+        uid = Binder.getCallingUid();
+    }
+    Preconditions.checkFlagsArgument(modeFlags, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    synchronized (mLock) {
+        boolean persistChanged = false;
+        UriPermission exactPerm = findUriPermissionLocked(uid, new GrantUri(userId, uri, 0));
+        UriPermission prefixPerm = findUriPermissionLocked(uid, new GrantUri(userId, uri, FLAG_GRANT_PREFIX_URI_PERMISSION));
+        if (exactPerm == null && prefixPerm == null && toPackage == null) {
+            throw new SecurityException("No permission grants found for UID " + uid + " and Uri " + uri.toSafeString());
+        }
+        if (exactPerm != null) {
+            persistChanged |= exactPerm.releasePersistableModes(modeFlags);
+            removeUriPermissionIfNeededLocked(exactPerm);
+        }
+        if (prefixPerm != null) {
+            persistChanged |= prefixPerm.releasePersistableModes(modeFlags);
+            removeUriPermissionIfNeededLocked(prefixPerm);
+        }
+        if (persistChanged) {
+            schedulePersistUriGrants();
+        }
+    }
+}

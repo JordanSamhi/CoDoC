@@ -1,0 +1,23 @@
+public void registerUsageCallback(NetworkTemplate template, int networkType, long thresholdBytes, UsageCallback callback, @Nullable Handler handler){
+    Objects.requireNonNull(callback, "UsageCallback cannot be null");
+    final Looper looper;
+    if (handler == null) {
+        looper = Looper.myLooper();
+    } else {
+        looper = handler.getLooper();
+    }
+    DataUsageRequest request = new DataUsageRequest(DataUsageRequest.REQUEST_ID_UNSET, template, thresholdBytes);
+    try {
+        CallbackHandler callbackHandler = new CallbackHandler(looper, networkType, template.getSubscriberId(), callback);
+        callback.request = mService.registerUsageCallback(mContext.getOpPackageName(), request, new Messenger(callbackHandler), new Binder());
+        if (DBG)
+            Log.d(TAG, "registerUsageCallback returned " + callback.request);
+        if (callback.request == null) {
+            Log.e(TAG, "Request from callback is null; should not happen");
+        }
+    } catch (RemoteException e) {
+        if (DBG)
+            Log.d(TAG, "Remote exception when registering callback");
+        throw e.rethrowFromSystemServer();
+    }
+}

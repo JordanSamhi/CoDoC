@@ -1,0 +1,17 @@
+public void shutdown(){
+    synchronized (mLock) {
+        if (mSecureElementService != null) {
+            for (Reader reader : mReaders.values()) {
+                try {
+                    reader.closeSessions();
+                } catch (Exception ignore) {
+                }
+            }
+        }
+        try {
+            mContext.unbindService(mConnection);
+        } catch (IllegalArgumentException e) {
+        }
+        mSecureElementService = null;
+    }
+}

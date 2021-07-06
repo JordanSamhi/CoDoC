@@ -1,0 +1,25 @@
+public final void handleMessage(Message msg){
+    if (!mHasQuit) {
+        if (mSm != null && msg.what != SM_INIT_CMD && msg.what != SM_QUIT_CMD) {
+            mSm.onPreHandleMessage(msg);
+        }
+        if (mDbg)
+            mSm.log("handleMessage: E msg.what=" + msg.what);
+        mMsg = msg;
+        State msgProcessedState = null;
+        if (mIsConstructionCompleted || (mMsg.what == SM_QUIT_CMD)) {
+            msgProcessedState = processMsg(msg);
+        } else if (!mIsConstructionCompleted && (mMsg.what == SM_INIT_CMD) && (mMsg.obj == mSmHandlerObj)) {
+            mIsConstructionCompleted = true;
+            invokeEnterMethods(0);
+        } else {
+            throw new RuntimeException("StateMachine.handleMessage: " + "The start method not called, received msg: " + msg);
+        }
+        performTransitions(msgProcessedState, msg);
+        if (mDbg && mSm != null)
+            mSm.log("handleMessage: X");
+        if (mSm != null && msg.what != SM_INIT_CMD && msg.what != SM_QUIT_CMD) {
+            mSm.onPostHandleMessage(msg);
+        }
+    }
+}

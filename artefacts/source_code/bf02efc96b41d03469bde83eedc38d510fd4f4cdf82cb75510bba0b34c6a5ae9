@@ -1,0 +1,28 @@
+public void resetPackageList(ProcessStatsService tracker){
+    final int N = pkgList.size();
+    if (baseProcessTracker != null) {
+        long now = SystemClock.uptimeMillis();
+        baseProcessTracker.setState(ProcessStats.STATE_NOTHING, tracker.getMemFactorLocked(), now, pkgList.mPkgList);
+        for (int ipkg = pkgList.size() - 1; ipkg >= 0; ipkg--) {
+            FrameworkStatsLog.write(FrameworkStatsLog.PROCESS_STATE_CHANGED, uid, processName, pkgList.keyAt(ipkg), ActivityManager.processStateAmToProto(ProcessStats.STATE_NOTHING), pkgList.valueAt(ipkg).appVersion);
+        }
+        if (N != 1) {
+            for (int i = 0; i < N; i++) {
+                ProcessStats.ProcessStateHolder holder = pkgList.valueAt(i);
+                if (holder.state != null && holder.state != baseProcessTracker) {
+                    holder.state.makeInactive();
+                }
+            }
+            pkgList.clear();
+            ProcessStats.ProcessStateHolder holder = new ProcessStats.ProcessStateHolder(info.longVersionCode);
+            tracker.updateProcessStateHolderLocked(holder, info.packageName, info.uid, info.longVersionCode, processName);
+            pkgList.put(info.packageName, holder);
+            if (holder.state != baseProcessTracker) {
+                holder.state.makeActive();
+            }
+        }
+    } else if (N != 1) {
+        pkgList.clear();
+        pkgList.put(info.packageName, new ProcessStats.ProcessStateHolder(info.longVersionCode));
+    }
+}

@@ -1,0 +1,55 @@
+public int setLanguage(final Locale loc){
+    return runAction((ITextToSpeechService service) -> {
+        if (loc == null) {
+            return LANG_NOT_SUPPORTED;
+        }
+        String language = null, country = null;
+        try {
+            language = loc.getISO3Language();
+        } catch (MissingResourceException e) {
+            Log.w(TAG, "Couldn't retrieve ISO 639-2/T language code for locale: " + loc, e);
+            return LANG_NOT_SUPPORTED;
+        }
+        try {
+            country = loc.getISO3Country();
+        } catch (MissingResourceException e) {
+            Log.w(TAG, "Couldn't retrieve ISO 3166 country code for locale: " + loc, e);
+            return LANG_NOT_SUPPORTED;
+        }
+        String variant = loc.getVariant();
+        int result = service.isLanguageAvailable(language, country, variant);
+        if (result >= LANG_AVAILABLE) {
+            String voiceName = service.getDefaultVoiceNameFor(language, country, variant);
+            if (TextUtils.isEmpty(voiceName)) {
+                Log.w(TAG, "Couldn't find the default voice for " + language + "-" + country + "-" + variant);
+                return LANG_NOT_SUPPORTED;
+            }
+            if (service.loadVoice(getCallerIdentity(), voiceName) == TextToSpeech.ERROR) {
+                Log.w(TAG, "The service claimed " + language + "-" + country + "-" + variant + " was available with voice name " + voiceName + " but loadVoice returned ERROR");
+                return LANG_NOT_SUPPORTED;
+            }
+            Voice voice = getVoice(service, voiceName);
+            if (voice == null) {
+                Log.w(TAG, "getDefaultVoiceNameFor returned " + voiceName + " for locale " + language + "-" + country + "-" + variant + " but getVoice returns null");
+                return LANG_NOT_SUPPORTED;
+            }
+            String voiceLanguage = "";
+            try {
+                voiceLanguage = voice.getLocale().getISO3Language();
+            } catch (MissingResourceException e) {
+                Log.w(TAG, "Couldn't retrieve ISO 639-2/T language code for locale: " + voice.getLocale(), e);
+            }
+            String voiceCountry = "";
+            try {
+                voiceCountry = voice.getLocale().getISO3Country();
+            } catch (MissingResourceException e) {
+                Log.w(TAG, "Couldn't retrieve ISO 3166 country code for locale: " + voice.getLocale(), e);
+            }
+            mParams.putString(Engine.KEY_PARAM_VOICE_NAME, voiceName);
+            mParams.putString(Engine.KEY_PARAM_LANGUAGE, voiceLanguage);
+            mParams.putString(Engine.KEY_PARAM_COUNTRY, voiceCountry);
+            mParams.putString(Engine.KEY_PARAM_VARIANT, voice.getLocale().getVariant());
+        }
+        return result;
+    }, LANG_NOT_SUPPORTED, "setLanguage");
+}

@@ -1,0 +1,11 @@
+public ParcelFileDescriptor simpleQueryForBlobFileDescriptor(){
+    acquireReference();
+    try {
+        return getSession().executeForBlobFileDescriptor(getSql(), getBindArgs(), getConnectionFlags(), null);
+    } catch (SQLiteDatabaseCorruptException ex) {
+        onCorruption();
+        throw ex;
+    } finally {
+        releaseReference();
+    }
+}

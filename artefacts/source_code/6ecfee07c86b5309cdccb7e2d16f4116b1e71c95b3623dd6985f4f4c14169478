@@ -1,0 +1,16 @@
+public void onSaveInstanceState(Bundle outState){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    synchronized (mLock) {
+        if (mSessionId != NO_SESSION) {
+            outState.putInt(SESSION_ID_TAG, mSessionId);
+        }
+        if (mState != STATE_UNKNOWN) {
+            outState.putInt(STATE_TAG, mState);
+        }
+        if (mLastAutofilledData != null) {
+            outState.putParcelable(LAST_AUTOFILLED_DATA_TAG, mLastAutofilledData);
+        }
+    }
+}

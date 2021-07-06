@@ -1,0 +1,27 @@
+public final void addConference(Conference conference){
+    Log.d(this, "addConference: conference=%s", conference);
+    String id = addConferenceInternal(conference);
+    if (id != null) {
+        List<String> connectionIds = new ArrayList<>(2);
+        for (Connection connection : conference.getConnections()) {
+            if (mIdByConnection.containsKey(connection)) {
+                connectionIds.add(mIdByConnection.get(connection));
+            }
+        }
+        conference.setTelecomCallId(id);
+        ParcelableConference parcelableConference = new ParcelableConference.Builder(conference.getPhoneAccountHandle(), conference.getState()).setConnectionCapabilities(conference.getConnectionCapabilities()).setConnectionProperties(conference.getConnectionProperties()).setConnectionIds(connectionIds).setVideoAttributes(conference.getVideoProvider() == null ? null : conference.getVideoProvider().getInterface(), conference.getVideoState()).setConnectTimeMillis(conference.getConnectTimeMillis(), conference.getConnectionStartElapsedRealtimeMillis()).setStatusHints(conference.getStatusHints()).setExtras(conference.getExtras()).setAddress(conference.getAddress(), conference.getAddressPresentation()).setCallerDisplayName(conference.getCallerDisplayName(), conference.getCallerDisplayNamePresentation()).setDisconnectCause(conference.getDisconnectCause()).setRingbackRequested(conference.isRingbackRequested()).setCallDirection(conference.getCallDirection()).build();
+        mAdapter.addConferenceCall(id, parcelableConference);
+        mAdapter.setVideoProvider(id, conference.getVideoProvider());
+        mAdapter.setVideoState(id, conference.getVideoState());
+        if (!conference.isMultiparty()) {
+            mAdapter.setConferenceState(id, conference.isMultiparty());
+        }
+        for (Connection connection : conference.getConnections()) {
+            String connectionId = mIdByConnection.get(connection);
+            if (connectionId != null) {
+                mAdapter.setIsConferenced(connectionId, id);
+            }
+        }
+        onConferenceAdded(conference);
+    }
+}

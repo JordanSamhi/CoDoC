@@ -1,0 +1,22 @@
+public List<ExportedEntry> getEntries(){
+    final ArrayList<ExportedEntry> exportedEntries;
+    synchronized (mLock) {
+        final int size = mEntries.size();
+        exportedEntries = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            Entry entry = mEntries.valueAt(i);
+            synchronized (entry) {
+                exportedEntries.add(new ExportedEntry(entry));
+            }
+        }
+    }
+    maybeAddSpecialEntry(exportedEntries, mOverflowEntry);
+    maybeAddSpecialEntry(exportedEntries, mHashCollisionEntry);
+    if (mAddDebugEntries && mBatteryStopwatch != null) {
+        exportedEntries.add(createDebugEntry("start_time_millis", mStartElapsedTime));
+        exportedEntries.add(createDebugEntry("end_time_millis", SystemClock.elapsedRealtime()));
+        exportedEntries.add(createDebugEntry("battery_time_millis", mBatteryStopwatch.getMillis()));
+        exportedEntries.add(createDebugEntry("sampling_interval", mSamplingInterval));
+    }
+    return exportedEntries;
+}

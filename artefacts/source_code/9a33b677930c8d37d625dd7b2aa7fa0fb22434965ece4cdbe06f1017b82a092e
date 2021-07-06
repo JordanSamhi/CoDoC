@@ -1,0 +1,12 @@
+public static CharSequence safeCharSequence(CharSequence cs){
+    if (cs == null)
+        return cs;
+    if (cs.length() > MAX_CHARSEQUENCE_LENGTH) {
+        cs = cs.subSequence(0, MAX_CHARSEQUENCE_LENGTH);
+    }
+    if (cs instanceof Parcelable) {
+        Log.e(TAG, "warning: " + cs.getClass().getCanonicalName() + " instance is a custom Parcelable and not allowed in Notification");
+        return cs.toString();
+    }
+    return removeTextSizeSpans(cs);
+}

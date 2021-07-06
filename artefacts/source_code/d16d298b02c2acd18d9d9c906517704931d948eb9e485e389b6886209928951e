@@ -1,0 +1,20 @@
+public synchronized void onImsCallTerminated(@Nullable ImsPhoneConnection conn, ImsReasonInfo reasonInfo){
+    if (conn == null) {
+        List<Integer> imsConnIds = getImsConnectionIds();
+        if (imsConnIds.size() == 1) {
+            loge("onImsCallTerminated: ending IMS call w/ conn=null");
+            finishImsCall(imsConnIds.get(0), reasonInfo);
+        } else {
+            loge("onImsCallTerminated: %d IMS calls w/ conn=null", imsConnIds.size());
+        }
+    } else {
+        int id = getConnectionId(conn);
+        if (mCallProtos.contains(id)) {
+            finishImsCall(id, reasonInfo);
+        } else {
+            loge("onImsCallTerminated: untracked connection");
+            addCall(conn);
+            finishImsCall(id, reasonInfo);
+        }
+    }
+}

@@ -1,0 +1,14 @@
+public void setPersistentVrThreadLocked(int tid, int pid, WindowProcessController proc){
+    if (!hasPersistentVrFlagSet()) {
+        Slog.w(TAG, "Persistent VR thread may only be set in persistent VR mode!");
+        return;
+    }
+    if (proc == null) {
+        Slog.w(TAG, "Persistent VR thread not set, calling process doesn't exist!");
+        return;
+    }
+    if (tid != 0) {
+        enforceThreadInProcess(tid, pid);
+    }
+    setPersistentVrRenderThreadLocked(tid, false);
+}

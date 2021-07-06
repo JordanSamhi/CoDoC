@@ -1,0 +1,18 @@
+public static ArrayMap<String, UserTypeDetails> getUserTypes(){
+    final ArrayMap<String, UserTypeDetails.Builder> builders = new ArrayMap<>();
+    builders.put(USER_TYPE_PROFILE_MANAGED, getDefaultTypeProfileManaged());
+    builders.put(USER_TYPE_FULL_SYSTEM, getDefaultTypeFullSystem());
+    builders.put(USER_TYPE_FULL_SECONDARY, getDefaultTypeFullSecondary());
+    builders.put(USER_TYPE_FULL_GUEST, getDefaultTypeFullGuest());
+    builders.put(USER_TYPE_FULL_DEMO, getDefaultTypeFullDemo());
+    builders.put(USER_TYPE_FULL_RESTRICTED, getDefaultTypeFullRestricted());
+    builders.put(USER_TYPE_SYSTEM_HEADLESS, getDefaultTypeSystemHeadless());
+    try (XmlResourceParser parser = Resources.getSystem().getXml(com.android.internal.R.xml.config_user_types)) {
+        customizeBuilders(builders, parser);
+    }
+    final ArrayMap<String, UserTypeDetails> types = new ArrayMap<>(builders.size());
+    for (int i = 0; i < builders.size(); i++) {
+        types.put(builders.keyAt(i), builders.valueAt(i).createUserTypeDetails());
+    }
+    return types;
+}

@@ -1,0 +1,11 @@
+public int getExpandedDisplayId(Context context){
+    if (mStackView == null) {
+        return INVALID_DISPLAY;
+    }
+    final boolean defaultDisplay = context.getDisplay() != null && context.getDisplay().getDisplayId() == DEFAULT_DISPLAY;
+    final BubbleViewProvider expandedViewProvider = mStackView.getExpandedBubble();
+    if (defaultDisplay && expandedViewProvider != null && isStackExpanded() && !mNotificationShadeWindowController.getPanelExpanded()) {
+        return expandedViewProvider.getDisplayId();
+    }
+    return INVALID_DISPLAY;
+}

@@ -1,0 +1,11 @@
+public Set<String> getDefaultCrossProfilePackages(){
+    throwIfParentInstance("getDefaultCrossProfilePackages");
+    if (mService != null) {
+        try {
+            return new ArraySet<>(mService.getDefaultCrossProfilePackages());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return Collections.emptySet();
+}

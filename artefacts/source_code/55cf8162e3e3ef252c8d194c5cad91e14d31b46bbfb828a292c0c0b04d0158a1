@@ -1,0 +1,38 @@
+public static void updateOrInsertCarrierKey(ImsiEncryptionInfo imsiEncryptionInfo, Context context, int phoneId){
+    byte[] keyBytes = imsiEncryptionInfo.getPublicKey().getEncoded();
+    ContentResolver mContentResolver = context.getContentResolver();
+    TelephonyMetrics tm = TelephonyMetrics.getInstance();
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(Telephony.CarrierColumns.MCC, imsiEncryptionInfo.getMcc());
+    contentValues.put(Telephony.CarrierColumns.MNC, imsiEncryptionInfo.getMnc());
+    contentValues.put(Telephony.CarrierColumns.KEY_TYPE, imsiEncryptionInfo.getKeyType());
+    contentValues.put(Telephony.CarrierColumns.KEY_IDENTIFIER, imsiEncryptionInfo.getKeyIdentifier());
+    contentValues.put(Telephony.CarrierColumns.PUBLIC_KEY, keyBytes);
+    contentValues.put(Telephony.CarrierColumns.EXPIRATION_TIME, imsiEncryptionInfo.getExpirationTime().getTime());
+    boolean downloadSuccessfull = true;
+    try {
+        Log.i(LOG_TAG, "Inserting imsiEncryptionInfo into db");
+        mContentResolver.insert(Telephony.CarrierColumns.CONTENT_URI, contentValues);
+    } catch (SQLiteConstraintException e) {
+        Log.i(LOG_TAG, "Insert failed, updating imsiEncryptionInfo into db");
+        ContentValues updatedValues = new ContentValues();
+        updatedValues.put(Telephony.CarrierColumns.PUBLIC_KEY, keyBytes);
+        updatedValues.put(Telephony.CarrierColumns.EXPIRATION_TIME, imsiEncryptionInfo.getExpirationTime().getTime());
+        updatedValues.put(Telephony.CarrierColumns.KEY_IDENTIFIER, imsiEncryptionInfo.getKeyIdentifier());
+        try {
+            int nRows = mContentResolver.update(Telephony.CarrierColumns.CONTENT_URI, updatedValues, "mcc=? and mnc=? and key_type=?", new String[] { imsiEncryptionInfo.getMcc(), imsiEncryptionInfo.getMnc(), String.valueOf(imsiEncryptionInfo.getKeyType()) });
+            if (nRows == 0) {
+                Log.d(LOG_TAG, "Error updating values:" + imsiEncryptionInfo);
+                downloadSuccessfull = false;
+            }
+        } catch (Exception ex) {
+            Log.d(LOG_TAG, "Error updating values:" + imsiEncryptionInfo + ex);
+            downloadSuccessfull = false;
+        }
+    } catch (Exception e) {
+        Log.d(LOG_TAG, "Error inserting/updating values:" + imsiEncryptionInfo + e);
+        downloadSuccessfull = false;
+    } finally {
+        tm.writeCarrierKeyEvent(phoneId, imsiEncryptionInfo.getKeyType(), downloadSuccessfull);
+    }
+}

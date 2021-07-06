@@ -1,0 +1,21 @@
+public boolean setOperatorBrandOverride(String brand){
+    log("setOperatorBrandOverride: " + brand);
+    log("current iccId: " + SubscriptionInfo.givePrintableIccid(getIccId()));
+    String iccId = getIccId();
+    if (TextUtils.isEmpty(iccId)) {
+        return false;
+    }
+    if (!checkSubIdAndIccIdMatch(iccId)) {
+        loge("iccId doesn't match current active subId.");
+        return false;
+    }
+    SharedPreferences.Editor spEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+    String key = OPERATOR_BRAND_OVERRIDE_PREFIX + iccId;
+    if (brand == null) {
+        spEditor.remove(key).commit();
+    } else {
+        spEditor.putString(key, brand).commit();
+    }
+    mOperatorBrandOverrideRegistrants.notifyRegistrants();
+    return true;
+}

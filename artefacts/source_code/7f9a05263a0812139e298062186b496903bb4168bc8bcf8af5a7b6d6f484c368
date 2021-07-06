@@ -1,0 +1,8 @@
+public void registerRcsAvailabilityCallback(int subId, IImsCapabilityCallback callback) throws android.telephony.ims.ImsException{
+    try {
+        mRcsFeatureConnection.addCallbackForSubscription(subId, callback);
+    } catch (IllegalStateException e) {
+        loge("registerRcsAvailabilityCallback: ", e);
+        throw new android.telephony.ims.ImsException("Can not register callback", android.telephony.ims.ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+}

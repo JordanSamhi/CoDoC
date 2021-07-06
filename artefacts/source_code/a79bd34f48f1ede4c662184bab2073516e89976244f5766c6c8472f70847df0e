@@ -1,0 +1,19 @@
+public void deleteProfile(String cardId, String iccid, @CallbackExecutor Executor executor, ResultCallback<Void> callback){
+    try {
+        getIEuiccCardController().deleteProfile(mContext.getOpPackageName(), cardId, iccid, new IDeleteProfileCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, null));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling deleteProfile", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

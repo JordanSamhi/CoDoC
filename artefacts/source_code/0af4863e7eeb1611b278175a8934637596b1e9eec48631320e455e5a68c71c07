@@ -1,0 +1,8 @@
+public static String getFileTimestamps(String path){
+    try {
+        BasicFileAttributes attr = Files.readAttributes(FileSystems.getDefault().getPath(path), BasicFileAttributes.class);
+        return "ctime=" + attr.creationTime() + " mtime=" + attr.lastModifiedTime() + " atime=" + attr.lastAccessTime();
+    } catch (IOException e) {
+        return "[unable to obtain timestamp]";
+    }
+}

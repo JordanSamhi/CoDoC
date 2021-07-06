@@ -1,0 +1,8 @@
+public void setTintMode(@Nullable PorterDuff.Mode tintMode){
+    if (!mSetTintModeInvoked) {
+        mSetTintModeInvoked = true;
+        BlendMode mode = tintMode != null ? BlendMode.fromValue(tintMode.nativeInt) : null;
+        setTintBlendMode(mode != null ? mode : Drawable.DEFAULT_BLEND_MODE);
+        mSetTintModeInvoked = false;
+    }
+}

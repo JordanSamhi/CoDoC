@@ -1,0 +1,9 @@
+public ScrollCaptureCallback createScrollCaptureCallbackInternal(@NonNull Rect localVisibleRect, @NonNull Point windowOffset){
+    if (mAttachInfo == null) {
+        return null;
+    }
+    if (mAttachInfo.mScrollCaptureInternal == null) {
+        mAttachInfo.mScrollCaptureInternal = new ScrollCaptureInternal();
+    }
+    return mAttachInfo.mScrollCaptureInternal.requestCallback(this, localVisibleRect, windowOffset);
+}

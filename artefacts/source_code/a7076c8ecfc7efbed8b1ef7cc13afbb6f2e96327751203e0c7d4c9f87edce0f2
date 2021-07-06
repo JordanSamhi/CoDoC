@@ -1,0 +1,37 @@
+public void onRespondToDataPathRequest(int ndpId, boolean success, int reasonOnFailure){
+    if (mDbg) {
+        Log.v(TAG, "onRespondToDataPathRequest: ndpId=" + ndpId + ", success=" + success);
+    }
+    WifiAwareNetworkSpecifier networkSpecifier = null;
+    AwareNetworkRequestInformation nnri = null;
+    for (Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> entry : mNetworkRequestsCache.entrySet()) {
+        if (entry.getValue().ndpId == ndpId) {
+            networkSpecifier = entry.getKey();
+            nnri = entry.getValue();
+            break;
+        }
+    }
+    if (nnri == null) {
+        Log.w(TAG, "onRespondToDataPathRequest: can't find a request with specified ndpId=" + ndpId);
+        if (VDBG) {
+            Log.v(TAG, "onRespondToDataPathRequest: network request cache = " + mNetworkRequestsCache);
+        }
+        return;
+    }
+    if (!success) {
+        Log.w(TAG, "onRespondToDataPathRequest: request " + networkSpecifier + " failed responding");
+        mMgr.endDataPath(ndpId);
+        mNetworkRequestsCache.remove(networkSpecifier);
+        mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+        mAwareMetrics.recordNdpStatus(reasonOnFailure, networkSpecifier.isOutOfBand(), nnri.startTimestamp);
+        return;
+    }
+    if (nnri.state != AwareNetworkRequestInformation.STATE_RESPONDER_WAIT_FOR_RESPOND_RESPONSE) {
+        Log.w(TAG, "onRespondToDataPathRequest: request " + networkSpecifier + " is incorrect state=" + nnri.state);
+        mMgr.endDataPath(ndpId);
+        mNetworkRequestsCache.remove(networkSpecifier);
+        mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+        return;
+    }
+    nnri.state = AwareNetworkRequestInformation.STATE_WAIT_FOR_CONFIRM;
+}

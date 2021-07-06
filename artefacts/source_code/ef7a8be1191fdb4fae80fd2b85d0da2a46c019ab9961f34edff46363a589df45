@@ -1,0 +1,8 @@
+public void testGetParameters_withSettingChangeAfterStart_updatesValues(){
+    mParameters.start();
+    long testTimeout = BackupAgentTimeoutParameters.DEFAULT_KV_BACKUP_AGENT_TIMEOUT_MILLIS * 2;
+    final String setting = BackupAgentTimeoutParameters.SETTING_KV_BACKUP_AGENT_TIMEOUT_MILLIS + "=" + testTimeout;
+    putStringAndNotify(setting);
+    long kvBackupAgentTimeoutMillis = mParameters.getKvBackupAgentTimeoutMillis();
+    assertEquals(testTimeout, kvBackupAgentTimeoutMillis);
+}

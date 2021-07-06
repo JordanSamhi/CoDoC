@@ -1,0 +1,11 @@
+public void setStroke(int width, ColorStateList colorStateList, float dashWidth, float dashGap){
+    mGradientState.setStroke(width, colorStateList, dashWidth, dashGap);
+    final int color;
+    if (colorStateList == null) {
+        color = Color.TRANSPARENT;
+    } else {
+        final int[] stateSet = getState();
+        color = colorStateList.getColorForState(stateSet, 0);
+    }
+    setStrokeInternal(width, color, dashWidth, dashGap);
+}

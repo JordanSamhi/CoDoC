@@ -1,0 +1,16 @@
+public void setColorFadeLevel(float level){
+    if (mColorFadeLevel != level) {
+        if (DEBUG) {
+            Slog.d(TAG, "setColorFadeLevel: level=" + level);
+        }
+        mColorFadeLevel = level;
+        if (mScreenState != Display.STATE_OFF) {
+            mScreenReady = false;
+            scheduleScreenUpdate();
+        }
+        if (mColorFadePrepared) {
+            mColorFadeReady = false;
+            scheduleColorFadeDraw();
+        }
+    }
+}

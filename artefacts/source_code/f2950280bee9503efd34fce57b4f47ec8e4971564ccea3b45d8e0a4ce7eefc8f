@@ -1,0 +1,38 @@
+public static String[] splitFileName(String mimeType, String displayName){
+    String name;
+    String ext;
+    if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+        name = displayName;
+        ext = null;
+    } else {
+        String mimeTypeFromExt;
+        final int lastDot = displayName.lastIndexOf('.');
+        if (lastDot >= 0) {
+            name = displayName.substring(0, lastDot);
+            ext = displayName.substring(lastDot + 1);
+            mimeTypeFromExt = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext.toLowerCase());
+        } else {
+            name = displayName;
+            ext = null;
+            mimeTypeFromExt = null;
+        }
+        if (mimeTypeFromExt == null) {
+            mimeTypeFromExt = ContentResolver.MIME_TYPE_DEFAULT;
+        }
+        final String extFromMimeType;
+        if (ContentResolver.MIME_TYPE_DEFAULT.equals(mimeType)) {
+            extFromMimeType = null;
+        } else {
+            extFromMimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+        }
+        if (Objects.equals(mimeType, mimeTypeFromExt) || Objects.equals(ext, extFromMimeType)) {
+        } else {
+            name = displayName;
+            ext = extFromMimeType;
+        }
+    }
+    if (ext == null) {
+        ext = "";
+    }
+    return new String[] { name, ext };
+}

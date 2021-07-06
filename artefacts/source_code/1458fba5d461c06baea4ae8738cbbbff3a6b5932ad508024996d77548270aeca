@@ -1,0 +1,7 @@
+public void testCancelBackups_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    backupManagerService.cancelBackups(mUserOneId);
+    verify(mUserOneService).cancelBackups();
+}

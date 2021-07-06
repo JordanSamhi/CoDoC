@@ -1,0 +1,24 @@
+public CharSequence getTitle(Context context){
+    CharSequence title = null;
+    ensureMetadataNotStale(context);
+    final PackageManager packageManager = context.getPackageManager();
+    if (mMetaData.containsKey(META_DATA_PREFERENCE_TITLE)) {
+        if (mMetaData.containsKey(META_DATA_PREFERENCE_TITLE_URI)) {
+            return null;
+        }
+        if (mMetaData.get(META_DATA_PREFERENCE_TITLE) instanceof Integer) {
+            try {
+                final Resources res = packageManager.getResourcesForApplication(mComponentPackage);
+                title = res.getString(mMetaData.getInt(META_DATA_PREFERENCE_TITLE));
+            } catch (PackageManager.NameNotFoundException | Resources.NotFoundException e) {
+                Log.w(TAG, "Couldn't find info", e);
+            }
+        } else {
+            title = mMetaData.getString(META_DATA_PREFERENCE_TITLE);
+        }
+    }
+    if (title == null) {
+        title = getComponentLabel(context);
+    }
+    return title;
+}

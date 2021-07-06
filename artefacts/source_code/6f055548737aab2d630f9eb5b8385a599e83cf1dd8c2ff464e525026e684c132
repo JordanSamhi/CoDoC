@@ -1,0 +1,44 @@
+public boolean setLock(@LockTypes int lockType, @NonNull byte[] password, @PasswordComplexity int complexity){
+    if (!checkInitialLockMethodUsage()) {
+        return false;
+    }
+    LockPatternUtils lockPatternUtils = new LockPatternUtils(mContext);
+    int userId = mContext.getUserId();
+    if (isDeviceSecure(userId)) {
+        Log.e(TAG, "Password already set, rejecting call to setLock");
+        return false;
+    }
+    if (!isValidLockPasswordComplexity(lockType, password, complexity)) {
+        Log.e(TAG, "Password is not valid, rejecting call to setLock");
+        return false;
+    }
+    boolean success = false;
+    try {
+        switch(lockType) {
+            case LockTypes.PASSWORD:
+                CharSequence passwordStr = new String(password, Charset.forName("UTF-8"));
+                lockPatternUtils.setLockCredential(LockscreenCredential.createPassword(passwordStr), LockscreenCredential.createNone(), userId);
+                success = true;
+                break;
+            case LockTypes.PIN:
+                CharSequence pinStr = new String(password);
+                lockPatternUtils.setLockCredential(LockscreenCredential.createPin(pinStr), LockscreenCredential.createNone(), userId);
+                success = true;
+                break;
+            case LockTypes.PATTERN:
+                List<LockPatternView.Cell> pattern = LockPatternUtils.byteArrayToPattern(password);
+                lockPatternUtils.setLockCredential(LockscreenCredential.createPattern(pattern), LockscreenCredential.createNone(), userId);
+                pattern.clear();
+                success = true;
+                break;
+            default:
+                Log.e(TAG, "Unknown lock type, returning a failure");
+        }
+    } catch (Exception e) {
+        Log.e(TAG, "Save lock exception", e);
+        success = false;
+    } finally {
+        Arrays.fill(password, (byte) 0);
+    }
+    return success;
+}

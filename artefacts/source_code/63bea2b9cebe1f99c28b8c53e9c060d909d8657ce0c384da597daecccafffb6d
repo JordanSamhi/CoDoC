@@ -1,0 +1,16 @@
+public final void deliver(QueuedInputEvent q){
+    if ((q.mFlags & QueuedInputEvent.FLAG_FINISHED) != 0) {
+        forward(q);
+    } else if (shouldDropInputEvent(q)) {
+        finish(q, false);
+    } else {
+        traceEvent(q, Trace.TRACE_TAG_VIEW);
+        final int result;
+        try {
+            result = onProcess(q);
+        } finally {
+            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        }
+        apply(q, result);
+    }
+}

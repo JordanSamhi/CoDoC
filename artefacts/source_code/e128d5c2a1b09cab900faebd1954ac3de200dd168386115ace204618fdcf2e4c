@@ -1,0 +1,29 @@
+public List<Pair<String, String>> getAttachedDbs(){
+    ArrayList<Pair<String, String>> attachedDbs = new ArrayList<Pair<String, String>>();
+    synchronized (mLock) {
+        if (mConnectionPoolLocked == null) {
+            return null;
+        }
+        if (!mHasAttachedDbsLocked) {
+            attachedDbs.add(new Pair<String, String>("main", mConfigurationLocked.path));
+            return attachedDbs;
+        }
+        acquireReference();
+    }
+    try {
+        Cursor c = null;
+        try {
+            c = rawQuery("pragma database_list;", null);
+            while (c.moveToNext()) {
+                attachedDbs.add(new Pair<String, String>(c.getString(1), c.getString(2)));
+            }
+        } finally {
+            if (c != null) {
+                c.close();
+            }
+        }
+        return attachedDbs;
+    } finally {
+        releaseReference();
+    }
+}

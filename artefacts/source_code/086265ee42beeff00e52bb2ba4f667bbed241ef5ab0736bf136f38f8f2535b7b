@@ -1,0 +1,35 @@
+public synchronized void onPackageRemoved(int uid){
+    for (Map.Entry<String, Set<UidRange>> vpn : mVpnUidRanges.entrySet()) {
+        if (UidRange.containsUid(vpn.getValue(), uid)) {
+            final Set<Integer> changedUids = new HashSet<>();
+            changedUids.add(uid);
+            removeBypassingUids(changedUids, -1);
+            updateVpnUids(vpn.getKey(), changedUids, false);
+        }
+    }
+    if (mPackageManager.getNameForUid(uid) == null) {
+        mAllApps.remove(UserHandle.getAppId(uid));
+    }
+    Map<Integer, Boolean> apps = new HashMap<>();
+    Boolean permission = null;
+    String[] packages = mPackageManager.getPackagesForUid(uid);
+    if (packages != null && packages.length > 0) {
+        for (String name : packages) {
+            permission = highestPermissionForUid(permission, name);
+            if (permission == SYSTEM) {
+                return;
+            }
+        }
+    }
+    if (permission == mApps.get(uid)) {
+        return;
+    } else if (permission != null) {
+        mApps.put(uid, permission);
+        apps.put(uid, permission);
+        update(mUsers, apps, true);
+    } else {
+        mApps.remove(uid);
+        apps.put(uid, NETWORK);
+        update(mUsers, apps, false);
+    }
+}

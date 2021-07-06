@@ -1,0 +1,29 @@
+public long executeForLong(String sql, Object[] bindArgs, CancellationSignal cancellationSignal){
+    if (sql == null) {
+        throw new IllegalArgumentException("sql must not be null.");
+    }
+    final int cookie = mRecentOperations.beginOperation("executeForLong", sql, bindArgs);
+    try {
+        final PreparedStatement statement = acquirePreparedStatement(sql);
+        try {
+            throwIfStatementForbidden(statement);
+            bindArguments(statement, bindArgs);
+            applyBlockGuardPolicy(statement);
+            attachCancellationSignal(cancellationSignal);
+            try {
+                long ret = nativeExecuteForLong(mConnectionPtr, statement.mStatementPtr);
+                mRecentOperations.setResult(ret);
+                return ret;
+            } finally {
+                detachCancellationSignal(cancellationSignal);
+            }
+        } finally {
+            releasePreparedStatement(statement);
+        }
+    } catch (RuntimeException ex) {
+        mRecentOperations.failOperation(cookie, ex);
+        throw ex;
+    } finally {
+        mRecentOperations.endOperation(cookie);
+    }
+}

@@ -1,0 +1,8 @@
+public void setPixel(int x, int y, @ColorInt int color){
+    checkRecycled("Can't call setPixel() on a recycled bitmap");
+    if (!isMutable()) {
+        throw new IllegalStateException();
+    }
+    checkPixelAccess(x, y);
+    nativeSetPixel(mNativePtr, x, y, color);
+}

@@ -1,0 +1,25 @@
+
+     * Convenience function for creating a {@link #ACTION_CHOOSER} Intent.
+     *
+     * <p>Builds a new {@link #ACTION_CHOOSER} Intent that wraps the given
+     * target intent, also optionally supplying a title.  If the target
+     * intent has specified {@link #FLAG_GRANT_READ_URI_PERMISSION} or
+     * {@link #FLAG_GRANT_WRITE_URI_PERMISSION}, then these flags will also be
+     * set in the returned chooser intent, with its ClipData set appropriately:
+     * either a direct reflection of {@link #getClipData()} if that is non-null,
+     * or a new ClipData built from {@link #getData()}.</p>
+     *
+     * <p>The caller may optionally supply an {@link IntentSender} to receive a callback
+     * when the user makes a choice. This can be useful if the calling application wants
+     * to remember the last chosen target and surface it as a more prominent or one-touch
+     * affordance elsewhere in the UI for next time.</p>
+     *
+     * @param target The Intent that the user will be selecting an activity
+     * to perform.
+     * @param title Optional title that will be displayed in the chooser,
+     * only when the target action is not ACTION_SEND or ACTION_SEND_MULTIPLE.
+     * @param sender Optional IntentSender to be called when a choice is made.
+     * @return Return a new Intent object that you can hand to
+     * {@link Context#startActivity(Intent) Context.startActivity()} and
+     * related methods.
+     

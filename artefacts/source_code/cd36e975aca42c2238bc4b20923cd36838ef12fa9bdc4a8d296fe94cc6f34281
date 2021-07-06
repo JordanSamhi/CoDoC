@@ -1,0 +1,11 @@
+public Notification buildNoMacRandomizationSupportNotification(@NonNull WifiConfiguration config){
+    String ssid = config.SSID;
+    String ssidAndSecurityType = config.getSsidAndSecurityTypeString();
+    String title = mContext.getResources().getString(R.string.wifi_cannot_connect_with_randomized_mac_title, ssid);
+    String content = mContext.getResources().getString(R.string.wifi_cannot_connect_with_randomized_mac_message);
+    Intent showDetailIntent = new Intent(ACTION_SHOW_SET_RANDOMIZATION_DETAILS).setPackage(mPackageName);
+    showDetailIntent.putExtra(RANDOMIZATION_SETTINGS_NETWORK_ID, config.networkId);
+    showDetailIntent.putExtra(RANDOMIZATION_SETTINGS_NETWORK_SSID, ssidAndSecurityType);
+    PendingIntent pendingShowDetailIntent = mFrameworkFacade.getBroadcast(mContext, 0, showDetailIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    return mFrameworkFacade.makeNotificationBuilder(mContext, WifiService.NOTIFICATION_NETWORK_ALERTS).setSmallIcon(Icon.createWithResource(mContext.getWifiOverlayApkPkgName(), com.android.wifi.resources.R.drawable.stat_notify_wifi_in_range)).setTicker(title).setContentTitle(title).setContentText(content).setContentIntent(pendingShowDetailIntent).setShowWhen(false).setLocalOnly(true).setColor(mContext.getResources().getColor(android.R.color.system_notification_accent_color, mContext.getTheme())).setAutoCancel(true).build();
+}

@@ -1,0 +1,13 @@
+public static ComponentName getDefaultSmsApplicationAsUser(Context context, boolean updateIfNeeded, int userId){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        ComponentName component = null;
+        SmsApplicationData smsApplicationData = getApplication(context, updateIfNeeded, userId);
+        if (smsApplicationData != null) {
+            component = new ComponentName(smsApplicationData.mPackageName, smsApplicationData.mSmsReceiverClass);
+        }
+        return component;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,24 @@
+public String resolveValidReportedPackageLocked(@Nullable CharSequence packageName, int appId, int userId, int pid){
+    if (packageName == null) {
+        return null;
+    }
+    if (appId == Process.SYSTEM_UID) {
+        return packageName.toString();
+    }
+    final String packageNameStr = packageName.toString();
+    final int resolvedUid = UserHandle.getUid(userId, appId);
+    if (isValidPackageForUid(packageNameStr, resolvedUid)) {
+        return packageName.toString();
+    }
+    if (mAppWidgetService != null && ArrayUtils.contains(mAppWidgetService.getHostedWidgetPackages(resolvedUid), packageNameStr)) {
+        return packageName.toString();
+    }
+    if (mContext.checkPermission(Manifest.permission.ACT_AS_PACKAGE_FOR_ACCESSIBILITY, pid, resolvedUid) == PackageManager.PERMISSION_GRANTED) {
+        return packageName.toString();
+    }
+    final String[] packageNames = mPackageManager.getPackagesForUid(resolvedUid);
+    if (ArrayUtils.isEmpty(packageNames)) {
+        return null;
+    }
+    return packageNames[0];
+}

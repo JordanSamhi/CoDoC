@@ -1,0 +1,11 @@
+public void deleteKeyphraseSoundModel(int keyphraseId, @NonNull Locale locale){
+    Objects.requireNonNull(locale);
+    try {
+        int status = mVoiceInteractionManagerService.deleteKeyphraseSoundModel(keyphraseId, locale.toLanguageTag());
+        if (status != SoundTrigger.STATUS_OK) {
+            throw new ServiceSpecificException(status);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

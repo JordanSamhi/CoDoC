@@ -1,0 +1,14 @@
+public static synchronized PluginData getPluginData(String url, Map<String, String> headers){
+    if (urlInterceptDisabled()) {
+        return null;
+    }
+    Iterator iter = getHandlers().listIterator();
+    while (iter.hasNext()) {
+        UrlInterceptHandler handler = (UrlInterceptHandler) iter.next();
+        PluginData data = handler.getPluginData(url, headers);
+        if (data != null) {
+            return data;
+        }
+    }
+    return null;
+}

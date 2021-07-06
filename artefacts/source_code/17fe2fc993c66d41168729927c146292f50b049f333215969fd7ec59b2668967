@@ -1,0 +1,101 @@
+public void setCompoundDrawables(@Nullable Drawable left, @Nullable Drawable top, @Nullable Drawable right, @Nullable Drawable bottom){
+    Drawables dr = mDrawables;
+    if (dr != null) {
+        if (dr.mDrawableStart != null)
+            dr.mDrawableStart.setCallback(null);
+        dr.mDrawableStart = null;
+        if (dr.mDrawableEnd != null)
+            dr.mDrawableEnd.setCallback(null);
+        dr.mDrawableEnd = null;
+        dr.mDrawableSizeStart = dr.mDrawableHeightStart = 0;
+        dr.mDrawableSizeEnd = dr.mDrawableHeightEnd = 0;
+    }
+    final boolean drawables = left != null || top != null || right != null || bottom != null;
+    if (!drawables) {
+        if (dr != null) {
+            if (!dr.hasMetadata()) {
+                mDrawables = null;
+            } else {
+                for (int i = dr.mShowing.length - 1; i >= 0; i--) {
+                    if (dr.mShowing[i] != null) {
+                        dr.mShowing[i].setCallback(null);
+                    }
+                    dr.mShowing[i] = null;
+                }
+                dr.mDrawableSizeLeft = dr.mDrawableHeightLeft = 0;
+                dr.mDrawableSizeRight = dr.mDrawableHeightRight = 0;
+                dr.mDrawableSizeTop = dr.mDrawableWidthTop = 0;
+                dr.mDrawableSizeBottom = dr.mDrawableWidthBottom = 0;
+            }
+        }
+    } else {
+        if (dr == null) {
+            mDrawables = dr = new Drawables(getContext());
+        }
+        mDrawables.mOverride = false;
+        if (dr.mShowing[Drawables.LEFT] != left && dr.mShowing[Drawables.LEFT] != null) {
+            dr.mShowing[Drawables.LEFT].setCallback(null);
+        }
+        dr.mShowing[Drawables.LEFT] = left;
+        if (dr.mShowing[Drawables.TOP] != top && dr.mShowing[Drawables.TOP] != null) {
+            dr.mShowing[Drawables.TOP].setCallback(null);
+        }
+        dr.mShowing[Drawables.TOP] = top;
+        if (dr.mShowing[Drawables.RIGHT] != right && dr.mShowing[Drawables.RIGHT] != null) {
+            dr.mShowing[Drawables.RIGHT].setCallback(null);
+        }
+        dr.mShowing[Drawables.RIGHT] = right;
+        if (dr.mShowing[Drawables.BOTTOM] != bottom && dr.mShowing[Drawables.BOTTOM] != null) {
+            dr.mShowing[Drawables.BOTTOM].setCallback(null);
+        }
+        dr.mShowing[Drawables.BOTTOM] = bottom;
+        final Rect compoundRect = dr.mCompoundRect;
+        int[] state;
+        state = getDrawableState();
+        if (left != null) {
+            left.setState(state);
+            left.copyBounds(compoundRect);
+            left.setCallback(this);
+            dr.mDrawableSizeLeft = compoundRect.width();
+            dr.mDrawableHeightLeft = compoundRect.height();
+        } else {
+            dr.mDrawableSizeLeft = dr.mDrawableHeightLeft = 0;
+        }
+        if (right != null) {
+            right.setState(state);
+            right.copyBounds(compoundRect);
+            right.setCallback(this);
+            dr.mDrawableSizeRight = compoundRect.width();
+            dr.mDrawableHeightRight = compoundRect.height();
+        } else {
+            dr.mDrawableSizeRight = dr.mDrawableHeightRight = 0;
+        }
+        if (top != null) {
+            top.setState(state);
+            top.copyBounds(compoundRect);
+            top.setCallback(this);
+            dr.mDrawableSizeTop = compoundRect.height();
+            dr.mDrawableWidthTop = compoundRect.width();
+        } else {
+            dr.mDrawableSizeTop = dr.mDrawableWidthTop = 0;
+        }
+        if (bottom != null) {
+            bottom.setState(state);
+            bottom.copyBounds(compoundRect);
+            bottom.setCallback(this);
+            dr.mDrawableSizeBottom = compoundRect.height();
+            dr.mDrawableWidthBottom = compoundRect.width();
+        } else {
+            dr.mDrawableSizeBottom = dr.mDrawableWidthBottom = 0;
+        }
+    }
+    if (dr != null) {
+        dr.mDrawableLeftInitial = left;
+        dr.mDrawableRightInitial = right;
+    }
+    resetResolvedDrawables();
+    resolveDrawables();
+    applyCompoundDrawableTint();
+    invalidate();
+    requestLayout();
+}

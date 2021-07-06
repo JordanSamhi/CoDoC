@@ -1,0 +1,48 @@
+public void startNetScan() throws LowpanException{
+    Map<String, Object> map = createScanOptionMap();
+    ILowpanNetScanCallback binderListener = new ILowpanNetScanCallback.Stub() {
+
+        public void onNetScanBeacon(LowpanBeaconInfo beaconInfo) {
+            Callback callback;
+            Handler handler;
+            synchronized (LowpanScanner.this) {
+                callback = mCallback;
+                handler = mHandler;
+            }
+            if (callback == null) {
+                return;
+            }
+            Runnable runnable = () -> callback.onNetScanBeacon(beaconInfo);
+            if (handler != null) {
+                handler.post(runnable);
+            } else {
+                runnable.run();
+            }
+        }
+
+        public void onNetScanFinished() {
+            Callback callback;
+            Handler handler;
+            synchronized (LowpanScanner.this) {
+                callback = mCallback;
+                handler = mHandler;
+            }
+            if (callback == null) {
+                return;
+            }
+            Runnable runnable = () -> callback.onScanFinished();
+            if (handler != null) {
+                handler.post(runnable);
+            } else {
+                runnable.run();
+            }
+        }
+    };
+    try {
+        mBinder.startNetScan(map, binderListener);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

@@ -1,0 +1,9 @@
+public void removeTransportModeTransforms(@NonNull FileDescriptor socket) throws IOException{
+    try (ParcelFileDescriptor pfd = ParcelFileDescriptor.dup(socket)) {
+        mService.removeTransportModeTransforms(pfd);
+    } catch (ServiceSpecificException e) {
+        throw rethrowCheckedExceptionFromServiceSpecificException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

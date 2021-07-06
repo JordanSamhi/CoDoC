@@ -1,0 +1,10 @@
+public final int getCurrentListenerHints(){
+    if (!isBound())
+        return 0;
+    try {
+        return getNotificationInterface().getHintsFromListener(mWrapper);
+    } catch (android.os.RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+        return 0;
+    }
+}

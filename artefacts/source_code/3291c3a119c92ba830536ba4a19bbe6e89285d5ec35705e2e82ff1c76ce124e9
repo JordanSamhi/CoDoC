@@ -1,0 +1,99 @@
+public void setNotification(int notifyType){
+    if (DBG)
+        log("setNotification: create notification " + notifyType);
+    if (!SubscriptionManager.isValidSubscriptionId(mSubId)) {
+        loge("cannot setNotification on invalid subid mSubId=" + mSubId);
+        return;
+    }
+    Context context = mPhone.getContext();
+    SubscriptionInfo info = mSubscriptionController.getActiveSubscriptionInfo(mPhone.getSubId(), context.getOpPackageName(), context.getAttributionTag());
+    if (info == null || (info.isOpportunistic() && info.getGroupUuid() != null)) {
+        log("cannot setNotification on invisible subid mSubId=" + mSubId);
+        return;
+    }
+    boolean isSetNotification = context.getResources().getBoolean(com.android.internal.R.bool.config_user_notification_of_restrictied_mobile_access);
+    if (!isSetNotification) {
+        if (DBG)
+            log("Ignore all the notifications");
+        return;
+    }
+    boolean autoCancelCsRejectNotification = false;
+    PersistableBundle bundle = getCarrierConfig();
+    boolean disableVoiceBarringNotification = bundle.getBoolean(CarrierConfigManager.KEY_DISABLE_VOICE_BARRING_NOTIFICATION_BOOL, false);
+    if (disableVoiceBarringNotification && (notifyType == CS_ENABLED || notifyType == CS_NORMAL_ENABLED || notifyType == CS_EMERGENCY_ENABLED)) {
+        if (DBG)
+            log("Voice/emergency call barred notification disabled");
+        return;
+    }
+    autoCancelCsRejectNotification = bundle.getBoolean(CarrierConfigManager.KEY_AUTO_CANCEL_CS_REJECT_NOTIFICATION, false);
+    CharSequence details = "";
+    CharSequence title = "";
+    int notificationId = CS_NOTIFICATION;
+    int icon = com.android.internal.R.drawable.stat_sys_warning;
+    final boolean multipleSubscriptions = (((TelephonyManager) mPhone.getContext().getSystemService(Context.TELEPHONY_SERVICE)).getPhoneCount() > 1);
+    final int simNumber = mSubscriptionController.getSlotIndex(mSubId) + 1;
+    switch(notifyType) {
+        case PS_ENABLED:
+            long dataSubId = SubscriptionManager.getDefaultDataSubscriptionId();
+            if (dataSubId != mPhone.getSubId()) {
+                return;
+            }
+            notificationId = PS_NOTIFICATION;
+            title = context.getText(com.android.internal.R.string.RestrictedOnDataTitle);
+            details = multipleSubscriptions ? context.getString(com.android.internal.R.string.RestrictedStateContentMsimTemplate, simNumber) : context.getText(com.android.internal.R.string.RestrictedStateContent);
+            break;
+        case PS_DISABLED:
+            notificationId = PS_NOTIFICATION;
+            break;
+        case CS_ENABLED:
+            title = context.getText(com.android.internal.R.string.RestrictedOnAllVoiceTitle);
+            details = multipleSubscriptions ? context.getString(com.android.internal.R.string.RestrictedStateContentMsimTemplate, simNumber) : context.getText(com.android.internal.R.string.RestrictedStateContent);
+            break;
+        case CS_NORMAL_ENABLED:
+            title = context.getText(com.android.internal.R.string.RestrictedOnNormalTitle);
+            details = multipleSubscriptions ? context.getString(com.android.internal.R.string.RestrictedStateContentMsimTemplate, simNumber) : context.getText(com.android.internal.R.string.RestrictedStateContent);
+            break;
+        case CS_EMERGENCY_ENABLED:
+            title = context.getText(com.android.internal.R.string.RestrictedOnEmergencyTitle);
+            details = multipleSubscriptions ? context.getString(com.android.internal.R.string.RestrictedStateContentMsimTemplate, simNumber) : context.getText(com.android.internal.R.string.RestrictedStateContent);
+            break;
+        case CS_DISABLED:
+            break;
+        case CS_REJECT_CAUSE_ENABLED:
+            notificationId = CS_REJECT_CAUSE_NOTIFICATION;
+            int resId = selectResourceForRejectCode(mRejectCode, multipleSubscriptions);
+            if (0 == resId) {
+                if (autoCancelCsRejectNotification) {
+                    notifyType = CS_REJECT_CAUSE_DISABLED;
+                } else {
+                    loge("setNotification: mRejectCode=" + mRejectCode + " is not handled.");
+                    return;
+                }
+            } else {
+                icon = com.android.internal.R.drawable.stat_notify_mmcc_indication_icn;
+                title = context.getString(resId, simNumber);
+                details = null;
+            }
+            break;
+    }
+    if (DBG) {
+        log("setNotification, create notification, notifyType: " + notifyType + ", title: " + title + ", details: " + details + ", subId: " + mSubId);
+    }
+    mNotification = new Notification.Builder(context).setWhen(System.currentTimeMillis()).setAutoCancel(true).setSmallIcon(icon).setTicker(title).setColor(context.getResources().getColor(com.android.internal.R.color.system_notification_accent_color)).setContentTitle(title).setStyle(new Notification.BigTextStyle().bigText(details)).setContentText(details).setChannelId(NotificationChannelController.CHANNEL_ID_ALERT).build();
+    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    if (notifyType == PS_DISABLED || notifyType == CS_DISABLED || notifyType == CS_REJECT_CAUSE_DISABLED) {
+        notificationManager.cancel(Integer.toString(mSubId), notificationId);
+    } else {
+        boolean show = false;
+        if (mSS.isEmergencyOnly() && notifyType == CS_EMERGENCY_ENABLED) {
+            show = true;
+        } else if (notifyType == CS_REJECT_CAUSE_ENABLED) {
+            show = true;
+        } else if (mSS.getState() == ServiceState.STATE_IN_SERVICE) {
+            show = true;
+        }
+        if (show) {
+            notificationManager.notify(Integer.toString(mSubId), notificationId, mNotification);
+        }
+    }
+}

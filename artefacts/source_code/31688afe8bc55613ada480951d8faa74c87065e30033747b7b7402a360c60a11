@@ -1,0 +1,14 @@
+public static boolean isIdenticalDnses(@NonNull LinkProperties left, @NonNull LinkProperties right){
+    final Collection<InetAddress> leftDnses = left.getDnsServers();
+    final Collection<InetAddress> rightDnses = right.getDnsServers();
+    final String leftDomains = left.getDomains();
+    final String rightDomains = right.getDomains();
+    if (leftDomains == null) {
+        if (rightDomains != null)
+            return false;
+    } else {
+        if (!leftDomains.equals(rightDomains))
+            return false;
+    }
+    return (leftDnses.size() == rightDnses.size()) ? leftDnses.containsAll(rightDnses) : false;
+}

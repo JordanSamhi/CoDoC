@@ -1,0 +1,15 @@
+public static Sampler MIRRORED_REPEAT_LINEAR(RenderScript rs){
+    if (rs.mSampler_MIRRORED_REPEAT_LINEAR == null) {
+        synchronized (rs) {
+            if (rs.mSampler_MIRRORED_REPEAT_LINEAR == null) {
+                Builder b = new Builder(rs);
+                b.setMinification(Value.LINEAR);
+                b.setMagnification(Value.LINEAR);
+                b.setWrapS(Value.MIRRORED_REPEAT);
+                b.setWrapT(Value.MIRRORED_REPEAT);
+                rs.mSampler_MIRRORED_REPEAT_LINEAR = b.create();
+            }
+        }
+    }
+    return rs.mSampler_MIRRORED_REPEAT_LINEAR;
+}

@@ -1,0 +1,7 @@
+public int noteOp(int op, int uid, @Nullable String packageName, @Nullable String attributionTag, @Nullable String message){
+    final int mode = noteOpNoThrow(op, uid, packageName, attributionTag, message);
+    if (mode == MODE_ERRORED) {
+        throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
+    }
+    return mode;
+}

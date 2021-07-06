@@ -1,0 +1,9 @@
+public void updateEfForEri(String eriText){
+    PersistableBundle config = getCarrierConfig();
+    int key = getSourcePriority(EF_SOURCE_ERI);
+    if (!TextUtils.isEmpty(eriText) && (mPhone.isPhoneTypeCdma() || mPhone.isPhoneTypeCdmaLte()) && config.getBoolean(CarrierConfigManager.KEY_ALLOW_ERI_BOOL)) {
+        mEf.put(key, new EriEfData(eriText));
+    } else {
+        mEf.remove(key);
+    }
+}

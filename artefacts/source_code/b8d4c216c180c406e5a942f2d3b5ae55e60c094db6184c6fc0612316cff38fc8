@@ -1,0 +1,11 @@
+public final void recycle(){
+    super.recycle();
+    mCharacters = null;
+    synchronized (gRecyclerLock) {
+        if (gRecyclerUsed < MAX_RECYCLED) {
+            gRecyclerUsed++;
+            mNext = gRecyclerTop;
+            gRecyclerTop = this;
+        }
+    }
+}

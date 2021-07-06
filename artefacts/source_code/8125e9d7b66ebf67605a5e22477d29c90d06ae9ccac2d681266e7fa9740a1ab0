@@ -1,0 +1,15 @@
+public String[] getStreamTypes(@NonNull Uri url, @NonNull String mimeTypeFilter) throws RemoteException{
+    Objects.requireNonNull(url, "url");
+    Objects.requireNonNull(mimeTypeFilter, "mimeTypeFilter");
+    beforeRemote();
+    try {
+        return mContentProvider.getStreamTypes(url, mimeTypeFilter);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

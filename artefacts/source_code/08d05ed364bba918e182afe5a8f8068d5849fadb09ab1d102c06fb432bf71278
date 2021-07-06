@@ -1,0 +1,13 @@
+public void setInputFocusLw(WindowState newWindow, boolean updateInputWindows){
+    ProtoLog.d(WM_DEBUG_FOCUS_LIGHT, "Input focus has changed to %s", newWindow);
+    if (newWindow != mInputFocus) {
+        if (newWindow != null && newWindow.canReceiveKeys()) {
+            newWindow.mToken.paused = false;
+        }
+        mInputFocus = newWindow;
+        setUpdateInputWindowsNeededLw();
+        if (updateInputWindows) {
+            updateInputWindowsLw(false);
+        }
+    }
+}

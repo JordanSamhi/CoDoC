@@ -1,0 +1,10 @@
+public List<Range<Long>> getActiveTimeSlots(){
+    List<Range<Long>> activeTimeSlots = new ArrayList<>();
+    synchronized (mLock) {
+        for (int slotType = 0; slotType < TIME_SLOT_TYPES_COUNT; slotType++) {
+            activeTimeSlots = combineTimeSlotLists(activeTimeSlots, getActiveTimeSlotsForType(slotType));
+        }
+    }
+    Collections.reverse(activeTimeSlots);
+    return activeTimeSlots;
+}

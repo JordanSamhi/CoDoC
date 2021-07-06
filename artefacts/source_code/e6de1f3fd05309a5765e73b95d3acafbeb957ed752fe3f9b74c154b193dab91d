@@ -1,0 +1,13 @@
+public void taskFinished(T task){
+    synchronized (mLock) {
+        if (DEBUG) {
+            Log.v(TAG + "[" + mName + "]", "taskFinished " + task);
+        }
+        if (!mTaskSet.remove(task)) {
+            if (!mEarlyFinishedTaskSet.add(task)) {
+                throw new IllegalStateException("Task " + task + " was already finished");
+            }
+        }
+        checkIfDrainFinished();
+    }
+}

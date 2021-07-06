@@ -1,0 +1,37 @@
+public void onPackageFailure(List<VersionedPackage> packages, @FailureReasons int failureReason){
+    if (packages == null) {
+        Slog.w(TAG, "Could not resolve a list of failing packages");
+        return;
+    }
+    mLongTaskHandler.post(() -> {
+        synchronized (mLock) {
+            if (mAllObservers.isEmpty()) {
+                return;
+            }
+            boolean requiresImmediateAction = (failureReason == FAILURE_REASON_NATIVE_CRASH || failureReason == FAILURE_REASON_EXPLICIT_HEALTH_CHECK);
+            if (requiresImmediateAction) {
+                handleFailureImmediately(packages, failureReason);
+            } else {
+                for (int pIndex = 0; pIndex < packages.size(); pIndex++) {
+                    VersionedPackage versionedPackage = packages.get(pIndex);
+                    PackageHealthObserver currentObserverToNotify = null;
+                    int currentObserverImpact = Integer.MAX_VALUE;
+                    for (int oIndex = 0; oIndex < mAllObservers.size(); oIndex++) {
+                        ObserverInternal observer = mAllObservers.valueAt(oIndex);
+                        PackageHealthObserver registeredObserver = observer.registeredObserver;
+                        if (registeredObserver != null && observer.onPackageFailureLocked(versionedPackage.getPackageName())) {
+                            int impact = registeredObserver.onHealthCheckFailed(versionedPackage, failureReason);
+                            if (impact != PackageHealthObserverImpact.USER_IMPACT_NONE && impact < currentObserverImpact) {
+                                currentObserverToNotify = registeredObserver;
+                                currentObserverImpact = impact;
+                            }
+                        }
+                    }
+                    if (currentObserverToNotify != null) {
+                        currentObserverToNotify.execute(versionedPackage, failureReason);
+                    }
+                }
+            }
+        }
+    });
+}

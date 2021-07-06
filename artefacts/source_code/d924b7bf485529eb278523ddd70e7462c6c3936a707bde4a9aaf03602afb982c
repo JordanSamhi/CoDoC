@@ -1,0 +1,11 @@
+public boolean isManagedProfile(){
+    if (mIsManagedProfileCached != null) {
+        return mIsManagedProfileCached;
+    }
+    try {
+        mIsManagedProfileCached = mService.isManagedProfile(UserHandle.myUserId());
+        return mIsManagedProfileCached;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

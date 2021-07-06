@@ -1,0 +1,10 @@
+public void testFilterAppsEligibleForBackup() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    TransportMock transportMock = setUpCurrentTransport(mTransportManager, mTransport);
+    registerPackages(PACKAGE_1, PACKAGE_2);
+    ShadowAppBackupUtils.setAppRunningAndEligibleForBackupWithTransport(PACKAGE_1);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    String[] filtered = backupManagerService.filterAppsEligibleForBackup(new String[] { PACKAGE_1, PACKAGE_2 });
+    assertThat(filtered).asList().containsExactly(PACKAGE_1);
+    verify(mTransportManager).disposeOfTransportClient(eq(transportMock.transportClient), any());
+}

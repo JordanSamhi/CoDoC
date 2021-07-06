@@ -1,0 +1,10 @@
+public ColorStateList getColorStateList(@ColorRes int id, @Nullable Theme theme) throws NotFoundException{
+    final TypedValue value = obtainTempTypedValue();
+    try {
+        final ResourcesImpl impl = mResourcesImpl;
+        impl.getValue(id, value, true);
+        return impl.loadColorStateList(this, value, id, theme);
+    } finally {
+        releaseTempTypedValue(value);
+    }
+}

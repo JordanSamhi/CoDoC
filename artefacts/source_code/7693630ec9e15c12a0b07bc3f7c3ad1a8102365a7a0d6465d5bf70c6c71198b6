@@ -1,0 +1,7 @@
+public void isKeyRotationDue_isTrueAfterAWholeWindowHasPassed(){
+    simulateBackups(MAX_BACKUPS_TILL_ROTATION);
+    mScheduler.recordKeyRotation(PACKAGE_2);
+    mScheduler.recordKeyRotation(PACKAGE_2);
+    setTimeMillis(TimeUnit.HOURS.toMillis(24));
+    assertThat(mScheduler.isKeyRotationDue(PACKAGE_1)).isTrue();
+}

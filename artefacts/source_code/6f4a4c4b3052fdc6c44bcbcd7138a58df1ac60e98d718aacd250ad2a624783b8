@@ -1,0 +1,80 @@
+public int onCommand(BasicShellCommandHandler parentShell){
+    final PrintWriter pw_err = parentShell.getErrPrintWriter();
+    final PrintWriter pw_out = parentShell.getOutPrintWriter();
+    String subCmd = parentShell.getNextArgRequired();
+    switch(subCmd) {
+        case "set":
+            {
+                String name = parentShell.getNextArgRequired();
+                if (!mSettableParameters.containsKey(name)) {
+                    pw_err.println("Unknown parameter name -- '" + name + "'");
+                    return -1;
+                }
+                String valueStr = parentShell.getNextArgRequired();
+                int value;
+                try {
+                    value = Integer.valueOf(valueStr);
+                } catch (NumberFormatException e) {
+                    pw_err.println("Can't convert value to integer -- '" + valueStr + "'");
+                    return -1;
+                }
+                mSettableParameters.put(name, value);
+                return 0;
+            }
+        case "get":
+            {
+                String name = parentShell.getNextArgRequired();
+                if (!mSettableParameters.containsKey(name)) {
+                    pw_err.println("Unknown parameter name -- '" + name + "'");
+                    return -1;
+                }
+                pw_out.println((int) mSettableParameters.get(name));
+                return 0;
+            }
+        case "get_capabilities":
+            {
+                JSONObject j = new JSONObject();
+                if (mCapabilities != null) {
+                    try {
+                        j.put("maxConcurrentAwareClusters", mCapabilities.maxConcurrentAwareClusters);
+                        j.put("maxPublishes", mCapabilities.maxPublishes);
+                        j.put("maxSubscribes", mCapabilities.maxSubscribes);
+                        j.put("maxServiceNameLen", mCapabilities.maxServiceNameLen);
+                        j.put("maxMatchFilterLen", mCapabilities.maxMatchFilterLen);
+                        j.put("maxTotalMatchFilterLen", mCapabilities.maxTotalMatchFilterLen);
+                        j.put("maxServiceSpecificInfoLen", mCapabilities.maxServiceSpecificInfoLen);
+                        j.put("maxExtendedServiceSpecificInfoLen", mCapabilities.maxExtendedServiceSpecificInfoLen);
+                        j.put("maxNdiInterfaces", mCapabilities.maxNdiInterfaces);
+                        j.put("maxNdpSessions", mCapabilities.maxNdpSessions);
+                        j.put("maxAppInfoLen", mCapabilities.maxAppInfoLen);
+                        j.put("maxQueuedTransmitMessages", mCapabilities.maxQueuedTransmitMessages);
+                        j.put("maxSubscribeInterfaceAddresses", mCapabilities.maxSubscribeInterfaceAddresses);
+                        j.put("supportedCipherSuites", mCapabilities.supportedCipherSuites);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "onCommand: get_capabilities e=" + e);
+                    }
+                }
+                pw_out.println(j.toString());
+                return 0;
+            }
+        case "allow_ndp_any":
+            {
+                String flag = parentShell.getNextArgRequired();
+                if (mDataPathMgr == null) {
+                    pw_err.println("Null Aware data-path manager - can't configure");
+                    return -1;
+                }
+                if (TextUtils.equals("true", flag)) {
+                    mDataPathMgr.mAllowNdpResponderFromAnyOverride = true;
+                } else if (TextUtils.equals("false", flag)) {
+                    mDataPathMgr.mAllowNdpResponderFromAnyOverride = false;
+                } else {
+                    pw_err.println("Unknown configuration flag for 'allow_ndp_any' - true|false expected" + " -- '" + flag + "'");
+                    return -1;
+                }
+            }
+        default:
+            pw_err.println("Unknown 'wifiaware state_mgr <cmd>'");
+    }
+    return -1;
+}

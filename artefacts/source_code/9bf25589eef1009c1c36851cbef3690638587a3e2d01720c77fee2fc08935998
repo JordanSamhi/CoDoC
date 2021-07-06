@@ -1,0 +1,12 @@
+public static void combineAuthenticatorBundles(Bundle bundle){
+    final boolean deviceCredentialAllowed = bundle.getBoolean(BiometricPrompt.KEY_ALLOW_DEVICE_CREDENTIAL, false);
+    bundle.remove(BiometricPrompt.KEY_ALLOW_DEVICE_CREDENTIAL);
+    @Authenticators.Types
+    final int authenticators;
+    if (bundle.containsKey(BiometricPrompt.KEY_AUTHENTICATORS_ALLOWED)) {
+        authenticators = bundle.getInt(BiometricPrompt.KEY_AUTHENTICATORS_ALLOWED, 0);
+    } else {
+        authenticators = deviceCredentialAllowed ? Authenticators.DEVICE_CREDENTIAL | Authenticators.BIOMETRIC_WEAK : Authenticators.BIOMETRIC_WEAK;
+    }
+    bundle.putInt(BiometricPrompt.KEY_AUTHENTICATORS_ALLOWED, authenticators);
+}

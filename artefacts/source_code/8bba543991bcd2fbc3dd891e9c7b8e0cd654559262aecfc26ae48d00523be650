@@ -1,0 +1,8 @@
+public void refreshEntitlements(int refreshType, @Nullable byte[] refreshData) throws MediaCasException{
+    validateInternalStates();
+    try {
+        MediaCasException.throwExceptionIfNeeded(mICas.refreshEntitlements(refreshType, toByteArray(refreshData)));
+    } catch (RemoteException e) {
+        cleanupAndRethrowIllegalState();
+    }
+}

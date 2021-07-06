@@ -1,0 +1,58 @@
+public void setItemChecked(int position, boolean value){
+    if (mChoiceMode == CHOICE_MODE_NONE) {
+        return;
+    }
+    if (value && mChoiceMode == CHOICE_MODE_MULTIPLE_MODAL && mChoiceActionMode == null) {
+        if (mMultiChoiceModeCallback == null || !mMultiChoiceModeCallback.hasWrappedCallback()) {
+            throw new IllegalStateException("AbsListView: attempted to start selection mode " + "for CHOICE_MODE_MULTIPLE_MODAL but no choice mode callback was " + "supplied. Call setMultiChoiceModeListener to set a callback.");
+        }
+        mChoiceActionMode = startActionMode(mMultiChoiceModeCallback);
+    }
+    final boolean itemCheckChanged;
+    if (mChoiceMode == CHOICE_MODE_MULTIPLE || mChoiceMode == CHOICE_MODE_MULTIPLE_MODAL) {
+        boolean oldValue = mCheckStates.get(position);
+        mCheckStates.put(position, value);
+        if (mCheckedIdStates != null && mAdapter.hasStableIds()) {
+            if (value) {
+                mCheckedIdStates.put(mAdapter.getItemId(position), position);
+            } else {
+                mCheckedIdStates.delete(mAdapter.getItemId(position));
+            }
+        }
+        itemCheckChanged = oldValue != value;
+        if (itemCheckChanged) {
+            if (value) {
+                mCheckedItemCount++;
+            } else {
+                mCheckedItemCount--;
+            }
+        }
+        if (mChoiceActionMode != null) {
+            final long id = mAdapter.getItemId(position);
+            mMultiChoiceModeCallback.onItemCheckedStateChanged(mChoiceActionMode, position, id, value);
+        }
+    } else {
+        boolean updateIds = mCheckedIdStates != null && mAdapter.hasStableIds();
+        itemCheckChanged = isItemChecked(position) != value;
+        if (value || isItemChecked(position)) {
+            mCheckStates.clear();
+            if (updateIds) {
+                mCheckedIdStates.clear();
+            }
+        }
+        if (value) {
+            mCheckStates.put(position, true);
+            if (updateIds) {
+                mCheckedIdStates.put(mAdapter.getItemId(position), position);
+            }
+            mCheckedItemCount = 1;
+        } else if (mCheckStates.size() == 0 || !mCheckStates.valueAt(0)) {
+            mCheckedItemCount = 0;
+        }
+    }
+    if (!mInLayout && !mBlockLayoutRequests && itemCheckChanged) {
+        mDataChanged = true;
+        rememberSyncState();
+        requestLayout();
+    }
+}

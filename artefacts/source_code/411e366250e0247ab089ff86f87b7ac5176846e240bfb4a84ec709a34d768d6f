@@ -1,0 +1,18 @@
+public boolean register(E callback, Object cookie){
+    synchronized (mCallbacks) {
+        if (mKilled) {
+            return false;
+        }
+        logExcessiveCallbacks();
+        IBinder binder = callback.asBinder();
+        try {
+            Callback cb = new Callback(callback, cookie);
+            unregister(callback);
+            binder.linkToDeath(cb, 0);
+            mCallbacks.put(binder, cb);
+            return true;
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+}

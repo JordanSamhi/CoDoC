@@ -1,0 +1,9 @@
+public static Intent getNextIntent(Intent originalIntent, int resultCode, Intent data){
+    Intent intent = new Intent(ACTION_NEXT);
+    copyWizardManagerExtras(originalIntent, intent);
+    intent.putExtra(EXTRA_RESULT_CODE, resultCode);
+    if (data != null && data.getExtras() != null) {
+        intent.putExtras(data.getExtras());
+    }
+    return intent;
+}

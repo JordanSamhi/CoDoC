@@ -1,0 +1,4 @@
+public Set<WifiNetworkSuggestion> getAllApprovedNetworkSuggestions(){
+    final String activeScorerPackage = mNetworkScoreManager.getActiveScorerPackage();
+    return mActiveNetworkSuggestionsPerApp.values().stream().filter(e -> e.isApproved(activeScorerPackage)).flatMap(e -> convertToWnsSet(e.extNetworkSuggestions).stream()).collect(Collectors.toSet());
+}

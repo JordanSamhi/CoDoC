@@ -1,0 +1,11 @@
+public synchronized void close(){
+    if (!mIsClosed) {
+        try {
+            mBinder.closeCommissioningSession();
+            lockedCleanup();
+        } catch (DeadObjectException x) {
+        } catch (RemoteException x) {
+            throw x.rethrowAsRuntimeException();
+        }
+    }
+}

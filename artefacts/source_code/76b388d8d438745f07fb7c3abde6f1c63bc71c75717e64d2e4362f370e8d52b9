@@ -1,0 +1,22 @@
+public void writeRestoreTokens(){
+    try (RandomAccessFile af = new RandomAccessFile(mTokenFile, "rwd")) {
+        af.writeInt(CURRENT_ANCESTRAL_RECORD_VERSION);
+        af.writeLong(mAncestralToken);
+        af.writeLong(mCurrentToken);
+        if (mAncestralPackages == null) {
+            af.writeInt(-1);
+        } else {
+            af.writeInt(mAncestralPackages.size());
+            if (DEBUG) {
+                Slog.v(TAG, addUserIdToLogMessage(mUserId, "Ancestral packages:  " + mAncestralPackages.size()));
+            }
+            for (String pkgName : mAncestralPackages) {
+                af.writeUTF(pkgName);
+                if (MORE_DEBUG)
+                    Slog.v(TAG, addUserIdToLogMessage(mUserId, "   " + pkgName));
+            }
+        }
+    } catch (IOException e) {
+        Slog.w(TAG, addUserIdToLogMessage(mUserId, "Unable to write token file:"), e);
+    }
+}

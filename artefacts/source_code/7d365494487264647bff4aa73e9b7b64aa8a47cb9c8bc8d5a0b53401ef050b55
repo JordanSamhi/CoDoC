@@ -1,0 +1,20 @@
+public void setRouteVolume(@NonNull MediaRoute2Info route, int volume){
+    Objects.requireNonNull(route, "route must not be null");
+    if (route.getVolumeHandling() == MediaRoute2Info.PLAYBACK_VOLUME_FIXED) {
+        Log.w(TAG, "setRouteVolume: the route has fixed volume. Ignoring.");
+        return;
+    }
+    if (volume < 0 || volume > route.getVolumeMax()) {
+        Log.w(TAG, "setRouteVolume: the target volume is out of range. Ignoring");
+        return;
+    }
+    Client client = getOrCreateClient();
+    if (client != null) {
+        try {
+            int requestId = mNextRequestId.getAndIncrement();
+            mMediaRouterService.setRouteVolumeWithManager(client, requestId, route, volume);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Unable to set route volume.", ex);
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public void closeWrite(@NonNull FileOutputStream destination){
+    final int indexOfValue = mOpenFiles.indexOfValue(destination);
+    if (indexOfValue < 0) {
+        throw new IllegalArgumentException("Unknown file stream " + destination);
+    }
+    mOpenFiles.removeAt(indexOfValue);
+    FileUtils.sync(destination);
+    FileUtils.closeQuietly(destination);
+}

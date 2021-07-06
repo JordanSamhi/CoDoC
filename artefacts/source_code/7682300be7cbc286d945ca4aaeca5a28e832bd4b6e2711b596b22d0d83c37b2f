@@ -1,0 +1,45 @@
+public static SparseArray<int[]> parseDppChannelList(String channelList){
+    SparseArray<int[]> channelListArray = new SparseArray<>();
+    if (TextUtils.isEmpty(channelList)) {
+        return channelListArray;
+    }
+    StringTokenizer str = new StringTokenizer(channelList, ",");
+    String classStr = null;
+    List<Integer> channelsInClass = new ArrayList<>();
+    try {
+        while (str.hasMoreElements()) {
+            String cur = str.nextToken();
+            int classDelim = cur.indexOf('/');
+            if (classDelim != -1) {
+                if (classStr != null) {
+                    int[] channelsArray = new int[channelsInClass.size()];
+                    for (int i = 0; i < channelsInClass.size(); i++) {
+                        channelsArray[i] = channelsInClass.get(i);
+                    }
+                    channelListArray.append(Integer.parseInt(classStr), channelsArray);
+                    channelsInClass = new ArrayList<>();
+                }
+                classStr = cur.substring(0, classDelim);
+                String channelStr = cur.substring(classDelim + 1);
+                channelsInClass.add(Integer.parseInt(channelStr));
+            } else {
+                if (classStr == null) {
+                    Log.e(TAG, "Cannot parse DPP channel list");
+                    return new SparseArray<>();
+                }
+                channelsInClass.add(Integer.parseInt(cur));
+            }
+        }
+        if (classStr != null) {
+            int[] channelsArray = new int[channelsInClass.size()];
+            for (int i = 0; i < channelsInClass.size(); i++) {
+                channelsArray[i] = channelsInClass.get(i);
+            }
+            channelListArray.append(Integer.parseInt(classStr), channelsArray);
+        }
+        return channelListArray;
+    } catch (NumberFormatException e) {
+        Log.e(TAG, "Cannot parse DPP channel list");
+        return new SparseArray<>();
+    }
+}

@@ -1,0 +1,9 @@
+public void crash(String message){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.REBOOT, null);
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        crashInternal(message);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

@@ -1,0 +1,13 @@
+public void addWifiLockAcqSession(int lockType, long duration){
+    switch(lockType) {
+        case WifiManager.WIFI_MODE_FULL_HIGH_PERF:
+            mWifiLockHighPerfAcqDurationSecHistogram.increment((int) (duration / 1000));
+            break;
+        case WifiManager.WIFI_MODE_FULL_LOW_LATENCY:
+            mWifiLockLowLatencyAcqDurationSecHistogram.increment((int) (duration / 1000));
+            break;
+        default:
+            Log.e(TAG, "addWifiLockAcqSession: Invalid lock type: " + lockType);
+            break;
+    }
+}

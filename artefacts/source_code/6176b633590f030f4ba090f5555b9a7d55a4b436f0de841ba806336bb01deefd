@@ -1,0 +1,9 @@
+public NetworkStatsCollection getOrLoadCompleteLocked(){
+    Objects.requireNonNull(mRotator, "missing FileRotator");
+    NetworkStatsCollection res = mComplete != null ? mComplete.get() : null;
+    if (res == null) {
+        res = loadLocked(Long.MIN_VALUE, Long.MAX_VALUE);
+        mComplete = new WeakReference<NetworkStatsCollection>(res);
+    }
+    return res;
+}

@@ -1,0 +1,20 @@
+public void dumpDebug(ProtoOutputStream proto, long fieldId, @WindowTraceLogLevel int logLevel){
+    boolean isVisible = isVisible();
+    if (logLevel == WindowTraceLogLevel.CRITICAL && !isVisible) {
+        return;
+    }
+    final long token = proto.start(fieldId);
+    super.dumpDebug(proto, CONFIGURATION_CONTAINER, logLevel);
+    proto.write(ORIENTATION, mOrientation);
+    proto.write(VISIBLE, isVisible);
+    if (mSurfaceAnimator.isAnimating()) {
+        mSurfaceAnimator.dumpDebug(proto, SURFACE_ANIMATOR);
+    }
+    for (int i = 0; i < getChildCount(); i++) {
+        final long childToken = proto.start(WindowContainerProto.CHILDREN);
+        final E child = getChildAt(i);
+        child.dumpDebug(proto, child.getProtoFieldId(), logLevel);
+        proto.end(childToken);
+    }
+    proto.end(token);
+}

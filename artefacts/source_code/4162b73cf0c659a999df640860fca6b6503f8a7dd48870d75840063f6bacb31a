@@ -1,0 +1,36 @@
+public void updateMonitoring(boolean allow){
+    if (mHideFromAppOps) {
+        return;
+    }
+    boolean requestingLocation = false;
+    boolean requestingHighPowerLocation = false;
+    if (allow) {
+        for (UpdateRecord updateRecord : mUpdateRecords.values()) {
+            LocationProviderManager manager = getLocationProviderManager(updateRecord.mProvider);
+            if (manager == null) {
+                continue;
+            }
+            if (!manager.isEnabled(UserHandle.getUserId(mCallerIdentity.uid)) && !isSettingsExempt(updateRecord)) {
+                continue;
+            }
+            requestingLocation = true;
+            ProviderProperties properties = manager.getProperties();
+            if (properties != null && properties.mPowerRequirement == Criteria.POWER_HIGH && updateRecord.mRequest.getInterval() < HIGH_POWER_INTERVAL_MS) {
+                requestingHighPowerLocation = true;
+                break;
+            }
+        }
+    }
+    mOpMonitoring = updateMonitoring(requestingLocation, mOpMonitoring, false);
+    boolean wasHighPowerMonitoring = mOpHighPowerMonitoring;
+    mOpHighPowerMonitoring = updateMonitoring(requestingHighPowerLocation, mOpHighPowerMonitoring, true);
+    if (mOpHighPowerMonitoring != wasHighPowerMonitoring) {
+        long identity = Binder.clearCallingIdentity();
+        try {
+            Intent intent = new Intent(LocationManager.HIGH_POWER_REQUEST_CHANGE_ACTION);
+            mContext.sendBroadcastAsUser(intent, UserHandle.ALL);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+}

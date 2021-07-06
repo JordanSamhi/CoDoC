@@ -1,0 +1,21 @@
+public void selectRoute(@NonNull RoutingSessionInfo sessionInfo, @NonNull MediaRoute2Info route){
+    Objects.requireNonNull(sessionInfo, "sessionInfo must not be null");
+    Objects.requireNonNull(route, "route must not be null");
+    if (sessionInfo.getSelectedRoutes().contains(route.getId())) {
+        Log.w(TAG, "Ignoring selecting a route that is already selected. route=" + route);
+        return;
+    }
+    if (!sessionInfo.getSelectableRoutes().contains(route.getId())) {
+        Log.w(TAG, "Ignoring selecting a non-selectable route=" + route);
+        return;
+    }
+    Client client = getOrCreateClient();
+    if (client != null) {
+        try {
+            int requestId = mNextRequestId.getAndIncrement();
+            mMediaRouterService.selectRouteWithManager(client, requestId, sessionInfo.getId(), route);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "selectRoute: Failed to send a request.", ex);
+        }
+    }
+}

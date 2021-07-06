@@ -1,0 +1,14 @@
+public boolean getSyncAutomaticallyAsUser(Account account, String providerName, int userId){
+    enforceCrossUserPermission(userId, "no permission to read the sync settings for user " + userId);
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS, "no permission to read the sync settings");
+    long identityToken = clearCallingIdentity();
+    try {
+        SyncManager syncManager = getSyncManager();
+        if (syncManager != null) {
+            return syncManager.getSyncStorageEngine().getSyncAutomatically(account, userId, providerName);
+        }
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+    return false;
+}

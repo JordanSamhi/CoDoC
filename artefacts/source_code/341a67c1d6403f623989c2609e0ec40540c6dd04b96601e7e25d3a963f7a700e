@@ -1,0 +1,34 @@
+public int getCdmaLevel(){
+    final int cdmaDbm = getCdmaDbm();
+    final int cdmaEcio = getCdmaEcio();
+    int levelDbm;
+    int levelEcio;
+    if (cdmaDbm == CellInfo.UNAVAILABLE)
+        levelDbm = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+    else if (cdmaDbm >= -75)
+        levelDbm = SIGNAL_STRENGTH_GREAT;
+    else if (cdmaDbm >= -85)
+        levelDbm = SIGNAL_STRENGTH_GOOD;
+    else if (cdmaDbm >= -95)
+        levelDbm = SIGNAL_STRENGTH_MODERATE;
+    else if (cdmaDbm >= -100)
+        levelDbm = SIGNAL_STRENGTH_POOR;
+    else
+        levelDbm = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+    if (cdmaEcio == CellInfo.UNAVAILABLE)
+        levelEcio = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+    else if (cdmaEcio >= -90)
+        levelEcio = SIGNAL_STRENGTH_GREAT;
+    else if (cdmaEcio >= -110)
+        levelEcio = SIGNAL_STRENGTH_GOOD;
+    else if (cdmaEcio >= -130)
+        levelEcio = SIGNAL_STRENGTH_MODERATE;
+    else if (cdmaEcio >= -150)
+        levelEcio = SIGNAL_STRENGTH_POOR;
+    else
+        levelEcio = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+    int level = (levelDbm < levelEcio) ? levelDbm : levelEcio;
+    if (DBG)
+        log("getCdmaLevel=" + level);
+    return level;
+}

@@ -1,0 +1,40 @@
+public int write(byte[] data) throws RemoteException{
+    enforceUid(Binder.getCallingUid());
+    long maxBlockSize = doGetMaximumDataBlockSize();
+    if (data.length > maxBlockSize) {
+        return (int) -maxBlockSize;
+    }
+    DataOutputStream outputStream;
+    try {
+        outputStream = new DataOutputStream(new FileOutputStream(new File(mDataBlockFile)));
+    } catch (FileNotFoundException e) {
+        Slog.e(TAG, "partition not available?", e);
+        return -1;
+    }
+    ByteBuffer headerAndData = ByteBuffer.allocate(data.length + HEADER_SIZE);
+    headerAndData.putInt(PARTITION_TYPE_MARKER);
+    headerAndData.putInt(data.length);
+    headerAndData.put(data);
+    synchronized (mLock) {
+        if (!mIsWritable) {
+            IoUtils.closeQuietly(outputStream);
+            return -1;
+        }
+        try {
+            byte[] checksum = new byte[DIGEST_SIZE_BYTES];
+            outputStream.write(checksum, 0, DIGEST_SIZE_BYTES);
+            outputStream.write(headerAndData.array());
+            outputStream.flush();
+        } catch (IOException e) {
+            Slog.e(TAG, "failed writing to the persistent data block", e);
+            return -1;
+        } finally {
+            IoUtils.closeQuietly(outputStream);
+        }
+        if (computeAndWriteDigestLocked()) {
+            return data.length;
+        } else {
+            return -1;
+        }
+    }
+}

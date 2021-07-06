@@ -1,0 +1,16 @@
+public boolean startDiscovery(){
+    if (getState() != STATE_ON) {
+        return false;
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.startDiscovery(getOpPackageName(), getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return false;
+}

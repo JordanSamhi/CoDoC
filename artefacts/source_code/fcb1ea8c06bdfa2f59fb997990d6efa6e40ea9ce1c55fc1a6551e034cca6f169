@@ -1,0 +1,12 @@
+public int getPartitionForPosition(int position){
+    ensureCacheValid();
+    int start = 0;
+    for (int i = 0, n = mPartitions.size(); i < n; i++) {
+        int end = start + mPartitions.get(i).count;
+        if (position >= start && position < end) {
+            return i;
+        }
+        start = end;
+    }
+    return -1;
+}

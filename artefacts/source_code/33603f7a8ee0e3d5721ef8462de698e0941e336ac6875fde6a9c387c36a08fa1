@@ -1,0 +1,24 @@
+public String toString(){
+    StringBuilder out = new StringBuilder("[OperationScheduler:");
+    TreeMap<String, Object> copy = new TreeMap<String, Object>(mStorage.getAll());
+    for (Map.Entry<String, Object> e : copy.entrySet()) {
+        String key = e.getKey();
+        if (key.startsWith(PREFIX)) {
+            if (key.endsWith("TimeMillis")) {
+                Time time = new Time();
+                time.set((Long) e.getValue());
+                out.append(" ").append(key.substring(PREFIX.length(), key.length() - 10));
+                out.append("=").append(time.format("%Y-%m-%d/%H:%M:%S"));
+            } else {
+                out.append(" ").append(key.substring(PREFIX.length()));
+                Object v = e.getValue();
+                if (v == null) {
+                    out.append("=(null)");
+                } else {
+                    out.append("=").append(v.toString());
+                }
+            }
+        }
+    }
+    return out.append("]").toString();
+}

@@ -1,0 +1,22 @@
+public static void writeTexture(ETC1Texture texture, OutputStream output) throws IOException{
+    ByteBuffer dataBuffer = texture.getData();
+    int originalPosition = dataBuffer.position();
+    try {
+        int width = texture.getWidth();
+        int height = texture.getHeight();
+        ByteBuffer header = ByteBuffer.allocateDirect(ETC1.ETC_PKM_HEADER_SIZE).order(ByteOrder.nativeOrder());
+        ETC1.formatHeader(header, width, height);
+        byte[] ioBuffer = new byte[4096];
+        header.get(ioBuffer, 0, ETC1.ETC_PKM_HEADER_SIZE);
+        output.write(ioBuffer, 0, ETC1.ETC_PKM_HEADER_SIZE);
+        int encodedSize = ETC1.getEncodedDataSize(width, height);
+        for (int i = 0; i < encodedSize; ) {
+            int chunkSize = Math.min(ioBuffer.length, encodedSize - i);
+            dataBuffer.get(ioBuffer, 0, chunkSize);
+            output.write(ioBuffer, 0, chunkSize);
+            i += chunkSize;
+        }
+    } finally {
+        dataBuffer.position(originalPosition);
+    }
+}

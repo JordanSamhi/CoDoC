@@ -1,0 +1,24 @@
+public boolean switchClientInterfaceToScanMode(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final Iface iface = mIfaceMgr.getIface(ifaceName);
+        if (iface == null) {
+            Log.e(TAG, "Trying to switch to scan mode on an invalid iface=" + ifaceName);
+            return false;
+        }
+        if (iface.type == Iface.IFACE_TYPE_STA_FOR_SCAN) {
+            Log.e(TAG, "Already in scan mode on iface=" + ifaceName);
+            return true;
+        }
+        if (!mSupplicantStaIfaceHal.teardownIface(iface.name)) {
+            Log.e(TAG, "Failed to teardown iface in supplicant on " + iface);
+            teardownInterface(iface.name);
+            return false;
+        }
+        iface.type = Iface.IFACE_TYPE_STA_FOR_SCAN;
+        stopSupplicantIfNecessary();
+        iface.featureSet = getSupportedFeatureSetInternal(iface.name);
+        iface.phyCapabilities = null;
+        Log.i(TAG, "Successfully switched to scan mode on iface=" + iface);
+        return true;
+    }
+}

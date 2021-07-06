@@ -1,0 +1,20 @@
+public synchronized void sortTiles(String skipPackageName){
+    Collections.sort(mTiles, (tile1, tile2) -> {
+        final int orderCompare = tile2.getOrder() - tile1.getOrder();
+        if (orderCompare != 0) {
+            return orderCompare;
+        }
+        final String package1 = tile1.getPackageName();
+        final String package2 = tile2.getPackageName();
+        final int packageCompare = CASE_INSENSITIVE_ORDER.compare(package1, package2);
+        if (packageCompare != 0) {
+            if (TextUtils.equals(package1, skipPackageName)) {
+                return -1;
+            }
+            if (TextUtils.equals(package2, skipPackageName)) {
+                return 1;
+            }
+        }
+        return packageCompare;
+    });
+}

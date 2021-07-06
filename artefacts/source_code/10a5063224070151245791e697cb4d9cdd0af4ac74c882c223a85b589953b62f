@@ -1,0 +1,8 @@
+public final long getOpId(){
+    if (mCrypto == null) {
+        return 0;
+    } else if (mCrypto instanceof IdentityCredential) {
+        return ((IdentityCredential) mCrypto).getCredstoreOperationHandle();
+    }
+    return AndroidKeyStoreProvider.getKeyStoreOperationHandle(mCrypto);
+}

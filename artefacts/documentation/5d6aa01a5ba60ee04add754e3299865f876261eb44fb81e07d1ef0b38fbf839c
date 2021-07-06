@@ -1,0 +1,23 @@
+
+     * Ask that a new activity be started for voice interaction.  This will create a
+     * new dedicated task in the activity manager for this voice interaction session;
+     * this means that {@link Intent#FLAG_ACTIVITY_NEW_TASK Intent.FLAG_ACTIVITY_NEW_TASK}
+     * will be set for you to make it a new task.
+     *
+     * <p>The newly started activity will be displayed to the user in a special way, as
+     * a layer under the voice interaction UI.</p>
+     *
+     * <p>As the voice activity runs, it can retrieve a {@link android.app.VoiceInteractor}
+     * through which it can perform voice interactions through your session.  These requests
+     * for voice interactions will appear as callbacks on {@link #onGetSupportedCommands},
+     * {@link #onRequestConfirmation}, {@link #onRequestPickOption},
+     * {@link #onRequestCompleteVoice}, {@link #onRequestAbortVoice},
+     * or {@link #onRequestCommand}
+     *
+     * <p>You will receive a call to {@link #onTaskStarted} when the task starts up
+     * and {@link #onTaskFinished} when the last activity has finished.
+     *
+     * @param intent The Intent to start this voice interaction.  The given Intent will
+     * always have {@link Intent#CATEGORY_VOICE Intent.CATEGORY_VOICE} added to it, since
+     * this is part of a voice interaction.
+     

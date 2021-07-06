@@ -1,0 +1,9 @@
+public boolean[] deviceHasKeys(int id, int[] keyCodes){
+    boolean[] ret = new boolean[keyCodes.length];
+    try {
+        mIm.hasKeys(id, InputDevice.SOURCE_ANY, keyCodes, ret);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return ret;
+}

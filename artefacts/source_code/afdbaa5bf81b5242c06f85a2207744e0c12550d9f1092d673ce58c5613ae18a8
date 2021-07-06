@@ -1,0 +1,22 @@
+public WlanWakeReasonAndCounts getWlanWakeReasonCount(){
+    class AnswerBox {
+
+        public WifiDebugHostWakeReasonStats value = null;
+    }
+    AnswerBox ans = new AnswerBox();
+    synchronized (sLock) {
+        if (mIWifiChip == null)
+            return null;
+        try {
+            mIWifiChip.getDebugHostWakeReasonStats((status, stats) -> {
+                if (ok(status)) {
+                    ans.value = stats;
+                }
+            });
+            return halToFrameworkWakeReasons(ans.value);
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return null;
+        }
+    }
+}

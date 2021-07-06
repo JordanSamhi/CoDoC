@@ -1,0 +1,12 @@
+public void notifyAccessibilityButtonClicked(int displayId, String targetName){
+    if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.STATUS_BAR_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+        throw new SecurityException("Caller does not hold permission " + android.Manifest.permission.STATUS_BAR_SERVICE);
+    }
+    if (targetName == null) {
+        synchronized (mLock) {
+            final AccessibilityUserState userState = getCurrentUserStateLocked();
+            targetName = userState.getTargetAssignedToAccessibilityButton();
+        }
+    }
+    mMainHandler.sendMessage(obtainMessage(AccessibilityManagerService::performAccessibilityShortcutInternal, this, displayId, ACCESSIBILITY_BUTTON, targetName));
+}

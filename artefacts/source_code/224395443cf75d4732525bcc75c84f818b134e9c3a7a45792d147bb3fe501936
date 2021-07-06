@@ -1,0 +1,24 @@
+public void addVibratorStateListener(@NonNull @CallbackExecutor Executor executor, @NonNull OnVibratorStateChangedListener listener){
+    Objects.requireNonNull(listener);
+    Objects.requireNonNull(executor);
+    if (mService == null) {
+        Log.w(TAG, "Failed to add vibrate state listener; no vibrator service.");
+        return;
+    }
+    synchronized (mDelegates) {
+        if (mDelegates.containsKey(listener)) {
+            Log.w(TAG, "Listener already registered.");
+            return;
+        }
+        try {
+            final OnVibratorStateChangedListenerDelegate delegate = new OnVibratorStateChangedListenerDelegate(listener, executor);
+            if (!mService.registerVibratorStateListener(delegate)) {
+                Log.w(TAG, "Failed to register vibrate state listener");
+                return;
+            }
+            mDelegates.put(listener, delegate);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

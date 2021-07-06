@@ -1,0 +1,65 @@
+public static void imageCopy(Image src, Image dst){
+    if (src == null || dst == null) {
+        throw new IllegalArgumentException("Images should be non-null");
+    }
+    if (src.getFormat() != dst.getFormat()) {
+        throw new IllegalArgumentException("Src and dst images should have the same format");
+    }
+    if (src.getFormat() == ImageFormat.PRIVATE || dst.getFormat() == ImageFormat.PRIVATE) {
+        throw new IllegalArgumentException("PRIVATE format images are not copyable");
+    }
+    if (src.getFormat() == ImageFormat.RAW_PRIVATE) {
+        throw new IllegalArgumentException("Copy of RAW_OPAQUE format has not been implemented");
+    }
+    if (src.getFormat() == ImageFormat.RAW_DEPTH) {
+        throw new IllegalArgumentException("Copy of RAW_DEPTH format has not been implemented");
+    }
+    if (!(dst.getOwner() instanceof ImageWriter)) {
+        throw new IllegalArgumentException("Destination image is not from ImageWriter. Only" + " the images from ImageWriter are writable");
+    }
+    Size srcSize = new Size(src.getWidth(), src.getHeight());
+    Size dstSize = new Size(dst.getWidth(), dst.getHeight());
+    if (!srcSize.equals(dstSize)) {
+        throw new IllegalArgumentException("source image size " + srcSize + " is different" + " with " + "destination image size " + dstSize);
+    }
+    Plane[] srcPlanes = src.getPlanes();
+    Plane[] dstPlanes = dst.getPlanes();
+    ByteBuffer srcBuffer = null;
+    ByteBuffer dstBuffer = null;
+    for (int i = 0; i < srcPlanes.length; i++) {
+        int srcRowStride = srcPlanes[i].getRowStride();
+        int dstRowStride = dstPlanes[i].getRowStride();
+        srcBuffer = srcPlanes[i].getBuffer();
+        dstBuffer = dstPlanes[i].getBuffer();
+        if (!(srcBuffer.isDirect() && dstBuffer.isDirect())) {
+            throw new IllegalArgumentException("Source and destination ByteBuffers must be" + " direct byteBuffer!");
+        }
+        if (srcPlanes[i].getPixelStride() != dstPlanes[i].getPixelStride()) {
+            throw new IllegalArgumentException("Source plane image pixel stride " + srcPlanes[i].getPixelStride() + " must be same as destination image pixel stride " + dstPlanes[i].getPixelStride());
+        }
+        int srcPos = srcBuffer.position();
+        srcBuffer.rewind();
+        dstBuffer.rewind();
+        if (srcRowStride == dstRowStride) {
+            dstBuffer.put(srcBuffer);
+        } else {
+            int srcOffset = srcBuffer.position();
+            int dstOffset = dstBuffer.position();
+            Size effectivePlaneSize = getEffectivePlaneSizeForImage(src, i);
+            int srcByteCount = effectivePlaneSize.getWidth() * srcPlanes[i].getPixelStride();
+            for (int row = 0; row < effectivePlaneSize.getHeight(); row++) {
+                if (row == effectivePlaneSize.getHeight() - 1) {
+                    int remainingBytes = srcBuffer.remaining() - srcOffset;
+                    if (srcByteCount > remainingBytes) {
+                        srcByteCount = remainingBytes;
+                    }
+                }
+                directByteBufferCopy(srcBuffer, srcOffset, dstBuffer, dstOffset, srcByteCount);
+                srcOffset += srcRowStride;
+                dstOffset += dstRowStride;
+            }
+        }
+        srcBuffer.position(srcPos);
+        dstBuffer.rewind();
+    }
+}

@@ -1,0 +1,14 @@
+public boolean setWifiConnectedNetworkScorer(@NonNull @CallbackExecutor Executor executor, @NonNull WifiConnectedNetworkScorer scorer){
+    if (executor == null)
+        throw new IllegalArgumentException("executor cannot be null");
+    if (scorer == null)
+        throw new IllegalArgumentException("scorer cannot be null");
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "setWifiConnectedNetworkScorer: scorer=" + scorer);
+    }
+    try {
+        return mService.setWifiConnectedNetworkScorer(new Binder(), new WifiConnectedNetworkScorerProxy(executor, scorer));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

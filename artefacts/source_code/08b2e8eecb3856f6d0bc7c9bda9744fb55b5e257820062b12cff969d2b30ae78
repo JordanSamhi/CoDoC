@@ -1,0 +1,13 @@
+public PersistableBundle getConfigByComponentForSubId(@NonNull String prefix, int subId){
+    PersistableBundle configs = getConfigForSubId(subId);
+    if (configs == null) {
+        return null;
+    }
+    PersistableBundle ret = new PersistableBundle();
+    for (String configKey : configs.keySet()) {
+        if (configKey.startsWith(prefix)) {
+            addConfig(configKey, configs.get(configKey), ret);
+        }
+    }
+    return ret;
+}

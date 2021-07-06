@@ -1,0 +1,13 @@
+public void close(){
+    if (mSession != null) {
+        try {
+            mSession.close();
+        } catch (RemoteException e) {
+            Log.w(TAG, e);
+        }
+    }
+    mSession = null;
+    if (mCloseGuard != null) {
+        mCloseGuard.close();
+    }
+}

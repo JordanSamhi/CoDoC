@@ -1,0 +1,14 @@
+public List<DownloadRequest> listPendingDownloads(){
+    IMbmsDownloadService downloadService = mService.get();
+    if (downloadService == null) {
+        throw new IllegalStateException("Middleware not yet bound");
+    }
+    try {
+        return downloadService.listPendingDownloads(mSubscriptionId);
+    } catch (RemoteException e) {
+        mService.set(null);
+        sIsInitialized.set(false);
+        sendErrorToApp(MbmsErrors.ERROR_MIDDLEWARE_LOST, null);
+        return Collections.emptyList();
+    }
+}

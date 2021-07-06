@@ -1,0 +1,37 @@
+public void updateLevel(PersistableBundle cc, ServiceState ss){
+    String calcMethod;
+    int[] rscpThresholds;
+    if (cc == null) {
+        calcMethod = DEFAULT_LEVEL_CALCULATION_METHOD;
+        rscpThresholds = sRscpThresholds;
+    } else {
+        calcMethod = cc.getString(CarrierConfigManager.KEY_WCDMA_DEFAULT_SIGNAL_STRENGTH_MEASUREMENT_STRING, DEFAULT_LEVEL_CALCULATION_METHOD);
+        if (TextUtils.isEmpty(calcMethod))
+            calcMethod = DEFAULT_LEVEL_CALCULATION_METHOD;
+        rscpThresholds = cc.getIntArray(CarrierConfigManager.KEY_WCDMA_RSCP_THRESHOLDS_INT_ARRAY);
+        if (rscpThresholds == null || rscpThresholds.length != NUM_SIGNAL_STRENGTH_THRESHOLDS) {
+            rscpThresholds = sRscpThresholds;
+        }
+    }
+    int level = NUM_SIGNAL_STRENGTH_THRESHOLDS;
+    switch(calcMethod) {
+        case LEVEL_CALCULATION_METHOD_RSCP:
+            if (mRscp < WCDMA_RSCP_MIN || mRscp > WCDMA_RSCP_MAX) {
+                mLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+                return;
+            }
+            while (level > 0 && mRscp < rscpThresholds[level - 1]) level--;
+            mLevel = level;
+            return;
+        default:
+            loge("Invalid Level Calculation Method for CellSignalStrengthWcdma = " + calcMethod);
+        case LEVEL_CALCULATION_METHOD_RSSI:
+            if (mRssi < WCDMA_RSSI_MIN || mRssi > WCDMA_RSSI_MAX) {
+                mLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;
+                return;
+            }
+            while (level > 0 && mRssi < sRssiThresholds[level - 1]) level--;
+            mLevel = level;
+            return;
+    }
+}

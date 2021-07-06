@@ -1,0 +1,13 @@
+public static void startNativeTracing(){
+    PrintWriter outStream = null;
+    try {
+        FileOutputStream fos = new FileOutputStream(SYSFS_QEMU_TRACE_STATE);
+        outStream = new FastPrintWriter(fos);
+        outStream.println("1");
+    } catch (Exception e) {
+    } finally {
+        if (outStream != null)
+            outStream.close();
+    }
+    VMDebug.startEmulatorTracing();
+}

@@ -1,0 +1,24 @@
+public List<NativeScanResult> getScanResults(@NonNull String ifaceName, @ScanResultType int scanType){
+    IWifiScannerImpl scannerImpl = getScannerImpl(ifaceName);
+    if (scannerImpl == null) {
+        Log.e(TAG, "No valid wificond scanner interface handler");
+        return new ArrayList<>();
+    }
+    List<NativeScanResult> results = null;
+    try {
+        if (scanType == SCAN_TYPE_SINGLE_SCAN) {
+            results = Arrays.asList(scannerImpl.getScanResults());
+        } else {
+            results = Arrays.asList(scannerImpl.getPnoScanResults());
+        }
+    } catch (RemoteException e1) {
+        Log.e(TAG, "Failed to create ScanDetail ArrayList");
+    }
+    if (results == null) {
+        results = new ArrayList<>();
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "get " + results.size() + " scan results from wificond");
+    }
+    return results;
+}

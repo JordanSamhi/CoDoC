@@ -1,0 +1,26 @@
+public boolean handleSmsReceivedIntent(Intent intent){
+    if (intent.getAction() != Intents.SMS_DELIVER_ACTION) {
+        Log.wtf(LOG_TAG, "Got intent with incorrect action: " + intent.getAction());
+        return false;
+    }
+    synchronized (mLock) {
+        removeExpiredTokenLocked();
+        String message = extractMessage(intent);
+        if (TextUtils.isEmpty(message)) {
+            return false;
+        }
+        AppRequestInfo info = findAppRequestInfoSmsIntentLocked(message);
+        if (info == null) {
+            return false;
+        }
+        try {
+            Intent fillIn = new Intent().putExtras(intent.getExtras()).putExtra(SmsManager.EXTRA_STATUS, SmsManager.RESULT_STATUS_SUCCESS).putExtra(SmsManager.EXTRA_SMS_MESSAGE, message).putExtra(SmsManager.EXTRA_SIM_SUBSCRIPTION_ID, info.subId).addFlags(Intent.FLAG_RECEIVER_VISIBLE_TO_INSTANT_APPS);
+            info.pendingIntent.send(mContext, 0, fillIn);
+        } catch (PendingIntent.CanceledException e) {
+            removeRequestLocked(info);
+            return false;
+        }
+        removeRequestLocked(info);
+        return true;
+    }
+}

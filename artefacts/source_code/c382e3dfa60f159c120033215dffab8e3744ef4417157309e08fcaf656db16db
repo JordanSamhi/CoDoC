@@ -1,0 +1,9 @@
+public boolean hasEnrolledFingerprints(int userId){
+    if (mService != null)
+        try {
+            return mService.hasEnrolledFingerprints(userId, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    return false;
+}

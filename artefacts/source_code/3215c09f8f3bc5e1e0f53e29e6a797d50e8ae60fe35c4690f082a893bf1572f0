@@ -1,0 +1,18 @@
+public static long readInteger(ByteBuffer payload, ByteOrder byteOrder, int size){
+    if (size < MINIMUM_INTEGER_SIZE || size > MAXIMUM_INTEGER_SIZE) {
+        throw new IllegalArgumentException("Invalid size " + size);
+    }
+    byte[] octets = new byte[size];
+    payload.get(octets);
+    long value = 0;
+    if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        for (int n = octets.length - 1; n >= 0; n--) {
+            value = (value << Byte.SIZE) | (octets[n] & 0xFF);
+        }
+    } else {
+        for (byte octet : octets) {
+            value = (value << Byte.SIZE) | (octet & 0xFF);
+        }
+    }
+    return value;
+}

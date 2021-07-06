@@ -1,0 +1,20 @@
+public static boolean delimitedStringContains(String delimitedString, char delimiter, String item){
+    if (isEmpty(delimitedString) || isEmpty(item)) {
+        return false;
+    }
+    int pos = -1;
+    int length = delimitedString.length();
+    while ((pos = delimitedString.indexOf(item, pos + 1)) != -1) {
+        if (pos > 0 && delimitedString.charAt(pos - 1) != delimiter) {
+            continue;
+        }
+        int expectedDelimiterPos = pos + item.length();
+        if (expectedDelimiterPos == length) {
+            return true;
+        }
+        if (delimitedString.charAt(expectedDelimiterPos) == delimiter) {
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public void setShelfHeight(boolean visible, int height){
+    mHandler.post(() -> {
+        final int shelfHeight = visible ? height : 0;
+        final boolean changed = mPipBoundsHandler.setShelfHeight(visible, shelfHeight);
+        if (changed) {
+            mTouchHandler.onShelfVisibilityChanged(visible, shelfHeight);
+            updateMovementBounds(mPipTaskOrganizer.getLastReportedBounds(), false, false, true, null);
+        }
+    });
+}

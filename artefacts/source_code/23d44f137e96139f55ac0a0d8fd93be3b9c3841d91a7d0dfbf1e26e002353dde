@@ -1,0 +1,13 @@
+public int requestBackup(String[] packages, BackupObserver observer, BackupManagerMonitor monitor, int flags){
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            BackupObserverWrapper observerWrapper = observer == null ? null : new BackupObserverWrapper(mContext, observer);
+            BackupManagerMonitorWrapper monitorWrapper = monitor == null ? null : new BackupManagerMonitorWrapper(monitor);
+            return sService.requestBackup(packages, observerWrapper, monitorWrapper, flags);
+        } catch (RemoteException e) {
+            Log.e(TAG, "requestBackup() couldn't connect");
+        }
+    }
+    return -1;
+}

@@ -1,0 +1,13 @@
+public static final void writeMapXml(Map val, String name, XmlSerializer out, WriteMapCallback callback) throws XmlPullParserException, IOException{
+    if (val == null) {
+        out.startTag(null, "null");
+        out.endTag(null, "null");
+        return;
+    }
+    out.startTag(null, "map");
+    if (name != null) {
+        out.attribute(null, "name", name);
+    }
+    writeMapXml(val, out, callback);
+    out.endTag(null, "map");
+}

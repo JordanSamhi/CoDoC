@@ -1,0 +1,13 @@
+public static SmsMessage createFromPdu(byte[] pdu){
+    SmsMessage msg = new SmsMessage();
+    try {
+        msg.parsePdu(pdu);
+        return msg;
+    } catch (RuntimeException ex) {
+        Rlog.e(LOG_TAG, "SMS PDU parsing failed: ", ex);
+        return null;
+    } catch (OutOfMemoryError e) {
+        Log.e(LOG_TAG, "SMS PDU parsing failed with out of memory: ", e);
+        return null;
+    }
+}

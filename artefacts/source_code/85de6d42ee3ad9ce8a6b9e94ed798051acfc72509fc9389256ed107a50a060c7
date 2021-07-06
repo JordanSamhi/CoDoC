@@ -1,0 +1,19 @@
+public JSONArray dumpBansJson(NotificationManagerService.DumpFilter filter){
+    JSONArray bans = new JSONArray();
+    Map<Integer, String> packageBans = getPackageBans();
+    for (Map.Entry<Integer, String> ban : packageBans.entrySet()) {
+        final int userId = UserHandle.getUserId(ban.getKey());
+        final String packageName = ban.getValue();
+        if (filter == null || filter.matches(packageName)) {
+            JSONObject banJson = new JSONObject();
+            try {
+                banJson.put("userId", userId);
+                banJson.put("packageName", packageName);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            bans.put(banJson);
+        }
+    }
+    return bans;
+}

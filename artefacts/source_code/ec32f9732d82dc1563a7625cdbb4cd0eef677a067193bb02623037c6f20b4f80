@@ -1,0 +1,15 @@
+public boolean start(long periodNanos, boolean wakeOnFifoFull){
+    if (!mEnabled) {
+        throw new IllegalStateException();
+    }
+    if (periodNanos <= 0) {
+        Log.e(TAG, "Invalid periodNanos " + periodNanos + " in batching request, not started");
+        return false;
+    }
+    mStarted = mNative.startBatch(periodNanos, wakeOnFifoFull);
+    if (mStarted) {
+        mPeriodNanos = periodNanos;
+        mWakeOnFifoFull = wakeOnFifoFull;
+    }
+    return mStarted;
+}

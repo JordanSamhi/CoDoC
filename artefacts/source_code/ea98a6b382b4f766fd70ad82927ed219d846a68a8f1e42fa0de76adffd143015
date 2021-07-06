@@ -1,0 +1,64 @@
+public WifiAwareNetworkSpecifier onDataPathRequest(int pubSubId, byte[] mac, int ndpId, byte[] message){
+    if (mDbg) {
+        Log.v(TAG, "onDataPathRequest: pubSubId=" + pubSubId + ", mac=" + String.valueOf(HexEncoding.encode(mac)) + ", ndpId=" + ndpId);
+    }
+    WifiAwareNetworkSpecifier networkSpecifier = null;
+    AwareNetworkRequestInformation nnri = null;
+    for (Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> entry : mNetworkRequestsCache.entrySet()) {
+        if (entry.getValue().pubSubId != 0 && entry.getValue().pubSubId != pubSubId) {
+            continue;
+        }
+        if (entry.getValue().peerDiscoveryMac != null && !Arrays.equals(entry.getValue().peerDiscoveryMac, mac)) {
+            continue;
+        }
+        if (entry.getValue().state != AwareNetworkRequestInformation.STATE_RESPONDER_WAIT_FOR_REQUEST) {
+            continue;
+        }
+        networkSpecifier = entry.getKey();
+        nnri = entry.getValue();
+        break;
+    }
+    Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> nnriE = getNetworkRequestByNdpId(ndpId);
+    if (nnriE != null) {
+        if (VDBG) {
+            Log.v(TAG, "onDataPathRequest: initiator-side indication for " + nnriE.getValue());
+        }
+        NetworkInformationData.ParsedResults peerServerInfo = NetworkInformationData.parseTlv(message);
+        if (peerServerInfo != null) {
+            if (peerServerInfo.port != 0) {
+                nnriE.getValue().peerPort = peerServerInfo.port;
+            }
+            if (peerServerInfo.transportProtocol != -1) {
+                nnriE.getValue().peerTransportProtocol = peerServerInfo.transportProtocol;
+            }
+            if (peerServerInfo.ipv6Override != null) {
+                nnriE.getValue().peerIpv6Override = peerServerInfo.ipv6Override;
+            }
+        }
+        return null;
+    }
+    if (nnri == null) {
+        Log.w(TAG, "onDataPathRequest: can't find a request with specified pubSubId=" + pubSubId + ", mac=" + String.valueOf(HexEncoding.encode(mac)));
+        if (VDBG) {
+            Log.v(TAG, "onDataPathRequest: network request cache = " + mNetworkRequestsCache);
+        }
+        mMgr.respondToDataPathRequest(false, ndpId, "", null, null, null, false);
+        return null;
+    }
+    if (nnri.peerDiscoveryMac == null) {
+        nnri.peerDiscoveryMac = mac;
+    }
+    nnri.interfaceName = selectInterfaceForRequest(nnri);
+    if (nnri.interfaceName == null) {
+        Log.w(TAG, "onDataPathRequest: request " + networkSpecifier + " no interface available");
+        mMgr.respondToDataPathRequest(false, ndpId, "", null, null, null, false);
+        mNetworkRequestsCache.remove(networkSpecifier);
+        mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+        return null;
+    }
+    nnri.state = AwareNetworkRequestInformation.STATE_RESPONDER_WAIT_FOR_RESPOND_RESPONSE;
+    nnri.ndpId = ndpId;
+    nnri.startTimestamp = mClock.getElapsedSinceBootMillis();
+    mMgr.respondToDataPathRequest(true, ndpId, nnri.interfaceName, nnri.networkSpecifier.pmk, nnri.networkSpecifier.passphrase, NetworkInformationData.buildTlv(nnri.networkSpecifier.port, nnri.networkSpecifier.transportProtocol), nnri.networkSpecifier.isOutOfBand());
+    return networkSpecifier;
+}

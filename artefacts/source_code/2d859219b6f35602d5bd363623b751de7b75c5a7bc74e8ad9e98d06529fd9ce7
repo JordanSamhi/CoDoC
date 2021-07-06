@@ -1,0 +1,31 @@
+public void ratchet(@NonNull ServiceState oldSS, @NonNull ServiceState newSS, boolean locationChange){
+    if (locationChange) {
+        mVoiceRatchetEnabled = false;
+        mDataRatchetEnabled = false;
+        return;
+    }
+    if (!isSameRatFamily(oldSS, newSS)) {
+        return;
+    }
+    updateBandwidths(oldSS.getCellBandwidths(), newSS);
+    boolean newUsingCA = oldSS.isUsingCarrierAggregation() || newSS.isUsingCarrierAggregation() || newSS.getCellBandwidths().length > 1;
+    NetworkRegistrationInfo oldCsNri = oldSS.getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_CS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    NetworkRegistrationInfo newCsNri = newSS.getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_CS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    if (mVoiceRatchetEnabled) {
+        int newPsNetworkType = ratchetRat(oldCsNri.getAccessNetworkTechnology(), newCsNri.getAccessNetworkTechnology());
+        newCsNri.setAccessNetworkTechnology(newPsNetworkType);
+        newSS.addNetworkRegistrationInfo(newCsNri);
+    } else if (oldCsNri.getAccessNetworkTechnology() != oldCsNri.getAccessNetworkTechnology()) {
+        mVoiceRatchetEnabled = true;
+    }
+    NetworkRegistrationInfo oldPsNri = oldSS.getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_PS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    NetworkRegistrationInfo newPsNri = newSS.getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_PS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    if (mDataRatchetEnabled) {
+        int newPsNetworkType = ratchetRat(oldPsNri.getAccessNetworkTechnology(), newPsNri.getAccessNetworkTechnology());
+        newPsNri.setAccessNetworkTechnology(newPsNetworkType);
+        newSS.addNetworkRegistrationInfo(newPsNri);
+    } else if (oldPsNri.getAccessNetworkTechnology() != newPsNri.getAccessNetworkTechnology()) {
+        mDataRatchetEnabled = true;
+    }
+    newSS.setIsUsingCarrierAggregation(newUsingCA);
+}

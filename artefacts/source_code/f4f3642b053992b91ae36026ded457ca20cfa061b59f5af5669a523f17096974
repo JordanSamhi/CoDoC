@@ -1,0 +1,9 @@
+public final void setCallerDisplayName(String callerDisplayName, int presentation){
+    checkImmutable();
+    Log.d(this, "setCallerDisplayName %s", callerDisplayName);
+    mCallerDisplayName = callerDisplayName;
+    mCallerDisplayNamePresentation = presentation;
+    for (Listener l : mListeners) {
+        l.onCallerDisplayNameChanged(this, callerDisplayName, presentation);
+    }
+}

@@ -1,0 +1,4 @@
+public EncryptedKvRestoreTask newInstance(Context context, RecoverableKeyStoreSecondaryKeyManager.RecoverableKeyStoreSecondaryKeyManagerProvider recoverableSecondaryKeyManagerProvider, FullRestoreDownloader fullRestoreDownloader, String secondaryKeyAlias, WrappedKeyProto.WrappedKey wrappedTertiaryKey) throws EncryptedRestoreException, NoSuchAlgorithmException, NoSuchPaddingException, KeyException, InvalidAlgorithmParameterException{
+    SecretKey tertiaryKey = RestoreKeyFetcher.unwrapTertiaryKey(recoverableSecondaryKeyManagerProvider, secondaryKeyAlias, wrappedTertiaryKey);
+    return new EncryptedKvRestoreTask(context.getFilesDir(), new ChunkHasher(tertiaryKey), new FullRestoreToFileTask(fullRestoreDownloader), new BackupFileDecryptorTask(tertiaryKey));
+}

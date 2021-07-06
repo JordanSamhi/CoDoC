@@ -1,0 +1,29 @@
+public static CharSequence formatDuration(long millis, int abbrev){
+    final FormatWidth width;
+    switch(abbrev) {
+        case LENGTH_LONG:
+            width = FormatWidth.WIDE;
+            break;
+        case LENGTH_SHORT:
+        case LENGTH_SHORTER:
+        case LENGTH_MEDIUM:
+            width = FormatWidth.SHORT;
+            break;
+        case LENGTH_SHORTEST:
+            width = FormatWidth.NARROW;
+            break;
+        default:
+            width = FormatWidth.WIDE;
+    }
+    final MeasureFormat formatter = MeasureFormat.getInstance(Locale.getDefault(), width);
+    if (millis >= HOUR_IN_MILLIS) {
+        final int hours = (int) ((millis + 1800000) / HOUR_IN_MILLIS);
+        return formatter.format(new Measure(hours, MeasureUnit.HOUR));
+    } else if (millis >= MINUTE_IN_MILLIS) {
+        final int minutes = (int) ((millis + 30000) / MINUTE_IN_MILLIS);
+        return formatter.format(new Measure(minutes, MeasureUnit.MINUTE));
+    } else {
+        final int seconds = (int) ((millis + 500) / SECOND_IN_MILLIS);
+        return formatter.format(new Measure(seconds, MeasureUnit.SECOND));
+    }
+}

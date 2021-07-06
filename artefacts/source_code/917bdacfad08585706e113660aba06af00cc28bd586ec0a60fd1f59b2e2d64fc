@@ -1,0 +1,14 @@
+public void setValue(int key, int index, long value){
+    assertConsistency();
+    if (value < 0) {
+        logOrThrow("can't store negative values" + " key=0x" + Integer.toHexString(key) + " index=" + index + " value=" + value + " -- " + dumpInternalState());
+        return;
+    }
+    try {
+        final long[] array = mParent.mLongs.get(getArrayFromKey(key));
+        array[getIndexFromKey(key) + index] = value;
+    } catch (IndexOutOfBoundsException ex) {
+        logOrThrow("key=0x" + Integer.toHexString(key) + " index=" + index + " value=" + value + " -- " + dumpInternalState(), ex);
+        return;
+    }
+}

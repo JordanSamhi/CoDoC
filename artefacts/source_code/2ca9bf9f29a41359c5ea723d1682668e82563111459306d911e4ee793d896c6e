@@ -1,0 +1,74 @@
+public SoftApConfiguration retrieveSoftApConfigurationFromBackupData(byte[] data){
+    if (data == null || data.length == 0) {
+        Log.e(TAG, "Invalid backup data received");
+        return null;
+    }
+    SoftApConfiguration.Builder configBuilder = new SoftApConfiguration.Builder();
+    try {
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
+        int version = in.readInt();
+        if (version < 1 || version > CURRENT_SAP_BACKUP_DATA_VERSION) {
+            throw new BackupUtils.BadVersionException("Unknown Backup Serialization Version");
+        }
+        if (version == 1)
+            return null;
+        configBuilder.setSsid(BackupUtils.readString(in));
+        int band;
+        if (version < 4) {
+            band = ApConfigUtil.convertWifiConfigBandToSoftApConfigBand(in.readInt());
+        } else {
+            band = in.readInt();
+        }
+        int channel = in.readInt();
+        if (channel == 0) {
+            configBuilder.setBand(band);
+        } else {
+            configBuilder.setChannel(channel, band);
+        }
+        String passphrase = BackupUtils.readString(in);
+        int securityType = in.readInt();
+        if (version < 4 && securityType == WifiConfiguration.KeyMgmt.WPA2_PSK) {
+            configBuilder.setPassphrase(passphrase, SoftApConfiguration.SECURITY_TYPE_WPA2_PSK);
+        } else if (version >= 4 && securityType != SoftApConfiguration.SECURITY_TYPE_OPEN) {
+            configBuilder.setPassphrase(passphrase, securityType);
+        }
+        if (version >= 3) {
+            configBuilder.setHiddenSsid(in.readBoolean());
+        }
+        if (version >= 5) {
+            configBuilder.setMaxNumberOfClients(in.readInt());
+            if (version >= 7) {
+                configBuilder.setShutdownTimeoutMillis(in.readLong());
+            } else {
+                configBuilder.setShutdownTimeoutMillis(Long.valueOf(in.readInt()));
+            }
+            configBuilder.setClientControlByUserEnabled(in.readBoolean());
+            int numberOfBlockedClient = in.readInt();
+            List<MacAddress> blockedList = new ArrayList<>(macAddressListFromByteArray(in, numberOfBlockedClient));
+            int numberOfAllowedClient = in.readInt();
+            List<MacAddress> allowedList = new ArrayList<>(macAddressListFromByteArray(in, numberOfAllowedClient));
+            configBuilder.setBlockedClientList(blockedList);
+            configBuilder.setAllowedClientList(allowedList);
+        }
+        if (version >= 6) {
+            configBuilder.setAutoShutdownEnabled(in.readBoolean());
+        } else {
+            WifiMigration.SettingsMigrationData migrationData = mSettingsMigrationDataHolder.retrieveData();
+            if (migrationData == null) {
+                Log.e(TAG, "No migration data present");
+            } else {
+                configBuilder.setAutoShutdownEnabled(migrationData.isSoftApTimeoutEnabled());
+            }
+        }
+    } catch (IOException io) {
+        Log.e(TAG, "Invalid backup data received, IOException: " + io);
+        return null;
+    } catch (BackupUtils.BadVersionException badVersion) {
+        Log.e(TAG, "Invalid backup data received, BadVersionException: " + badVersion);
+        return null;
+    } catch (IllegalArgumentException ie) {
+        Log.e(TAG, "Invalid backup data received, IllegalArgumentException " + ie);
+        return null;
+    }
+    return configBuilder.build();
+}

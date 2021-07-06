@@ -1,0 +1,7 @@
+public void unregisterTetheringEventCallback(@NonNull final OnTetheringEventCallback callback){
+    Objects.requireNonNull(callback, "The callback must be non-null");
+    synchronized (mTetheringEventCallbacks) {
+        final TetheringEventCallback tetherCallback = mTetheringEventCallbacks.remove(callback);
+        mTetheringManager.unregisterTetheringEventCallback(tetherCallback);
+    }
+}

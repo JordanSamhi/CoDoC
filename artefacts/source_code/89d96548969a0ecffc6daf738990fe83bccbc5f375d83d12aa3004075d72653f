@@ -1,0 +1,12 @@
+public boolean isEmbeddedCardPresent(){
+    UiccSlot[] slots = mUiccController.getUiccSlots();
+    if (slots == null) {
+        return false;
+    }
+    for (UiccSlot slotInfo : slots) {
+        if (slotInfo != null && !slotInfo.isRemovable() && slotInfo.getCardState() != null && slotInfo.getCardState().isCardPresent()) {
+            return true;
+        }
+    }
+    return false;
+}

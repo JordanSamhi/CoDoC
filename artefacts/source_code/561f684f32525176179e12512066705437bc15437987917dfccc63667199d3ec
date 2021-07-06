@@ -1,0 +1,53 @@
+public String getProviderMimeType(Uri uri, int userId){
+    enforceNotIsolatedCaller("getProviderMimeType");
+    final String name = uri.getAuthority();
+    int callingUid = Binder.getCallingUid();
+    int callingPid = Binder.getCallingPid();
+    long ident = 0;
+    boolean clearedIdentity = false;
+    userId = mUserController.unsafeConvertIncomingUser(userId);
+    if (canClearIdentity(callingPid, callingUid, userId)) {
+        clearedIdentity = true;
+        ident = Binder.clearCallingIdentity();
+    }
+    ContentProviderHolder holder = null;
+    try {
+        holder = getContentProviderExternalUnchecked(name, null, callingUid, "*getmimetype*", userId);
+        if (holder != null) {
+            final IBinder providerConnection = holder.connection;
+            final ComponentName providerName = holder.info.getComponentName();
+            final Runnable providerNotResponding = new Runnable() {
+
+                @Override
+                public void run() {
+                    Log.w(TAG, "Provider " + providerName + " didn't return from getType().");
+                    appNotRespondingViaProvider(providerConnection);
+                }
+            };
+            mHandler.postDelayed(providerNotResponding, 1000);
+            try {
+                return holder.provider.getType(uri);
+            } finally {
+                mHandler.removeCallbacks(providerNotResponding);
+            }
+        }
+    } catch (RemoteException e) {
+        Log.w(TAG, "Content provider dead retrieving " + uri, e);
+        return null;
+    } catch (Exception e) {
+        Log.w(TAG, "Exception while determining type of " + uri, e);
+        return null;
+    } finally {
+        if (!clearedIdentity) {
+            ident = Binder.clearCallingIdentity();
+        }
+        try {
+            if (holder != null) {
+                removeContentProviderExternalUnchecked(name, null, userId);
+            }
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+    return null;
+}

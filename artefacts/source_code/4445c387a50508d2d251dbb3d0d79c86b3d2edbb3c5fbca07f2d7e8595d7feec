@@ -1,0 +1,9 @@
+public PreciseDataConnectionState getPreciseDataConnectionState(String apnType, boolean isSuspended, int networkType){
+    int telState = convertDctStateToTelephonyDataState(getState(apnType));
+    if ((telState == TelephonyManager.DATA_CONNECTED || telState == TelephonyManager.DATA_DISCONNECTING) && isSuspended) {
+        telState = TelephonyManager.DATA_SUSPENDED;
+    }
+    ApnSetting apnSetting = getActiveApnSetting(apnType);
+    int apnTypesBitmask = ApnSetting.getApnTypesBitmaskFromString(apnType);
+    return new PreciseDataConnectionState(telState, networkType, apnTypesBitmask, apnType, getLinkProperties(apnType), DataFailCause.NONE, apnSetting);
+}

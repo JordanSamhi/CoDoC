@@ -1,0 +1,22 @@
+public String toString(){
+    final StringBuilder sb = new StringBuilder("Incident(");
+    if (mAll) {
+        sb.append("all");
+    } else {
+        final int N = mSections.size();
+        if (N > 0) {
+            sb.append(mSections.get(0));
+        }
+        for (int i = 1; i < N; i++) {
+            sb.append(" ");
+            sb.append(mSections.get(i));
+        }
+    }
+    sb.append(", ");
+    sb.append(mHeaders.size());
+    sb.append(" headers), ");
+    sb.append("privacy: ").append(mPrivacyPolicy);
+    sb.append("receiver pkg: ").append(mReceiverPkg);
+    sb.append("receiver cls: ").append(mReceiverCls);
+    return sb.toString();
+}

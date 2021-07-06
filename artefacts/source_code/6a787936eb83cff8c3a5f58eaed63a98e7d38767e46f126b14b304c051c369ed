@@ -1,0 +1,16 @@
+public boolean setMeteredOverride(@NonNull String fqdn, @MeteredOverride int meteredOverride){
+    ArrayList<PasspointProvider> passpointProviders = new ArrayList<>(mProviders.values());
+    boolean found = false;
+    for (PasspointProvider provider : passpointProviders) {
+        if (TextUtils.equals(provider.getConfig().getHomeSp().getFqdn(), fqdn)) {
+            if (provider.setMeteredOverride(meteredOverride)) {
+                mWifiMetrics.logUserActionEvent(WifiMetrics.convertMeteredOverrideEnumToUserActionEventType(meteredOverride), provider.isFromSuggestion(), true);
+            }
+            found = true;
+        }
+    }
+    if (found) {
+        mWifiConfigManager.saveToStore(true);
+    }
+    return found;
+}

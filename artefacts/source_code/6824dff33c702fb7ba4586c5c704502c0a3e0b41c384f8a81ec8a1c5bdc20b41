@@ -1,0 +1,44 @@
+public ContentValues getContentValues(){
+    ContentValues cv = new ContentValues(16);
+    cv.put(CellBroadcasts.SLOT_INDEX, mSlotIndex);
+    cv.put(CellBroadcasts.SUBSCRIPTION_ID, mSubId);
+    cv.put(CellBroadcasts.GEOGRAPHICAL_SCOPE, mGeographicalScope);
+    if (mLocation.getPlmn() != null) {
+        cv.put(CellBroadcasts.PLMN, mLocation.getPlmn());
+    }
+    if (mLocation.getLac() != -1) {
+        cv.put(CellBroadcasts.LAC, mLocation.getLac());
+    }
+    if (mLocation.getCid() != -1) {
+        cv.put(CellBroadcasts.CID, mLocation.getCid());
+    }
+    cv.put(CellBroadcasts.SERIAL_NUMBER, getSerialNumber());
+    cv.put(CellBroadcasts.SERVICE_CATEGORY, getServiceCategory());
+    cv.put(CellBroadcasts.LANGUAGE_CODE, getLanguageCode());
+    cv.put(CellBroadcasts.DATA_CODING_SCHEME, getDataCodingScheme());
+    cv.put(CellBroadcasts.MESSAGE_BODY, getMessageBody());
+    cv.put(CellBroadcasts.MESSAGE_FORMAT, getMessageFormat());
+    cv.put(CellBroadcasts.MESSAGE_PRIORITY, getMessagePriority());
+    SmsCbEtwsInfo etwsInfo = getEtwsWarningInfo();
+    if (etwsInfo != null) {
+        cv.put(CellBroadcasts.ETWS_WARNING_TYPE, etwsInfo.getWarningType());
+        cv.put(CellBroadcasts.ETWS_IS_PRIMARY, etwsInfo.isPrimary());
+    }
+    SmsCbCmasInfo cmasInfo = getCmasWarningInfo();
+    if (cmasInfo != null) {
+        cv.put(CellBroadcasts.CMAS_MESSAGE_CLASS, cmasInfo.getMessageClass());
+        cv.put(CellBroadcasts.CMAS_CATEGORY, cmasInfo.getCategory());
+        cv.put(CellBroadcasts.CMAS_RESPONSE_TYPE, cmasInfo.getResponseType());
+        cv.put(CellBroadcasts.CMAS_SEVERITY, cmasInfo.getSeverity());
+        cv.put(CellBroadcasts.CMAS_URGENCY, cmasInfo.getUrgency());
+        cv.put(CellBroadcasts.CMAS_CERTAINTY, cmasInfo.getCertainty());
+    }
+    cv.put(CellBroadcasts.RECEIVED_TIME, mReceivedTimeMillis);
+    if (mGeometries != null) {
+        cv.put(CellBroadcasts.GEOMETRIES, CbGeoUtils.encodeGeometriesToString(mGeometries));
+    } else {
+        cv.put(CellBroadcasts.GEOMETRIES, (String) null);
+    }
+    cv.put(CellBroadcasts.MAXIMUM_WAIT_TIME, mMaximumWaitTimeSec);
+    return cv;
+}

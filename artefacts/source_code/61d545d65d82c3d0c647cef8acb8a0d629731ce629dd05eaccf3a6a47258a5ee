@@ -1,0 +1,8 @@
+public void reinit(@IntRange(from = 0) long noteTime, @IntRange(from = -1) long duration, @Nullable OpEventProxyInfo proxy, @NonNull Pools.Pool<OpEventProxyInfo> proxyPool){
+    mNoteTime = Preconditions.checkArgumentNonnegative(noteTime);
+    mDuration = Preconditions.checkArgumentInRange(duration, -1L, Long.MAX_VALUE, "duration");
+    if (mProxy != null) {
+        proxyPool.release(mProxy);
+    }
+    mProxy = proxy;
+}

@@ -1,0 +1,14 @@
+public static ComponentName getDefaultSimFullApplication(Context context, boolean updateIfNeeded){
+    int userId = getIncomingUserId(context);
+    final long token = Binder.clearCallingIdentity();
+    try {
+        ComponentName component = null;
+        SmsApplicationData smsApplicationData = getApplication(context, updateIfNeeded, userId);
+        if (smsApplicationData != null && smsApplicationData.mSimFullReceiverClass != null) {
+            component = new ComponentName(smsApplicationData.mPackageName, smsApplicationData.mSimFullReceiverClass);
+        }
+        return component;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

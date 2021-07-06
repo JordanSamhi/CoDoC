@@ -1,0 +1,10 @@
+public static String get(String key, String defaultValue){
+    try {
+        final Class<?> systemProperties = Class.forName("android.os.SystemProperties");
+        final Method get = systemProperties.getMethod("get", String.class, String.class);
+        return (String) get.invoke(null, key, defaultValue);
+    } catch (Exception e) {
+        Log.e(TAG, "Exception while getting system property: ", e);
+        return defaultValue;
+    }
+}

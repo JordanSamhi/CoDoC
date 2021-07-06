@@ -1,0 +1,8 @@
+public void testAgentConnected_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    IBinder agentBinder = mock(IBinder.class);
+    backupManagerService.agentConnected(mUserOneId, TEST_PACKAGE, agentBinder);
+    verify(mUserOneService).agentConnected(TEST_PACKAGE, agentBinder);
+}

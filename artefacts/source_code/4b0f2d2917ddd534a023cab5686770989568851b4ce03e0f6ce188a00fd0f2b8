@@ -1,0 +1,10 @@
+public List<PhoneAccountHandle> getSelfManagedPhoneAccounts(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getSelfManagedPhoneAccounts(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getSelfManagedPhoneAccounts()", e);
+    }
+    return new ArrayList<>();
+}

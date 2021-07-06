@@ -1,0 +1,9 @@
+public static boolean hasIpChanged(WifiConfiguration existingConfig, WifiConfiguration newConfig){
+    if (existingConfig.getIpAssignment() != newConfig.getIpAssignment()) {
+        return true;
+    }
+    if (newConfig.getIpAssignment() == IpConfiguration.IpAssignment.STATIC) {
+        return !Objects.equals(existingConfig.getStaticIpConfiguration(), newConfig.getStaticIpConfiguration());
+    }
+    return false;
+}

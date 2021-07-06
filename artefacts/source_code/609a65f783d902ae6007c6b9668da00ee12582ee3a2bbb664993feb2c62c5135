@@ -1,0 +1,13 @@
+public void cleanup(Intent intent){
+    Intent transportIntent = TransportClientManager.getRealTransportIntent(intent);
+    Log.i(TAG, "cleanup: intent:" + intent + " transportIntent:" + transportIntent);
+    IntermediateEncryptingTransport transport;
+    synchronized (mTransportsLock) {
+        transport = mTransports.remove(transportIntent.getComponent());
+    }
+    if (transport != null) {
+        mTransportClientManager.disposeOfTransportClient(transport.getClient(), CALLER);
+    } else {
+        Log.i(TAG, "Could not find IntermediateEncryptingTransport");
+    }
+}

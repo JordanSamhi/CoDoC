@@ -1,0 +1,37 @@
+public void setVoiceCallForwardingFlag(int line, boolean enable, String dialNumber){
+    if (line != 1)
+        return;
+    mCallForwardingStatus = enable ? CALL_FORWARDING_STATUS_ENABLED : CALL_FORWARDING_STATUS_DISABLED;
+    mRecordsEventsRegistrants.notifyResult(EVENT_CFI);
+    try {
+        if (validEfCfis(mEfCfis)) {
+            if (enable) {
+                mEfCfis[1] |= 1;
+            } else {
+                mEfCfis[1] &= 0xfe;
+            }
+            log("setVoiceCallForwardingFlag: enable=" + enable + " mEfCfis=" + IccUtils.bytesToHexString(mEfCfis));
+            if (enable && !TextUtils.isEmpty(dialNumber)) {
+                logv("EF_CFIS: updating cf number, " + Rlog.pii(LOG_TAG, dialNumber));
+                byte[] bcdNumber = PhoneNumberUtils.numberToCalledPartyBCD(dialNumber, PhoneNumberUtils.BCD_EXTENDED_TYPE_EF_ADN);
+                System.arraycopy(bcdNumber, 0, mEfCfis, CFIS_TON_NPI_OFFSET, bcdNumber.length);
+                mEfCfis[CFIS_BCD_NUMBER_LENGTH_OFFSET] = (byte) (bcdNumber.length);
+                mEfCfis[CFIS_ADN_CAPABILITY_ID_OFFSET] = (byte) 0xFF;
+                mEfCfis[CFIS_ADN_EXTENSION_ID_OFFSET] = (byte) 0xFF;
+            }
+            mFh.updateEFLinearFixed(EF_CFIS, 1, mEfCfis, null, obtainMessage(EVENT_UPDATE_DONE, EF_CFIS));
+        } else {
+            log("setVoiceCallForwardingFlag: ignoring enable=" + enable + " invalid mEfCfis=" + IccUtils.bytesToHexString(mEfCfis));
+        }
+        if (mEfCff != null) {
+            if (enable) {
+                mEfCff[0] = (byte) ((mEfCff[0] & CFF_LINE1_RESET) | CFF_UNCONDITIONAL_ACTIVE);
+            } else {
+                mEfCff[0] = (byte) ((mEfCff[0] & CFF_LINE1_RESET) | CFF_UNCONDITIONAL_DEACTIVE);
+            }
+            mFh.updateEFTransparent(EF_CFF_CPHS, mEfCff, obtainMessage(EVENT_UPDATE_DONE, EF_CFF_CPHS));
+        }
+    } catch (ArrayIndexOutOfBoundsException ex) {
+        logw("Error saving call forwarding flag to SIM. " + "Probably malformed SIM record", ex);
+    }
+}

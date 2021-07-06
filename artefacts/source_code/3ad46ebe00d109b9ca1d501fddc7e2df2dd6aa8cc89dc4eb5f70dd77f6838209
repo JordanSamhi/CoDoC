@@ -1,0 +1,14 @@
+public void adjustConfigurationLw(Configuration config, int keyboardPresence, int navigationPresence){
+    mHaveBuiltInKeyboard = (keyboardPresence & PRESENCE_INTERNAL) != 0;
+    readConfigurationDependentBehaviors();
+    readLidState();
+    if (config.keyboard == Configuration.KEYBOARD_NOKEYS || (keyboardPresence == PRESENCE_INTERNAL && isHidden(mLidKeyboardAccessibility))) {
+        config.hardKeyboardHidden = Configuration.HARDKEYBOARDHIDDEN_YES;
+        if (!mHasSoftInput) {
+            config.keyboardHidden = Configuration.KEYBOARDHIDDEN_YES;
+        }
+    }
+    if (config.navigation == Configuration.NAVIGATION_NONAV || (navigationPresence == PRESENCE_INTERNAL && isHidden(mLidNavigationAccessibility))) {
+        config.navigationHidden = Configuration.NAVIGATIONHIDDEN_YES;
+    }
+}

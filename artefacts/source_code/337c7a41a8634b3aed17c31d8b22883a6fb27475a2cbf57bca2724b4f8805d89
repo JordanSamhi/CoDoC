@@ -1,0 +1,14 @@
+public void setRouteVolume(@NonNull MediaRoute2Info route, int volume){
+    Objects.requireNonNull(route, "route must not be null");
+    MediaRouter2Stub stub;
+    synchronized (sRouterLock) {
+        stub = mStub;
+    }
+    if (stub != null) {
+        try {
+            mMediaRouterService.setRouteVolumeWithRouter2(stub, route, volume);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Unable to set route volume.", ex);
+        }
+    }
+}

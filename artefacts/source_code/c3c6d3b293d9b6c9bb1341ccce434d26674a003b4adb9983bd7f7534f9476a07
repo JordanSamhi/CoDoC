@@ -1,0 +1,18 @@
+public void removePip(){
+    if (!mInPip || mExitingPip || mToken == null) {
+        Log.wtf(TAG, "Not allowed to removePip in current state" + " mInPip=" + mInPip + " mExitingPip=" + mExitingPip + " mToken=" + mToken);
+        return;
+    }
+    getUpdateHandler().post(() -> {
+        try {
+            final WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.setBounds(mToken, null);
+            WindowOrganizer.applyTransaction(wct);
+            ActivityTaskManager.getService().removeStacksInWindowingModes(new int[] { WINDOWING_MODE_PINNED });
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to remove PiP", e);
+        }
+    });
+    mInitialState.remove(mToken.asBinder());
+    mExitingPip = true;
+}

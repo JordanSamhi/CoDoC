@@ -1,0 +1,27 @@
+public boolean startBgScan(@NonNull String ifaceName, WifiNative.ScanSettings settings, WifiNative.ScanEventHandler eventHandler){
+    WifiStatus status;
+    if (eventHandler == null)
+        return boolResult(false);
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        try {
+            if (mScan != null && !mScan.paused) {
+                ok(iface.stopBackgroundScan(mScan.cmdId));
+                mScan = null;
+            }
+            mLastScanCmdId = (mLastScanCmdId % 9) + 1;
+            CurrentBackgroundScan scan = new CurrentBackgroundScan(mLastScanCmdId, settings);
+            status = iface.startBackgroundScan(scan.cmdId, scan.param);
+            if (!ok(status))
+                return false;
+            scan.eventHandler = eventHandler;
+            mScan = scan;
+            return true;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+}

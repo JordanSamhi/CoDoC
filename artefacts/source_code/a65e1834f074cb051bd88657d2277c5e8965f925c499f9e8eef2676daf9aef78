@@ -1,0 +1,10 @@
+public void makeDirectory(@NonNull String path) throws IOException{
+    try {
+        int res = mService.makeDirectory(mId, path);
+        if (res < 0) {
+            throw new IOException("makeDirectory() failed with errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

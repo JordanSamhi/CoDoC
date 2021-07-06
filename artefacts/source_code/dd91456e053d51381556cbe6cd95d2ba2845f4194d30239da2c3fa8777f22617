@@ -1,0 +1,123 @@
+public void incrementAvailableNetworksHistograms(List<ScanDetail> scanDetails, boolean isFullBand){
+    synchronized (mLock) {
+        if (mWifiConfigManager == null || mWifiNetworkSelector == null || mPasspointManager == null) {
+            return;
+        }
+        if (!isFullBand) {
+            mWifiLogProto.partialAllSingleScanListenerResults++;
+            return;
+        }
+        Set<ScanResultMatchInfo> ssids = new HashSet<ScanResultMatchInfo>();
+        int bssids = 0;
+        Set<ScanResultMatchInfo> openSsids = new HashSet<ScanResultMatchInfo>();
+        int openBssids = 0;
+        Set<ScanResultMatchInfo> savedSsids = new HashSet<ScanResultMatchInfo>();
+        int savedBssids = 0;
+        int openOrSavedBssids = 0;
+        Set<PasspointProvider> savedPasspointProviderProfiles = new HashSet<PasspointProvider>();
+        int savedPasspointProviderBssids = 0;
+        int passpointR1Aps = 0;
+        int passpointR2Aps = 0;
+        int passpointR3Aps = 0;
+        Map<ANQPNetworkKey, Integer> passpointR1UniqueEss = new HashMap<>();
+        Map<ANQPNetworkKey, Integer> passpointR2UniqueEss = new HashMap<>();
+        Map<ANQPNetworkKey, Integer> passpointR3UniqueEss = new HashMap<>();
+        int supporting80211mcAps = 0;
+        for (ScanDetail scanDetail : scanDetails) {
+            NetworkDetail networkDetail = scanDetail.getNetworkDetail();
+            ScanResult scanResult = scanDetail.getScanResult();
+            if (networkDetail.is80211McResponderSupport()) {
+                supporting80211mcAps++;
+            }
+            ScanResultMatchInfo matchInfo = ScanResultMatchInfo.fromScanResult(scanResult);
+            List<Pair<PasspointProvider, PasspointMatch>> matchedProviders = null;
+            if (networkDetail.isInterworking()) {
+                matchedProviders = mPasspointManager.matchProvider(scanResult, false);
+                if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R1) {
+                    passpointR1Aps++;
+                } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R2) {
+                    passpointR2Aps++;
+                } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R3) {
+                    passpointR3Aps++;
+                }
+                long bssid = 0;
+                boolean validBssid = false;
+                try {
+                    bssid = Utils.parseMac(scanResult.BSSID);
+                    validBssid = true;
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Invalid BSSID provided in the scan result: " + scanResult.BSSID);
+                }
+                if (validBssid) {
+                    ANQPNetworkKey uniqueEss = ANQPNetworkKey.buildKey(scanResult.SSID, bssid, scanResult.hessid, networkDetail.getAnqpDomainID());
+                    if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R1) {
+                        Integer countObj = passpointR1UniqueEss.get(uniqueEss);
+                        int count = countObj == null ? 0 : countObj;
+                        passpointR1UniqueEss.put(uniqueEss, count + 1);
+                    } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R2) {
+                        Integer countObj = passpointR2UniqueEss.get(uniqueEss);
+                        int count = countObj == null ? 0 : countObj;
+                        passpointR2UniqueEss.put(uniqueEss, count + 1);
+                    } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R3) {
+                        Integer countObj = passpointR3UniqueEss.get(uniqueEss);
+                        int count = countObj == null ? 0 : countObj;
+                        passpointR3UniqueEss.put(uniqueEss, count + 1);
+                    }
+                }
+            }
+            if (mWifiNetworkSelector.isSignalTooWeak(scanResult)) {
+                continue;
+            }
+            ssids.add(matchInfo);
+            bssids++;
+            boolean isOpen = matchInfo.networkType == WifiConfiguration.SECURITY_TYPE_OPEN;
+            WifiConfiguration config = mWifiConfigManager.getConfiguredNetworkForScanDetail(scanDetail);
+            boolean isSaved = (config != null) && !config.isEphemeral() && !config.isPasspoint();
+            if (isOpen) {
+                openSsids.add(matchInfo);
+                openBssids++;
+            }
+            if (isSaved) {
+                savedSsids.add(matchInfo);
+                savedBssids++;
+            }
+            if (isOpen || isSaved) {
+                openOrSavedBssids++;
+            }
+            if (matchedProviders != null && !matchedProviders.isEmpty()) {
+                for (Pair<PasspointProvider, PasspointMatch> passpointProvider : matchedProviders) {
+                    savedPasspointProviderProfiles.add(passpointProvider.first);
+                }
+                savedPasspointProviderBssids++;
+            }
+        }
+        mWifiLogProto.fullBandAllSingleScanListenerResults++;
+        incrementTotalScanSsids(mTotalSsidsInScanHistogram, ssids.size());
+        incrementTotalScanResults(mTotalBssidsInScanHistogram, bssids);
+        incrementSsid(mAvailableOpenSsidsInScanHistogram, openSsids.size());
+        incrementBssid(mAvailableOpenBssidsInScanHistogram, openBssids);
+        incrementSsid(mAvailableSavedSsidsInScanHistogram, savedSsids.size());
+        incrementBssid(mAvailableSavedBssidsInScanHistogram, savedBssids);
+        openSsids.addAll(savedSsids);
+        incrementSsid(mAvailableOpenOrSavedSsidsInScanHistogram, openSsids.size());
+        incrementBssid(mAvailableOpenOrSavedBssidsInScanHistogram, openOrSavedBssids);
+        incrementSsid(mAvailableSavedPasspointProviderProfilesInScanHistogram, savedPasspointProviderProfiles.size());
+        incrementBssid(mAvailableSavedPasspointProviderBssidsInScanHistogram, savedPasspointProviderBssids);
+        incrementTotalPasspointAps(mObservedHotspotR1ApInScanHistogram, passpointR1Aps);
+        incrementTotalPasspointAps(mObservedHotspotR2ApInScanHistogram, passpointR2Aps);
+        incrementTotalPasspointAps(mObservedHotspotR3ApInScanHistogram, passpointR3Aps);
+        incrementTotalUniquePasspointEss(mObservedHotspotR1EssInScanHistogram, passpointR1UniqueEss.size());
+        incrementTotalUniquePasspointEss(mObservedHotspotR2EssInScanHistogram, passpointR2UniqueEss.size());
+        incrementTotalUniquePasspointEss(mObservedHotspotR3EssInScanHistogram, passpointR3UniqueEss.size());
+        for (Integer count : passpointR1UniqueEss.values()) {
+            incrementPasspointPerUniqueEss(mObservedHotspotR1ApsPerEssInScanHistogram, count);
+        }
+        for (Integer count : passpointR2UniqueEss.values()) {
+            incrementPasspointPerUniqueEss(mObservedHotspotR2ApsPerEssInScanHistogram, count);
+        }
+        for (Integer count : passpointR3UniqueEss.values()) {
+            incrementPasspointPerUniqueEss(mObservedHotspotR3ApsPerEssInScanHistogram, count);
+        }
+        increment80211mcAps(mObserved80211mcApInScanHistogram, supporting80211mcAps);
+    }
+}

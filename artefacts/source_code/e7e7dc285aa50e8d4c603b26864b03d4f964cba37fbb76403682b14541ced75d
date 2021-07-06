@@ -1,0 +1,38 @@
+public void onStartedGoingToSleep(int why){
+    if (DEBUG)
+        Log.d(TAG, "onStartedGoingToSleep(" + why + ")");
+    synchronized (this) {
+        mDeviceInteractive = false;
+        mGoingToSleep = true;
+        mUpdateMonitor.dispatchKeyguardGoingAway(false);
+        int currentUser = KeyguardUpdateMonitor.getCurrentUser();
+        final boolean lockImmediately = mLockPatternUtils.getPowerButtonInstantlyLocks(currentUser) || !mLockPatternUtils.isSecure(currentUser);
+        long timeout = getLockTimeout(KeyguardUpdateMonitor.getCurrentUser());
+        mLockLater = false;
+        if (mExitSecureCallback != null) {
+            if (DEBUG)
+                Log.d(TAG, "pending exit secure callback cancelled");
+            try {
+                mExitSecureCallback.onKeyguardExitResult(false);
+            } catch (RemoteException e) {
+                Slog.w(TAG, "Failed to call onKeyguardExitResult(false)", e);
+            }
+            mExitSecureCallback = null;
+            if (!mExternallyEnabled) {
+                hideLocked();
+            }
+        } else if (mShowing) {
+            mPendingReset = true;
+        } else if ((why == WindowManagerPolicyConstants.OFF_BECAUSE_OF_TIMEOUT && timeout > 0) || (why == WindowManagerPolicyConstants.OFF_BECAUSE_OF_USER && !lockImmediately)) {
+            doKeyguardLaterLocked(timeout);
+            mLockLater = true;
+        } else if (!mLockPatternUtils.isLockScreenDisabled(currentUser)) {
+            mPendingLock = true;
+        }
+        if (mPendingLock) {
+            playSounds(true);
+        }
+    }
+    mUpdateMonitor.dispatchStartedGoingToSleep(why);
+    notifyStartedGoingToSleep();
+}

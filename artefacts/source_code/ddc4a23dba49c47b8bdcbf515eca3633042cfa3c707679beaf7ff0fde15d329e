@@ -1,0 +1,8 @@
+public void startEasyConnectAsConfiguratorInitiator(@NonNull String enrolleeUri, int selectedNetworkId, @EasyConnectNetworkRole int enrolleeNetworkRole, @NonNull @CallbackExecutor Executor executor, @NonNull EasyConnectStatusCallback callback){
+    Binder binder = new Binder();
+    try {
+        mService.startDppAsConfiguratorInitiator(binder, enrolleeUri, selectedNetworkId, enrolleeNetworkRole, new EasyConnectCallbackProxy(executor, callback));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

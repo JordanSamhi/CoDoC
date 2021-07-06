@@ -1,0 +1,15 @@
+public void onPanelClosed(int featureId, @NonNull Menu menu){
+    switch(featureId) {
+        case Window.FEATURE_OPTIONS_PANEL:
+            mFragments.dispatchOptionsMenuClosed(menu);
+            onOptionsMenuClosed(menu);
+            break;
+        case Window.FEATURE_CONTEXT_MENU:
+            onContextMenuClosed(menu);
+            break;
+        case Window.FEATURE_ACTION_BAR:
+            initWindowDecorActionBar();
+            mActionBar.dispatchMenuVisibilityChanged(false);
+            break;
+    }
+}

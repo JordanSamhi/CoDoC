@@ -1,0 +1,33 @@
+
+         * <p>Defines whether the chromaticity diagram should be clipped by the first
+         * registered color space. The default value is false.</p>
+         *
+         * <p>The following code snippet and image show the default behavior:</p>
+         * <pre class="prettyprint">
+         * Bitmap bitmap = ColorSpace.createRenderer()
+         *     .add(ColorSpace.get(ColorSpace.Named.SRGB), 0xffffffff)
+         *     .add(ColorSpace.get(ColorSpace.Named.DCI_P3), 0xffffc845)
+         *     .render();
+         * </pre>
+         * <p>
+         *     <img style="display: block; margin: 0 auto;" src="{@docRoot}reference/android/images/graphics/colorspace_comparison.png" />
+         *     <figcaption style="text-align: center;">Clipping disabled</figcaption>
+         * </p>
+         *
+         * <p>Here is the same example with clipping enabled:</p>
+         * <pre class="prettyprint">
+         * Bitmap bitmap = ColorSpace.createRenderer()
+         *     .clip(true)
+         *     .add(ColorSpace.get(ColorSpace.Named.SRGB), 0xffffffff)
+         *     .add(ColorSpace.get(ColorSpace.Named.DCI_P3), 0xffffc845)
+         *     .render();
+         * </pre>
+         * <p>
+         *     <img style="display: block; margin: 0 auto;" src="{@docRoot}reference/android/images/graphics/colorspace_clipped.png" />
+         *     <figcaption style="text-align: center;">Clipping enabled</figcaption>
+         * </p>
+         *
+         * @param clip True to clip the chromaticity diagram to the first registered color space,
+         *             false otherwise
+         * @return This instance of {@link Renderer}
+         

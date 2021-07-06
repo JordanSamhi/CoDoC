@@ -1,0 +1,42 @@
+public void configureSurfaces(Collection<Pair<Surface, Size>> surfaces){
+    releaseEGLContext();
+    if (surfaces == null || surfaces.size() == 0) {
+        Log.w(TAG, "No output surfaces configured for GL drawing.");
+        return;
+    }
+    for (Pair<Surface, Size> p : surfaces) {
+        Surface s = p.first;
+        Size surfaceSize = p.second;
+        try {
+            EGLSurfaceHolder holder = new EGLSurfaceHolder();
+            holder.surface = s;
+            holder.width = surfaceSize.getWidth();
+            holder.height = surfaceSize.getHeight();
+            if (LegacyCameraDevice.needsConversion(s)) {
+                mConversionSurfaces.add(holder);
+                LegacyCameraDevice.connectSurface(s);
+            } else {
+                mSurfaces.add(holder);
+            }
+        } catch (LegacyExceptionUtils.BufferQueueAbandonedException e) {
+            Log.w(TAG, "Surface abandoned, skipping configuration... ", e);
+        }
+    }
+    configureEGLContext();
+    if (mSurfaces.size() > 0) {
+        configureEGLOutputSurfaces(mSurfaces);
+    }
+    if (mConversionSurfaces.size() > 0) {
+        configureEGLPbufferSurfaces(mConversionSurfaces);
+    }
+    try {
+        makeCurrent((mSurfaces.size() > 0) ? mSurfaces.get(0).eglSurface : mConversionSurfaces.get(0).eglSurface);
+    } catch (LegacyExceptionUtils.BufferQueueAbandonedException e) {
+        Log.w(TAG, "Surface abandoned, skipping configuration... ", e);
+    }
+    initializeGLState();
+    mSurfaceTexture = new SurfaceTexture(getTextureId());
+    if (SystemProperties.getBoolean(LEGACY_PERF_PROPERTY, false)) {
+        setupGlTiming();
+    }
+}

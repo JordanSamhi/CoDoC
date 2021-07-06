@@ -1,0 +1,13 @@
+public KeyphraseMetadata getKeyphraseMetadata(@NonNull String keyphrase, @NonNull Locale locale){
+    Objects.requireNonNull(keyphrase);
+    Objects.requireNonNull(locale);
+    if (mKeyphrases != null && mKeyphrases.length > 0) {
+        for (KeyphraseMetadata keyphraseMetadata : mKeyphrases) {
+            if (keyphraseMetadata.supportsPhrase(keyphrase) && keyphraseMetadata.supportsLocale(locale)) {
+                return keyphraseMetadata;
+            }
+        }
+    }
+    Slog.w(TAG, "No enrollment application supports the given keyphrase/locale: '" + keyphrase + "'/" + locale);
+    return null;
+}

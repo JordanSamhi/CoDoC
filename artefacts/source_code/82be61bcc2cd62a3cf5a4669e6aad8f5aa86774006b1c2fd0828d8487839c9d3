@@ -1,0 +1,54 @@
+public void writeToParcel(Parcel dest, int flags){
+    final int N = mList.size();
+    final int callFlags = flags;
+    dest.writeInt(N);
+    if (DEBUG)
+        Log.d(TAG, "Writing " + N + " items");
+    if (N > 0) {
+        final Class<?> listElementClass = mList.get(0).getClass();
+        writeParcelableCreator(mList.get(0), dest);
+        int i = 0;
+        while (i < N && i < mInlineCountLimit && dest.dataSize() < MAX_IPC_SIZE) {
+            dest.writeInt(1);
+            final T parcelable = mList.get(i);
+            verifySameType(listElementClass, parcelable.getClass());
+            writeElement(parcelable, dest, callFlags);
+            if (DEBUG)
+                Log.d(TAG, "Wrote inline #" + i + ": " + mList.get(i));
+            i++;
+        }
+        if (i < N) {
+            dest.writeInt(0);
+            Binder retriever = new Binder() {
+
+                @Override
+                protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+                    if (code != FIRST_CALL_TRANSACTION) {
+                        return super.onTransact(code, data, reply, flags);
+                    }
+                    int i = data.readInt();
+                    if (DEBUG)
+                        Log.d(TAG, "Writing more @" + i + " of " + N);
+                    while (i < N && reply.dataSize() < MAX_IPC_SIZE) {
+                        reply.writeInt(1);
+                        final T parcelable = mList.get(i);
+                        verifySameType(listElementClass, parcelable.getClass());
+                        writeElement(parcelable, reply, callFlags);
+                        if (DEBUG)
+                            Log.d(TAG, "Wrote extra #" + i + ": " + mList.get(i));
+                        i++;
+                    }
+                    if (i < N) {
+                        if (DEBUG)
+                            Log.d(TAG, "Breaking @" + i + " of " + N);
+                        reply.writeInt(0);
+                    }
+                    return true;
+                }
+            };
+            if (DEBUG)
+                Log.d(TAG, "Breaking @" + i + " of " + N + ": retriever=" + retriever);
+            dest.writeStrongBinder(retriever);
+        }
+    }
+}

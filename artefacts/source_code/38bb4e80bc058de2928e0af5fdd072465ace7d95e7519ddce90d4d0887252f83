@@ -1,0 +1,12 @@
+public void acquireLock(IBinder binder, String tag){
+    synchronized (mMulticasters) {
+        mMulticastEnabled++;
+        mMulticasters.add(new Multicaster(tag, binder));
+        mFilterController.stopFilteringMulticastPackets();
+    }
+    int uid = Binder.getCallingUid();
+    final long ident = Binder.clearCallingIdentity();
+    mBatteryStats.reportWifiMulticastEnabled(new WorkSource(uid));
+    WifiStatsLog.write_non_chained(WifiStatsLog.WIFI_MULTICAST_LOCK_STATE_CHANGED, uid, null, WifiStatsLog.WIFI_MULTICAST_LOCK_STATE_CHANGED__STATE__ON, tag);
+    Binder.restoreCallingIdentity(ident);
+}

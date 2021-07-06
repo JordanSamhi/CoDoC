@@ -1,0 +1,12 @@
+public boolean isTypeService(BatterySipper sipper){
+    final String[] packages = mPackageManager.getPackagesForUid(sipper.getUid());
+    if (packages == null) {
+        return false;
+    }
+    for (String packageName : packages) {
+        if (ArrayUtils.contains(mServicepackageArray, packageName)) {
+            return true;
+        }
+    }
+    return false;
+}

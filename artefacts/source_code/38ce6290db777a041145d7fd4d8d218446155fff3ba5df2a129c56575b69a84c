@@ -1,0 +1,24 @@
+public static long getOrCreateThreadId(Context context, Set<String> recipients){
+    Uri.Builder uriBuilder = THREAD_ID_CONTENT_URI.buildUpon();
+    for (String recipient : recipients) {
+        if (Mms.isEmailAddress(recipient)) {
+            recipient = Mms.extractAddrSpec(recipient);
+        }
+        uriBuilder.appendQueryParameter("recipient", recipient);
+    }
+    Uri uri = uriBuilder.build();
+    Cursor cursor = SqliteWrapper.query(context, context.getContentResolver(), uri, ID_PROJECTION, null, null, null);
+    if (cursor != null) {
+        try {
+            if (cursor.moveToFirst()) {
+                return cursor.getLong(0);
+            } else {
+                Rlog.e(TAG, "getOrCreateThreadId returned no rows!");
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+    Rlog.e(TAG, "getOrCreateThreadId failed with " + recipients.size() + " recipients");
+    throw new IllegalArgumentException("Unable to find or allocate a thread ID.");
+}

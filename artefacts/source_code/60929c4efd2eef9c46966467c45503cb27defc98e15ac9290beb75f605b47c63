@@ -1,0 +1,14 @@
+public String filterOperatorNameByPattern(String operatorName){
+    if (mOperatorNameStringPattern == null || TextUtils.isEmpty(operatorName)) {
+        return operatorName;
+    }
+    Matcher matcher = mOperatorNameStringPattern.matcher(operatorName);
+    if (matcher.find()) {
+        if (matcher.groupCount() > 0) {
+            operatorName = matcher.group(1);
+        } else {
+            log("filterOperatorNameByPattern: pattern no group");
+        }
+    }
+    return operatorName;
+}

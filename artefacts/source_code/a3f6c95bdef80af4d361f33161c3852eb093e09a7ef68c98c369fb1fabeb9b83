@@ -1,0 +1,15 @@
+public void start(Handler handler){
+    synchronized (mLock) {
+        mHalDeviceManager.initialize();
+        mHalDeviceManager.registerStatusListener(() -> {
+            if (VDBG)
+                Log.d(TAG, "hdm.onStatusChanged");
+            if (mHalDeviceManager.isStarted()) {
+                mHalDeviceManager.registerRttControllerLifecycleCallback(mRttLifecycleCb, handler);
+            }
+        }, handler);
+        if (mHalDeviceManager.isStarted()) {
+            mHalDeviceManager.registerRttControllerLifecycleCallback(mRttLifecycleCb, handler);
+        }
+    }
+}

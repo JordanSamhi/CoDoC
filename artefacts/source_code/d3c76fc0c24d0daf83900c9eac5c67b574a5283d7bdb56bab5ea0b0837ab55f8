@@ -1,0 +1,11 @@
+public static DateTimeKeyListener getInstance(@Nullable Locale locale){
+    DateTimeKeyListener instance;
+    synchronized (sLock) {
+        instance = sInstanceCache.get(locale);
+        if (instance == null) {
+            instance = new DateTimeKeyListener(locale);
+            sInstanceCache.put(locale, instance);
+        }
+    }
+    return instance;
+}

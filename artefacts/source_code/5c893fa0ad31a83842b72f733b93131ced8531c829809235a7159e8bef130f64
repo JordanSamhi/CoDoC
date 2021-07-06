@@ -1,0 +1,15 @@
+public static Vsa getHS2VendorSpecificIE(InformationElement[] ies){
+    Vsa vsa = new Vsa();
+    if (ies != null) {
+        for (InformationElement ie : ies) {
+            if (ie.id == InformationElement.EID_VSA) {
+                try {
+                    vsa.from(ie);
+                } catch (RuntimeException e) {
+                    Log.e(TAG, "Failed to parse Vendor Specific IE: " + e.getMessage());
+                }
+            }
+        }
+    }
+    return vsa;
+}

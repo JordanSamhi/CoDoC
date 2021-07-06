@@ -1,0 +1,10 @@
+public boolean isTtySupported(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().isTtySupported(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException attempting to get TTY supported state.", e);
+    }
+    return false;
+}

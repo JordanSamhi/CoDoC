@@ -1,0 +1,9 @@
+public void startChangingAnimations(){
+    LinkedHashMap<View, Animator> currentAnimCopy = (LinkedHashMap<View, Animator>) currentChangingAnimations.clone();
+    for (Animator anim : currentAnimCopy.values()) {
+        if (anim instanceof ObjectAnimator) {
+            ((ObjectAnimator) anim).setCurrentPlayTime(0);
+        }
+        anim.start();
+    }
+}

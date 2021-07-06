@@ -1,0 +1,11 @@
+public void enableUiccApplications(boolean enable, Message onCompleteMessage){
+    UiccSlot slot = mUiccController.getUiccSlotForPhone(mPhoneId);
+    if (slot == null || slot.getCardState() != IccCardStatus.CardState.CARDSTATE_PRESENT) {
+        if (onCompleteMessage != null) {
+            AsyncResult.forMessage(onCompleteMessage, null, new IllegalStateException("No SIM card is present"));
+            onCompleteMessage.sendToTarget();
+        }
+        return;
+    }
+    mCi.enableUiccApplications(enable, onCompleteMessage);
+}

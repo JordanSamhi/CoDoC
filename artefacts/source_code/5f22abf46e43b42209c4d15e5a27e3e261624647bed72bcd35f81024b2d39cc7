@@ -1,0 +1,20 @@
+public void enqueueFullBackup(String packageName, long lastBackedUp){
+    FullBackupEntry newEntry = new FullBackupEntry(packageName, lastBackedUp);
+    synchronized (mQueueLock) {
+        dequeueFullBackupLocked(packageName);
+        int which = -1;
+        if (lastBackedUp > 0) {
+            for (which = mFullBackupQueue.size() - 1; which >= 0; which--) {
+                final FullBackupEntry entry = mFullBackupQueue.get(which);
+                if (entry.lastBackup <= lastBackedUp) {
+                    mFullBackupQueue.add(which + 1, newEntry);
+                    break;
+                }
+            }
+        }
+        if (which < 0) {
+            mFullBackupQueue.add(0, newEntry);
+        }
+    }
+    writeFullBackupScheduleAsync();
+}

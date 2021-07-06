@@ -1,0 +1,35 @@
+public static void scrollTo(TextView widget, Layout layout, int x, int y){
+    final int horizontalPadding = widget.getTotalPaddingLeft() + widget.getTotalPaddingRight();
+    final int availableWidth = widget.getWidth() - horizontalPadding;
+    final int top = layout.getLineForVertical(y);
+    Alignment a = layout.getParagraphAlignment(top);
+    boolean ltr = layout.getParagraphDirection(top) > 0;
+    int left, right;
+    if (widget.getHorizontallyScrolling()) {
+        final int verticalPadding = widget.getTotalPaddingTop() + widget.getTotalPaddingBottom();
+        final int bottom = layout.getLineForVertical(y + widget.getHeight() - verticalPadding);
+        left = Integer.MAX_VALUE;
+        right = 0;
+        for (int i = top; i <= bottom; i++) {
+            left = (int) Math.min(left, layout.getLineLeft(i));
+            right = (int) Math.max(right, layout.getLineRight(i));
+        }
+    } else {
+        left = 0;
+        right = availableWidth;
+    }
+    final int actualWidth = right - left;
+    if (actualWidth < availableWidth) {
+        if (a == Alignment.ALIGN_CENTER) {
+            x = left - ((availableWidth - actualWidth) / 2);
+        } else if ((ltr && (a == Alignment.ALIGN_OPPOSITE)) || (!ltr && (a == Alignment.ALIGN_NORMAL)) || (a == Alignment.ALIGN_RIGHT)) {
+            x = left - (availableWidth - actualWidth);
+        } else {
+            x = left;
+        }
+    } else {
+        x = Math.min(x, right - availableWidth);
+        x = Math.max(x, left);
+    }
+    widget.scrollTo(x, y);
+}

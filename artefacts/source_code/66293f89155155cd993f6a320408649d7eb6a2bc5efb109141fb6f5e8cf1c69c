@@ -1,0 +1,14 @@
+public DrmInfo getDrmInfo(){
+    DrmInfo drmInfo = null;
+    synchronized (mDrmLock) {
+        if (!mDrmInfoResolved && mDrmInfo == null) {
+            final String msg = "The Player has not been prepared yet";
+            Log.v(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
+        if (mDrmInfo != null) {
+            drmInfo = mDrmInfo.makeCopy();
+        }
+    }
+    return drmInfo;
+}

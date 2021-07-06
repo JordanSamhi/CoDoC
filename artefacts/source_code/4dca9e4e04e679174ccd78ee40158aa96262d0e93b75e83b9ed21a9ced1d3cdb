@@ -1,0 +1,11 @@
+public void setCurrent(int currentNetworkId, String currentBssid){
+    mCurrentNetworkId = currentNetworkId;
+    mCurrentBssid = null;
+    if (currentBssid == null)
+        return;
+    try {
+        mCurrentBssid = MacAddress.fromString(currentBssid);
+    } catch (RuntimeException e) {
+        failWithException(e);
+    }
+}

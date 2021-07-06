@@ -1,0 +1,14 @@
+public final int dequeueInputBuffer(long timeoutUs){
+    synchronized (mBufferLock) {
+        if (mBufferMode == BUFFER_MODE_BLOCK) {
+            throw new IncompatibleWithBlockModelException("dequeueInputBuffer() " + "is not compatible with CONFIGURE_FLAG_USE_BLOCK_MODEL. " + "Please use MediaCodec.Callback objectes to get input buffer slots.");
+        }
+    }
+    int res = native_dequeueInputBuffer(timeoutUs);
+    if (res >= 0) {
+        synchronized (mBufferLock) {
+            validateInputByteBuffer(mCachedInputBuffers, res);
+        }
+    }
+    return res;
+}

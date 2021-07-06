@@ -1,0 +1,28 @@
+public void incrementWifiUsabilityScoreCount(int seqNum, int score, int predictionHorizonSec){
+    if (score < MIN_WIFI_USABILITY_SCORE || score > MAX_WIFI_USABILITY_SCORE) {
+        return;
+    }
+    synchronized (mLock) {
+        mSeqNumToFramework = seqNum;
+        mLastWifiUsabilityScore = score;
+        mLastWifiUsabilityScoreNoReset = score;
+        mWifiUsabilityScoreCounts.put(score, mWifiUsabilityScoreCounts.get(score) + 1);
+        mLastPredictionHorizonSec = predictionHorizonSec;
+        mLastPredictionHorizonSecNoReset = predictionHorizonSec;
+        boolean wifiWins = mWifiWinsUsabilityScore;
+        if (score > LOW_WIFI_USABILITY_SCORE) {
+            wifiWins = true;
+        } else if (score < LOW_WIFI_USABILITY_SCORE) {
+            wifiWins = false;
+        }
+        if (wifiWins != mWifiWinsUsabilityScore) {
+            mWifiWinsUsabilityScore = wifiWins;
+            StaEvent event = new StaEvent();
+            event.type = StaEvent.TYPE_WIFI_USABILITY_SCORE_BREACH;
+            addStaEvent(event);
+            if (!wifiWins && mScoreBreachLowTimeMillis == -1) {
+                mScoreBreachLowTimeMillis = mClock.getElapsedSinceBootMillis();
+            }
+        }
+    }
+}

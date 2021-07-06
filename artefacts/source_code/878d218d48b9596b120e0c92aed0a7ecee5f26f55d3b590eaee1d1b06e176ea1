@@ -1,0 +1,14 @@
+public static final void withCleanCallingIdentity(@NonNull ThrowingRunnable action){
+    long callingIdentity = clearCallingIdentity();
+    Throwable throwableToPropagate = null;
+    try {
+        action.runOrThrow();
+    } catch (Throwable throwable) {
+        throwableToPropagate = throwable;
+    } finally {
+        restoreCallingIdentity(callingIdentity);
+        if (throwableToPropagate != null) {
+            throw ExceptionUtils.propagate(throwableToPropagate);
+        }
+    }
+}

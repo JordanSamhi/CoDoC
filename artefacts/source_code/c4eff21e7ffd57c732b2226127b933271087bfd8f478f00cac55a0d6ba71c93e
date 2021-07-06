@@ -1,0 +1,15 @@
+public synchronized void startVpnProfile(@NonNull String packageName, @NonNull KeyStore keyStore){
+    checkNotNull(packageName, "No package name provided");
+    checkNotNull(keyStore, "KeyStore missing");
+    enforceNotRestrictedUser();
+    if (!prepare(packageName, null, VpnManager.TYPE_VPN_PLATFORM)) {
+        throw new SecurityException("User consent not granted for package " + packageName);
+    }
+    Binder.withCleanCallingIdentity(() -> {
+        final VpnProfile profile = getVpnProfilePrivileged(packageName, keyStore);
+        if (profile == null) {
+            throw new IllegalArgumentException("No profile found for " + packageName);
+        }
+        startVpnProfilePrivileged(profile, packageName, null);
+    });
+}

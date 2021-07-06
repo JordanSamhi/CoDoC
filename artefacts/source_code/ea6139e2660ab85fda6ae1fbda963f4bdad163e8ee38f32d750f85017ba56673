@@ -1,0 +1,14 @@
+public static char gsmExtendedToChar(int gsmChar){
+    if (gsmChar == GSM_EXTENDED_ESCAPE) {
+        return ' ';
+    } else if (gsmChar >= 0 && gsmChar < 128) {
+        char c = sLanguageShiftTables[0].charAt(gsmChar);
+        if (c == ' ') {
+            return sLanguageTables[0].charAt(gsmChar);
+        } else {
+            return c;
+        }
+    } else {
+        return ' ';
+    }
+}

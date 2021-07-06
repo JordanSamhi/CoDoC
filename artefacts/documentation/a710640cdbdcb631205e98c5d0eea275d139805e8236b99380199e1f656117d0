@@ -1,0 +1,32 @@
+
+     * Add a surface to this OutputConfiguration.
+     *
+     * <p> This function can be called before or after {@link
+     * CameraDevice#createCaptureSessionByOutputConfigurations}. If it's called after,
+     * the application must finalize the capture session with
+     * {@link CameraCaptureSession#finalizeOutputConfigurations}. It is possible to call this method
+     * after the output configurations have been finalized only in cases of enabled surface sharing
+     * see {@link #enableSurfaceSharing}. The modified output configuration must be updated with
+     * {@link CameraCaptureSession#updateOutputConfiguration}.</p>
+     *
+     * <p> If the OutputConfiguration was constructed with a deferred surface by {@link
+     * OutputConfiguration#OutputConfiguration(Size, Class)}, the added surface must be obtained
+     * from {@link android.view.SurfaceView} by calling {@link android.view.SurfaceHolder#getSurface},
+     * or from {@link android.graphics.SurfaceTexture} via
+     * {@link android.view.Surface#Surface(android.graphics.SurfaceTexture)}).</p>
+     *
+     * <p> If the OutputConfiguration was constructed by other constructors, the added
+     * surface must be compatible with the existing surface. See {@link #enableSurfaceSharing} for
+     * details of compatible surfaces.</p>
+     *
+     * <p> If the OutputConfiguration already contains a Surface, {@link #enableSurfaceSharing} must
+     * be called before calling this function to add a new Surface.</p>
+     *
+     * @param surface The surface to be added.
+     * @throws IllegalArgumentException if the Surface is invalid, the Surface's
+     *         dataspace/format doesn't match, or adding the Surface would exceed number of
+     *         shared surfaces supported.
+     * @throws IllegalStateException if the Surface was already added to this OutputConfiguration,
+     *         or if the OutputConfiguration is not shared and it already has a surface associated
+     *         with it.
+     

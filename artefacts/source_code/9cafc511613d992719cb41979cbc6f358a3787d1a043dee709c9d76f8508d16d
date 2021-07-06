@@ -1,0 +1,8 @@
+public boolean isChangeEnabledInternal(long changeId, ApplicationInfo appInfo){
+    if (mCompatConfig.isChangeEnabled(changeId, appInfo)) {
+        reportChange(changeId, appInfo.uid, ChangeReporter.STATE_ENABLED);
+        return true;
+    }
+    reportChange(changeId, appInfo.uid, ChangeReporter.STATE_DISABLED);
+    return false;
+}

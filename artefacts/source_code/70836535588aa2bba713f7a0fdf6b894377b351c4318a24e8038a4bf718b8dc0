@@ -1,0 +1,26 @@
+public boolean invokeMenuActionSync(Activity targetActivity, int id, int flag){
+    class MenuRunnable implements Runnable {
+
+        private final Activity activity;
+
+        private final int identifier;
+
+        private final int flags;
+
+        boolean returnValue;
+
+        public MenuRunnable(Activity _activity, int _identifier, int _flags) {
+            activity = _activity;
+            identifier = _identifier;
+            flags = _flags;
+        }
+
+        public void run() {
+            Window win = activity.getWindow();
+            returnValue = win.performPanelIdentifierAction(Window.FEATURE_OPTIONS_PANEL, identifier, flags);
+        }
+    }
+    MenuRunnable mr = new MenuRunnable(targetActivity, id, flag);
+    runOnMainSync(mr);
+    return mr.returnValue;
+}

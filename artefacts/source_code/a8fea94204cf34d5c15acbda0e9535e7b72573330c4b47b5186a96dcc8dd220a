@@ -1,0 +1,10 @@
+public boolean isManagedProfile(@UserIdInt int userId){
+    if (userId == UserHandle.myUserId()) {
+        return isManagedProfile();
+    }
+    try {
+        return mService.isManagedProfile(userId);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

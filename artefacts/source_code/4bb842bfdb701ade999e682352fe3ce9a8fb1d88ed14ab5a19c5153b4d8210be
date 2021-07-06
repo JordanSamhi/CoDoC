@@ -1,0 +1,10 @@
+public String[] getPcscfAddress(String apnType){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return new String[0];
+        return telephony.getPcscfAddress(apnType, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException e) {
+        return new String[0];
+    }
+}

@@ -1,0 +1,10 @@
+public boolean canDisablePhysicalSubscription(){
+    enforceReadPrivilegedPhoneState("canToggleUiccApplicationsEnablement");
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        Phone phone = PhoneFactory.getDefaultPhone();
+        return phone != null && phone.canDisablePhysicalSubscription();
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

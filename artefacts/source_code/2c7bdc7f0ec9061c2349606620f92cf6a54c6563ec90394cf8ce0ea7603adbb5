@@ -1,0 +1,11 @@
+public void invalidateAuthToken(final String accountType, final String authToken){
+    if (accountType == null)
+        throw new IllegalArgumentException("accountType is null");
+    try {
+        if (authToken != null) {
+            mService.invalidateAuthToken(accountType, authToken);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

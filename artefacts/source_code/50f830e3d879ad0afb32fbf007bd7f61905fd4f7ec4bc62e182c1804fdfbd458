@@ -1,0 +1,14 @@
+public void start(ImsCallSession session, String[] participants) throws ImsException{
+    logi("start(n) :: session=" + session);
+    synchronized (mLockObj) {
+        mSession = session;
+        mIsConferenceHost = true;
+        try {
+            session.setListener(createCallSessionListener());
+            session.start(participants, mCallProfile);
+        } catch (Throwable t) {
+            loge("start(n) :: ", t);
+            throw new ImsException("start(n)", t, 0);
+        }
+    }
+}

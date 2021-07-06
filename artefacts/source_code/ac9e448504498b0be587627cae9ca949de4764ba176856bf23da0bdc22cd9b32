@@ -1,0 +1,34 @@
+public boolean setOffHostForService(@NonNull ComponentName service, @NonNull String offHostSecureElement){
+    boolean validSecureElement = false;
+    NfcAdapter adapter = NfcAdapter.getDefaultAdapter(mContext);
+    if (adapter == null || offHostSecureElement == null) {
+        return false;
+    }
+    List<String> validSE = adapter.getSupportedOffHostSecureElements();
+    if ((offHostSecureElement.startsWith("eSE") && !validSE.contains("eSE")) || (offHostSecureElement.startsWith("SIM") && !validSE.contains("SIM"))) {
+        return false;
+    }
+    if (!offHostSecureElement.startsWith("eSE") && !offHostSecureElement.startsWith("SIM")) {
+        return false;
+    }
+    if (offHostSecureElement.equals("eSE")) {
+        offHostSecureElement = "eSE1";
+    } else if (offHostSecureElement.equals("SIM")) {
+        offHostSecureElement = "SIM1";
+    }
+    try {
+        return sService.setOffHostForService(mContext.getUserId(), service, offHostSecureElement);
+    } catch (RemoteException e) {
+        recoverService();
+        if (sService == null) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return false;
+        }
+        try {
+            return sService.setOffHostForService(mContext.getUserId(), service, offHostSecureElement);
+        } catch (RemoteException ee) {
+            Log.e(TAG, "Failed to reach CardEmulationService.");
+            return false;
+        }
+    }
+}

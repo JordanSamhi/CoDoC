@@ -1,0 +1,10 @@
+public void onBeforeUnlockUser(@UserIdInt int userId){
+    UserInfo userInfo = getUserInfo(userId);
+    if (userInfo == null) {
+        return;
+    }
+    final int userSerial = userInfo.serialNumber;
+    boolean migrateAppsData = !Build.FINGERPRINT.equals(userInfo.lastLoggedInFingerprint);
+    mUserDataPreparer.prepareUserData(userId, userSerial, StorageManager.FLAG_STORAGE_CE);
+    mPm.reconcileAppsData(userId, StorageManager.FLAG_STORAGE_CE, migrateAppsData);
+}

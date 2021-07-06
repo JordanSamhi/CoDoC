@@ -1,0 +1,19 @@
+public void prepareLocalAnimators(@NonNull AnimatorSet animatorSet, @Nullable Resources res){
+    if (mPendingAnims != null) {
+        if (res != null) {
+            inflatePendingAnimators(res, null);
+        } else {
+            Log.e(LOGTAG, "Failed to load animators. Either the AnimatedVectorDrawable" + " must be created using a Resources object or applyTheme() must be" + " called with a non-null Theme object.");
+        }
+        mPendingAnims = null;
+    }
+    final int count = mAnimators == null ? 0 : mAnimators.size();
+    if (count > 0) {
+        final Animator firstAnim = prepareLocalAnimator(0);
+        final AnimatorSet.Builder builder = animatorSet.play(firstAnim);
+        for (int i = 1; i < count; ++i) {
+            final Animator nextAnim = prepareLocalAnimator(i);
+            builder.with(nextAnim);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public void setLocalMatrix(@Nullable Matrix localM){
+    if (localM == null || localM.isIdentity()) {
+        if (mLocalMatrix != null) {
+            mLocalMatrix = null;
+            discardNativeInstance();
+        }
+    } else {
+        if (mLocalMatrix == null) {
+            mLocalMatrix = new Matrix(localM);
+            discardNativeInstance();
+        } else if (!mLocalMatrix.equals(localM)) {
+            mLocalMatrix.set(localM);
+            discardNativeInstance();
+        }
+    }
+}

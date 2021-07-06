@@ -1,0 +1,8 @@
+public boolean isSystemAlertWarningNeeded(int userId, String pkg){
+    synchronized (mMutex) {
+        final ForegroundServicesUserState services = mUserServices.get(userId);
+        if (services == null)
+            return false;
+        return services.getStandardLayoutKeys(pkg) == null;
+    }
+}

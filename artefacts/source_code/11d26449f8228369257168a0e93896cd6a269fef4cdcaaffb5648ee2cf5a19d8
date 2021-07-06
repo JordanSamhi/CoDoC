@@ -1,0 +1,17 @@
+public static void waitForConnectionToZygote(LocalSocketAddress zygoteSocketAddress){
+    int numRetries = ZYGOTE_CONNECT_TIMEOUT_MS / ZYGOTE_CONNECT_RETRY_DELAY_MS;
+    for (int n = numRetries; n >= 0; n--) {
+        try {
+            final ZygoteState zs = ZygoteState.connect(zygoteSocketAddress, null);
+            zs.close();
+            return;
+        } catch (IOException ioe) {
+            Log.w(LOG_TAG, "Got error connecting to zygote, retrying. msg= " + ioe.getMessage());
+        }
+        try {
+            Thread.sleep(ZYGOTE_CONNECT_RETRY_DELAY_MS);
+        } catch (InterruptedException ignored) {
+        }
+    }
+    Slog.wtf(LOG_TAG, "Failed to connect to Zygote through socket " + zygoteSocketAddress.getName());
+}

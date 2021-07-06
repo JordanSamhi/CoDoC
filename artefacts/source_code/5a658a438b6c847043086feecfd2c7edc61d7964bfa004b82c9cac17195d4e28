@@ -1,0 +1,29 @@
+public void getProviderMimeTypeAsync(Uri uri, int userId, RemoteCallback resultCallback){
+    enforceNotIsolatedCaller("getProviderMimeTypeAsync");
+    final String name = uri.getAuthority();
+    final int callingUid = Binder.getCallingUid();
+    final int callingPid = Binder.getCallingPid();
+    final int safeUserId = mUserController.unsafeConvertIncomingUser(userId);
+    final long ident = canClearIdentity(callingPid, callingUid, userId) ? Binder.clearCallingIdentity() : 0;
+    try {
+        final ContentProviderHolder holder = getContentProviderExternalUnchecked(name, null, callingUid, "*getmimetype*", safeUserId);
+        if (holder != null) {
+            holder.provider.getTypeAsync(uri, new RemoteCallback(result -> {
+                final long identity = Binder.clearCallingIdentity();
+                try {
+                    removeContentProviderExternalUnchecked(name, null, safeUserId);
+                } finally {
+                    Binder.restoreCallingIdentity(identity);
+                }
+                resultCallback.sendResult(result);
+            }));
+        } else {
+            resultCallback.sendResult(Bundle.EMPTY);
+        }
+    } catch (RemoteException e) {
+        Log.w(TAG, "Content provider dead retrieving " + uri, e);
+        resultCallback.sendResult(Bundle.EMPTY);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

@@ -1,0 +1,21 @@
+public final Icon getCustomPrinterIcon(@NonNull PrinterId printerId){
+    throwIfCalledOnMainThread();
+    synchronized (mLock) {
+        throwIfDestroyedLocked();
+        mCanUnbind = false;
+    }
+    try {
+        return mGetCustomPrinterIconCaller.getCustomPrinterIcon(getRemoteInstanceLazy(), printerId);
+    } catch (RemoteException | TimeoutException | InterruptedException e) {
+        Slog.e(LOG_TAG, "Error getting custom printer icon.", e);
+        return null;
+    } finally {
+        if (DEBUG) {
+            Slog.i(LOG_TAG, "[user: " + mUserHandle.getIdentifier() + "] getCustomPrinterIcon()");
+        }
+        synchronized (mLock) {
+            mCanUnbind = true;
+            mLock.notifyAll();
+        }
+    }
+}

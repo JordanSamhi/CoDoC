@@ -1,0 +1,8 @@
+public void sendOtaStatusChangedBroadcast(){
+    Intent intent = new Intent(EuiccManager.ACTION_OTA_STATUS_CHANGED);
+    ComponentInfo bestComponent = mConnector.findBestComponent(mContext.getPackageManager());
+    if (bestComponent != null) {
+        intent.setPackage(bestComponent.packageName);
+    }
+    mContext.sendBroadcast(intent, permission.WRITE_EMBEDDED_SUBSCRIPTIONS);
+}

@@ -1,0 +1,12 @@
+public void startSelectionActionModeAsync(boolean adjustSelection){
+    adjustSelection &= getTextClassificationSettings().isSmartSelectionEnabled();
+    int[] sortedSelectionIndices = sortSelctionIndicesFromTextView(mTextView);
+    mSelectionTracker.onOriginalSelection(getText(mTextView), sortedSelectionIndices[0], sortedSelectionIndices[1], false);
+    cancelAsyncTask();
+    if (skipTextClassification()) {
+        startSelectionActionMode(null);
+    } else {
+        resetTextClassificationHelper();
+        mTextClassificationAsyncTask = new TextClassificationAsyncTask(mTextView, mTextClassificationHelper.getTimeoutDuration(), adjustSelection ? mTextClassificationHelper::suggestSelection : mTextClassificationHelper::classifyText, mSmartSelectSprite != null ? this::startSelectionActionModeWithSmartSelectAnimation : this::startSelectionActionMode, mTextClassificationHelper::getOriginalSelection).execute();
+    }
+}

@@ -1,0 +1,12 @@
+public void notifyPreviewProgramAddedToWatchNext(String packageName, long previewProgramId, long watchNextProgramId){
+    Intent intent = new Intent();
+    intent.setAction(TvContract.ACTION_PREVIEW_PROGRAM_ADDED_TO_WATCH_NEXT);
+    intent.putExtra(TvContract.EXTRA_PREVIEW_PROGRAM_ID, previewProgramId);
+    intent.putExtra(TvContract.EXTRA_WATCH_NEXT_PROGRAM_ID, watchNextProgramId);
+    intent.setPackage(packageName);
+    try {
+        mService.sendTvInputNotifyIntent(intent, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

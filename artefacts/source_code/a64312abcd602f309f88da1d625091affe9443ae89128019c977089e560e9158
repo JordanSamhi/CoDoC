@@ -1,0 +1,20 @@
+public List<WifiConfiguration> getWifiConfigsForPasspointProfiles(List<String> idList){
+    if (mProviders.isEmpty()) {
+        return Collections.emptyList();
+    }
+    List<WifiConfiguration> configs = new ArrayList<>();
+    Set<String> uniqueIdSet = new HashSet<>();
+    uniqueIdSet.addAll(idList);
+    for (String uniqueId : uniqueIdSet) {
+        PasspointProvider provider = mProviders.get(uniqueId);
+        if (provider == null) {
+            continue;
+        }
+        WifiConfiguration config = provider.getWifiConfig();
+        if (provider.isFromSuggestion() && !mWifiInjector.getWifiNetworkSuggestionsManager().isPasspointSuggestionSharedWithUser(config)) {
+            continue;
+        }
+        configs.add(config);
+    }
+    return configs;
+}

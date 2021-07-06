@@ -1,0 +1,19 @@
+public static Bitmap parseToRGB(byte[] data, int length, boolean transparency){
+    int valueIndex = 0;
+    int width = data[valueIndex++] & 0xFF;
+    int height = data[valueIndex++] & 0xFF;
+    int bits = data[valueIndex++] & 0xFF;
+    int colorNumber = data[valueIndex++] & 0xFF;
+    int clutOffset = ((data[valueIndex++] & 0xFF) << 8) | (data[valueIndex++] & 0xFF);
+    int[] colorIndexArray = getCLUT(data, clutOffset, colorNumber);
+    if (true == transparency) {
+        colorIndexArray[colorNumber - 1] = Color.TRANSPARENT;
+    }
+    int[] resultArray = null;
+    if (0 == (8 % bits)) {
+        resultArray = mapTo2OrderBitColor(data, valueIndex, (width * height), colorIndexArray, bits);
+    } else {
+        resultArray = mapToNon2OrderBitColor(data, valueIndex, (width * height), colorIndexArray, bits);
+    }
+    return Bitmap.createBitmap(resultArray, width, height, Bitmap.Config.RGB_565);
+}

@@ -1,0 +1,25 @@
+
+     * Attempt to tether the named interface.  This will setup a dhcp server
+     * on the interface, forward and NAT IP packets and forward DNS requests
+     * to the best active upstream network interface.  Note that if no upstream
+     * IP network interface is available, dhcp will still run and traffic will be
+     * allowed between the tethered devices and this device, though upstream net
+     * access will of course fail until an upstream network interface becomes
+     * active.
+     *
+     * <p>This method requires the caller to hold either the
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE} permission
+     * or the ability to modify system settings as determined by
+     * {@link android.provider.Settings.System#canWrite}.</p>
+     *
+     * <p>WARNING: New clients should not use this function. The only usages should be in PanService
+     * and WifiStateMachine which need direct access. All other clients should use
+     * {@link #startTethering} and {@link #stopTethering} which encapsulate proper provisioning
+     * logic.</p>
+     *
+     * @param iface the interface name to tether.
+     * @return error a {@code TETHER_ERROR} value indicating success or failure type
+     * @deprecated Use {@link TetheringManager#startTethering} instead
+     *
+     * {@hide}
+     

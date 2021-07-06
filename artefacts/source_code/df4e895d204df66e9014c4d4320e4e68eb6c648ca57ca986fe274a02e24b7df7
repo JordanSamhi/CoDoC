@@ -1,0 +1,41 @@
+public void clearBackupData(String transportName, String packageName){
+    if (DEBUG) {
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "clearBackupData() of " + packageName + " on " + transportName));
+    }
+    PackageInfo info;
+    try {
+        info = mPackageManager.getPackageInfoAsUser(packageName, PackageManager.GET_SIGNING_CERTIFICATES, mUserId);
+    } catch (NameNotFoundException e) {
+        Slog.d(TAG, addUserIdToLogMessage(mUserId, "No such package '" + packageName + "' - not clearing backup data"));
+        return;
+    }
+    Set<String> apps;
+    if ((mContext.checkPermission(android.Manifest.permission.BACKUP, Binder.getCallingPid(), Binder.getCallingUid())) == PackageManager.PERMISSION_DENIED) {
+        apps = mBackupParticipants.get(Binder.getCallingUid());
+    } else {
+        if (MORE_DEBUG) {
+            Slog.v(TAG, addUserIdToLogMessage(mUserId, "Privileged caller, allowing clear of other apps"));
+        }
+        apps = mProcessedPackagesJournal.getPackagesCopy();
+    }
+    if (apps.contains(packageName)) {
+        if (MORE_DEBUG) {
+            Slog.v(TAG, addUserIdToLogMessage(mUserId, "Found the app - running clear process"));
+        }
+        mBackupHandler.removeMessages(MSG_RETRY_CLEAR);
+        synchronized (mQueueLock) {
+            TransportClient transportClient = mTransportManager.getTransportClient(transportName, "BMS.clearBackupData()");
+            if (transportClient == null) {
+                Message msg = mBackupHandler.obtainMessage(MSG_RETRY_CLEAR, new ClearRetryParams(transportName, packageName));
+                mBackupHandler.sendMessageDelayed(msg, TRANSPORT_RETRY_INTERVAL);
+                return;
+            }
+            long oldId = Binder.clearCallingIdentity();
+            OnTaskFinishedListener listener = caller -> mTransportManager.disposeOfTransportClient(transportClient, caller);
+            mWakelock.acquire();
+            Message msg = mBackupHandler.obtainMessage(MSG_RUN_CLEAR, new ClearParams(transportClient, info, listener));
+            mBackupHandler.sendMessage(msg);
+            Binder.restoreCallingIdentity(oldId);
+        }
+    }
+}

@@ -1,0 +1,24 @@
+public Bitmap getThumbnailBitmap(){
+    if (!mHasThumbnail) {
+        return null;
+    } else if (mThumbnailBytes == null) {
+        mThumbnailBytes = getThumbnailBytes();
+    }
+    if (mThumbnailCompression == DATA_JPEG || mThumbnailCompression == DATA_JPEG_COMPRESSED) {
+        return BitmapFactory.decodeByteArray(mThumbnailBytes, 0, mThumbnailLength);
+    } else if (mThumbnailCompression == DATA_UNCOMPRESSED) {
+        int[] rgbValues = new int[mThumbnailBytes.length / 3];
+        byte alpha = (byte) 0xff000000;
+        for (int i = 0; i < rgbValues.length; i++) {
+            rgbValues[i] = alpha + (mThumbnailBytes[3 * i] << 16) + (mThumbnailBytes[3 * i + 1] << 8) + mThumbnailBytes[3 * i + 2];
+        }
+        ExifAttribute imageLengthAttribute = (ExifAttribute) mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_IMAGE_LENGTH);
+        ExifAttribute imageWidthAttribute = (ExifAttribute) mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_IMAGE_WIDTH);
+        if (imageLengthAttribute != null && imageWidthAttribute != null) {
+            int imageLength = imageLengthAttribute.getIntValue(mExifByteOrder);
+            int imageWidth = imageWidthAttribute.getIntValue(mExifByteOrder);
+            return Bitmap.createBitmap(rgbValues, imageWidth, imageLength, Bitmap.Config.ARGB_8888);
+        }
+    }
+    return null;
+}

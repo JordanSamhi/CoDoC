@@ -1,0 +1,93 @@
+public void handleMessage(Message msg){
+    AsyncResult ar;
+    switch(msg.what) {
+        case EVENT_APP_READY:
+            mLockedRecordsReqReason = LOCKED_RECORDS_REQ_REASON_NONE;
+            onReady();
+            break;
+        case EVENT_APP_DETECTED:
+            mLockedRecordsReqReason = LOCKED_RECORDS_REQ_REASON_NONE;
+            onDetected();
+            break;
+        case EVENT_APP_LOCKED:
+            mLockedRecordsReqReason = LOCKED_RECORDS_REQ_REASON_LOCKED;
+            onLocked();
+            break;
+        case EVENT_APP_NETWORK_LOCKED:
+            mLockedRecordsReqReason = LOCKED_RECORDS_REQ_REASON_NETWORK_LOCKED;
+            onLocked();
+            break;
+        case EVENT_GET_ICC_RECORD_DONE:
+            try {
+                ar = (AsyncResult) msg.obj;
+                IccRecordLoaded recordLoaded = (IccRecordLoaded) ar.userObj;
+                if (DBG)
+                    log(recordLoaded.getEfName() + " LOADED");
+                if (ar.exception != null) {
+                    loge("Record Load Exception: " + ar.exception);
+                } else {
+                    recordLoaded.onRecordLoaded(ar);
+                }
+            } catch (RuntimeException exc) {
+                loge("Exception parsing SIM record: " + exc);
+            } finally {
+                onRecordLoaded();
+            }
+            break;
+        case EVENT_REFRESH:
+            ar = (AsyncResult) msg.obj;
+            if (DBG)
+                log("Card REFRESH occurred: ");
+            if (ar.exception == null) {
+                handleRefresh((IccRefreshResponse) ar.result);
+            } else {
+                loge("Icc refresh Exception: " + ar.exception);
+            }
+            break;
+        case EVENT_AKA_AUTHENTICATE_DONE:
+            ar = (AsyncResult) msg.obj;
+            AuthAsyncResponse rsp = (AuthAsyncResponse) ar.userObj;
+            if (DBG)
+                log("EVENT_AKA_AUTHENTICATE_DONE");
+            synchronized (rsp) {
+                if (ar.exception != null) {
+                    rsp.exception = ar.exception;
+                    loge("Exception ICC SIM AKA: " + ar.exception);
+                } else if (ar.result == null) {
+                    rsp.exception = new NullPointerException("Null SIM authentication response");
+                    loge("EVENT_AKA_AUTHENTICATE_DONE: null response");
+                } else {
+                    try {
+                        rsp.authRsp = (IccIoResult) ar.result;
+                        if (VDBG)
+                            log("ICC SIM AKA: authRsp = " + rsp.authRsp);
+                    } catch (ClassCastException e) {
+                        rsp.exception = e;
+                        loge("Failed to parse ICC SIM AKA contents: " + e);
+                    }
+                }
+                rsp.notifyAll();
+            }
+            break;
+        case EVENT_GET_SMS_RECORD_SIZE_DONE:
+            ar = (AsyncResult) msg.obj;
+            if (ar.exception != null) {
+                onRecordLoaded();
+                loge("Exception in EVENT_GET_SMS_RECORD_SIZE_DONE " + ar.exception);
+                break;
+            }
+            int[] recordSize = (int[]) ar.result;
+            try {
+                mSmsCountOnIcc = recordSize[2];
+                log("EVENT_GET_SMS_RECORD_SIZE_DONE Size " + recordSize[0] + " total " + recordSize[1] + " record " + recordSize[2]);
+            } catch (ArrayIndexOutOfBoundsException exc) {
+                mSmsCountOnIcc = -1;
+                loge("ArrayIndexOutOfBoundsException in EVENT_GET_SMS_RECORD_SIZE_DONE: " + exc.toString());
+            } finally {
+                onRecordLoaded();
+            }
+            break;
+        default:
+            super.handleMessage(msg);
+    }
+}

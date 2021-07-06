@@ -1,0 +1,18 @@
+public void setName(String name){
+    if (name == null) {
+        throw new RSIllegalArgumentException("setName requires a string of non-zero length.");
+    }
+    if (name.length() < 1) {
+        throw new RSIllegalArgumentException("setName does not accept a zero length string.");
+    }
+    if (mName != null) {
+        throw new RSIllegalArgumentException("setName object already has a name.");
+    }
+    try {
+        byte[] bytes = name.getBytes("UTF-8");
+        mRS.nAssignName(mID, bytes);
+        mName = name;
+    } catch (java.io.UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+    }
+}

@@ -1,0 +1,13 @@
+public Canvas lockCanvas(Rect dirty){
+    if (mDestroyed) {
+        return null;
+    }
+    if (mCanvas == null) {
+        mCanvas = new Canvas();
+    }
+    if (nLockCanvas(mNativeObject, mCanvas, dirty)) {
+        mSaveCount = mCanvas.save();
+        return mCanvas;
+    }
+    return null;
+}

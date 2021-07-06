@@ -1,0 +1,6 @@
+public void requestDeviceInfo(@NonNull Channel c, @NonNull DeviceInfoListener listener){
+    checkChannel(c);
+    if (listener == null)
+        throw new IllegalArgumentException("This listener cannot be null.");
+    c.mAsyncChannel.sendMessage(REQUEST_DEVICE_INFO, 0, c.putListener(listener));
+}

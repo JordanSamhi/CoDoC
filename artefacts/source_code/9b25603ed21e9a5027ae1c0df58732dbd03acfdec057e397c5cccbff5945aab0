@@ -1,0 +1,14 @@
+public void setUp() throws Exception{
+    MockitoAnnotations.initMocks(this);
+    mTransport = backupTransport();
+    mTransportName = mTransport.transportName;
+    mBackupThread = startSilentBackupThread(TAG);
+    mShadowBackupLooper = shadowOf(mBackupThread.getLooper());
+    ContextWrapper context = RuntimeEnvironment.application;
+    mShadowPackageManager = shadowOf(context.getPackageManager());
+    mContext = context;
+    mShadowContext = shadowOf(context);
+    File cacheDir = mContext.getCacheDir();
+    mBaseStateDir = new File(cacheDir, "base_state");
+    mDataDir = new File(cacheDir, "data");
+}

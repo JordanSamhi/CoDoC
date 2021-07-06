@@ -1,0 +1,14 @@
+
+     * Registers the operation that is called to retrieve the metrics data. This must be called
+     * each time statsd starts. The config must have been added first (via {@link #addConfig},
+     * although addConfig could have been called on a previous boot). This operation allows
+     * statsd to send metrics data whenever statsd determines that the metrics in memory are
+     * approaching the memory limits. The fetch operation should call {@link #getReports} to fetch
+     * the data, which also deletes the retrieved metrics from statsd's memory.
+     *
+     * @param pendingIntent the PendingIntent to use when broadcasting info to the subscriber
+     *                      associated with the given subscriberId. May be null, in which case
+     *                      it removes any associated pending intent with this configKey.
+     * @param configKey     The integer naming the config to which this operation is attached.
+     * @throws StatsUnavailableException if unsuccessful due to failing to connect to stats service
+     

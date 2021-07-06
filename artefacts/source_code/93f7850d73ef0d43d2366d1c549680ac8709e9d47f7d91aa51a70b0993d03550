@@ -1,0 +1,19 @@
+public File getCacheDir(){
+    synchronized (mSync) {
+        if (mCacheDir == null) {
+            mCacheDir = new File(mFileContext.getCacheDir(), renamedFileName("cache"));
+        }
+        if (!mCacheDir.exists()) {
+            if (!mCacheDir.mkdirs()) {
+                Log.w("RenamingDelegatingContext", "Unable to create cache directory");
+                return null;
+            }
+            try {
+                Files.setPosixFilePermissions(mCacheDir.toPath(), EnumSet.allOf(PosixFilePermission.class));
+            } catch (IOException e) {
+                Log.e("RenamingDelegatingContext", "Could not set permissions of test cacheDir", e);
+            }
+        }
+    }
+    return mCacheDir;
+}

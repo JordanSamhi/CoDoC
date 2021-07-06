@@ -1,0 +1,68 @@
+public void query(@Nullable Network network, @NonNull String domain, @QueryFlag int flags, @NonNull @CallbackExecutor Executor executor, @Nullable CancellationSignal cancellationSignal, @NonNull Callback<? super List<InetAddress>> callback){
+    if (cancellationSignal != null && cancellationSignal.isCanceled()) {
+        return;
+    }
+    final Object lock = new Object();
+    final Network queryNetwork;
+    try {
+        queryNetwork = (network != null) ? network : getDnsNetwork();
+    } catch (ErrnoException e) {
+        executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, e)));
+        return;
+    }
+    final boolean queryIpv6 = haveIpv6(queryNetwork);
+    final boolean queryIpv4 = haveIpv4(queryNetwork);
+    if (!queryIpv6 && !queryIpv4) {
+        executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, new ErrnoException("resNetworkQuery", ENONET))));
+        return;
+    }
+    final FileDescriptor v4fd;
+    final FileDescriptor v6fd;
+    int queryCount = 0;
+    if (queryIpv6) {
+        try {
+            v6fd = resNetworkQuery(queryNetwork.getNetIdForResolv(), domain, CLASS_IN, TYPE_AAAA, flags);
+        } catch (ErrnoException e) {
+            executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, e)));
+            return;
+        }
+        queryCount++;
+    } else
+        v6fd = null;
+    try {
+        Thread.sleep(SLEEP_TIME_MS);
+    } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+    }
+    if (queryIpv4) {
+        try {
+            v4fd = resNetworkQuery(queryNetwork.getNetIdForResolv(), domain, CLASS_IN, TYPE_A, flags);
+        } catch (ErrnoException e) {
+            if (queryIpv6)
+                resNetworkCancel(v6fd);
+            executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, e)));
+            return;
+        }
+        queryCount++;
+    } else
+        v4fd = null;
+    final InetAddressAnswerAccumulator accumulator = new InetAddressAnswerAccumulator(queryNetwork, queryCount, callback);
+    synchronized (lock) {
+        if (queryIpv6) {
+            registerFDListener(executor, v6fd, accumulator, cancellationSignal, lock);
+        }
+        if (queryIpv4) {
+            registerFDListener(executor, v4fd, accumulator, cancellationSignal, lock);
+        }
+        if (cancellationSignal == null)
+            return;
+        cancellationSignal.setOnCancelListener(() -> {
+            synchronized (lock) {
+                if (queryIpv4)
+                    cancelQuery(v4fd);
+                if (queryIpv6)
+                    cancelQuery(v6fd);
+            }
+        });
+    }
+}

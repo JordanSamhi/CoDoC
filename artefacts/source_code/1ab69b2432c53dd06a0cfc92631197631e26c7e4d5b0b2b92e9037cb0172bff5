@@ -1,0 +1,20 @@
+public static void uncorkInvalidations(@NonNull String name){
+    synchronized (sCorkLock) {
+        int numberCorks = sCorks.getOrDefault(name, 0);
+        if (DEBUG) {
+            Log.d(TAG, String.format("uncorking %s: numberCorks=%s", name, numberCorks));
+        }
+        if (numberCorks < 1) {
+            throw new AssertionError("cork underflow: " + name);
+        }
+        if (numberCorks == 1) {
+            sCorks.remove(name);
+            invalidateCacheLocked(name);
+            if (DEBUG) {
+                Log.d(TAG, "uncorked: " + name);
+            }
+        } else {
+            sCorks.put(name, numberCorks - 1);
+        }
+    }
+}

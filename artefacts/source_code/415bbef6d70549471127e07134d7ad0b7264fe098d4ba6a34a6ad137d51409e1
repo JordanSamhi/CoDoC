@@ -1,0 +1,16 @@
+public void setEventListener(@Nullable EventListener listener, @Nullable Handler handler){
+    mListener = listener;
+    if (mListener == null) {
+        mEventHandler = null;
+        return;
+    }
+    Looper looper = (handler != null) ? handler.getLooper() : null;
+    if (looper == null && (looper = Looper.myLooper()) == null && (looper = Looper.getMainLooper()) == null) {
+        if (mHandlerThread == null || !mHandlerThread.isAlive()) {
+            mHandlerThread = new HandlerThread("MediaCasEventThread", Process.THREAD_PRIORITY_FOREGROUND);
+            mHandlerThread.start();
+        }
+        looper = mHandlerThread.getLooper();
+    }
+    mEventHandler = new EventHandler(looper);
+}

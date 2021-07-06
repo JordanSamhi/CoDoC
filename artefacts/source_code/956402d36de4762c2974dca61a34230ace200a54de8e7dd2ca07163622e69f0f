@@ -1,0 +1,37 @@
+public boolean isAlwaysOnPackageSupported(String packageName, @NonNull KeyStore keyStore){
+    enforceSettingsPermission();
+    if (packageName == null) {
+        return false;
+    }
+    final long oldId = Binder.clearCallingIdentity();
+    try {
+        if (getVpnProfilePrivileged(packageName, keyStore) != null) {
+            return true;
+        }
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+    PackageManager pm = mContext.getPackageManager();
+    ApplicationInfo appInfo = null;
+    try {
+        appInfo = pm.getApplicationInfoAsUser(packageName, 0, mUserHandle);
+    } catch (NameNotFoundException unused) {
+        Log.w(TAG, "Can't find \"" + packageName + "\" when checking always-on support");
+    }
+    if (appInfo == null || appInfo.targetSdkVersion < VERSION_CODES.N) {
+        return false;
+    }
+    final Intent intent = new Intent(VpnConfig.SERVICE_INTERFACE);
+    intent.setPackage(packageName);
+    List<ResolveInfo> services = pm.queryIntentServicesAsUser(intent, PackageManager.GET_META_DATA, mUserHandle);
+    if (services == null || services.size() == 0) {
+        return false;
+    }
+    for (ResolveInfo rInfo : services) {
+        final Bundle metaData = rInfo.serviceInfo.metaData;
+        if (metaData != null && !metaData.getBoolean(VpnService.SERVICE_META_DATA_SUPPORTS_ALWAYS_ON, true)) {
+            return false;
+        }
+    }
+    return true;
+}

@@ -1,0 +1,38 @@
+public final void measure(int widthMeasureSpec, int heightMeasureSpec){
+    boolean optical = isLayoutModeOptical(this);
+    if (optical != isLayoutModeOptical(mParent)) {
+        Insets insets = getOpticalInsets();
+        int oWidth = insets.left + insets.right;
+        int oHeight = insets.top + insets.bottom;
+        widthMeasureSpec = MeasureSpec.adjust(widthMeasureSpec, optical ? -oWidth : oWidth);
+        heightMeasureSpec = MeasureSpec.adjust(heightMeasureSpec, optical ? -oHeight : oHeight);
+    }
+    long key = (long) widthMeasureSpec << 32 | (long) heightMeasureSpec & 0xffffffffL;
+    if (mMeasureCache == null)
+        mMeasureCache = new LongSparseLongArray(2);
+    final boolean forceLayout = (mPrivateFlags & PFLAG_FORCE_LAYOUT) == PFLAG_FORCE_LAYOUT;
+    final boolean specChanged = widthMeasureSpec != mOldWidthMeasureSpec || heightMeasureSpec != mOldHeightMeasureSpec;
+    final boolean isSpecExactly = MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY;
+    final boolean matchesSpecSize = getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec) && getMeasuredHeight() == MeasureSpec.getSize(heightMeasureSpec);
+    final boolean needsLayout = specChanged && (sAlwaysRemeasureExactly || !isSpecExactly || !matchesSpecSize);
+    if (forceLayout || needsLayout) {
+        mPrivateFlags &= ~PFLAG_MEASURED_DIMENSION_SET;
+        resolveRtlPropertiesIfNeeded();
+        int cacheIndex = forceLayout ? -1 : mMeasureCache.indexOfKey(key);
+        if (cacheIndex < 0 || sIgnoreMeasureCache) {
+            onMeasure(widthMeasureSpec, heightMeasureSpec);
+            mPrivateFlags3 &= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;
+        } else {
+            long value = mMeasureCache.valueAt(cacheIndex);
+            setMeasuredDimensionRaw((int) (value >> 32), (int) value);
+            mPrivateFlags3 |= PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;
+        }
+        if ((mPrivateFlags & PFLAG_MEASURED_DIMENSION_SET) != PFLAG_MEASURED_DIMENSION_SET) {
+            throw new IllegalStateException("View with id " + getId() + ": " + getClass().getName() + "#onMeasure() did not set the" + " measured dimension by calling" + " setMeasuredDimension()");
+        }
+        mPrivateFlags |= PFLAG_LAYOUT_REQUIRED;
+    }
+    mOldWidthMeasureSpec = widthMeasureSpec;
+    mOldHeightMeasureSpec = heightMeasureSpec;
+    mMeasureCache.put(key, ((long) mMeasuredWidth) << 32 | (long) mMeasuredHeight & 0xffffffffL);
+}

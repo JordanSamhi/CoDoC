@@ -1,0 +1,19 @@
+public void incrementThroughputKbpsCount(int txThroughputKbps, int rxThroughputKbps, int frequency){
+    synchronized (mLock) {
+        if (ScanResult.is24GHz(frequency)) {
+            if (txThroughputKbps >= 0) {
+                mTxThroughputMbpsHistogram2G.increment(txThroughputKbps / 1000);
+            }
+            if (rxThroughputKbps >= 0) {
+                mRxThroughputMbpsHistogram2G.increment(rxThroughputKbps / 1000);
+            }
+        } else {
+            if (txThroughputKbps >= 0) {
+                mTxThroughputMbpsHistogramAbove2G.increment(txThroughputKbps / 1000);
+            }
+            if (rxThroughputKbps >= 0) {
+                mRxThroughputMbpsHistogramAbove2G.increment(rxThroughputKbps / 1000);
+            }
+        }
+    }
+}

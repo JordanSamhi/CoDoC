@@ -1,0 +1,8 @@
+public AccessibilityNodeInfo findFocus(int focus){
+    enforceSealed();
+    enforceValidFocusType(focus);
+    if (!canPerformRequestOverConnection(mConnectionId, mWindowId, mSourceNodeId)) {
+        return null;
+    }
+    return AccessibilityInteractionClient.getInstance().findFocus(mConnectionId, mWindowId, mSourceNodeId, focus);
+}

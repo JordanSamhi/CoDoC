@@ -1,0 +1,14 @@
+public int getWidthHint(int displayId) throws RemoteException{
+    synchronized (mLock) {
+        if (!isValidDisplay(displayId)) {
+            throw new IllegalArgumentException("Cannot find display with id=" + displayId);
+        }
+        WallpaperData wallpaper = mWallpaperMap.get(UserHandle.getCallingUserId());
+        if (wallpaper != null) {
+            final DisplayData wpdData = getDisplayDataOrCreate(displayId);
+            return wpdData.mWidth;
+        } else {
+            return 0;
+        }
+    }
+}

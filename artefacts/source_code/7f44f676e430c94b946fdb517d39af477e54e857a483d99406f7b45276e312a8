@@ -1,0 +1,31 @@
+public static Pair<Integer, Integer> statusBarCornerCutoutMargins(DisplayCutout cutout, Display display, int exactRotation, int statusBarHeight){
+    if (cutout == null) {
+        return null;
+    }
+    Point size = new Point();
+    display.getRealSize(size);
+    Rect bounds = new Rect();
+    switch(exactRotation) {
+        case RotationUtils.ROTATION_LANDSCAPE:
+            boundsFromDirection(cutout, Gravity.LEFT, bounds);
+            break;
+        case RotationUtils.ROTATION_SEASCAPE:
+            boundsFromDirection(cutout, Gravity.RIGHT, bounds);
+            break;
+        case RotationUtils.ROTATION_NONE:
+            boundsFromDirection(cutout, Gravity.TOP, bounds);
+            break;
+        case RotationUtils.ROTATION_UPSIDE_DOWN:
+            return null;
+    }
+    if (statusBarHeight >= 0 && bounds.top > statusBarHeight) {
+        return null;
+    }
+    if (bounds.left <= 0) {
+        return new Pair<>(bounds.right, 0);
+    }
+    if (bounds.right >= size.x) {
+        return new Pair<>(0, size.x - bounds.left);
+    }
+    return null;
+}

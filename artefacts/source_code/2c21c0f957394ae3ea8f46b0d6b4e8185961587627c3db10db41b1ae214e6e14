@@ -1,0 +1,7 @@
+public Builder addChildAsBytes(int tag, byte[] value){
+    if (isConstructedTag(tag)) {
+        throw new IllegalStateException("Cannot set value of a constructed tag: " + tag);
+    }
+    addChild(new Asn1Node(tag, value, 0, value.length));
+    return this;
+}

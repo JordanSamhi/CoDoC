@@ -1,0 +1,66 @@
+public static InputStream getInputStream(@NotNull RemoteInputStream is){
+    return new InputStream() {
+
+        @Override
+        public int read() throws IOException {
+            return is.read();
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public int read(byte[] b) throws IOException {
+            return read(b, 0, b.length);
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            try {
+                byte[] read = is.read(off, len);
+                int actualLength = Math.min(len, read.length);
+                System.arraycopy(read, 0, b, off, actualLength);
+                return actualLength;
+            } catch (EndOfStreamException e) {
+                return -1;
+            }
+        }
+
+        @Override
+        public long skip(long n) throws IOException {
+            return is.skip(n);
+        }
+
+        @Override
+        public int available() throws IOException {
+            return is.available();
+        }
+
+        @Override
+        public void close() throws IOException {
+            is.close();
+        }
+
+        @Override
+        public synchronized void mark(int readlimit) {
+            try {
+                is.mark(readlimit);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public synchronized void reset() throws IOException {
+            is.reset();
+        }
+
+        @Override
+        public boolean markSupported() {
+            try {
+                return is.markSupported();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    };
+}

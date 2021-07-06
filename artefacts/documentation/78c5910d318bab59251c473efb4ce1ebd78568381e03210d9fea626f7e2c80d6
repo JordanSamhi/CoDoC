@@ -1,0 +1,25 @@
+
+         * Informs the application that the time shift status is changed.
+         *
+         * <p>Prior to calling this method, the application assumes the status
+         * {@link TvInputManager#TIME_SHIFT_STATUS_UNKNOWN}. Right after the session is created, it
+         * is important to invoke the method with the status
+         * {@link TvInputManager#TIME_SHIFT_STATUS_AVAILABLE} if the implementation does support
+         * time shifting, or {@link TvInputManager#TIME_SHIFT_STATUS_UNSUPPORTED} otherwise. Failure
+         * to notifying the current status change immediately might result in an undesirable
+         * behavior in the application such as hiding the play controls.
+         *
+         * <p>If the status {@link TvInputManager#TIME_SHIFT_STATUS_AVAILABLE} is reported, the
+         * application assumes it can pause/resume playback, seek to a specified time position and
+         * set playback rate and audio mode. The implementation should override
+         * {@link #onTimeShiftPause}, {@link #onTimeShiftResume}, {@link #onTimeShiftSeekTo},
+         * {@link #onTimeShiftGetStartPosition}, {@link #onTimeShiftGetCurrentPosition} and
+         * {@link #onTimeShiftSetPlaybackParams}.
+         *
+         * @param status The current time shift status. Should be one of the followings.
+         * <ul>
+         * <li>{@link TvInputManager#TIME_SHIFT_STATUS_UNSUPPORTED}
+         * <li>{@link TvInputManager#TIME_SHIFT_STATUS_UNAVAILABLE}
+         * <li>{@link TvInputManager#TIME_SHIFT_STATUS_AVAILABLE}
+         * </ul>
+         

@@ -1,0 +1,15 @@
+public StatusBarNotification[] getActiveNotificationsWithAttribution(String callingPkg, String callingAttributionTag){
+    getContext().enforceCallingOrSelfPermission(android.Manifest.permission.ACCESS_NOTIFICATIONS, "NotificationManagerService.getActiveNotifications");
+    StatusBarNotification[] tmp = null;
+    int uid = Binder.getCallingUid();
+    if (mAppOps.noteOpNoThrow(AppOpsManager.OP_ACCESS_NOTIFICATIONS, uid, callingPkg, callingAttributionTag, null) == AppOpsManager.MODE_ALLOWED) {
+        synchronized (mNotificationLock) {
+            tmp = new StatusBarNotification[mNotificationList.size()];
+            final int N = mNotificationList.size();
+            for (int i = 0; i < N; i++) {
+                tmp[i] = mNotificationList.get(i).getSbn();
+            }
+        }
+    }
+    return tmp;
+}

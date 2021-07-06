@@ -1,0 +1,16 @@
+public void startDppAsEnrolleeInitiator(IBinder binder, String configuratorUri, IDppCallback callback){
+    if (binder == null) {
+        throw new IllegalArgumentException("Binder must not be null");
+    }
+    if (TextUtils.isEmpty(configuratorUri)) {
+        throw new IllegalArgumentException("Enrollee URI must not be null or empty");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Callback must not be null");
+    }
+    final int uid = getMockableCallingUid();
+    if (!isSettingsOrSuw(Binder.getCallingPid(), Binder.getCallingUid())) {
+        throw new SecurityException(TAG + ": Permission denied");
+    }
+    mWifiThreadRunner.post(() -> mDppManager.startDppAsEnrolleeInitiator(uid, binder, configuratorUri, callback));
+}

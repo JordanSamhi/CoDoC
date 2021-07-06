@@ -1,0 +1,10 @@
+public void addPortAssociation(@NonNull String inputPort, int displayPort){
+    if (!checkCallingPermission(android.Manifest.permission.ASSOCIATE_INPUT_DEVICE_TO_DISPLAY_BY_PORT, "addPortAssociation()")) {
+        throw new SecurityException("Requires ASSOCIATE_INPUT_DEVICE_TO_DISPLAY_BY_PORT permission");
+    }
+    Objects.requireNonNull(inputPort);
+    synchronized (mAssociationsLock) {
+        mRuntimeAssociations.put(inputPort, displayPort);
+    }
+    nativeNotifyPortAssociationsChanged(mPtr);
+}

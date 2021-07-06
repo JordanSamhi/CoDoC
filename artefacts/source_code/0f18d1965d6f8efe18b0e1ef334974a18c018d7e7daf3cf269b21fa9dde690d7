@@ -1,0 +1,11 @@
+public void cancelAll(){
+    INotificationManager service = getService();
+    String pkg = mContext.getPackageName();
+    if (localLOGV)
+        Log.v(TAG, pkg + ": cancelAll()");
+    try {
+        service.cancelAllNotifications(pkg, mContext.getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

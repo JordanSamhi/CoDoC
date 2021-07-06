@@ -1,0 +1,13 @@
+public void toggleGroup(int position){
+    obtainPositionMetadata(mPositionMetadata, position);
+    if (mPositionMetadata.itemType != ITEM_TYPE_GROUP_HEADER) {
+        throw new IllegalArgumentException("Not a group at position " + position);
+    }
+    if (mPositionMetadata.isExpanded) {
+        mGroupMetadata[mPositionMetadata.groupPosition] &= ~EXPANDED_GROUP_MASK;
+    } else {
+        mGroupMetadata[mPositionMetadata.groupPosition] |= EXPANDED_GROUP_MASK;
+    }
+    resetCache();
+    notifyDataSetChanged();
+}

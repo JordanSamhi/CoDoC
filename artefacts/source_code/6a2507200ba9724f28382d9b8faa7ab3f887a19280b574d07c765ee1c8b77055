@@ -1,0 +1,24 @@
+public static WrappedKey fromSecretKey(PlatformEncryptionKey wrappingKey, SecretKey key, @Nullable byte[] metadata) throws InvalidKeyException, KeyStoreException{
+    if (key.getEncoded() == null) {
+        throw new InvalidKeyException("key does not expose encoded material. It cannot be wrapped.");
+    }
+    Cipher cipher;
+    try {
+        cipher = Cipher.getInstance(KEY_WRAP_CIPHER_ALGORITHM);
+    } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+        throw new RuntimeException("Android does not support AES/GCM/NoPadding. This should never happen.");
+    }
+    cipher.init(Cipher.WRAP_MODE, wrappingKey.getKey());
+    byte[] encryptedKeyMaterial;
+    try {
+        encryptedKeyMaterial = cipher.wrap(key);
+    } catch (IllegalBlockSizeException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof KeyStoreException) {
+            throw (KeyStoreException) cause;
+        } else {
+            throw new RuntimeException("IllegalBlockSizeException should not be thrown by AES/GCM/NoPadding mode.", e);
+        }
+    }
+    return new WrappedKey(cipher.getIV(), encryptedKeyMaterial, metadata, wrappingKey.getGenerationId(), RecoveryController.RECOVERY_STATUS_SYNC_IN_PROGRESS);
+}

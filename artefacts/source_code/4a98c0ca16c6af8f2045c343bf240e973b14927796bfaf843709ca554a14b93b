@@ -1,0 +1,12 @@
+public boolean prepareVpn(@Nullable String oldPackage, @Nullable String newPackage, int userId){
+    enforceCrossUserPermission(userId);
+    synchronized (mVpns) {
+        throwIfLockdownEnabled();
+        Vpn vpn = mVpns.get(userId);
+        if (vpn != null) {
+            return vpn.prepare(oldPackage, newPackage, VpnManager.TYPE_VPN_SERVICE);
+        } else {
+            return false;
+        }
+    }
+}

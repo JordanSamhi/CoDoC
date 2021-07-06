@@ -1,0 +1,14 @@
+public boolean updateMimeGroup(String packageName, String mimeGroup){
+    F[] filters = mMimeGroupToFilter.get(mimeGroup);
+    int n = filters != null ? filters.length : 0;
+    mIsUpdatingMimeGroup = true;
+    boolean hasChanges = false;
+    F filter;
+    for (int i = 0; i < n && (filter = filters[i]) != null; i++) {
+        if (isPackageForFilter(packageName, filter)) {
+            hasChanges |= updateFilter(filter);
+        }
+    }
+    mIsUpdatingMimeGroup = false;
+    return hasChanges;
+}

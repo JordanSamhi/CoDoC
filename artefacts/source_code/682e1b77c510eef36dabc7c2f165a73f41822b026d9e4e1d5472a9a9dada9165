@@ -1,0 +1,24 @@
+public OperationResult finish(IBinder token, KeymasterArguments arguments, byte[] input, byte[] signature, byte[] entropy){
+    OperationPromise promise = new OperationPromise();
+    try {
+        mBinder.asBinder().linkToDeath(promise, 0);
+        arguments = arguments != null ? arguments : new KeymasterArguments();
+        entropy = entropy != null ? entropy : new byte[0];
+        input = input != null ? input : new byte[0];
+        signature = signature != null ? signature : new byte[0];
+        int errorCode = mBinder.finish(promise, token, arguments, input, signature, entropy);
+        if (errorCode == NO_ERROR) {
+            return interruptedPreservingGet(promise.getFuture());
+        } else {
+            return new OperationResult(errorCode);
+        }
+    } catch (RemoteException e) {
+        Log.w(TAG, "Cannot connect to keystore", e);
+        return null;
+    } catch (ExecutionException e) {
+        Log.e(TAG, "Finish completed with exception", e);
+        return null;
+    } finally {
+        mBinder.asBinder().unlinkToDeath(promise, 0);
+    }
+}

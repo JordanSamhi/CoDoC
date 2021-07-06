@@ -1,0 +1,16 @@
+public boolean dispatchPopulateAccessibilityEventInternal(AccessibilityEvent event){
+    if (mTopToBottomLeftToRightSet == null) {
+        mTopToBottomLeftToRightSet = new TreeSet<View>(new TopToBottomLeftToRightComparator());
+    }
+    for (int i = 0, count = getChildCount(); i < count; i++) {
+        mTopToBottomLeftToRightSet.add(getChildAt(i));
+    }
+    for (View view : mTopToBottomLeftToRightSet) {
+        if (view.getVisibility() == View.VISIBLE && view.dispatchPopulateAccessibilityEvent(event)) {
+            mTopToBottomLeftToRightSet.clear();
+            return true;
+        }
+    }
+    mTopToBottomLeftToRightSet.clear();
+    return false;
+}

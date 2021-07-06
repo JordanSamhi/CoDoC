@@ -1,0 +1,13 @@
+public int setIdle(String packageName, int userId, boolean idle, long elapsedRealtime){
+    final int newBucket;
+    final int reason;
+    if (idle) {
+        newBucket = IDLE_BUCKET_CUTOFF;
+        reason = REASON_MAIN_FORCED_BY_USER;
+    } else {
+        newBucket = STANDBY_BUCKET_ACTIVE;
+        reason = REASON_MAIN_USAGE | REASON_SUB_USAGE_USER_INTERACTION;
+    }
+    setAppStandbyBucket(packageName, userId, elapsedRealtime, newBucket, reason, false);
+    return newBucket;
+}

@@ -1,0 +1,11 @@
+public void provideContextImage(@NonNull Bitmap bitmap, @NonNull Bundle imageContextRequestExtras){
+    if (mService == null) {
+        Log.e(TAG, "provideContextImage called, but no ContentSuggestionsManager configured");
+        return;
+    }
+    try {
+        mService.provideContextBitmap(mUser, bitmap, imageContextRequestExtras);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

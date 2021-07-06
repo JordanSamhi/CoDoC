@@ -1,0 +1,11 @@
+public void play(Context context, Uri uri, boolean looping, int stream){
+    PlayerBase.deprecateStreamTypeForPlayback(stream, "AsyncPlayer", "play()");
+    if (context == null || uri == null) {
+        return;
+    }
+    try {
+        play(context, uri, looping, new AudioAttributes.Builder().setInternalLegacyStreamType(stream).build());
+    } catch (IllegalArgumentException e) {
+        Log.e(mTag, "Call to deprecated AsyncPlayer.play() method caused:", e);
+    }
+}

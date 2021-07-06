@@ -1,0 +1,9 @@
+public UserInfo preCreateUser(@NonNull String userType) throws UserOperationException{
+    try {
+        return mService.preCreateUserWithThrow(userType);
+    } catch (ServiceSpecificException e) {
+        throw UserOperationException.from(e);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

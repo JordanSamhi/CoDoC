@@ -1,0 +1,12 @@
+public void onConfigurationChanged(@NonNull Configuration newConfig){
+    if (DEBUG_LIFECYCLE)
+        Slog.v(TAG, "onConfigurationChanged " + this + ": " + newConfig);
+    mCalled = true;
+    mFragments.dispatchConfigurationChanged(newConfig);
+    if (mWindow != null) {
+        mWindow.onConfigurationChanged(newConfig);
+    }
+    if (mActionBar != null) {
+        mActionBar.onConfigurationChanged(newConfig);
+    }
+}

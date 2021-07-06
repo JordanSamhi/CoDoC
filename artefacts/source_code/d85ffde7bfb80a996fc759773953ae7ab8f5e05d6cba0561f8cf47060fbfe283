@@ -1,0 +1,11 @@
+public static void updateLocales(LocaleList locales){
+    try {
+        final IActivityManager am = ActivityManager.getService();
+        final Configuration config = am.getConfiguration();
+        config.setLocales(locales);
+        config.userSetLocale = true;
+        am.updatePersistentConfiguration(config);
+        BackupManager.dataChanged("com.android.providers.settings");
+    } catch (RemoteException e) {
+    }
+}

@@ -1,0 +1,14 @@
+public boolean reportError(BluetoothDevice device, byte error){
+    boolean result = false;
+    final IBluetoothHidDevice service = getService();
+    if (service != null) {
+        try {
+            result = service.reportError(device, error);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+    }
+    return result;
+}

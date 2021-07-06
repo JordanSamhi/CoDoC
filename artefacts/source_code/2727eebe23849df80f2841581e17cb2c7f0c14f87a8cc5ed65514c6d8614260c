@@ -1,0 +1,10 @@
+public static double distanceClosestPointerToPoint(PointF pointerDown, MotionEvent moveEvent){
+    float movement = Float.MAX_VALUE;
+    for (int i = 0; i < moveEvent.getPointerCount(); i++) {
+        final float moveDelta = MathUtils.dist(pointerDown.x, pointerDown.y, moveEvent.getX(i), moveEvent.getY(i));
+        if (movement > moveDelta) {
+            movement = moveDelta;
+        }
+    }
+    return movement;
+}

@@ -1,0 +1,12 @@
+public boolean disconnect(String packageName){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return false;
+    }
+    if (!isTargetSdkLessThanQOrPrivileged(packageName, Binder.getCallingPid(), Binder.getCallingUid())) {
+        mLog.info("disconnect not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return false;
+    }
+    mLog.info("disconnect uid=%").c(Binder.getCallingUid()).flush();
+    mClientModeImpl.disconnectCommand();
+    return true;
+}

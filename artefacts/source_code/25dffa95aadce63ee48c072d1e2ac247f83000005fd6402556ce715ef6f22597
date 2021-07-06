@@ -1,0 +1,52 @@
+public void initialize(int width, int height, int parentWidth, int parentHeight){
+    super.initialize(width, height, parentWidth, parentHeight);
+    boolean durationSet = (mFlags & PROPERTY_DURATION_MASK) == PROPERTY_DURATION_MASK;
+    boolean fillAfterSet = (mFlags & PROPERTY_FILL_AFTER_MASK) == PROPERTY_FILL_AFTER_MASK;
+    boolean fillBeforeSet = (mFlags & PROPERTY_FILL_BEFORE_MASK) == PROPERTY_FILL_BEFORE_MASK;
+    boolean repeatModeSet = (mFlags & PROPERTY_REPEAT_MODE_MASK) == PROPERTY_REPEAT_MODE_MASK;
+    boolean shareInterpolator = (mFlags & PROPERTY_SHARE_INTERPOLATOR_MASK) == PROPERTY_SHARE_INTERPOLATOR_MASK;
+    boolean startOffsetSet = (mFlags & PROPERTY_START_OFFSET_MASK) == PROPERTY_START_OFFSET_MASK;
+    if (shareInterpolator) {
+        ensureInterpolator();
+    }
+    final ArrayList<Animation> children = mAnimations;
+    final int count = children.size();
+    final long duration = mDuration;
+    final boolean fillAfter = mFillAfter;
+    final boolean fillBefore = mFillBefore;
+    final int repeatMode = mRepeatMode;
+    final Interpolator interpolator = mInterpolator;
+    final long startOffset = mStartOffset;
+    long[] storedOffsets = mStoredOffsets;
+    if (startOffsetSet) {
+        if (storedOffsets == null || storedOffsets.length != count) {
+            storedOffsets = mStoredOffsets = new long[count];
+        }
+    } else if (storedOffsets != null) {
+        storedOffsets = mStoredOffsets = null;
+    }
+    for (int i = 0; i < count; i++) {
+        Animation a = children.get(i);
+        if (durationSet) {
+            a.setDuration(duration);
+        }
+        if (fillAfterSet) {
+            a.setFillAfter(fillAfter);
+        }
+        if (fillBeforeSet) {
+            a.setFillBefore(fillBefore);
+        }
+        if (repeatModeSet) {
+            a.setRepeatMode(repeatMode);
+        }
+        if (shareInterpolator) {
+            a.setInterpolator(interpolator);
+        }
+        if (startOffsetSet) {
+            long offset = a.getStartOffset();
+            a.setStartOffset(offset + startOffset);
+            storedOffsets[i] = offset;
+        }
+        a.initialize(width, height, parentWidth, parentHeight);
+    }
+}

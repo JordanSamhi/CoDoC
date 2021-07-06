@@ -1,0 +1,12 @@
+public void setScanAlwaysAvailable(boolean isAvailable){
+    enforceNetworkSettingsPermission();
+    mLog.info("setScanAlwaysAvailable uid=%").c(Binder.getCallingUid()).flush();
+    mSettingsStore.handleWifiScanAlwaysAvailableToggled(isAvailable);
+    long ident = Binder.clearCallingIdentity();
+    try {
+        mWifiInjector.getWifiScanAlwaysAvailableSettingsCompatibility().handleWifiScanAlwaysAvailableToggled(isAvailable);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    mActiveModeWarden.scanAlwaysModeChanged();
+}

@@ -1,0 +1,25 @@
+public boolean configureExtListen(boolean enable, int periodInMillis, int intervalInMillis){
+    if (enable && intervalInMillis < periodInMillis) {
+        return false;
+    }
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("configureExtListen"))
+            return false;
+        if (!enable) {
+            periodInMillis = 0;
+            intervalInMillis = 0;
+        }
+        if (periodInMillis < 0 || intervalInMillis < 0) {
+            Log.e(TAG, "Invalid parameters supplied to configureExtListen: " + periodInMillis + ", " + intervalInMillis);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("configureExtListen(" + periodInMillis + ", " + intervalInMillis + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.configureExtListen(periodInMillis, intervalInMillis));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

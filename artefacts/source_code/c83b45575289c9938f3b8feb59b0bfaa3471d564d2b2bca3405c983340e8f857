@@ -1,0 +1,11 @@
+public boolean unmountObb(String rawPath, boolean force, OnObbStateChangeListener listener){
+    Preconditions.checkNotNull(rawPath, "rawPath cannot be null");
+    Preconditions.checkNotNull(listener, "listener cannot be null");
+    try {
+        final int nonce = mObbActionListener.addListener(listener);
+        mStorageManager.unmountObb(rawPath, force, mObbActionListener, nonce);
+        return true;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,12 @@
+public CharSequence getGmtDisplayName(Context context, String id, long millis, boolean grayGmt){
+    TimeZone timezone = TimeZone.getTimeZone(id);
+    if (timezone == null) {
+        return null;
+    }
+    final Locale defaultLocale = Locale.getDefault();
+    if (!defaultLocale.equals(mDefaultLocale)) {
+        mDefaultLocale = defaultLocale;
+        cacheOverrides(context);
+    }
+    return buildGmtDisplayName(timezone, millis, grayGmt);
+}

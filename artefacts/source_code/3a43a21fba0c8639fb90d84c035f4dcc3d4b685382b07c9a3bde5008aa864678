@@ -1,0 +1,21 @@
+public int getServiceState(int subId){
+    int resultState = ServiceState.STATE_OUT_OF_SERVICE;
+    for (Phone phone : mPhones) {
+        if (phone.getSubId() == subId) {
+            int serviceState = phone.getServiceState().getState();
+            if (serviceState == ServiceState.STATE_IN_SERVICE) {
+                resultState = serviceState;
+                break;
+            } else if (serviceState == ServiceState.STATE_OUT_OF_SERVICE) {
+                if (resultState == ServiceState.STATE_EMERGENCY_ONLY || resultState == ServiceState.STATE_POWER_OFF) {
+                    resultState = serviceState;
+                }
+            } else if (serviceState == ServiceState.STATE_EMERGENCY_ONLY) {
+                if (resultState == ServiceState.STATE_POWER_OFF) {
+                    resultState = serviceState;
+                }
+            }
+        }
+    }
+    return resultState;
+}

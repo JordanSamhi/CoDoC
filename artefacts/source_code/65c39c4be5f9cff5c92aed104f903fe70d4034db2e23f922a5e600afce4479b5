@@ -1,0 +1,10 @@
+public void setIsUsingCarrierAggregation(boolean ca){
+    NetworkRegistrationInfo nri = getNetworkRegistrationInfo(NetworkRegistrationInfo.DOMAIN_PS, AccessNetworkConstants.TRANSPORT_TYPE_WWAN);
+    if (nri != null) {
+        DataSpecificRegistrationInfo dsri = nri.getDataSpecificInfo();
+        if (dsri != null) {
+            dsri.setIsUsingCarrierAggregation(ca);
+            addNetworkRegistrationInfo(nri);
+        }
+    }
+}

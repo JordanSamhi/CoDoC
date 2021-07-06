@@ -1,0 +1,39 @@
+
+     * Construct a {@code SELECT} statement suitable for use in a group of
+     * {@code SELECT} statements that will be joined through {@code UNION} operators
+     * in buildUnionQuery.
+     *
+     * @param typeDiscriminatorColumn the name of the result column
+     *   whose cells will contain the name of the table from which
+     *   each row was drawn.
+     * @param unionColumns the names of the columns to appear in the
+     *   result.  This may include columns that do not appear in the
+     *   table this {@code SELECT} is querying (i.e. mTables), but that do
+     *   appear in one of the other tables in the {@code UNION} query that we
+     *   are constructing.
+     * @param columnsPresentInTable a Set of the names of the columns
+     *   that appear in this table (i.e. in the table whose name is
+     *   mTables).  Since columns in unionColumns include columns that
+     *   appear only in other tables, we use this array to distinguish
+     *   which ones actually are present.  Other columns will have
+     *   NULL values for results from this subquery.
+     * @param computedColumnsOffset all columns in unionColumns before
+     *   this index are included under the assumption that they're
+     *   computed and therefore won't appear in columnsPresentInTable,
+     *   e.g. "date * 1000 as normalized_date"
+     * @param typeDiscriminatorValue the value used for the
+     *   type-discriminator column in this subquery
+     * @param selection A filter declaring which rows to return,
+     *   formatted as an SQL {@code WHERE} clause (excluding the {@code WHERE}
+     *   itself).  Passing null will return all rows for the given
+     *   URL.
+     * @param groupBy A filter declaring how to group rows, formatted
+     *   as an SQL {@code GROUP BY} clause (excluding the {@code GROUP BY} itself).
+     *   Passing null will cause the rows to not be grouped.
+     * @param having A filter declare which row groups to include in
+     *   the cursor, if row grouping is being used, formatted as an
+     *   SQL {@code HAVING} clause (excluding the {@code HAVING} itself).  Passing
+     *   null will cause all row groups to be included, and is
+     *   required when row grouping is not being used.
+     * @return the resulting SQL {@code SELECT} statement
+     

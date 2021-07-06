@@ -1,0 +1,81 @@
+public void makeNewLayout(int wantWidth, int hintWidth, BoringLayout.Metrics boring, BoringLayout.Metrics hintBoring, int ellipsisWidth, boolean bringIntoView){
+    stopMarquee();
+    mOldMaximum = mMaximum;
+    mOldMaxMode = mMaxMode;
+    mHighlightPathBogus = true;
+    if (wantWidth < 0) {
+        wantWidth = 0;
+    }
+    if (hintWidth < 0) {
+        hintWidth = 0;
+    }
+    Layout.Alignment alignment = getLayoutAlignment();
+    final boolean testDirChange = mSingleLine && mLayout != null && (alignment == Layout.Alignment.ALIGN_NORMAL || alignment == Layout.Alignment.ALIGN_OPPOSITE);
+    int oldDir = 0;
+    if (testDirChange)
+        oldDir = mLayout.getParagraphDirection(0);
+    boolean shouldEllipsize = mEllipsize != null && getKeyListener() == null;
+    final boolean switchEllipsize = mEllipsize == TruncateAt.MARQUEE && mMarqueeFadeMode != MARQUEE_FADE_NORMAL;
+    TruncateAt effectiveEllipsize = mEllipsize;
+    if (mEllipsize == TruncateAt.MARQUEE && mMarqueeFadeMode == MARQUEE_FADE_SWITCH_SHOW_ELLIPSIS) {
+        effectiveEllipsize = TruncateAt.END_SMALL;
+    }
+    if (mTextDir == null) {
+        mTextDir = getTextDirectionHeuristic();
+    }
+    mLayout = makeSingleLayout(wantWidth, boring, ellipsisWidth, alignment, shouldEllipsize, effectiveEllipsize, effectiveEllipsize == mEllipsize);
+    if (switchEllipsize) {
+        TruncateAt oppositeEllipsize = effectiveEllipsize == TruncateAt.MARQUEE ? TruncateAt.END : TruncateAt.MARQUEE;
+        mSavedMarqueeModeLayout = makeSingleLayout(wantWidth, boring, ellipsisWidth, alignment, shouldEllipsize, oppositeEllipsize, effectiveEllipsize != mEllipsize);
+    }
+    shouldEllipsize = mEllipsize != null;
+    mHintLayout = null;
+    if (mHint != null) {
+        if (shouldEllipsize)
+            hintWidth = wantWidth;
+        if (hintBoring == UNKNOWN_BORING) {
+            hintBoring = BoringLayout.isBoring(mHint, mTextPaint, mTextDir, mHintBoring);
+            if (hintBoring != null) {
+                mHintBoring = hintBoring;
+            }
+        }
+        if (hintBoring != null) {
+            if (hintBoring.width <= hintWidth && (!shouldEllipsize || hintBoring.width <= ellipsisWidth)) {
+                if (mSavedHintLayout != null) {
+                    mHintLayout = mSavedHintLayout.replaceOrMake(mHint, mTextPaint, hintWidth, alignment, mSpacingMult, mSpacingAdd, hintBoring, mIncludePad);
+                } else {
+                    mHintLayout = BoringLayout.make(mHint, mTextPaint, hintWidth, alignment, mSpacingMult, mSpacingAdd, hintBoring, mIncludePad);
+                }
+                mSavedHintLayout = (BoringLayout) mHintLayout;
+            } else if (shouldEllipsize && hintBoring.width <= hintWidth) {
+                if (mSavedHintLayout != null) {
+                    mHintLayout = mSavedHintLayout.replaceOrMake(mHint, mTextPaint, hintWidth, alignment, mSpacingMult, mSpacingAdd, hintBoring, mIncludePad, mEllipsize, ellipsisWidth);
+                } else {
+                    mHintLayout = BoringLayout.make(mHint, mTextPaint, hintWidth, alignment, mSpacingMult, mSpacingAdd, hintBoring, mIncludePad, mEllipsize, ellipsisWidth);
+                }
+            }
+        }
+        if (mHintLayout == null) {
+            StaticLayout.Builder builder = StaticLayout.Builder.obtain(mHint, 0, mHint.length(), mTextPaint, hintWidth).setAlignment(alignment).setTextDirection(mTextDir).setLineSpacing(mSpacingAdd, mSpacingMult).setIncludePad(mIncludePad).setUseLineSpacingFromFallbacks(mUseFallbackLineSpacing).setBreakStrategy(mBreakStrategy).setHyphenationFrequency(mHyphenationFrequency).setJustificationMode(mJustificationMode).setMaxLines(mMaxMode == LINES ? mMaximum : Integer.MAX_VALUE);
+            if (shouldEllipsize) {
+                builder.setEllipsize(mEllipsize).setEllipsizedWidth(ellipsisWidth);
+            }
+            mHintLayout = builder.build();
+        }
+    }
+    if (bringIntoView || (testDirChange && oldDir != mLayout.getParagraphDirection(0))) {
+        registerForPreDraw();
+    }
+    if (mEllipsize == TextUtils.TruncateAt.MARQUEE) {
+        if (!compressText(ellipsisWidth)) {
+            final int height = mLayoutParams.height;
+            if (height != LayoutParams.WRAP_CONTENT && height != LayoutParams.MATCH_PARENT) {
+                startMarquee();
+            } else {
+                mRestartMarquee = true;
+            }
+        }
+    }
+    if (mEditor != null)
+        mEditor.prepareCursorControllers();
+}

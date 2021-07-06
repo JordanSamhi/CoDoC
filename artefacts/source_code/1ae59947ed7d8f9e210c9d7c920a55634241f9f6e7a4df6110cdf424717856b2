@@ -1,0 +1,6 @@
+public boolean isDelegateAllowed(String sourcePkg, int sourceUid, String potentialDelegatePkg, int potentialDelegateUid){
+    synchronized (mPackagePreferences) {
+        PackagePreferences prefs = getPackagePreferencesLocked(sourcePkg, sourceUid);
+        return prefs != null && prefs.isValidDelegate(potentialDelegatePkg, potentialDelegateUid);
+    }
+}

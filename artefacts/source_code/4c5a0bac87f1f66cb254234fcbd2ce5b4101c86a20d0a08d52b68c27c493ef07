@@ -1,0 +1,27 @@
+public synchronized IpSecSpiResponse allocateSecurityParameterIndex(String destinationAddress, int requestedSpi, IBinder binder) throws RemoteException{
+    checkInetAddress(destinationAddress);
+    if (requestedSpi > 0 && requestedSpi < 256) {
+        throw new IllegalArgumentException("ESP SPI must not be in the range of 0-255.");
+    }
+    Objects.requireNonNull(binder, "Null Binder passed to allocateSecurityParameterIndex");
+    int callingUid = Binder.getCallingUid();
+    UserRecord userRecord = mUserResourceTracker.getUserRecord(callingUid);
+    final int resourceId = mNextResourceId++;
+    int spi = IpSecManager.INVALID_SECURITY_PARAMETER_INDEX;
+    try {
+        if (!userRecord.mSpiQuotaTracker.isAvailable()) {
+            return new IpSecSpiResponse(IpSecManager.Status.RESOURCE_UNAVAILABLE, INVALID_RESOURCE_ID, spi);
+        }
+        spi = mSrvConfig.getNetdInstance().ipSecAllocateSpi(callingUid, "", destinationAddress, requestedSpi);
+        Log.d(TAG, "Allocated SPI " + spi);
+        userRecord.mSpiRecords.put(resourceId, new RefcountedResource<SpiRecord>(new SpiRecord(resourceId, "", destinationAddress, spi), binder));
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == OsConstants.ENOENT) {
+            return new IpSecSpiResponse(IpSecManager.Status.SPI_UNAVAILABLE, INVALID_RESOURCE_ID, spi);
+        }
+        throw e;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return new IpSecSpiResponse(IpSecManager.Status.OK, resourceId, spi);
+}

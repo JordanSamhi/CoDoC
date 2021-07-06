@@ -1,0 +1,17 @@
+public static Pair<int[], String[]> getUidsAndTagsForWs(WorkSource ws){
+    List<Integer> uids = new ArrayList<>();
+    List<String> tags = new ArrayList<>();
+    for (int i = 0; i < ws.size(); i++) {
+        uids.add(ws.getUid(i));
+        tags.add(ws.getPackageName(i));
+    }
+    final List<WorkSource.WorkChain> workChains = ws.getWorkChains();
+    if (workChains != null) {
+        for (int i = 0; i < workChains.size(); ++i) {
+            final WorkSource.WorkChain workChain = workChains.get(i);
+            uids.add(workChain.getAttributionUid());
+            tags.add(workChain.getAttributionTag());
+        }
+    }
+    return Pair.create(uids.stream().mapToInt(Integer::intValue).toArray(), tags.toArray(new String[0]));
+}

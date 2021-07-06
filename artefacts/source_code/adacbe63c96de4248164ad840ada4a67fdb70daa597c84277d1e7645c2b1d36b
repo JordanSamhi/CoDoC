@@ -1,0 +1,43 @@
+public boolean setListenChannel(int listenChannel, int operatingChannel){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("setListenChannel"))
+            return false;
+        if (listenChannel >= 1 && listenChannel <= 11) {
+            SupplicantResult<Void> result = new SupplicantResult("setListenChannel(" + listenChannel + ", " + DEFAULT_OPERATING_CLASS + ")");
+            try {
+                result.setResult(mISupplicantP2pIface.setListenChannel(listenChannel, DEFAULT_OPERATING_CLASS));
+            } catch (RemoteException e) {
+                Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+                supplicantServiceDiedHandler();
+            }
+            if (!result.isSuccess()) {
+                return false;
+            }
+        } else if (listenChannel != 0) {
+            return false;
+        }
+        if (operatingChannel >= 0 && operatingChannel <= 165) {
+            ArrayList<ISupplicantP2pIface.FreqRange> ranges = new ArrayList<>();
+            if (operatingChannel >= 1 && operatingChannel <= 165) {
+                int freq = (operatingChannel <= 14 ? 2407 : 5000) + operatingChannel * 5;
+                ISupplicantP2pIface.FreqRange range1 = new ISupplicantP2pIface.FreqRange();
+                range1.min = 1000;
+                range1.max = freq - 5;
+                ISupplicantP2pIface.FreqRange range2 = new ISupplicantP2pIface.FreqRange();
+                range2.min = freq + 5;
+                range2.max = 6000;
+                ranges.add(range1);
+                ranges.add(range2);
+            }
+            SupplicantResult<Void> result = new SupplicantResult("setDisallowedFrequencies(" + ranges + ")");
+            try {
+                result.setResult(mISupplicantP2pIface.setDisallowedFrequencies(ranges));
+            } catch (RemoteException e) {
+                Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+                supplicantServiceDiedHandler();
+            }
+            return result.isSuccess();
+        }
+        return false;
+    }
+}

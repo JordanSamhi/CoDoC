@@ -1,0 +1,10 @@
+public static void openTransaction(){
+    synchronized (SurfaceControl.class) {
+        if (sGlobalTransaction == null) {
+            sGlobalTransaction = new Transaction();
+        }
+        synchronized (SurfaceControl.class) {
+            sTransactionNestCount++;
+        }
+    }
+}

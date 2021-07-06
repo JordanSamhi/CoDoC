@@ -1,0 +1,16 @@
+public List<FontInfo> getFonts(){
+    Typeface_Delegate typeface = mTypeface;
+    if (typeface == null) {
+        if (Typeface.sDefaultTypeface == null) {
+            return Collections.emptyList();
+        }
+        typeface = Typeface_Delegate.getDelegate(Typeface.sDefaultTypeface.native_instance);
+    }
+    if (mFonts != null) {
+        return mFonts;
+    }
+    AffineTransform affineTransform = mTextScaleX != 1.0 || mTextSkewX != 0 ? new AffineTransform(mTextScaleX, mTextSkewX, 0, 1, 0, 0) : null;
+    List<FontInfo> infoList = StreamSupport.stream(typeface.getFonts(mFontVariant).spliterator(), false).filter(Objects::nonNull).map(font -> getFontInfo(font, mTextSize, affineTransform)).collect(Collectors.toList());
+    mFonts = Collections.unmodifiableList(infoList);
+    return mFonts;
+}

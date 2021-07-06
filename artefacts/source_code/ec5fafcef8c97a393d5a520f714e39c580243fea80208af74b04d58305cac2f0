@@ -1,0 +1,7 @@
+public static List<PasswordValidationError> validatePassword(PasswordMetrics adminMetrics, int minComplexity, boolean isPin, byte[] password){
+    if (hasInvalidCharacters(password)) {
+        return Collections.singletonList(new PasswordValidationError(CONTAINS_INVALID_CHARACTERS, 0));
+    }
+    final PasswordMetrics enteredMetrics = computeForPassword(password);
+    return validatePasswordMetrics(adminMetrics, minComplexity, isPin, enteredMetrics);
+}

@@ -1,0 +1,18 @@
+
+     * Queue a new request.
+     *
+     * <p>
+     * For requests that use the Camera1 API preview output stream, this will block if there are
+     * already {@code maxInFlight} requests in progress (until at least one prior request has
+     * completed). For requests that use the Camera1 API jpeg callbacks, this will block until
+     * all prior requests have been completed to avoid stopping preview for
+     * {@link android.hardware.Camera#takePicture} before prior preview requests have been
+     * completed.
+     * </p>
+     * @param holder the {@link RequestHolder} for this request.
+     * @param legacy the {@link LegacyRequest} for this request; this will not be mutated.
+     * @param timeout a timeout to use for this call.
+     * @param unit the units to use for the timeout.
+     * @return {@code false} if this method timed out.
+     * @throws InterruptedException if this thread is interrupted.
+     

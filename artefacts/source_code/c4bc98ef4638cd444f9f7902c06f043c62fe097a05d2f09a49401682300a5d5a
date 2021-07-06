@@ -1,0 +1,22 @@
+public AsyncTask<Bitmap, Void, Palette> generate(final Palette.PaletteAsyncListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener can not be null");
+    }
+    return new AsyncTask<Bitmap, Void, Palette>() {
+
+        @Override
+        protected Palette doInBackground(Bitmap... params) {
+            try {
+                return generate();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Exception thrown during async generate", e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Palette colorExtractor) {
+            listener.onGenerated(colorExtractor);
+        }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mBitmap);
+}

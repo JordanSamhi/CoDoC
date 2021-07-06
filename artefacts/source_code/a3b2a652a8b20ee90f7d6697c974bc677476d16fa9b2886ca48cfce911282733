@@ -1,0 +1,6 @@
+public void ZTRSM(@Side int Side, @Uplo int Uplo, @Transpose int TransA, @Diag int Diag, Double2 alpha, Allocation A, Allocation B){
+    validateUplo(Uplo);
+    validateDiag(Diag);
+    validateTRSM(Element.F64_2(mRS), Side, TransA, A, B);
+    mRS.nScriptIntrinsicBLAS_Z(getID(mRS), RsBlas_ztrsm, TransA, 0, Side, Uplo, Diag, B.getType().getY(), B.getType().getX(), 0, alpha.x, alpha.y, A.getID(mRS), B.getID(mRS), 0, 0, 0, 0, 0, 0, 0);
+}

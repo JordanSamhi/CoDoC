@@ -1,0 +1,8 @@
+public long addKey(TertiaryKey tertiaryKey) throws EncryptionDbException{
+    SQLiteDatabase db = mHelper.getWritableDatabaseSafe();
+    ContentValues values = new ContentValues();
+    values.put(TertiaryKeysEntry.COLUMN_NAME_SECONDARY_KEY_ALIAS, tertiaryKey.getSecondaryKeyAlias());
+    values.put(TertiaryKeysEntry.COLUMN_NAME_PACKAGE_NAME, tertiaryKey.getPackageName());
+    values.put(TertiaryKeysEntry.COLUMN_NAME_WRAPPED_KEY_BYTES, tertiaryKey.getWrappedKeyBytes());
+    return db.replace(TertiaryKeysEntry.TABLE_NAME, null, values);
+}

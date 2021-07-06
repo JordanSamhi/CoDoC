@@ -1,0 +1,9 @@
+public ContentValues[] getApns(int subId){
+    try {
+        List<ContentValues> apns = ApnService.this.onRestoreApns(subId);
+        return apns.toArray(new ContentValues[apns.size()]);
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "Error in getApns for subId=" + subId + ": " + e.getMessage(), e);
+        return null;
+    }
+}

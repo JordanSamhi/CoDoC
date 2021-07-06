@@ -1,0 +1,12 @@
+public void setActivityType(int activityType){
+    int currentActivityType = getActivityType();
+    if (currentActivityType == activityType) {
+        return;
+    }
+    if (currentActivityType != ACTIVITY_TYPE_UNDEFINED) {
+        throw new IllegalStateException("Can't change activity type once set: " + this + " activityType=" + activityTypeToString(activityType));
+    }
+    mRequestsTmpConfig.setTo(getRequestedOverrideConfiguration());
+    mRequestsTmpConfig.windowConfiguration.setActivityType(activityType);
+    onRequestedOverrideConfigurationChanged(mRequestsTmpConfig);
+}

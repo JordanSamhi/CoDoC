@@ -1,0 +1,31 @@
+public void setUpWithCallback(Callback callback, RemoteInputController.Delegate delegate){
+    mCallback = callback;
+    mRemoteInputController = new RemoteInputController(delegate, mRemoteInputUriController);
+    mRemoteInputController.addCallback(new RemoteInputController.Callback() {
+
+        @Override
+        public void onRemoteInputSent(NotificationEntry entry) {
+            if (FORCE_REMOTE_INPUT_HISTORY && isNotificationKeptForRemoteInputHistory(entry.getKey())) {
+                mNotificationLifetimeFinishedCallback.onSafeToRemove(entry.getKey());
+            } else if (mEntriesKeptForRemoteInputActive.contains(entry)) {
+                mMainHandler.postDelayed(() -> {
+                    if (mEntriesKeptForRemoteInputActive.remove(entry)) {
+                        mNotificationLifetimeFinishedCallback.onSafeToRemove(entry.getKey());
+                    }
+                }, REMOTE_INPUT_KEPT_ENTRY_AUTO_CANCEL_DELAY);
+            }
+            try {
+                mBarService.onNotificationDirectReplied(entry.getSbn().getKey());
+                if (entry.editedSuggestionInfo != null) {
+                    boolean modifiedBeforeSending = !TextUtils.equals(entry.remoteInputText, entry.editedSuggestionInfo.originalText);
+                    mBarService.onNotificationSmartReplySent(entry.getSbn().getKey(), entry.editedSuggestionInfo.index, entry.editedSuggestionInfo.originalText, NotificationLogger.getNotificationLocation(entry).toMetricsEventEnum(), modifiedBeforeSending);
+                }
+            } catch (RemoteException e) {
+            }
+        }
+    });
+    mSmartReplyController.setCallback((entry, reply) -> {
+        StatusBarNotification newSbn = rebuildNotificationWithRemoteInput(entry, reply, true, null, null);
+        mEntryManager.updateNotification(newSbn, null);
+    });
+}

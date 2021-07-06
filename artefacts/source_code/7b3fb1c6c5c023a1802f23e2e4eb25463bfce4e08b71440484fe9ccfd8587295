@@ -1,0 +1,18 @@
+public static Bitmap decodeByteArray(byte[] data, int offset, int length, Options opts){
+    if ((offset | length) < 0 || data.length < offset + length) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    validate(opts);
+    Bitmap bm;
+    Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
+    try {
+        bm = nativeDecodeByteArray(data, offset, length, opts, Options.nativeInBitmap(opts), Options.nativeColorSpace(opts));
+        if (bm == null && opts != null && opts.inBitmap != null) {
+            throw new IllegalArgumentException("Problem decoding into existing bitmap");
+        }
+        setDensityFromOptions(bm, opts);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
+    }
+    return bm;
+}

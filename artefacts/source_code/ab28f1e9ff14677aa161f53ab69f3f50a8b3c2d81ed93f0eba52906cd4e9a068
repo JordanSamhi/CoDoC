@@ -1,0 +1,31 @@
+public static ZoomData convertZoomRatio(Rect activeArraySize, float zoomRatio, Size previewSize, Camera.Parameters params){
+    if (DEBUG) {
+        Log.v(TAG, "convertZoomRatio - user zoom ratio was " + zoomRatio);
+    }
+    List<Rect> availableReportedCropRegions = getAvailableZoomCropRectangles(params, activeArraySize);
+    List<Rect> availablePreviewCropRegions = getAvailablePreviewZoomCropRectangles(params, activeArraySize, previewSize);
+    if (availableReportedCropRegions.size() != availablePreviewCropRegions.size()) {
+        throw new AssertionError("available reported/preview crop region size mismatch");
+    }
+    int bestZoomIndex = 0;
+    Rect reportedCropRegion = new Rect(availableReportedCropRegions.get(0));
+    Rect previewCropRegion = new Rect(availablePreviewCropRegions.get(0));
+    float reportedZoomRatio = 1.0f;
+    if (params.isZoomSupported()) {
+        List<Integer> zoomRatios = params.getZoomRatios();
+        for (int i = 1; i < zoomRatios.size(); i++) {
+            if (zoomRatio * ZOOM_RATIO_MULTIPLIER >= zoomRatios.get(i)) {
+                bestZoomIndex = i;
+                reportedCropRegion = availableReportedCropRegions.get(i);
+                previewCropRegion = availablePreviewCropRegions.get(i);
+                reportedZoomRatio = zoomRatios.get(i);
+            } else {
+                break;
+            }
+        }
+    }
+    if (DEBUG) {
+        Log.v(TAG, "convertZoomRatio - zoom calculated to: " + "zoomIndex = " + bestZoomIndex + ", reported crop region = " + reportedCropRegion + ", preview crop region = " + previewCropRegion + ", reported zoom ratio = " + reportedZoomRatio);
+    }
+    return new ZoomData(bestZoomIndex, reportedCropRegion, previewCropRegion, reportedZoomRatio);
+}

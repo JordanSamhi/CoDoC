@@ -1,0 +1,7 @@
+public void testDestinationString_whenTransportNotRegistered() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    when(mTransportManager.getTransportCurrentDestinationString(eq(mTransportName))).thenThrow(TransportNotRegisteredException.class);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    String destination = backupManagerService.getDestinationString(mTransportName);
+    assertThat(destination).isNull();
+}

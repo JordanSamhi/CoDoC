@@ -1,0 +1,30 @@
+public void startActivityFromRecentsAsync(final Task.TaskKey taskKey, ActivityOptions options, int windowingMode, int activityType, final Consumer<Boolean> resultCallback, final Handler resultCallbackHandler){
+    if (taskKey.windowingMode == WINDOWING_MODE_SPLIT_SCREEN_PRIMARY) {
+        if (options == null) {
+            options = ActivityOptions.makeBasic();
+        }
+        options.setLaunchWindowingMode(WINDOWING_MODE_SPLIT_SCREEN_SECONDARY);
+    } else if (windowingMode != WINDOWING_MODE_UNDEFINED || activityType != ACTIVITY_TYPE_UNDEFINED) {
+        if (options == null) {
+            options = ActivityOptions.makeBasic();
+        }
+        options.setLaunchWindowingMode(windowingMode);
+        options.setLaunchActivityType(activityType);
+    }
+    final ActivityOptions finalOptions = options;
+    boolean result = false;
+    try {
+        result = startActivityFromRecents(taskKey.id, finalOptions);
+    } catch (Exception e) {
+    }
+    final boolean finalResult = result;
+    if (resultCallback != null) {
+        resultCallbackHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                resultCallback.accept(finalResult);
+            }
+        });
+    }
+}

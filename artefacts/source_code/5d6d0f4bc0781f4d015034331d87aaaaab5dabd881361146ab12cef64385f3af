@@ -1,0 +1,29 @@
+public static String getGeoDescription(Context context, String number){
+    if (VDBG)
+        Log.v(TAG, "getGeoDescription('" + number + "')...");
+    if (TextUtils.isEmpty(number)) {
+        return null;
+    }
+    PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+    PhoneNumberOfflineGeocoder geocoder = PhoneNumberOfflineGeocoder.getInstance();
+    Locale locale = context.getResources().getConfiguration().locale;
+    String countryIso = getCurrentCountryIso(context, locale);
+    PhoneNumber pn = null;
+    try {
+        if (VDBG)
+            Log.v(TAG, "parsing '" + number + "' for countryIso '" + countryIso + "'...");
+        pn = util.parse(number, countryIso);
+        if (VDBG)
+            Log.v(TAG, "- parsed number: " + pn);
+    } catch (NumberParseException e) {
+        Log.w(TAG, "getGeoDescription: NumberParseException for incoming number '" + Log.pii(number) + "'");
+    }
+    if (pn != null) {
+        String description = geocoder.getDescriptionForNumber(pn, locale);
+        if (VDBG)
+            Log.v(TAG, "- got description: '" + description + "'");
+        return description;
+    } else {
+        return null;
+    }
+}

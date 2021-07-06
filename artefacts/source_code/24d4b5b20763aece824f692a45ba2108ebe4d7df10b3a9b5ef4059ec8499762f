@@ -1,0 +1,17 @@
+public void registerVrStateCallback(@NonNull @CallbackExecutor Executor executor, @NonNull VrStateCallback callback){
+    if (callback == null || mCallbackMap.containsKey(callback)) {
+        return;
+    }
+    CallbackEntry entry = new CallbackEntry(callback, executor);
+    mCallbackMap.put(callback, entry);
+    try {
+        mService.registerListener(entry.mStateCallback);
+        mService.registerPersistentVrStateListener(entry.mPersistentStateCallback);
+    } catch (RemoteException e) {
+        try {
+            unregisterVrStateCallback(callback);
+        } catch (Exception ignore) {
+            e.rethrowFromSystemServer();
+        }
+    }
+}

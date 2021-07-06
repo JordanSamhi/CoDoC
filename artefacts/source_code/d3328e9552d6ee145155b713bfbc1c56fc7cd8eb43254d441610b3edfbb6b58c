@@ -1,0 +1,12 @@
+public void readExif(InputStream inStream) throws IOException{
+    if (inStream == null) {
+        throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
+    }
+    ExifData d = null;
+    try {
+        d = new ExifReader(this).read(inStream);
+    } catch (ExifInvalidFormatException e) {
+        throw new IOException("Invalid exif format : " + e);
+    }
+    mData = d;
+}

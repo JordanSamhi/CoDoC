@@ -1,0 +1,13 @@
+public boolean removeStaIface(@NonNull String ifaceName){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        if (!mHalDeviceManager.removeIface((IWifiIface) iface)) {
+            mLog.err("Failed to remove STA iface").flush();
+            return boolResult(false);
+        }
+        mIWifiStaIfaces.remove(ifaceName);
+        return true;
+    }
+}

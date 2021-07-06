@@ -1,0 +1,11 @@
+public int handleElapsedTimeLocked(long elapsedMs){
+    if (elapsedMs <= 0) {
+        Slog.w(TAG, "Cannot handle non-positive elapsed time for package " + getName());
+        return mHealthCheckState;
+    }
+    mDurationMs -= elapsedMs;
+    if (mHealthCheckState == HealthCheckState.ACTIVE) {
+        mHealthCheckDurationMs -= elapsedMs;
+    }
+    return updateHealthCheckStateLocked();
+}

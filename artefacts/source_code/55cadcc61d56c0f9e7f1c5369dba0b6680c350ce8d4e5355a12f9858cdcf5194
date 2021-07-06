@@ -1,0 +1,23 @@
+public static List<AccessPoint> getAllConfigs(Context context, WifiManager wifiManager){
+    List<AccessPoint> savedConfigs = new ArrayList<>();
+    List<WifiConfiguration> savedNetworks = wifiManager.getConfiguredNetworks();
+    for (WifiConfiguration network : savedNetworks) {
+        if (network.isPasspoint()) {
+            continue;
+        }
+        if (network.isEphemeral()) {
+            continue;
+        }
+        savedConfigs.add(new AccessPoint(context, network));
+    }
+    try {
+        List<PasspointConfiguration> savedPasspointConfigs = wifiManager.getPasspointConfigurations();
+        if (savedPasspointConfigs != null) {
+            for (PasspointConfiguration config : savedPasspointConfigs) {
+                savedConfigs.add(new AccessPoint(context, config));
+            }
+        }
+    } catch (UnsupportedOperationException e) {
+    }
+    return savedConfigs;
+}

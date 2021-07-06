@@ -1,0 +1,17 @@
+public static SizeF parseSizeF(String string) throws NumberFormatException{
+    checkNotNull(string, "string must not be null");
+    int sep_ix = string.indexOf('*');
+    if (sep_ix < 0) {
+        sep_ix = string.indexOf('x');
+    }
+    if (sep_ix < 0) {
+        throw invalidSizeF(string);
+    }
+    try {
+        return new SizeF(Float.parseFloat(string.substring(0, sep_ix)), Float.parseFloat(string.substring(sep_ix + 1)));
+    } catch (NumberFormatException e) {
+        throw invalidSizeF(string);
+    } catch (IllegalArgumentException e) {
+        throw invalidSizeF(string);
+    }
+}

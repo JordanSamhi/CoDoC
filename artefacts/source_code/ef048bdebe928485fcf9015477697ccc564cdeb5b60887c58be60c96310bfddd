@@ -1,0 +1,9 @@
+public AccountAndUser[] getRunningAccounts(){
+    final int[] runningUserIds;
+    try {
+        runningUserIds = ActivityManager.getService().getRunningUserIds();
+    } catch (RemoteException e) {
+        throw new RuntimeException(e);
+    }
+    return getAccounts(runningUserIds);
+}

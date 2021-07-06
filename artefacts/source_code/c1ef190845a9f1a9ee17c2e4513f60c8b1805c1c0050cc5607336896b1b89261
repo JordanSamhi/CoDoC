@@ -1,0 +1,11 @@
+public List<ApplicationInfo> getInstalledApplicationsAsUser(int flags, int userId){
+    try {
+        ParceledListSlice<ApplicationInfo> parceledList = mPM.getInstalledApplications(updateFlagsForApplication(flags, userId), userId);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,11 @@
+public void setSealed(boolean sealed){
+    super.setSealed(sealed);
+    final List<AccessibilityRecord> records = mRecords;
+    if (records != null) {
+        final int recordCount = records.size();
+        for (int i = 0; i < recordCount; i++) {
+            AccessibilityRecord record = records.get(i);
+            record.setSealed(sealed);
+        }
+    }
+}

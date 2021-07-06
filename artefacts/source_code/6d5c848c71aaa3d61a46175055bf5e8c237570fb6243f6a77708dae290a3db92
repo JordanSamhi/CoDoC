@@ -1,0 +1,9 @@
+public boolean clickAndWaitForNewWindow(long timeout) throws UiObjectNotFoundException{
+    Tracer.trace(timeout);
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    Rect rect = getVisibleBounds(node);
+    return getInteractionController().clickAndWaitForNewWindow(rect.centerX(), rect.centerY(), mConfig.getActionAcknowledgmentTimeout());
+}

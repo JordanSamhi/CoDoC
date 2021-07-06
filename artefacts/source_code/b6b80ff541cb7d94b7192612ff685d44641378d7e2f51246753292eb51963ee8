@@ -1,0 +1,16 @@
+public void onBindViewHolder(PreferenceViewHolder holder){
+    super.onBindViewHolder(holder);
+    View summaryContainer = holder.findViewById(R.id.summary_container);
+    if (summaryContainer != null) {
+        summaryContainer.setVisibility(TextUtils.isEmpty(getSummary()) ? View.GONE : View.VISIBLE);
+        mAppendix = holder.findViewById(R.id.appendix);
+        if (mAppendix != null && mAppendixVisibility != -1) {
+            mAppendix.setVisibility(mAppendixVisibility);
+        }
+    }
+    TextView title = (TextView) holder.findViewById(android.R.id.title);
+    if (title != null) {
+        title.setSingleLine(false);
+        title.setMaxLines(3);
+    }
+}

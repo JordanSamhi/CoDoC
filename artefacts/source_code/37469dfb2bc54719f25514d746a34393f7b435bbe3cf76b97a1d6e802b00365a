@@ -1,0 +1,11 @@
+public ArrayList<SmsMessage> getAllMessagesFromIcc(){
+    List<SmsRawData> records = null;
+    try {
+        ISms iSms = getISmsService();
+        if (iSms != null) {
+            records = iSms.getAllMessagesFromIccEfForSubscriber(getSubscriptionId(), null);
+        }
+    } catch (RemoteException ex) {
+    }
+    return createMessageListFromRawRecords(records);
+}

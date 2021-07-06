@@ -1,0 +1,16 @@
+public synchronized void registerRecoveryAgent(int userId, int uid){
+    if (mSerialNumbers == null) {
+        verifyKnownUsers();
+    }
+    Long storedSerialNumber = mSerialNumbers.get(userId);
+    if (storedSerialNumber == null) {
+        storedSerialNumber = -1L;
+    }
+    if (storedSerialNumber != -1) {
+        return;
+    }
+    long currentSerialNumber = mUserManager.getSerialNumberForUser(UserHandle.of(userId));
+    if (currentSerialNumber != -1) {
+        storeUserSerialNumber(userId, currentSerialNumber);
+    }
+}

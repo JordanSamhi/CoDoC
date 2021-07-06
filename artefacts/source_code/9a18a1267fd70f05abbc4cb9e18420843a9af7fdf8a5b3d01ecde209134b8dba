@@ -1,0 +1,14 @@
+public static T[] insert(T[] array, int currentSize, int index, T element){
+    assert currentSize <= array.length;
+    if (currentSize + 1 <= array.length) {
+        System.arraycopy(array, index, array, index + 1, currentSize - index);
+        array[index] = element;
+        return array;
+    }
+    @SuppressWarnings("unchecked")
+    T[] newArray = ArrayUtils.newUnpaddedArray((Class<T>) array.getClass().getComponentType(), growSize(currentSize));
+    System.arraycopy(array, 0, newArray, 0, index);
+    newArray[index] = element;
+    System.arraycopy(array, index, newArray, index + 1, array.length - index);
+    return newArray;
+}

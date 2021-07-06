@@ -1,0 +1,13 @@
+public void close(){
+    if (!mService.isConnected()) {
+        Log.e(TAG, "service not connected to system");
+        return;
+    }
+    synchronized (mLock) {
+        try {
+            mSession.close();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error closing session", e);
+        }
+    }
+}

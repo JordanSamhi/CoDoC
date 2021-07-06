@@ -1,0 +1,25 @@
+public static InputStream openDefaultWallpaper(Context context, @SetWallpaperFlags int which){
+    final String whichProp;
+    final int defaultResId;
+    if (which == FLAG_LOCK) {
+        return null;
+    } else {
+        whichProp = PROP_WALLPAPER;
+        defaultResId = com.android.internal.R.drawable.default_wallpaper;
+    }
+    final String path = SystemProperties.get(whichProp);
+    if (!TextUtils.isEmpty(path)) {
+        final File file = new File(path);
+        if (file.exists()) {
+            try {
+                return new FileInputStream(file);
+            } catch (IOException e) {
+            }
+        }
+    }
+    try {
+        return context.getResources().openRawResource(defaultResId);
+    } catch (NotFoundException e) {
+    }
+    return null;
+}

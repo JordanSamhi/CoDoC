@@ -1,0 +1,19 @@
+public Bundle toBundle(){
+    Bundle b = new Bundle();
+    if (mTemporaryAppWhitelistDuration > 0) {
+        b.putLong(KEY_TEMPORARY_APP_WHITELIST_DURATION, mTemporaryAppWhitelistDuration);
+    }
+    if (mMinManifestReceiverApiLevel != 0) {
+        b.putInt(KEY_MIN_MANIFEST_RECEIVER_API_LEVEL, mMinManifestReceiverApiLevel);
+    }
+    if (mMaxManifestReceiverApiLevel != Build.VERSION_CODES.CUR_DEVELOPMENT) {
+        b.putInt(KEY_MAX_MANIFEST_RECEIVER_API_LEVEL, mMaxManifestReceiverApiLevel);
+    }
+    if (mDontSendToRestrictedApps) {
+        b.putBoolean(KEY_DONT_SEND_TO_RESTRICTED_APPS, true);
+    }
+    if (mAllowBackgroundActivityStarts) {
+        b.putBoolean(KEY_ALLOW_BACKGROUND_ACTIVITY_STARTS, true);
+    }
+    return b.isEmpty() ? null : b;
+}

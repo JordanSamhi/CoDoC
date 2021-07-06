@@ -1,0 +1,10 @@
+public int getSettingValue(int setting){
+    if ((setting & mSettings) == 0) {
+        Log.e(TAG, "Setting not supported: " + setting + " " + mSettings);
+        throw new IllegalStateException("Setting not supported: " + setting);
+    }
+    Integer i = mSettingsValue.get(setting);
+    if (i == null)
+        return -1;
+    return i;
+}

@@ -1,0 +1,10 @@
+public void testDump_onUnknownUser_doesNotPropagateCall() throws Exception{
+    grantDumpPermissions();
+    BackupManagerService backupManagerService = createService();
+    File testFile = createTestFile();
+    FileDescriptor fileDescriptor = new FileDescriptor();
+    PrintWriter printWriter = new PrintWriter(testFile);
+    String[] args = { "1", "2" };
+    backupManagerService.dump(fileDescriptor, printWriter, args);
+    verify(mUserOneService, never()).dump(fileDescriptor, printWriter, args);
+}

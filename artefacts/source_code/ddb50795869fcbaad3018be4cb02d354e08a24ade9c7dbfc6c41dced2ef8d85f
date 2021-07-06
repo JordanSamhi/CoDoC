@@ -1,0 +1,11 @@
+public List<ConfigurationStats> queryConfigurations(int intervalType, long beginTime, long endTime){
+    try {
+        @SuppressWarnings("unchecked")
+        ParceledListSlice<ConfigurationStats> slice = mService.queryConfigurationStats(intervalType, beginTime, endTime, mContext.getOpPackageName());
+        if (slice != null) {
+            return slice.getList();
+        }
+    } catch (RemoteException e) {
+    }
+    return Collections.emptyList();
+}

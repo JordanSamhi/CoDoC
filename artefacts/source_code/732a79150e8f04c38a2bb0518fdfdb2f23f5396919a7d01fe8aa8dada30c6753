@@ -1,0 +1,18 @@
+public void setFindAccessibilityNodeInfosResult(List<AccessibilityNodeInfo> infos, int interactionId){
+    synchronized (mInstanceLock) {
+        if (interactionId > mInteractionId) {
+            if (infos != null) {
+                final boolean isIpcCall = (Binder.getCallingPid() != Process.myPid());
+                if (!isIpcCall) {
+                    mFindAccessibilityNodeInfosResult = new ArrayList<>(infos);
+                } else {
+                    mFindAccessibilityNodeInfosResult = infos;
+                }
+            } else {
+                mFindAccessibilityNodeInfosResult = Collections.emptyList();
+            }
+            mInteractionId = interactionId;
+        }
+        mInstanceLock.notifyAll();
+    }
+}

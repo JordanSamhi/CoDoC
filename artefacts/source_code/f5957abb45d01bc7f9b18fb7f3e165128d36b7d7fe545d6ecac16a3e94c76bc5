@@ -1,0 +1,15 @@
+public void registerSuggestionConnectionStatusListener(IBinder binder, @NonNull ISuggestionConnectionStatusListener listener, int listenerIdentifier, String packageName, @Nullable String featureId){
+    if (binder == null) {
+        throw new IllegalArgumentException("Binder must not be null");
+    }
+    if (listener == null) {
+        throw new IllegalArgumentException("listener must not be null");
+    }
+    final int uid = Binder.getCallingUid();
+    enforceAccessPermission();
+    enforceLocationPermission(packageName, featureId, uid);
+    if (mVerboseLoggingEnabled) {
+        mLog.info("registerSuggestionConnectionStatusListener uid=%").c(uid).flush();
+    }
+    mWifiThreadRunner.post(() -> mWifiNetworkSuggestionsManager.registerSuggestionConnectionStatusListener(binder, listener, listenerIdentifier, packageName));
+}

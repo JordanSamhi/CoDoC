@@ -1,0 +1,21 @@
+public int getNetworkType(){
+    synchronized (mLockObj) {
+        if (mCallProfile == null) {
+            return ServiceState.RIL_RADIO_TECHNOLOGY_UNKNOWN;
+        }
+        int networkType = mCallProfile.getCallExtraInt(ImsCallProfile.EXTRA_CALL_NETWORK_TYPE, TelephonyManager.NETWORK_TYPE_UNKNOWN);
+        if (networkType == TelephonyManager.NETWORK_TYPE_UNKNOWN) {
+            String oldRatType = mCallProfile.getCallExtra(ImsCallProfile.EXTRA_CALL_RAT_TYPE);
+            if (TextUtils.isEmpty(oldRatType)) {
+                oldRatType = mCallProfile.getCallExtra(ImsCallProfile.EXTRA_CALL_RAT_TYPE_ALT);
+            }
+            try {
+                int oldRatTypeConverted = Integer.parseInt(oldRatType);
+                networkType = ServiceState.rilRadioTechnologyToNetworkType(oldRatTypeConverted);
+            } catch (NumberFormatException e) {
+                networkType = TelephonyManager.NETWORK_TYPE_UNKNOWN;
+            }
+        }
+        return networkType;
+    }
+}

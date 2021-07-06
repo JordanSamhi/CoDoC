@@ -1,0 +1,32 @@
+public void dump(PrintWriter pw){
+    pw.println("DisplayModeDirector");
+    synchronized (mLock) {
+        pw.println("  mSupportedModesByDisplay:");
+        for (int i = 0; i < mSupportedModesByDisplay.size(); i++) {
+            final int id = mSupportedModesByDisplay.keyAt(i);
+            final Display.Mode[] modes = mSupportedModesByDisplay.valueAt(i);
+            pw.println("    " + id + " -> " + Arrays.toString(modes));
+        }
+        pw.println("  mDefaultModeByDisplay:");
+        for (int i = 0; i < mDefaultModeByDisplay.size(); i++) {
+            final int id = mDefaultModeByDisplay.keyAt(i);
+            final Display.Mode mode = mDefaultModeByDisplay.valueAt(i);
+            pw.println("    " + id + " -> " + mode);
+        }
+        pw.println("  mVotesByDisplay:");
+        for (int i = 0; i < mVotesByDisplay.size(); i++) {
+            pw.println("    " + mVotesByDisplay.keyAt(i) + ":");
+            SparseArray<Vote> votes = mVotesByDisplay.valueAt(i);
+            for (int p = Vote.MAX_PRIORITY; p >= Vote.MIN_PRIORITY; p--) {
+                Vote vote = votes.get(p);
+                if (vote == null) {
+                    continue;
+                }
+                pw.println("      " + Vote.priorityToString(p) + " -> " + vote);
+            }
+        }
+        mSettingsObserver.dumpLocked(pw);
+        mAppRequestObserver.dumpLocked(pw);
+        mBrightnessObserver.dumpLocked(pw);
+    }
+}

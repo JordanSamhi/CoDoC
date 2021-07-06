@@ -1,0 +1,31 @@
+public void revokeRuntimePermissions(@NonNull Map<String, List<String>> request, boolean doDryRun, @Reason int reason, @NonNull @CallbackExecutor Executor executor, @NonNull OnRevokeRuntimePermissionsCallback callback){
+    checkNotNull(executor);
+    checkNotNull(callback);
+    checkNotNull(request);
+    for (Map.Entry<String, List<String>> appRequest : request.entrySet()) {
+        checkNotNull(appRequest.getKey());
+        checkCollectionElementsNotNull(appRequest.getValue(), "permissions");
+    }
+    enforceSomePermissionsGrantedToSelf(Manifest.permission.REVOKE_RUNTIME_PERMISSIONS);
+    mRemoteService.postAsync(service -> {
+        Bundle bundledizedRequest = new Bundle();
+        for (Map.Entry<String, List<String>> appRequest : request.entrySet()) {
+            bundledizedRequest.putStringArrayList(appRequest.getKey(), new ArrayList<>(appRequest.getValue()));
+        }
+        AndroidFuture<Map<String, List<String>>> revokeRuntimePermissionsResult = new AndroidFuture<>();
+        service.revokeRuntimePermissions(bundledizedRequest, doDryRun, reason, mContext.getPackageName(), revokeRuntimePermissionsResult);
+        return revokeRuntimePermissionsResult;
+    }).whenCompleteAsync((revoked, err) -> {
+        long token = Binder.clearCallingIdentity();
+        try {
+            if (err != null) {
+                Log.e(TAG, "Failure when revoking runtime permissions " + revoked, err);
+                callback.onRevokeRuntimePermissions(Collections.emptyMap());
+            } else {
+                callback.onRevokeRuntimePermissions(revoked);
+            }
+        } finally {
+            Binder.restoreCallingIdentity(token);
+        }
+    }, executor);
+}

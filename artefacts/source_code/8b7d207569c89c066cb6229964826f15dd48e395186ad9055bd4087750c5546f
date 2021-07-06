@@ -1,0 +1,25 @@
+public void pullPackageChannelGroupPreferencesStats(List<StatsEvent> events){
+    synchronized (mPackagePreferences) {
+        int totalGroupsPulled = 0;
+        for (int i = 0; i < mPackagePreferences.size(); i++) {
+            if (totalGroupsPulled > NOTIFICATION_CHANNEL_GROUP_PULL_LIMIT) {
+                break;
+            }
+            final PackagePreferences r = mPackagePreferences.valueAt(i);
+            for (NotificationChannelGroup groupChannel : r.groups.values()) {
+                if (++totalGroupsPulled > NOTIFICATION_CHANNEL_GROUP_PULL_LIMIT) {
+                    break;
+                }
+                SysUiStatsEvent.Builder event = mStatsEventBuilderFactory.newBuilder().setAtomId(PACKAGE_NOTIFICATION_CHANNEL_GROUP_PREFERENCES);
+                event.writeInt(r.uid);
+                event.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+                event.writeString(groupChannel.getId());
+                event.writeString(groupChannel.getName().toString());
+                event.writeString(groupChannel.getDescription());
+                event.writeBoolean(groupChannel.isBlocked());
+                event.writeInt(groupChannel.getUserLockedFields());
+                events.add(event.build());
+            }
+        }
+    }
+}

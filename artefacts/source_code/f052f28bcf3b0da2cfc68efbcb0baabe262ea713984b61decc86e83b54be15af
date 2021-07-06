@@ -1,0 +1,10 @@
+public int getVoiceActivationState(int subId){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.getVoiceActivationState(subId, getOpPackageName());
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    return SIM_ACTIVATION_STATE_UNKNOWN;
+}

@@ -1,0 +1,18 @@
+public HistoricalOp getOpAt(@IntRange(from = 0) int index){
+    int numOpsFound = 0;
+    int numAttributions = getAttributedOpsCount();
+    for (int code = 0; code < _NUM_OP; code++) {
+        String opName = opToPublicName(code);
+        for (int attributionNum = 0; attributionNum < numAttributions; attributionNum++) {
+            if (getAttributedOpsAt(attributionNum).getOp(opName) != null) {
+                if (numOpsFound == index) {
+                    return getOp(opName);
+                } else {
+                    numOpsFound++;
+                    break;
+                }
+            }
+        }
+    }
+    throw new IndexOutOfBoundsException();
+}

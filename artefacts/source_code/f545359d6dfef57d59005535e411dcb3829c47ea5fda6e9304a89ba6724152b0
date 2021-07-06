@@ -1,0 +1,12 @@
+public ArraySet<? extends Object> readArraySet(@Nullable ClassLoader loader){
+    final int size = readInt();
+    if (size < 0) {
+        return null;
+    }
+    ArraySet<Object> result = new ArraySet<>(size);
+    for (int i = 0; i < size; i++) {
+        Object value = readValue(loader);
+        result.append(value);
+    }
+    return result;
+}

@@ -1,0 +1,5 @@
+public synchronized void removeIconsForPkg(String packageName, UserHandle user){
+    removeFromMemCacheLocked(packageName, user);
+    long userSerial = getSerialNumberForUser(user);
+    mIconDb.delete(IconDB.COLUMN_COMPONENT + " LIKE ? AND " + IconDB.COLUMN_USER + " = ?", new String[] { packageName + "/%", Long.toString(userSerial) });
+}

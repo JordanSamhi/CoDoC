@@ -1,0 +1,22 @@
+public static boolean checkBluetoothAddress(String address){
+    if (address == null || address.length() != ADDRESS_LENGTH) {
+        return false;
+    }
+    for (int i = 0; i < ADDRESS_LENGTH; i++) {
+        char c = address.charAt(i);
+        switch(i % 3) {
+            case 0:
+            case 1:
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')) {
+                    break;
+                }
+                return false;
+            case 2:
+                if (c == ':') {
+                    break;
+                }
+                return false;
+        }
+    }
+    return true;
+}

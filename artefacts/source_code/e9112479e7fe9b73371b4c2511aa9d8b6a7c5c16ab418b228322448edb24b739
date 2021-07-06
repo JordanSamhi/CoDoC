@@ -1,0 +1,10 @@
+public static List<String> getAllCodePaths(AndroidPackage aPkg){
+    PackageImpl pkg = (PackageImpl) aPkg;
+    ArrayList<String> paths = new ArrayList<>();
+    paths.add(pkg.getBaseCodePath());
+    String[] splitCodePaths = pkg.getSplitCodePaths();
+    if (!ArrayUtils.isEmpty(splitCodePaths)) {
+        Collections.addAll(paths, splitCodePaths);
+    }
+    return paths;
+}

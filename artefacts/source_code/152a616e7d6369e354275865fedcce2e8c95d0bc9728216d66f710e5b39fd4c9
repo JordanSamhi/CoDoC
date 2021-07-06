@@ -1,0 +1,8 @@
+public long notifyANR(InputApplicationHandle inputApplicationHandle, IBinder token, String reason){
+    final long startTime = SystemClock.uptimeMillis();
+    try {
+        return notifyANRInner(inputApplicationHandle, token, reason);
+    } finally {
+        Slog.d(TAG_WM, "notifyANR took " + (SystemClock.uptimeMillis() - startTime) + "ms");
+    }
+}

@@ -1,0 +1,10 @@
+public Transaction setDisplaySize(IBinder displayToken, int width, int height){
+    if (displayToken == null) {
+        throw new IllegalArgumentException("displayToken must not be null");
+    }
+    if (width <= 0 || height <= 0) {
+        throw new IllegalArgumentException("width and height must be positive");
+    }
+    nativeSetDisplaySize(mNativeObject, displayToken, width, height);
+    return this;
+}

@@ -1,0 +1,22 @@
+public void getTouchableRegion(Rect outRect){
+    if (mUserEducationView != null && mUserEducationView.getVisibility() == VISIBLE) {
+        outRect.set(0, 0, getWidth(), getHeight());
+        return;
+    }
+    if (!mIsExpanded) {
+        if (getBubbleCount() > 0) {
+            mBubbleContainer.getChildAt(0).getBoundsOnScreen(outRect);
+            outRect.top -= mBubbleTouchPadding;
+            outRect.left -= mBubbleTouchPadding;
+            outRect.right += mBubbleTouchPadding;
+            outRect.bottom += mBubbleTouchPadding;
+        }
+    } else {
+        mBubbleContainer.getBoundsOnScreen(outRect);
+    }
+    if (mFlyout.getVisibility() == View.VISIBLE) {
+        final Rect flyoutBounds = new Rect();
+        mFlyout.getBoundsOnScreen(flyoutBounds);
+        outRect.union(flyoutBounds);
+    }
+}

@@ -1,0 +1,8 @@
+public void onSessionConfigSuccessResponse(short transactionId, boolean isPublish, byte pubSubId){
+    Message msg = mSm.obtainMessage(MESSAGE_TYPE_RESPONSE);
+    msg.arg1 = RESPONSE_TYPE_ON_SESSION_CONFIG_SUCCESS;
+    msg.arg2 = transactionId;
+    msg.obj = pubSubId;
+    msg.getData().putBoolean(MESSAGE_BUNDLE_KEY_SESSION_TYPE, isPublish);
+    mSm.sendMessage(msg);
+}

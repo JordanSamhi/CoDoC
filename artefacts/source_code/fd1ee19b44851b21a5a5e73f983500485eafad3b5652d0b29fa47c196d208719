@@ -1,0 +1,7 @@
+public final T readCreator(@NonNull Parcelable.Creator<?> creator, @Nullable ClassLoader loader){
+    if (creator instanceof Parcelable.ClassLoaderCreator<?>) {
+        Parcelable.ClassLoaderCreator<?> classLoaderCreator = (Parcelable.ClassLoaderCreator<?>) creator;
+        return (T) classLoaderCreator.createFromParcel(this, loader);
+    }
+    return (T) creator.createFromParcel(this);
+}

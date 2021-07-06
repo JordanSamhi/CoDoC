@@ -1,0 +1,9 @@
+public String getWpsNfcConfigurationToken(){
+    synchronized (mLock) {
+        ArrayList<Byte> token = getWpsNfcConfigurationTokenInternal();
+        if (token == null) {
+            return null;
+        }
+        return NativeUtil.hexStringFromByteArray(NativeUtil.byteArrayFromArrayList(token));
+    }
+}

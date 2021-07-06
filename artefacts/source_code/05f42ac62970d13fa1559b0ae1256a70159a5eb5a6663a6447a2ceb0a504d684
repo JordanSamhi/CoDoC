@@ -1,0 +1,14 @@
+public List<BluetoothDevice> getDevicesMatchingConnectionStates(int[] states){
+    log("getDevicesMatchingConnectionStates: states=" + Arrays.toString(states));
+    final IBluetoothPbap service = mService;
+    if (service == null) {
+        Log.w(TAG, "Proxy not attached to service");
+        return new ArrayList<BluetoothDevice>();
+    }
+    try {
+        return service.getDevicesMatchingConnectionStates(states);
+    } catch (RemoteException e) {
+        Log.e(TAG, e.toString());
+    }
+    return new ArrayList<BluetoothDevice>();
+}

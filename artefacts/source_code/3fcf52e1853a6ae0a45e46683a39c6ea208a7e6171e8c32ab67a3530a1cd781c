@@ -1,0 +1,17 @@
+public void failAll(){
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        CaptureHolder h;
+        while ((h = mActiveRequests.pollFirst()) != null) {
+            h.setPreviewFailed();
+            h.setJpegFailed();
+        }
+        mPreviewCaptureQueue.clear();
+        mPreviewProduceQueue.clear();
+        mJpegCaptureQueue.clear();
+        mJpegProduceQueue.clear();
+    } finally {
+        lock.unlock();
+    }
+}

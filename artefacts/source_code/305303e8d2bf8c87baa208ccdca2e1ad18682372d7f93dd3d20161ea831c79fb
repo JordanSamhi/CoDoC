@@ -1,0 +1,9 @@
+public void addExternalRoute(IpPrefix prefix, int flags) throws LowpanException{
+    try {
+        mBinder.addExternalRoute(prefix, flags);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

@@ -1,0 +1,13 @@
+
+     * Add LayoutTransition to the list of transitions to be started in the next traversal.
+     * This list will be cleared after the transitions on the list are start()'ed. These
+     * transitionsa re added by LayoutTransition itself when it sets up animations. The setup
+     * happens during the layout phase of traversal, which we want to complete before any of the
+     * animations are started (because those animations may side-effect properties that layout
+     * depends upon, like the bounding rectangles of the affected views). So we add the transition
+     * to the list and it is started just prior to starting the drawing phase of traversal.
+     *
+     * @param transition The LayoutTransition to be started on the next traversal.
+     *
+     * @hide
+     

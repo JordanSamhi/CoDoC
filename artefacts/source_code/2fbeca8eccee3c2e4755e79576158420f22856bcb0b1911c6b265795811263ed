@@ -1,0 +1,19 @@
+public Cursor runQueryOnBackgroundThread(CharSequence constraint){
+    if (DBG)
+        Log.d(LOG_TAG, "runQueryOnBackgroundThread(" + constraint + ")");
+    String query = (constraint == null) ? "" : constraint.toString();
+    Cursor cursor = null;
+    if (mSearchView.getVisibility() != View.VISIBLE || mSearchView.getWindowVisibility() != View.VISIBLE) {
+        return null;
+    }
+    try {
+        cursor = mSearchManager.getSuggestions(mSearchable, query, QUERY_LIMIT);
+        if (cursor != null) {
+            cursor.getCount();
+            return cursor;
+        }
+    } catch (RuntimeException e) {
+        Log.w(LOG_TAG, "Search suggestions query threw an exception.", e);
+    }
+    return null;
+}

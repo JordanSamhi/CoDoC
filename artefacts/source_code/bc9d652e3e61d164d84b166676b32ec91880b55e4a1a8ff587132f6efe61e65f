@@ -1,0 +1,12 @@
+public void removeDownstreamInterface(String ifname){
+    final LinkProperties lp = mDownstreams.remove(ifname);
+    if (lp == null)
+        return;
+    if (!started())
+        return;
+    for (RouteInfo route : lp.getRoutes()) {
+        if (shouldIgnoreDownstreamRoute(route))
+            continue;
+        mHwInterface.removeDownstreamPrefix(ifname, route.getDestination().toString());
+    }
+}

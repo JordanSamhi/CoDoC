@@ -1,0 +1,23 @@
+public static void formatNumber(Editable text, int defaultFormattingType){
+    int formatType = defaultFormattingType;
+    if (text.length() > 2 && text.charAt(0) == '+') {
+        if (text.charAt(1) == '1') {
+            formatType = FORMAT_NANP;
+        } else if (text.length() >= 3 && text.charAt(1) == '8' && text.charAt(2) == '1') {
+            formatType = FORMAT_JAPAN;
+        } else {
+            formatType = FORMAT_UNKNOWN;
+        }
+    }
+    switch(formatType) {
+        case FORMAT_NANP:
+            formatNanpNumber(text);
+            return;
+        case FORMAT_JAPAN:
+            formatJapaneseNumber(text);
+            return;
+        case FORMAT_UNKNOWN:
+            removeDashes(text);
+            return;
+    }
+}

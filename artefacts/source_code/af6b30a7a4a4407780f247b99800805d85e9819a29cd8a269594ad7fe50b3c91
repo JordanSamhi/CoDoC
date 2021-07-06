@@ -1,0 +1,36 @@
+public static List<Integer> parseFormatString(String messageString){
+    ArrayList<Integer> types = new ArrayList<>();
+    for (int i = 0; i < messageString.length(); ) {
+        if (messageString.charAt(i) == '%') {
+            if (i + 1 >= messageString.length()) {
+                throw new InvalidFormatStringException("Invalid format string in config");
+            }
+            switch(messageString.charAt(i + 1)) {
+                case 'b':
+                    types.add(LogDataType.BOOLEAN);
+                    break;
+                case 'd':
+                case 'o':
+                case 'x':
+                    types.add(LogDataType.LONG);
+                    break;
+                case 'f':
+                case 'e':
+                case 'g':
+                    types.add(LogDataType.DOUBLE);
+                    break;
+                case 's':
+                    types.add(LogDataType.STRING);
+                    break;
+                case '%':
+                    break;
+                default:
+                    throw new InvalidFormatStringException("Invalid format string field" + " %${messageString[i + 1]}");
+            }
+            i += 2;
+        } else {
+            i += 1;
+        }
+    }
+    return types;
+}

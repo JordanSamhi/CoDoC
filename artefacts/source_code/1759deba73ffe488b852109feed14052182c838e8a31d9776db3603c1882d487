@@ -1,0 +1,9 @@
+public void startResolutionActivity(Activity activity, int requestCode, Intent resultIntent, PendingIntent callbackIntent) throws IntentSender.SendIntentException{
+    PendingIntent resolutionIntent = resultIntent.getParcelableExtra(EXTRA_EMBEDDED_SUBSCRIPTION_RESOLUTION_INTENT);
+    if (resolutionIntent == null) {
+        throw new IllegalArgumentException("Invalid result intent");
+    }
+    Intent fillInIntent = new Intent();
+    fillInIntent.putExtra(EuiccManager.EXTRA_EMBEDDED_SUBSCRIPTION_RESOLUTION_CALLBACK_INTENT, callbackIntent);
+    activity.startIntentSenderForResult(resolutionIntent.getIntentSender(), requestCode, fillInIntent, 0, 0, 0);
+}

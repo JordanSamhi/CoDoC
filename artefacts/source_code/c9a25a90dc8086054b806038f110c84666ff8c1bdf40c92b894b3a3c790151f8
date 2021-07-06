@@ -1,0 +1,10 @@
+public static PlatformVpnProfile fromVpnProfile(@NonNull VpnProfile profile) throws IOException, GeneralSecurityException{
+    switch(profile.type) {
+        case TYPE_IKEV2_IPSEC_USER_PASS:
+        case TYPE_IKEV2_IPSEC_PSK:
+        case TYPE_IKEV2_IPSEC_RSA:
+            return Ikev2VpnProfile.fromVpnProfile(profile);
+        default:
+            throw new IllegalArgumentException("Unknown VPN Profile type");
+    }
+}

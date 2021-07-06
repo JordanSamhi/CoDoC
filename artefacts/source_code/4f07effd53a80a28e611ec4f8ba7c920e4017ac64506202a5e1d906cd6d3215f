@@ -1,0 +1,26 @@
+public static void initThreadDefaults(ApplicationInfo ai){
+    final ThreadPolicy.Builder builder = new ThreadPolicy.Builder();
+    final int targetSdkVersion = (ai != null) ? ai.targetSdkVersion : Build.VERSION_CODES.CUR_DEVELOPMENT;
+    if (targetSdkVersion >= Build.VERSION_CODES.HONEYCOMB) {
+        builder.detectNetwork();
+        builder.penaltyDeathOnNetwork();
+    }
+    if (Build.IS_USER || DISABLE || SystemProperties.getBoolean(DISABLE_PROPERTY, false)) {
+    } else if (Build.IS_USERDEBUG) {
+        if (isBundledSystemApp(ai)) {
+            builder.detectAll();
+            builder.penaltyDropBox();
+            if (SystemProperties.getBoolean(VISUAL_PROPERTY, false)) {
+                builder.penaltyFlashScreen();
+            }
+        }
+    } else if (Build.IS_ENG) {
+        if (isBundledSystemApp(ai)) {
+            builder.detectAll();
+            builder.penaltyDropBox();
+            builder.penaltyLog();
+            builder.penaltyFlashScreen();
+        }
+    }
+    setThreadPolicy(builder.build());
+}

@@ -1,0 +1,23 @@
+public Object getItem(int position){
+    ensureCacheValid();
+    int start = 0;
+    for (Partition mPartition : mPartitions) {
+        int end = start + mPartition.count;
+        if (position >= start && position < end) {
+            int offset = position - start;
+            if (mPartition.hasHeader) {
+                offset--;
+            }
+            if (offset == -1) {
+                return null;
+            }
+            Cursor cursor = mPartition.cursor;
+            if (cursor == null || cursor.isClosed() || !cursor.moveToPosition(offset)) {
+                return null;
+            }
+            return cursor;
+        }
+        start = end;
+    }
+    return null;
+}

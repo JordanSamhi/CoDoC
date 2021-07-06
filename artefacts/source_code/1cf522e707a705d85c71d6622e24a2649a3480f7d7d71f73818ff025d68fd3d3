@@ -1,0 +1,11 @@
+public boolean enableNdefPush(){
+    if (!sHasNfcFeature) {
+        throw new UnsupportedOperationException();
+    }
+    try {
+        return sService.enableNdefPush();
+    } catch (RemoteException e) {
+        attemptDeadServiceRecovery(e);
+        return false;
+    }
+}

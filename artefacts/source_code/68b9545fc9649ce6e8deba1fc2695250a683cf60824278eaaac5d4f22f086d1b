@@ -1,0 +1,13 @@
+public void addOnColorsChangedListener(@NonNull OnColorsChangedListener callback, @Nullable Handler handler, int userId, int displayId){
+    synchronized (this) {
+        if (!mColorCallbackRegistered) {
+            try {
+                mService.registerWallpaperColorsCallback(this, userId, displayId);
+                mColorCallbackRegistered = true;
+            } catch (RemoteException e) {
+                Log.w(TAG, "Can't register for color updates", e);
+            }
+        }
+        mColorListeners.add(new Pair<>(callback, handler));
+    }
+}

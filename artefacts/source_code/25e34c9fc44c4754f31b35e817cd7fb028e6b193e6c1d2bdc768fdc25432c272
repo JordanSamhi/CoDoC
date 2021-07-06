@@ -1,0 +1,9 @@
+public int saveRights(DrmRights drmRights, String rightsPath, String contentPath) throws IOException{
+    if (null == drmRights || !drmRights.isValid()) {
+        throw new IllegalArgumentException("Given drmRights or contentPath is not valid");
+    }
+    if (null != rightsPath && !rightsPath.equals("")) {
+        DrmUtils.writeToFile(rightsPath, drmRights.getData());
+    }
+    return _saveRights(mUniqueId, drmRights, rightsPath, contentPath);
+}

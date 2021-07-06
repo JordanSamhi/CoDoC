@@ -1,0 +1,8 @@
+public boolean isNetworkLoggingEnabled(@Nullable ComponentName admin){
+    throwIfParentInstance("isNetworkLoggingEnabled");
+    try {
+        return mService.isNetworkLoggingEnabled(admin, mContext.getPackageName());
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

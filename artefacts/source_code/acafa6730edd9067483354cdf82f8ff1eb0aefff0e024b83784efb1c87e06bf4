@@ -1,0 +1,6 @@
+public void commitChanges() throws RemoteException{
+    if (Binder.getCallingUid() != android.os.Process.SYSTEM_UID) {
+        throw new SecurityException("no permission to commit checkpoint changes");
+    }
+    mVold.commitChanges();
+}

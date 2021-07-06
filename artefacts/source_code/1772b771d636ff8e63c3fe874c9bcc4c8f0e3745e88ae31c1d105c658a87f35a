@@ -1,0 +1,11 @@
+public List<RecipientEntry> getSelectedRecipients(){
+    DrawableRecipientChip[] chips = getText().getSpans(0, getText().length(), DrawableRecipientChip.class);
+    List<RecipientEntry> results = new ArrayList<RecipientEntry>();
+    if (chips == null) {
+        return results;
+    }
+    for (DrawableRecipientChip c : chips) {
+        results.add(c.getEntry());
+    }
+    return results;
+}

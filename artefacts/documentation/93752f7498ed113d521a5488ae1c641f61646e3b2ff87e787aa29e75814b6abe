@@ -1,0 +1,19 @@
+
+     * Returns the current standby bucket of the calling app. The system determines the standby
+     * state of the app based on app usage patterns. Standby buckets determine how much an app will
+     * be restricted from running background tasks such as jobs and alarms.
+     * <p>Restrictions increase progressively from {@link #STANDBY_BUCKET_ACTIVE} to
+     * {@link #STANDBY_BUCKET_RESTRICTED}, with {@link #STANDBY_BUCKET_ACTIVE} being the least
+     * restrictive. The battery level of the device might also affect the restrictions.
+     * <p>Apps in buckets &le; {@link #STANDBY_BUCKET_ACTIVE} have no standby restrictions imposed.
+     * Apps in buckets &gt; {@link #STANDBY_BUCKET_FREQUENT} may have network access restricted when
+     * running in the background.
+     * <p>The standby state of an app can change at any time either due to a user interaction or a
+     * system interaction or some algorithm determining that the app can be restricted for a period
+     * of time before the user has a need for it.
+     * <p>You can also query the recent history of standby bucket changes by calling
+     * {@link #queryEventsForSelf(long, long)} and searching for
+     * {@link UsageEvents.Event#STANDBY_BUCKET_CHANGED}.
+     *
+     * @return the current standby bucket of the calling app. One of STANDBY_BUCKET_* constants.
+     

@@ -1,0 +1,16 @@
+public static int getLegacyStreamTypeForStrategyWithAudioAttributes(@NonNull AudioAttributes audioAttributes){
+    Preconditions.checkNotNull(audioAttributes, "AudioAttributes must not be null");
+    for (final AudioProductStrategy productStrategy : AudioProductStrategy.getAudioProductStrategies()) {
+        if (productStrategy.supportsAudioAttributes(audioAttributes)) {
+            int streamType = productStrategy.getLegacyStreamTypeForAudioAttributes(audioAttributes);
+            if (streamType == AudioSystem.STREAM_DEFAULT) {
+                Log.w(TAG, "Attributes " + audioAttributes.toString() + " ported by strategy " + productStrategy.getId() + " has no stream type associated, " + "DO NOT USE STREAM TO CONTROL THE VOLUME");
+                return AudioSystem.STREAM_MUSIC;
+            }
+            if (streamType < AudioSystem.getNumStreamTypes()) {
+                return streamType;
+            }
+        }
+    }
+    return AudioSystem.STREAM_MUSIC;
+}

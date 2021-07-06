@@ -1,0 +1,12 @@
+public void finish(){
+    Intent intent = getIntent();
+    AccountAuthenticatorResponse response = intent.getParcelableExtra(EXTRAS_RESPONSE);
+    if (response != null) {
+        if (mResultBundle != null) {
+            response.onResult(mResultBundle);
+        } else {
+            response.onError(AccountManager.ERROR_CODE_CANCELED, "canceled");
+        }
+    }
+    super.finish();
+}

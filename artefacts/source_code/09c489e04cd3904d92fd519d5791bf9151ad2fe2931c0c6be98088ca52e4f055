@@ -1,0 +1,12 @@
+public void remove(@NonNull Object key){
+    Objects.requireNonNull(key);
+    ListenerWithCancellation<V> listener;
+    synchronized (mListeners) {
+        listener = mListeners.get(key);
+        if (listener == null) {
+            return;
+        }
+        mListeners.remove(key);
+    }
+    listener.cancel();
+}

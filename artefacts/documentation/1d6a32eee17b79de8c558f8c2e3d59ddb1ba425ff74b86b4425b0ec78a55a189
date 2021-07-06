@@ -1,0 +1,28 @@
+
+     * Find the view that has the specified focus type. The search is performed
+     * across all windows.
+     * <p>
+     * <strong>Note:</strong> In order to access the windows your service has
+     * to declare the capability to retrieve window content by setting the
+     * {@link android.R.styleable#AccessibilityService_canRetrieveWindowContent}
+     * property in its meta-data. For details refer to {@link #SERVICE_META_DATA}.
+     * Also the service has to opt-in to retrieve the interactive windows by
+     * setting the {@link AccessibilityServiceInfo#FLAG_RETRIEVE_INTERACTIVE_WINDOWS}
+     * flag. Otherwise, the search will be performed only in the active window.
+     * </p>
+     * <p>
+     * <strong>Note:</strong> If the view with {@link AccessibilityNodeInfo#FOCUS_INPUT}
+     * is on an embedded view hierarchy which is embedded in a {@link SurfaceView} via
+     * {@link SurfaceView#setChildSurfacePackage}, there is a limitation that this API
+     * won't be able to find the node for the view. It's because views don't know about
+     * the embedded hierarchies. Instead, you could traverse all the nodes to find the
+     * focus.
+     * </p>
+     *
+     * @param focus The focus to find. One of {@link AccessibilityNodeInfo#FOCUS_INPUT} or
+     *         {@link AccessibilityNodeInfo#FOCUS_ACCESSIBILITY}.
+     * @return The node info of the focused view or null.
+     *
+     * @see AccessibilityNodeInfo#FOCUS_INPUT
+     * @see AccessibilityNodeInfo#FOCUS_ACCESSIBILITY
+     

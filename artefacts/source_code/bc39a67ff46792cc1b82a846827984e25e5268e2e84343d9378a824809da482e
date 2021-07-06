@@ -1,0 +1,12 @@
+public void onVolumeUnmount(VolumeInfo vol){
+    StorageUserConnection connection = onVolumeRemove(vol);
+    Slog.i(TAG, "On volume unmount " + vol);
+    if (connection != null) {
+        String sessionId = vol.getId();
+        try {
+            connection.removeSessionAndWait(sessionId);
+        } catch (ExternalStorageServiceException e) {
+            Slog.e(TAG, "Failed to end session for vol with id: " + sessionId, e);
+        }
+    }
+}

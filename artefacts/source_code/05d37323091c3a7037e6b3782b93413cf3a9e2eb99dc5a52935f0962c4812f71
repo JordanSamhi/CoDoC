@@ -1,0 +1,10 @@
+public void disableEphemeralNetwork(@NonNull String network){
+    if (TextUtils.isEmpty(network)) {
+        throw new IllegalArgumentException("SSID cannot be null or empty!");
+    }
+    try {
+        mService.disableEphemeralNetwork(network, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

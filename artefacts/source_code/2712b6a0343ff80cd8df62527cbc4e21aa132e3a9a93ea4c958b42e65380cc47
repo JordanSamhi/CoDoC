@@ -1,0 +1,9 @@
+public boolean longClick() throws UiObjectNotFoundException{
+    Tracer.trace();
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    Rect rect = getVisibleBounds(node);
+    return getInteractionController().longTapNoSync(rect.centerX(), rect.centerY());
+}

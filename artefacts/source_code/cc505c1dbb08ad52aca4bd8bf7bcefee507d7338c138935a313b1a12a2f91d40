@@ -1,0 +1,13 @@
+public OnClickListener createOnClickListener(@Nullable final OnClickListener listener){
+    return new OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            if (requiringScrollToBottom) {
+                delegate.pageScrollDown();
+            } else if (listener != null) {
+                listener.onClick(view);
+            }
+        }
+    };
+}

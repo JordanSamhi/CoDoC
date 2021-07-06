@@ -1,0 +1,12 @@
+public void setConnectionScanDetail(ScanDetail scanDetail){
+    synchronized (mLock) {
+        if (mCurrentConnectionEvent != null && scanDetail != null) {
+            NetworkDetail networkDetail = scanDetail.getNetworkDetail();
+            ScanResult scanResult = scanDetail.getScanResult();
+            if (networkDetail != null && scanResult != null && mCurrentConnectionEvent.mConfigSsid != null && mCurrentConnectionEvent.mConfigSsid.equals("\"" + networkDetail.getSSID() + "\"")) {
+                updateMetricsFromNetworkDetail(networkDetail);
+                updateMetricsFromScanResult(scanResult);
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+public void drawBackground(Canvas canvas, Path highlight, Paint highlightPaint, int cursorOffsetVertical, int firstLine, int lastLine){
+    if (mSpannedText) {
+        if (mLineBackgroundSpans == null) {
+            mLineBackgroundSpans = new SpanSet<LineBackgroundSpan>(LineBackgroundSpan.class);
+        }
+        Spanned buffer = (Spanned) mText;
+        int textLength = buffer.length();
+        mLineBackgroundSpans.init(buffer, 0, textLength);
+        if (mLineBackgroundSpans.numberOfSpans > 0) {
+            int previousLineBottom = getLineTop(firstLine);
+            int previousLineEnd = getLineStart(firstLine);
+            ParagraphStyle[] spans = NO_PARA_SPANS;
+            int spansLength = 0;
+            TextPaint paint = mPaint;
+            int spanEnd = 0;
+            final int width = mWidth;
+            for (int i = firstLine; i <= lastLine; i++) {
+                int start = previousLineEnd;
+                int end = getLineStart(i + 1);
+                previousLineEnd = end;
+                int ltop = previousLineBottom;
+                int lbottom = getLineTop(i + 1);
+                previousLineBottom = lbottom;
+                int lbaseline = lbottom - getLineDescent(i);
+                if (end >= spanEnd) {
+                    spanEnd = mLineBackgroundSpans.getNextTransition(start, textLength);
+                    spansLength = 0;
+                    if (start != end || start == 0) {
+                        for (int j = 0; j < mLineBackgroundSpans.numberOfSpans; j++) {
+                            if (mLineBackgroundSpans.spanStarts[j] >= end || mLineBackgroundSpans.spanEnds[j] <= start)
+                                continue;
+                            spans = GrowingArrayUtils.append(spans, spansLength, mLineBackgroundSpans.spans[j]);
+                            spansLength++;
+                        }
+                    }
+                }
+                for (int n = 0; n < spansLength; n++) {
+                    LineBackgroundSpan lineBackgroundSpan = (LineBackgroundSpan) spans[n];
+                    lineBackgroundSpan.drawBackground(canvas, paint, 0, width, ltop, lbaseline, lbottom, buffer, start, end, i);
+                }
+            }
+        }
+        mLineBackgroundSpans.recycle();
+    }
+    if (highlight != null) {
+        if (cursorOffsetVertical != 0)
+            canvas.translate(0, cursorOffsetVertical);
+        canvas.drawPath(highlight, highlightPaint);
+        if (cursorOffsetVertical != 0)
+            canvas.translate(0, -cursorOffsetVertical);
+    }
+}

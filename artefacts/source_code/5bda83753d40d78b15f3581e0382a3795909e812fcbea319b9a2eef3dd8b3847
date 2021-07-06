@@ -1,0 +1,69 @@
+public final void invalidateChild(View child, final Rect dirty){
+    final AttachInfo attachInfo = mAttachInfo;
+    if (attachInfo != null && attachInfo.mHardwareAccelerated) {
+        onDescendantInvalidated(child, child);
+        return;
+    }
+    ViewParent parent = this;
+    if (attachInfo != null) {
+        final boolean drawAnimation = (child.mPrivateFlags & PFLAG_DRAW_ANIMATION) != 0;
+        Matrix childMatrix = child.getMatrix();
+        if (child.mLayerType != LAYER_TYPE_NONE) {
+            mPrivateFlags |= PFLAG_INVALIDATED;
+            mPrivateFlags &= ~PFLAG_DRAWING_CACHE_VALID;
+        }
+        final int[] location = attachInfo.mInvalidateChildLocation;
+        location[CHILD_LEFT_INDEX] = child.mLeft;
+        location[CHILD_TOP_INDEX] = child.mTop;
+        if (!childMatrix.isIdentity() || (mGroupFlags & ViewGroup.FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
+            RectF boundingRect = attachInfo.mTmpTransformRect;
+            boundingRect.set(dirty);
+            Matrix transformMatrix;
+            if ((mGroupFlags & ViewGroup.FLAG_SUPPORT_STATIC_TRANSFORMATIONS) != 0) {
+                Transformation t = attachInfo.mTmpTransformation;
+                boolean transformed = getChildStaticTransformation(child, t);
+                if (transformed) {
+                    transformMatrix = attachInfo.mTmpMatrix;
+                    transformMatrix.set(t.getMatrix());
+                    if (!childMatrix.isIdentity()) {
+                        transformMatrix.preConcat(childMatrix);
+                    }
+                } else {
+                    transformMatrix = childMatrix;
+                }
+            } else {
+                transformMatrix = childMatrix;
+            }
+            transformMatrix.mapRect(boundingRect);
+            dirty.set((int) Math.floor(boundingRect.left), (int) Math.floor(boundingRect.top), (int) Math.ceil(boundingRect.right), (int) Math.ceil(boundingRect.bottom));
+        }
+        do {
+            View view = null;
+            if (parent instanceof View) {
+                view = (View) parent;
+            }
+            if (drawAnimation) {
+                if (view != null) {
+                    view.mPrivateFlags |= PFLAG_DRAW_ANIMATION;
+                } else if (parent instanceof ViewRootImpl) {
+                    ((ViewRootImpl) parent).mIsAnimating = true;
+                }
+            }
+            if (view != null) {
+                if ((view.mPrivateFlags & PFLAG_DIRTY_MASK) != PFLAG_DIRTY) {
+                    view.mPrivateFlags = (view.mPrivateFlags & ~PFLAG_DIRTY_MASK) | PFLAG_DIRTY;
+                }
+            }
+            parent = parent.invalidateChildInParent(location, dirty);
+            if (view != null) {
+                Matrix m = view.getMatrix();
+                if (!m.isIdentity()) {
+                    RectF boundingRect = attachInfo.mTmpTransformRect;
+                    boundingRect.set(dirty);
+                    m.mapRect(boundingRect);
+                    dirty.set((int) Math.floor(boundingRect.left), (int) Math.floor(boundingRect.top), (int) Math.ceil(boundingRect.right), (int) Math.ceil(boundingRect.bottom));
+                }
+            }
+        } while (parent != null);
+    }
+}

@@ -1,0 +1,15 @@
+public boolean sendKeyAndWaitForEvent(final int keyCode, final int metaState, final int eventType, long timeout){
+    Runnable command = new Runnable() {
+
+        @Override
+        public void run() {
+            final long eventTime = SystemClock.uptimeMillis();
+            KeyEvent downEvent = new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, InputDevice.SOURCE_KEYBOARD);
+            if (injectEventSync(downEvent)) {
+                KeyEvent upEvent = new KeyEvent(eventTime, eventTime, KeyEvent.ACTION_UP, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, InputDevice.SOURCE_KEYBOARD);
+                injectEventSync(upEvent);
+            }
+        }
+    };
+    return runAndWaitForEvents(command, new WaitForAnyEventPredicate(eventType), timeout) != null;
+}

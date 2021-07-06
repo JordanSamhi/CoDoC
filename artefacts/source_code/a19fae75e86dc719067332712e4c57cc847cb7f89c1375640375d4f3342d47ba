@@ -1,0 +1,15 @@
+public static float normalizeAdaptiveIcon(Drawable d, int size, @Nullable RectF outBounds){
+    Rect tmpBounds = new Rect(d.getBounds());
+    d.setBounds(0, 0, size, size);
+    Path path = ((AdaptiveIconDrawable) d).getIconMask();
+    Region region = new Region();
+    region.setPath(path, new Region(0, 0, size, size));
+    Rect hullBounds = region.getBounds();
+    int hullArea = GraphicsUtils.getArea(region);
+    if (outBounds != null) {
+        float sizeF = size;
+        outBounds.set(hullBounds.left / sizeF, hullBounds.top / sizeF, 1 - (hullBounds.right / sizeF), 1 - (hullBounds.bottom / sizeF));
+    }
+    d.setBounds(tmpBounds);
+    return getScale(hullArea, hullArea, size * size);
+}

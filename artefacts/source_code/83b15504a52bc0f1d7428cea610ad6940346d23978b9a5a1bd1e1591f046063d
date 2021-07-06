@@ -1,0 +1,13 @@
+public static TransportMock setUpCurrentTransport(TransportManager transportManager, TransportData transport) throws Exception{
+    TransportMock transportMock = setUpTransport(transportManager, transport);
+    int status = transport.transportStatus;
+    when(transportManager.getCurrentTransportName()).thenReturn(transport.transportName);
+    if (status == TransportStatus.REGISTERED_AVAILABLE || status == TransportStatus.REGISTERED_UNAVAILABLE) {
+        when(transportManager.getCurrentTransportClient(any())).thenReturn(transportMock.transportClient);
+        when(transportManager.getCurrentTransportClientOrThrow(any())).thenReturn(transportMock.transportClient);
+    } else {
+        when(transportManager.getCurrentTransportClient(any())).thenReturn(null);
+        when(transportManager.getCurrentTransportClientOrThrow(any())).thenThrow(TransportNotRegisteredException.class);
+    }
+    return transportMock;
+}

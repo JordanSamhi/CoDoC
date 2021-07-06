@@ -1,0 +1,13 @@
+public boolean setAlias(@NonNull String alias){
+    final IBluetooth service = sService;
+    if (service == null) {
+        Log.e(TAG, "BT not enabled. Cannot set Remote Device name");
+        return false;
+    }
+    try {
+        return service.setRemoteAlias(this, alias);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return false;
+}

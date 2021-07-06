@@ -1,0 +1,23 @@
+public final void populateViewportLocked(DisplayViewport viewport){
+    viewport.orientation = mCurrentOrientation;
+    if (mCurrentLayerStackRect != null) {
+        viewport.logicalFrame.set(mCurrentLayerStackRect);
+    } else {
+        viewport.logicalFrame.setEmpty();
+    }
+    if (mCurrentDisplayRect != null) {
+        viewport.physicalFrame.set(mCurrentDisplayRect);
+    } else {
+        viewport.physicalFrame.setEmpty();
+    }
+    boolean isRotated = (mCurrentOrientation == Surface.ROTATION_90 || mCurrentOrientation == Surface.ROTATION_270);
+    DisplayDeviceInfo info = getDisplayDeviceInfoLocked();
+    viewport.deviceWidth = isRotated ? info.height : info.width;
+    viewport.deviceHeight = isRotated ? info.width : info.height;
+    viewport.uniqueId = info.uniqueId;
+    if (info.address instanceof DisplayAddress.Physical) {
+        viewport.physicalPort = ((DisplayAddress.Physical) info.address).getPort();
+    } else {
+        viewport.physicalPort = null;
+    }
+}

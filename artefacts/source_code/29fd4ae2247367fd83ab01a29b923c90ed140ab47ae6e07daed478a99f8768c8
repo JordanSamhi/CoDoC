@@ -1,0 +1,8 @@
+public boolean isWfcRoamingEnabledByUser(){
+    int setting = SubscriptionManager.getIntegerSubscriptionProperty(getSubId(), SubscriptionManager.WFC_IMS_ROAMING_ENABLED, SUB_PROPERTY_NOT_INITIALIZED, mContext);
+    if (setting == SUB_PROPERTY_NOT_INITIALIZED) {
+        return getBooleanCarrierConfig(CarrierConfigManager.KEY_CARRIER_DEFAULT_WFC_IMS_ROAMING_ENABLED_BOOL);
+    } else {
+        return setting == ProvisioningManager.PROVISIONING_VALUE_ENABLED;
+    }
+}

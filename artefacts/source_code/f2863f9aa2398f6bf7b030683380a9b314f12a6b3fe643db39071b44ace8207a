@@ -1,0 +1,20 @@
+public CarrierFrequencyRange[] getCarrierFrequencies(){
+    if (mService == null) {
+        Log.w(TAG, "no consumer ir service.");
+        return null;
+    }
+    try {
+        int[] freqs = mService.getCarrierFrequencies();
+        if (freqs.length % 2 != 0) {
+            Log.w(TAG, "consumer ir service returned an uneven number of frequencies.");
+            return null;
+        }
+        CarrierFrequencyRange[] range = new CarrierFrequencyRange[freqs.length / 2];
+        for (int i = 0; i < freqs.length; i += 2) {
+            range[i / 2] = new CarrierFrequencyRange(freqs[i], freqs[i + 1]);
+        }
+        return range;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

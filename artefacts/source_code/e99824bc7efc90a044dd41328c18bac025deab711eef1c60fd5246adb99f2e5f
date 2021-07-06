@@ -1,0 +1,12 @@
+public void processSsData(AsyncResult data){
+    Rlog.d(LOG_TAG, "In processSsData");
+    mIsSsInfo = true;
+    try {
+        SsData ssData = (SsData) data.result;
+        parseSsData(ssData);
+    } catch (ClassCastException ex) {
+        Rlog.e(LOG_TAG, "Class Cast Exception in parsing SS Data : " + ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(LOG_TAG, "Null Pointer Exception in parsing SS Data : " + ex);
+    }
+}

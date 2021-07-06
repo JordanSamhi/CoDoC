@@ -1,0 +1,11 @@
+public boolean deleteMessageFromIcc(int messageIndex){
+    boolean success = false;
+    try {
+        ISms iSms = getISmsService();
+        if (iSms != null) {
+            success = iSms.updateMessageOnIccEfForSubscriber(getSubscriptionId(), null, messageIndex, STATUS_ON_ICC_FREE, null);
+        }
+    } catch (RemoteException ex) {
+    }
+    return success;
+}

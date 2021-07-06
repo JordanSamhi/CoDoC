@@ -1,0 +1,107 @@
+public static ApnSetting fromString(String data){
+    if (data == null)
+        return null;
+    int version;
+    if (data.matches(V7_FORMAT_REGEX + ".*")) {
+        version = 7;
+        data = data.replaceFirst(V7_FORMAT_REGEX, "");
+    } else if (data.matches(V6_FORMAT_REGEX + ".*")) {
+        version = 6;
+        data = data.replaceFirst(V6_FORMAT_REGEX, "");
+    } else if (data.matches(V5_FORMAT_REGEX + ".*")) {
+        version = 5;
+        data = data.replaceFirst(V5_FORMAT_REGEX, "");
+    } else if (data.matches(V4_FORMAT_REGEX + ".*")) {
+        version = 4;
+        data = data.replaceFirst(V4_FORMAT_REGEX, "");
+    } else if (data.matches(V3_FORMAT_REGEX + ".*")) {
+        version = 3;
+        data = data.replaceFirst(V3_FORMAT_REGEX, "");
+    } else if (data.matches(V2_FORMAT_REGEX + ".*")) {
+        version = 2;
+        data = data.replaceFirst(V2_FORMAT_REGEX, "");
+    } else {
+        version = 1;
+    }
+    String[] a = data.split("\\s*,\\s*", -1);
+    if (a.length < 14) {
+        return null;
+    }
+    int authType;
+    try {
+        authType = Integer.parseInt(a[12]);
+    } catch (NumberFormatException e) {
+        authType = 0;
+    }
+    String[] typeArray;
+    String protocol, roamingProtocol;
+    boolean carrierEnabled;
+    int bearerBitmask = 0;
+    int networkTypeBitmask = 0;
+    int profileId = 0;
+    boolean modemCognitive = false;
+    int maxConns = 0;
+    int waitTime = 0;
+    int maxConnsTime = 0;
+    int mtu = UNSET_MTU;
+    String mvnoType = "";
+    String mvnoMatchData = "";
+    int apnSetId = Carriers.NO_APN_SET_ID;
+    int carrierId = TelephonyManager.UNKNOWN_CARRIER_ID;
+    int skip464xlat = Carriers.SKIP_464XLAT_DEFAULT;
+    if (version == 1) {
+        typeArray = new String[a.length - 13];
+        System.arraycopy(a, 13, typeArray, 0, a.length - 13);
+        protocol = PROTOCOL_INT_MAP.get(PROTOCOL_IP);
+        roamingProtocol = PROTOCOL_INT_MAP.get(PROTOCOL_IP);
+        carrierEnabled = true;
+    } else {
+        if (a.length < 18) {
+            return null;
+        }
+        typeArray = a[13].split("\\s*\\|\\s*");
+        protocol = a[14];
+        roamingProtocol = a[15];
+        carrierEnabled = Boolean.parseBoolean(a[16]);
+        bearerBitmask = ServiceState.getBitmaskFromString(a[17]);
+        if (a.length > 22) {
+            modemCognitive = Boolean.parseBoolean(a[19]);
+            try {
+                profileId = Integer.parseInt(a[18]);
+                maxConns = Integer.parseInt(a[20]);
+                waitTime = Integer.parseInt(a[21]);
+                maxConnsTime = Integer.parseInt(a[22]);
+            } catch (NumberFormatException e) {
+            }
+        }
+        if (a.length > 23) {
+            try {
+                mtu = Integer.parseInt(a[23]);
+            } catch (NumberFormatException e) {
+            }
+        }
+        if (a.length > 25) {
+            mvnoType = a[24];
+            mvnoMatchData = a[25];
+        }
+        if (a.length > 26) {
+            networkTypeBitmask = ServiceState.getBitmaskFromString(a[26]);
+        }
+        if (a.length > 27) {
+            apnSetId = Integer.parseInt(a[27]);
+        }
+        if (a.length > 28) {
+            carrierId = Integer.parseInt(a[28]);
+        }
+        if (a.length > 29) {
+            try {
+                skip464xlat = Integer.parseInt(a[29]);
+            } catch (NumberFormatException e) {
+            }
+        }
+    }
+    if (networkTypeBitmask == 0) {
+        networkTypeBitmask = ServiceState.convertBearerBitmaskToNetworkTypeBitmask(bearerBitmask);
+    }
+    return makeApnSetting(-1, a[10] + a[11], a[0], a[1], a[2], portFromString(a[3]), UriFromString(a[7]), a[8], portFromString(a[9]), a[4], a[5], authType, getApnTypesBitmaskFromString(TextUtils.join(",", typeArray)), getProtocolIntFromString(protocol), getProtocolIntFromString(roamingProtocol), carrierEnabled, networkTypeBitmask, profileId, modemCognitive, maxConns, waitTime, maxConnsTime, mtu, getMvnoTypeIntFromString(mvnoType), mvnoMatchData, apnSetId, carrierId, skip464xlat);
+}

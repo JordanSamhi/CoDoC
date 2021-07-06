@@ -1,0 +1,6 @@
+public static void logApexdRevert(Context context, @NonNull List<String> failedPackageNames, @NonNull String failingNativeProcess){
+    Set<VersionedPackage> logPackages = getLogPackages(context, failedPackageNames);
+    for (VersionedPackage logPackage : logPackages) {
+        logEvent(logPackage, WATCHDOG_ROLLBACK_OCCURRED__ROLLBACK_TYPE__ROLLBACK_SUCCESS, WATCHDOG_ROLLBACK_OCCURRED__ROLLBACK_REASON__REASON_NATIVE_CRASH_DURING_BOOT, failingNativeProcess);
+    }
+}

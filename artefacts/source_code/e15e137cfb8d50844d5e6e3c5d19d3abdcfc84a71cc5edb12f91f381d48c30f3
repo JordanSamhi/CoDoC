@@ -1,0 +1,21 @@
+public boolean update(MotionEvent event){
+    if (event.getActionMasked() == MotionEvent.ACTION_MOVE && mCurrentStrokes.size() != 0 && event.getEventTimeNano() - mCurrentStrokes.valueAt(0).getLastEventTimeNano() < MINIMUM_DT_NANOS - MINIMUM_DT_SMEAR_NANOS) {
+        return false;
+    }
+    mEndingStrokes.clear();
+    int action = event.getActionMasked();
+    if (action == MotionEvent.ACTION_DOWN) {
+        mCurrentStrokes.clear();
+    }
+    for (int i = 0; i < event.getPointerCount(); i++) {
+        int id = event.getPointerId(i);
+        if (mCurrentStrokes.get(id) == null) {
+            mCurrentStrokes.put(id, new Stroke(event.getEventTimeNano(), mDpi));
+        }
+        mCurrentStrokes.get(id).addPoint(event.getX(i), event.getY(i), event.getEventTimeNano());
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL || (action == MotionEvent.ACTION_POINTER_UP && i == event.getActionIndex())) {
+            mEndingStrokes.add(getStroke(id));
+        }
+    }
+    return true;
+}

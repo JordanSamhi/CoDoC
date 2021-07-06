@@ -1,0 +1,9 @@
+public void onServiceReady(){
+    try {
+        log("onServiceReady: calling filterSms on " + mPackageName);
+        filterSms(new MessagePdu(Arrays.asList(mPdus)), mSmsFormat, mDestPort, mPhone.getSubId(), mSmsFilterCallback);
+    } catch (RuntimeException e) {
+        loge("Exception filtering the SMS with " + mPackageName + ": " + e);
+        mSmsFilterCallback.onFilterComplete(CarrierMessagingService.RECEIVE_OPTIONS_DEFAULT);
+    }
+}

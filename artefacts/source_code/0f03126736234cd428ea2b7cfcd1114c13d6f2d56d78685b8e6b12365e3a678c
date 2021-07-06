@@ -1,0 +1,12 @@
+public void notifyInputChannelBroken(IBinder token){
+    if (token == null) {
+        return;
+    }
+    synchronized (mService.mGlobalLock) {
+        WindowState windowState = mService.mInputToWindowMap.get(token);
+        if (windowState != null) {
+            Slog.i(TAG_WM, "WINDOW DIED " + windowState);
+            windowState.removeIfPossible();
+        }
+    }
+}

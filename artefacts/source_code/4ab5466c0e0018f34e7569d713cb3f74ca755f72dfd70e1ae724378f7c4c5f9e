@@ -1,0 +1,8 @@
+public static void setCached9Patch(String value, NinePatchChunk ninePatch, Object projectKey){
+    if (projectKey != null) {
+        Map<String, SoftReference<NinePatchChunk>> map = sProject9PatchCache.computeIfAbsent(projectKey, k -> new HashMap<>());
+        map.put(value, new SoftReference<>(ninePatch));
+    } else {
+        sFramework9PatchCache.put(value, new SoftReference<>(ninePatch));
+    }
+}

@@ -1,0 +1,8 @@
+public void grantDefaultPermissionsToLuiApp(@NonNull String packageName, @NonNull UserHandle user, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
+    try {
+        mPermissionManager.grantDefaultPermissionsToActiveLuiApp(packageName, user.getIdentifier());
+        executor.execute(() -> callback.accept(true));
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

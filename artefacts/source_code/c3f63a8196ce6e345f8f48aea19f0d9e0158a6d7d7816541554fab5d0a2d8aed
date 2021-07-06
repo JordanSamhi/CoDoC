@@ -1,0 +1,14 @@
+public static String intToString(Class<?> clazz, String field, int integer){
+    final IntToString[] mapping = getMapping(clazz, field);
+    if (mapping == null) {
+        return Integer.toString(integer);
+    }
+    final int count = mapping.length;
+    for (int j = 0; j < count; j++) {
+        final IntToString map = mapping[j];
+        if (map.from() == integer) {
+            return map.to();
+        }
+    }
+    return Integer.toString(integer);
+}

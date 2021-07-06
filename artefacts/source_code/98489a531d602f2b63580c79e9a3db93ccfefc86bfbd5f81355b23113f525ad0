@@ -1,0 +1,19 @@
+public static int findSupportedAbi(Handle handle, String[] supportedAbis){
+    int finalRes = NO_NATIVE_LIBRARIES;
+    for (long apkHandle : handle.apkHandles) {
+        final int res = nativeFindSupportedAbi(apkHandle, supportedAbis, handle.debuggable);
+        if (res == NO_NATIVE_LIBRARIES) {
+        } else if (res == INSTALL_FAILED_NO_MATCHING_ABIS) {
+            if (finalRes < 0) {
+                finalRes = INSTALL_FAILED_NO_MATCHING_ABIS;
+            }
+        } else if (res >= 0) {
+            if (finalRes < 0 || res < finalRes) {
+                finalRes = res;
+            }
+        } else {
+            return res;
+        }
+    }
+    return finalRes;
+}

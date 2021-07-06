@@ -1,0 +1,12 @@
+public void start(){
+    if (mIpMemoryStore != null) {
+        Log.w(TAG, "Reconnecting to IpMemoryStore service");
+    }
+    mIpMemoryStore = mWifiInjector.getIpMemoryStore();
+    if (mIpMemoryStore == null) {
+        Log.e(TAG, "No IpMemoryStore service!");
+        return;
+    }
+    mWifiScoreCard.installMemoryStore(this);
+    mWifiHealthMonitor.installMemoryStoreSetUpDetectionAlarm(this);
+}

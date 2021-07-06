@@ -1,0 +1,14 @@
+public void setUp() throws Exception{
+    MockitoAnnotations.initMocks(this);
+    Application application = RuntimeEnvironment.application;
+    mContext = application;
+    mShadowContext = shadowOf(application);
+    mShadowUserManager = Shadow.extract(UserManager.get(application));
+    mUserOneId = UserHandle.USER_SYSTEM + 1;
+    mUserTwoId = mUserOneId + 1;
+    mShadowUserManager.addUser(mUserOneId, "mUserOneId", 0);
+    mShadowUserManager.addUser(mUserTwoId, "mUserTwoId", 0);
+    mShadowContext.grantPermissions(BACKUP);
+    mShadowContext.grantPermissions(INTERACT_ACROSS_USERS_FULL);
+    ShadowBinder.setCallingUid(Process.SYSTEM_UID);
+}

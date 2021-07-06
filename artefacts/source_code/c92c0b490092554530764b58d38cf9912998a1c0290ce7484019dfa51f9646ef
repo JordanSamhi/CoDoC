@@ -1,0 +1,10 @@
+public boolean setBssid(String bssidStr){
+    synchronized (mLock) {
+        try {
+            return setBssid(NativeUtil.macAddressToByteArray(bssidStr));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + bssidStr, e);
+            return false;
+        }
+    }
+}

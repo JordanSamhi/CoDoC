@@ -1,0 +1,15 @@
+public static HSOsuProvidersElement parse(ByteBuffer payload) throws ProtocolException{
+    int ssidLength = payload.get() & 0xFF;
+    if (ssidLength > MAXIMUM_OSU_SSID_LENGTH) {
+        throw new ProtocolException("Invalid SSID length: " + ssidLength);
+    }
+    byte[] ssidBytes = new byte[ssidLength];
+    payload.get(ssidBytes);
+    int numProviders = payload.get() & 0xFF;
+    List<OsuProviderInfo> providers = new ArrayList<>();
+    while (numProviders > 0) {
+        providers.add(OsuProviderInfo.parse(payload));
+        numProviders--;
+    }
+    return new HSOsuProvidersElement(WifiSsid.createFromByteArray(ssidBytes), providers);
+}

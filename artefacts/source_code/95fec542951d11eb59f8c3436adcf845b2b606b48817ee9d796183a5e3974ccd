@@ -1,0 +1,10 @@
+public Builder batchUpdate(@NonNull Validator condition, @NonNull BatchUpdates updates){
+    throwIfDestroyed();
+    Preconditions.checkArgument((condition instanceof InternalValidator), "not provided by Android System: " + condition);
+    Preconditions.checkNotNull(updates);
+    if (mUpdates == null) {
+        mUpdates = new ArrayList<>();
+    }
+    mUpdates.add(new Pair<>((InternalValidator) condition, updates));
+    return this;
+}

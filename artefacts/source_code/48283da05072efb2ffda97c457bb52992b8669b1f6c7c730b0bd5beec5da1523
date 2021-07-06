@@ -1,0 +1,10 @@
+public byte[] withContext(byte[] label, byte[] context){
+    final Mac m = getMac();
+    update32(m, 1);
+    m.update(label);
+    m.update((byte) 0);
+    m.update(context);
+    update32(m, context.length * 8);
+    update32(m, 256);
+    return m.doFinal();
+}

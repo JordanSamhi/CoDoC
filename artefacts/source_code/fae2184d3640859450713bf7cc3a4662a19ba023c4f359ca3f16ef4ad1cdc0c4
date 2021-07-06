@@ -1,0 +1,8 @@
+public float getEstimate(long time){
+    truncateOldValues(time);
+    final float value = filter(time, mBuffer);
+    if (mLoggingEnabled) {
+        Slog.d(mTag, "get estimate: " + value + " @ " + time);
+    }
+    return value;
+}

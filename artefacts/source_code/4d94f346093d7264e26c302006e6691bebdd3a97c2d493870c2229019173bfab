@@ -1,0 +1,13 @@
+public boolean remove(JobStatus jobStatus, boolean removeFromPersisted){
+    boolean removed = mJobSet.remove(jobStatus);
+    if (!removed) {
+        if (DEBUG) {
+            Slog.d(TAG, "Couldn't remove job: didn't exist: " + jobStatus);
+        }
+        return false;
+    }
+    if (removeFromPersisted && jobStatus.isPersisted()) {
+        maybeWriteStatusToDiskAsync();
+    }
+    return removed;
+}

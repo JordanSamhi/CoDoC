@@ -1,0 +1,12 @@
+public boolean checkCapability(String sha256String, @CertCapabilities int flags){
+    if (this == UNKNOWN) {
+        return false;
+    }
+    byte[] sha256Bytes = sha256String == null ? null : HexEncoding.decode(sha256String, false);
+    if (hasSha256Certificate(sha256Bytes, flags)) {
+        return true;
+    }
+    final String[] mSignaturesSha256Digests = PackageUtils.computeSignaturesSha256Digests(signatures);
+    final String mSignaturesSha256Digest = PackageUtils.computeSignaturesSha256Digest(mSignaturesSha256Digests);
+    return mSignaturesSha256Digest.equals(sha256String);
+}

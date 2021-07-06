@@ -1,0 +1,11 @@
+public void showDialog(boolean keyguardShowing, boolean isDeviceProvisioned){
+    mKeyguardShowing = keyguardShowing;
+    mDeviceProvisioned = isDeviceProvisioned;
+    if (mDialog != null) {
+        mDialog.dismiss();
+        mDialog = null;
+        mHandler.sendEmptyMessage(MESSAGE_SHOW);
+    } else {
+        handleShow();
+    }
+}

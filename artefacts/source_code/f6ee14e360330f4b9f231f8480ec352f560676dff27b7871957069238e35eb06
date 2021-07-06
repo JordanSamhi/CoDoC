@@ -1,0 +1,13 @@
+public ParcelUuid[] getUuids(){
+    final IBluetooth service = sService;
+    if (service == null || !isBluetoothEnabled()) {
+        Log.e(TAG, "BT not enabled. Cannot get remote device Uuids");
+        return null;
+    }
+    try {
+        return service.getRemoteUuids(this);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return null;
+}

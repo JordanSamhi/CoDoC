@@ -1,0 +1,13 @@
+public static long tryGetMyContactsGroupId(ContentResolver resolver){
+    Cursor groupsCursor = resolver.query(Groups.CONTENT_URI, GROUPS_PROJECTION, Groups.SYSTEM_ID + "='" + Groups.GROUP_MY_CONTACTS + "'", null, null);
+    if (groupsCursor != null) {
+        try {
+            if (groupsCursor.moveToFirst()) {
+                return groupsCursor.getLong(0);
+            }
+        } finally {
+            groupsCursor.close();
+        }
+    }
+    return 0;
+}

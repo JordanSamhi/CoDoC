@@ -1,0 +1,16 @@
+public boolean connect(BluetoothDevice device){
+    if (DBG)
+        log("connect(" + device + ")");
+    final IBluetoothHearingAid service = getService();
+    try {
+        if (service != null && isEnabled() && isValidDevice(device)) {
+            return service.connect(device);
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return false;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return false;
+    }
+}

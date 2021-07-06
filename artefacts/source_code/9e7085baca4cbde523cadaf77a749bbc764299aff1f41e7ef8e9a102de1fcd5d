@@ -1,0 +1,27 @@
+public void queueInputImage(Image image){
+    if (image == null) {
+        throw new IllegalArgumentException("image shouldn't be null");
+    }
+    boolean ownedByMe = isImageOwnedByMe(image);
+    if (ownedByMe && !(((WriterSurfaceImage) image).mIsImageValid)) {
+        throw new IllegalStateException("Image from ImageWriter is invalid");
+    }
+    if (!ownedByMe) {
+        if (!(image.getOwner() instanceof ImageReader)) {
+            throw new IllegalArgumentException("Only images from ImageReader can be queued to" + " ImageWriter, other image source is not supported yet!");
+        }
+        ImageReader prevOwner = (ImageReader) image.getOwner();
+        prevOwner.detachImage(image);
+        attachAndQueueInputImage(image);
+        image.close();
+        return;
+    }
+    Rect crop = image.getCropRect();
+    nativeQueueInputImage(mNativeContext, image, image.getTimestamp(), crop.left, crop.top, crop.right, crop.bottom, image.getTransform(), image.getScalingMode());
+    if (ownedByMe) {
+        mDequeuedImages.remove(image);
+        WriterSurfaceImage wi = (WriterSurfaceImage) image;
+        wi.clearSurfacePlanes();
+        wi.mIsImageValid = false;
+    }
+}

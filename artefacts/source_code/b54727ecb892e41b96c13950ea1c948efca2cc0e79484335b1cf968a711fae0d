@@ -1,0 +1,19 @@
+public void setLayoutFrozen(boolean frozen){
+    if (frozen != mLayoutFrozen) {
+        assertNotInLayoutOrScroll("Do not setLayoutFrozen in layout or scroll");
+        if (!frozen) {
+            mLayoutFrozen = false;
+            if (mLayoutRequestEaten && mLayout != null && mAdapter != null) {
+                requestLayout();
+            }
+            mLayoutRequestEaten = false;
+        } else {
+            final long now = SystemClock.uptimeMillis();
+            MotionEvent cancelEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0.0f, 0.0f, 0);
+            onTouchEvent(cancelEvent);
+            mLayoutFrozen = true;
+            mIgnoreMotionEventTillDown = true;
+            stopScroll();
+        }
+    }
+}

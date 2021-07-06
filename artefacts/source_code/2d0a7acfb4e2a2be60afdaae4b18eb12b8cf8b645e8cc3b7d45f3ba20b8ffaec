@@ -1,0 +1,10 @@
+public String getLabel(@NonNull PackageManager packageManager){
+    if (!TextUtils.isEmpty(mPackageName) && mLabelResId > 0) {
+        try {
+            return packageManager.getResourcesForApplication(mPackageName).getString(mLabelResId);
+        } catch (NotFoundException | NameNotFoundException e) {
+            Log.w(LOG_TAG, "Could not load resouce" + mLabelResId + " from package " + mPackageName);
+        }
+    }
+    return mLabel;
+}

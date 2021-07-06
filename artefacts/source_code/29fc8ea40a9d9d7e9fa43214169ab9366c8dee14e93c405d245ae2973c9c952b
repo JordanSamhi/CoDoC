@@ -1,0 +1,23 @@
+public boolean gatherTransparentRegion(Region region){
+    final AttachInfo attachInfo = mAttachInfo;
+    if (region != null && attachInfo != null) {
+        final int pflags = mPrivateFlags;
+        if ((pflags & PFLAG_SKIP_DRAW) == 0) {
+            final int[] location = attachInfo.mTransparentLocation;
+            getLocationInWindow(location);
+            int shadowOffset = getZ() > 0 ? (int) getZ() : 0;
+            region.op(location[0] - shadowOffset, location[1] - shadowOffset, location[0] + mRight - mLeft + shadowOffset, location[1] + mBottom - mTop + (shadowOffset * 3), Region.Op.DIFFERENCE);
+        } else {
+            if (mBackground != null && mBackground.getOpacity() != PixelFormat.TRANSPARENT) {
+                applyDrawableToTransparentRegion(mBackground, region);
+            }
+            if (mForegroundInfo != null && mForegroundInfo.mDrawable != null && mForegroundInfo.mDrawable.getOpacity() != PixelFormat.TRANSPARENT) {
+                applyDrawableToTransparentRegion(mForegroundInfo.mDrawable, region);
+            }
+            if (mDefaultFocusHighlight != null && mDefaultFocusHighlight.getOpacity() != PixelFormat.TRANSPARENT) {
+                applyDrawableToTransparentRegion(mDefaultFocusHighlight, region);
+            }
+        }
+    }
+    return true;
+}

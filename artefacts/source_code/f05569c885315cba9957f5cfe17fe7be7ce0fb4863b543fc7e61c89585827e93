@@ -1,0 +1,7 @@
+public void testSetAutoRestore_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.setAutoRestore(mUserTwoId, true);
+    verify(mUserOneService, never()).setAutoRestore(true);
+}

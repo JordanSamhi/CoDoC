@@ -1,0 +1,27 @@
+public static boolean deleteOlderFiles(File dir, int minCount, long minAgeMs){
+    if (minCount < 0 || minAgeMs < 0) {
+        throw new IllegalArgumentException("Constraints must be positive or 0");
+    }
+    final File[] files = dir.listFiles();
+    if (files == null)
+        return false;
+    Arrays.sort(files, new Comparator<File>() {
+
+        @Override
+        public int compare(File lhs, File rhs) {
+            return Long.compare(rhs.lastModified(), lhs.lastModified());
+        }
+    });
+    boolean deleted = false;
+    for (int i = minCount; i < files.length; i++) {
+        final File file = files[i];
+        final long age = System.currentTimeMillis() - file.lastModified();
+        if (age > minAgeMs) {
+            if (file.delete()) {
+                Log.d(TAG, "Deleted old file " + file);
+                deleted = true;
+            }
+        }
+    }
+    return deleted;
+}

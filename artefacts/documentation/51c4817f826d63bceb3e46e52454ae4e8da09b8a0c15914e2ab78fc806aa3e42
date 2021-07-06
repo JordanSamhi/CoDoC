@@ -1,0 +1,18 @@
+
+     * Returns any packages in a given set of packages that cannot be suspended via a call to {@link
+     * #setPackagesSuspended(String[], boolean, PersistableBundle, PersistableBundle,
+     * SuspendDialogInfo) setPackagesSuspended}. The platform prevents suspending certain critical
+     * packages to keep the device in a functioning state, e.g. the default dialer and launcher.
+     * Apps need to hold {@link Manifest.permission#SUSPEND_APPS SUSPEND_APPS} to call this API.
+     *
+     * <p>
+     * Note that this set of critical packages can change with time, so even though a package name
+     * was not returned by this call, it does not guarantee that a subsequent call to
+     * {@link #setPackagesSuspended(String[], boolean, PersistableBundle, PersistableBundle,
+     * SuspendDialogInfo) setPackagesSuspended} for that package will succeed, especially if
+     * significant time elapsed between the two calls.
+     *
+     * @param packageNames The packages to check.
+     * @return A list of packages that can not be currently suspended by the system.
+     * @hide
+     

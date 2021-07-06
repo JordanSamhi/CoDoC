@@ -1,0 +1,7 @@
+public static void unmap(@NonNull ByteBuffer buffer){
+    if (buffer instanceof DirectByteBuffer) {
+        NioUtils.freeDirectBuffer(buffer);
+    } else {
+        throw new IllegalArgumentException("ByteBuffer wasn't created by #map(int, int, int); can't unmap");
+    }
+}

@@ -1,0 +1,12 @@
+public boolean isDataConnectionAllowed(){
+    boolean retVal = false;
+    try {
+        int subId = getSubId(SubscriptionManager.getDefaultDataSubscriptionId());
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            retVal = telephony.isDataEnabled(subId);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error isDataConnectionAllowed", e);
+    }
+    return retVal;
+}

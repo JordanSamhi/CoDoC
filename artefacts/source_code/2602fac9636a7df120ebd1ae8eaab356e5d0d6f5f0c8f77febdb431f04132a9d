@@ -1,0 +1,8 @@
+public List<SipProfile> getProfiles() throws SipException{
+    try {
+        checkSipServiceConnection();
+        return mSipService.getProfiles(mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw new SipException(e.getMessage());
+    }
+}

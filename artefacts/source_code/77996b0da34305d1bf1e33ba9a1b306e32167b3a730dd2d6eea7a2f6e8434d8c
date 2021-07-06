@@ -1,0 +1,15 @@
+public static void validateDexMetadataFile(String dmaPath) throws PackageParserException{
+    StrictJarFile jarFile = null;
+    try {
+        jarFile = new StrictJarFile(dmaPath, false, false);
+    } catch (IOException e) {
+        throw new PackageParserException(INSTALL_FAILED_BAD_DEX_METADATA, "Error opening " + dmaPath, e);
+    } finally {
+        if (jarFile != null) {
+            try {
+                jarFile.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
+}

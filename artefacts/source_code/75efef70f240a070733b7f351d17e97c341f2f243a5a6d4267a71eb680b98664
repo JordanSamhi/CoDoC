@@ -1,0 +1,10 @@
+public void notifyPendingSystemUpdate(long updateReceivedTime, boolean isSecurityPatch){
+    throwIfParentInstance("notifyPendingSystemUpdate");
+    if (mService != null) {
+        try {
+            mService.notifyPendingSystemUpdate(SystemUpdateInfo.of(updateReceivedTime, isSecurityPatch));
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

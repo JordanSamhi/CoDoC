@@ -1,0 +1,36 @@
+
+     * Schedule an alarm that represents an alarm clock, which will be used to notify the user
+     * when it goes off.  The expectation is that when this alarm triggers, the application will
+     * further wake up the device to tell the user about the alarm -- turning on the screen,
+     * playing a sound, vibrating, etc.  As such, the system will typically also use the
+     * information supplied here to tell the user about this upcoming alarm if appropriate.
+     *
+     * <p>Due to the nature of this kind of alarm, similar to {@link #setExactAndAllowWhileIdle},
+     * these alarms will be allowed to trigger even if the system is in a low-power idle
+     * (a.k.a. doze) mode.  The system may also do some prep-work when it sees that such an
+     * alarm coming up, to reduce the amount of background work that could happen if this
+     * causes the device to fully wake up -- this is to avoid situations such as a large number
+     * of devices having an alarm set at the same time in the morning, all waking up at that
+     * time and suddenly swamping the network with pending background work.  As such, these
+     * types of alarms can be extremely expensive on battery use and should only be used for
+     * their intended purpose.</p>
+     *
+     * <p>
+     * This method is like {@link #setExact(int, long, PendingIntent)}, but implies
+     * {@link #RTC_WAKEUP}.
+     *
+     * @param info
+     * @param operation Action to perform when the alarm goes off;
+     *        typically comes from {@link PendingIntent#getBroadcast
+     *        IntentSender.getBroadcast()}.
+     *
+     * @see #set
+     * @see #setRepeating
+     * @see #setWindow
+     * @see #setExact
+     * @see #cancel
+     * @see #getNextAlarmClock()
+     * @see android.content.Context#sendBroadcast
+     * @see android.content.Context#registerReceiver
+     * @see android.content.Intent#filterEquals
+     

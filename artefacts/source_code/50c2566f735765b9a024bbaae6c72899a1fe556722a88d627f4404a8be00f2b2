@@ -1,0 +1,24 @@
+public final void updateDragShadow(DragShadowBuilder shadowBuilder){
+    if (ViewDebug.DEBUG_DRAG) {
+        Log.d(VIEW_LOG_TAG, "updateDragShadow");
+    }
+    if (mAttachInfo == null) {
+        Log.w(VIEW_LOG_TAG, "updateDragShadow called on a detached view.");
+        return;
+    }
+    if (mAttachInfo.mDragToken != null) {
+        try {
+            Canvas canvas = mAttachInfo.mDragSurface.lockCanvas(null);
+            try {
+                canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+                shadowBuilder.onDrawShadow(canvas);
+            } finally {
+                mAttachInfo.mDragSurface.unlockCanvasAndPost(canvas);
+            }
+        } catch (Exception e) {
+            Log.e(VIEW_LOG_TAG, "Unable to update drag shadow", e);
+        }
+    } else {
+        Log.e(VIEW_LOG_TAG, "No active drag");
+    }
+}

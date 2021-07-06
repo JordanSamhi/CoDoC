@@ -1,0 +1,49 @@
+public void updateCpuTimeLocked(boolean onBattery, boolean onBatteryScreenOff){
+    if (mPowerProfile == null) {
+        return;
+    }
+    if (DEBUG_ENERGY_CPU) {
+        Slog.d(TAG, "!Cpu updating!");
+    }
+    if (mCpuFreqs == null) {
+        mCpuFreqs = mCpuUidFreqTimeReader.readFreqs(mPowerProfile);
+    }
+    ArrayList<StopwatchTimer> partialTimersToConsider = null;
+    if (onBatteryScreenOff) {
+        partialTimersToConsider = new ArrayList<>();
+        for (int i = mPartialTimers.size() - 1; i >= 0; --i) {
+            final StopwatchTimer timer = mPartialTimers.get(i);
+            if (timer.mInList && timer.mUid != null && timer.mUid.mUid != Process.SYSTEM_UID) {
+                partialTimersToConsider.add(timer);
+            }
+        }
+    }
+    markPartialTimersAsEligible();
+    if (!onBattery) {
+        mCpuUidUserSysTimeReader.readDelta(null);
+        mCpuUidFreqTimeReader.readDelta(null);
+        mNumAllUidCpuTimeReads += 2;
+        if (mConstants.TRACK_CPU_ACTIVE_CLUSTER_TIME) {
+            mCpuUidActiveTimeReader.readDelta(null);
+            mCpuUidClusterTimeReader.readDelta(null);
+            mNumAllUidCpuTimeReads += 2;
+        }
+        for (int cluster = mKernelCpuSpeedReaders.length - 1; cluster >= 0; --cluster) {
+            mKernelCpuSpeedReaders[cluster].readDelta();
+        }
+        return;
+    }
+    mUserInfoProvider.refreshUserIds();
+    final SparseLongArray updatedUids = mCpuUidFreqTimeReader.perClusterTimesAvailable() ? null : new SparseLongArray();
+    readKernelUidCpuTimesLocked(partialTimersToConsider, updatedUids, onBattery);
+    if (updatedUids != null) {
+        updateClusterSpeedTimes(updatedUids, onBattery);
+    }
+    readKernelUidCpuFreqTimesLocked(partialTimersToConsider, onBattery, onBatteryScreenOff);
+    mNumAllUidCpuTimeReads += 2;
+    if (mConstants.TRACK_CPU_ACTIVE_CLUSTER_TIME) {
+        readKernelUidCpuActiveTimesLocked(onBattery);
+        readKernelUidCpuClusterTimesLocked(onBattery);
+        mNumAllUidCpuTimeReads += 2;
+    }
+}

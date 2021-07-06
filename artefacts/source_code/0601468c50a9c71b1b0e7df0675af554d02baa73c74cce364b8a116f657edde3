@@ -1,0 +1,21 @@
+public static SoftApConfiguration generateLocalOnlyHotspotConfig(Context context, int apBand, @Nullable SoftApConfiguration customConfig){
+    SoftApConfiguration.Builder configBuilder;
+    if (customConfig != null) {
+        configBuilder = new SoftApConfiguration.Builder(customConfig);
+    } else {
+        configBuilder = new SoftApConfiguration.Builder();
+        configBuilder.setAutoShutdownEnabled(false);
+    }
+    configBuilder.setBand(apBand);
+    if (customConfig == null || customConfig.getSsid() == null) {
+        configBuilder.setSsid(generateLohsSsid(context));
+    }
+    if (customConfig == null) {
+        if (ApConfigUtil.isWpa3SaeSupported(context)) {
+            configBuilder.setPassphrase(generatePassword(), SoftApConfiguration.SECURITY_TYPE_WPA3_SAE_TRANSITION);
+        } else {
+            configBuilder.setPassphrase(generatePassword(), SoftApConfiguration.SECURITY_TYPE_WPA2_PSK);
+        }
+    }
+    return configBuilder.build();
+}

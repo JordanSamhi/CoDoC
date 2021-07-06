@@ -1,0 +1,9 @@
+public SurfaceControl build(){
+    if (mWidth < 0 || mHeight < 0) {
+        throw new IllegalStateException("width and height must be positive or unset");
+    }
+    if ((mWidth > 0 || mHeight > 0) && (isEffectLayer() || isContainerLayer())) {
+        throw new IllegalStateException("Only buffer layers can set a valid buffer size.");
+    }
+    return new SurfaceControl(mSession, mName, mWidth, mHeight, mFormat, mFlags, mParent, mMetadata, mLocalOwnerView, mCallsite);
+}

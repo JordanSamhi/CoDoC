@@ -1,0 +1,13 @@
+public int getCarrierPrivilegeStatus(PackageInfo packageInfo){
+    List<Signature> signatures = getSignatures(packageInfo);
+    if (signatures.isEmpty()) {
+        throw new IllegalArgumentException("Must use GET_SIGNING_CERTIFICATES when looking up package info");
+    }
+    for (Signature sig : signatures) {
+        int accessStatus = getCarrierPrivilegeStatus(sig, packageInfo.packageName);
+        if (accessStatus != TelephonyManager.CARRIER_PRIVILEGE_STATUS_NO_ACCESS) {
+            return accessStatus;
+        }
+    }
+    return TelephonyManager.CARRIER_PRIVILEGE_STATUS_NO_ACCESS;
+}

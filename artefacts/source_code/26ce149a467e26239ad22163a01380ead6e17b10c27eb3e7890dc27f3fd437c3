@@ -1,0 +1,27 @@
+public void draw(Canvas canvas){
+    final Rect bounds = getBounds();
+    final float scale = bounds.width() / BASE_ICON_SIZE;
+    final int ringStrokeWidth = (int) (RING_STROKE_WIDTH * scale);
+    final int headSize = (int) (HEAD_SIZE * scale);
+    final int badgePadding = (int) (BADGE_ORIGIN * scale);
+    final int badgeCenter = (int) (BADGE_CENTER * scale);
+    mPaddingPaint.setStrokeWidth(ringStrokeWidth);
+    final float radius = (int) (CIRCLE_RADIUS * scale);
+    if (mBaseIcon != null) {
+        mBaseIcon.setBounds(0, 0, headSize, headSize);
+        mBaseIcon.draw(canvas);
+    } else {
+        Log.w("ConversationIconFactory", "ConversationIconDrawable has null base icon");
+    }
+    if (mBadgeIcon != null) {
+        canvas.drawCircle(badgeCenter, badgeCenter, radius, mPaddingPaint);
+        mBadgeIcon.setBounds(badgePadding, badgePadding, headSize, headSize);
+        mBadgeIcon.draw(canvas);
+    } else {
+        Log.w("ConversationIconFactory", "ConversationIconDrawable has null badge icon");
+    }
+    if (mShowRing) {
+        mRingPaint.setStrokeWidth(ringStrokeWidth);
+        canvas.drawCircle(badgeCenter, badgeCenter, radius, mRingPaint);
+    }
+}

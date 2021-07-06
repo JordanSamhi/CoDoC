@@ -1,0 +1,12 @@
+public String getDeviceId(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return null;
+        return telephony.getDeviceIdWithFeature(mContext.getOpPackageName(), mContext.getAttributionTag());
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

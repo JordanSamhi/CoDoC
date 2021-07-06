@@ -1,0 +1,54 @@
+public ProcFileIterator open(boolean ignoreCache){
+    if (mErrors >= ERROR_THRESHOLD) {
+        return null;
+    }
+    if (ignoreCache) {
+        mWriteLock.lock();
+    } else {
+        mReadLock.lock();
+        if (dataValid()) {
+            return new ProcFileIterator(mSize);
+        }
+        mReadLock.unlock();
+        mWriteLock.lock();
+        if (dataValid()) {
+            mReadLock.lock();
+            mWriteLock.unlock();
+            return new ProcFileIterator(mSize);
+        }
+    }
+    int total = 0;
+    int curr;
+    mSize = 0;
+    final int oldMask = StrictMode.allowThreadDiskReadsMask();
+    try (BufferedReader r = Files.newBufferedReader(mFile)) {
+        if (mBuf == null) {
+            mBuf = new char[1024];
+        }
+        while ((curr = r.read(mBuf, total, mBuf.length - total)) >= 0) {
+            total += curr;
+            if (total == mBuf.length) {
+                if (mBuf.length == MAX_BUFFER_SIZE) {
+                    mErrors++;
+                    Slog.e(TAG, "Proc file too large: " + mFile);
+                    return null;
+                }
+                mBuf = Arrays.copyOf(mBuf, Math.min(mBuf.length << 1, MAX_BUFFER_SIZE));
+            }
+        }
+        mSize = total;
+        mLastReadTime = SystemClock.elapsedRealtime();
+        mReadLock.lock();
+        return new ProcFileIterator(total);
+    } catch (FileNotFoundException | NoSuchFileException e) {
+        mErrors++;
+        Slog.w(TAG, "File not found. It's normal if not implemented: " + mFile);
+    } catch (IOException e) {
+        mErrors++;
+        Slog.e(TAG, "Error reading " + mFile, e);
+    } finally {
+        StrictMode.setThreadPolicyMask(oldMask);
+        mWriteLock.unlock();
+    }
+    return null;
+}

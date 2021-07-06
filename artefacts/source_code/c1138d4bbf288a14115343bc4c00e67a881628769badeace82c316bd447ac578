@@ -1,0 +1,38 @@
+public boolean noteMobileRadioPowerStateLocked(int powerState, long timestampNs, int uid){
+    final long elapsedRealtime = mClocks.elapsedRealtime();
+    final long uptime = mClocks.uptimeMillis();
+    if (mMobileRadioPowerState != powerState) {
+        long realElapsedRealtimeMs;
+        final boolean active = powerState == DataConnectionRealTimeInfo.DC_POWER_STATE_MEDIUM || powerState == DataConnectionRealTimeInfo.DC_POWER_STATE_HIGH;
+        if (active) {
+            if (uid > 0) {
+                noteMobileRadioApWakeupLocked(elapsedRealtime, uptime, uid);
+            }
+            mMobileRadioActiveStartTime = realElapsedRealtimeMs = timestampNs / (1000 * 1000);
+            mHistoryCur.states |= HistoryItem.STATE_MOBILE_RADIO_ACTIVE_FLAG;
+        } else {
+            realElapsedRealtimeMs = timestampNs / (1000 * 1000);
+            long lastUpdateTimeMs = mMobileRadioActiveStartTime;
+            if (realElapsedRealtimeMs < lastUpdateTimeMs) {
+                Slog.wtf(TAG, "Data connection inactive timestamp " + realElapsedRealtimeMs + " is before start time " + lastUpdateTimeMs);
+                realElapsedRealtimeMs = elapsedRealtime;
+            } else if (realElapsedRealtimeMs < elapsedRealtime) {
+                mMobileRadioActiveAdjustedTime.addCountLocked(elapsedRealtime - realElapsedRealtimeMs);
+            }
+            mHistoryCur.states &= ~HistoryItem.STATE_MOBILE_RADIO_ACTIVE_FLAG;
+        }
+        if (DEBUG_HISTORY)
+            Slog.v(TAG, "Mobile network active " + active + " to: " + Integer.toHexString(mHistoryCur.states));
+        addHistoryRecordLocked(elapsedRealtime, uptime);
+        mMobileRadioPowerState = powerState;
+        if (active) {
+            mMobileRadioActiveTimer.startRunningLocked(elapsedRealtime);
+            mMobileRadioActivePerAppTimer.startRunningLocked(elapsedRealtime);
+        } else {
+            mMobileRadioActiveTimer.stopRunningLocked(realElapsedRealtimeMs);
+            mMobileRadioActivePerAppTimer.stopRunningLocked(realElapsedRealtimeMs);
+            return true;
+        }
+    }
+    return false;
+}

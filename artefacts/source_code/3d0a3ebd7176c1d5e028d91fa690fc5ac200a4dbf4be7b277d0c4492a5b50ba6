@@ -1,0 +1,14 @@
+public int getForegroundServiceTypeLocked(ComponentName className, IBinder token){
+    final int userId = UserHandle.getCallingUserId();
+    final long origId = Binder.clearCallingIdentity();
+    int ret = ServiceInfo.FOREGROUND_SERVICE_TYPE_NONE;
+    try {
+        ServiceRecord r = findServiceLocked(className, token, userId);
+        if (r != null) {
+            ret = r.foregroundServiceType;
+        }
+    } finally {
+        Binder.restoreCallingIdentity(origId);
+    }
+    return ret;
+}

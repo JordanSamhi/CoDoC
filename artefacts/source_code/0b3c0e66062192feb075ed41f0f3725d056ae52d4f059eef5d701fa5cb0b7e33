@@ -1,0 +1,7 @@
+public boolean requestQuietModeEnabled(boolean enableQuietMode, @NonNull UserHandle userHandle, IntentSender target, int flags){
+    try {
+        return mService.requestQuietModeEnabled(mContext.getPackageName(), enableQuietMode, userHandle.getIdentifier(), target, flags);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

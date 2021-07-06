@@ -1,0 +1,7 @@
+public List<ShortcutInfo> getManifestShortcuts(){
+    try {
+        return mService.getShortcuts(mContext.getPackageName(), FLAG_MATCH_MANIFEST, injectMyUserId()).getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

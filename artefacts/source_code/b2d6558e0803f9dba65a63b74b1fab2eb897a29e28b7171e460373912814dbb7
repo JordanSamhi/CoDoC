@@ -1,0 +1,19 @@
+public void snapRectToClosestEdge(Rect stackBounds, Rect movementBounds, Rect boundsOut){
+    final int boundedLeft = Math.max(movementBounds.left, Math.min(movementBounds.right, stackBounds.left));
+    final int boundedTop = Math.max(movementBounds.top, Math.min(movementBounds.bottom, stackBounds.top));
+    boundsOut.set(stackBounds);
+    final int fromLeft = Math.abs(stackBounds.left - movementBounds.left);
+    final int fromTop = Math.abs(stackBounds.top - movementBounds.top);
+    final int fromRight = Math.abs(movementBounds.right - stackBounds.left);
+    final int fromBottom = Math.abs(movementBounds.bottom - stackBounds.top);
+    final int shortest = Math.min(Math.min(fromLeft, fromRight), Math.min(fromTop, fromBottom));
+    if (shortest == fromLeft) {
+        boundsOut.offsetTo(movementBounds.left, boundedTop);
+    } else if (shortest == fromTop) {
+        boundsOut.offsetTo(boundedLeft, movementBounds.top);
+    } else if (shortest == fromRight) {
+        boundsOut.offsetTo(movementBounds.right, boundedTop);
+    } else {
+        boundsOut.offsetTo(boundedLeft, movementBounds.bottom);
+    }
+}

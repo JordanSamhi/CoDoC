@@ -1,0 +1,23 @@
+public void dismissAllNotifications(@UserIdInt int userId){
+    Assert.isMainThread();
+    checkForReentrantCall();
+    mLogger.logDismissAll(userId);
+    try {
+        mStatusBarService.onClearAllNotifications(userId);
+    } catch (RemoteException e) {
+        mLogger.logRemoteExceptionOnClearAllNotifications(e);
+    }
+    final List<NotificationEntry> entries = new ArrayList<>(getAllNotifs());
+    for (int i = entries.size() - 1; i >= 0; i--) {
+        NotificationEntry entry = entries.get(i);
+        if (!shouldDismissOnClearAll(entry, userId)) {
+            updateDismissInterceptors(entry);
+            if (isDismissIntercepted(entry)) {
+                mLogger.logNotifClearAllDismissalIntercepted(entry.getKey());
+            }
+            entries.remove(i);
+        }
+    }
+    locallyDismissNotifications(entries);
+    dispatchEventsAndRebuildList();
+}

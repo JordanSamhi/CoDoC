@@ -1,0 +1,12 @@
+public synchronized SoftApConfiguration getApConfiguration(){
+    if (mPersistentWifiApConfig == null) {
+        Log.d(TAG, "Fallback to use default AP configuration");
+        persistConfigAndTriggerBackupManagerProxy(getDefaultApConfiguration());
+    }
+    SoftApConfiguration sanitizedPersistentconfig = sanitizePersistentApConfig(mPersistentWifiApConfig);
+    if (mPersistentWifiApConfig != sanitizedPersistentconfig) {
+        Log.d(TAG, "persisted config was converted, need to resave it");
+        persistConfigAndTriggerBackupManagerProxy(sanitizedPersistentconfig);
+    }
+    return mPersistentWifiApConfig;
+}

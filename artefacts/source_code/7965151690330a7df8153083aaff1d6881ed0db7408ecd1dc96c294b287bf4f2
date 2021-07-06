@@ -1,0 +1,7 @@
+public static AccessorMock<T> mockAccessor(T defaultValue){
+    AtomicReference<T> holder = new AtomicReference<>(defaultValue);
+    return new AccessorMock<>(invocation -> holder.get(), invocation -> {
+        holder.set(invocation.getArgument(0));
+        return null;
+    });
+}

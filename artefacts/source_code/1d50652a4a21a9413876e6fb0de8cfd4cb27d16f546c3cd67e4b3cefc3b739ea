@@ -1,0 +1,17 @@
+public boolean isChannelWidthSupported(@ChannelWidth int chWidth){
+    switch(chWidth) {
+        case ScanResult.CHANNEL_WIDTH_20MHZ:
+            return true;
+        case ScanResult.CHANNEL_WIDTH_40MHZ:
+            return (m80211nSupported || m80211acSupported || m80211axSupported);
+        case ScanResult.CHANNEL_WIDTH_80MHZ:
+            return (m80211acSupported || m80211axSupported);
+        case ScanResult.CHANNEL_WIDTH_160MHZ:
+            return mChannelWidth160MhzSupported;
+        case ScanResult.CHANNEL_WIDTH_80MHZ_PLUS_MHZ:
+            return mChannelWidth80p80MhzSupported;
+        default:
+            Log.e(TAG, "isChannelWidthSupported called with invalid channel width: " + chWidth);
+    }
+    return false;
+}

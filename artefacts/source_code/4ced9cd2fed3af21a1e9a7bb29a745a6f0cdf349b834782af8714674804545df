@@ -1,0 +1,15 @@
+public void notifyValueChanged(View view, int virtualId, AutofillValue value){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    synchronized (mLock) {
+        if (!mEnabled || !isActiveLocked()) {
+            if (sVerbose) {
+                Log.v(TAG, "notifyValueChanged(" + view.getAutofillId() + ":" + virtualId + "): ignoring on state " + getStateAsStringLocked());
+            }
+            return;
+        }
+        final AutofillId id = getAutofillId(view, virtualId);
+        updateSessionLocked(id, null, value, ACTION_VALUE_CHANGED, 0);
+    }
+}

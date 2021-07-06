@@ -1,0 +1,14 @@
+public static int getDefaultType(Uri defaultRingtoneUri){
+    defaultRingtoneUri = ContentProvider.getUriWithoutUserId(defaultRingtoneUri);
+    if (defaultRingtoneUri == null) {
+        return -1;
+    } else if (defaultRingtoneUri.equals(Settings.System.DEFAULT_RINGTONE_URI)) {
+        return TYPE_RINGTONE;
+    } else if (defaultRingtoneUri.equals(Settings.System.DEFAULT_NOTIFICATION_URI)) {
+        return TYPE_NOTIFICATION;
+    } else if (defaultRingtoneUri.equals(Settings.System.DEFAULT_ALARM_ALERT_URI)) {
+        return TYPE_ALARM;
+    } else {
+        return -1;
+    }
+}

@@ -1,0 +1,19 @@
+public void handleUpEvent(KeyEvent event){
+    final int keyCode = event.getKeyCode();
+    if (DEBUG)
+        Log.v(TAG, "Handle key up " + event + ": " + this);
+    int index = mActiveLongPresses.indexOfKey(keyCode);
+    if (index >= 0) {
+        if (DEBUG)
+            Log.v(TAG, "  Index: " + index);
+        event.mFlags |= FLAG_CANCELED | FLAG_CANCELED_LONG_PRESS;
+        mActiveLongPresses.removeAt(index);
+    }
+    if (mDownKeyCode == keyCode) {
+        if (DEBUG)
+            Log.v(TAG, "  Tracking!");
+        event.mFlags |= FLAG_TRACKING;
+        mDownKeyCode = 0;
+        mDownTarget = null;
+    }
+}

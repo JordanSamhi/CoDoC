@@ -1,0 +1,53 @@
+
+         * Triggers a custom UI before before autofilling the screen with the contents of this
+         * dataset.
+         *
+         * <p><b>Note:</b> Although the name of this method suggests that it should be used just for
+         * authentication flow, it can be used for other advanced flows; see {@link AutofillService}
+         * for examples.
+         *
+         * <p>This method is called when you need to provide an authentication
+         * UI for the data set. For example, when a data set contains credit card information
+         * (such as number, expiration date, and verification code), you can display UI
+         * asking for the verification code before filing in the data. Even if the
+         * data set is completely populated the system will launch the specified authentication
+         * intent and will need your approval to fill it in. Since the data set is "locked"
+         * until the user authenticates it, typically this data set name is masked
+         * (for example, "VISA....1234"). Typically you would want to store the data set
+         * labels non-encrypted and the actual sensitive data encrypted and not in memory.
+         * This allows showing the labels in the UI while involving the user if one of
+         * the items with these labels is chosen. Note that if you use sensitive data as
+         * a label, for example an email address, then it should also be encrypted.</p>
+         *
+         * <p>When a user triggers autofill, the system launches the provided intent
+         * whose extras will have the {@link
+         * android.view.autofill.AutofillManager#EXTRA_ASSIST_STRUCTURE screen content},
+         * and your {@link android.view.autofill.AutofillManager#EXTRA_CLIENT_STATE client
+         * state}. Once you complete your authentication flow you should set the activity
+         * result to {@link android.app.Activity#RESULT_OK} and provide the fully populated
+         * {@link Dataset dataset} or a fully-populated {@link FillResponse response} by
+         * setting it to the {@link
+         * android.view.autofill.AutofillManager#EXTRA_AUTHENTICATION_RESULT} extra. If you
+         * provide a dataset in the result, it will replace the authenticated dataset and
+         * will be immediately filled in. An exception to this behavior is if the original
+         * dataset represents a pinned inline suggestion (i.e. any of the field in the dataset
+         * has a pinned inline presentation, see {@link InlinePresentation#isPinned()}), then
+         * the original dataset will not be replaced,
+         * so that it can be triggered as a pending intent again.
+         * If you provide a response, it will replace the
+         * current response and the UI will be refreshed. For example, if you provided
+         * credit card information without the CVV for the data set in the {@link FillResponse
+         * response} then the returned data set should contain the CVV entry.
+         *
+         * <p><b>Note:</b> Do not make the provided pending intent
+         * immutable by using {@link android.app.PendingIntent#FLAG_IMMUTABLE} as the
+         * platform needs to fill in the authentication arguments.
+         *
+         * @param authentication Intent to an activity with your authentication flow.
+         *
+         * @throws IllegalStateException if {@link #build()} was already called.
+         *
+         * @return this builder.
+         *
+         * @see android.app.PendingIntent
+         

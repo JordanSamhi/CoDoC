@@ -1,0 +1,10 @@
+public synchronized MetadataEditor putBitmap(int key, Bitmap bitmap) throws IllegalArgumentException{
+    super.putBitmap(key, bitmap);
+    if (mMetadataBuilder != null) {
+        String metadataKey = MediaMetadata.getKeyFromMetadataEditorKey(key);
+        if (metadataKey != null) {
+            mMetadataBuilder.putBitmap(metadataKey, bitmap);
+        }
+    }
+    return this;
+}

@@ -1,0 +1,11 @@
+public boolean isModemEnabledForSlot(int slotIndex){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.isModemEnabledForSlot(slotIndex, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "enableModem RemoteException", ex);
+    }
+    return false;
+}

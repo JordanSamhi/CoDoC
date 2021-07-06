@@ -1,0 +1,13 @@
+public Canvas lockHardwareWideColorGamutCanvas(){
+    synchronized (mLock) {
+        checkNotReleasedLocked();
+        if (mHwuiContext != null && !mHwuiContext.isWideColorGamut()) {
+            mHwuiContext.destroy();
+            mHwuiContext = null;
+        }
+        if (mHwuiContext == null) {
+            mHwuiContext = new HwuiContext(true);
+        }
+        return mHwuiContext.lockCanvas(nativeGetWidth(mNativeObject), nativeGetHeight(mNativeObject));
+    }
+}

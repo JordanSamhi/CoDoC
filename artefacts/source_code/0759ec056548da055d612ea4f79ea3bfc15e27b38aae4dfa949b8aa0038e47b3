@@ -1,0 +1,16 @@
+public void dispose(){
+    mDestroyed.set(true);
+    mCi.unregisterForIccRefresh(this);
+    mParentApp.unregisterForReady(this);
+    mParentApp.unregisterForDetected(this);
+    mParentApp.unregisterForLocked(this);
+    mParentApp.unregisterForNetworkLocked(this);
+    mParentApp = null;
+    mFh = null;
+    mCi = null;
+    mContext = null;
+    if (mAdnCache != null) {
+        mAdnCache.reset();
+    }
+    mLoaded.set(false);
+}

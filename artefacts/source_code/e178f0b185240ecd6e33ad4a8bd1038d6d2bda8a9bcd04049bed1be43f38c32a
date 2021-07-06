@@ -1,0 +1,12 @@
+public void writeToParcel(Parcel dest, int flags){
+    Uri.writeToParcel(dest, mContentUri);
+    dest.writeInt(mContentUriOwnerUserId);
+    mDescription.writeToParcel(dest, flags);
+    Uri.writeToParcel(dest, mLinkUri);
+    if (mUriToken != null) {
+        dest.writeInt(1);
+        dest.writeStrongBinder(mUriToken.asBinder());
+    } else {
+        dest.writeInt(0);
+    }
+}

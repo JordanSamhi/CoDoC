@@ -1,0 +1,15 @@
+
+         * Set up the back-off/retry policy.
+         * This defaults to some respectable values: {30 seconds, Exponential}. We cap back-off at
+         * 5hrs.
+         * Note that trying to set a backoff criteria for a job with
+         * {@link #setRequiresDeviceIdle(boolean)} will throw an exception when you call build().
+         * This is because back-off typically does not make sense for these types of jobs. See
+         * {@link android.app.job.JobService#jobFinished(android.app.job.JobParameters, boolean)}
+         * for more description of the return value for the case of a job executing while in idle
+         * mode.
+         * @param initialBackoffMillis Millisecond time interval to wait initially when job has
+         *                             failed.
+         * @see JobInfo#getInitialBackoffMillis()
+         * @see JobInfo#getBackoffPolicy()
+         

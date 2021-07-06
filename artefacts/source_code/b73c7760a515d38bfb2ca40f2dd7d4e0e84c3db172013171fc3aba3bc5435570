@@ -1,0 +1,11 @@
+public boolean getStorageEncryption(@Nullable ComponentName admin){
+    throwIfParentInstance("getStorageEncryption");
+    if (mService != null) {
+        try {
+            return mService.getStorageEncryption(admin, myUserId());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

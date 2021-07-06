@@ -1,0 +1,12 @@
+public boolean registerPluginListener(SensorManagerPlugin.Sensor sensor, SensorManagerPlugin.SensorEventListener listener){
+    if (mPlugins.isEmpty()) {
+        Log.w(TAG, "No plugins registered");
+        return false;
+    }
+    mHandler.post(() -> {
+        for (int i = 0; i < mPlugins.size(); i++) {
+            mPlugins.get(i).registerListener(sensor, listener);
+        }
+    });
+    return true;
+}

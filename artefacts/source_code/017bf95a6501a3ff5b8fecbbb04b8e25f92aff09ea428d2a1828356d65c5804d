@@ -1,0 +1,50 @@
+public static KeyChainConnection bindAsUser(@NonNull Context context, UserHandle user) throws InterruptedException{
+    if (context == null) {
+        throw new NullPointerException("context == null");
+    }
+    ensureNotOnMainThread(context);
+    if (!UserManager.get(context).isUserUnlocked(user)) {
+        throw new IllegalStateException("User must be unlocked");
+    }
+    final CountDownLatch countDownLatch = new CountDownLatch(1);
+    final AtomicReference<IKeyChainService> keyChainService = new AtomicReference<>();
+    ServiceConnection keyChainServiceConnection = new ServiceConnection() {
+
+        volatile boolean mConnectedAtLeastOnce = false;
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            if (!mConnectedAtLeastOnce) {
+                mConnectedAtLeastOnce = true;
+                keyChainService.set(IKeyChainService.Stub.asInterface(Binder.allowBlocking(service)));
+                countDownLatch.countDown();
+            }
+        }
+
+        @Override
+        public void onBindingDied(ComponentName name) {
+            if (!mConnectedAtLeastOnce) {
+                mConnectedAtLeastOnce = true;
+                countDownLatch.countDown();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
+    Intent intent = new Intent(IKeyChainService.class.getName());
+    ComponentName comp = intent.resolveSystemService(context.getPackageManager(), 0);
+    intent.setComponent(comp);
+    if (comp == null || !context.bindServiceAsUser(intent, keyChainServiceConnection, Context.BIND_AUTO_CREATE, user)) {
+        throw new AssertionError("could not bind to KeyChainService");
+    }
+    countDownLatch.await();
+    IKeyChainService service = keyChainService.get();
+    if (service != null) {
+        return new KeyChainConnection(context, keyChainServiceConnection, service);
+    } else {
+        context.unbindService(keyChainServiceConnection);
+        throw new AssertionError("KeyChainService died while binding");
+    }
+}

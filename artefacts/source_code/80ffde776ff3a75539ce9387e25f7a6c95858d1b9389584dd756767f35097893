@@ -1,0 +1,11 @@
+public void ZHERK(@Uplo int Uplo, @Transpose int Trans, double alpha, Allocation A, double beta, Allocation C){
+    validateUplo(Uplo);
+    validateHERK(Element.F64_2(mRS), Trans, A, C);
+    int k = 0;
+    if (Trans == CONJ_TRANSPOSE) {
+        k = A.getType().getY();
+    } else {
+        k = A.getType().getX();
+    }
+    mRS.nScriptIntrinsicBLAS_Z(getID(mRS), RsBlas_zherk, Trans, 0, 0, Uplo, 0, 0, C.getType().getX(), k, alpha, 0, A.getID(mRS), 0, beta, 0, C.getID(mRS), 0, 0, 0, 0);
+}

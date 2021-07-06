@@ -1,0 +1,24 @@
+public final void onClick(View widget, @InvocationMethod int invocationMethod){
+    if (widget instanceof TextView) {
+        final TextView textView = (TextView) widget;
+        final Context context = textView.getContext();
+        if (TextClassificationManager.getSettings(context).isSmartLinkifyEnabled()) {
+            switch(invocationMethod) {
+                case INVOCATION_METHOD_TOUCH:
+                    textView.requestActionMode(this);
+                    break;
+                case INVOCATION_METHOD_KEYBOARD:
+                case INVOCATION_METHOD_UNSPECIFIED:
+                default:
+                    textView.handleClick(this);
+                    break;
+            }
+        } else {
+            if (mTextLink.mUrlSpan != null) {
+                mTextLink.mUrlSpan.onClick(textView);
+            } else {
+                textView.handleClick(this);
+            }
+        }
+    }
+}

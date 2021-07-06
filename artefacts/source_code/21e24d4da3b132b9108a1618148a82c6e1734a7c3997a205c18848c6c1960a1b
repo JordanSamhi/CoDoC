@@ -1,0 +1,22 @@
+public static final boolean addLinks(@NonNull TextView text, @LinkifyMask int mask){
+    if (mask == 0) {
+        return false;
+    }
+    final Context context = text.getContext();
+    final CharSequence t = text.getText();
+    if (t instanceof Spannable) {
+        if (addLinks((Spannable) t, mask, context, null)) {
+            addLinkMovementMethod(text);
+            return true;
+        }
+        return false;
+    } else {
+        SpannableString s = SpannableString.valueOf(t);
+        if (addLinks(s, mask, context, null)) {
+            addLinkMovementMethod(text);
+            text.setText(s);
+            return true;
+        }
+        return false;
+    }
+}

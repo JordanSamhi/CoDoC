@@ -1,0 +1,6 @@
+public void registerForIccChanged(Handler h, int what, Object obj){
+    synchronized (mLock) {
+        mIccChangedRegistrants.addUnique(h, what, obj);
+    }
+    Message.obtain(h, what, new AsyncResult(obj, null, null)).sendToTarget();
+}

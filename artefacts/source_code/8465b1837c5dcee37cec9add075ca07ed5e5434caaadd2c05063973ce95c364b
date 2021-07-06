@@ -1,0 +1,56 @@
+public static int getClosestAvailableZoomCrop(Camera.Parameters params, Rect activeArray, Size streamSize, Rect cropRegion, Rect reportedCropRegion, Rect previewCropRegion){
+    checkNotNull(params, "params must not be null");
+    checkNotNull(activeArray, "activeArray must not be null");
+    checkNotNull(streamSize, "streamSize must not be null");
+    checkNotNull(reportedCropRegion, "reportedCropRegion must not be null");
+    checkNotNull(previewCropRegion, "previewCropRegion must not be null");
+    Rect actualCrop = new Rect(cropRegion);
+    if (!actualCrop.intersect(activeArray)) {
+        Log.w(TAG, "getClosestAvailableZoomCrop - Crop region out of range; " + "setting to active array size");
+        actualCrop.set(activeArray);
+    }
+    Rect previewCrop = getPreviewCropRectangleUnzoomed(activeArray, streamSize);
+    Rect cropRegionAsPreview = shrinkToSameAspectRatioCentered(previewCrop, actualCrop);
+    if (DEBUG) {
+        Log.v(TAG, "getClosestAvailableZoomCrop - actualCrop = " + actualCrop);
+        Log.v(TAG, "getClosestAvailableZoomCrop - previewCrop = " + previewCrop);
+        Log.v(TAG, "getClosestAvailableZoomCrop - cropRegionAsPreview = " + cropRegionAsPreview);
+    }
+    Rect bestReportedCropRegion = null;
+    Rect bestPreviewCropRegion = null;
+    int bestZoomIndex = -1;
+    List<Rect> availableReportedCropRegions = getAvailableZoomCropRectangles(params, activeArray);
+    List<Rect> availablePreviewCropRegions = getAvailablePreviewZoomCropRectangles(params, activeArray, streamSize);
+    if (DEBUG) {
+        Log.v(TAG, "getClosestAvailableZoomCrop - availableReportedCropRegions = " + ListUtils.listToString(availableReportedCropRegions));
+        Log.v(TAG, "getClosestAvailableZoomCrop - availablePreviewCropRegions = " + ListUtils.listToString(availablePreviewCropRegions));
+    }
+    if (availableReportedCropRegions.size() != availablePreviewCropRegions.size()) {
+        throw new AssertionError("available reported/preview crop region size mismatch");
+    }
+    for (int i = 0; i < availableReportedCropRegions.size(); ++i) {
+        Rect currentPreviewCropRegion = availablePreviewCropRegions.get(i);
+        Rect currentReportedCropRegion = availableReportedCropRegions.get(i);
+        boolean isBest;
+        if (bestZoomIndex == -1) {
+            isBest = true;
+        } else if (currentPreviewCropRegion.width() >= cropRegionAsPreview.width() && currentPreviewCropRegion.height() >= cropRegionAsPreview.height()) {
+            isBest = true;
+        } else {
+            isBest = false;
+        }
+        if (isBest) {
+            bestPreviewCropRegion = currentPreviewCropRegion;
+            bestReportedCropRegion = currentReportedCropRegion;
+            bestZoomIndex = i;
+        } else {
+            break;
+        }
+    }
+    if (bestZoomIndex == -1) {
+        throw new AssertionError("Should've found at least one valid zoom index");
+    }
+    reportedCropRegion.set(bestReportedCropRegion);
+    previewCropRegion.set(bestPreviewCropRegion);
+    return bestZoomIndex;
+}

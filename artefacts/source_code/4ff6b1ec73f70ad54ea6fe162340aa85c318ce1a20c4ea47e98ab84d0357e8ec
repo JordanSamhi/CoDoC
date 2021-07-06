@@ -1,0 +1,10 @@
+public void start() throws PluginException{
+    try {
+        synchronized (mLock) {
+            isRunning = true;
+            mPlugin.start(this);
+        }
+    } catch (Throwable e) {
+        throw new PluginException(mPlugin, "Cannot start", e);
+    }
+}

@@ -1,0 +1,10 @@
+public static void registerRIL(CommandsInterface cmdsIf){
+    cmdsIf.getHardwareConfig(sRilHardwareConfig);
+    if (sRilHardwareConfig != null) {
+        AsyncResult ar = (AsyncResult) sRilHardwareConfig.obj;
+        if (ar.exception == null) {
+            handleGetHardwareConfigChanged(ar);
+        }
+    }
+    cmdsIf.registerForHardwareConfigChanged(sTelephonyDevController, EVENT_HARDWARE_CONFIG_CHANGED, null);
+}

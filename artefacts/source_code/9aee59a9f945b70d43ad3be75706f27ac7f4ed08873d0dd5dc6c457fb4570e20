@@ -1,0 +1,21 @@
+public boolean requestRectangleOnScreen(Rect rectangle, boolean immediate){
+    if (mParent == null) {
+        return false;
+    }
+    View child = this;
+    RectF position = (mAttachInfo != null) ? mAttachInfo.mTmpTransformRect : new RectF();
+    position.set(rectangle);
+    ViewParent parent = mParent;
+    boolean scrolled = false;
+    while (parent != null) {
+        rectangle.set((int) position.left, (int) position.top, (int) position.right, (int) position.bottom);
+        scrolled |= parent.requestChildRectangleOnScreen(child, rectangle, immediate);
+        if (!(parent instanceof View)) {
+            break;
+        }
+        position.offset(child.mLeft - child.getScrollX(), child.mTop - child.getScrollY());
+        child = (View) parent;
+        parent = child.getParent();
+    }
+    return scrolled;
+}

@@ -1,0 +1,9 @@
+public void writeDroppedIncomingMultipartSms(int phoneId, String format, int receivedCount, int totalCount){
+    logv("Logged dropped multipart SMS: received " + receivedCount + " out of " + totalCount);
+    SmsSession.Event.IncompleteSms details = new SmsSession.Event.IncompleteSms();
+    details.receivedParts = receivedCount;
+    details.totalParts = totalCount;
+    InProgressSmsSession smsSession = startNewSmsSession(phoneId);
+    smsSession.addEvent(new SmsSessionEventBuilder(SmsSession.Event.Type.INCOMPLETE_SMS_RECEIVED).setFormat(convertSmsFormat(format)).setIncompleteSms(details));
+    finishSmsSession(smsSession);
+}

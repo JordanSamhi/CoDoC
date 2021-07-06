@@ -1,0 +1,14 @@
+public void BNNM(Allocation A, int a_offset, Allocation B, int b_offset, Allocation C, int c_offset, int c_mult){
+    validateL3(Element.U8(mRS), NO_TRANSPOSE, TRANSPOSE, 0, A, B, C);
+    if (a_offset < 0 || a_offset > 255) {
+        throw new RSRuntimeException("Invalid a_offset passed to BNNM");
+    }
+    if (b_offset < 0 || b_offset > 255) {
+        throw new RSRuntimeException("Invalid b_offset passed to BNNM");
+    }
+    int M = -1, N = -1, K = -1;
+    M = A.getType().getY();
+    N = B.getType().getY();
+    K = A.getType().getX();
+    mRS.nScriptIntrinsicBLAS_BNNM(getID(mRS), M, N, K, A.getID(mRS), a_offset, B.getID(mRS), b_offset, C.getID(mRS), c_offset, c_mult);
+}

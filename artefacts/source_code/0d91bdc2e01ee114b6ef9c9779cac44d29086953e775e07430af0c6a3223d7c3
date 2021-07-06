@@ -1,0 +1,41 @@
+public boolean setupInterfaceForClientMode(@NonNull String ifaceName, @NonNull @CallbackExecutor Executor executor, @NonNull ScanEventCallback scanCallback, @NonNull ScanEventCallback pnoScanCallback){
+    Log.d(TAG, "Setting up interface for client mode");
+    if (!retrieveWificondAndRegisterForDeath()) {
+        return false;
+    }
+    if (scanCallback == null || pnoScanCallback == null || executor == null) {
+        Log.e(TAG, "setupInterfaceForClientMode invoked with null callbacks");
+        return false;
+    }
+    IClientInterface clientInterface = null;
+    try {
+        clientInterface = mWificond.createClientInterface(ifaceName);
+    } catch (RemoteException e1) {
+        Log.e(TAG, "Failed to get IClientInterface due to remote exception");
+        return false;
+    }
+    if (clientInterface == null) {
+        Log.e(TAG, "Could not get IClientInterface instance from wificond");
+        return false;
+    }
+    Binder.allowBlocking(clientInterface.asBinder());
+    mClientInterfaces.put(ifaceName, clientInterface);
+    try {
+        IWifiScannerImpl wificondScanner = clientInterface.getWifiScannerImpl();
+        if (wificondScanner == null) {
+            Log.e(TAG, "Failed to get WificondScannerImpl");
+            return false;
+        }
+        mWificondScanners.put(ifaceName, wificondScanner);
+        Binder.allowBlocking(wificondScanner.asBinder());
+        ScanEventHandler scanEventHandler = new ScanEventHandler(executor, scanCallback);
+        mScanEventHandlers.put(ifaceName, scanEventHandler);
+        wificondScanner.subscribeScanEvents(scanEventHandler);
+        PnoScanEventHandler pnoScanEventHandler = new PnoScanEventHandler(executor, pnoScanCallback);
+        mPnoScanEventHandlers.put(ifaceName, pnoScanEventHandler);
+        wificondScanner.subscribePnoScanEvents(pnoScanEventHandler);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to refresh wificond scanner due to remote exception");
+    }
+    return true;
+}

@@ -1,0 +1,15 @@
+public void onClick(@NonNull ViewGroup rootView){
+    for (int i = 0; i < mVisibilities.size(); i++) {
+        final int id = mVisibilities.keyAt(i);
+        final View child = rootView.findViewById(id);
+        if (child == null) {
+            Slog.w(TAG, "Skipping view id " + id + " because it's not found on " + rootView);
+            continue;
+        }
+        final int visibility = mVisibilities.valueAt(i);
+        if (sVerbose) {
+            Slog.v(TAG, "Changing visibility of view " + child + " from " + child.getVisibility() + " to  " + visibility);
+        }
+        child.setVisibility(visibility);
+    }
+}

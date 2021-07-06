@@ -1,0 +1,13 @@
+public int getExpandedClockPosition(){
+    final int availableHeight = mMaxShadeBottom - mMinTopMargin;
+    final int containerCenter = mMinTopMargin + availableHeight / 2;
+    float y = containerCenter - mKeyguardStatusHeight * CLOCK_HEIGHT_WEIGHT - mClockNotificationsMargin - mNotificationStackHeight / 2;
+    if (y < mMinTopMargin) {
+        y = mMinTopMargin;
+    }
+    final float maxClockY = getMaxClockY();
+    if (y > maxClockY) {
+        y = maxClockY;
+    }
+    return (int) y;
+}

@@ -1,0 +1,55 @@
+public static String gsm8BitUnpackedToString(byte[] data, int offset, int length, String characterset){
+    boolean isMbcs = false;
+    Charset charset = null;
+    ByteBuffer mbcsBuffer = null;
+    if (!TextUtils.isEmpty(characterset) && !characterset.equalsIgnoreCase("us-ascii") && Charset.isSupported(characterset)) {
+        isMbcs = true;
+        charset = Charset.forName(characterset);
+        mbcsBuffer = ByteBuffer.allocate(2);
+    }
+    String languageTableToChar = sLanguageTables[0];
+    String shiftTableToChar = sLanguageShiftTables[0];
+    StringBuilder ret = new StringBuilder(length);
+    boolean prevWasEscape = false;
+    for (int i = offset; i < offset + length; i++) {
+        int c = data[i] & 0xff;
+        if (c == 0xff) {
+            break;
+        } else if (c == GSM_EXTENDED_ESCAPE) {
+            if (prevWasEscape) {
+                ret.append(' ');
+                prevWasEscape = false;
+            } else {
+                prevWasEscape = true;
+            }
+        } else {
+            if (prevWasEscape) {
+                char shiftChar = c < shiftTableToChar.length() ? shiftTableToChar.charAt(c) : ' ';
+                if (shiftChar == ' ') {
+                    if (c < languageTableToChar.length()) {
+                        ret.append(languageTableToChar.charAt(c));
+                    } else {
+                        ret.append(' ');
+                    }
+                } else {
+                    ret.append(shiftChar);
+                }
+            } else {
+                if (!isMbcs || c < 0x80 || i + 1 >= offset + length) {
+                    if (c < languageTableToChar.length()) {
+                        ret.append(languageTableToChar.charAt(c));
+                    } else {
+                        ret.append(' ');
+                    }
+                } else {
+                    mbcsBuffer.clear();
+                    mbcsBuffer.put(data, i++, 2);
+                    mbcsBuffer.flip();
+                    ret.append(charset.decode(mbcsBuffer).toString());
+                }
+            }
+            prevWasEscape = false;
+        }
+    }
+    return ret.toString();
+}

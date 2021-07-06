@@ -1,0 +1,24 @@
+public void setLayerTracing(boolean enabled){
+    mAtmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.DUMP, "setLayerTracing");
+    long token = Binder.clearCallingIdentity();
+    try {
+        Parcel data = null;
+        try {
+            IBinder sf = ServiceManager.getService("SurfaceFlinger");
+            if (sf != null) {
+                data = Parcel.obtain();
+                data.writeInterfaceToken("android.ui.ISurfaceComposer");
+                data.writeInt(enabled ? 1 : 0);
+                sf.transact(1025, data, null, 0);
+            }
+        } catch (RemoteException e) {
+            Slog.e(TAG, "Failed to set layer tracing");
+        } finally {
+            if (data != null) {
+                data.recycle();
+            }
+        }
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

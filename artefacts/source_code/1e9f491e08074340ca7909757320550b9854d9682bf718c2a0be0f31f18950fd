@@ -1,0 +1,21 @@
+public void draw(Canvas canvas, DrawParams params){
+    if (params == null) {
+        Log.e(TAG, "Invalid null argument(s) passed in call to draw.");
+        return;
+    }
+    canvas.save();
+    Rect iconBounds = params.iconBounds;
+    float[] dotPosition = params.leftAlign ? mLeftDotPosition : mRightDotPosition;
+    float dotCenterX = iconBounds.left + iconBounds.width() * dotPosition[0];
+    float dotCenterY = iconBounds.top + iconBounds.height() * dotPosition[1];
+    Rect canvasBounds = canvas.getClipBounds();
+    float offsetX = params.leftAlign ? Math.max(0, canvasBounds.left - (dotCenterX + mBitmapOffset)) : Math.min(0, canvasBounds.right - (dotCenterX - mBitmapOffset));
+    float offsetY = Math.max(0, canvasBounds.top - (dotCenterY + mBitmapOffset));
+    canvas.translate(dotCenterX + offsetX, dotCenterY + offsetY);
+    canvas.scale(params.scale, params.scale);
+    mCirclePaint.setColor(Color.BLACK);
+    canvas.drawBitmap(mBackgroundWithShadow, mBitmapOffset, mBitmapOffset, mCirclePaint);
+    mCirclePaint.setColor(params.color);
+    canvas.drawCircle(0, 0, mCircleRadius, mCirclePaint);
+    canvas.restore();
+}

@@ -1,0 +1,15 @@
+public static DigitalServiceSource ofArib(int aribType, AribData data){
+    if (data == null) {
+        throw new IllegalArgumentException("data should not be null.");
+    }
+    switch(aribType) {
+        case DIGITAL_BROADCAST_TYPE_ARIB:
+        case DIGITAL_BROADCAST_TYPE_ARIB_BS:
+        case DIGITAL_BROADCAST_TYPE_ARIB_CS:
+        case DIGITAL_BROADCAST_TYPE_ARIB_T:
+            return new DigitalServiceSource(DigitalServiceSource.DIGITAL_SERVICE_IDENTIFIED_BY_DIGITAL_ID, aribType, data);
+        default:
+            Log.w(TAG, "Invalid ARIB type:" + aribType);
+            throw new IllegalArgumentException("type should not be null.");
+    }
+}

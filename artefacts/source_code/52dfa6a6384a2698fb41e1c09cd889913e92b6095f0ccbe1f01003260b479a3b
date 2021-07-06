@@ -1,0 +1,90 @@
+public static void tokenize(@Nullable String sql, int options, Consumer<String> checker){
+    if (sql == null) {
+        return;
+    }
+    int pos = 0;
+    final int len = sql.length();
+    while (pos < len) {
+        final char ch = peek(sql, pos);
+        if (isAlpha(ch)) {
+            final int start = pos;
+            pos++;
+            while (isAlNum(peek(sql, pos))) {
+                pos++;
+            }
+            final int end = pos;
+            final String token = sql.substring(start, end);
+            checker.accept(token);
+            continue;
+        }
+        if (isAnyOf(ch, "'\"`")) {
+            final int quoteStart = pos;
+            pos++;
+            for (; ; ) {
+                pos = sql.indexOf(ch, pos);
+                if (pos < 0) {
+                    throw genException("Unterminated quote", sql);
+                }
+                if (peek(sql, pos + 1) != ch) {
+                    break;
+                }
+                pos += 2;
+            }
+            final int quoteEnd = pos;
+            pos++;
+            if (ch != '\'') {
+                final String tokenUnquoted = sql.substring(quoteStart + 1, quoteEnd);
+                final String token;
+                if (tokenUnquoted.indexOf(ch) >= 0) {
+                    token = tokenUnquoted.replaceAll(String.valueOf(ch) + ch, String.valueOf(ch));
+                } else {
+                    token = tokenUnquoted;
+                }
+                checker.accept(token);
+            } else {
+                if ((options &= OPTION_TOKEN_ONLY) != 0) {
+                    throw genException("Non-token detected", sql);
+                }
+            }
+            continue;
+        }
+        if (ch == '[') {
+            final int quoteStart = pos;
+            pos++;
+            pos = sql.indexOf(']', pos);
+            if (pos < 0) {
+                throw genException("Unterminated quote", sql);
+            }
+            final int quoteEnd = pos;
+            pos++;
+            final String token = sql.substring(quoteStart + 1, quoteEnd);
+            checker.accept(token);
+            continue;
+        }
+        if ((options &= OPTION_TOKEN_ONLY) != 0) {
+            throw genException("Non-token detected", sql);
+        }
+        if (ch == '-' && peek(sql, pos + 1) == '-') {
+            pos += 2;
+            pos = sql.indexOf('\n', pos);
+            if (pos < 0) {
+                throw genException("Unterminated comment", sql);
+            }
+            pos++;
+            continue;
+        }
+        if (ch == '/' && peek(sql, pos + 1) == '*') {
+            pos += 2;
+            pos = sql.indexOf("*/", pos);
+            if (pos < 0) {
+                throw genException("Unterminated comment", sql);
+            }
+            pos += 2;
+            continue;
+        }
+        if (ch == ';') {
+            throw genException("Semicolon is not allowed", sql);
+        }
+        pos++;
+    }
+}

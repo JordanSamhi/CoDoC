@@ -1,0 +1,19 @@
+public synchronized MtpObject getByPath(String path){
+    MtpObject obj = null;
+    for (MtpObject root : mRoots.values()) {
+        if (path.startsWith(root.getName())) {
+            obj = root;
+            path = path.substring(root.getName().length());
+        }
+    }
+    for (String name : path.split("/")) {
+        if (obj == null || !obj.isDir())
+            return null;
+        if ("".equals(name))
+            continue;
+        if (!obj.isVisited())
+            getChildren(obj);
+        obj = obj.getChild(name);
+    }
+    return obj;
+}

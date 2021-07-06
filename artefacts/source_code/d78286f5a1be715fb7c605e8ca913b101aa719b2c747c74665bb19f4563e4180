@@ -1,0 +1,10 @@
+public boolean isApplicationHidden(@NonNull ComponentName admin, String packageName){
+    if (mService != null) {
+        try {
+            return mService.isApplicationHidden(admin, mContext.getPackageName(), packageName, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

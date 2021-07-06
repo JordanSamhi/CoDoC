@@ -1,0 +1,18 @@
+
+     * Suspends any current rendering into the surface but do not do any destruction. This
+     * is useful to temporarily suspend using the active Surface in order to do any Surface
+     * mutations necessary.
+     *
+     * <p>Any subsequent draws will override the pause, resuming normal operation.
+     *
+     * @return true if there was an outstanding render request, false otherwise. If this is true
+     * the caller should ensure that {@link #createRenderRequest()}
+     * and {@link FrameRenderRequest#syncAndDraw()} is called at the soonest
+     * possible time to resume normal operation.
+     *
+     * TODO Should this be exposed? ViewRootImpl needs it because it destroys the old
+     * Surface before getting a new one. However things like SurfaceView will ensure that
+     * the old surface remains un-destroyed until after a new frame has been produced with
+     * the new surface.
+     * @hide
+     

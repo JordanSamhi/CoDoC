@@ -1,0 +1,37 @@
+public static byte[] stringToGsm7BitPacked(String data, int startingSeptetOffset, boolean throwException, int languageTable, int languageShiftTable) throws EncodeException{
+    int dataLen = data.length();
+    int septetCount = countGsmSeptetsUsingTables(data, !throwException, languageTable, languageShiftTable);
+    if (septetCount == -1) {
+        throw new EncodeException("countGsmSeptetsUsingTables(): unencodable char");
+    }
+    septetCount += startingSeptetOffset;
+    if (septetCount > 255) {
+        throw new EncodeException("Payload cannot exceed 255 septets", EncodeException.ERROR_EXCEED_SIZE);
+    }
+    int byteCount = ((septetCount * 7) + 7) / 8;
+    byte[] ret = new byte[byteCount + 1];
+    SparseIntArray charToLanguageTable = sCharsToGsmTables[languageTable];
+    SparseIntArray charToShiftTable = sCharsToShiftTables[languageShiftTable];
+    for (int i = 0, septets = startingSeptetOffset, bitOffset = startingSeptetOffset * 7; i < dataLen && septets < septetCount; i++, bitOffset += 7) {
+        char c = data.charAt(i);
+        int v = charToLanguageTable.get(c, -1);
+        if (v == -1) {
+            v = charToShiftTable.get(c, -1);
+            if (v == -1) {
+                if (throwException) {
+                    throw new EncodeException("stringToGsm7BitPacked(): unencodable char");
+                } else {
+                    v = charToLanguageTable.get(' ', ' ');
+                }
+            } else {
+                packSmsChar(ret, bitOffset, GSM_EXTENDED_ESCAPE);
+                bitOffset += 7;
+                septets++;
+            }
+        }
+        packSmsChar(ret, bitOffset, v);
+        septets++;
+    }
+    ret[0] = (byte) (septetCount);
+    return ret;
+}

@@ -1,0 +1,9 @@
+public TlvConstructor putByteArray(int type, @Nullable byte[] array, int offset, int length){
+    checkLength(length);
+    addHeader(type, length);
+    if (length != 0) {
+        System.arraycopy(array, offset, mArray, mPosition, length);
+    }
+    mPosition += length;
+    return this;
+}

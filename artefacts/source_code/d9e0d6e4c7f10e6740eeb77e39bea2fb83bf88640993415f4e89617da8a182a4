@@ -1,0 +1,43 @@
+public SoftApConfiguration resetToDefaultForUnsupportedConfig(@NonNull SoftApConfiguration config){
+    SoftApConfiguration.Builder configBuilder = new SoftApConfiguration.Builder(config);
+    if ((!ApConfigUtil.isClientForceDisconnectSupported(mContext) || mContext.getResources().getBoolean(R.bool.config_wifiSoftapResetUserControlConfig)) && (config.isClientControlByUserEnabled() || config.getBlockedClientList().size() != 0)) {
+        configBuilder.setClientControlByUserEnabled(false);
+        configBuilder.setBlockedClientList(new ArrayList<>());
+        Log.i(TAG, "Reset ClientControlByUser to false due to device doesn't support");
+    }
+    if ((!ApConfigUtil.isClientForceDisconnectSupported(mContext) || mContext.getResources().getBoolean(R.bool.config_wifiSoftapResetMaxClientSettingConfig)) && config.getMaxNumberOfClients() != 0) {
+        configBuilder.setMaxNumberOfClients(0);
+        Log.i(TAG, "Reset MaxNumberOfClients to 0 due to device doesn't support");
+    }
+    if (!ApConfigUtil.isWpa3SaeSupported(mContext) && (config.getSecurityType() == SoftApConfiguration.SECURITY_TYPE_WPA3_SAE || config.getSecurityType() == SoftApConfiguration.SECURITY_TYPE_WPA3_SAE_TRANSITION)) {
+        configBuilder.setPassphrase(generatePassword(), SoftApConfiguration.SECURITY_TYPE_WPA2_PSK);
+        Log.i(TAG, "Device doesn't support WPA3-SAE, reset config to WPA2");
+    }
+    if (mContext.getResources().getBoolean(R.bool.config_wifiSoftapResetChannelConfig) && config.getChannel() != 0) {
+        configBuilder.setBand(config.getBand() | SoftApConfiguration.BAND_2GHZ);
+        Log.i(TAG, "Reset SAP channel configuration");
+    }
+    int newBand = config.getBand();
+    if (!mContext.getResources().getBoolean(R.bool.config_wifi6ghzSupport) && (newBand & SoftApConfiguration.BAND_6GHZ) != 0) {
+        newBand &= ~SoftApConfiguration.BAND_6GHZ;
+        Log.i(TAG, "Device doesn't support 6g, remove 6G band from band setting");
+    }
+    if (!mContext.getResources().getBoolean(R.bool.config_wifi5ghzSupport) && (newBand & SoftApConfiguration.BAND_5GHZ) != 0) {
+        newBand &= ~SoftApConfiguration.BAND_5GHZ;
+        Log.i(TAG, "Device doesn't support 5g, remove 5G band from band setting");
+    }
+    if (newBand != config.getBand()) {
+        Log.i(TAG, "Reset band from " + config.getBand() + " to " + (newBand | SoftApConfiguration.BAND_2GHZ));
+        configBuilder.setBand(newBand | SoftApConfiguration.BAND_2GHZ);
+    }
+    if (mContext.getResources().getBoolean(R.bool.config_wifiSoftapResetHiddenConfig) && config.isHiddenSsid()) {
+        configBuilder.setHiddenSsid(false);
+        Log.i(TAG, "Reset SAP Hidden Network configuration");
+    }
+    if (mContext.getResources().getBoolean(R.bool.config_wifiSoftapResetAutoShutdownTimerConfig) && config.getShutdownTimeoutMillis() != 0) {
+        configBuilder.setShutdownTimeoutMillis(0);
+        Log.i(TAG, "Reset SAP auto shutdown configuration");
+    }
+    mWifiMetrics.noteSoftApConfigReset(config, configBuilder.build());
+    return configBuilder.build();
+}

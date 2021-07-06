@@ -1,0 +1,121 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (mEditor != null && mEditor.mProcessTextIntentActionsHandler.performAccessibilityAction(action)) {
+        return true;
+    }
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_CLICK:
+            {
+                return performAccessibilityActionClick(arguments);
+            }
+        case AccessibilityNodeInfo.ACTION_COPY:
+            {
+                if (isFocused() && canCopy()) {
+                    if (onTextContextMenuItem(ID_COPY)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_PASTE:
+            {
+                if (isFocused() && canPaste()) {
+                    if (onTextContextMenuItem(ID_PASTE)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_CUT:
+            {
+                if (isFocused() && canCut()) {
+                    if (onTextContextMenuItem(ID_CUT)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_SET_SELECTION:
+            {
+                ensureIterableTextForAccessibilitySelectable();
+                CharSequence text = getIterableTextForAccessibility();
+                if (text == null) {
+                    return false;
+                }
+                final int start = (arguments != null) ? arguments.getInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, -1) : -1;
+                final int end = (arguments != null) ? arguments.getInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, -1) : -1;
+                if ((getSelectionStart() != start || getSelectionEnd() != end)) {
+                    if (start == end && end == -1) {
+                        Selection.removeSelection((Spannable) text);
+                        return true;
+                    }
+                    if (start >= 0 && start <= end && end <= text.length()) {
+                        Selection.setSelection((Spannable) text, start, end);
+                        if (mEditor != null) {
+                            mEditor.startSelectionActionModeAsync(false);
+                        }
+                        return true;
+                    }
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY:
+        case AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY:
+            {
+                ensureIterableTextForAccessibilitySelectable();
+                return super.performAccessibilityActionInternal(action, arguments);
+            }
+        case ACCESSIBILITY_ACTION_SHARE:
+            {
+                if (isFocused() && canShare()) {
+                    if (onTextContextMenuItem(ID_SHARE)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_SET_TEXT:
+            {
+                if (!isEnabled() || (mBufferType != BufferType.EDITABLE)) {
+                    return false;
+                }
+                CharSequence text = (arguments != null) ? arguments.getCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE) : null;
+                setText(text);
+                if (mText != null) {
+                    int updatedTextLength = mText.length();
+                    if (updatedTextLength > 0) {
+                        Selection.setSelection(mSpannable, updatedTextLength);
+                    }
+                }
+            }
+            return true;
+        case R.id.accessibilityActionImeEnter:
+            {
+                if (isFocused() && isTextEditable()) {
+                    onEditorAction(getImeActionId());
+                }
+            }
+            return true;
+        case AccessibilityNodeInfo.ACTION_LONG_CLICK:
+            {
+                if (isLongClickable()) {
+                    boolean handled;
+                    if (isEnabled() && (mBufferType == BufferType.EDITABLE)) {
+                        mEditor.mIsBeingLongClickedByAccessibility = true;
+                        try {
+                            handled = performLongClick();
+                        } finally {
+                            mEditor.mIsBeingLongClickedByAccessibility = false;
+                        }
+                    } else {
+                        handled = performLongClick();
+                    }
+                    return handled;
+                }
+            }
+            return false;
+        default:
+            {
+                return super.performAccessibilityActionInternal(action, arguments);
+            }
+    }
+}

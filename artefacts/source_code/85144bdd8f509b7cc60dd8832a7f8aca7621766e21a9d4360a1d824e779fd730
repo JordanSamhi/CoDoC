@@ -1,0 +1,7 @@
+public static boolean maybeShowBatterySaverConfirmation(Context context, Bundle extras){
+    if (Secure.getInt(context.getContentResolver(), Secure.LOW_POWER_WARNING_ACKNOWLEDGED, 0) != 0) {
+        return false;
+    }
+    context.sendBroadcast(getSystemUiBroadcast(ACTION_SHOW_START_SAVER_CONFIRMATION, extras));
+    return true;
+}

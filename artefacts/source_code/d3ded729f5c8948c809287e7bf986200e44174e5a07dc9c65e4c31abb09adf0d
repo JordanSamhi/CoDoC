@@ -1,0 +1,16 @@
+public void startSubscriptionProvisioning(OsuProvider provider, IProvisioningCallback callback){
+    if (provider == null) {
+        throw new IllegalArgumentException("Provider must not be null");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Callback must not be null");
+    }
+    if (!isSettingsOrSuw(Binder.getCallingPid(), Binder.getCallingUid())) {
+        throw new SecurityException(TAG + ": Permission denied");
+    }
+    final int uid = Binder.getCallingUid();
+    mLog.trace("startSubscriptionProvisioning uid=%").c(uid).flush();
+    if (mClientModeImpl.syncStartSubscriptionProvisioning(uid, provider, callback, mClientModeImplChannel)) {
+        mLog.trace("Subscription provisioning started with %").c(provider.toString()).flush();
+    }
+}

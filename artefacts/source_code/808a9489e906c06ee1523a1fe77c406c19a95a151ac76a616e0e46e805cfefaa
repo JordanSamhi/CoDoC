@@ -1,0 +1,14 @@
+public boolean reset(){
+    if (!mService.isConnected()) {
+        Log.e(TAG, "service is not connected");
+        return false;
+    }
+    synchronized (mLock) {
+        try {
+            closeSessions();
+            return mReader.reset();
+        } catch (RemoteException ignore) {
+            return false;
+        }
+    }
+}

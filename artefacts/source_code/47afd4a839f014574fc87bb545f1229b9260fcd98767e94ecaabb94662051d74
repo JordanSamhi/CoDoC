@@ -1,0 +1,14 @@
+public void phoneStateChanged(int numActive, int numHeld, int callState, String number, int type, String name){
+    final IBluetoothHeadset service = mService;
+    if (service != null && isEnabled()) {
+        try {
+            service.phoneStateChanged(numActive, numHeld, callState, number, type, name);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+        if (DBG)
+            Log.d(TAG, Log.getStackTraceString(new Throwable()));
+    }
+}

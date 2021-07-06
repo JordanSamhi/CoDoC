@@ -1,0 +1,12 @@
+public void setChecked(boolean checked){
+    final boolean changed = mChecked != checked;
+    if (changed || !mCheckedSet) {
+        mChecked = checked;
+        mCheckedSet = true;
+        persistBoolean(checked);
+        if (changed) {
+            notifyDependencyChange(shouldDisableDependents());
+            notifyChanged();
+        }
+    }
+}

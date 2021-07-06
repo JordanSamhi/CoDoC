@@ -1,0 +1,16 @@
+public boolean connectionDisconnected(GsmCdmaConnection conn){
+    if (mState != State.DISCONNECTED) {
+        boolean hasOnlyDisconnectedConnections = true;
+        for (Connection c : getConnections()) {
+            if (c.getState() != State.DISCONNECTED) {
+                hasOnlyDisconnectedConnections = false;
+                break;
+            }
+        }
+        if (hasOnlyDisconnectedConnections) {
+            mState = State.DISCONNECTED;
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,0 +1,9 @@
+public boolean isWifiStandardSupported(@NonNull String ifaceName, @WifiAnnotations.WifiStandard int standard){
+    synchronized (mLock) {
+        Iface iface = mIfaceMgr.getIface(ifaceName);
+        if (iface == null || iface.phyCapabilities == null) {
+            return false;
+        }
+        return iface.phyCapabilities.isWifiStandardSupported(standard);
+    }
+}

@@ -1,0 +1,11 @@
+public void onTimedEvent(long timeUs){
+    if (DEBUG)
+        Log.d(TAG, "onTimedEvent " + timeUs);
+    synchronized (this) {
+        long timeMs = timeUs / 1000;
+        updateActiveCues(false, timeMs);
+        takeTime(timeMs);
+    }
+    updateView(mActiveCues);
+    scheduleTimedEvents();
+}

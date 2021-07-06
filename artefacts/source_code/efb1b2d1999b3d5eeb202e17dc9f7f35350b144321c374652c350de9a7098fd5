@@ -1,0 +1,28 @@
+public void createMenuPopup(){
+    if (!isOverflowPopupNeeded()) {
+        return;
+    }
+    DisplayMetrics metrics = mBridgeContext.getMetrics();
+    MenuBuilder menu = mActionBar.getMenuBuilder();
+    OverflowMenuAdapter adapter = new OverflowMenuAdapter(menu, mActionBar.getPopupContext());
+    ListView listView = new ListView(mActionBar.getPopupContext(), null, R.attr.dropDownListViewStyle);
+    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(measureContentWidth(adapter), LayoutParams.WRAP_CONTENT);
+    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_END);
+    if (mActionBar.isSplit()) {
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        layoutParams.bottomMargin = getActionBarHeight() + mActionBar.getMenuPopupMargin();
+    } else {
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        layoutParams.topMargin = getActionBarHeight() + mActionBar.getMenuPopupMargin();
+    }
+    layoutParams.setMarginEnd(getPixelValue("5dp", metrics));
+    listView.setLayoutParams(layoutParams);
+    listView.setAdapter(adapter);
+    final TypedArray a = mActionBar.getPopupContext().obtainStyledAttributes(null, R.styleable.PopupWindow, R.attr.popupMenuStyle, 0);
+    listView.setBackground(a.getDrawable(R.styleable.PopupWindow_popupBackground));
+    listView.setDivider(a.getDrawable(R.attr.actionBarDivider));
+    a.recycle();
+    listView.setElevation(mActionBar.getMenuPopupElevation());
+    assert mEnclosingLayout != null : "Unable to find view to attach ActionMenuPopup.";
+    mEnclosingLayout.addView(listView);
+}

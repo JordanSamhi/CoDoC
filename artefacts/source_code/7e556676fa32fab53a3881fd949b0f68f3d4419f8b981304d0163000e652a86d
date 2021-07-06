@@ -1,0 +1,10 @@
+public boolean needsRedaction(NotificationEntry ent){
+    int userId = ent.getSbn().getUserId();
+    boolean isCurrentUserRedactingNotifs = !userAllowsPrivateNotificationsInPublic(mCurrentUserId);
+    boolean isNotifForManagedProfile = mCurrentManagedProfiles.contains(userId);
+    boolean isNotifUserRedacted = !userAllowsPrivateNotificationsInPublic(userId);
+    boolean isNotifRedacted = (!isNotifForManagedProfile && isCurrentUserRedactingNotifs) || isNotifUserRedacted;
+    boolean notificationRequestsRedaction = ent.getSbn().getNotification().visibility == Notification.VISIBILITY_PRIVATE;
+    boolean userForcesRedaction = packageHasVisibilityOverride(ent.getSbn().getKey());
+    return userForcesRedaction || notificationRequestsRedaction && isNotifRedacted;
+}

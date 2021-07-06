@@ -1,0 +1,233 @@
+public static void convertRequestMetadata(LegacyRequest legacyRequest){
+    CameraCharacteristics characteristics = legacyRequest.characteristics;
+    CaptureRequest request = legacyRequest.captureRequest;
+    Size previewSize = legacyRequest.previewSize;
+    Camera.Parameters params = legacyRequest.parameters;
+    Rect activeArray = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+    ParameterUtils.ZoomData zoomData;
+    {
+        zoomData = ParameterUtils.convertToLegacyZoom(activeArray, request.get(SCALER_CROP_REGION), request.get(CONTROL_ZOOM_RATIO), previewSize, params);
+        if (params.isZoomSupported()) {
+            params.setZoom(zoomData.zoomIndex);
+        } else if (DEBUG) {
+            Log.v(TAG, "convertRequestToMetadata - zoom is not supported");
+        }
+    }
+    {
+        int aberrationMode = ParamsUtils.getOrDefault(request, COLOR_CORRECTION_ABERRATION_MODE, COLOR_CORRECTION_ABERRATION_MODE_FAST);
+        if (aberrationMode != COLOR_CORRECTION_ABERRATION_MODE_FAST && aberrationMode != COLOR_CORRECTION_ABERRATION_MODE_HIGH_QUALITY) {
+            Log.w(TAG, "convertRequestToMetadata - Ignoring unsupported " + "colorCorrection.aberrationMode = " + aberrationMode);
+        }
+    }
+    {
+        String legacyMode;
+        Integer antiBandingMode = request.get(CONTROL_AE_ANTIBANDING_MODE);
+        if (antiBandingMode != null) {
+            legacyMode = convertAeAntiBandingModeToLegacy(antiBandingMode);
+        } else {
+            legacyMode = ListUtils.listSelectFirstFrom(params.getSupportedAntibanding(), new String[] { Parameters.ANTIBANDING_AUTO, Parameters.ANTIBANDING_OFF, Parameters.ANTIBANDING_50HZ, Parameters.ANTIBANDING_60HZ });
+        }
+        if (legacyMode != null) {
+            params.setAntibanding(legacyMode);
+        }
+    }
+    {
+        {
+            MeteringRectangle[] aeRegions = request.get(CONTROL_AE_REGIONS);
+            if (request.get(CONTROL_AWB_REGIONS) != null) {
+                Log.w(TAG, "convertRequestMetadata - control.awbRegions setting is not " + "supported, ignoring value");
+            }
+            int maxNumMeteringAreas = params.getMaxNumMeteringAreas();
+            List<Camera.Area> meteringAreaList = convertMeteringRegionsToLegacy(activeArray, zoomData, aeRegions, maxNumMeteringAreas, "AE");
+            if (maxNumMeteringAreas > 0) {
+                params.setMeteringAreas(meteringAreaList);
+            }
+        }
+        {
+            MeteringRectangle[] afRegions = request.get(CONTROL_AF_REGIONS);
+            int maxNumFocusAreas = params.getMaxNumFocusAreas();
+            List<Camera.Area> focusAreaList = convertMeteringRegionsToLegacy(activeArray, zoomData, afRegions, maxNumFocusAreas, "AF");
+            if (maxNumFocusAreas > 0) {
+                params.setFocusAreas(focusAreaList);
+            }
+        }
+    }
+    Range<Integer> aeFpsRange = request.get(CONTROL_AE_TARGET_FPS_RANGE);
+    if (aeFpsRange != null) {
+        int[] legacyFps = convertAeFpsRangeToLegacy(aeFpsRange);
+        int[] rangeToApply = null;
+        for (int[] range : params.getSupportedPreviewFpsRange()) {
+            int intRangeLow = (int) Math.floor(range[0] / 1000.0) * 1000;
+            int intRangeHigh = (int) Math.ceil(range[1] / 1000.0) * 1000;
+            if (legacyFps[0] == intRangeLow && legacyFps[1] == intRangeHigh) {
+                rangeToApply = range;
+                break;
+            }
+        }
+        if (rangeToApply != null) {
+            params.setPreviewFpsRange(rangeToApply[Camera.Parameters.PREVIEW_FPS_MIN_INDEX], rangeToApply[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+        } else {
+            Log.w(TAG, "Unsupported FPS range set [" + legacyFps[0] + "," + legacyFps[1] + "]");
+        }
+    }
+    {
+        Range<Integer> compensationRange = characteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_RANGE);
+        int compensation = ParamsUtils.getOrDefault(request, CONTROL_AE_EXPOSURE_COMPENSATION, 0);
+        if (!compensationRange.contains(compensation)) {
+            Log.w(TAG, "convertRequestMetadata - control.aeExposureCompensation " + "is out of range, ignoring value");
+            compensation = 0;
+        }
+        params.setExposureCompensation(compensation);
+    }
+    {
+        Boolean aeLock = getIfSupported(request, CONTROL_AE_LOCK, false, params.isAutoExposureLockSupported(), false);
+        if (aeLock != null) {
+            params.setAutoExposureLock(aeLock);
+        }
+        if (DEBUG) {
+            Log.v(TAG, "convertRequestToMetadata - control.aeLock set to " + aeLock);
+        }
+    }
+    mapAeAndFlashMode(request, params);
+    {
+        int afMode = ParamsUtils.getOrDefault(request, CONTROL_AF_MODE, CONTROL_AF_MODE_OFF);
+        String focusMode = LegacyMetadataMapper.convertAfModeToLegacy(afMode, params.getSupportedFocusModes());
+        if (focusMode != null) {
+            params.setFocusMode(focusMode);
+        }
+        if (DEBUG) {
+            Log.v(TAG, "convertRequestToMetadata - control.afMode " + afMode + " mapped to " + focusMode);
+        }
+    }
+    {
+        Integer awbMode = getIfSupported(request, CONTROL_AWB_MODE, CONTROL_AWB_MODE_AUTO, params.getSupportedWhiteBalance() != null, CONTROL_AWB_MODE_AUTO);
+        String whiteBalanceMode = null;
+        if (awbMode != null) {
+            whiteBalanceMode = convertAwbModeToLegacy(awbMode);
+            params.setWhiteBalance(whiteBalanceMode);
+        }
+        if (DEBUG) {
+            Log.v(TAG, "convertRequestToMetadata - control.awbMode " + awbMode + " mapped to " + whiteBalanceMode);
+        }
+    }
+    {
+        Boolean awbLock = getIfSupported(request, CONTROL_AWB_LOCK, false, params.isAutoWhiteBalanceLockSupported(), false);
+        if (awbLock != null) {
+            params.setAutoWhiteBalanceLock(awbLock);
+        }
+    }
+    {
+        int captureIntent = ParamsUtils.getOrDefault(request, CONTROL_CAPTURE_INTENT, CONTROL_CAPTURE_INTENT_PREVIEW);
+        captureIntent = filterSupportedCaptureIntent(captureIntent);
+        params.setRecordingHint(captureIntent == CONTROL_CAPTURE_INTENT_VIDEO_RECORD || captureIntent == CONTROL_CAPTURE_INTENT_VIDEO_SNAPSHOT);
+    }
+    {
+        Integer stabMode = getIfSupported(request, CONTROL_VIDEO_STABILIZATION_MODE, CONTROL_VIDEO_STABILIZATION_MODE_OFF, params.isVideoStabilizationSupported(), CONTROL_VIDEO_STABILIZATION_MODE_OFF);
+        if (stabMode != null) {
+            params.setVideoStabilization(stabMode == CONTROL_VIDEO_STABILIZATION_MODE_ON);
+        }
+    }
+    {
+        boolean infinityFocusSupported = ListUtils.listContains(params.getSupportedFocusModes(), Parameters.FOCUS_MODE_INFINITY);
+        Float focusDistance = getIfSupported(request, LENS_FOCUS_DISTANCE, 0f, infinityFocusSupported, 0f);
+        if (focusDistance == null || focusDistance != 0f) {
+            Log.w(TAG, "convertRequestToMetadata - Ignoring android.lens.focusDistance " + infinityFocusSupported + ", only 0.0f is supported");
+        }
+    }
+    {
+        if (params.getSupportedSceneModes() != null) {
+            int controlMode = ParamsUtils.getOrDefault(request, CONTROL_MODE, CONTROL_MODE_AUTO);
+            String modeToSet;
+            switch(controlMode) {
+                case CONTROL_MODE_USE_SCENE_MODE:
+                    {
+                        int sceneMode = ParamsUtils.getOrDefault(request, CONTROL_SCENE_MODE, CONTROL_SCENE_MODE_DISABLED);
+                        String legacySceneMode = LegacyMetadataMapper.convertSceneModeToLegacy(sceneMode);
+                        if (legacySceneMode != null) {
+                            modeToSet = legacySceneMode;
+                        } else {
+                            modeToSet = Parameters.SCENE_MODE_AUTO;
+                            Log.w(TAG, "Skipping unknown requested scene mode: " + sceneMode);
+                        }
+                        break;
+                    }
+                case CONTROL_MODE_AUTO:
+                    {
+                        modeToSet = Parameters.SCENE_MODE_AUTO;
+                        break;
+                    }
+                default:
+                    {
+                        Log.w(TAG, "Control mode " + controlMode + " is unsupported, defaulting to AUTO");
+                        modeToSet = Parameters.SCENE_MODE_AUTO;
+                    }
+            }
+            params.setSceneMode(modeToSet);
+        }
+    }
+    {
+        if (params.getSupportedColorEffects() != null) {
+            int effectMode = ParamsUtils.getOrDefault(request, CONTROL_EFFECT_MODE, CONTROL_EFFECT_MODE_OFF);
+            String legacyEffectMode = LegacyMetadataMapper.convertEffectModeToLegacy(effectMode);
+            if (legacyEffectMode != null) {
+                params.setColorEffect(legacyEffectMode);
+            } else {
+                params.setColorEffect(Parameters.EFFECT_NONE);
+                Log.w(TAG, "Skipping unknown requested effect mode: " + effectMode);
+            }
+        }
+    }
+    {
+        int testPatternMode = ParamsUtils.getOrDefault(request, SENSOR_TEST_PATTERN_MODE, SENSOR_TEST_PATTERN_MODE_OFF);
+        if (testPatternMode != SENSOR_TEST_PATTERN_MODE_OFF) {
+            Log.w(TAG, "convertRequestToMetadata - ignoring sensor.testPatternMode " + testPatternMode + "; only OFF is supported");
+        }
+    }
+    {
+        Location location = request.get(JPEG_GPS_LOCATION);
+        if (location != null) {
+            if (checkForCompleteGpsData(location)) {
+                params.setGpsAltitude(location.getAltitude());
+                params.setGpsLatitude(location.getLatitude());
+                params.setGpsLongitude(location.getLongitude());
+                params.setGpsProcessingMethod(location.getProvider().toUpperCase());
+                params.setGpsTimestamp(location.getTime());
+            } else {
+                Log.w(TAG, "Incomplete GPS parameters provided in location " + location);
+            }
+        } else {
+            params.removeGpsData();
+        }
+    }
+    {
+        Integer orientation = request.get(CaptureRequest.JPEG_ORIENTATION);
+        params.setRotation(ParamsUtils.getOrDefault(request, JPEG_ORIENTATION, (orientation == null) ? 0 : orientation));
+    }
+    {
+        params.setJpegQuality(0xFF & ParamsUtils.getOrDefault(request, JPEG_QUALITY, DEFAULT_JPEG_QUALITY));
+    }
+    {
+        params.setJpegThumbnailQuality(0xFF & ParamsUtils.getOrDefault(request, JPEG_THUMBNAIL_QUALITY, DEFAULT_JPEG_QUALITY));
+    }
+    {
+        List<Camera.Size> sizes = params.getSupportedJpegThumbnailSizes();
+        if (sizes != null && sizes.size() > 0) {
+            Size s = request.get(JPEG_THUMBNAIL_SIZE);
+            boolean invalidSize = (s == null) ? false : !ParameterUtils.containsSize(sizes, s.getWidth(), s.getHeight());
+            if (invalidSize) {
+                Log.w(TAG, "Invalid JPEG thumbnail size set " + s + ", skipping thumbnail...");
+            }
+            if (s == null || invalidSize) {
+                params.setJpegThumbnailSize(0, 0);
+            } else {
+                params.setJpegThumbnailSize(s.getWidth(), s.getHeight());
+            }
+        }
+    }
+    {
+        int mode = ParamsUtils.getOrDefault(request, NOISE_REDUCTION_MODE, NOISE_REDUCTION_MODE_FAST);
+        if (mode != NOISE_REDUCTION_MODE_FAST && mode != NOISE_REDUCTION_MODE_HIGH_QUALITY) {
+            Log.w(TAG, "convertRequestToMetadata - Ignoring unsupported " + "noiseReduction.mode = " + mode);
+        }
+    }
+}

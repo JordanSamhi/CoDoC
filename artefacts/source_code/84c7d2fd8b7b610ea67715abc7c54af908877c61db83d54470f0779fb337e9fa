@@ -1,0 +1,60 @@
+public void update(MotionEvent event, ViewConfiguration config){
+    final int action = event.getActionMasked();
+    if (action == MotionEvent.ACTION_DOWN) {
+        final boolean isMouse = event.isFromSource(InputDevice.SOURCE_MOUSE);
+        final long millisSinceLastUp = event.getEventTime() - mLastUpMillis;
+        final long millisBetweenLastDownAndLastUp = mLastUpMillis - mLastDownMillis;
+        if (millisSinceLastUp <= ViewConfiguration.getDoubleTapTimeout() && millisBetweenLastDownAndLastUp <= ViewConfiguration.getDoubleTapTimeout() && (mMultiTapStatus == MultiTapStatus.FIRST_TAP || (mMultiTapStatus == MultiTapStatus.DOUBLE_TAP && isMouse))) {
+            if (mMultiTapStatus == MultiTapStatus.FIRST_TAP) {
+                mMultiTapStatus = MultiTapStatus.DOUBLE_TAP;
+            } else {
+                mMultiTapStatus = MultiTapStatus.TRIPLE_CLICK;
+            }
+            mMultiTapInSameArea = isDistanceWithin(mLastDownX, mLastDownY, event.getX(), event.getY(), config.getScaledDoubleTapSlop());
+            if (TextView.DEBUG_CURSOR) {
+                String status = isDoubleTap() ? "double" : "triple";
+                String inSameArea = mMultiTapInSameArea ? "in same area" : "not in same area";
+                logCursor("EditorTouchState", "ACTION_DOWN: %s tap detected, %s", status, inSameArea);
+            }
+        } else {
+            mMultiTapStatus = MultiTapStatus.FIRST_TAP;
+            mMultiTapInSameArea = false;
+            if (TextView.DEBUG_CURSOR) {
+                logCursor("EditorTouchState", "ACTION_DOWN: first tap detected");
+            }
+        }
+        mLastDownX = event.getX();
+        mLastDownY = event.getY();
+        mLastDownMillis = event.getEventTime();
+        mMovedEnoughForDrag = false;
+        mIsDragCloseToVertical = false;
+    } else if (action == MotionEvent.ACTION_UP) {
+        if (TextView.DEBUG_CURSOR) {
+            logCursor("EditorTouchState", "ACTION_UP");
+        }
+        mLastUpX = event.getX();
+        mLastUpY = event.getY();
+        mLastUpMillis = event.getEventTime();
+        mMovedEnoughForDrag = false;
+        mIsDragCloseToVertical = false;
+    } else if (action == MotionEvent.ACTION_MOVE) {
+        if (!mMovedEnoughForDrag) {
+            float deltaX = event.getX() - mLastDownX;
+            float deltaY = event.getY() - mLastDownY;
+            float deltaXSquared = deltaX * deltaX;
+            float distanceSquared = (deltaXSquared) + (deltaY * deltaY);
+            int touchSlop = config.getScaledTouchSlop();
+            mMovedEnoughForDrag = distanceSquared > touchSlop * touchSlop;
+            if (mMovedEnoughForDrag) {
+                mIsDragCloseToVertical = Math.abs(deltaX) <= Math.abs(deltaY);
+            }
+        }
+    } else if (action == MotionEvent.ACTION_CANCEL) {
+        mLastDownMillis = 0;
+        mLastUpMillis = 0;
+        mMultiTapStatus = MultiTapStatus.NONE;
+        mMultiTapInSameArea = false;
+        mMovedEnoughForDrag = false;
+        mIsDragCloseToVertical = false;
+    }
+}

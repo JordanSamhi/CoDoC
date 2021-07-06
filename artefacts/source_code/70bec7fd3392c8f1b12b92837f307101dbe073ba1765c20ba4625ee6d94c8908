@@ -1,0 +1,11 @@
+public void execute(){
+    acquireReference();
+    try {
+        getSession().execute(getSql(), getBindArgs(), getConnectionFlags(), null);
+    } catch (SQLiteDatabaseCorruptException ex) {
+        onCorruption();
+        throw ex;
+    } finally {
+        releaseReference();
+    }
+}

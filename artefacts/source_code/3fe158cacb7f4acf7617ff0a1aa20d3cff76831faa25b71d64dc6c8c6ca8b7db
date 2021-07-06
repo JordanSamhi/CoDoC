@@ -1,0 +1,43 @@
+public String readFromParcel(ProcessStats stats, Parcel in, int parcelVersion){
+    mTotalCount = in.readInt();
+    mTotalDuration = in.readLong();
+    mTotalActiveCount = in.readInt();
+    mTotalActiveDuration = in.readLong();
+    final int NSRC = in.readInt();
+    if (NSRC < 0 || NSRC > 100000) {
+        return "Association with bad src count: " + NSRC;
+    }
+    for (int isrc = 0; isrc < NSRC; isrc++) {
+        final int uid = in.readInt();
+        final String procName = stats.readCommonString(in, parcelVersion);
+        final String pkgName = stats.readCommonString(in, parcelVersion);
+        final SourceKey key = new SourceKey(uid, procName, pkgName);
+        final SourceState src = new SourceState(key);
+        src.mCount = in.readInt();
+        src.mDuration = in.readLong();
+        src.mActiveCount = in.readInt();
+        if (in.readInt() != 0) {
+            src.makeDurations();
+            if (!src.mActiveDurations.readFromParcel(in)) {
+                return "Duration table corrupt: " + key + " <- " + src;
+            }
+        } else {
+            src.mActiveProcState = in.readInt();
+            src.mActiveDuration = in.readLong();
+        }
+        if (VALIDATE_TIMES) {
+            if (src.mDuration > mTotalDuration) {
+                RuntimeException ex = new RuntimeException();
+                ex.fillInStackTrace();
+                Slog.w(TAG, "Reading tot duration " + src.mDuration + " exceeds total " + mTotalDuration + " in source " + src.mKey.mProcess + " to assoc " + mName, ex);
+            }
+            if (src.mActiveDurations == null && src.mActiveDuration > mTotalDuration) {
+                RuntimeException ex = new RuntimeException();
+                ex.fillInStackTrace();
+                Slog.w(TAG, "Reading act duration " + src.mActiveDuration + " exceeds total " + mTotalDuration + " in source " + src.mKey.mProcess + " to assoc " + mName, ex);
+            }
+        }
+        mSources.put(key, src);
+    }
+    return null;
+}

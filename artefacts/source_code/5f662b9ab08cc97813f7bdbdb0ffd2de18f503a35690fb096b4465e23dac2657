@@ -1,0 +1,11 @@
+public static String getStringForUser(ContentResolver resolver, String name, int userHandle){
+    if (MOVED_TO_SECURE.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.System" + " to android.provider.Settings.Secure, returning read-only value.");
+        return Secure.getStringForUser(resolver, name, userHandle);
+    }
+    if (MOVED_TO_GLOBAL.contains(name) || MOVED_TO_SECURE_THEN_GLOBAL.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.System" + " to android.provider.Settings.Global, returning read-only value.");
+        return Global.getStringForUser(resolver, name, userHandle);
+    }
+    return sNameValueCache.getStringForUser(resolver, name, userHandle);
+}

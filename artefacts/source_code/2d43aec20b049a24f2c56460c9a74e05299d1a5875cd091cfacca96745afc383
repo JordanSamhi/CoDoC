@@ -1,0 +1,9 @@
+public static void insetsBetweenFrames(@NonNull Rect outerFrame, @Nullable Rect innerFrame, @NonNull Rect outInsets){
+    if (innerFrame == null) {
+        outInsets.setEmpty();
+        return;
+    }
+    final int w = outerFrame.width();
+    final int h = outerFrame.height();
+    outInsets.set(Math.min(w, Math.max(0, innerFrame.left - outerFrame.left)), Math.min(h, Math.max(0, innerFrame.top - outerFrame.top)), Math.min(w, Math.max(0, outerFrame.right - innerFrame.right)), Math.min(h, Math.max(0, outerFrame.bottom - innerFrame.bottom)));
+}

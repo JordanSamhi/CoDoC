@@ -1,0 +1,15 @@
+public RestoreSession beginRestoreSession(){
+    RestoreSession session = null;
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            IRestoreSession binder = sService.beginRestoreSessionForUser(mContext.getUserId(), null, null);
+            if (binder != null) {
+                session = new RestoreSession(mContext, binder);
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "beginRestoreSession() couldn't connect");
+        }
+    }
+    return session;
+}

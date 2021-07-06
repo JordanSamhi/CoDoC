@@ -1,0 +1,13 @@
+public void removeOnUidImportanceListener(OnUidImportanceListener listener){
+    synchronized (this) {
+        UidObserver observer = mImportanceListeners.remove(listener);
+        if (observer == null) {
+            throw new IllegalArgumentException("Listener not registered: " + listener);
+        }
+        try {
+            getService().unregisterUidObserver(observer);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,18 @@
+public String[] getDocumentStreamTypes(String documentId, String mimeTypeFilter){
+    Cursor cursor = null;
+    try {
+        cursor = queryDocument(documentId, null);
+        if (cursor.moveToFirst()) {
+            final String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(Document.COLUMN_MIME_TYPE));
+            final long flags = cursor.getLong(cursor.getColumnIndexOrThrow(Document.COLUMN_FLAGS));
+            if ((flags & Document.FLAG_VIRTUAL_DOCUMENT) == 0 && mimeType != null && MimeTypeFilter.matches(mimeType, mimeTypeFilter)) {
+                return new String[] { mimeType };
+            }
+        }
+    } catch (FileNotFoundException e) {
+        return null;
+    } finally {
+        IoUtils.closeQuietly(cursor);
+    }
+    return null;
+}

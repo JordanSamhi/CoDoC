@@ -1,0 +1,34 @@
+public boolean hideKeyguardImpl(){
+    mIsKeyguard = false;
+    Trace.beginSection("StatusBar#hideKeyguard");
+    boolean staying = mStatusBarStateController.leaveOpenOnKeyguardHide();
+    if (!(mStatusBarStateController.setState(StatusBarState.SHADE))) {
+        mLockscreenUserManager.updatePublicMode();
+    }
+    if (mStatusBarStateController.leaveOpenOnKeyguardHide()) {
+        if (!mStatusBarStateController.isKeyguardRequested()) {
+            mStatusBarStateController.setLeaveOpenOnKeyguardHide(false);
+        }
+        long delay = mKeyguardStateController.calculateGoingToFullShadeDelay();
+        mNotificationPanelViewController.animateToFullShade(delay);
+        if (mDraggedDownEntry != null) {
+            mDraggedDownEntry.setUserLocked(false);
+            mDraggedDownEntry = null;
+        }
+        mNavigationBarController.disableAnimationsDuringHide(mDisplayId, delay);
+    } else if (!mNotificationPanelViewController.isCollapsing()) {
+        instantCollapseNotificationPanel();
+    }
+    if (mQSPanel != null) {
+        mQSPanel.refreshAllTiles();
+    }
+    mHandler.removeMessages(MSG_LAUNCH_TRANSITION_TIMEOUT);
+    releaseGestureWakeLock();
+    mNotificationPanelViewController.onAffordanceLaunchEnded();
+    mNotificationPanelViewController.cancelAnimation();
+    mNotificationPanelViewController.setAlpha(1f);
+    mNotificationPanelViewController.resetViewGroupFade();
+    updateScrimController();
+    Trace.endSection();
+    return staying;
+}

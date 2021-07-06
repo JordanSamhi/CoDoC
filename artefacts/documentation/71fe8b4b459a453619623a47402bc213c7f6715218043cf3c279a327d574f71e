@@ -1,0 +1,28 @@
+
+     * In Activity Transitions, onSharedElementStart is called immediately before
+     * capturing the start of the shared element state on enter and reenter transitions and
+     * immediately before capturing the end of the shared element state for exit and return
+     * transitions.
+     * <p>
+     * In Fragment Transitions, onSharedElementStart is called immediately before capturing the
+     * start state of all shared element transitions.
+     * <p>
+     * This call can be used to adjust the transition start state by modifying the shared
+     * element Views. Note that no layout step will be executed between onSharedElementStart
+     * and the transition state capture.
+     * <p>
+     * For Activity Transitions, any changes made in {@link #onSharedElementEnd(List, List, List)}
+     * that are not updated during by layout should be corrected in onSharedElementStart for exit and
+     * return transitions. For example, rotation or scale will not be affected by layout and
+     * if changed in {@link #onSharedElementEnd(List, List, List)}, it will also have to be reset
+     * in onSharedElementStart again to correct the end state.
+     *
+     * @param sharedElementNames The names of the shared elements that were accepted into
+     *                           the View hierarchy.
+     * @param sharedElements The shared elements that are part of the View hierarchy.
+     * @param sharedElementSnapshots The Views containing snap shots of the shared element
+     *                               from the launching Window. These elements will not
+     *                               be part of the scene, but will be positioned relative
+     *                               to the Window decor View. This list is null for Fragment
+     *                               Transitions.
+     

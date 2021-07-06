@@ -1,0 +1,14 @@
+public boolean canSupportIfaceCombo(SparseArray<Integer> ifaceCombo){
+    if (VDBG)
+        Log.d(TAG, "canSupportIfaceCombo: ifaceCombo=" + ifaceCombo);
+    synchronized (mLock) {
+        int[] ifaceComboArr = new int[IFACE_TYPES_BY_PRIORITY.length];
+        for (int type : IFACE_TYPES_BY_PRIORITY) {
+            ifaceComboArr[type] = ifaceCombo.get(type, 0);
+        }
+        WifiChipInfo[] chipInfos = getAllChipInfo();
+        if (chipInfos == null)
+            return false;
+        return isItPossibleToCreateIfaceCombo(chipInfos, ifaceComboArr);
+    }
+}

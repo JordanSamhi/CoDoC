@@ -1,0 +1,10 @@
+public WifiAwareDiscoverySessionState terminateSession(int sessionId){
+    WifiAwareDiscoverySessionState session = mSessions.get(sessionId);
+    if (session == null) {
+        Log.e(TAG, "terminateSession: sessionId doesn't exist - " + sessionId);
+        return null;
+    }
+    session.terminate();
+    mSessions.delete(sessionId);
+    return session;
+}

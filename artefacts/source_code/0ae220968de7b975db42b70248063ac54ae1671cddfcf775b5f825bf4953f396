@@ -1,0 +1,15 @@
+public Map<Constants.ANQPElementType, ANQPElement> getANQPElements(ScanResult scanResult){
+    InformationElementUtil.Vsa vsa = InformationElementUtil.getHS2VendorSpecificIE(scanResult.informationElements);
+    long bssid;
+    try {
+        bssid = Utils.parseMac(scanResult.BSSID);
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Invalid BSSID provided in the scan result: " + scanResult.BSSID);
+        return new HashMap<>();
+    }
+    ANQPData anqpEntry = mAnqpCache.getEntry(ANQPNetworkKey.buildKey(scanResult.SSID, bssid, scanResult.hessid, vsa.anqpDomainID));
+    if (anqpEntry != null) {
+        return anqpEntry.getElements();
+    }
+    return new HashMap<>();
+}

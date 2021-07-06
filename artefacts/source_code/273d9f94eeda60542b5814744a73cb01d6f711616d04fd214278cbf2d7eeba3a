@@ -1,0 +1,29 @@
+public static void addUserAuthArgs(KeymasterArguments args, UserAuthArgs spec){
+    if (spec.isUserConfirmationRequired()) {
+        args.addBoolean(KeymasterDefs.KM_TAG_TRUSTED_CONFIRMATION_REQUIRED);
+    }
+    if (spec.isUserPresenceRequired()) {
+        args.addBoolean(KeymasterDefs.KM_TAG_TRUSTED_USER_PRESENCE_REQUIRED);
+    }
+    if (spec.isUnlockedDeviceRequired()) {
+        args.addBoolean(KeymasterDefs.KM_TAG_UNLOCKED_DEVICE_REQUIRED);
+    }
+    if (!spec.isUserAuthenticationRequired()) {
+        args.addBoolean(KeymasterDefs.KM_TAG_NO_AUTH_REQUIRED);
+        return;
+    }
+    if (spec.getUserAuthenticationValidityDurationSeconds() == 0) {
+        addSids(args, spec);
+        args.addEnum(KeymasterDefs.KM_TAG_USER_AUTH_TYPE, spec.getUserAuthenticationType());
+        if (spec.isUserAuthenticationValidWhileOnBody()) {
+            throw new ProviderException("Key validity extension while device is on-body is not " + "supported for keys requiring fingerprint authentication");
+        }
+    } else {
+        addSids(args, spec);
+        args.addEnum(KeymasterDefs.KM_TAG_USER_AUTH_TYPE, spec.getUserAuthenticationType());
+        args.addUnsignedInt(KeymasterDefs.KM_TAG_AUTH_TIMEOUT, spec.getUserAuthenticationValidityDurationSeconds());
+        if (spec.isUserAuthenticationValidWhileOnBody()) {
+            args.addBoolean(KeymasterDefs.KM_TAG_ALLOW_WHILE_ON_BODY);
+        }
+    }
+}

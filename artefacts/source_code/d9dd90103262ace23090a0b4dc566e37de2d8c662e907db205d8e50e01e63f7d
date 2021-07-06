@@ -1,0 +1,11 @@
+public static int getSimStateForSlotIndex(int slotIndex){
+    int simState = TelephonyManager.SIM_STATE_UNKNOWN;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            simState = iSub.getSimStateForSlotIndex(slotIndex);
+        }
+    } catch (RemoteException ex) {
+    }
+    return simState;
+}

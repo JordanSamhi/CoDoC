@@ -1,0 +1,15 @@
+public static AutofillOptions forWhitelistingItself(){
+    final ActivityThread at = ActivityThread.currentActivityThread();
+    if (at == null) {
+        throw new IllegalStateException("No ActivityThread");
+    }
+    final String packageName = at.getApplication().getPackageName();
+    if (!"android.autofillservice.cts".equals(packageName)) {
+        Log.e(TAG, "forWhitelistingItself(): called by " + packageName);
+        throw new SecurityException("Thou shall not pass!");
+    }
+    final AutofillOptions options = new AutofillOptions(AutofillManager.FLAG_ADD_CLIENT_VERBOSE, true);
+    options.augmentedAutofillEnabled = true;
+    Log.i(TAG, "forWhitelistingItself(" + packageName + "): " + options);
+    return options;
+}

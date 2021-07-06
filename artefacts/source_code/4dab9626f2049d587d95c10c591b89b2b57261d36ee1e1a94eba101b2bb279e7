@@ -1,0 +1,83 @@
+public WifiConfiguration createWifiConfiguration(){
+    if (mParsedSSIDLine == null) {
+        return null;
+    }
+    WifiConfiguration configuration = new WifiConfiguration();
+    configuration.SSID = mParsedSSIDLine.substring(mParsedSSIDLine.indexOf('=') + 1);
+    if (mParsedHiddenLine != null) {
+        configuration.hiddenSSID = Integer.parseInt(mParsedHiddenLine.substring(mParsedHiddenLine.indexOf('=') + 1)) != 0;
+    }
+    if (mParsedKeyMgmtLine == null) {
+        configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+    } else {
+        final String bareKeyMgmt = mParsedKeyMgmtLine.substring(mParsedKeyMgmtLine.indexOf('=') + 1);
+        String[] typeStrings = bareKeyMgmt.split("\\s+");
+        for (int i = 0; i < typeStrings.length; i++) {
+            final String ktype = typeStrings[i];
+            if (ktype.equals("NONE")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            } else if (ktype.equals("WPA-PSK")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+            } else if (ktype.equals("WPA-EAP")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+            } else if (ktype.equals("IEEE8021X")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.IEEE8021X);
+            } else if (ktype.equals("WAPI-PSK")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WAPI_PSK);
+            } else if (ktype.equals("WAPI-CERT")) {
+                configuration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WAPI_CERT);
+            }
+        }
+    }
+    if (mParsedAuthAlgLine != null) {
+        if (mParsedAuthAlgLine.contains("OPEN")) {
+            configuration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+        }
+        if (mParsedAuthAlgLine.contains("SHARED")) {
+            configuration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+        }
+    }
+    if (mParsedPskLine != null) {
+        configuration.preSharedKey = mParsedPskLine.substring(mParsedPskLine.indexOf('=') + 1);
+    }
+    if (mParsedWepKeyLines[0] != null) {
+        configuration.wepKeys[0] = mParsedWepKeyLines[0].substring(mParsedWepKeyLines[0].indexOf('=') + 1);
+    }
+    if (mParsedWepKeyLines[1] != null) {
+        configuration.wepKeys[1] = mParsedWepKeyLines[1].substring(mParsedWepKeyLines[1].indexOf('=') + 1);
+    }
+    if (mParsedWepKeyLines[2] != null) {
+        configuration.wepKeys[2] = mParsedWepKeyLines[2].substring(mParsedWepKeyLines[2].indexOf('=') + 1);
+    }
+    if (mParsedWepKeyLines[3] != null) {
+        configuration.wepKeys[3] = mParsedWepKeyLines[3].substring(mParsedWepKeyLines[3].indexOf('=') + 1);
+    }
+    if (mParsedWepTxKeyIdxLine != null) {
+        configuration.wepTxKeyIndex = Integer.valueOf(mParsedWepTxKeyIdxLine.substring(mParsedWepTxKeyIdxLine.indexOf('=') + 1));
+    }
+    if (mParsedIdStrLine != null) {
+        String idString = mParsedIdStrLine.substring(mParsedIdStrLine.indexOf('=') + 1);
+        if (idString != null) {
+            Map<String, String> extras = SupplicantStaNetworkHal.parseNetworkExtra(NativeUtil.removeEnclosingQuotes(idString));
+            if (extras == null) {
+                Log.e(TAG, "Error parsing network extras, ignoring network.");
+                return null;
+            }
+            String configKey = extras.get(SupplicantStaNetworkHal.ID_STRING_KEY_CONFIG_KEY);
+            if (configKey == null) {
+                Log.e(TAG, "Configuration key was not passed, ignoring network.");
+                return null;
+            }
+            if (!configKey.equals(configuration.getKey())) {
+                Log.w(TAG, "Configuration key does not match. Retrieved: " + configKey + ", Calculated: " + configuration.getKey());
+            }
+            int creatorUid = Integer.parseInt(extras.get(SupplicantStaNetworkHal.ID_STRING_KEY_CREATOR_UID));
+            if (creatorUid >= Process.FIRST_APPLICATION_UID) {
+                Log.d(TAG, "Ignoring network from non-system app: " + configuration.getKey());
+                return null;
+            }
+        }
+    }
+    return configuration;
+}

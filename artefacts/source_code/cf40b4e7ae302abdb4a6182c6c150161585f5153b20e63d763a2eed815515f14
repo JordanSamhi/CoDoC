@@ -1,0 +1,8 @@
+public void stopAll(){
+    synchronized (mLocalOnlyHotspotRequests) {
+        if (!mLocalOnlyHotspotRequests.isEmpty()) {
+            sendHotspotFailedMessageToAllLOHSRequestInfoEntriesLocked(LocalOnlyHotspotCallback.ERROR_INCOMPATIBLE_MODE);
+            stopIfEmptyLocked();
+        }
+    }
+}

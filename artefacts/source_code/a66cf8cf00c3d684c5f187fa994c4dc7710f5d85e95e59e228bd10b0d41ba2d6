@@ -1,0 +1,13 @@
+public Intent getManageKeyphraseIntent(@ManageActions int action, @NonNull String keyphrase, @NonNull Locale locale){
+    Objects.requireNonNull(keyphrase);
+    Objects.requireNonNull(locale);
+    if (mKeyphrasePackageMap == null || mKeyphrasePackageMap.isEmpty()) {
+        Slog.w(TAG, "No enrollment application exists");
+        return null;
+    }
+    KeyphraseMetadata keyphraseMetadata = getKeyphraseMetadata(keyphrase, locale);
+    if (keyphraseMetadata != null) {
+        return new Intent(ACTION_MANAGE_VOICE_KEYPHRASES).setPackage(mKeyphrasePackageMap.get(keyphraseMetadata)).putExtra(EXTRA_VOICE_KEYPHRASE_HINT_TEXT, keyphrase).putExtra(EXTRA_VOICE_KEYPHRASE_LOCALE, locale.toLanguageTag()).putExtra(EXTRA_VOICE_KEYPHRASE_ACTION, action);
+    }
+    return null;
+}

@@ -1,0 +1,34 @@
+public void connect(WifiConfiguration config, int netId, @Nullable IBinder binder, @Nullable IActionListener callback, int callbackIdentifier, int callingUid){
+    mWifiInjector.getWifiThreadRunner().post(() -> {
+        if (callback != null && binder != null) {
+            mProcessingActionListeners.add(binder, callback, callbackIdentifier);
+        }
+        NetworkUpdateResult result = null;
+        if (config != null) {
+            result = mWifiConfigManager.addOrUpdateNetwork(config, callingUid);
+            if (!result.isSuccess()) {
+                loge("connectNetwork adding/updating config=" + config + " failed");
+                sendActionListenerFailure(callbackIdentifier, WifiManager.ERROR);
+                return;
+            }
+            broadcastWifiCredentialChanged(WifiManager.WIFI_CREDENTIAL_SAVED, config);
+        } else {
+            if (mWifiConfigManager.getConfiguredNetwork(netId) == null) {
+                loge("connectNetwork Invalid network Id=" + netId);
+                sendActionListenerFailure(callbackIdentifier, WifiManager.ERROR);
+                return;
+            }
+            result = new NetworkUpdateResult(netId);
+        }
+        final int networkId = result.getNetworkId();
+        mWifiConfigManager.userEnabledNetwork(networkId);
+        if (!mWifiConfigManager.enableNetwork(networkId, true, callingUid, null) || !mWifiConfigManager.updateLastConnectUid(networkId, callingUid)) {
+            logi("connect Allowing uid " + callingUid + " with insufficient permissions to connect=" + networkId);
+        } else if (mWifiPermissionsUtil.checkNetworkSettingsPermission(callingUid)) {
+            mWifiConnectivityManager.setUserConnectChoice(networkId);
+        }
+        Message message = obtainMessage(CMD_CONNECT_NETWORK, -1, callbackIdentifier, result);
+        message.sendingUid = callingUid;
+        sendMessage(message);
+    });
+}

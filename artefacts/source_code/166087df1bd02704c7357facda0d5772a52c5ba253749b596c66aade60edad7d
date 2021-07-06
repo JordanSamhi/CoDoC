@@ -1,0 +1,21 @@
+public String toString(){
+    String val = "";
+    if (mDestination != null)
+        val = mDestination.toString();
+    if (mType == RTN_UNREACHABLE) {
+        val += " unreachable";
+    } else if (mType == RTN_THROW) {
+        val += " throw";
+    } else {
+        val += " ->";
+        if (mGateway != null)
+            val += " " + mGateway.getHostAddress();
+        if (mInterface != null)
+            val += " " + mInterface;
+        if (mType != RTN_UNICAST) {
+            val += " unknown type " + mType;
+        }
+    }
+    val += " mtu " + mMtu;
+    return val;
+}

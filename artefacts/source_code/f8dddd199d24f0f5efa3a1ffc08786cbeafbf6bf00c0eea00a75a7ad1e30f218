@@ -1,0 +1,23 @@
+public PhysicsPropertyAnimator followAnimatedTargetAlongPath(Path path, int targetAnimDuration, TimeInterpolator targetAnimInterpolator, Runnable... pathAnimEndActions){
+    if (mPathAnimator != null) {
+        mPathAnimator.cancel();
+    }
+    mPathAnimator = ObjectAnimator.ofFloat(this, mCurrentPointOnPathXProperty, mCurrentPointOnPathYProperty, path);
+    if (pathAnimEndActions != null) {
+        mPathAnimator.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                for (Runnable action : pathAnimEndActions) {
+                    if (action != null) {
+                        action.run();
+                    }
+                }
+            }
+        });
+    }
+    mPathAnimator.setDuration(targetAnimDuration);
+    mPathAnimator.setInterpolator(targetAnimInterpolator);
+    clearTranslationValues();
+    return this;
+}

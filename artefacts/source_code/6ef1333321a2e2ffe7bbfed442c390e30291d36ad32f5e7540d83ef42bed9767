@@ -1,0 +1,19 @@
+public void cancel(OnAlarmListener listener){
+    if (listener == null) {
+        throw new NullPointerException("cancel() called with a null OnAlarmListener");
+    }
+    ListenerWrapper wrapper = null;
+    synchronized (AlarmManager.class) {
+        if (sWrappers != null) {
+            final WeakReference<ListenerWrapper> weakRef = sWrappers.get(listener);
+            if (weakRef != null) {
+                wrapper = weakRef.get();
+            }
+        }
+    }
+    if (wrapper == null) {
+        Log.w(TAG, "Unrecognized alarm listener " + listener);
+        return;
+    }
+    wrapper.cancel();
+}

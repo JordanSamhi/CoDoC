@@ -1,0 +1,11 @@
+public static RoamingConsortiumElement parse(ByteBuffer payload) throws ProtocolException{
+    List<Long> OIs = new ArrayList<Long>();
+    while (payload.hasRemaining()) {
+        int length = payload.get() & 0xFF;
+        if (length < MINIMUM_OI_LENGTH || length > MAXIMUM_OI_LENGTH) {
+            throw new ProtocolException("Bad OI length: " + length);
+        }
+        OIs.add(ByteBufferReader.readInteger(payload, ByteOrder.BIG_ENDIAN, length));
+    }
+    return new RoamingConsortiumElement(OIs);
+}

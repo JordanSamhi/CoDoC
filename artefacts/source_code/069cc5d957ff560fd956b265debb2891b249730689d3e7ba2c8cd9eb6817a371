@@ -1,0 +1,16 @@
+public boolean isEnrolledForKeyphrase(int keyphraseId, String bcp47Locale){
+    synchronized (this) {
+        enforceIsCurrentVoiceInteractionService();
+    }
+    if (bcp47Locale == null) {
+        throw new IllegalArgumentException("Illegal argument(s) in isEnrolledForKeyphrase");
+    }
+    final int callingUid = UserHandle.getCallingUserId();
+    final long caller = Binder.clearCallingIdentity();
+    try {
+        KeyphraseSoundModel model = mDbHelper.getKeyphraseSoundModel(keyphraseId, callingUid, bcp47Locale);
+        return model != null;
+    } finally {
+        Binder.restoreCallingIdentity(caller);
+    }
+}

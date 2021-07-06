@@ -1,0 +1,21 @@
+public boolean isRtlCharAt(int offset){
+    int line = getLineForOffset(offset);
+    Directions dirs = getLineDirections(line);
+    if (dirs == DIRS_ALL_LEFT_TO_RIGHT) {
+        return false;
+    }
+    if (dirs == DIRS_ALL_RIGHT_TO_LEFT) {
+        return true;
+    }
+    int[] runs = dirs.mDirections;
+    int lineStart = getLineStart(line);
+    for (int i = 0; i < runs.length; i += 2) {
+        int start = lineStart + runs[i];
+        int limit = start + (runs[i + 1] & RUN_LENGTH_MASK);
+        if (offset >= start && offset < limit) {
+            int level = (runs[i + 1] >>> RUN_LEVEL_SHIFT) & RUN_LEVEL_MASK;
+            return ((level & 1) != 0);
+        }
+    }
+    return false;
+}

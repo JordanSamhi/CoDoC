@@ -1,0 +1,14 @@
+public void unflatten(String flattened){
+    mMap.clear();
+    TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(';');
+    splitter.setString(flattened);
+    for (String kv : splitter) {
+        int pos = kv.indexOf('=');
+        if (pos == -1) {
+            continue;
+        }
+        String k = kv.substring(0, pos);
+        String v = kv.substring(pos + 1);
+        mMap.put(k, v);
+    }
+}

@@ -1,0 +1,10 @@
+public void setAutoRefreshEnabled(boolean enabled){
+    if (mIsAutoRefreshEnabled != enabled) {
+        int error = nativeSetAutoRefreshEnabled(mNativeObject, enabled);
+        if (error != 0) {
+            throw new RuntimeException("Failed to set auto refresh on Surface (bad object?)");
+        } else {
+            mIsAutoRefreshEnabled = enabled;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public AutofillId getNextAutofillId(){
+    final AutofillClient client = getClient();
+    if (client == null)
+        return null;
+    final AutofillId id = client.autofillClientGetNextAutofillId();
+    if (id == null && sDebug) {
+        Log.d(TAG, "getNextAutofillId(): client " + client + " returned null");
+    }
+    return id;
+}

@@ -1,0 +1,9 @@
+public void performBackPress(){
+    if (!isInitialized()) {
+        return;
+    }
+    final int displayId = mVirtualDisplay.getDisplay().getDisplayId();
+    final InputManager im = InputManager.getInstance();
+    im.injectInputEvent(createKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK, displayId), InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+    im.injectInputEvent(createKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK, displayId), InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+}

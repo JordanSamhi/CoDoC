@@ -1,0 +1,13 @@
+public void onUserLoggedIn(@UserIdInt int userId){
+    UserData userData = getUserDataNoChecks(userId);
+    if (userData == null || userData.info.partial) {
+        Slog.w(LOG_TAG, "userForeground: unknown user #" + userId);
+        return;
+    }
+    final long now = System.currentTimeMillis();
+    if (now > EPOCH_PLUS_30_YEARS) {
+        userData.info.lastLoggedInTime = now;
+    }
+    userData.info.lastLoggedInFingerprint = Build.FINGERPRINT;
+    scheduleWriteUser(userData);
+}

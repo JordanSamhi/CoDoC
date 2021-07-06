@@ -1,0 +1,13 @@
+public void initialize(NotificationListener notificationService, NotificationRowBinderImpl rowBinder, NotificationListContainer listContainer){
+    mDumpManager.registerDumpable("NotifPipeline", this);
+    if (mFeatureFlags.isNewNotifPipelineRenderingEnabled()) {
+        mNotifInflater.setRowBinder(rowBinder);
+    }
+    mNotifPluggableCoordinators.attach(mPipelineWrapper);
+    mNotifViewManager.setViewConsumer(listContainer);
+    mNotifViewManager.attach(mListBuilder);
+    mListBuilder.attach(mNotifCollection);
+    mNotifCollection.attach(mGroupCoalescer);
+    mGroupCoalescer.attach(notificationService);
+    Log.d(TAG, "Notif pipeline initialized");
+}

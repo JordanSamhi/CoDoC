@@ -1,0 +1,15 @@
+public boolean areComponentsInPlaceLocked(JobStatus job){
+    final boolean jobExists = mJobs.containsJob(job);
+    final boolean userStarted = areUsersStartedLocked(job);
+    final boolean backingUp = mBackingUpUids.indexOfKey(job.getSourceUid()) >= 0;
+    if (DEBUG) {
+        Slog.v(TAG, "areComponentsInPlaceLocked: " + job.toShortString() + " exists=" + jobExists + " userStarted=" + userStarted + " backingUp=" + backingUp);
+    }
+    if (!jobExists || !userStarted || backingUp) {
+        return false;
+    }
+    if (checkIfRestricted(job) != null) {
+        return false;
+    }
+    return isComponentUsable(job);
+}

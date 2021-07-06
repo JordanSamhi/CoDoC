@@ -1,0 +1,32 @@
+public static Typeface createFromDisk(@NonNull BridgeContext context, @NonNull String path, boolean isFramework){
+    Typeface typeface = Typeface.findFromCache(context.getAssets(), path);
+    if (typeface != null) {
+        return typeface;
+    }
+    String lowerCaseValue = path.toLowerCase();
+    if (lowerCaseValue.endsWith(SdkConstants.DOT_XML)) {
+        Boolean psiParserSupport = context.getLayoutlibCallback().getFlag(RenderParamsFlags.FLAG_KEY_XML_FILE_PARSER_SUPPORT);
+        XmlPullParser parser;
+        if (psiParserSupport != null && psiParserSupport) {
+            parser = context.getLayoutlibCallback().createXmlParserForPsiFile(path);
+        } else {
+            parser = context.getLayoutlibCallback().createXmlParserForFile(path);
+        }
+        if (parser != null) {
+            BridgeXmlBlockParser blockParser = new BridgeXmlBlockParser(parser, context, ResourceNamespace.fromBoolean(isFramework));
+            try {
+                FontResourcesParser.FamilyResourceEntry entry = FontResourcesParser.parse(blockParser, context.getResources());
+                typeface = Typeface.createFromResources(entry, context.getAssets(), path);
+            } catch (XmlPullParserException | IOException e) {
+                Bridge.getLog().error(null, "Failed to parse file " + path, e, null, null);
+            } finally {
+                blockParser.ensurePopped();
+            }
+        } else {
+            Bridge.getLog().error(LayoutLog.TAG_BROKEN, String.format("File %s does not exist (or is not a file)", path), null, null);
+        }
+    } else {
+        typeface = new Typeface.Builder(context.getAssets(), path, false, 0).build();
+    }
+    return typeface;
+}

@@ -1,0 +1,8 @@
+public static List<String> getCertFingerprintsFromPackageManager(String packageName, Context context) throws NameNotFoundException{
+    Signature[] signatures = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures;
+    ArrayList<String> result = new ArrayList<String>(signatures.length);
+    for (Signature sig : signatures) {
+        result.add(computeNormalizedSha256Fingerprint(sig.toByteArray()));
+    }
+    return result;
+}

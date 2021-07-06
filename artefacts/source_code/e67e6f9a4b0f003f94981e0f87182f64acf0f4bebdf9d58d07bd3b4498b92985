@@ -1,0 +1,10 @@
+public synchronized void dump(@NonNull DualDumpOutputStream dump, String idName, long id){
+    long token = dump.start(idName, id);
+    dump.write("card", UsbAlsaDeviceProto.CARD, mCardNum);
+    dump.write("device", UsbAlsaDeviceProto.DEVICE, mDeviceNum);
+    dump.write("name", UsbAlsaDeviceProto.NAME, mDeviceName);
+    dump.write("has_output", UsbAlsaDeviceProto.HAS_PLAYBACK, mHasOutput);
+    dump.write("has_input", UsbAlsaDeviceProto.HAS_CAPTURE, mHasInput);
+    dump.write("address", UsbAlsaDeviceProto.ADDRESS, mDeviceAddress);
+    dump.end(token);
+}

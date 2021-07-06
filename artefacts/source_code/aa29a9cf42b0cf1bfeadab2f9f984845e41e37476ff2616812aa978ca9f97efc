@@ -1,0 +1,15 @@
+public static final boolean alarmExists(ContentResolver cr, long eventId, long begin, long alarmTime){
+    String[] projection = new String[] { ALARM_TIME };
+    Cursor cursor = cr.query(CONTENT_URI, projection, WHERE_ALARM_EXISTS, (new String[] { Long.toString(eventId), Long.toString(begin), Long.toString(alarmTime) }), null);
+    boolean found = false;
+    try {
+        if (cursor != null && cursor.getCount() > 0) {
+            found = true;
+        }
+    } finally {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    return found;
+}

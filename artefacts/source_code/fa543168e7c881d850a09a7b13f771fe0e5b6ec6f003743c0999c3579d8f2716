@@ -1,0 +1,23 @@
+public int[] getCurrentDrawableState(){
+    int[] states = KEY_STATE_NORMAL;
+    if (on) {
+        if (pressed) {
+            states = KEY_STATE_PRESSED_ON;
+        } else {
+            states = KEY_STATE_NORMAL_ON;
+        }
+    } else {
+        if (sticky) {
+            if (pressed) {
+                states = KEY_STATE_PRESSED_OFF;
+            } else {
+                states = KEY_STATE_NORMAL_OFF;
+            }
+        } else {
+            if (pressed) {
+                states = KEY_STATE_PRESSED;
+            }
+        }
+    }
+    return states;
+}

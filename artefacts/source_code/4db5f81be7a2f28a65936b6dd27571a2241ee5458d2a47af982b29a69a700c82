@@ -1,0 +1,14 @@
+public void getEid(AsyncResultCallback<String> callback, Handler handler){
+    if (mEid != null) {
+        AsyncResultHelper.returnResult(mEid, callback, handler);
+        return;
+    }
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_GET_EID).addChildAsBytes(Tags.TAG_TAG_LIST, new byte[] { Tags.TAG_EID }).build().toHex())), response -> {
+        String eid = IccUtils.bytesToHexString(parseResponse(response).getChild(Tags.TAG_EID).asBytes());
+        synchronized (mLock) {
+            mEid = eid;
+            mCardId = eid;
+        }
+        return eid;
+    }, callback, handler);
+}

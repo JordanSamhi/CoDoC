@@ -1,0 +1,18 @@
+public void stop() throws IllegalStateException{
+    if (mState != STATE_INITIALIZED) {
+        throw new IllegalStateException("stop() called on uninitialized AudioTrack.");
+    }
+    synchronized (mPlayStateLock) {
+        native_stop();
+        baseStop();
+        if (mOffloaded && mPlayState != PLAYSTATE_PAUSED_STOPPING) {
+            mPlayState = PLAYSTATE_STOPPING;
+        } else {
+            mPlayState = PLAYSTATE_STOPPED;
+            mOffloadEosPending = false;
+            mAvSyncHeader = null;
+            mAvSyncBytesRemaining = 0;
+            mPlayStateLock.notify();
+        }
+    }
+}

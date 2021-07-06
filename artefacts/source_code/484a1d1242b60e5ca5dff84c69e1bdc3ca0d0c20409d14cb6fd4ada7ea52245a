@@ -1,0 +1,10 @@
+public void cancel(){
+    if (mRequestInterface == null) {
+        throw new IllegalStateException("Request " + this + " is no longer active");
+    }
+    try {
+        mRequestInterface.cancel();
+    } catch (RemoteException e) {
+        Log.w(TAG, "Voice interactor has died", e);
+    }
+}

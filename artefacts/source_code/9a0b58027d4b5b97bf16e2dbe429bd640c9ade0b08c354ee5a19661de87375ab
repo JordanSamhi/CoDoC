@@ -1,0 +1,8 @@
+public void testRunTask_whenQueueEmptyOnFirstBackup_doesNotUpdateCurrentToken() throws Exception{
+    TransportMock transportMock = setUpInitializedTransport(mTransport);
+    KeyValueBackupTask task = createKeyValueBackupTask(transportMock, true);
+    mBackupManagerService.setCurrentToken(0L);
+    when(transportMock.transport.getCurrentRestoreSet()).thenReturn(1234L);
+    runTask(task);
+    assertThat(mBackupManagerService.getCurrentToken()).isEqualTo(0L);
+}

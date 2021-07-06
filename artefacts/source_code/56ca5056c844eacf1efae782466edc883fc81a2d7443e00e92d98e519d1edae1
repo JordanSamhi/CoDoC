@@ -1,0 +1,11 @@
+public void notifyUnhiddenLocked(List<NotificationRecord> changedNotifications){
+    if (changedNotifications == null || changedNotifications.size() == 0) {
+        return;
+    }
+    notifyRankingUpdateLocked(changedNotifications);
+    int numChangedNotifications = changedNotifications.size();
+    for (int i = 0; i < numChangedNotifications; i++) {
+        NotificationRecord rec = changedNotifications.get(i);
+        mListeners.notifyPostedLocked(rec, rec, false);
+    }
+}

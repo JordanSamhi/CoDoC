@@ -1,0 +1,10 @@
+public static String getDefaultCompilerFilter(){
+    String value = SystemProperties.get("dalvik.vm.dex2oat-filter");
+    if (value == null || value.isEmpty()) {
+        return "speed";
+    }
+    if (!DexFile.isValidCompilerFilter(value) || DexFile.isProfileGuidedCompilerFilter(value)) {
+        return "speed";
+    }
+    return value;
+}

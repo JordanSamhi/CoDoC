@@ -1,0 +1,9 @@
+public void setNotificationDelegate(String sourcePkg, int sourceUid, String delegatePkg, int delegateUid){
+    synchronized (mPackagePreferences) {
+        PackagePreferences prefs = getOrCreatePackagePreferencesLocked(sourcePkg, sourceUid);
+        boolean userAllowed = prefs.delegate == null || prefs.delegate.mUserAllowed;
+        Delegate delegate = new Delegate(delegatePkg, delegateUid, true, userAllowed);
+        prefs.delegate = delegate;
+    }
+    updateConfig();
+}

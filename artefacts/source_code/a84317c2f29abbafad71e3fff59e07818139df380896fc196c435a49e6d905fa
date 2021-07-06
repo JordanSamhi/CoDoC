@@ -1,0 +1,36 @@
+public List<WifiConfiguration> retrieveConfigurationsFromSupplicantBackupData(byte[] supplicantData, byte[] ipConfigData){
+    if (supplicantData == null || supplicantData.length == 0) {
+        Log.e(TAG, "Invalid supplicant backup data received");
+        return null;
+    }
+    if (mVerboseLoggingEnabled) {
+        mDebugLastSupplicantBackupDataRestored = supplicantData;
+        mDebugLastIpConfigBackupDataRestored = ipConfigData;
+    }
+    SupplicantBackupMigration.SupplicantNetworks supplicantNetworks = new SupplicantBackupMigration.SupplicantNetworks();
+    char[] restoredAsChars = new char[supplicantData.length];
+    for (int i = 0; i < supplicantData.length; i++) {
+        restoredAsChars[i] = (char) supplicantData[i];
+    }
+    BufferedReader in = new BufferedReader(new CharArrayReader(restoredAsChars));
+    supplicantNetworks.readNetworksFromStream(in);
+    List<WifiConfiguration> configurations = supplicantNetworks.retrieveWifiConfigurations();
+    if (ipConfigData != null && ipConfigData.length != 0) {
+        SparseArray<IpConfiguration> networks = IpConfigStore.readIpAndProxyConfigurations(new ByteArrayInputStream(ipConfigData));
+        if (networks != null) {
+            for (int i = 0; i < networks.size(); i++) {
+                int id = networks.keyAt(i);
+                for (WifiConfiguration configuration : configurations) {
+                    if (configuration.getKey().hashCode() == id) {
+                        configuration.setIpConfiguration(networks.valueAt(i));
+                    }
+                }
+            }
+        } else {
+            Log.e(TAG, "Failed to parse ipconfig data");
+        }
+    } else {
+        Log.e(TAG, "Invalid ipconfig backup data received");
+    }
+    return configurations;
+}

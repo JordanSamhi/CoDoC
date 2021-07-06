@@ -1,0 +1,9 @@
+public IBinder startOrGetTestNetworkService(){
+    synchronized (mTNSLock) {
+        TestNetworkService.enforceTestNetworkPermissions(mContext);
+        if (mTNS == null) {
+            mTNS = new TestNetworkService(mContext, mNMS);
+        }
+        return mTNS;
+    }
+}

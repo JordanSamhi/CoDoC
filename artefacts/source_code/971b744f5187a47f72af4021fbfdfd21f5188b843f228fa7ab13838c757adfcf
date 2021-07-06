@@ -1,0 +1,7 @@
+public void incrementConnectToNetworkNotificationAction(String notifierTag, int notificationType, int actionType){
+    synchronized (mLock) {
+        int key = notificationType * CONNECT_TO_NETWORK_NOTIFICATION_ACTION_KEY_MULTIPLIER + actionType;
+        int count = mConnectToNetworkNotificationActionCount.get(key);
+        mConnectToNetworkNotificationActionCount.put(key, count + 1);
+    }
+}

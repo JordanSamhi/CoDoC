@@ -1,0 +1,19 @@
+public T get(long key, @Nullable Theme theme){
+    synchronized (this) {
+        final LongSparseArray<WeakReference<T>> themedEntries = getThemedLocked(theme, false);
+        if (themedEntries != null) {
+            final WeakReference<T> themedEntry = themedEntries.get(key);
+            if (themedEntry != null) {
+                return themedEntry.get();
+            }
+        }
+        final LongSparseArray<WeakReference<T>> unthemedEntries = getUnthemedLocked(false);
+        if (unthemedEntries != null) {
+            final WeakReference<T> unthemedEntry = unthemedEntries.get(key);
+            if (unthemedEntry != null) {
+                return unthemedEntry.get();
+            }
+        }
+    }
+    return null;
+}

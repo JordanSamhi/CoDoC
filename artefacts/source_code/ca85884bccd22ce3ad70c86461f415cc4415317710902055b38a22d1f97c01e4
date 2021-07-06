@@ -1,0 +1,16 @@
+public static byte[] byteAddrFromStringAddr(String addr){
+    Preconditions.checkNotNull(addr);
+    String[] parts = addr.split(":");
+    if (parts.length != ETHER_ADDR_LEN) {
+        throw new IllegalArgumentException(addr + " was not a valid MAC address");
+    }
+    byte[] bytes = new byte[ETHER_ADDR_LEN];
+    for (int i = 0; i < ETHER_ADDR_LEN; i++) {
+        int x = Integer.valueOf(parts[i], 16);
+        if (x < 0 || 0xff < x) {
+            throw new IllegalArgumentException(addr + "was not a valid MAC address");
+        }
+        bytes[i] = (byte) x;
+    }
+    return bytes;
+}

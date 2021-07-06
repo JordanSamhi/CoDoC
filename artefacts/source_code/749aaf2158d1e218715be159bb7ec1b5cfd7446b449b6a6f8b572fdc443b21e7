@@ -1,0 +1,29 @@
+public void onClientConnectionState(int status, int clientIf, boolean connected, String address){
+    if (DBG) {
+        Log.d(TAG, "onClientConnectionState() - status=" + status + " clientIf=" + clientIf + " device=" + address);
+    }
+    if (!address.equals(mDevice.getAddress())) {
+        return;
+    }
+    int profileState = connected ? BluetoothProfile.STATE_CONNECTED : BluetoothProfile.STATE_DISCONNECTED;
+    runOrQueueCallback(new Runnable() {
+
+        @Override
+        public void run() {
+            final BluetoothGattCallback callback = mCallback;
+            if (callback != null) {
+                callback.onConnectionStateChange(BluetoothGatt.this, status, profileState);
+            }
+        }
+    });
+    synchronized (mStateLock) {
+        if (connected) {
+            mConnState = CONN_STATE_CONNECTED;
+        } else {
+            mConnState = CONN_STATE_IDLE;
+        }
+    }
+    synchronized (mDeviceBusyLock) {
+        mDeviceBusy = false;
+    }
+}

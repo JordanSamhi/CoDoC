@@ -1,0 +1,11 @@
+public void setSeparateProfileChallengeEnabled(int userHandle, boolean enabled, LockscreenCredential profilePassword){
+    if (!isManagedProfile(userHandle)) {
+        return;
+    }
+    try {
+        getLockSettings().setSeparateProfileChallengeEnabled(userHandle, enabled, profilePassword);
+        reportEnabledTrustAgentsChanged(userHandle);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Couldn't update work profile challenge enabled");
+    }
+}

@@ -1,0 +1,15 @@
+public boolean updateGenericSoundModel(GenericSoundModel soundModel){
+    synchronized (this) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(GenericSoundModelContract.KEY_MODEL_UUID, soundModel.getUuid().toString());
+        values.put(GenericSoundModelContract.KEY_VENDOR_UUID, soundModel.getVendorUuid().toString());
+        values.put(GenericSoundModelContract.KEY_DATA, soundModel.getData());
+        values.put(GenericSoundModelContract.KEY_MODEL_VERSION, soundModel.getVersion());
+        try {
+            return db.insertWithOnConflict(GenericSoundModelContract.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE) != -1;
+        } finally {
+            db.close();
+        }
+    }
+}

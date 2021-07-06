@@ -1,0 +1,20 @@
+public static ANQPElement parseElement(Constants.ANQPElementType infoID, ByteBuffer payload) throws ProtocolException{
+    switch(infoID) {
+        case ANQPVenueName:
+            return VenueNameElement.parse(payload);
+        case ANQPRoamingConsortium:
+            return RoamingConsortiumElement.parse(payload);
+        case ANQPIPAddrAvailability:
+            return IPAddressTypeAvailabilityElement.parse(payload);
+        case ANQPNAIRealm:
+            return NAIRealmElement.parse(payload);
+        case ANQP3GPPNetwork:
+            return ThreeGPPNetworkElement.parse(payload);
+        case ANQPDomName:
+            return DomainNameElement.parse(payload);
+        case ANQPVendorSpec:
+            return parseVendorSpecificElement(payload);
+        default:
+            throw new ProtocolException("Unknown element ID: " + infoID);
+    }
+}

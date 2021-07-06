@@ -1,0 +1,34 @@
+public void adjustVolume(String packageName, String opPackageName, int pid, int uid, boolean asSystemService, int direction, int flags, boolean useSuggested){
+    int previousFlagPlaySound = flags & AudioManager.FLAG_PLAY_SOUND;
+    if (checkPlaybackActiveState(true) || isSystemPriority()) {
+        flags &= ~AudioManager.FLAG_PLAY_SOUND;
+    }
+    if (mVolumeType == PlaybackInfo.PLAYBACK_TYPE_LOCAL) {
+        int stream = getVolumeStream(mAudioAttrs);
+        postAdjustLocalVolume(stream, direction, flags, opPackageName, pid, uid, asSystemService, useSuggested, previousFlagPlaySound);
+    } else {
+        if (mVolumeControlType == VolumeProvider.VOLUME_CONTROL_FIXED) {
+            return;
+        }
+        if (direction == AudioManager.ADJUST_TOGGLE_MUTE || direction == AudioManager.ADJUST_MUTE || direction == AudioManager.ADJUST_UNMUTE) {
+            Log.w(TAG, "Muting remote playback is not supported");
+            return;
+        }
+        if (DEBUG) {
+            Log.w(TAG, "adjusting volume, pkg=" + packageName + ", asSystemService=" + asSystemService + ", dir=" + direction);
+        }
+        mSessionCb.adjustVolume(packageName, pid, uid, asSystemService, direction);
+        int volumeBefore = (mOptimisticVolume < 0 ? mCurrentVolume : mOptimisticVolume);
+        mOptimisticVolume = volumeBefore + direction;
+        mOptimisticVolume = Math.max(0, Math.min(mOptimisticVolume, mMaxVolume));
+        mHandler.removeCallbacks(mClearOptimisticVolumeRunnable);
+        mHandler.postDelayed(mClearOptimisticVolumeRunnable, OPTIMISTIC_VOLUME_TIMEOUT);
+        if (volumeBefore != mOptimisticVolume) {
+            pushVolumeUpdate();
+        }
+        mService.notifyRemoteVolumeChanged(flags, this);
+        if (DEBUG) {
+            Log.d(TAG, "Adjusted optimistic volume to " + mOptimisticVolume + " max is " + mMaxVolume);
+        }
+    }
+}

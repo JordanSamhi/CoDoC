@@ -1,0 +1,19 @@
+public void switchToProfile(String cardId, String iccid, boolean refresh, @CallbackExecutor Executor executor, ResultCallback<EuiccProfileInfo> callback){
+    try {
+        getIEuiccCardController().switchToProfile(mContext.getOpPackageName(), cardId, iccid, refresh, new ISwitchToProfileCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, EuiccProfileInfo profile) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, profile));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling switchToProfile", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

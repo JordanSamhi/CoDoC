@@ -1,0 +1,11 @@
+public void startRequesting(String packageName, @Nullable String featureId, String providerName, long intervalMs, boolean isForeground){
+    PackageProviderKey key = new PackageProviderKey(packageName, featureId, providerName);
+    PackageStatistics stats = statistics.get(key);
+    if (stats == null) {
+        stats = new PackageStatistics();
+        statistics.put(key, stats);
+    }
+    stats.startRequesting(intervalMs);
+    stats.updateForeground(isForeground);
+    history.addRequest(packageName, featureId, providerName, intervalMs);
+}

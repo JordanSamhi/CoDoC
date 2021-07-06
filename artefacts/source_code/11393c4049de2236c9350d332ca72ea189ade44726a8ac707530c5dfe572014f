@@ -1,0 +1,8 @@
+public boolean hasBackupPassword() throws RemoteException{
+    int userId = binderGetCallingUserId();
+    if (!isUserReadyForBackup(userId)) {
+        return false;
+    }
+    UserBackupManagerService userBackupManagerService = getServiceForUserIfCallerHasPermission(UserHandle.USER_SYSTEM, "hasBackupPassword()");
+    return userBackupManagerService != null && userBackupManagerService.hasBackupPassword();
+}

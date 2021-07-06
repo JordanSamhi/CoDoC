@@ -1,0 +1,11 @@
+public Result acquire(long timeout){
+    if (mContext == null) {
+        throw new IllegalStateException("After scene creation, #init() must be called");
+    }
+    Result result = acquireLock(timeout);
+    if (result != null) {
+        return result;
+    }
+    setUp();
+    return SUCCESS.createResult();
+}

@@ -1,0 +1,15 @@
+public void startAndInstall(){
+    mStrings.clear();
+    final int poolPosition = mParcel.readInt();
+    final int startPosition = mParcel.dataPosition();
+    mParcel.setDataPosition(poolPosition);
+    mParcel.readStringList(mStrings);
+    mParcel.setDataPosition(startPosition);
+    if (DEBUG) {
+        Log.i(TAG, "Read " + mStrings.size() + " strings");
+        for (int i = 0; i < mStrings.size(); i++) {
+            Log.i(TAG, "  " + i + ": \"" + mStrings.get(i) + "\"");
+        }
+    }
+    mParcel.setReadWriteHelper(this);
+}

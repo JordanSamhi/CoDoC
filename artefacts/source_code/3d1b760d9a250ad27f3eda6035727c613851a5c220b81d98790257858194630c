@@ -1,0 +1,92 @@
+public static CameraMetadataNative createRequestTemplate(CameraCharacteristics c, int templateId){
+    if (!ArrayUtils.contains(sAllowedTemplates, templateId)) {
+        throw new IllegalArgumentException("templateId out of range");
+    }
+    CameraMetadataNative m = new CameraMetadataNative();
+    m.set(CaptureRequest.CONTROL_AWB_MODE, CameraMetadata.CONTROL_AWB_MODE_AUTO);
+    m.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CONTROL_AE_ANTIBANDING_MODE_AUTO);
+    m.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 0);
+    m.set(CaptureRequest.CONTROL_AE_LOCK, false);
+    m.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER, CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
+    m.set(CaptureRequest.CONTROL_AF_TRIGGER, CONTROL_AF_TRIGGER_IDLE);
+    m.set(CaptureRequest.CONTROL_AWB_MODE, CONTROL_AWB_MODE_AUTO);
+    m.set(CaptureRequest.CONTROL_AWB_LOCK, false);
+    {
+        Rect activeArray = c.get(SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+        MeteringRectangle[] activeRegions = new MeteringRectangle[] { new MeteringRectangle(0, 0, activeArray.width() - 1, activeArray.height() - 1, 0) };
+        m.set(CaptureRequest.CONTROL_AE_REGIONS, activeRegions);
+        m.set(CaptureRequest.CONTROL_AWB_REGIONS, activeRegions);
+        m.set(CaptureRequest.CONTROL_AF_REGIONS, activeRegions);
+    }
+    {
+        int captureIntent;
+        switch(templateId) {
+            case CameraDevice.TEMPLATE_PREVIEW:
+                captureIntent = CONTROL_CAPTURE_INTENT_PREVIEW;
+                break;
+            case CameraDevice.TEMPLATE_STILL_CAPTURE:
+                captureIntent = CONTROL_CAPTURE_INTENT_STILL_CAPTURE;
+                break;
+            case CameraDevice.TEMPLATE_RECORD:
+                captureIntent = CONTROL_CAPTURE_INTENT_VIDEO_RECORD;
+                break;
+            default:
+                throw new AssertionError("Impossible; keep in sync with sAllowedTemplates");
+        }
+        m.set(CaptureRequest.CONTROL_CAPTURE_INTENT, captureIntent);
+    }
+    m.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+    m.set(CaptureRequest.CONTROL_MODE, CONTROL_MODE_AUTO);
+    {
+        Float minimumFocusDistance = c.get(LENS_INFO_MINIMUM_FOCUS_DISTANCE);
+        int afMode;
+        if (minimumFocusDistance != null && minimumFocusDistance == LENS_INFO_MINIMUM_FOCUS_DISTANCE_FIXED_FOCUS) {
+            afMode = CameraMetadata.CONTROL_AF_MODE_OFF;
+        } else {
+            afMode = CameraMetadata.CONTROL_AF_MODE_AUTO;
+            if (templateId == CameraDevice.TEMPLATE_RECORD || templateId == CameraDevice.TEMPLATE_VIDEO_SNAPSHOT) {
+                if (ArrayUtils.contains(c.get(CONTROL_AF_AVAILABLE_MODES), CONTROL_AF_MODE_CONTINUOUS_VIDEO)) {
+                    afMode = CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO;
+                }
+            } else if (templateId == CameraDevice.TEMPLATE_PREVIEW || templateId == CameraDevice.TEMPLATE_STILL_CAPTURE) {
+                if (ArrayUtils.contains(c.get(CONTROL_AF_AVAILABLE_MODES), CONTROL_AF_MODE_CONTINUOUS_PICTURE)) {
+                    afMode = CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE;
+                }
+            }
+        }
+        if (DEBUG) {
+            Log.v(TAG, "createRequestTemplate (templateId=" + templateId + ")," + " afMode=" + afMode + ", minimumFocusDistance=" + minimumFocusDistance);
+        }
+        m.set(CaptureRequest.CONTROL_AF_MODE, afMode);
+    }
+    {
+        Range<Integer>[] availableFpsRange = c.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        Range<Integer> bestRange = availableFpsRange[0];
+        for (Range<Integer> r : availableFpsRange) {
+            if (bestRange.getUpper() < r.getUpper()) {
+                bestRange = r;
+            } else if (bestRange.getUpper() == r.getUpper() && bestRange.getLower() < r.getLower()) {
+                bestRange = r;
+            }
+        }
+        m.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, bestRange);
+    }
+    m.set(CaptureRequest.CONTROL_SCENE_MODE, CONTROL_SCENE_MODE_DISABLED);
+    m.set(CaptureRequest.CONTROL_ZOOM_RATIO, 1.0f);
+    m.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, STATISTICS_FACE_DETECT_MODE_OFF);
+    m.set(CaptureRequest.FLASH_MODE, FLASH_MODE_OFF);
+    if (templateId == CameraDevice.TEMPLATE_STILL_CAPTURE) {
+        m.set(CaptureRequest.NOISE_REDUCTION_MODE, NOISE_REDUCTION_MODE_HIGH_QUALITY);
+    } else {
+        m.set(CaptureRequest.NOISE_REDUCTION_MODE, NOISE_REDUCTION_MODE_FAST);
+    }
+    if (templateId == CameraDevice.TEMPLATE_STILL_CAPTURE) {
+        m.set(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, COLOR_CORRECTION_ABERRATION_MODE_HIGH_QUALITY);
+    } else {
+        m.set(CaptureRequest.COLOR_CORRECTION_ABERRATION_MODE, COLOR_CORRECTION_ABERRATION_MODE_FAST);
+    }
+    m.set(CaptureRequest.LENS_FOCAL_LENGTH, c.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)[0]);
+    Size[] sizes = c.get(CameraCharacteristics.JPEG_AVAILABLE_THUMBNAIL_SIZES);
+    m.set(CaptureRequest.JPEG_THUMBNAIL_SIZE, (sizes.length > 1) ? sizes[1] : sizes[0]);
+    return m;
+}

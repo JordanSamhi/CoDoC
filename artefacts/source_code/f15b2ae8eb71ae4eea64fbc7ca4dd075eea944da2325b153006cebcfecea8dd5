@@ -1,0 +1,13 @@
+public void lock(){
+    try {
+        getDispatchThread().runJob(new Runnable() {
+
+            @Override
+            public void run() {
+                getCameraHandler().sendEmptyMessage(CameraActions.LOCK);
+            }
+        });
+    } catch (final RuntimeException ex) {
+        getAgent().getCameraExceptionHandler().onDispatchThreadException(ex);
+    }
+}

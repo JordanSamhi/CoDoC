@@ -1,0 +1,16 @@
+public static void sleep(long ms){
+    long start = uptimeMillis();
+    long duration = ms;
+    boolean interrupted = false;
+    do {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            interrupted = true;
+        }
+        duration = start + ms - uptimeMillis();
+    } while (duration > 0);
+    if (interrupted) {
+        Thread.currentThread().interrupt();
+    }
+}

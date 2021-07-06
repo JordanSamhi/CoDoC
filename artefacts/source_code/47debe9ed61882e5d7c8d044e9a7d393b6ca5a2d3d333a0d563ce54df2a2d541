@@ -1,0 +1,10 @@
+public void sendUssd(String ussdMessage) throws ImsException{
+    logi("sendUssd :: ussdMessage=" + ussdMessage);
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            loge("sendUssd :: ");
+            throw new ImsException("No call session", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        mSession.sendUssd(ussdMessage);
+    }
+}

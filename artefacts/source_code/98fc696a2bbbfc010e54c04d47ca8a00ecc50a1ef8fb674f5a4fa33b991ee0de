@@ -1,0 +1,12 @@
+public void setHistoryMaxSize(int historyMaxSize){
+    synchronized (mInstanceLock) {
+        if (mHistoryMaxSize == historyMaxSize) {
+            return;
+        }
+        mHistoryMaxSize = historyMaxSize;
+        pruneExcessiveHistoricalRecordsIfNeeded();
+        if (sortActivitiesIfNeeded()) {
+            notifyChanged();
+        }
+    }
+}

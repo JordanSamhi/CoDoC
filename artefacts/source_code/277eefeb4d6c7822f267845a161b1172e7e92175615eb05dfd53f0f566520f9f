@@ -1,0 +1,14 @@
+public List<ApnSetting> getDevicePolicyOverrideApns(@NonNull Context context){
+    try (Cursor cursor = context.getContentResolver().query(DPC_URI, null, null, null, null)) {
+        if (cursor == null) {
+            return Collections.emptyList();
+        }
+        List<ApnSetting> apnList = new ArrayList<ApnSetting>();
+        cursor.moveToPosition(-1);
+        while (cursor.moveToNext()) {
+            ApnSetting apn = ApnSetting.makeApnSetting(cursor);
+            apnList.add(apn);
+        }
+        return apnList;
+    }
+}

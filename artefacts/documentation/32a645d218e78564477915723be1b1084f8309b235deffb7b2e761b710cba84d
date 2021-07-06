@@ -1,0 +1,38 @@
+
+     * Match this filter against an Intent's data (type, scheme and path). If
+     * the filter does not specify any types and does not specify any
+     * schemes/paths, the match will only succeed if the intent does not
+     * also specify a type or data.  If the filter does not specify any schemes,
+     * it will implicitly match intents with no scheme, or the schemes "content:"
+     * or "file:" (basically performing a MIME-type only match).  If the filter
+     * does not specify any MIME types, the Intent also must not specify a MIME
+     * type.
+     *
+     * <p>Be aware that to match against an authority, you must also specify a base
+     * scheme the authority is in.  To match against a data path, both a scheme
+     * and authority must be specified.  If the filter does not specify any
+     * types or schemes that it matches against, it is considered to be empty
+     * (any authority or data path given is ignored, as if it were empty as
+     * well).
+     *
+     * <p><em>Note: MIME type, Uri scheme, and host name matching in the
+     * Android framework is case-sensitive, unlike the formal RFC definitions.
+     * As a result, you should always write these elements with lower case letters,
+     * and normalize any MIME types or Uris you receive from
+     * outside of Android to ensure these elements are lower case before
+     * supplying them here.</em></p>
+     *
+     * @param type The desired data type to look for, as returned by
+     *             Intent.resolveType().
+     * @param scheme The desired data scheme to look for, as returned by
+     *               Intent.getScheme().
+     * @param data The full data string to match against, as supplied in
+     *             Intent.data.
+     *
+     * @return Returns either a valid match constant (a combination of
+     * {@link #MATCH_CATEGORY_MASK} and {@link #MATCH_ADJUSTMENT_MASK}),
+     * or one of the error codes {@link #NO_MATCH_TYPE} if the type didn't match
+     * or {@link #NO_MATCH_DATA} if the scheme/path didn't match.
+     *
+     * @see #match
+     

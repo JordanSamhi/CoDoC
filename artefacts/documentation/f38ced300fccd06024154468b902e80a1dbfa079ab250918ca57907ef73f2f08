@@ -1,0 +1,22 @@
+
+     * Direct callback version of {@link #set(int, long, PendingIntent)}.  Rather than
+     * supplying a PendingIntent to be sent when the alarm time is reached, this variant
+     * supplies an {@link OnAlarmListener} instance that will be invoked at that time.
+     * <p>
+     * The OnAlarmListener's {@link OnAlarmListener#onAlarm() onAlarm()} method will be
+     * invoked via the specified target Handler, or on the application's main looper
+     * if {@code null} is passed as the {@code targetHandler} parameter.
+     *
+     * @param type type of alarm.
+     * @param triggerAtMillis time in milliseconds that the alarm should go
+     *         off, using the appropriate clock (depending on the alarm type).
+     * @param tag string describing the alarm, used for logging and battery-use
+     *         attribution
+     * @param listener {@link OnAlarmListener} instance whose
+     *         {@link OnAlarmListener#onAlarm() onAlarm()} method will be
+     *         called when the alarm time is reached.  A given OnAlarmListener instance can
+     *         only be the target of a single pending alarm, just as a given PendingIntent
+     *         can only be used with one alarm at a time.
+     * @param targetHandler {@link Handler} on which to execute the listener's onAlarm()
+     *         callback, or {@code null} to run that callback on the main looper.
+     

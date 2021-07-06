@@ -1,0 +1,8 @@
+public int generateRandomIntegerToken(){
+    int token = mTokenGenerator.nextInt();
+    if (token < 0)
+        token = -token;
+    token &= ~0xFF;
+    token |= (mNextToken.incrementAndGet() & 0xFF);
+    return token;
+}

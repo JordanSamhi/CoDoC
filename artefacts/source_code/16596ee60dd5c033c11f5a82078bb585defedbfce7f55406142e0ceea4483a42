@@ -1,0 +1,8 @@
+public String getPackageName() throws UiObjectNotFoundException{
+    Tracer.trace();
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    return safeStringReturn(node.getPackageName());
+}

@@ -1,0 +1,12 @@
+public boolean readPacketFilterComplete(byte[] data){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.readPacketFilterComplete(data);
+        return true;
+    } catch (RemoteException e) {
+        log("Error notifying IpClient of packet filter read", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,10 @@
+public final void onRegistered(@ImsRegistrationTech int imsRadioTech){
+    updateToState(imsRadioTech, RegistrationManager.REGISTRATION_STATE_REGISTERED);
+    mCallbacks.broadcastAction((c) -> {
+        try {
+            c.onRegistered(imsRadioTech);
+        } catch (RemoteException e) {
+            Log.w(LOG_TAG, e + " " + "onRegistrationConnected() - Skipping " + "callback.");
+        }
+    });
+}

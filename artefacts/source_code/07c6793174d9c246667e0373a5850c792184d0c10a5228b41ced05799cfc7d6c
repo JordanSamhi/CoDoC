@@ -1,0 +1,14 @@
+public void seekTo(long msec, @SeekMode int mode){
+    if (mode < SEEK_PREVIOUS_SYNC || mode > SEEK_CLOSEST) {
+        final String msg = "Illegal seek mode: " + mode;
+        throw new IllegalArgumentException(msg);
+    }
+    if (msec > Integer.MAX_VALUE) {
+        Log.w(TAG, "seekTo offset " + msec + " is too large, cap to " + Integer.MAX_VALUE);
+        msec = Integer.MAX_VALUE;
+    } else if (msec < Integer.MIN_VALUE) {
+        Log.w(TAG, "seekTo offset " + msec + " is too small, cap to " + Integer.MIN_VALUE);
+        msec = Integer.MIN_VALUE;
+    }
+    _seekTo(msec, mode);
+}

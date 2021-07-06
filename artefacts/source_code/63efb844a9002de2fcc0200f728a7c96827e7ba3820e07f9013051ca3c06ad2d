@@ -1,0 +1,9 @@
+public void setEmptyView(View emptyView){
+    mEmptyView = emptyView;
+    if (emptyView != null && emptyView.getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+        emptyView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
+    final T adapter = getAdapter();
+    final boolean empty = ((adapter == null) || adapter.isEmpty());
+    updateEmptyStatus(empty);
+}

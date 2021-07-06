@@ -1,0 +1,4 @@
+public static String getIPv6Interface(UpstreamNetworkState ns){
+    final boolean canTether = (ns != null) && (ns.network != null) && (ns.linkProperties != null) && (ns.networkCapabilities != null) && ns.linkProperties.hasIpv6DnsServer() && ns.linkProperties.hasGlobalIpv6Address() && ns.networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
+    return canTether ? getInterfaceForDestination(ns.linkProperties, IN6ADDR_ANY) : null;
+}

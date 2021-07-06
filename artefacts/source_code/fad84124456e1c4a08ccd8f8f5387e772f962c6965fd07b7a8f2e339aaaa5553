@@ -1,0 +1,35 @@
+public boolean shouldFilterApplication(int callingUid, @Nullable SettingBase callingSetting, PackageSetting targetPkgSetting, int userId){
+    Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "shouldFilterApplication");
+    try {
+        int callingAppId = UserHandle.getAppId(callingUid);
+        if (callingAppId < Process.FIRST_APPLICATION_UID || targetPkgSetting.appId < Process.FIRST_APPLICATION_UID || callingAppId == targetPkgSetting.appId) {
+            return false;
+        }
+        if (mShouldFilterCache != null) {
+            SparseBooleanArray shouldFilterTargets = mShouldFilterCache.get(callingUid);
+            final int targetUid = UserHandle.getUid(userId, targetPkgSetting.appId);
+            if (shouldFilterTargets == null) {
+                Slog.wtf(TAG, "Encountered calling uid with no cached rules: " + callingUid);
+                return true;
+            }
+            int indexOfTargetUid = shouldFilterTargets.indexOfKey(targetUid);
+            if (indexOfTargetUid < 0) {
+                Slog.w(TAG, "Encountered calling -> target with no cached rules: " + callingUid + " -> " + targetUid);
+                return true;
+            }
+            if (!shouldFilterTargets.valueAt(indexOfTargetUid)) {
+                return false;
+            }
+        } else {
+            if (!shouldFilterApplicationInternal(callingUid, callingSetting, targetPkgSetting, userId)) {
+                return false;
+            }
+        }
+        if (DEBUG_LOGGING || mFeatureConfig.isLoggingEnabled(callingAppId)) {
+            log(callingSetting, targetPkgSetting, "BLOCKED");
+        }
+        return !DEBUG_ALLOW_ALL;
+    } finally {
+        Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+    }
+}

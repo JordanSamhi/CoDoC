@@ -1,0 +1,21 @@
+public void notifyPermissionResponse(String packageName, PersistableBundle response){
+    if (packageName == null) {
+        throw new NullPointerException("packageName cannot be null");
+    }
+    if (response == null) {
+        throw new NullPointerException("request cannot be null");
+    }
+    if (!response.containsKey(REQUEST_KEY_ID)) {
+        throw new IllegalArgumentException("REQUEST_KEY_ID must be specified");
+    }
+    if (!response.containsKey(RESPONSE_KEY_RESULT)) {
+        throw new IllegalArgumentException("RESPONSE_KEY_RESULT must be specified");
+    }
+    try {
+        if (mService != null) {
+            mService.notifyPermissionResponse(packageName, response);
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

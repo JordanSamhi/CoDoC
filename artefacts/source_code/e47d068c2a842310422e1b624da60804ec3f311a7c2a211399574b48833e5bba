@@ -1,0 +1,10 @@
+public void notifyOnRemoteViewsLoaded(int position, RemoteViews view){
+    if (view == null)
+        return;
+    final LinkedList<RemoteViewsFrameLayout> refs = removeReturnOld(position);
+    if (refs != null) {
+        for (final RemoteViewsFrameLayout ref : refs) {
+            ref.onRemoteViewsLoaded(view, mRemoteViewsOnClickHandler, true);
+        }
+    }
+}

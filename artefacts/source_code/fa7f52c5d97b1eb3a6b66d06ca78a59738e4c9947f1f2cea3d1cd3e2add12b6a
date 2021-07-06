@@ -1,0 +1,11 @@
+public void measureChildWithMargins(View child, int widthUsed, int heightUsed){
+    final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+    final Rect insets = mRecyclerView.getItemDecorInsetsForChild(child);
+    widthUsed += insets.left + insets.right;
+    heightUsed += insets.top + insets.bottom;
+    final int widthSpec = getChildMeasureSpec(getWidth(), getWidthMode(), getPaddingLeft() + getPaddingRight() + lp.leftMargin + lp.rightMargin + widthUsed, lp.width, canScrollHorizontally());
+    final int heightSpec = getChildMeasureSpec(getHeight(), getHeightMode(), getPaddingTop() + getPaddingBottom() + lp.topMargin + lp.bottomMargin + heightUsed, lp.height, canScrollVertically());
+    if (shouldMeasureChild(child, widthSpec, heightSpec, lp)) {
+        child.measure(widthSpec, heightSpec);
+    }
+}

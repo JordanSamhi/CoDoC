@@ -1,0 +1,12 @@
+public ArrayList<AidGroup> getAidGroups(){
+    final ArrayList<AidGroup> groups = new ArrayList<AidGroup>();
+    for (Map.Entry<String, AidGroup> entry : mDynamicAidGroups.entrySet()) {
+        groups.add(entry.getValue());
+    }
+    for (Map.Entry<String, AidGroup> entry : mStaticAidGroups.entrySet()) {
+        if (!mDynamicAidGroups.containsKey(entry.getKey())) {
+            groups.add(entry.getValue());
+        }
+    }
+    return groups;
+}

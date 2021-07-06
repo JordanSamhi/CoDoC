@@ -1,0 +1,20 @@
+public static String getDisplayLocaleList(LocaleList locales, Locale displayLocale, @IntRange(from = 1) int maxLocales){
+    final Locale dispLocale = displayLocale == null ? Locale.getDefault() : displayLocale;
+    final boolean ellipsisNeeded = locales.size() > maxLocales;
+    final int localeCount, listCount;
+    if (ellipsisNeeded) {
+        localeCount = maxLocales;
+        listCount = maxLocales + 1;
+    } else {
+        listCount = localeCount = locales.size();
+    }
+    final String[] localeNames = new String[listCount];
+    for (int i = 0; i < localeCount; i++) {
+        localeNames[i] = LocaleHelper.getDisplayName(locales.get(i), dispLocale, false);
+    }
+    if (ellipsisNeeded) {
+        localeNames[maxLocales] = TextUtils.getEllipsisString(TextUtils.TruncateAt.END);
+    }
+    ListFormatter lfn = ListFormatter.getInstance(dispLocale);
+    return lfn.format((Object[]) localeNames);
+}

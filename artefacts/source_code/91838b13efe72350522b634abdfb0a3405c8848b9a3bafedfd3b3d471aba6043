@@ -1,0 +1,20 @@
+public void apply(@NonNull ValueFinder finder, @NonNull RemoteViews parentTemplate, int childViewId) throws Exception{
+    final AutofillValue value = finder.findRawValueByAutofillId(mFieldId);
+    if (value == null) {
+        Log.w(TAG, "No value for id " + mFieldId);
+        return;
+    }
+    if (!value.isDate()) {
+        Log.w(TAG, "Value for " + mFieldId + " is not date: " + value);
+        return;
+    }
+    try {
+        final Date date = new Date(value.getDateValue());
+        final String transformed = mDateFormat.format(date);
+        if (sDebug)
+            Log.d(TAG, "Transformed " + date + " to " + transformed);
+        parentTemplate.setCharSequence(childViewId, "setText", transformed);
+    } catch (Exception e) {
+        Log.w(TAG, "Could not apply " + mDateFormat + " to " + value + ": " + e);
+    }
+}

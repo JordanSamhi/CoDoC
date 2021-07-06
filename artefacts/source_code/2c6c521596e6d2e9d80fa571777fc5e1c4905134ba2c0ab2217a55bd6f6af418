@@ -1,0 +1,154 @@
+public void init(Context context, IWindowManager windowManager, WindowManagerFuncs windowManagerFuncs){
+    mContext = context;
+    mWindowManager = windowManager;
+    mWindowManagerFuncs = windowManagerFuncs;
+    mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
+    mActivityManagerInternal = LocalServices.getService(ActivityManagerInternal.class);
+    mActivityTaskManagerInternal = LocalServices.getService(ActivityTaskManagerInternal.class);
+    mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
+    mDreamManagerInternal = LocalServices.getService(DreamManagerInternal.class);
+    mPowerManagerInternal = LocalServices.getService(PowerManagerInternal.class);
+    mAppOpsManager = mContext.getSystemService(AppOpsManager.class);
+    mDisplayManager = mContext.getSystemService(DisplayManager.class);
+    mPackageManager = mContext.getPackageManager();
+    mHasFeatureWatch = mPackageManager.hasSystemFeature(FEATURE_WATCH);
+    mHasFeatureLeanback = mPackageManager.hasSystemFeature(FEATURE_LEANBACK);
+    mHasFeatureAuto = mPackageManager.hasSystemFeature(FEATURE_AUTOMOTIVE);
+    mHasFeatureHdmiCec = mPackageManager.hasSystemFeature(FEATURE_HDMI_CEC);
+    mAccessibilityShortcutController = new AccessibilityShortcutController(mContext, new Handler(), mCurrentUserId);
+    mLogger = new MetricsLogger();
+    Resources res = mContext.getResources();
+    mWakeOnDpadKeyPress = res.getBoolean(com.android.internal.R.bool.config_wakeOnDpadKeyPress);
+    mWakeOnAssistKeyPress = res.getBoolean(com.android.internal.R.bool.config_wakeOnAssistKeyPress);
+    mWakeOnBackKeyPress = res.getBoolean(com.android.internal.R.bool.config_wakeOnBackKeyPress);
+    boolean burnInProtectionEnabled = context.getResources().getBoolean(com.android.internal.R.bool.config_enableBurnInProtection);
+    boolean burnInProtectionDevMode = SystemProperties.getBoolean("persist.debug.force_burn_in", false);
+    if (burnInProtectionEnabled || burnInProtectionDevMode) {
+        final int minHorizontal;
+        final int maxHorizontal;
+        final int minVertical;
+        final int maxVertical;
+        final int maxRadius;
+        if (burnInProtectionDevMode) {
+            minHorizontal = -8;
+            maxHorizontal = 8;
+            minVertical = -8;
+            maxVertical = -4;
+            maxRadius = (isRoundWindow()) ? 6 : -1;
+        } else {
+            Resources resources = context.getResources();
+            minHorizontal = resources.getInteger(com.android.internal.R.integer.config_burnInProtectionMinHorizontalOffset);
+            maxHorizontal = resources.getInteger(com.android.internal.R.integer.config_burnInProtectionMaxHorizontalOffset);
+            minVertical = resources.getInteger(com.android.internal.R.integer.config_burnInProtectionMinVerticalOffset);
+            maxVertical = resources.getInteger(com.android.internal.R.integer.config_burnInProtectionMaxVerticalOffset);
+            maxRadius = resources.getInteger(com.android.internal.R.integer.config_burnInProtectionMaxRadius);
+        }
+        mBurnInProtectionHelper = new BurnInProtectionHelper(context, minHorizontal, maxHorizontal, minVertical, maxVertical, maxRadius);
+    }
+    mHandler = new PolicyHandler();
+    mWakeGestureListener = new MyWakeGestureListener(mContext, mHandler);
+    mSettingsObserver = new SettingsObserver(mHandler);
+    mSettingsObserver.observe();
+    mShortcutManager = new ShortcutManager(context);
+    mUiMode = context.getResources().getInteger(com.android.internal.R.integer.config_defaultUiModeType);
+    mHomeIntent = new Intent(Intent.ACTION_MAIN, null);
+    mHomeIntent.addCategory(Intent.CATEGORY_HOME);
+    mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+    mEnableCarDockHomeCapture = context.getResources().getBoolean(com.android.internal.R.bool.config_enableCarDockHomeLaunch);
+    mCarDockIntent = new Intent(Intent.ACTION_MAIN, null);
+    mCarDockIntent.addCategory(Intent.CATEGORY_CAR_DOCK);
+    mCarDockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+    mDeskDockIntent = new Intent(Intent.ACTION_MAIN, null);
+    mDeskDockIntent.addCategory(Intent.CATEGORY_DESK_DOCK);
+    mDeskDockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+    mVrHeadsetHomeIntent = new Intent(Intent.ACTION_MAIN, null);
+    mVrHeadsetHomeIntent.addCategory(Intent.CATEGORY_VR_HOME);
+    mVrHeadsetHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+    mPowerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    mBroadcastWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PhoneWindowManager.mBroadcastWakeLock");
+    mPowerKeyWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PhoneWindowManager.mPowerKeyWakeLock");
+    mEnableShiftMenuBugReports = "1".equals(SystemProperties.get("ro.debuggable"));
+    mLidKeyboardAccessibility = mContext.getResources().getInteger(com.android.internal.R.integer.config_lidKeyboardAccessibility);
+    mLidNavigationAccessibility = mContext.getResources().getInteger(com.android.internal.R.integer.config_lidNavigationAccessibility);
+    mLidControlsDisplayFold = mContext.getResources().getBoolean(com.android.internal.R.bool.config_lidControlsDisplayFold);
+    mAllowTheaterModeWakeFromKey = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromKey);
+    mAllowTheaterModeWakeFromPowerKey = mAllowTheaterModeWakeFromKey || mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromPowerKey);
+    mAllowTheaterModeWakeFromMotion = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromMotion);
+    mAllowTheaterModeWakeFromMotionWhenNotDreaming = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromMotionWhenNotDreaming);
+    mAllowTheaterModeWakeFromCameraLens = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromCameraLens);
+    mAllowTheaterModeWakeFromLidSwitch = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromLidSwitch);
+    mAllowTheaterModeWakeFromWakeGesture = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowTheaterModeWakeFromGesture);
+    mGoToSleepOnButtonPressTheaterMode = mContext.getResources().getBoolean(com.android.internal.R.bool.config_goToSleepOnButtonPressTheaterMode);
+    mSupportLongPressPowerWhenNonInteractive = mContext.getResources().getBoolean(com.android.internal.R.bool.config_supportLongPressPowerWhenNonInteractive);
+    mLongPressOnBackBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_longPressOnBackBehavior);
+    mShortPressOnPowerBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_shortPressOnPowerBehavior);
+    mLongPressOnPowerBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_longPressOnPowerBehavior);
+    mVeryLongPressOnPowerBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_veryLongPressOnPowerBehavior);
+    mDoublePressOnPowerBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_doublePressOnPowerBehavior);
+    mTriplePressOnPowerBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_triplePressOnPowerBehavior);
+    mShortPressOnSleepBehavior = mContext.getResources().getInteger(com.android.internal.R.integer.config_shortPressOnSleepBehavior);
+    mVeryLongPressTimeout = mContext.getResources().getInteger(com.android.internal.R.integer.config_veryLongPressTimeout);
+    mAllowStartActivityForLongPressOnPowerDuringSetup = mContext.getResources().getBoolean(com.android.internal.R.bool.config_allowStartActivityForLongPressOnPowerInSetup);
+    mHapticTextHandleEnabled = mContext.getResources().getBoolean(com.android.internal.R.bool.config_enableHapticTextHandle);
+    mUseTvRouting = AudioSystem.getPlatformType(mContext) == AudioSystem.PLATFORM_TELEVISION;
+    mHandleVolumeKeysInWM = mContext.getResources().getBoolean(com.android.internal.R.bool.config_handleVolumeKeysInWindowManager);
+    mPerDisplayFocusEnabled = mContext.getResources().getBoolean(com.android.internal.R.bool.config_perDisplayFocusEnabled);
+    readConfigurationDependentBehaviors();
+    if (mLidControlsDisplayFold) {
+        mDisplayFoldController = DisplayFoldController.create(context, DEFAULT_DISPLAY);
+    } else if (SystemProperties.getBoolean("persist.debug.force_foldable", false)) {
+        mDisplayFoldController = DisplayFoldController.createWithProxSensor(context, DEFAULT_DISPLAY);
+    }
+    mAccessibilityManager = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+    IntentFilter filter = new IntentFilter();
+    filter.addAction(UiModeManager.ACTION_ENTER_CAR_MODE);
+    filter.addAction(UiModeManager.ACTION_EXIT_CAR_MODE);
+    filter.addAction(UiModeManager.ACTION_ENTER_DESK_MODE);
+    filter.addAction(UiModeManager.ACTION_EXIT_DESK_MODE);
+    filter.addAction(Intent.ACTION_DOCK_EVENT);
+    Intent intent = context.registerReceiver(mDockReceiver, filter);
+    if (intent != null) {
+        mDefaultDisplayPolicy.setDockMode(intent.getIntExtra(Intent.EXTRA_DOCK_STATE, Intent.EXTRA_DOCK_STATE_UNDOCKED));
+    }
+    filter = new IntentFilter();
+    filter.addAction(Intent.ACTION_DREAMING_STARTED);
+    filter.addAction(Intent.ACTION_DREAMING_STOPPED);
+    context.registerReceiver(mDreamReceiver, filter);
+    filter = new IntentFilter(Intent.ACTION_USER_SWITCHED);
+    context.registerReceiver(mMultiuserReceiver, filter);
+    mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+    mLongPressVibePattern = getLongIntArray(mContext.getResources(), com.android.internal.R.array.config_longPressVibePattern);
+    mCalendarDateVibePattern = getLongIntArray(mContext.getResources(), com.android.internal.R.array.config_calendarDateVibePattern);
+    mSafeModeEnabledVibePattern = getLongIntArray(mContext.getResources(), com.android.internal.R.array.config_safeModeEnabledVibePattern);
+    mScreenshotChordEnabled = mContext.getResources().getBoolean(com.android.internal.R.bool.config_enableScreenshotChord);
+    mGlobalKeyManager = new GlobalKeyManager(mContext);
+    initializeHdmiState();
+    if (!mPowerManager.isInteractive()) {
+        startedGoingToSleep(WindowManagerPolicy.OFF_BECAUSE_OF_USER);
+        finishedGoingToSleep(WindowManagerPolicy.OFF_BECAUSE_OF_USER);
+    }
+    mWindowManagerInternal.registerAppTransitionListener(new AppTransitionListener() {
+
+        @Override
+        public int onAppTransitionStartingLocked(int transit, long duration, long statusBarAnimationStartTime, long statusBarAnimationDuration) {
+            return handleStartTransitionForKeyguardLw(transit, duration);
+        }
+
+        @Override
+        public void onAppTransitionCancelledLocked(int transit) {
+            handleStartTransitionForKeyguardLw(transit, 0);
+        }
+    });
+    mKeyguardDelegate = new KeyguardServiceDelegate(mContext, new StateCallback() {
+
+        @Override
+        public void onTrustedChanged() {
+            mWindowManagerFuncs.notifyKeyguardTrustedChanged();
+        }
+
+        @Override
+        public void onShowingChanged() {
+            mWindowManagerFuncs.onKeyguardShowingAndNotOccludedChanged();
+        }
+    });
+}

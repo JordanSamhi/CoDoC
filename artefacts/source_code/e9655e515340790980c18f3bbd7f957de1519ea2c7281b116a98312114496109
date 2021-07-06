@@ -1,0 +1,15 @@
+public int setUidDeviceAffinity(IAudioPolicyCallback pcb, int uid, @NonNull int[] deviceTypes, @NonNull String[] deviceAddresses){
+    if (DEBUG_AP) {
+        Log.d(TAG, "setUidDeviceAffinity for " + pcb.asBinder() + " uid:" + uid);
+    }
+    synchronized (mAudioPolicies) {
+        final AudioPolicyProxy app = checkUpdateForPolicy(pcb, "Cannot change device affinity in audio policy");
+        if (app == null) {
+            return AudioManager.ERROR;
+        }
+        if (!app.hasMixRoutedToDevices(deviceTypes, deviceAddresses)) {
+            return AudioManager.ERROR;
+        }
+        return app.setUidDeviceAffinities(uid, deviceTypes, deviceAddresses);
+    }
+}

@@ -1,0 +1,21 @@
+public static String roleCombinationsToString(int combo){
+    StringBuilder result = new StringBuilder();
+    result.append("[");
+    boolean first = true;
+    while (combo != 0) {
+        final int index = Integer.numberOfTrailingZeros(combo);
+        combo &= ~(1 << index);
+        final int powerRole = (index / NUM_DATA_ROLES + POWER_ROLE_OFFSET);
+        final int dataRole = index % NUM_DATA_ROLES;
+        if (first) {
+            first = false;
+        } else {
+            result.append(", ");
+        }
+        result.append(powerRoleToString(powerRole));
+        result.append(':');
+        result.append(dataRoleToString(dataRole));
+    }
+    result.append("]");
+    return result.toString();
+}

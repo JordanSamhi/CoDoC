@@ -1,0 +1,21 @@
+public void onReportLocation(List<Location> locations){
+    IBatchedLocationCallback gnssBatchingCallback;
+    LinkedListener<Void, IBatchedLocationCallback> gnssBatchingDeathCallback;
+    synchronized (mGnssBatchingLock) {
+        gnssBatchingCallback = mGnssBatchingCallback;
+        gnssBatchingDeathCallback = mGnssBatchingDeathCallback;
+    }
+    if (gnssBatchingCallback == null || gnssBatchingDeathCallback == null) {
+        return;
+    }
+    int userId = gnssBatchingDeathCallback.getCallerIdentity().userId;
+    if (!mLocationManagerInternal.isProviderEnabledForUser(GPS_PROVIDER, userId)) {
+        Log.w(TAG, "reportLocationBatch() called without user permission");
+        return;
+    }
+    try {
+        gnssBatchingCallback.onLocationBatch(locations);
+    } catch (RemoteException e) {
+        Log.e(TAG, "reportLocationBatch() failed", e);
+    }
+}

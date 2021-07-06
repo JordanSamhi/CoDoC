@@ -1,0 +1,9 @@
+public long getFirstId(@IdentifierType int type){
+    if (mPrimaryId.getType() == type)
+        return mPrimaryId.getValue();
+    for (Identifier id : mSecondaryIds) {
+        if (id.getType() == type)
+            return id.getValue();
+    }
+    throw new IllegalArgumentException("Identifier " + type + " not found");
+}

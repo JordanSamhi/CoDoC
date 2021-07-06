@@ -1,0 +1,7 @@
+public static Uri addToMyContactsGroup(ContentResolver resolver, long personId){
+    long groupId = tryGetMyContactsGroupId(resolver);
+    if (groupId == 0) {
+        throw new IllegalStateException("Failed to find the My Contacts group");
+    }
+    return addToGroup(resolver, personId, groupId);
+}

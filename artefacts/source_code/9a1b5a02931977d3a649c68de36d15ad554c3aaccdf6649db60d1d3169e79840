@@ -1,0 +1,9 @@
+public boolean isStreamMute(int streamType){
+    if (streamType == AudioManager.USE_DEFAULT_STREAM_TYPE) {
+        streamType = getActiveStreamType(streamType);
+    }
+    synchronized (VolumeStreamState.class) {
+        ensureValidStreamType(streamType);
+        return mStreamStates[streamType].mIsMuted;
+    }
+}

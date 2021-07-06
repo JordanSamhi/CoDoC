@@ -1,0 +1,16 @@
+public static long copy(@NonNull FileDescriptor in, @NonNull FileDescriptor out, long count, @Nullable CancellationSignal signal, @Nullable Executor executor, @Nullable ProgressListener listener) throws IOException{
+    if (sEnableCopyOptimizations) {
+        try {
+            final StructStat st_in = Os.fstat(in);
+            final StructStat st_out = Os.fstat(out);
+            if (S_ISREG(st_in.st_mode) && S_ISREG(st_out.st_mode)) {
+                return copyInternalSendfile(in, out, count, signal, executor, listener);
+            } else if (S_ISFIFO(st_in.st_mode) || S_ISFIFO(st_out.st_mode)) {
+                return copyInternalSplice(in, out, count, signal, executor, listener);
+            }
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+    }
+    return copyInternalUserspace(in, out, count, signal, executor, listener);
+}

@@ -1,0 +1,9 @@
+public static void deleteAllCarrierKeysForImsiEncryption(Context context){
+    Log.i(LOG_TAG, "deleting ALL carrier keys from db");
+    ContentResolver mContentResolver = context.getContentResolver();
+    try {
+        mContentResolver.delete(Telephony.CarrierColumns.CONTENT_URI, null, null);
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "Delete failed" + e);
+    }
+}

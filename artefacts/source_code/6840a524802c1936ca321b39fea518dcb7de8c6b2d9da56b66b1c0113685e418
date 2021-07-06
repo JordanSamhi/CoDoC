@@ -1,0 +1,10 @@
+public static boolean isSystemReady(){
+    if (!sSystemReady) {
+        if (ActivityThread.isSystem()) {
+            sSystemReady = LocalServices.getService(ActivityManagerInternal.class).isSystemReady();
+        } else {
+            sSystemReady = true;
+        }
+    }
+    return sSystemReady;
+}

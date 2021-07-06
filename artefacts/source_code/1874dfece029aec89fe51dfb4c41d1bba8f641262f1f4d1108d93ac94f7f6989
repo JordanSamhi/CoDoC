@@ -1,0 +1,85 @@
+public CameraDeviceImpl.StateCallbackKK getDeviceStateCallback(){
+    final CameraCaptureSession session = this;
+    final Object interfaceLock = mDeviceImpl.mInterfaceLock;
+    return new CameraDeviceImpl.StateCallbackKK() {
+
+        private boolean mBusy = false;
+
+        private boolean mActive = false;
+
+        @Override
+        public void onOpened(CameraDevice camera) {
+            throw new AssertionError("Camera must already be open before creating a session");
+        }
+
+        @Override
+        public void onDisconnected(CameraDevice camera) {
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onDisconnected");
+            close();
+        }
+
+        @Override
+        public void onError(CameraDevice camera, int error) {
+            Log.wtf(TAG, mIdString + "Got device error " + error);
+        }
+
+        @Override
+        public void onActive(CameraDevice camera) {
+            mIdleDrainer.taskStarted();
+            mActive = true;
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onActive");
+            mStateCallback.onActive(session);
+        }
+
+        @Override
+        public void onIdle(CameraDevice camera) {
+            boolean isAborting;
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onIdle");
+            synchronized (interfaceLock) {
+                isAborting = mAborting;
+            }
+            if (mBusy && isAborting) {
+                mAbortDrainer.taskFinished();
+                synchronized (interfaceLock) {
+                    mAborting = false;
+                }
+            }
+            if (mActive) {
+                mIdleDrainer.taskFinished();
+            }
+            mBusy = false;
+            mActive = false;
+            mStateCallback.onReady(session);
+        }
+
+        @Override
+        public void onBusy(CameraDevice camera) {
+            mBusy = true;
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onBusy");
+        }
+
+        @Override
+        public void onUnconfigured(CameraDevice camera) {
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onUnconfigured");
+        }
+
+        @Override
+        public void onRequestQueueEmpty() {
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onRequestQueueEmpty");
+            mStateCallback.onCaptureQueueEmpty(session);
+        }
+
+        @Override
+        public void onSurfacePrepared(Surface surface) {
+            if (DEBUG)
+                Log.v(TAG, mIdString + "onSurfacePrepared");
+            mStateCallback.onSurfacePrepared(session, surface);
+        }
+    };
+}

@@ -1,0 +1,11 @@
+public List<CellInfo> getAllCellInfo(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return null;
+        return telephony.getAllCellInfo(getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    return null;
+}

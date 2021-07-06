@@ -1,0 +1,27 @@
+public int setDataCaptureListener(OnDataCaptureListener listener, int rate, boolean waveform, boolean fft){
+    if (listener == null) {
+        waveform = false;
+        fft = false;
+    }
+    int status;
+    synchronized (mStateLock) {
+        status = native_setPeriodicCapture(rate, waveform, fft);
+    }
+    if (status == SUCCESS) {
+        synchronized (mListenerLock) {
+            mCaptureListener = listener;
+            if ((listener != null) && (mNativeEventHandler == null)) {
+                Looper looper;
+                if ((looper = Looper.myLooper()) != null) {
+                    mNativeEventHandler = new Handler(looper);
+                } else if ((looper = Looper.getMainLooper()) != null) {
+                    mNativeEventHandler = new Handler(looper);
+                } else {
+                    mNativeEventHandler = null;
+                    status = ERROR_NO_INIT;
+                }
+            }
+        }
+    }
+    return status;
+}

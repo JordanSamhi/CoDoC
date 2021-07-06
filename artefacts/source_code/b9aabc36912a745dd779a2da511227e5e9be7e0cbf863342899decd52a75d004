@@ -1,0 +1,25 @@
+public static boolean isValidVpnProfile(@NonNull VpnProfile profile){
+    if (profile.server.isEmpty() || profile.ipsecIdentifier.isEmpty()) {
+        return false;
+    }
+    switch(profile.type) {
+        case TYPE_IKEV2_IPSEC_USER_PASS:
+            if (profile.username.isEmpty() || profile.password.isEmpty()) {
+                return false;
+            }
+            break;
+        case TYPE_IKEV2_IPSEC_PSK:
+            if (profile.ipsecSecret.isEmpty()) {
+                return false;
+            }
+            break;
+        case TYPE_IKEV2_IPSEC_RSA:
+            if (profile.ipsecSecret.isEmpty() || profile.ipsecUserCert.isEmpty()) {
+                return false;
+            }
+            break;
+        default:
+            return false;
+    }
+    return true;
+}

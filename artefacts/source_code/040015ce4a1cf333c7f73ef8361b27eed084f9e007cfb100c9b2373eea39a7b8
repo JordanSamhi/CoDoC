@@ -1,0 +1,40 @@
+public void setDimensionHints(int width, int height, String callingPackage, int displayId) throws RemoteException{
+    checkPermission(android.Manifest.permission.SET_WALLPAPER_HINTS);
+    if (!isWallpaperSupported(callingPackage)) {
+        return;
+    }
+    width = Math.min(width, GLHelper.getMaxTextureSize());
+    height = Math.min(height, GLHelper.getMaxTextureSize());
+    synchronized (mLock) {
+        int userId = UserHandle.getCallingUserId();
+        WallpaperData wallpaper = getWallpaperSafeLocked(userId, FLAG_SYSTEM);
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("width and height must be > 0");
+        }
+        if (!isValidDisplay(displayId)) {
+            throw new IllegalArgumentException("Cannot find display with id=" + displayId);
+        }
+        final DisplayData wpdData = getDisplayDataOrCreate(displayId);
+        if (width != wpdData.mWidth || height != wpdData.mHeight) {
+            wpdData.mWidth = width;
+            wpdData.mHeight = height;
+            if (displayId == DEFAULT_DISPLAY)
+                saveSettingsLocked(userId);
+            if (mCurrentUserId != userId)
+                return;
+            if (wallpaper.connection != null) {
+                final WallpaperConnection.DisplayConnector connector = wallpaper.connection.getDisplayConnectorOrCreate(displayId);
+                final IWallpaperEngine engine = connector != null ? connector.mEngine : null;
+                if (engine != null) {
+                    try {
+                        engine.setDesiredSize(width, height);
+                    } catch (RemoteException e) {
+                    }
+                    notifyCallbacksLocked(wallpaper);
+                } else if (wallpaper.connection.mService != null && connector != null) {
+                    connector.mDimensionsChanged = true;
+                }
+            }
+        }
+    }
+}

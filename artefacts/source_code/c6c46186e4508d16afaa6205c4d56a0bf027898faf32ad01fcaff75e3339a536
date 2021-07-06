@@ -1,0 +1,14 @@
+public List<HdmiDeviceInfo> getDeviceList(){
+    enforceAccessPermission();
+    HdmiCecLocalDeviceTv tv = tv();
+    if (tv != null) {
+        synchronized (mLock) {
+            return tv.getSafeCecDevicesLocked();
+        }
+    } else {
+        HdmiCecLocalDeviceAudioSystem audioSystem = audioSystem();
+        synchronized (mLock) {
+            return (audioSystem == null) ? Collections.<HdmiDeviceInfo>emptyList() : audioSystem.getSafeCecDevicesLocked();
+        }
+    }
+}

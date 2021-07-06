@@ -1,0 +1,17 @@
+public final T runOnBinderBlocking(BlockingBinderRunner<T> runner, T defaultValue){
+    try {
+        return runOnHandlerBlocking(() -> {
+            if (mBinder == null) {
+                return defaultValue;
+            }
+            try {
+                return runner.run(mBinder);
+            } catch (RuntimeException | RemoteException e) {
+                Log.e(TAG, getLogPrefix() + " exception running on " + mServiceInfo, e);
+                return defaultValue;
+            }
+        });
+    } catch (InterruptedException | TimeoutException e) {
+        return defaultValue;
+    }
+}

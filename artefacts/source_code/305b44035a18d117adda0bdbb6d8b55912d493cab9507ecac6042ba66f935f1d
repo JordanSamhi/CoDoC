@@ -1,0 +1,5 @@
+public void loadEFImgTransparent(int fileid, int highOffset, int lowOffset, int length, Message onLoaded){
+    Message response = obtainMessage(EVENT_READ_ICON_DONE, fileid, 0, onLoaded);
+    logd("IccFileHandler: loadEFImgTransparent fileid = " + fileid + " filePath = " + getEFPath(EF_IMG) + " highOffset = " + highOffset + " lowOffset = " + lowOffset + " length = " + length);
+    mCi.iccIOForApp(COMMAND_READ_BINARY, fileid, getEFPath(EF_IMG), highOffset, lowOffset, length, null, null, mAid, response);
+}

@@ -1,0 +1,26 @@
+public SipAudioCall takeAudioCall(Intent incomingCallIntent, SipAudioCall.Listener listener) throws SipException{
+    if (incomingCallIntent == null) {
+        throw new SipException("Cannot retrieve session with null intent");
+    }
+    String callId = getCallId(incomingCallIntent);
+    if (callId == null) {
+        throw new SipException("Call ID missing in incoming call intent");
+    }
+    String offerSd = getOfferSessionDescription(incomingCallIntent);
+    if (offerSd == null) {
+        throw new SipException("Session description missing in incoming " + "call intent");
+    }
+    try {
+        checkSipServiceConnection();
+        ISipSession session = mSipService.getPendingSession(callId, mContext.getOpPackageName());
+        if (session == null) {
+            throw new SipException("No pending session for the call");
+        }
+        SipAudioCall call = new SipAudioCall(mContext, session.getLocalProfile());
+        call.attachCall(new SipSession(session), offerSd);
+        call.setListener(listener);
+        return call;
+    } catch (Throwable t) {
+        throw new SipException("takeAudioCall()", t);
+    }
+}

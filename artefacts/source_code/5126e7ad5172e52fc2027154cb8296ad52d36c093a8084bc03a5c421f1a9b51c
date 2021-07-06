@@ -1,0 +1,18 @@
+public void onPrepareSubMenu(SubMenu subMenu){
+    subMenu.clear();
+    ActivityChooserModel dataModel = ActivityChooserModel.get(mContext, mShareHistoryFileName);
+    PackageManager packageManager = mContext.getPackageManager();
+    final int expandedActivityCount = dataModel.getActivityCount();
+    final int collapsedActivityCount = Math.min(expandedActivityCount, mMaxShownActivityCount);
+    for (int i = 0; i < collapsedActivityCount; i++) {
+        ResolveInfo activity = dataModel.getActivity(i);
+        subMenu.add(0, i, i, activity.loadLabel(packageManager)).setIcon(activity.loadIcon(packageManager)).setOnMenuItemClickListener(mOnMenuItemClickListener);
+    }
+    if (collapsedActivityCount < expandedActivityCount) {
+        SubMenu expandedSubMenu = subMenu.addSubMenu(Menu.NONE, collapsedActivityCount, collapsedActivityCount, mContext.getString(R.string.activity_chooser_view_see_all));
+        for (int i = 0; i < expandedActivityCount; i++) {
+            ResolveInfo activity = dataModel.getActivity(i);
+            expandedSubMenu.add(0, i, i, activity.loadLabel(packageManager)).setIcon(activity.loadIcon(packageManager)).setOnMenuItemClickListener(mOnMenuItemClickListener);
+        }
+    }
+}

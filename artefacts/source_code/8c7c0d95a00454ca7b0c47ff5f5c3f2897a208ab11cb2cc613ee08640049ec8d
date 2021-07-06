@@ -1,0 +1,12 @@
+public void close(){
+    if (!mIsClosed.getAndSet(true)) {
+        if (mCloseGuard != null) {
+            mCloseGuard.close();
+        }
+        try {
+            mClientProxy.close();
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

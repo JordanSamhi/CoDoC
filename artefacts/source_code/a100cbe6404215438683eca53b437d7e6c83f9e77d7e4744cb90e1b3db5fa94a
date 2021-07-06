@@ -1,0 +1,7 @@
+public ParcelFileDescriptor establishVpn(VpnConfig config){
+    int user = UserHandle.getUserId(Binder.getCallingUid());
+    synchronized (mVpns) {
+        throwIfLockdownEnabled();
+        return mVpns.get(user).establish(config);
+    }
+}

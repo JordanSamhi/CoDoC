@@ -1,0 +1,12 @@
+public int getCdmaRoamingMode(){
+    int mode = CDMA_ROAMING_MODE_RADIO_DEFAULT;
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            mode = telephony.getCdmaRoamingMode(getSubId());
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "Error calling ITelephony#getCdmaRoamingMode", ex);
+    }
+    return mode;
+}

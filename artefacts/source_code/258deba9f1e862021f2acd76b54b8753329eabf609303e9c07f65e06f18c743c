@@ -1,0 +1,9 @@
+public void setWifiEnabled(boolean enable){
+    localLog("Set WiFi " + (enable ? "enabled" : "disabled"));
+    if (mWifiEnabled && !enable) {
+        mNetworkSelector.resetOnDisable();
+        mBssidBlocklistMonitor.clearBssidBlocklist();
+    }
+    mWifiEnabled = enable;
+    updateRunningState();
+}

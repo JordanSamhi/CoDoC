@@ -1,0 +1,10 @@
+public void doFrame(long frameTimeNanos){
+    synchronized (this) {
+        if (mRenderer == null) {
+            reportDrawIfNeeded();
+            Looper.myLooper().quit();
+            return;
+        }
+        doFrameUncheckedLocked();
+    }
+}

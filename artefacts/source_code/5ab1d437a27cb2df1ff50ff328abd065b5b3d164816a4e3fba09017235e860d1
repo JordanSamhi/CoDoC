@@ -1,0 +1,13 @@
+public boolean hasRequestedPermission(ArraySet<String> names){
+    synchronized (mLock) {
+        if (mPermissions == null) {
+            return false;
+        }
+        for (int i = names.size() - 1; i >= 0; i--) {
+            if (mPermissions.get(names.valueAt(i)) != null) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

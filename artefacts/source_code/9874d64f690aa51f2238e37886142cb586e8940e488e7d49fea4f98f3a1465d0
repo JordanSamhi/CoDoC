@@ -1,0 +1,8 @@
+public static Inet4Address intToInet4AddressHTH(int hostAddress){
+    byte[] addressBytes = { (byte) (0xff & (hostAddress >> 24)), (byte) (0xff & (hostAddress >> 16)), (byte) (0xff & (hostAddress >> 8)), (byte) (0xff & hostAddress) };
+    try {
+        return (Inet4Address) InetAddress.getByAddress(addressBytes);
+    } catch (UnknownHostException e) {
+        throw new AssertionError();
+    }
+}

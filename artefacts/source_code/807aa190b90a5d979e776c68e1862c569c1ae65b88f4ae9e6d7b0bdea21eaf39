@@ -1,0 +1,9 @@
+public void onSyncCanceled(){
+    final SyncThread syncThread;
+    synchronized (mSyncThreadLock) {
+        syncThread = mSyncThreads.get(null);
+    }
+    if (syncThread != null) {
+        syncThread.interrupt();
+    }
+}

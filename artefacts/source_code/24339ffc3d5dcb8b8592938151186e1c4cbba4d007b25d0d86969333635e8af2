@@ -1,0 +1,17 @@
+public void dumpShort(@NonNull PrintWriter pw, @UserIdInt int userId){
+    synchronized (mLock) {
+        final String temporaryName = mTemporaryServiceNames.get(userId);
+        if (temporaryName != null) {
+            pw.print("tmpName=");
+            pw.print(temporaryName);
+            final long ttl = mTemporaryServiceExpiration - SystemClock.elapsedRealtime();
+            pw.print(" (expires in ");
+            TimeUtils.formatDuration(ttl, pw);
+            pw.print("), ");
+        }
+        pw.print("defaultName=");
+        pw.print(getDefaultServiceName(userId));
+        final boolean disabled = mDefaultServicesDisabled.get(userId);
+        pw.println(disabled ? " (disabled)" : " (enabled)");
+    }
+}

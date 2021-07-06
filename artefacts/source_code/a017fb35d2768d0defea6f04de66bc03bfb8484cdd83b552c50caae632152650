@@ -1,0 +1,14 @@
+public boolean moveTopActivityToPinnedStack(int stackId, Rect bounds){
+    enforceCallerIsRecentsOrHasPermission(MANAGE_ACTIVITY_STACKS, "moveTopActivityToPinnedStack()");
+    synchronized (mGlobalLock) {
+        if (!mSupportsPictureInPicture) {
+            throw new IllegalStateException("moveTopActivityToPinnedStack:" + "Device doesn't support picture-in-picture mode");
+        }
+        long ident = Binder.clearCallingIdentity();
+        try {
+            return mRootWindowContainer.moveTopStackActivityToPinnedStack(stackId);
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+}

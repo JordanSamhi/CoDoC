@@ -1,0 +1,13 @@
+public int dexOptSecondaryDexPath(ApplicationInfo info, String path, PackageDexUsage.DexUseInfo dexUseInfo, DexoptOptions options){
+    if (info.uid == -1) {
+        throw new IllegalArgumentException("Dexopt for path " + path + " has invalid uid.");
+    }
+    synchronized (mInstallLock) {
+        final long acquireTime = acquireWakeLockLI(info.uid);
+        try {
+            return dexOptSecondaryDexPathLI(info, path, dexUseInfo, options);
+        } finally {
+            releaseWakeLockLI(acquireTime);
+        }
+    }
+}

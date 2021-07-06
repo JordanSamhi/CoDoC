@@ -1,0 +1,12 @@
+public synchronized MediaMetadataEditor putString(int key, String value) throws IllegalArgumentException{
+    if (mApplied) {
+        Log.e(TAG, "Can't edit a previously applied MediaMetadataEditor");
+        return this;
+    }
+    if (METADATA_KEYS_TYPE.get(key, METADATA_TYPE_INVALID) != METADATA_TYPE_STRING) {
+        throw (new IllegalArgumentException("Invalid type 'String' for key " + key));
+    }
+    mEditorMetadata.putString(String.valueOf(key), value);
+    mMetadataChanged = true;
+    return this;
+}

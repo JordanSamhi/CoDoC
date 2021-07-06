@@ -1,0 +1,17 @@
+public Drawable loadUnbadgedItemIcon(@NonNull PackageItemInfo itemInfo, @Nullable ApplicationInfo appInfo){
+    if (itemInfo.showUserIcon != UserHandle.USER_NULL) {
+        int targetUserId = itemInfo.showUserIcon;
+        return UserIcons.getDefaultUserIcon(mContext.getResources(), targetUserId, false);
+    }
+    Drawable dr = null;
+    if (itemInfo.packageName != null) {
+        dr = getDrawable(itemInfo.packageName, itemInfo.icon, appInfo);
+    }
+    if (dr == null && itemInfo != appInfo && appInfo != null) {
+        dr = loadUnbadgedItemIcon(appInfo, appInfo);
+    }
+    if (dr == null) {
+        dr = itemInfo.loadDefaultIcon(this);
+    }
+    return dr;
+}

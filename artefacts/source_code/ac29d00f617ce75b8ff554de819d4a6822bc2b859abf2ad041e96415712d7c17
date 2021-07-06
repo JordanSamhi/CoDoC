@@ -1,0 +1,9 @@
+public boolean click() throws UiObjectNotFoundException{
+    Tracer.trace();
+    AccessibilityNodeInfo node = findAccessibilityNodeInfo(mConfig.getWaitForSelectorTimeout());
+    if (node == null) {
+        throw new UiObjectNotFoundException(getSelector().toString());
+    }
+    Rect rect = getVisibleBounds(node);
+    return getInteractionController().clickAndSync(rect.centerX(), rect.centerY(), mConfig.getActionAcknowledgmentTimeout());
+}

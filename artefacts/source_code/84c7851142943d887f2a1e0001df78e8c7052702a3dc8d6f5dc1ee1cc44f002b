@@ -1,0 +1,8 @@
+public boolean setCurrentNetworkBssid(@NonNull String ifaceName, String bssidStr){
+    synchronized (mLock) {
+        SupplicantStaNetworkHal networkHandle = checkSupplicantStaNetworkAndLogFailure(ifaceName, "setCurrentNetworkBssid");
+        if (networkHandle == null)
+            return false;
+        return networkHandle.setBssid(bssidStr);
+    }
+}

@@ -1,0 +1,12 @@
+public int getSessionVolume(){
+    if (TextUtils.isEmpty(mPackageName)) {
+        Log.w(TAG, "getSessionVolume() package name is null or empty!");
+        return -1;
+    }
+    final RoutingSessionInfo info = getRoutingSessionInfo();
+    if (info != null) {
+        return info.getVolume();
+    }
+    Log.w(TAG, "getSessionVolume() can't found corresponding RoutingSession with : " + mPackageName);
+    return -1;
+}

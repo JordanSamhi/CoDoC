@@ -1,0 +1,14 @@
+public void close(){
+    if (mP2pManager == null) {
+        Log.w(TAG, "Channel.close(): Null mP2pManager!?");
+    } else {
+        try {
+            mP2pManager.mService.close(mBinder);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    mAsyncChannel.disconnect();
+    mCloseGuard.close();
+    Reference.reachabilityFence(this);
+}

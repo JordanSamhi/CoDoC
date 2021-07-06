@@ -1,0 +1,11 @@
+public void logUserActionEvent(int eventType, boolean isEphemeral, boolean isPasspoint){
+    synchronized (mLock) {
+        TargetNetworkInfo networkInfo = new TargetNetworkInfo();
+        networkInfo.isEphemeral = isEphemeral;
+        networkInfo.isPasspoint = isPasspoint;
+        mUserActionEventList.add(new UserActionEventWithTime(eventType, networkInfo));
+        if (mUserActionEventList.size() > MAX_USER_ACTION_EVENTS) {
+            mUserActionEventList.remove();
+        }
+    }
+}

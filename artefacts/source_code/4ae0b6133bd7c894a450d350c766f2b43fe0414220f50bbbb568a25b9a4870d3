@@ -1,0 +1,10 @@
+public void onReceive(Context context, Intent intent){
+    if (!intent.getAction().equals(AudioManager.VOLUME_CHANGED_ACTION) && !intent.getAction().equals(AudioManager.STREAM_DEVICES_CHANGED_ACTION)) {
+        return;
+    }
+    int streamType = intent.getIntExtra(AudioManager.EXTRA_VOLUME_STREAM_TYPE, -1);
+    if (streamType != AudioManager.STREAM_MUSIC) {
+        return;
+    }
+    updateVolume();
+}

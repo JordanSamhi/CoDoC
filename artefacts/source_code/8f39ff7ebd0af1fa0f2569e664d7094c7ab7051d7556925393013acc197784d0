@@ -1,0 +1,8 @@
+public synchronized void setSnapshotListener(int recoveryAgentUid, @Nullable PendingIntent intent){
+    Log.i(TAG, "Registered listener for agent with uid " + recoveryAgentUid);
+    mAgentIntents.put(recoveryAgentUid, intent);
+    if (mAgentsWithPendingSnapshots.contains(recoveryAgentUid)) {
+        Log.i(TAG, "Snapshot already created for agent. Immediately triggering intent.");
+        tryToSendIntent(recoveryAgentUid, intent);
+    }
+}

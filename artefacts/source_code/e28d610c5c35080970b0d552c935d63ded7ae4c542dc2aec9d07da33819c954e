@@ -1,0 +1,18 @@
+public void close(){
+    try {
+        IMbmsDownloadService downloadService = mService.get();
+        if (downloadService == null || mServiceConnection == null) {
+            Log.i(LOG_TAG, "Service already dead");
+            return;
+        }
+        downloadService.dispose(mSubscriptionId);
+        mContext.unbindService(mServiceConnection);
+    } catch (RemoteException e) {
+        Log.i(LOG_TAG, "Remote exception while disposing of service");
+    } finally {
+        mService.set(null);
+        sIsInitialized.set(false);
+        mServiceConnection = null;
+        mInternalCallback.stop();
+    }
+}

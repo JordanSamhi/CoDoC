@@ -1,0 +1,8 @@
+public SurfaceControl getBoundsLayer(){
+    if (mBoundsLayer == null) {
+        mBoundsLayer = new SurfaceControl.Builder(mSurfaceSession).setContainerLayer().setName("Bounds for - " + getTitle().toString()).setParent(getRenderSurfaceControl()).setCallsite("ViewRootImpl.getBoundsLayer").build();
+        setBoundsLayerCrop();
+        mTransaction.show(mBoundsLayer).apply();
+    }
+    return mBoundsLayer;
+}

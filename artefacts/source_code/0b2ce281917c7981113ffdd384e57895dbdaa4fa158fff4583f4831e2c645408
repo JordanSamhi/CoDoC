@@ -1,0 +1,6 @@
+public void tearDown(ApnContext apnContext, String reason, Message onCompletedMsg){
+    if (DBG) {
+        log("tearDown: apnContext=" + apnContext + " reason=" + reason + " onCompletedMsg=" + onCompletedMsg);
+    }
+    sendMessage(DataConnection.EVENT_DISCONNECT, new DisconnectParams(apnContext, reason, DcTracker.RELEASE_TYPE_DETACH, onCompletedMsg));
+}

@@ -1,0 +1,21 @@
+public void dump(FileDescriptor fd, PrintWriter printwriter, String[] args){
+    IndentingPrintWriter pw = new IndentingPrintWriter(printwriter, "  ");
+    pw.println("TransportManager:");
+    pw.increaseIndent();
+    pw.println("mAvailableTransports=[" + Arrays.stream(mAvailableTransports).mapToObj(type -> AccessNetworkConstants.transportTypeToString(type)).collect(Collectors.joining(",")) + "]");
+    pw.println("mCurrentAvailableNetworks=" + mCurrentAvailableNetworks);
+    pw.println("mAvailableNetworksList=" + mAvailableNetworksList);
+    pw.println("mPendingHandoverApns=" + mPendingHandoverApns);
+    pw.println("mCurrentTransports=" + mCurrentTransports);
+    pw.println("isInLegacy=" + isInLegacyMode());
+    pw.println("IWLAN operation mode=" + SystemProperties.get(SYSTEM_PROPERTIES_IWLAN_OPERATION_MODE));
+    if (mAccessNetworksManager != null) {
+        mAccessNetworksManager.dump(fd, pw, args);
+    }
+    pw.println("Local logs=");
+    pw.increaseIndent();
+    mLocalLog.dump(fd, pw, args);
+    pw.decreaseIndent();
+    pw.decreaseIndent();
+    pw.flush();
+}

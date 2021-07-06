@@ -1,0 +1,14 @@
+public double getAttributeDouble(@NonNull String tag, double defaultValue){
+    if (tag == null) {
+        throw new NullPointerException("tag shouldn't be null");
+    }
+    ExifAttribute exifAttribute = getExifAttribute(tag);
+    if (exifAttribute == null) {
+        return defaultValue;
+    }
+    try {
+        return exifAttribute.getDoubleValue(mExifByteOrder);
+    } catch (NumberFormatException e) {
+        return defaultValue;
+    }
+}

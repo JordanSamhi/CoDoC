@@ -1,0 +1,17 @@
+
+         * Allow any app on the device to access this blob data once it is committed using
+         * a {@link BlobHandle} representing the blob.
+         *
+         * <p><strong>Note:</strong> This is only meant to be used from libraries and SDKs where
+         * the apps which we want to allow access is not known ahead of time.
+         * If a blob is being committed to be shared with a particular set of apps, it is highly
+         * recommended to use {@link #allowPackageAccess(String, byte[])} instead.
+         *
+         * <p> This needs to be called before committing the blob using
+         * {@link #commit(Executor, Consumer)}.
+         *
+         * @throws IOException when there is an I/O error while changing the access.
+         * @throws SecurityException when the caller is not the owner of the session.
+         * @throws IllegalStateException when the caller tries to change access for a blob which is
+         *                               already committed.
+         

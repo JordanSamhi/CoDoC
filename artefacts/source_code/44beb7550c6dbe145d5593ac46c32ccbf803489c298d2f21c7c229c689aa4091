@@ -1,0 +1,12 @@
+public void authenticate(@NonNull CancellationSignal cancel, @NonNull @CallbackExecutor Executor executor, @NonNull AuthenticationCallback callback){
+    if (cancel == null) {
+        throw new IllegalArgumentException("Must supply a cancellation signal");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Must supply an executor");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Must supply a callback");
+    }
+    authenticateInternal(null, cancel, executor, callback, mContext.getUserId());
+}

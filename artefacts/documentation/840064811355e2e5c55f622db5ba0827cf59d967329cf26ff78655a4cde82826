@@ -1,0 +1,17 @@
+
+     * Opens the proc file and buffers all its content, which can be traversed through a
+     * ProcFileIterator.
+     *
+     * This method will tolerate at most 5 errors. After that, it will always return null. This is
+     * to save resources and to prevent log spam.
+     *
+     * This method is thread-safe. It first checks if there are other threads holding read/write
+     * lock. If there are, it assumes data is fresh and reuses the data.
+     *
+     * A read lock is automatically acquired when a valid ProcFileIterator is returned. Caller MUST
+     * call {@link ProcFileIterator#close()} when it is done to release the lock.
+     *
+     * @param ignoreCache If true, ignores the cache and refreshes the data anyway.
+     * @return A {@link ProcFileIterator} to iterate through the file content, or null if there is
+     * error.
+     

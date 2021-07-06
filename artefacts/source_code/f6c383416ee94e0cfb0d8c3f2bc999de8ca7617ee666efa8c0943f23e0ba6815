@@ -1,0 +1,10 @@
+public void sendMultimediaMessage(int subId, @NonNull Uri contentUri, @Nullable String locationUrl, @Nullable Bundle configOverrides, @Nullable PendingIntent sentIntent, long messageId){
+    try {
+        final IMms iMms = IMms.Stub.asInterface(ServiceManager.getService("imms"));
+        if (iMms == null) {
+            return;
+        }
+        iMms.sendMessage(subId, ActivityThread.currentPackageName(), contentUri, locationUrl, configOverrides, sentIntent, messageId);
+    } catch (RemoteException e) {
+    }
+}

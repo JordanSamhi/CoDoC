@@ -1,0 +1,14 @@
+public boolean isExtendedApduSupported(){
+    if (mHistoricalBytes == null) {
+        return false;
+    }
+    byte[] cardCapabilities = mHistoricalBytes.getValue(TAG_CARD_CAPABILITIES);
+    if (cardCapabilities == null || cardCapabilities.length < 3) {
+        return false;
+    }
+    if (mIsDirectConvention) {
+        return (cardCapabilities[EXTENDED_APDU_INDEX] & B7_MASK) > 0;
+    } else {
+        return (cardCapabilities[EXTENDED_APDU_INDEX] & B2_MASK) > 0;
+    }
+}

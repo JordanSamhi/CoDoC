@@ -1,0 +1,23 @@
+public void unholdHeldCall() throws CallStateException{
+    ImsCall imsCall = mBackgroundCall.getImsCall();
+    if (mHoldSwitchingState == HoldSwapState.PENDING_SINGLE_CALL_UNHOLD || mHoldSwitchingState == HoldSwapState.SWAPPING_ACTIVE_AND_HELD) {
+        logi("Ignoring unhold request while already unholding or swapping");
+        return;
+    }
+    if (imsCall != null) {
+        mCallExpectedToResume = imsCall;
+        HoldSwapState oldHoldState = mHoldSwitchingState;
+        mHoldSwitchingState = HoldSwapState.PENDING_SINGLE_CALL_UNHOLD;
+        mForegroundCall.switchWith(mBackgroundCall);
+        logHoldSwapState("unholdCurrentCall");
+        try {
+            imsCall.resume();
+            mMetrics.writeOnImsCommand(mPhone.getPhoneId(), imsCall.getSession(), ImsCommand.IMS_CMD_RESUME);
+        } catch (ImsException e) {
+            mForegroundCall.switchWith(mBackgroundCall);
+            mHoldSwitchingState = oldHoldState;
+            logHoldSwapState("unholdCurrentCall - fail");
+            throw new CallStateException(e.getMessage());
+        }
+    }
+}

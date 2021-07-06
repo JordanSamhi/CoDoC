@@ -1,0 +1,11 @@
+public long getEstimatedMediaPosition(){
+    synchronized (mInfoLock) {
+        if (mCurrentSession != null) {
+            PlaybackState state = mCurrentSession.getPlaybackState();
+            if (state != null) {
+                return state.getPosition();
+            }
+        }
+    }
+    return -1;
+}

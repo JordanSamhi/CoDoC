@@ -1,0 +1,31 @@
+public void registerTrustListener(final TrustListener trustListener){
+    try {
+        ITrustListener.Stub iTrustListener = new ITrustListener.Stub() {
+
+            @Override
+            public void onTrustChanged(boolean enabled, int userId, int flags) {
+                Message m = mHandler.obtainMessage(MSG_TRUST_CHANGED, (enabled ? 1 : 0), userId, trustListener);
+                if (flags != 0) {
+                    m.getData().putInt(DATA_FLAGS, flags);
+                }
+                m.sendToTarget();
+            }
+
+            @Override
+            public void onTrustManagedChanged(boolean managed, int userId) {
+                mHandler.obtainMessage(MSG_TRUST_MANAGED_CHANGED, (managed ? 1 : 0), userId, trustListener).sendToTarget();
+            }
+
+            @Override
+            public void onTrustError(CharSequence message) {
+                Message m = mHandler.obtainMessage(MSG_TRUST_ERROR);
+                m.getData().putCharSequence(DATA_MESSAGE, message);
+                m.sendToTarget();
+            }
+        };
+        mService.registerTrustListener(iTrustListener);
+        mTrustListeners.put(trustListener, iTrustListener);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

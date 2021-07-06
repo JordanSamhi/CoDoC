@@ -1,0 +1,23 @@
+public void remove(int type, NetworkAgentInfo nai, boolean wasDefault){
+    ArrayList<NetworkAgentInfo> list = mTypeLists[type];
+    if (list == null || list.isEmpty()) {
+        return;
+    }
+    final boolean wasFirstNetwork = list.get(0).equals(nai);
+    synchronized (mTypeLists) {
+        if (!list.remove(nai)) {
+            return;
+        }
+    }
+    if (wasFirstNetwork || wasDefault) {
+        maybeLogBroadcast(nai, DetailedState.DISCONNECTED, type, wasDefault);
+        mService.sendLegacyNetworkBroadcast(nai, DetailedState.DISCONNECTED, type);
+    }
+    if (!list.isEmpty() && wasFirstNetwork) {
+        if (DBG)
+            log("Other network available for type " + type + ", sending connected broadcast");
+        final NetworkAgentInfo replacement = list.get(0);
+        maybeLogBroadcast(replacement, DetailedState.CONNECTED, type, mService.isDefaultNetwork(replacement));
+        mService.sendLegacyNetworkBroadcast(replacement, DetailedState.CONNECTED, type);
+    }
+}

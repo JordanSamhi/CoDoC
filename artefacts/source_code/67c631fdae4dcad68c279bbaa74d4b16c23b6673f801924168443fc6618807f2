@@ -1,0 +1,10 @@
+public void onStop(){
+    if (mRegistered) {
+        mContext.unregisterReceiver(mReceiver);
+        mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
+        mRegistered = false;
+    }
+    unregisterScoreCache();
+    pauseScanning();
+    mWorkHandler.removeCallbacksAndMessages(null);
+}

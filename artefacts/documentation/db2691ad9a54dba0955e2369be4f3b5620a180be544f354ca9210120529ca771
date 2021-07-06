@@ -1,0 +1,18 @@
+
+     * Called by device owner or profile owner of an organization-owned managed profile to install
+     * a system update from the given file. The device will be
+     * rebooted in order to finish installing the update. Note that if the device is rebooted, this
+     * doesn't necessarily mean that the update has been applied successfully. The caller should
+     * additionally check the system version with {@link android.os.Build#FINGERPRINT} or {@link
+     * android.os.Build.VERSION}. If an error occurs during processing the OTA before the reboot,
+     * the caller will be notified by {@link InstallSystemUpdateCallback}. If device does not have
+     * sufficient battery level, the installation will fail with error {@link
+     * InstallSystemUpdateCallback#UPDATE_ERROR_BATTERY_LOW}.
+     *
+     * @param admin The {@link DeviceAdminReceiver} that this request is associated with.
+     * @param updateFilePath An Uri of the file that contains the update. The file should be
+     * readable by the calling app.
+     * @param executor The executor through which the callback should be invoked.
+     * @param callback A callback object that will inform the caller when installing an update
+     * fails.
+     

@@ -1,0 +1,85 @@
+public void startDppAsConfiguratorInitiator(int uid, IBinder binder, String enrolleeUri, int selectedNetworkId, @WifiManager.EasyConnectNetworkRole int enrolleeNetworkRole, IDppCallback callback){
+    mDppMetrics.updateDppConfiguratorInitiatorRequests();
+    if (mDppRequestInfo != null) {
+        try {
+            Log.e(TAG, "DPP request already in progress");
+            Log.e(TAG, "Ongoing request UID: " + mDppRequestInfo.uid + ", new UID: " + uid);
+            mDppMetrics.updateDppFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_BUSY);
+            callback.onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_BUSY, null, null, new int[0]);
+        } catch (RemoteException e) {
+        }
+        return;
+    }
+    mClientIfaceName = mWifiNative.getClientInterfaceName();
+    if (mClientIfaceName == null) {
+        try {
+            Log.e(TAG, "Wi-Fi client interface does not exist");
+            mDppMetrics.updateDppFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_GENERIC);
+            callback.onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_GENERIC, null, null, new int[0]);
+        } catch (RemoteException e) {
+        }
+        return;
+    }
+    WifiConfiguration selectedNetwork = mWifiConfigManager.getConfiguredNetworkWithoutMasking(selectedNetworkId);
+    if (selectedNetwork == null) {
+        try {
+            Log.e(TAG, "Selected network is null");
+            mDppMetrics.updateDppFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_INVALID_NETWORK);
+            callback.onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_INVALID_NETWORK, null, null, new int[0]);
+        } catch (RemoteException e) {
+        }
+        return;
+    }
+    String password = null;
+    String psk = null;
+    int securityAkm;
+    if (selectedNetwork.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.SAE)) {
+        password = selectedNetwork.preSharedKey;
+        securityAkm = DppAkm.SAE;
+    } else if (selectedNetwork.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK)) {
+        if (selectedNetwork.preSharedKey.matches(String.format("[0-9A-Fa-f]{%d}", 64))) {
+            psk = selectedNetwork.preSharedKey;
+        } else {
+            password = selectedNetwork.preSharedKey;
+        }
+        securityAkm = DppAkm.PSK;
+    } else {
+        try {
+            Log.e(TAG, "Key management must be either PSK or SAE");
+            mDppMetrics.updateDppFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_INVALID_NETWORK);
+            callback.onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_INVALID_NETWORK, null, null, new int[0]);
+        } catch (RemoteException e) {
+        }
+        return;
+    }
+    mDppRequestInfo = new DppRequestInfo();
+    mDppRequestInfo.uid = uid;
+    mDppRequestInfo.binder = binder;
+    mDppRequestInfo.callback = callback;
+    if (!linkToDeath(mDppRequestInfo)) {
+        onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_GENERIC);
+        return;
+    }
+    logd("Interface " + mClientIfaceName + ": Initializing URI: " + enrolleeUri);
+    mDppRequestInfo.startTime = mClock.getElapsedSinceBootMillis();
+    mDppTimeoutMessage.schedule(mDppRequestInfo.startTime + DPP_TIMEOUT_MS);
+    int peerId = mWifiNative.addDppPeerUri(mClientIfaceName, enrolleeUri);
+    if (peerId < 0) {
+        Log.e(TAG, "DPP add URI failure");
+        onFailure(DppFailureCode.INVALID_URI);
+        return;
+    }
+    mDppRequestInfo.peerId = peerId;
+    logd("Authenticating");
+    String ssidEncoded = encodeStringToHex(selectedNetwork.SSID);
+    String passwordEncoded = null;
+    if (password != null) {
+        passwordEncoded = encodeStringToHex(selectedNetwork.preSharedKey);
+    }
+    if (!mWifiNative.startDppConfiguratorInitiator(mClientIfaceName, mDppRequestInfo.peerId, 0, ssidEncoded, passwordEncoded, psk, enrolleeNetworkRole == EASY_CONNECT_NETWORK_ROLE_AP ? DppNetRole.AP : DppNetRole.STA, securityAkm)) {
+        Log.e(TAG, "DPP Start Configurator Initiator failure");
+        onFailure(DppFailureCode.FAILURE);
+        return;
+    }
+    logd("Success: Started DPP Initiator with peer ID " + mDppRequestInfo.peerId);
+}

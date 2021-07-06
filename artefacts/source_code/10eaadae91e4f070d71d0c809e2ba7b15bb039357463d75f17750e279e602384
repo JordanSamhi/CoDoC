@@ -1,0 +1,36 @@
+public int getKeyguardDisabledFeatures(ComponentName who, int userHandle, boolean parent){
+    if (!mHasFeature) {
+        return 0;
+    }
+    enforceFullCrossUsersPermission(userHandle);
+    final long ident = mInjector.binderClearCallingIdentity();
+    try {
+        synchronized (getLockObject()) {
+            if (who != null) {
+                ActiveAdmin admin = getActiveAdminUncheckedLocked(who, userHandle, parent);
+                return (admin != null) ? admin.disabledKeyguardFeatures : 0;
+            }
+            final List<ActiveAdmin> admins;
+            if (!parent && isManagedProfile(userHandle)) {
+                admins = getUserDataUnchecked(userHandle).mAdminList;
+            } else {
+                admins = getActiveAdminsForLockscreenPoliciesLocked(userHandle, parent);
+            }
+            int which = DevicePolicyManager.KEYGUARD_DISABLE_FEATURES_NONE;
+            final int N = admins.size();
+            for (int i = 0; i < N; i++) {
+                ActiveAdmin admin = admins.get(i);
+                int userId = admin.getUserHandle().getIdentifier();
+                boolean isRequestedUser = !parent && (userId == userHandle);
+                if (isRequestedUser || !isManagedProfile(userId)) {
+                    which |= admin.disabledKeyguardFeatures;
+                } else {
+                    which |= (admin.disabledKeyguardFeatures & PROFILE_KEYGUARD_FEATURES_AFFECT_OWNER);
+                }
+            }
+            return which;
+        }
+    } finally {
+        mInjector.binderRestoreCallingIdentity(ident);
+    }
+}

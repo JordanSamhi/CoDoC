@@ -1,0 +1,19 @@
+public static boolean isAsciiPrintable(byte[] byteArray){
+    if (byteArray == null) {
+        return true;
+    }
+    for (byte b : byteArray) {
+        switch(b) {
+            case 0x07:
+            case '\f':
+            case '\n':
+            case '\t':
+            case 0x0b:
+                continue;
+        }
+        if (b < ASCII_PRINTABLE_MIN || b > ASCII_PRINTABLE_MAX) {
+            return false;
+        }
+    }
+    return true;
+}

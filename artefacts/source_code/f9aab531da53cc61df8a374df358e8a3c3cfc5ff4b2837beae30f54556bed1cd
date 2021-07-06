@@ -1,0 +1,15 @@
+public void setSingleLine(boolean singleLine){
+    if (singleLine != mSingleLine) {
+        mSingleLine = singleLine;
+        MarginLayoutParams p = (MarginLayoutParams) mMessageContainer.getLayoutParams();
+        p.topMargin = singleLine ? 0 : mNotificationTextMarginTop;
+        mMessageContainer.setLayoutParams(p);
+        mContentContainer.setOrientation(singleLine ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mSenderView.getLayoutParams();
+        layoutParams.setMarginEnd(singleLine ? mSenderTextPaddingSingleLine : 0);
+        mSenderView.setSingleLine(singleLine);
+        updateMaxDisplayedLines();
+        updateClipRect();
+        updateSenderVisibility();
+    }
+}

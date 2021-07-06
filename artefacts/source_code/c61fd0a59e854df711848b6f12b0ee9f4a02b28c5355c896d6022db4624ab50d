@@ -1,0 +1,12 @@
+public boolean updateRestrictions(@UserIdInt int userId, @Nullable Bundle restrictions){
+    final boolean changed = !UserRestrictionsUtils.areEqual(mUserRestrictions.get(userId), restrictions);
+    if (!changed) {
+        return false;
+    }
+    if (!UserRestrictionsUtils.isEmpty(restrictions)) {
+        mUserRestrictions.put(userId, restrictions);
+    } else {
+        mUserRestrictions.delete(userId);
+    }
+    return true;
+}

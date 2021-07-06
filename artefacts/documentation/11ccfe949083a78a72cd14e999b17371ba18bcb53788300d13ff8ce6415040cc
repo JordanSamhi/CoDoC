@@ -1,0 +1,52 @@
+
+     * Registers a {@link android.hardware.SensorEventListener SensorEventListener} for the given
+     * sensor at the given sampling frequency and the given maximum reporting latency.
+     * <p>
+     * This function is similar to {@link #registerListener(SensorEventListener, Sensor, int)} but
+     * it allows events to stay temporarily in the hardware FIFO (queue) before being delivered. The
+     * events can be stored in the hardware FIFO up to {@code maxReportLatencyUs} microseconds. Once
+     * one of the events in the FIFO needs to be reported, all of the events in the FIFO are
+     * reported sequentially. This means that some events will be reported before the maximum
+     * reporting latency has elapsed.
+     * </p><p>
+     * When {@code maxReportLatencyUs} is 0, the call is equivalent to a call to
+     * {@link #registerListener(SensorEventListener, Sensor, int)}, as it requires the events to be
+     * delivered as soon as possible.
+     * </p><p>
+     * When {@code sensor.maxFifoEventCount()} is 0, the sensor does not use a FIFO, so the call
+     * will also be equivalent to {@link #registerListener(SensorEventListener, Sensor, int)}.
+     * </p><p>
+     * Setting {@code maxReportLatencyUs} to a positive value allows to reduce the number of
+     * interrupts the AP (Application Processor) receives, hence reducing power consumption, as the
+     * AP can switch to a lower power state while the sensor is capturing the data. This is
+     * especially important when registering to wake-up sensors, for which each interrupt causes the
+     * AP to wake up if it was in suspend mode. See {@link Sensor#isWakeUpSensor()} for more
+     * information on wake-up sensors.
+     * </p>
+     * <p class="note">
+     * </p>
+     * Note: Don't use this method with one-shot trigger sensors such as
+     * {@link Sensor#TYPE_SIGNIFICANT_MOTION}. Use
+     * {@link #requestTriggerSensor(TriggerEventListener, Sensor)} instead. </p>
+     *
+     * @param listener A {@link android.hardware.SensorEventListener SensorEventListener} object
+     *            that will receive the sensor events. If the application is interested in receiving
+     *            flush complete notifications, it should register with
+     *            {@link android.hardware.SensorEventListener SensorEventListener2} instead.
+     * @param sensor The {@link android.hardware.Sensor Sensor} to register to.
+     * @param samplingPeriodUs The desired delay between two consecutive events in microseconds.
+     *            This is only a hint to the system. Events may be received faster or slower than
+     *            the specified rate. Usually events are received faster. Can be one of
+     *            {@link #SENSOR_DELAY_NORMAL}, {@link #SENSOR_DELAY_UI},
+     *            {@link #SENSOR_DELAY_GAME}, {@link #SENSOR_DELAY_FASTEST} or the delay in
+     *            microseconds.
+     * @param maxReportLatencyUs Maximum time in microseconds that events can be delayed before
+     *            being reported to the application. A large value allows reducing the power
+     *            consumption associated with the sensor. If maxReportLatencyUs is set to zero,
+     *            events are delivered as soon as they are available, which is equivalent to calling
+     *            {@link #registerListener(SensorEventListener, Sensor, int)}.
+     * @return <code>true</code> if the sensor is supported and successfully enabled.
+     * @see #registerListener(SensorEventListener, Sensor, int)
+     * @see #unregisterListener(SensorEventListener)
+     * @see #flush(SensorEventListener)
+     

@@ -1,0 +1,17 @@
+public DisplayCutout inset(int insetLeft, int insetTop, int insetRight, int insetBottom){
+    if (insetLeft == 0 && insetTop == 0 && insetRight == 0 && insetBottom == 0 || (isBoundsEmpty() && mWaterfallInsets.equals(Insets.NONE))) {
+        return this;
+    }
+    Rect safeInsets = insetInsets(insetLeft, insetTop, insetRight, insetBottom, new Rect(mSafeInsets));
+    if (insetLeft == 0 && insetTop == 0 && mSafeInsets.equals(safeInsets)) {
+        return this;
+    }
+    Rect waterfallInsets = insetInsets(insetLeft, insetTop, insetRight, insetBottom, mWaterfallInsets.toRect());
+    Rect[] bounds = mBounds.getRects();
+    for (int i = 0; i < bounds.length; ++i) {
+        if (!bounds[i].equals(ZERO_RECT)) {
+            bounds[i].offset(-insetLeft, -insetTop);
+        }
+    }
+    return new DisplayCutout(safeInsets, Insets.of(waterfallInsets), bounds, false);
+}

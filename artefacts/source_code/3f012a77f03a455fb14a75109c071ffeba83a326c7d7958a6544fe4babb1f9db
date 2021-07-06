@@ -1,0 +1,16 @@
+public List<SubscriptionInfo> getOpportunisticSubscriptions(){
+    String contextPkg = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    String contextAttributionTag = mContext != null ? mContext.getAttributionTag() : null;
+    List<SubscriptionInfo> subInfoList = null;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            subInfoList = iSub.getOpportunisticSubscriptions(contextPkg, contextAttributionTag);
+        }
+    } catch (RemoteException ex) {
+    }
+    if (subInfoList == null) {
+        subInfoList = new ArrayList<>();
+    }
+    return subInfoList;
+}

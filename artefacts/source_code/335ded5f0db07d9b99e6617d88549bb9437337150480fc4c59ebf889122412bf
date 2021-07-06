@@ -1,0 +1,24 @@
+public void unregisterAudioRecordingCallback(@NonNull AudioRecordingCallback cb){
+    if (cb == null) {
+        throw new IllegalArgumentException("Illegal null AudioRecordingCallback argument");
+    }
+    synchronized (mRecordCallbackLock) {
+        if (mRecordCallbackList == null) {
+            return;
+        }
+        final int oldCbCount = mRecordCallbackList.size();
+        if (removeRecordCallback_sync(cb)) {
+            final int newCbCount = mRecordCallbackList.size();
+            if ((oldCbCount > 0) && (newCbCount == 0)) {
+                final IAudioService service = getService();
+                try {
+                    service.unregisterRecordingCallback(mRecCb);
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
+        } else {
+            Log.w(TAG, "attempt to call unregisterAudioRecordingCallback() on a callback" + " already unregistered or never registered");
+        }
+    }
+}

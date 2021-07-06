@@ -1,0 +1,15 @@
+public void onDescriptorWriteRequest(String address, int transId, int offset, int length, boolean isPrep, boolean needRsp, int handle, byte[] value){
+    if (VDBG)
+        Log.d(TAG, "onDescriptorWriteRequest() - handle=" + handle);
+    BluetoothDevice device = mAdapter.getRemoteDevice(address);
+    BluetoothGattDescriptor descriptor = getDescriptorByHandle(handle);
+    if (descriptor == null) {
+        Log.w(TAG, "onDescriptorWriteRequest() no desc for handle " + handle);
+        return;
+    }
+    try {
+        mCallback.onDescriptorWriteRequest(device, transId, descriptor, isPrep, needRsp, offset, value);
+    } catch (Exception ex) {
+        Log.w(TAG, "Unhandled exception in callback", ex);
+    }
+}

@@ -1,0 +1,10 @@
+public List<UiccAccessRule> getAllAccessRules(){
+    List<UiccAccessRule> merged = new ArrayList<>();
+    if (mNativeAccessRules != null) {
+        merged.addAll(getAccessRules());
+    }
+    if (mCarrierConfigAccessRules != null) {
+        merged.addAll(Arrays.asList(mCarrierConfigAccessRules));
+    }
+    return merged.isEmpty() ? null : merged;
+}

@@ -1,0 +1,40 @@
+public void dump(PrintWriter pw){
+    synchronized (this) {
+        String selectQuery = "SELECT  * FROM " + SoundModelContract.TABLE;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        try {
+            pw.println("  Enrolled KeyphraseSoundModels:");
+            if (c.moveToFirst()) {
+                String[] columnNames = c.getColumnNames();
+                do {
+                    for (String name : columnNames) {
+                        int colNameIndex = c.getColumnIndex(name);
+                        int type = c.getType(colNameIndex);
+                        switch(type) {
+                            case Cursor.FIELD_TYPE_STRING:
+                                pw.printf("    %s: %s\n", name, c.getString(colNameIndex));
+                                break;
+                            case Cursor.FIELD_TYPE_BLOB:
+                                pw.printf("    %s: data blob\n", name);
+                                break;
+                            case Cursor.FIELD_TYPE_INTEGER:
+                                pw.printf("    %s: %d\n", name, c.getInt(colNameIndex));
+                                break;
+                            case Cursor.FIELD_TYPE_FLOAT:
+                                pw.printf("    %s: %f\n", name, c.getFloat(colNameIndex));
+                                break;
+                            case Cursor.FIELD_TYPE_NULL:
+                                pw.printf("    %s: null\n", name);
+                                break;
+                        }
+                    }
+                    pw.println();
+                } while (c.moveToNext());
+            }
+        } finally {
+            c.close();
+            db.close();
+        }
+    }
+}

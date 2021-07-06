@@ -1,0 +1,23 @@
+public static LocaleList resolveLocales(LocaleList restore, LocaleList current, String[] supportedLocales){
+    final HashMap<Locale, Locale> allLocales = new HashMap<>(supportedLocales.length);
+    for (String supportedLocaleStr : supportedLocales) {
+        final Locale locale = Locale.forLanguageTag(supportedLocaleStr);
+        allLocales.put(toFullLocale(locale), locale);
+    }
+    final ArrayList<Locale> filtered = new ArrayList<>(current.size());
+    for (int i = 0; i < current.size(); i++) {
+        final Locale locale = current.get(i);
+        allLocales.remove(toFullLocale(locale));
+        filtered.add(locale);
+    }
+    for (int i = 0; i < restore.size(); i++) {
+        final Locale locale = allLocales.remove(toFullLocale(restore.get(i)));
+        if (locale != null) {
+            filtered.add(locale);
+        }
+    }
+    if (filtered.size() == current.size()) {
+        return current;
+    }
+    return new LocaleList(filtered.toArray(new Locale[filtered.size()]));
+}

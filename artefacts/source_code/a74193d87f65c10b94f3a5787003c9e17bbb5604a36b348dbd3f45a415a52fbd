@@ -1,0 +1,11 @@
+public InputStream getInputStream() throws IOException{
+    InputStream is;
+    if (mData != null) {
+        is = new ByteArrayInputStream(mData);
+    } else if (mFileDescriptor != null) {
+        is = new ParcelFileDescriptor.AutoCloseInputStream(mFileDescriptor);
+    } else {
+        return null;
+    }
+    return (mFlags & IS_GZIPPED) != 0 ? new GZIPInputStream(is) : is;
+}

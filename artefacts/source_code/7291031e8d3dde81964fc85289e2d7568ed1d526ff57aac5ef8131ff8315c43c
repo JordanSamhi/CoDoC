@@ -1,0 +1,10 @@
+public void write(ParcelFileDescriptor output) throws IOException{
+    try {
+        throwIfClosed();
+        synchronized (PdfRenderer.sPdfiumLock) {
+            nativeWrite(mNativeDocument, output.getFd());
+        }
+    } finally {
+        IoUtils.closeQuietly(output);
+    }
+}

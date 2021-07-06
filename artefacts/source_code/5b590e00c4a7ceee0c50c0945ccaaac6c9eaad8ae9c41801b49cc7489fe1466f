@@ -1,0 +1,10 @@
+public void setProperties(Equalizer.Settings settings) throws IllegalStateException, IllegalArgumentException, UnsupportedOperationException{
+    if (settings.numBands != settings.bandLevels.length || settings.numBands != mNumBands) {
+        throw new IllegalArgumentException("settings invalid band count: " + settings.numBands);
+    }
+    byte[] param = concatArrays(shortToByteArray(settings.curPreset), shortToByteArray(mNumBands));
+    for (int i = 0; i < mNumBands; i++) {
+        param = concatArrays(param, shortToByteArray(settings.bandLevels[i]));
+    }
+    checkStatus(setParameter(PARAM_PROPERTIES, param));
+}

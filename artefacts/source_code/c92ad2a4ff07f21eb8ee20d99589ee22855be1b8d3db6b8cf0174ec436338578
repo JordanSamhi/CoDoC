@@ -1,0 +1,36 @@
+public String getSsid(String address){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("getSsid"))
+            return null;
+        if (address == null) {
+            Log.e(TAG, "Cannot parse peer mac address.");
+            return null;
+        }
+        byte[] macAddress = null;
+        try {
+            macAddress = NativeUtil.macAddressToByteArray(address);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse mac address.", e);
+            return null;
+        }
+        SupplicantResult<String> result = new SupplicantResult("getSsid(" + address + ")");
+        try {
+            mISupplicantP2pIface.getSsid(macAddress, (SupplicantStatus status, ArrayList<Byte> ssid) -> {
+                String ssidString = null;
+                if (ssid != null) {
+                    try {
+                        ssidString = NativeUtil.removeEnclosingQuotes(NativeUtil.encodeSsid(ssid));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Could not encode SSID.", e);
+                    }
+                }
+                result.setResult(status, ssidString);
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+            return null;
+        }
+        return result.getResult();
+    }
+}

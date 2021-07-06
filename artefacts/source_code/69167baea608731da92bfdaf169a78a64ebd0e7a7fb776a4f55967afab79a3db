@@ -1,0 +1,13 @@
+public boolean setPreferredDevice(AudioDeviceInfo deviceInfo){
+    if (deviceInfo != null && !deviceInfo.isSink()) {
+        return false;
+    }
+    int preferredDeviceId = deviceInfo != null ? deviceInfo.getId() : 0;
+    boolean status = native_setOutputDevice(preferredDeviceId);
+    if (status == true) {
+        synchronized (this) {
+            mPreferredDevice = deviceInfo;
+        }
+    }
+    return status;
+}

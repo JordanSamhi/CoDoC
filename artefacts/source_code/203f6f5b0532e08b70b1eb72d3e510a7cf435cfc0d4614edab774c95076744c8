@@ -1,0 +1,12 @@
+public CharSequence loadLabel(PackageManager pm){
+    if (mNonLocalizedLabel != null) {
+        return mNonLocalizedLabel;
+    }
+    if (mLabelRes != 0 && mSourcePackage != null) {
+        CharSequence label = pm.getText(mSourcePackage, mLabelRes, null);
+        if (label != null) {
+            return label;
+        }
+    }
+    return null;
+}

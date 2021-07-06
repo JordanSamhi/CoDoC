@@ -1,0 +1,12 @@
+public boolean containsSettings(WifiScanner.ScanSettings scanSettings){
+    if (scanSettings.band == WifiScanner.WIFI_BAND_UNSPECIFIED) {
+        for (int j = 0; j < scanSettings.channels.length; ++j) {
+            if (!containsChannel(scanSettings.channels[j].frequency)) {
+                return false;
+            }
+        }
+        return true;
+    } else {
+        return containsBand(scanSettings.band);
+    }
+}

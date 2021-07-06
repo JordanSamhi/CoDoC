@@ -1,0 +1,15 @@
+public IncrementalStorage openStorage(@NonNull String path){
+    try {
+        final int id = mService.openStorage(path);
+        if (id < 0) {
+            return null;
+        }
+        final IncrementalStorage storage = new IncrementalStorage(mService, id);
+        synchronized (mStorages) {
+            mStorages.put(id, storage);
+        }
+        return storage;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

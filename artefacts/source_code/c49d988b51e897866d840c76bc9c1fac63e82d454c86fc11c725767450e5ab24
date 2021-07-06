@@ -1,0 +1,69 @@
+public final View createView(@NonNull Context viewContext, @NonNull String name, @Nullable String prefix, @Nullable AttributeSet attrs) throws ClassNotFoundException, InflateException{
+    Objects.requireNonNull(viewContext);
+    Objects.requireNonNull(name);
+    Constructor<? extends View> constructor = sConstructorMap.get(name);
+    if (constructor != null && !verifyClassLoader(constructor)) {
+        constructor = null;
+        sConstructorMap.remove(name);
+    }
+    Class<? extends View> clazz = null;
+    try {
+        Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
+        if (constructor == null) {
+            clazz = Class.forName(prefix != null ? (prefix + name) : name, false, mContext.getClassLoader()).asSubclass(View.class);
+            if (mFilter != null && clazz != null) {
+                boolean allowed = mFilter.onLoadClass(clazz);
+                if (!allowed) {
+                    failNotAllowed(name, prefix, viewContext, attrs);
+                }
+            }
+            constructor = clazz.getConstructor(mConstructorSignature);
+            constructor.setAccessible(true);
+            sConstructorMap.put(name, constructor);
+        } else {
+            if (mFilter != null) {
+                Boolean allowedState = mFilterMap.get(name);
+                if (allowedState == null) {
+                    clazz = Class.forName(prefix != null ? (prefix + name) : name, false, mContext.getClassLoader()).asSubclass(View.class);
+                    boolean allowed = clazz != null && mFilter.onLoadClass(clazz);
+                    mFilterMap.put(name, allowed);
+                    if (!allowed) {
+                        failNotAllowed(name, prefix, viewContext, attrs);
+                    }
+                } else if (allowedState.equals(Boolean.FALSE)) {
+                    failNotAllowed(name, prefix, viewContext, attrs);
+                }
+            }
+        }
+        Object lastContext = mConstructorArgs[0];
+        mConstructorArgs[0] = viewContext;
+        Object[] args = mConstructorArgs;
+        args[1] = attrs;
+        try {
+            final View view = constructor.newInstance(args);
+            if (view instanceof ViewStub) {
+                final ViewStub viewStub = (ViewStub) view;
+                viewStub.setLayoutInflater(cloneInContext((Context) args[0]));
+            }
+            return view;
+        } finally {
+            mConstructorArgs[0] = lastContext;
+        }
+    } catch (NoSuchMethodException e) {
+        final InflateException ie = new InflateException(getParserStateDescription(viewContext, attrs) + ": Error inflating class " + (prefix != null ? (prefix + name) : name), e);
+        ie.setStackTrace(EMPTY_STACK_TRACE);
+        throw ie;
+    } catch (ClassCastException e) {
+        final InflateException ie = new InflateException(getParserStateDescription(viewContext, attrs) + ": Class is not a View " + (prefix != null ? (prefix + name) : name), e);
+        ie.setStackTrace(EMPTY_STACK_TRACE);
+        throw ie;
+    } catch (ClassNotFoundException e) {
+        throw e;
+    } catch (Exception e) {
+        final InflateException ie = new InflateException(getParserStateDescription(viewContext, attrs) + ": Error inflating class " + (clazz == null ? "<unknown>" : clazz.getName()), e);
+        ie.setStackTrace(EMPTY_STACK_TRACE);
+        throw ie;
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+    }
+}

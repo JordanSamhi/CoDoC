@@ -1,0 +1,15 @@
+public int getStorageCryptType(){
+    if (isNone()) {
+        return StorageManager.CRYPT_TYPE_DEFAULT;
+    }
+    if (isPattern()) {
+        return StorageManager.CRYPT_TYPE_PATTERN;
+    }
+    if (isPin()) {
+        return StorageManager.CRYPT_TYPE_PIN;
+    }
+    if (isPassword()) {
+        return StorageManager.CRYPT_TYPE_PASSWORD;
+    }
+    throw new IllegalStateException("Unhandled credential type");
+}

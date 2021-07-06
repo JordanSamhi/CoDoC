@@ -1,0 +1,13 @@
+public static boolean parseDate(String date, Calendar outDate){
+    if (date == null || date.isEmpty()) {
+        return false;
+    }
+    try {
+        final Date parsedDate = DATE_FORMATTER.parse(date);
+        outDate.setTime(parsedDate);
+        return true;
+    } catch (ParseException e) {
+        Log.w(LOG_TAG, "Date: " + date + " not in format: " + DATE_FORMAT);
+        return false;
+    }
+}

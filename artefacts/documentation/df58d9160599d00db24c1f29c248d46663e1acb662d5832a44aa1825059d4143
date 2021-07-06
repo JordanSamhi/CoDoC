@@ -1,0 +1,49 @@
+
+     * Specifies the mapping between the Allocation's cells and an array's elements
+     * when data is copied from the Allocation to the array, or vice-versa.
+     *
+     * Only applies to an Allocation whose Element is a vector of length 3 (such as
+     * {@link Element#U8_3} or {@link Element#RGB_888}). Enabling this feature may make
+     * copying data from the Allocation to an array or vice-versa less efficient.
+     *
+     * <p> Vec3 Element cells are stored in an Allocation as Vec4 Element cells with
+     * the same {@link android.renderscript.Element.DataType}, with the fourth vector
+     * component treated as padding. When this feature is enabled, only the data components,
+     * i.e. the first 3 vector components of each cell, will be mapped between the array
+     * and the Allocation. When disabled, explicit mapping of the padding components
+     * is required, as described in the following example.
+     *
+     * <p> For example, when copying an integer array to an Allocation of two {@link
+     * Element#I32_3} cells using {@link #copyFrom(int[])}:
+     * <p> When disabled:
+     *     The array must have at least 8 integers, with the first 4 integers copied
+     *     to the first cell of the Allocation, and the next 4 integers copied to
+     *     the second cell. The 4th and 8th integers are mapped as the padding components.
+     *
+     * <p> When enabled:
+     *     The array just needs to have at least 6 integers, with the first 3 integers
+     *     copied to the the first cell as data components, and the next 3 copied to
+     *     the second cell. There is no mapping for the padding components.
+     *
+     * <p> Similarly, when copying a byte array to an Allocation of two {@link
+     * Element#I32_3} cells, using {@link #copyFromUnchecked(int[])}:
+     * <p> When disabled:
+     *     The array must have at least 32 bytes, with the first 16 bytes copied
+     *     to the first cell of the Allocation, and the next 16 bytes copied to
+     *     the second cell. The 13th-16th and 29th-32nd bytes are mapped as padding
+     *     components.
+     *
+     * <p> When enabled:
+     *     The array just needs to have at least 24 bytes, with the first 12 bytes copied
+     *     to the first cell of the Allocation, and the next 12 bytes copied to
+     *     the second cell. There is no mapping for the padding components.
+     *
+     * <p> Similar to copying data to an Allocation from an array, when copying data from an
+     * Allocation to an array, the padding components for Vec3 Element cells will not be
+     * copied/mapped to the array if AutoPadding is enabled.
+     *
+     * <p> Default: Disabled.
+     *
+     * @param useAutoPadding True: enable AutoPadding; False: disable AutoPadding
+     *
+     

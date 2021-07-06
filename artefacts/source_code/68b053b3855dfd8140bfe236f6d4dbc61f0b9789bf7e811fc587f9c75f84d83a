@@ -1,0 +1,19 @@
+public static Builder fromSerializedRequest(byte[] data){
+    Builder builder;
+    try {
+        ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data));
+        SerializationDataContainer dataContainer = (SerializationDataContainer) stream.readObject();
+        builder = new Builder(dataContainer.source, dataContainer.destination);
+        builder.version = dataContainer.version;
+        builder.appIntent = dataContainer.appIntent;
+        builder.fileServiceId = dataContainer.fileServiceId;
+        builder.subscriptionId = dataContainer.subscriptionId;
+    } catch (IOException e) {
+        Log.e(LOG_TAG, "Got IOException trying to parse opaque data");
+        throw new IllegalArgumentException(e);
+    } catch (ClassNotFoundException e) {
+        Log.e(LOG_TAG, "Got ClassNotFoundException trying to parse opaque data");
+        throw new IllegalArgumentException(e);
+    }
+    return builder;
+}

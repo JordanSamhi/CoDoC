@@ -1,0 +1,11 @@
+public void updateTopPadding(float qsHeight, boolean animate){
+    int topPadding = (int) qsHeight;
+    int minStackHeight = getLayoutMinHeight();
+    if (topPadding + minStackHeight > getHeight()) {
+        mTopPaddingOverflow = topPadding + minStackHeight - getHeight();
+    } else {
+        mTopPaddingOverflow = 0;
+    }
+    setTopPadding(topPadding, animate && !mKeyguardBypassController.getBypassEnabled());
+    setExpandedHeight(mExpandedHeight);
+}

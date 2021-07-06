@@ -1,0 +1,11 @@
+public void clear(){
+    Iterator<Map.Entry<String, PerAppInfo>> iter = mActiveNetworkSuggestionsPerApp.entrySet().iterator();
+    while (iter.hasNext()) {
+        Map.Entry<String, PerAppInfo> entry = iter.next();
+        removeInternal(Collections.EMPTY_LIST, entry.getKey(), entry.getValue());
+        iter.remove();
+    }
+    mSuggestionStatusListenerPerApp.clear();
+    saveToStore();
+    Log.i(TAG, "Cleared all internal state");
+}

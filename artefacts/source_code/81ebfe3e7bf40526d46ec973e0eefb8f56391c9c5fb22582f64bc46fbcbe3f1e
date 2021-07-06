@@ -1,0 +1,30 @@
+public void execute(){
+    if (MORE_DEBUG) {
+        Slog.v(TAG, "*** Executing restore step " + mState);
+    }
+    switch(mState) {
+        case INITIAL:
+            startRestore();
+            break;
+        case RUNNING_QUEUE:
+            dispatchNextRestore();
+            break;
+        case RESTORE_KEYVALUE:
+            restoreKeyValue();
+            break;
+        case RESTORE_FULL:
+            restoreFull();
+            break;
+        case RESTORE_FINISHED:
+            restoreFinished();
+            break;
+        case FINAL:
+            if (!mFinished) {
+                finalizeRestore();
+            } else {
+                Slog.e(TAG, "Duplicate finish");
+            }
+            mFinished = true;
+            break;
+    }
+}

@@ -1,0 +1,9 @@
+public void authorizeReport(int callingUid, final String callingPackage, final String receiverClass, final String reportId, final int flags, final IIncidentAuthListener listener){
+    enforceRequestAuthorizationPermission();
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        mPendingReports.authorizeReport(callingUid, callingPackage, receiverClass, reportId, flags, listener);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

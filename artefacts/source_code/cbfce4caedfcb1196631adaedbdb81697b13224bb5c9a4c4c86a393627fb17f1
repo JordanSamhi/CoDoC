@@ -1,0 +1,24 @@
+public void close(IBinder binder){
+    enforceAccessPermission();
+    enforceChangePermission();
+    DeathHandlerData dhd;
+    synchronized (mLock) {
+        dhd = mDeathDataByBinder.get(binder);
+        if (dhd == null) {
+            Log.w(TAG, "close(): no death recipient for binder");
+            return;
+        }
+        mP2pStateMachine.sendMessage(REMOVE_CLIENT_INFO, 0, 0, binder);
+        binder.unlinkToDeath(dhd.mDeathRecipient, 0);
+        mDeathDataByBinder.remove(binder);
+        if (dhd.mMessenger != null && mDeathDataByBinder.isEmpty()) {
+            try {
+                dhd.mMessenger.send(mClientHandler.obtainMessage(WifiP2pManager.STOP_DISCOVERY));
+                dhd.mMessenger.send(mClientHandler.obtainMessage(WifiP2pManager.REMOVE_GROUP));
+            } catch (RemoteException e) {
+                Log.e(TAG, "close: Failed sending clean-up commands: e=" + e);
+            }
+            mP2pStateMachine.sendMessage(DISABLE_P2P);
+        }
+    }
+}

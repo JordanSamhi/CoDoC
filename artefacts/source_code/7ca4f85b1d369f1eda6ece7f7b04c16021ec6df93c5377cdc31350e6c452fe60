@@ -1,0 +1,12 @@
+public static CallerInfo getCallerInfo(Context context, Uri contactRef){
+    CallerInfo info = null;
+    ContentResolver cr = CallerInfoAsyncQuery.getCurrentProfileContentResolver(context);
+    if (cr != null) {
+        try {
+            info = getCallerInfo(context, contactRef, cr.query(contactRef, null, null, null, null));
+        } catch (RuntimeException re) {
+            Log.e(TAG, re, "Error getting caller info.");
+        }
+    }
+    return info;
+}

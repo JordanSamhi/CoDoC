@@ -1,0 +1,10 @@
+public void recycle(){
+    if (mRecycled) {
+        throw new RuntimeException(toString() + " recycled twice!");
+    }
+    mRecycled = true;
+    mXml = null;
+    mTheme = null;
+    mAssets = null;
+    mResources.mTypedArrayPool.release(this);
+}

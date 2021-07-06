@@ -1,0 +1,33 @@
+public void setRemoteSession(ICameraOfflineSession remoteSession) throws CameraAccessException{
+    synchronized (mInterfaceLock) {
+        if (remoteSession == null) {
+            notifyFailedSwitch();
+            return;
+        }
+        mRemoteSession = remoteSession;
+        IBinder remoteSessionBinder = remoteSession.asBinder();
+        if (remoteSessionBinder == null) {
+            throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "The camera offline session has encountered a serious error");
+        }
+        try {
+            remoteSessionBinder.linkToDeath(this, 0);
+        } catch (RemoteException e) {
+            throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "The camera offline session has encountered a serious error");
+        }
+        Runnable readyDispatch = new Runnable() {
+
+            @Override
+            public void run() {
+                if (!isClosed()) {
+                    mOfflineCallback.onReady(CameraOfflineSessionImpl.this);
+                }
+            }
+        };
+        final long ident = Binder.clearCallingIdentity();
+        try {
+            mOfflineExecutor.execute(readyDispatch);
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+}

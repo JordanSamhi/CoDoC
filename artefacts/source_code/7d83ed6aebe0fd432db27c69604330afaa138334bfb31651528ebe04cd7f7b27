@@ -1,0 +1,14 @@
+public int sendMessageToNanoApp(@NonNull NanoAppMessage message){
+    Objects.requireNonNull(message, "NanoAppMessage cannot be null");
+    int maxPayloadBytes = mAttachedHub.getMaxPacketLengthBytes();
+    byte[] payload = message.getMessageBody();
+    if (payload != null && payload.length > maxPayloadBytes) {
+        Log.e(TAG, "Message (" + payload.length + " bytes) exceeds max payload length (" + maxPayloadBytes + " bytes)");
+        return ContextHubTransaction.RESULT_FAILED_BAD_PARAMS;
+    }
+    try {
+        return mClientProxy.sendMessageToNanoApp(message);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

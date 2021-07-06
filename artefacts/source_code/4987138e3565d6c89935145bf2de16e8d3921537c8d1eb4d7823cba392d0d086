@@ -1,0 +1,28 @@
+public void positionTaskInStack(int taskId, int stackId, int position){
+    mAmInternal.enforceCallingPermission(MANAGE_ACTIVITY_STACKS, "positionTaskInStack()");
+    synchronized (mGlobalLock) {
+        long ident = Binder.clearCallingIdentity();
+        try {
+            if (DEBUG_STACK)
+                Slog.d(TAG_STACK, "positionTaskInStack: positioning task=" + taskId + " in stackId=" + stackId + " at position=" + position);
+            final Task task = mRootWindowContainer.anyTaskForId(taskId);
+            if (task == null) {
+                throw new IllegalArgumentException("positionTaskInStack: no task for id=" + taskId);
+            }
+            final ActivityStack stack = mRootWindowContainer.getStack(stackId);
+            if (stack == null) {
+                throw new IllegalArgumentException("positionTaskInStack: no stack for id=" + stackId);
+            }
+            if (!stack.isActivityTypeStandardOrUndefined()) {
+                throw new IllegalArgumentException("positionTaskInStack: Attempt to change" + " the position of task " + taskId + " in/to non-standard stack");
+            }
+            if (task.getStack() == stack) {
+                stack.positionChildAt(task, position);
+            } else {
+                task.reparent(stack, position, REPARENT_LEAVE_STACK_IN_PLACE, !ANIMATE, !DEFER_RESUME, "positionTaskInStack");
+            }
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+}

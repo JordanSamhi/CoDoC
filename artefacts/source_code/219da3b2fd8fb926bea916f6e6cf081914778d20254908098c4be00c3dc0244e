@@ -1,0 +1,14 @@
+public void setCustomScalarFunction(@NonNull String functionName, @NonNull UnaryOperator<String> scalarFunction) throws SQLiteException{
+    Objects.requireNonNull(functionName);
+    Objects.requireNonNull(scalarFunction);
+    synchronized (mLock) {
+        throwIfNotOpenLocked();
+        mConfigurationLocked.customScalarFunctions.put(functionName, scalarFunction);
+        try {
+            mConnectionPoolLocked.reconfigure(mConfigurationLocked);
+        } catch (RuntimeException ex) {
+            mConfigurationLocked.customScalarFunctions.remove(functionName);
+            throw ex;
+        }
+    }
+}

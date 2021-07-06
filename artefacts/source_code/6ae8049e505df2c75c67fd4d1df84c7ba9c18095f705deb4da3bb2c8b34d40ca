@@ -1,0 +1,10 @@
+public void removeParticipants(String[] participants) throws ImsException{
+    logi("removeParticipants :: session=" + mSession);
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            loge("removeParticipants :: ");
+            throw new ImsException("No call session", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        mSession.removeParticipants(participants);
+    }
+}

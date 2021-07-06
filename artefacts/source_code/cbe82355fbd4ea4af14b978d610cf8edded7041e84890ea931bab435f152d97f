@@ -1,0 +1,21 @@
+public void addUsageSessionObserver(int requestingUid, int observerId, String[] observed, long timeLimit, long sessionThresholdTime, PendingIntent limitReachedCallbackIntent, PendingIntent sessionEndCallbackIntent, @UserIdInt int userId){
+    if (timeLimit < getMinTimeLimit()) {
+        throw new IllegalArgumentException("Time limit must be >= " + getMinTimeLimit());
+    }
+    synchronized (mLock) {
+        UserData user = getOrCreateUserDataLocked(userId);
+        ObserverAppData observerApp = getOrCreateObserverAppDataLocked(requestingUid);
+        SessionUsageGroup group = observerApp.sessionUsageGroups.get(observerId);
+        if (group != null) {
+            group.remove();
+        }
+        final int observerIdCount = observerApp.sessionUsageGroups.size();
+        if (observerIdCount >= getUsageSessionObserverPerUidLimit()) {
+            throw new IllegalStateException("Too many app usage observers added by uid " + requestingUid);
+        }
+        group = new SessionUsageGroup(user, observerApp, observerId, observed, timeLimit, limitReachedCallbackIntent, sessionThresholdTime, sessionEndCallbackIntent);
+        observerApp.sessionUsageGroups.append(observerId, group);
+        user.addUsageGroup(group);
+        noteActiveLocked(user, group, getUptimeMillis());
+    }
+}

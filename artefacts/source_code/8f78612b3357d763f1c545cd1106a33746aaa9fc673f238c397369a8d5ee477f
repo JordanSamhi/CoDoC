@@ -1,0 +1,54 @@
+public Parcel getNextParcel(BatteryStats.HistoryItem out){
+    if (mRecordCount == 0) {
+        out.clear();
+    }
+    ++mRecordCount;
+    if (mCurrentParcel != null) {
+        if (mCurrentParcel.dataPosition() < mCurrentParcelEnd) {
+            return mCurrentParcel;
+        } else if (mHistoryBuffer == mCurrentParcel) {
+            return null;
+        } else if (mHistoryParcels == null || !mHistoryParcels.contains(mCurrentParcel)) {
+            mCurrentParcel.recycle();
+        }
+    }
+    while (mCurrentFileIndex < mFileNumbers.size() - 1) {
+        mCurrentParcel = null;
+        mCurrentParcelEnd = 0;
+        final Parcel p = Parcel.obtain();
+        AtomicFile file = getFile(mFileNumbers.get(mCurrentFileIndex++));
+        if (readFileToParcel(p, file)) {
+            int bufSize = p.readInt();
+            int curPos = p.dataPosition();
+            mCurrentParcelEnd = curPos + bufSize;
+            mCurrentParcel = p;
+            if (curPos < mCurrentParcelEnd) {
+                return mCurrentParcel;
+            }
+        } else {
+            p.recycle();
+        }
+    }
+    if (mHistoryParcels != null) {
+        while (mParcelIndex < mHistoryParcels.size()) {
+            final Parcel p = mHistoryParcels.get(mParcelIndex++);
+            if (!skipHead(p)) {
+                continue;
+            }
+            final int bufSize = p.readInt();
+            final int curPos = p.dataPosition();
+            mCurrentParcelEnd = curPos + bufSize;
+            mCurrentParcel = p;
+            if (curPos < mCurrentParcelEnd) {
+                return mCurrentParcel;
+            }
+        }
+    }
+    if (mHistoryBuffer.dataSize() <= 0) {
+        return null;
+    }
+    mHistoryBuffer.setDataPosition(0);
+    mCurrentParcel = mHistoryBuffer;
+    mCurrentParcelEnd = mCurrentParcel.dataSize();
+    return mCurrentParcel;
+}

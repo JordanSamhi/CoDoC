@@ -1,0 +1,17 @@
+public boolean getReport(BluetoothDevice device, byte reportType, byte reportId, int bufferSize){
+    if (VDBG) {
+        log("getReport(" + device + "), reportType=" + reportType + " reportId=" + reportId + "bufferSize=" + bufferSize);
+    }
+    final IBluetoothHidHost service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.getReport(device, reportType, reportId, bufferSize);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+            return false;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return false;
+}

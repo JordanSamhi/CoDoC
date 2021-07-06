@@ -1,0 +1,7 @@
+public boolean getBindInstantServiceAllowed(int userId){
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.MANAGE_BIND_INSTANT_SERVICE, "getBindInstantServiceAllowed");
+    synchronized (mServicesLock) {
+        final UserServices<V> user = findOrCreateUserLocked(userId);
+        return user.mBindInstantServiceAllowed;
+    }
+}

@@ -1,0 +1,13 @@
+public static Intent composeQuickContactsIntent(Context context, Rect target, Uri lookupUri, int mode, String[] excludeMimes){
+    Context actualContext = context;
+    while ((actualContext instanceof ContextWrapper) && !(actualContext instanceof Activity)) {
+        actualContext = ((ContextWrapper) actualContext).getBaseContext();
+    }
+    final int intentFlags = ((actualContext instanceof Activity) ? 0 : Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK) | Intent.FLAG_ACTIVITY_SINGLE_TOP;
+    final Intent intent = new Intent(ACTION_QUICK_CONTACT).addFlags(intentFlags);
+    intent.setData(lookupUri);
+    intent.setSourceBounds(target);
+    intent.putExtra(EXTRA_MODE, mode);
+    intent.putExtra(EXTRA_EXCLUDE_MIMES, excludeMimes);
+    return intent;
+}

@@ -1,0 +1,11 @@
+public static DisplayManagerGlobal getInstance(){
+    synchronized (DisplayManagerGlobal.class) {
+        if (sInstance == null) {
+            IBinder b = ServiceManager.getService(Context.DISPLAY_SERVICE);
+            if (b != null) {
+                sInstance = new DisplayManagerGlobal(IDisplayManager.Stub.asInterface(b));
+            }
+        }
+        return sInstance;
+    }
+}

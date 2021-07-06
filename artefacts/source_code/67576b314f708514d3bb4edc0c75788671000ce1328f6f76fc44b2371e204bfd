@@ -1,0 +1,11 @@
+public void registerNetworkCallback(@NonNull NetworkRequest request, @NonNull PendingIntent operation){
+    printStackTrace();
+    checkPendingIntentNotNull(operation);
+    try {
+        mService.pendingListenForNetwork(request.networkCapabilities, operation, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        throw convertServiceException(e);
+    }
+}

@@ -1,0 +1,21 @@
+public static String getAppNameFromPackageName(String packageName, String mapString){
+    packageName = packageName.toLowerCase();
+    final String pairDelim = "\\s*;\\s*";
+    final String keyValueDelim = "\\s*:\\s*";
+    if (TextUtils.isEmpty(mapString)) {
+        return null;
+    }
+    List<String> keyValuePairList = Arrays.asList(mapString.split(pairDelim));
+    if (keyValuePairList.isEmpty()) {
+        return null;
+    }
+    for (String keyValueString : keyValuePairList) {
+        String[] keyValue = keyValueString.split(keyValueDelim);
+        if (keyValue.length == 2) {
+            if (keyValue[0].equals(packageName)) {
+                return keyValue[1];
+            }
+        }
+    }
+    return null;
+}

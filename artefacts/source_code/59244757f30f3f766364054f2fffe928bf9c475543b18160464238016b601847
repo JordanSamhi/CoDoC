@@ -1,0 +1,11 @@
+public int executeUpdateDelete(){
+    acquireReference();
+    try {
+        return getSession().executeForChangedRowCount(getSql(), getBindArgs(), getConnectionFlags(), null);
+    } catch (SQLiteDatabaseCorruptException ex) {
+        onCorruption();
+        throw ex;
+    } finally {
+        releaseReference();
+    }
+}

@@ -1,0 +1,33 @@
+public boolean onKeyDown(int keyCode, @NonNull KeyEvent event){
+    if (mSelectedChip != null && keyCode == KeyEvent.KEYCODE_DEL) {
+        if (mAlternatesPopup != null && mAlternatesPopup.isShowing()) {
+            mAlternatesPopup.dismiss();
+        }
+        removeChip(mSelectedChip);
+    }
+    switch(keyCode) {
+        case KeyEvent.KEYCODE_ENTER:
+        case KeyEvent.KEYCODE_DPAD_CENTER:
+            if (event.hasNoModifiers()) {
+                if (commitDefault()) {
+                    return true;
+                }
+                if (mSelectedChip != null) {
+                    clearSelectedChip();
+                    return true;
+                } else if (focusNext()) {
+                    return true;
+                }
+            }
+            break;
+    }
+    final DrawableRecipientChip lastRecipientChip = getLastChip();
+    boolean isHandled = super.onKeyDown(keyCode, event);
+    if (keyCode == KeyEvent.KEYCODE_DEL && isHandled && lastRecipientChip != null) {
+        final RecipientEntry entry = lastRecipientChip.getEntry();
+        if (!mNoChipMode && mRecipientChipDeletedListener != null && entry != null) {
+            mRecipientChipDeletedListener.onRecipientChipDeleted(entry);
+        }
+    }
+    return isHandled;
+}

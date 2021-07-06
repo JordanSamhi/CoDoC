@@ -1,0 +1,11 @@
+public void reportInitialPartialScan(int channelCount, boolean status){
+    synchronized (mLock) {
+        if (status) {
+            mInitPartialScanSuccessCount++;
+            mInitPartialScanSuccessHistogram.increment(channelCount);
+        } else {
+            mInitPartialScanFailureCount++;
+            mInitPartialScanFailureHistogram.increment(channelCount);
+        }
+    }
+}

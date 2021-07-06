@@ -1,0 +1,12 @@
+public final void writeTypedSparseArray(@Nullable SparseArray<T> val, int parcelableFlags){
+    if (val == null) {
+        writeInt(-1);
+        return;
+    }
+    final int count = val.size();
+    writeInt(count);
+    for (int i = 0; i < count; i++) {
+        writeInt(val.keyAt(i));
+        writeTypedObject(val.valueAt(i), parcelableFlags);
+    }
+}

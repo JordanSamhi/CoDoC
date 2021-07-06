@@ -1,0 +1,13 @@
+public void callActivityOnResume(Activity activity){
+    activity.mResumed = true;
+    activity.onResume();
+    if (mActivityMonitors != null) {
+        synchronized (mSync) {
+            final int N = mActivityMonitors.size();
+            for (int i = 0; i < N; i++) {
+                final ActivityMonitor am = mActivityMonitors.get(i);
+                am.match(activity, activity, activity.getIntent());
+            }
+        }
+    }
+}

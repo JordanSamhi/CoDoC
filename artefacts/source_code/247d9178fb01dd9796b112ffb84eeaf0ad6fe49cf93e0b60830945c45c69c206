@@ -1,0 +1,19 @@
+public void performValidation(){
+    Validator v = getValidator();
+    if (v == null || mTokenizer == null) {
+        return;
+    }
+    Editable e = getText();
+    int i = getText().length();
+    while (i > 0) {
+        int start = mTokenizer.findTokenStart(e, i);
+        int end = mTokenizer.findTokenEnd(e, start);
+        CharSequence sub = e.subSequence(start, end);
+        if (TextUtils.isEmpty(sub)) {
+            e.replace(start, i, "");
+        } else if (!v.isValid(sub)) {
+            e.replace(start, i, mTokenizer.terminateToken(v.fixText(sub)));
+        }
+        i = start;
+    }
+}

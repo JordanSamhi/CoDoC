@@ -1,0 +1,12 @@
+public int available() throws IOException{
+    FileDescriptor myFd = fd;
+    if (myFd == null)
+        throw new IOException("socket closed");
+    Int32Ref avail = new Int32Ref(0);
+    try {
+        Os.ioctlInt(myFd, OsConstants.FIONREAD, avail);
+    } catch (ErrnoException e) {
+        throw e.rethrowAsIOException();
+    }
+    return avail.value;
+}

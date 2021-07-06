@@ -1,0 +1,9 @@
+public void registerForQualifiedNetworksChanged(Handler h, int what){
+    if (h != null) {
+        Registrant r = new Registrant(h, what, null);
+        mQualifiedNetworksChangedRegistrants.add(r);
+        if (mAvailableNetworks.size() != 0) {
+            r.notifyResult(getQualifiedNetworksList());
+        }
+    }
+}

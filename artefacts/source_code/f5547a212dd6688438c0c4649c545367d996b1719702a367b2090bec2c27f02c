@@ -1,0 +1,11 @@
+public void startObserving(ExtconInfo extconInfo){
+    String devicePath = extconInfo.getDevicePath();
+    if (devicePath == null) {
+        Slog.wtf(TAG, "Unable to start observing  " + extconInfo.getName() + " because the device path is null. " + SELINUX_POLICIES_NEED_TO_BE_CHANGED);
+    } else {
+        mExtconInfos.put(devicePath, extconInfo);
+        if (LOG)
+            Slog.v(TAG, "Observing  " + devicePath);
+        startObserving("DEVPATH=" + devicePath);
+    }
+}

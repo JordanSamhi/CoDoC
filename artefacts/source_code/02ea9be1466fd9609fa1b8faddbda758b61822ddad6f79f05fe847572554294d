@@ -1,0 +1,21 @@
+public void deselectRoute(@NonNull RoutingSessionInfo sessionInfo, @NonNull MediaRoute2Info route){
+    Objects.requireNonNull(sessionInfo, "sessionInfo must not be null");
+    Objects.requireNonNull(route, "route must not be null");
+    if (!sessionInfo.getSelectedRoutes().contains(route.getId())) {
+        Log.w(TAG, "Ignoring deselecting a route that is not selected. route=" + route);
+        return;
+    }
+    if (!sessionInfo.getDeselectableRoutes().contains(route.getId())) {
+        Log.w(TAG, "Ignoring deselecting a non-deselectable route=" + route);
+        return;
+    }
+    Client client = getOrCreateClient();
+    if (client != null) {
+        try {
+            int requestId = mNextRequestId.getAndIncrement();
+            mMediaRouterService.deselectRouteWithManager(client, requestId, sessionInfo.getId(), route);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "deselectRoute: Failed to send a request.", ex);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public static void start(Context context){
+    if (SipManager.isApiSupported(context)) {
+        if (ServiceManager.getService("sip") == null) {
+            ServiceManager.addService("sip", new SipService(context));
+            context.sendBroadcast(new Intent(SipManager.ACTION_SIP_SERVICE_UP));
+            if (DBG)
+                slog("start:");
+        }
+    }
+}

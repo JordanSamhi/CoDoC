@@ -1,0 +1,13 @@
+public static void setTextViewAsDisabledByAdmin(Context context, TextView textView, boolean disabled){
+    final SpannableStringBuilder sb = new SpannableStringBuilder(textView.getText());
+    removeExistingRestrictedSpans(sb);
+    if (disabled) {
+        final int disabledColor = Utils.getDisabled(context, textView.getCurrentTextColor());
+        sb.setSpan(new ForegroundColorSpan(disabledColor), 0, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setCompoundDrawables(null, null, getRestrictedPadlock(context), null);
+        textView.setCompoundDrawablePadding(context.getResources().getDimensionPixelSize(R.dimen.restricted_icon_padding));
+    } else {
+        textView.setCompoundDrawables(null, null, null, null);
+    }
+    textView.setText(sb);
+}

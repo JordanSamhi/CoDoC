@@ -1,0 +1,13 @@
+public static Keyphrase readFromParcel(@NonNull Parcel in){
+    int id = in.readInt();
+    int recognitionModes = in.readInt();
+    Locale locale = Locale.forLanguageTag(in.readString());
+    String text = in.readString();
+    int[] users = null;
+    int numUsers = in.readInt();
+    if (numUsers >= 0) {
+        users = new int[numUsers];
+        in.readIntArray(users);
+    }
+    return new Keyphrase(id, recognitionModes, locale, text, users);
+}

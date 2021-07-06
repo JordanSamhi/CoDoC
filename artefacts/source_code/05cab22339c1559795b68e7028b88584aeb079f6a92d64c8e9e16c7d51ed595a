@@ -1,0 +1,25 @@
+public boolean startWpsPbc(String groupIfName, String bssid){
+    if (TextUtils.isEmpty(groupIfName)) {
+        Log.e(TAG, "Group name required when requesting WPS PBC. Got (" + groupIfName + ")");
+        return false;
+    }
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("startWpsPbc"))
+            return false;
+        byte[] macAddress = null;
+        try {
+            macAddress = NativeUtil.macAddressToByteArray(bssid);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse BSSID.", e);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("startWpsPbc(" + groupIfName + ", " + bssid + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.startWpsPbc(groupIfName, macAddress));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

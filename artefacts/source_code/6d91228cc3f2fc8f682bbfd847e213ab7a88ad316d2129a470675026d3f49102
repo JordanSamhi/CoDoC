@@ -1,0 +1,25 @@
+public static Rect[] extractBoundsFromList(Rect safeInsets, List<Rect> boundingRects){
+    Rect[] sortedBounds = new Rect[BOUNDS_POSITION_LENGTH];
+    for (int i = 0; i < sortedBounds.length; ++i) {
+        sortedBounds[i] = ZERO_RECT;
+    }
+    if (safeInsets != null && boundingRects != null) {
+        final boolean topBottomInset = safeInsets.top > 0 || safeInsets.bottom > 0;
+        for (Rect bound : boundingRects) {
+            if (topBottomInset) {
+                if (bound.top == 0) {
+                    sortedBounds[BOUNDS_POSITION_TOP] = bound;
+                } else {
+                    sortedBounds[BOUNDS_POSITION_BOTTOM] = bound;
+                }
+            } else {
+                if (bound.left == 0) {
+                    sortedBounds[BOUNDS_POSITION_LEFT] = bound;
+                } else {
+                    sortedBounds[BOUNDS_POSITION_RIGHT] = bound;
+                }
+            }
+        }
+    }
+    return sortedBounds;
+}

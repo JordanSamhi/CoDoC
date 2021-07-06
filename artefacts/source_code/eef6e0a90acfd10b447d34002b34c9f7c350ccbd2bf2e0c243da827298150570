@@ -1,0 +1,23 @@
+public static int getDeadChar(int accent, int c){
+    if (c == accent || CHAR_SPACE == c) {
+        return accent;
+    }
+    int combining = sAccentToCombining.get(accent);
+    if (combining == 0) {
+        return 0;
+    }
+    final int combination = (combining << 16) | c;
+    int combined;
+    synchronized (sDeadKeyCache) {
+        combined = sDeadKeyCache.get(combination, -1);
+        if (combined == -1) {
+            sDeadKeyBuilder.setLength(0);
+            sDeadKeyBuilder.append((char) c);
+            sDeadKeyBuilder.append((char) combining);
+            String result = Normalizer.normalize(sDeadKeyBuilder, Normalizer.Form.NFC);
+            combined = result.codePointCount(0, result.length()) == 1 ? result.codePointAt(0) : 0;
+            sDeadKeyCache.put(combination, combined);
+        }
+    }
+    return combined;
+}

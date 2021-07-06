@@ -1,0 +1,15 @@
+public synchronized boolean beginRenameObject(MtpObject obj, String newName){
+    if (sDebug)
+        Log.v(TAG, "beginRenameObject " + obj.getName() + " " + newName);
+    if (obj.isRoot())
+        return false;
+    if (isSpecialSubDir(obj))
+        return false;
+    if (obj.getParent().getChild(newName) != null)
+        return false;
+    MtpObject oldObj = obj.copy(false);
+    obj.setName(newName);
+    obj.getParent().addChild(obj);
+    oldObj.getParent().addChild(oldObj);
+    return generalBeginRenameObject(oldObj, obj);
+}

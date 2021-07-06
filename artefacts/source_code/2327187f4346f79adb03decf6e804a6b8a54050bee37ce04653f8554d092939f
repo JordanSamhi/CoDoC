@@ -1,0 +1,9 @@
+public boolean isAvailable(@RcsImsCapabilities.RcsImsCapabilityFlag int capability) throws android.telephony.ims.ImsException{
+    try {
+        int currentStatus = mRcsFeatureConnection.queryCapabilityStatus();
+        return new RcsImsCapabilities(currentStatus).isCapable(capability);
+    } catch (RemoteException e) {
+        loge("isAvailable error: ", e);
+        throw new android.telephony.ims.ImsException("Can not determine availability", android.telephony.ims.ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+}

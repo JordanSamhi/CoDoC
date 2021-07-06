@@ -1,0 +1,18 @@
+public CharSequence getText(@StyleableRes int index){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    final int type = data[index + STYLE_TYPE];
+    if (type == TypedValue.TYPE_NULL) {
+        return null;
+    } else if (type == TypedValue.TYPE_STRING) {
+        return loadStringValueAt(index);
+    }
+    final TypedValue v = mValue;
+    if (getValueAt(index, v)) {
+        return v.coerceToString();
+    }
+    throw new RuntimeException("getText of bad type: 0x" + Integer.toHexString(type));
+}

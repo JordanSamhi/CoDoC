@@ -1,0 +1,25 @@
+public static void lowLevelReboot(String reason){
+    if (reason == null) {
+        reason = "";
+    }
+    if (reason.equals(PowerManager.REBOOT_QUIESCENT)) {
+        sQuiescent = true;
+        reason = "";
+    } else if (reason.endsWith("," + PowerManager.REBOOT_QUIESCENT)) {
+        sQuiescent = true;
+        reason = reason.substring(0, reason.length() - PowerManager.REBOOT_QUIESCENT.length() - 1);
+    }
+    if (reason.equals(PowerManager.REBOOT_RECOVERY) || reason.equals(PowerManager.REBOOT_RECOVERY_UPDATE)) {
+        reason = "recovery";
+    }
+    if (sQuiescent) {
+        reason = reason + ",quiescent";
+    }
+    SystemProperties.set("sys.powerctl", "reboot," + reason);
+    try {
+        Thread.sleep(20 * 1000L);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+    Slog.wtf(TAG, "Unexpected return from lowLevelReboot!");
+}

@@ -1,0 +1,12 @@
+public void enableIfPossible(){
+    boolean isAvailable = isAvailable();
+    if (VDBG)
+        Log.v(TAG, "enableIfPossible: isAvailable=" + isAvailable);
+    if (!isAvailable) {
+        return;
+    }
+    sendRttStateChangedBroadcast(true);
+    mRttServiceSynchronized.mHandler.post(() -> {
+        mRttServiceSynchronized.executeNextRangingRequestIfPossible(false);
+    });
+}

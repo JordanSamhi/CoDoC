@@ -1,0 +1,10 @@
+public boolean hasPermission(UsbDevice device){
+    if (mService == null) {
+        return false;
+    }
+    try {
+        return mService.hasDevicePermission(device, mContext.getPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

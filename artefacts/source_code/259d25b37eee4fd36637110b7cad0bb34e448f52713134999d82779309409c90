@@ -1,0 +1,24 @@
+public void writeToParcel(Parcel destination, int flags){
+    destination.writeParcelable(mPhoneAccount, 0);
+    destination.writeInt(mState);
+    destination.writeInt(mConnectionCapabilities);
+    destination.writeParcelable(mAddress, 0);
+    destination.writeInt(mAddressPresentation);
+    destination.writeString(mCallerDisplayName);
+    destination.writeInt(mCallerDisplayNamePresentation);
+    destination.writeStrongBinder(mVideoProvider != null ? mVideoProvider.asBinder() : null);
+    destination.writeInt(mVideoState);
+    destination.writeByte((byte) (mRingbackRequested ? 1 : 0));
+    destination.writeByte((byte) (mIsVoipAudioMode ? 1 : 0));
+    destination.writeLong(mConnectTimeMillis);
+    destination.writeParcelable(mStatusHints, 0);
+    destination.writeParcelable(mDisconnectCause, 0);
+    destination.writeStringList(mConferenceableConnectionIds);
+    destination.writeBundle(mExtras);
+    destination.writeInt(mConnectionProperties);
+    destination.writeInt(mSupportedAudioRoutes);
+    destination.writeString(mParentCallId);
+    destination.writeLong(mConnectElapsedTimeMillis);
+    destination.writeInt(mCallDirection);
+    destination.writeInt(mCallerNumberVerificationStatus);
+}

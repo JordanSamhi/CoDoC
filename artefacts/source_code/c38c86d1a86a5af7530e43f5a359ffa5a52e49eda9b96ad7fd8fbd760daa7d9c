@@ -1,0 +1,6 @@
+public static Cleaner create(Object ob, Runnable thunk){
+    if (thunk == null)
+        return null;
+    java.lang.ref.Cleaner cleaner = java.lang.ref.Cleaner.create();
+    return new Cleaner(cleaner.register(ob, thunk));
+}

@@ -1,0 +1,18 @@
+public int getLineBounds(int line, Rect bounds){
+    if (mLayout == null) {
+        if (bounds != null) {
+            bounds.set(0, 0, 0, 0);
+        }
+        return 0;
+    } else {
+        int baseline = mLayout.getLineBounds(line, bounds);
+        int voffset = getExtendedPaddingTop();
+        if ((mGravity & Gravity.VERTICAL_GRAVITY_MASK) != Gravity.TOP) {
+            voffset += getVerticalOffset(true);
+        }
+        if (bounds != null) {
+            bounds.offset(getCompoundPaddingLeft(), voffset);
+        }
+        return baseline + voffset;
+    }
+}

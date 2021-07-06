@@ -1,0 +1,15 @@
+public void prepareDownload(@Nullable byte[] hashCc, byte[] smdpSigned2, byte[] smdpSignature2, byte[] smdpCertificate, AsyncResultCallback<byte[]> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> {
+        Asn1Node.Builder builder = Asn1Node.newBuilder(Tags.TAG_PREPARE_DOWNLOAD).addChild(new Asn1Decoder(smdpSigned2).nextNode()).addChild(new Asn1Decoder(smdpSignature2).nextNode());
+        if (hashCc != null) {
+            builder.addChildAsBytes(Tags.TAG_UNI_4, hashCc);
+        }
+        requestBuilder.addStoreData(builder.addChild(new Asn1Decoder(smdpCertificate).nextNode()).build().toHex());
+    }), response -> {
+        Asn1Node root = parseResponse(response);
+        if (root.hasChild(Tags.TAG_CTX_COMP_1, Tags.TAG_UNI_2)) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_PREPARE_DOWNLOAD, root.getChild(Tags.TAG_CTX_COMP_1, Tags.TAG_UNI_2).asInteger());
+        }
+        return root.toBytes();
+    }, callback, handler);
+}

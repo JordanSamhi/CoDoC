@@ -1,0 +1,10 @@
+public boolean confirmConfiguration(){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.confirmConfiguration();
+        return true;
+    } catch (RemoteException e) {
+        log("Error confirming IpClient configuration", e);
+        return false;
+    }
+}

@@ -1,0 +1,12 @@
+public void setUp(){
+    MockitoAnnotations.initMocks(this);
+    when(mMockNative.startAntennaInfoListening()).thenReturn(true);
+    when(mMockNative.stopAntennaInfoListening()).thenReturn(true);
+    mTestProvider = new GnssAntennaInfoProvider(RuntimeEnvironment.application, new Handler(Looper.myLooper()), mMockNative) {
+
+        @Override
+        public boolean isGpsEnabled() {
+            return true;
+        }
+    };
+}

@@ -1,0 +1,49 @@
+public void applyRestoredPayload(String key, byte[] payload){
+    synchronized (mLock) {
+        if (KEY_USAGE_STATS.equals(key)) {
+            IntervalStats dailyConfigSource = getLatestUsageStats(UsageStatsManager.INTERVAL_DAILY);
+            IntervalStats weeklyConfigSource = getLatestUsageStats(UsageStatsManager.INTERVAL_WEEKLY);
+            IntervalStats monthlyConfigSource = getLatestUsageStats(UsageStatsManager.INTERVAL_MONTHLY);
+            IntervalStats yearlyConfigSource = getLatestUsageStats(UsageStatsManager.INTERVAL_YEARLY);
+            try {
+                DataInputStream in = new DataInputStream(new ByteArrayInputStream(payload));
+                int backupDataVersion = in.readInt();
+                if (backupDataVersion < 1 || backupDataVersion > BACKUP_VERSION)
+                    return;
+                for (int i = 0; i < mIntervalDirs.length; i++) {
+                    deleteDirectoryContents(mIntervalDirs[i]);
+                }
+                int fileCount = in.readInt();
+                for (int i = 0; i < fileCount; i++) {
+                    IntervalStats stats = deserializeIntervalStats(getIntervalStatsBytes(in), backupDataVersion);
+                    stats = mergeStats(stats, dailyConfigSource);
+                    putUsageStats(UsageStatsManager.INTERVAL_DAILY, stats);
+                }
+                fileCount = in.readInt();
+                for (int i = 0; i < fileCount; i++) {
+                    IntervalStats stats = deserializeIntervalStats(getIntervalStatsBytes(in), backupDataVersion);
+                    stats = mergeStats(stats, weeklyConfigSource);
+                    putUsageStats(UsageStatsManager.INTERVAL_WEEKLY, stats);
+                }
+                fileCount = in.readInt();
+                for (int i = 0; i < fileCount; i++) {
+                    IntervalStats stats = deserializeIntervalStats(getIntervalStatsBytes(in), backupDataVersion);
+                    stats = mergeStats(stats, monthlyConfigSource);
+                    putUsageStats(UsageStatsManager.INTERVAL_MONTHLY, stats);
+                }
+                fileCount = in.readInt();
+                for (int i = 0; i < fileCount; i++) {
+                    IntervalStats stats = deserializeIntervalStats(getIntervalStatsBytes(in), backupDataVersion);
+                    stats = mergeStats(stats, yearlyConfigSource);
+                    putUsageStats(UsageStatsManager.INTERVAL_YEARLY, stats);
+                }
+                if (DEBUG)
+                    Slog.i(TAG, "Completed Restoring UsageStats");
+            } catch (IOException ioe) {
+                Slog.d(TAG, "Failed to read data from input stream", ioe);
+            } finally {
+                indexFilesLocked();
+            }
+        }
+    }
+}

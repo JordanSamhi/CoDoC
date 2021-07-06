@@ -1,0 +1,12 @@
+public void onInitializeAccessibilityEventInternal(AccessibilityEvent event){
+    super.onInitializeAccessibilityEventInternal(event);
+    event.setScrollable(isScrollableForAccessibility());
+    View selectedView = getSelectedView();
+    if (selectedView != null) {
+        event.setEnabled(selectedView.isEnabled());
+    }
+    event.setCurrentItemIndex(getSelectedItemPosition());
+    event.setFromIndex(getFirstVisiblePosition());
+    event.setToIndex(getLastVisiblePosition());
+    event.setItemCount(getCount());
+}

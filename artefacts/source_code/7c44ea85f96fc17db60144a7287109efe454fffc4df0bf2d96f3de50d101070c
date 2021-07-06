@@ -1,0 +1,12 @@
+public void updateTracker(long frameNumber, boolean isError, int requestType){
+    if (isError) {
+        mFutureErrorMap.put(frameNumber, requestType);
+    } else {
+        try {
+            updateCompletedFrameNumber(frameNumber, requestType);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+    update();
+}

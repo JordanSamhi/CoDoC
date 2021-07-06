@@ -1,0 +1,39 @@
+public String getIccSimChallengeResponse(int authContext, String data){
+    if (VDBG)
+        log("getIccSimChallengeResponse:");
+    final CommandsInterface ci = mCi;
+    final UiccCardApplication parentApp = mParentApp;
+    if (ci == null || parentApp == null) {
+        loge("getIccSimChallengeResponse: Fail, ci or parentApp is null");
+        return null;
+    }
+    AuthAsyncResponse rsp = new AuthAsyncResponse();
+    synchronized (rsp) {
+        ci.requestIccSimAuthentication(authContext, data, parentApp.getAid(), obtainMessage(EVENT_AKA_AUTHENTICATE_DONE, 0, 0, rsp));
+        final long startTime = SystemClock.elapsedRealtime();
+        do {
+            try {
+                long sleepTime = startTime + ICC_SIM_CHALLENGE_TIMEOUT_MILLIS - SystemClock.elapsedRealtime();
+                if (sleepTime > 0)
+                    rsp.wait(sleepTime);
+            } catch (InterruptedException e) {
+                Rlog.w("IccRecords", "getIccSimChallengeResponse: InterruptedException.");
+            }
+        } while (SystemClock.elapsedRealtime() - startTime < ICC_SIM_CHALLENGE_TIMEOUT_MILLIS && rsp.authRsp == null && rsp.exception == null);
+        if (SystemClock.elapsedRealtime() - startTime >= ICC_SIM_CHALLENGE_TIMEOUT_MILLIS && rsp.authRsp == null && rsp.exception == null) {
+            loge("getIccSimChallengeResponse timeout!");
+            return null;
+        }
+        if (rsp.exception != null) {
+            loge("getIccSimChallengeResponse exception: " + rsp.exception);
+            return null;
+        }
+        if (rsp.authRsp == null) {
+            loge("getIccSimChallengeResponse: No authentication response");
+            return null;
+        }
+    }
+    if (VDBG)
+        log("getIccSimChallengeResponse: return rsp.authRsp");
+    return rsp.authRsp.payload != null ? new String(rsp.authRsp.payload) : null;
+}

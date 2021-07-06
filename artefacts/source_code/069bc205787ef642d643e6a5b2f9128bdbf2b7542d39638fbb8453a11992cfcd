@@ -1,0 +1,10 @@
+public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoInternal(info);
+    final int rowsCount = getCount();
+    final int selectionMode = getSelectionModeForAccessibility();
+    final CollectionInfo collectionInfo = CollectionInfo.obtain(-1, -1, false, selectionMode);
+    info.setCollectionInfo(collectionInfo);
+    if (rowsCount > 0) {
+        info.addAction(AccessibilityAction.ACTION_SCROLL_TO_POSITION);
+    }
+}

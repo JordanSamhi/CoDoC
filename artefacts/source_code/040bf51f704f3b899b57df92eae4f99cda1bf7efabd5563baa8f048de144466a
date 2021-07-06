@@ -1,0 +1,10 @@
+public void restoreEntity(BackupDataInputStream data){
+    Context context = mContext;
+    String key = data.getKey();
+    if (DEBUG)
+        Log.d(TAG, "got entity '" + key + "' size=" + data.size());
+    if (isKeyInList(key, mPrefGroups)) {
+        File f = context.getSharedPrefsFile(key).getAbsoluteFile();
+        writeFile(f, data);
+    }
+}

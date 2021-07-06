@@ -1,0 +1,8 @@
+public boolean sendNiResponse(int notificationId, int userResponse){
+    if (DEBUG) {
+        Log.d(TAG, "sendNiResponse, notifId: " + notificationId + ", response: " + userResponse);
+    }
+    native_send_ni_response(notificationId, userResponse);
+    FrameworkStatsLog.write(FrameworkStatsLog.GNSS_NI_EVENT_REPORTED, FrameworkStatsLog.GNSS_NI_EVENT_REPORTED__EVENT_TYPE__NI_RESPONSE, notificationId, 0, false, false, false, 0, 0, null, null, 0, 0, mSuplEsEnabled, isGpsEnabled(), userResponse);
+    return true;
+}

@@ -1,0 +1,12 @@
+public boolean isBackupServiceActive(UserHandle user){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "isBackupServiceActive");
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            return sService.isBackupServiceActive(user.getIdentifier());
+        } catch (RemoteException e) {
+            Log.e(TAG, "isBackupEnabled() couldn't connect");
+        }
+    }
+    return false;
+}

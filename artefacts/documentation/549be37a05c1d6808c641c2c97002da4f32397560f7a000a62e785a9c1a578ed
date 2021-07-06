@@ -1,0 +1,23 @@
+
+     * ZHBMV performs the matrix-vector operation
+     * y := alpha*A*x + beta*y
+     *
+     * Details: http://www.netlib.org/lapack/explore-html/d3/d1a/zhbmv_8f.html
+     *
+     * Note: For a N*N matrix, the input Allocation should also be of size N*N (dimY = N, dimX = N),
+     *       but only the region N*(K+1) will be referenced. The following subroutine can is an
+     *       example showing how to convert a UPPER trianglar matrix 'a' to row-based band matrix 'b'.
+     *           for i in range(0, n):
+     *              for j in range(i, min(i+k+1, n)):
+     *                  b[i, j-i] = a[i, j]
+     *
+     * @param Uplo Specifies whether the upper or lower triangular part of the band matrix A is being supplied.
+     * @param K The number of off-diagonals of the matrix A
+     * @param alpha The scalar alpha.
+     * @param A The input allocation contains matrix A, supported elements type {@link Element#F64_2}.
+     * @param X The input allocation contains vector x, supported elements type {@link Element#F64_2}.
+     * @param incX The increment for the elements of vector x, must be larger than zero.
+     * @param beta The scalar beta.
+     * @param Y The input allocation contains vector y, supported elements type {@link Element#F64_2}.
+     * @param incY The increment for the elements of vector y, must be larger than zero.
+     

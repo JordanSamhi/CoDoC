@@ -1,0 +1,22 @@
+public UserHandle getUserForAncestralSerialNumber(long ancestralSerialNumber){
+    if (mGlobalDisable) {
+        return null;
+    }
+    int callingUserId = Binder.getCallingUserHandle().getIdentifier();
+    long oldId = Binder.clearCallingIdentity();
+    final int[] userIds;
+    try {
+        userIds = getUserManager().getProfileIds(callingUserId, false);
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+    for (int userId : userIds) {
+        UserBackupManagerService userBackupManagerService = mUserServices.get(userId);
+        if (userBackupManagerService != null) {
+            if (userBackupManagerService.getAncestralSerialNumber() == ancestralSerialNumber) {
+                return UserHandle.of(userId);
+            }
+        }
+    }
+    return null;
+}

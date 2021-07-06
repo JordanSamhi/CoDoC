@@ -1,0 +1,11 @@
+public int getConnectionState(BluetoothDevice device, int profile){
+    if (DBG)
+        Log.d(TAG, "getConnectionState()");
+    List<BluetoothDevice> connectedDevices = getConnectedDevices(profile);
+    for (BluetoothDevice connectedDevice : connectedDevices) {
+        if (device.equals(connectedDevice)) {
+            return BluetoothProfile.STATE_CONNECTED;
+        }
+    }
+    return BluetoothProfile.STATE_DISCONNECTED;
+}

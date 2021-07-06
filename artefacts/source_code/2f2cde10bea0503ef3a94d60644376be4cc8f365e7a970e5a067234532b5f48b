@@ -1,0 +1,13 @@
+public int read(@NonNull ByteBuffer audioBuffer, int sizeInBytes, @ReadMode int readMode){
+    if (mState != STATE_INITIALIZED) {
+        return ERROR_INVALID_OPERATION;
+    }
+    if ((readMode != READ_BLOCKING) && (readMode != READ_NON_BLOCKING)) {
+        Log.e(TAG, "AudioRecord.read() called with invalid blocking mode");
+        return ERROR_BAD_VALUE;
+    }
+    if ((audioBuffer == null) || (sizeInBytes < 0)) {
+        return ERROR_BAD_VALUE;
+    }
+    return native_read_in_direct_buffer(audioBuffer, sizeInBytes, readMode == READ_BLOCKING);
+}

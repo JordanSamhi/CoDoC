@@ -1,0 +1,20 @@
+
+     * Replace oldAdn with newAdn in ADN-like record in EF
+     *
+     * getAdnRecordsInEf must be called at least once before this function,
+     * otherwise an error will be returned. Currently the email field
+     * if set in the ADN record is ignored.
+     * throws SecurityException if no WRITE_CONTACTS permission
+     *
+     * @param efid must be one among EF_ADN, EF_FDN, and EF_SDN
+     * @param oldTag adn tag to be replaced
+     * @param oldPhoneNumber adn number to be replaced
+     *        Set both oldTag and oldPhoneNubmer to "" means to replace an
+     *        empty record, aka, insert new record
+     * @param newTag adn tag to be stored
+     * @param newPhoneNumber adn number ot be stored
+     *        Set both newTag and newPhoneNubmer to "" means to replace the old
+     *        record with empty one, aka, delete old record
+     * @param pin2 required to update EF_FDN, otherwise must be null
+     * @return true for success
+     

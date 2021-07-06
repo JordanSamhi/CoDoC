@@ -1,0 +1,16 @@
+public int getConnectionState(){
+    if (getState() != STATE_ON) {
+        return BluetoothAdapter.STATE_DISCONNECTED;
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.getAdapterConnectionState();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "getConnectionState:", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return BluetoothAdapter.STATE_DISCONNECTED;
+}

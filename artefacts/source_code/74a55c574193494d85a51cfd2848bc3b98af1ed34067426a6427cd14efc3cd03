@@ -1,0 +1,55 @@
+public Matrix inverse(Matrix result, Matrix scratch){
+    if (!(n == m && n == result.n && m == result.m && n == scratch.n && 2 * m == scratch.m)) {
+        throw new IllegalArgumentException();
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            scratch.put(i, j, get(i, j));
+            scratch.put(i, m + j, i == j ? 1.0 : 0.0);
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        int ibest = i;
+        double vbest = Math.abs(scratch.get(ibest, ibest));
+        for (int ii = i + 1; ii < n; ii++) {
+            double v = Math.abs(scratch.get(ii, i));
+            if (v > vbest) {
+                ibest = ii;
+                vbest = v;
+            }
+        }
+        if (ibest != i) {
+            for (int j = 0; j < scratch.m; j++) {
+                double t = scratch.get(i, j);
+                scratch.put(i, j, scratch.get(ibest, j));
+                scratch.put(ibest, j, t);
+            }
+        }
+        double d = scratch.get(i, i);
+        if (d == 0.0)
+            throw new ArithmeticException("Singular matrix");
+        for (int j = 0; j < scratch.m; j++) {
+            scratch.put(i, j, scratch.get(i, j) / d);
+        }
+        for (int ii = i + 1; ii < n; ii++) {
+            d = scratch.get(ii, i);
+            for (int j = 0; j < scratch.m; j++) {
+                scratch.put(ii, j, scratch.get(ii, j) - d * scratch.get(i, j));
+            }
+        }
+    }
+    for (int i = n - 1; i >= 0; i--) {
+        for (int ii = 0; ii < i; ii++) {
+            double d = scratch.get(ii, i);
+            for (int j = 0; j < scratch.m; j++) {
+                scratch.put(ii, j, scratch.get(ii, j) - d * scratch.get(i, j));
+            }
+        }
+    }
+    for (int i = 0; i < result.n; i++) {
+        for (int j = 0; j < result.m; j++) {
+            result.put(i, j, scratch.get(i, m + j));
+        }
+    }
+    return result;
+}

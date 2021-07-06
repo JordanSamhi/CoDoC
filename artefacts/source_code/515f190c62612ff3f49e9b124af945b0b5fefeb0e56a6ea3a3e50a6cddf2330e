@@ -1,0 +1,10 @@
+public void excludeKeysFromRestore(@NonNull String packageName, @NonNull List<String> keys){
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            sService.excludeKeysFromRestore(packageName, keys);
+        } catch (RemoteException e) {
+            Log.e(TAG, "excludeKeysFromRestore() couldn't connect");
+        }
+    }
+}

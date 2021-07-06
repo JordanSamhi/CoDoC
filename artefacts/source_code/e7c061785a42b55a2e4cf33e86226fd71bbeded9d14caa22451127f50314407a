@@ -1,0 +1,12 @@
+public static InputManager getInstance(){
+    synchronized (InputManager.class) {
+        if (sInstance == null) {
+            try {
+                sInstance = new InputManager(IInputManager.Stub.asInterface(ServiceManager.getServiceOrThrow(Context.INPUT_SERVICE)));
+            } catch (ServiceNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return sInstance;
+    }
+}

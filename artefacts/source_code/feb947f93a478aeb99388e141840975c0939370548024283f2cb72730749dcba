@@ -1,0 +1,23 @@
+public static void main(String[] args){
+    if (args.length == 0) {
+        showUsage(System.err);
+        System.exit(0);
+    }
+    IncidentHelper incidentHelper = new IncidentHelper(args);
+    try {
+        incidentHelper.run(args);
+    } catch (IllegalArgumentException e) {
+        showUsage(System.err);
+        System.err.println();
+        e.printStackTrace(System.err);
+        if (sLog) {
+            Log.e(TAG, "Error: ", e);
+        }
+    } catch (Exception e) {
+        e.printStackTrace(System.err);
+        if (sLog) {
+            Log.e(TAG, "Error: ", e);
+        }
+        System.exit(1);
+    }
+}

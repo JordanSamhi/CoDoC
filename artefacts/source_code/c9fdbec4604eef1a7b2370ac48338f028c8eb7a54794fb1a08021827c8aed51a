@@ -1,0 +1,10 @@
+public static void assertHorizontalCenterAligned(View reference, View test){
+    int[] xy = new int[2];
+    reference.getLocationOnScreen(xy);
+    int referenceLeft = xy[0];
+    test.getLocationOnScreen(xy);
+    int testLeft = xy[0];
+    int center = (reference.getMeasuredWidth() - test.getMeasuredWidth()) / 2;
+    int delta = testLeft - referenceLeft;
+    assertEquals("views are not horizontally center aligned", center, delta);
+}

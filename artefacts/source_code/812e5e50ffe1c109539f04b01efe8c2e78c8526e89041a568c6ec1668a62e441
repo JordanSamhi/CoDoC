@@ -1,0 +1,25 @@
+public String buildInsert(ContentValues values){
+    if (values == null || values.isEmpty()) {
+        throw new IllegalArgumentException("Empty values");
+    }
+    StringBuilder sql = new StringBuilder(120);
+    sql.append("INSERT INTO ");
+    sql.append(SQLiteDatabase.findEditTable(mTables));
+    sql.append(" (");
+    final ArrayMap<String, Object> rawValues = values.getValues();
+    for (int i = 0; i < rawValues.size(); i++) {
+        if (i > 0) {
+            sql.append(',');
+        }
+        sql.append(rawValues.keyAt(i));
+    }
+    sql.append(") VALUES (");
+    for (int i = 0; i < rawValues.size(); i++) {
+        if (i > 0) {
+            sql.append(',');
+        }
+        sql.append('?');
+    }
+    sql.append(")");
+    return sql.toString();
+}

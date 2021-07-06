@@ -1,0 +1,11 @@
+public Float getFloatValue(int formatType, int offset){
+    if ((offset + getTypeLen(formatType)) > mValue.length)
+        return null;
+    switch(formatType) {
+        case FORMAT_SFLOAT:
+            return bytesToFloat(mValue[offset], mValue[offset + 1]);
+        case FORMAT_FLOAT:
+            return bytesToFloat(mValue[offset], mValue[offset + 1], mValue[offset + 2], mValue[offset + 3]);
+    }
+    return null;
+}

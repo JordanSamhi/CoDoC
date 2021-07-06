@@ -1,0 +1,30 @@
+public void addLockoutResetCallback(final LockoutResetCallback callback){
+    if (mService != null) {
+        try {
+            final PowerManager powerManager = mContext.getSystemService(PowerManager.class);
+            mService.addLockoutResetCallback(new IBiometricServiceLockoutResetCallback.Stub() {
+
+                @Override
+                public void onLockoutReset(long deviceId, IRemoteCallback serverCallback) throws RemoteException {
+                    try {
+                        final PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "faceLockoutResetCallback");
+                        wakeLock.acquire();
+                        mHandler.post(() -> {
+                            try {
+                                callback.onLockoutReset();
+                            } finally {
+                                wakeLock.release();
+                            }
+                        });
+                    } finally {
+                        serverCallback.sendResult(null);
+                    }
+                }
+            });
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        Log.w(TAG, "addLockoutResetCallback(): Service not connected!");
+    }
+}

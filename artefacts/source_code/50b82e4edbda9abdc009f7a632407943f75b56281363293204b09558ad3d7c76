@@ -1,0 +1,14 @@
+public static SliceItem getPrimaryIcon(Slice slice){
+    for (SliceItem item : slice.getItems()) {
+        if (Objects.equals(item.getFormat(), SliceItem.FORMAT_IMAGE)) {
+            return item;
+        }
+        if (!(compareTypes(item, SliceItem.FORMAT_SLICE) && item.hasHint(Slice.HINT_LIST)) && !item.hasHint(Slice.HINT_ACTIONS) && !item.hasHint(Slice.HINT_LIST_ITEM) && !compareTypes(item, SliceItem.FORMAT_ACTION)) {
+            SliceItem icon = SliceQuery.find(item, SliceItem.FORMAT_IMAGE);
+            if (icon != null) {
+                return icon;
+            }
+        }
+    }
+    return null;
+}

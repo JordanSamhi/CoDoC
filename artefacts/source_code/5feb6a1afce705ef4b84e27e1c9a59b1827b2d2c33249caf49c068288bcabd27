@@ -1,0 +1,21 @@
+public Size getSizeForAspectRatio(float aspectRatio, float minEdgeSize, int displayWidth, int displayHeight){
+    final int smallestDisplaySize = Math.min(displayWidth, displayHeight);
+    final int minSize = (int) Math.max(minEdgeSize, smallestDisplaySize * mDefaultSizePercent);
+    final int width;
+    final int height;
+    if (aspectRatio <= mMinAspectRatioForMinSize || aspectRatio > mMaxAspectRatioForMinSize) {
+        if (aspectRatio <= 1) {
+            width = minSize;
+            height = Math.round(width / aspectRatio);
+        } else {
+            height = minSize;
+            width = Math.round(height * aspectRatio);
+        }
+    } else {
+        final float widthAtMaxAspectRatioForMinSize = mMaxAspectRatioForMinSize * minSize;
+        final float radius = PointF.length(widthAtMaxAspectRatioForMinSize, minSize);
+        height = (int) Math.round(Math.sqrt((radius * radius) / (aspectRatio * aspectRatio + 1)));
+        width = Math.round(height * aspectRatio);
+    }
+    return new Size(width, height);
+}

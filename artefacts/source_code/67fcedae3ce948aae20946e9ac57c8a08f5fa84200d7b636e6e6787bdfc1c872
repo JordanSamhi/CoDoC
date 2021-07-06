@@ -1,0 +1,14 @@
+public void putAll(Map<String, WrappedKeyProto.WrappedKey> wrappedKeysByApplicationName) throws IOException{
+    TertiaryKeysTable tertiaryKeysTable = mDatabase.getTertiaryKeysTable();
+    try {
+        for (String applicationName : wrappedKeysByApplicationName.keySet()) {
+            byte[] keyBytes = getEncodedKey(wrappedKeysByApplicationName.get(applicationName));
+            long primaryKey = tertiaryKeysTable.addKey(new TertiaryKey(mSecondaryKey.getAlias(), applicationName, keyBytes));
+            if (primaryKey == -1) {
+                throw new IOException("Failed to commit to db");
+            }
+        }
+    } finally {
+        mDatabase.close();
+    }
+}

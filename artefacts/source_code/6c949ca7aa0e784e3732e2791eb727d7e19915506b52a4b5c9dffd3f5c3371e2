@@ -1,0 +1,30 @@
+public void requestCellInfoUpdate(@NonNull WorkSource workSource, @NonNull @CallbackExecutor Executor executor, @NonNull CellInfoCallback callback){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null)
+            return;
+        telephony.requestCellInfoUpdateWithWorkSource(getSubId(), new ICellInfoCallback.Stub() {
+
+            @Override
+            public void onCellInfo(List<CellInfo> cellInfo) {
+                final long identity = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onCellInfo(cellInfo));
+                } finally {
+                    Binder.restoreCallingIdentity(identity);
+                }
+            }
+
+            @Override
+            public void onError(int errorCode, String exceptionName, String message) {
+                final long identity = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onError(errorCode, createThrowableByClassName(exceptionName, message)));
+                } finally {
+                    Binder.restoreCallingIdentity(identity);
+                }
+            }
+        }, getOpPackageName(), getAttributionTag(), workSource);
+    } catch (RemoteException ex) {
+    }
+}

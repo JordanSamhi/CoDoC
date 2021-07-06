@@ -1,0 +1,11 @@
+public void onBlockedClientConnecting(WifiClient client, int blockedReason){
+    Iterator<ISoftApCallback> iterator = mRegisteredSoftApCallbacks.getCallbacks().iterator();
+    while (iterator.hasNext()) {
+        ISoftApCallback callback = iterator.next();
+        try {
+            callback.onBlockedClientConnecting(client, blockedReason);
+        } catch (RemoteException e) {
+            Log.e(TAG, "onBlockedClientConnecting: remote exception -- " + e);
+        }
+    }
+}

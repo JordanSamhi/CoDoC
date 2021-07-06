@@ -1,0 +1,8 @@
+public List<ShortcutInfo> getShortcuts(@NonNull ShortcutQuery query, @NonNull UserHandle user){
+    logErrorForInvalidProfileAccess(user);
+    try {
+        return maybeUpdateDisabledMessage(mService.getShortcuts(mContext.getPackageName(), new ShortcutQueryWrapper(query), user).getList());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,37 @@
+public static float computeCompatibleScaling(DisplayMetrics dm, DisplayMetrics outDm){
+    final int width = dm.noncompatWidthPixels;
+    final int height = dm.noncompatHeightPixels;
+    int shortSize, longSize;
+    if (width < height) {
+        shortSize = width;
+        longSize = height;
+    } else {
+        shortSize = height;
+        longSize = width;
+    }
+    int newShortSize = (int) (DEFAULT_NORMAL_SHORT_DIMENSION * dm.density + 0.5f);
+    float aspect = ((float) longSize) / shortSize;
+    if (aspect > MAXIMUM_ASPECT_RATIO) {
+        aspect = MAXIMUM_ASPECT_RATIO;
+    }
+    int newLongSize = (int) (newShortSize * aspect + 0.5f);
+    int newWidth, newHeight;
+    if (width < height) {
+        newWidth = newShortSize;
+        newHeight = newLongSize;
+    } else {
+        newWidth = newLongSize;
+        newHeight = newShortSize;
+    }
+    float sw = width / (float) newWidth;
+    float sh = height / (float) newHeight;
+    float scale = sw < sh ? sw : sh;
+    if (scale < 1) {
+        scale = 1;
+    }
+    if (outDm != null) {
+        outDm.widthPixels = newWidth;
+        outDm.heightPixels = newHeight;
+    }
+    return scale;
+}

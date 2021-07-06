@@ -1,0 +1,14 @@
+public void setLastBaselineToBottomHeight(@Px @IntRange(from = 0) int lastBaselineToBottomHeight){
+    Preconditions.checkArgumentNonnegative(lastBaselineToBottomHeight);
+    final FontMetricsInt fontMetrics = getPaint().getFontMetricsInt();
+    final int fontMetricsBottom;
+    if (getIncludeFontPadding()) {
+        fontMetricsBottom = fontMetrics.bottom;
+    } else {
+        fontMetricsBottom = fontMetrics.descent;
+    }
+    if (lastBaselineToBottomHeight > Math.abs(fontMetricsBottom)) {
+        final int paddingBottom = lastBaselineToBottomHeight - fontMetricsBottom;
+        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), paddingBottom);
+    }
+}

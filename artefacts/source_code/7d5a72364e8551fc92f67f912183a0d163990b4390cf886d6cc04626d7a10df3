@@ -1,0 +1,9 @@
+public void downloadMms(@NonNull Uri pduUri, int subId, @NonNull Uri location, @NonNull final CarrierMessagingCallbackWrapper callback){
+    if (mICarrierMessagingService != null) {
+        try {
+            mICarrierMessagingService.downloadMms(pduUri, subId, location, new CarrierMessagingCallbackWrapperInternal(callback));
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

@@ -1,0 +1,13 @@
+public String toMimeType(){
+    switch(mTnf) {
+        case NdefRecord.TNF_WELL_KNOWN:
+            if (Arrays.equals(mType, NdefRecord.RTD_TEXT)) {
+                return "text/plain";
+            }
+            break;
+        case NdefRecord.TNF_MIME_MEDIA:
+            String mimeType = new String(mType, StandardCharsets.US_ASCII);
+            return Intent.normalizeMimeType(mimeType);
+    }
+    return null;
+}

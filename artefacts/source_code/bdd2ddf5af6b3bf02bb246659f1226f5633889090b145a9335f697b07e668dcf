@@ -1,0 +1,21 @@
+public static Map<String, Pair<SecretKey, byte[]>> unwrapKeys(PlatformDecryptionKey platformKey, Map<String, WrappedKey> wrappedKeys) throws NoSuchAlgorithmException, NoSuchPaddingException, BadPlatformKeyException, InvalidKeyException, InvalidAlgorithmParameterException{
+    HashMap<String, Pair<SecretKey, byte[]>> unwrappedKeys = new HashMap<>();
+    Cipher cipher = Cipher.getInstance(KEY_WRAP_CIPHER_ALGORITHM);
+    int platformKeyGenerationId = platformKey.getGenerationId();
+    for (String alias : wrappedKeys.keySet()) {
+        WrappedKey wrappedKey = wrappedKeys.get(alias);
+        if (wrappedKey.getPlatformKeyGenerationId() != platformKeyGenerationId) {
+            throw new BadPlatformKeyException(String.format(Locale.US, "WrappedKey with alias '%s' was wrapped with platform key %d, not " + "platform key %d", alias, wrappedKey.getPlatformKeyGenerationId(), platformKey.getGenerationId()));
+        }
+        cipher.init(Cipher.UNWRAP_MODE, platformKey.getKey(), new GCMParameterSpec(GCM_TAG_LENGTH_BITS, wrappedKey.getNonce()));
+        SecretKey key;
+        try {
+            key = (SecretKey) cipher.unwrap(wrappedKey.getKeyMaterial(), APPLICATION_KEY_ALGORITHM, Cipher.SECRET_KEY);
+        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+            Log.e(TAG, String.format(Locale.US, "Error unwrapping recoverable key with alias '%s'", alias), e);
+            continue;
+        }
+        unwrappedKeys.put(alias, Pair.create(key, wrappedKey.getKeyMetadata()));
+    }
+    return unwrappedKeys;
+}

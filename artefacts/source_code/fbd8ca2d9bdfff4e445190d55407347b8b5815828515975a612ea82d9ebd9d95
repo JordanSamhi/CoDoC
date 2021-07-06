@@ -1,0 +1,46 @@
+public boolean onForwardedEvent(@NonNull MotionEvent event, int activePointerId){
+    boolean handledEvent = true;
+    boolean clearPressedItem = false;
+    final int actionMasked = event.getActionMasked();
+    switch(actionMasked) {
+        case MotionEvent.ACTION_CANCEL:
+            handledEvent = false;
+            break;
+        case MotionEvent.ACTION_UP:
+            handledEvent = false;
+        case MotionEvent.ACTION_MOVE:
+            final int activeIndex = event.findPointerIndex(activePointerId);
+            if (activeIndex < 0) {
+                handledEvent = false;
+                break;
+            }
+            final int x = (int) event.getX(activeIndex);
+            final int y = (int) event.getY(activeIndex);
+            final int position = pointToPosition(x, y);
+            if (position == INVALID_POSITION) {
+                clearPressedItem = true;
+                break;
+            }
+            final View child = getChildAt(position - getFirstVisiblePosition());
+            setPressedItem(child, position, x, y);
+            handledEvent = true;
+            if (actionMasked == MotionEvent.ACTION_UP) {
+                final long id = getItemIdAtPosition(position);
+                performItemClick(child, position, id);
+            }
+            break;
+    }
+    if (!handledEvent || clearPressedItem) {
+        clearPressedItem();
+    }
+    if (handledEvent) {
+        if (mScrollHelper == null) {
+            mScrollHelper = new AbsListViewAutoScroller(this);
+        }
+        mScrollHelper.setEnabled(true);
+        mScrollHelper.onTouch(this, event);
+    } else if (mScrollHelper != null) {
+        mScrollHelper.setEnabled(false);
+    }
+    return handledEvent;
+}

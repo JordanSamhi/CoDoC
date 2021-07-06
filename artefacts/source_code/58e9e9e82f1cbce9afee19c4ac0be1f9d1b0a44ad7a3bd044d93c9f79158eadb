@@ -1,0 +1,15 @@
+public void setDiscoverableTimeout(int timeout){
+    if (getState() != STATE_ON) {
+        return;
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            mService.setDiscoverableTimeout(timeout);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+}

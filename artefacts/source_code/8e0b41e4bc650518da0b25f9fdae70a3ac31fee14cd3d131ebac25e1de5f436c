@@ -1,0 +1,37 @@
+public void dump(ProtoOutputStream proto, long fieldId){
+    final long token = proto.start(fieldId);
+    synchronized (mLock) {
+        super.dump(proto, CountQuotaTrackerProto.BASE_QUOTA_DATA);
+        for (int i = 0; i < mCategoryCountWindowSizesMs.size(); ++i) {
+            final Category category = mCategoryCountWindowSizesMs.keyAt(i);
+            final long clToken = proto.start(CountQuotaTrackerProto.COUNT_LIMIT);
+            category.dumpDebug(proto, CountQuotaTrackerProto.CountLimit.CATEGORY);
+            proto.write(CountQuotaTrackerProto.CountLimit.LIMIT, mMaxCategoryCounts.get(category));
+            proto.write(CountQuotaTrackerProto.CountLimit.WINDOW_SIZE_MS, mCategoryCountWindowSizesMs.get(category));
+            proto.end(clToken);
+        }
+        mExecutionStatsCache.forEach((userId, pkgName, tag, stats) -> {
+            final boolean isQuotaFree = isIndividualQuotaFreeLocked(userId, pkgName);
+            final long usToken = proto.start(CountQuotaTrackerProto.UPTC_STATS);
+            (new Uptc(userId, pkgName, tag)).dumpDebug(proto, CountQuotaTrackerProto.UptcStats.UPTC);
+            proto.write(CountQuotaTrackerProto.UptcStats.IS_QUOTA_FREE, isQuotaFree);
+            final LongArrayQueue events = mEventTimes.get(userId, pkgName, tag);
+            if (events != null) {
+                for (int j = events.size() - 1; j >= 0; --j) {
+                    final long eToken = proto.start(CountQuotaTrackerProto.UptcStats.EVENTS);
+                    proto.write(CountQuotaTrackerProto.Event.TIMESTAMP_ELAPSED, events.get(j));
+                    proto.end(eToken);
+                }
+            }
+            final long statsToken = proto.start(CountQuotaTrackerProto.UptcStats.EXECUTION_STATS);
+            proto.write(CountQuotaTrackerProto.ExecutionStats.EXPIRATION_TIME_ELAPSED, stats.expirationTimeElapsed);
+            proto.write(CountQuotaTrackerProto.ExecutionStats.WINDOW_SIZE_MS, stats.windowSizeMs);
+            proto.write(CountQuotaTrackerProto.ExecutionStats.COUNT_LIMIT, stats.countLimit);
+            proto.write(CountQuotaTrackerProto.ExecutionStats.COUNT_IN_WINDOW, stats.countInWindow);
+            proto.write(CountQuotaTrackerProto.ExecutionStats.IN_QUOTA_TIME_ELAPSED, stats.inQuotaTimeElapsed);
+            proto.end(statsToken);
+            proto.end(usToken);
+        });
+        proto.end(token);
+    }
+}

@@ -1,0 +1,21 @@
+public Bitmap takeScreenshot(){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    Display display = DisplayManagerGlobal.getInstance().getRealDisplay(Display.DEFAULT_DISPLAY);
+    Point displaySize = new Point();
+    display.getRealSize(displaySize);
+    int rotation = display.getRotation();
+    Bitmap screenShot = null;
+    try {
+        screenShot = mUiAutomationConnection.takeScreenshot(new Rect(0, 0, displaySize.x, displaySize.y), rotation);
+        if (screenShot == null) {
+            return null;
+        }
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error while taking screnshot!", re);
+        return null;
+    }
+    screenShot.setHasAlpha(false);
+    return screenShot;
+}

@@ -1,0 +1,12 @@
+public static void writeCutoutToParcel(DisplayCutout cutout, Parcel out, int flags){
+    if (cutout == null) {
+        out.writeInt(-1);
+    } else if (cutout == NO_CUTOUT) {
+        out.writeInt(0);
+    } else {
+        out.writeInt(1);
+        out.writeTypedObject(cutout.mSafeInsets, flags);
+        out.writeTypedArray(cutout.mBounds.getRects(), flags);
+        out.writeTypedObject(cutout.mWaterfallInsets, flags);
+    }
+}

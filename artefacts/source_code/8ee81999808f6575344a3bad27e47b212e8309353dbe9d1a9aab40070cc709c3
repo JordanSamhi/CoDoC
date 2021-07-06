@@ -1,0 +1,11 @@
+public void selectBackupTransport(ComponentName transport, SelectBackupTransportCallback listener){
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            SelectTransportListenerWrapper wrapper = listener == null ? null : new SelectTransportListenerWrapper(mContext, listener);
+            sService.selectBackupTransportAsyncForUser(mContext.getUserId(), transport, wrapper);
+        } catch (RemoteException e) {
+            Log.e(TAG, "selectBackupTransportAsync() couldn't connect");
+        }
+    }
+}

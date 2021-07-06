@@ -1,0 +1,19 @@
+
+     * Entry point for the carrier identification.
+     *
+     *    1. SIM_LOAD_EVENT
+     *        This indicates that all SIM records has been loaded and its first entry point for the
+     *        carrier identification. Note, there are other attributes could be changed on the fly
+     *        like APN. We cached all carrier matching rules based on MCCMNC to speed
+     *        up carrier resolution on following trigger events.
+     *
+     *    2. PREFER_APN_UPDATE_EVENT
+     *        This indicates prefer apn has been changed. It could be triggered when user modified
+     *        APN settings or when default data connection first establishes on the current carrier.
+     *        We follow up on this by querying prefer apn sqlite and re-issue carrier identification
+     *        with the updated prefer apn name.
+     *
+     *    3. CARRIER_ID_DB_UPDATE_EVENT
+     *        This indicates that carrierIdentification database which stores all matching rules
+     *        has been updated. It could be triggered from OTA or assets update.
+     

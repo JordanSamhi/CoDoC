@@ -1,0 +1,12 @@
+
+     * Temporarily put the cache in the uninitialized state and prevent invalidations from
+     * moving it out of that state: useful in cases where we want to avoid the overhead of a
+     * large number of cache invalidations in a short time.  While the cache is corked, clients
+     * bypass the cache and talk to backing services directly.  This property makes corking
+     * correctness-preserving even if corked outside the lock that controls access to the
+     * cache's backing service.
+     *
+     * corkInvalidations() and uncorkInvalidations() must be called in pairs.
+     *
+     * @param name Name of the cache-key property to cork
+     

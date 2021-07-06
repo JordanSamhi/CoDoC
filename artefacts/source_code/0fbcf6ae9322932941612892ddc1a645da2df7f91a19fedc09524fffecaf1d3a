@@ -1,0 +1,11 @@
+public float update(long now){
+    float rate;
+    if (mLastEventTime == null) {
+        rate = 0f;
+    } else {
+        mInterarrivalTime = getInterarrivalEstimate(now);
+        rate = (float) (1.0 / mInterarrivalTime);
+    }
+    mLastEventTime = now;
+    return rate;
+}

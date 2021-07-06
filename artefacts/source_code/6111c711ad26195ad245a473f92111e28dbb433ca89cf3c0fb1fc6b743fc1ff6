@@ -1,0 +1,26 @@
+public static int unstableRemoveIf(@Nullable ArrayList<T> collection, @NonNull java.util.function.Predicate<T> predicate){
+    if (collection == null) {
+        return 0;
+    }
+    final int size = collection.size();
+    int leftIdx = 0;
+    int rightIdx = size - 1;
+    while (leftIdx <= rightIdx) {
+        while (leftIdx < size && !predicate.test(collection.get(leftIdx))) {
+            leftIdx++;
+        }
+        while (rightIdx > leftIdx && predicate.test(collection.get(rightIdx))) {
+            rightIdx--;
+        }
+        if (leftIdx >= rightIdx) {
+            break;
+        }
+        Collections.swap(collection, leftIdx, rightIdx);
+        leftIdx++;
+        rightIdx--;
+    }
+    for (int i = size - 1; i >= leftIdx; i--) {
+        collection.remove(i);
+    }
+    return size - leftIdx;
+}

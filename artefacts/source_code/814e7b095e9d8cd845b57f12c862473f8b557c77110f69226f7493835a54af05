@@ -1,0 +1,17 @@
+public void sendAccessibilityEventUncheckedInternal(AccessibilityEvent event){
+    boolean isWindowStateChanged = (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+    boolean isWindowDisappearedEvent = isWindowStateChanged && ((event.getContentChangeTypes() & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED) != 0);
+    if (!isShown() && !isWindowDisappearedEvent) {
+        return;
+    }
+    onInitializeAccessibilityEvent(event);
+    if ((event.getEventType() & POPULATING_ACCESSIBILITY_EVENT_TYPES) != 0) {
+        dispatchPopulateAccessibilityEvent(event);
+    }
+    SendAccessibilityEventThrottle throttle = getThrottleForAccessibilityEvent(event);
+    if (throttle != null) {
+        throttle.post(event);
+    } else {
+        requestParentSendAccessibilityEvent(event);
+    }
+}

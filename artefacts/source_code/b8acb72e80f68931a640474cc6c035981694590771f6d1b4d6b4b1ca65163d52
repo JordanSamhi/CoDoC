@@ -1,0 +1,14 @@
+public UserInfo createRestrictedProfile(String name){
+    try {
+        UserHandle parentUserHandle = Process.myUserHandle();
+        UserInfo user = mService.createRestrictedProfileWithThrow(name, parentUserHandle.getIdentifier());
+        if (user != null) {
+            AccountManager.get(mContext).addSharedAccountsFromParentUser(parentUserHandle, UserHandle.of(user.id));
+        }
+        return user;
+    } catch (ServiceSpecificException e) {
+        return null;
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

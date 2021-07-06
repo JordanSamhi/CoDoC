@@ -1,0 +1,51 @@
+public void updateUserPreferences(){
+    SubscriptionInfo mNextActivatedSub = null;
+    int activeCount = 0;
+    if (!isRadioInValidState()) {
+        logd("Radio is in Invalid state, Ignore Updating User Preference!!!");
+        return;
+    }
+    List<SubscriptionInfo> sil = getActiveSubscriptionInfoList(mContext.getOpPackageName());
+    if (sil == null || sil.size() < 1) {
+        logi("updateUserPreferences: Subscription list is empty");
+        return;
+    }
+    if (SystemProperties.getBoolean("persist.vendor.radio.aosp_usr_pref_sel", false)) {
+        logi("updateUserPreferences: AOSP user preference option enabled ");
+        return;
+    }
+    final int defaultVoiceSubId = getDefaultVoiceSubId();
+    final int defaultDataSubId = getDefaultDataSubId();
+    final int defaultSmsSubId = getDefaultSmsSubId();
+    for (SubscriptionInfo subInfo : sil) {
+        if (isUiccProvisioned(subInfo.getSimSlotIndex())) {
+            activeCount++;
+            if (mNextActivatedSub == null)
+                mNextActivatedSub = subInfo;
+        }
+    }
+    logd("updateUserPreferences:: active sub count = " + activeCount + " dds = " + defaultDataSubId + " voice = " + defaultVoiceSubId + " sms = " + defaultSmsSubId);
+    if (activeCount == 1) {
+        setSmsPromptEnabled(false);
+    }
+    if ((mNextActivatedSub == null) || (getActiveSubInfoCountMax() == 1))
+        return;
+    handleDataPreference(mNextActivatedSub.getSubscriptionId());
+    if ((defaultSmsSubId != SubscriptionManager.INVALID_SUBSCRIPTION_ID || activeCount == 1) && !isSubProvisioned(defaultSmsSubId)) {
+        setDefaultSmsSubId(mNextActivatedSub.getSubscriptionId());
+    }
+    if ((defaultVoiceSubId != SubscriptionManager.INVALID_SUBSCRIPTION_ID || activeCount == 1) && !isSubProvisioned(defaultVoiceSubId)) {
+        setDefaultVoiceSubId(mNextActivatedSub.getSubscriptionId());
+    }
+    if (!isNonSimAccountFound() && activeCount == 1) {
+        final int subId = mNextActivatedSub.getSubscriptionId();
+        PhoneAccountHandle phoneAccountHandle = subscriptionIdToPhoneAccountHandle(subId);
+        logi("set default phoneaccount to  " + subId);
+        mTelecomManager.setUserSelectedOutgoingPhoneAccount(phoneAccountHandle);
+    }
+    if (!isSubProvisioned(sDefaultFallbackSubId.get())) {
+        setDefaultFallbackSubId(mNextActivatedSub.getSubscriptionId(), SubscriptionManager.SUBSCRIPTION_TYPE_LOCAL_SIM);
+    }
+    notifySubscriptionInfoChanged();
+    logd("updateUserPreferences: after currentDds = " + getDefaultDataSubId() + " voice = " + getDefaultVoiceSubId() + " sms = " + getDefaultSmsSubId());
+}

@@ -1,0 +1,11 @@
+public BubbleMetadata build(){
+    if (mShortcutId == null && mPendingIntent == null) {
+        throw new NullPointerException("Must supply pending intent or shortcut to bubble");
+    }
+    if (mShortcutId == null && mIcon == null) {
+        throw new NullPointerException("Must supply an icon or shortcut for the bubble");
+    }
+    BubbleMetadata data = new BubbleMetadata(mPendingIntent, mDeleteIntent, mIcon, mDesiredHeight, mDesiredHeightResId, mShortcutId);
+    data.setFlags(mFlags);
+    return data;
+}

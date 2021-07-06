@@ -1,0 +1,32 @@
+public static byte[] getSubmitPduEncodedMessage(boolean isTypeGsm, @NonNull String destinationAddress, @NonNull String message, @EncodingSize int encoding, @IntRange(from = 0) int languageTable, @IntRange(from = 0) int languageShiftTable, @IntRange(from = 0, to = 255) int refNumber, @IntRange(from = 1, to = 255) int seqNumber, @IntRange(from = 1, to = 255) int msgCount){
+    byte[] data;
+    SmsHeader.ConcatRef concatRef = new SmsHeader.ConcatRef();
+    concatRef.refNumber = refNumber;
+    concatRef.seqNumber = seqNumber;
+    concatRef.msgCount = msgCount;
+    concatRef.isEightBits = true;
+    SmsHeader smsHeader = new SmsHeader();
+    smsHeader.concatRef = concatRef;
+    if (encoding == ENCODING_7BIT) {
+        smsHeader.languageTable = languageTable;
+        smsHeader.languageShiftTable = languageShiftTable;
+    }
+    if (isTypeGsm) {
+        data = com.android.internal.telephony.gsm.SmsMessage.getSubmitPdu(null, destinationAddress, message, false, SmsHeader.toByteArray(smsHeader), encoding, languageTable, languageShiftTable).encodedMessage;
+    } else {
+        UserData uData = new UserData();
+        uData.payloadStr = message;
+        uData.userDataHeader = smsHeader;
+        if (encoding == ENCODING_7BIT) {
+            uData.msgEncoding = UserData.ENCODING_GSM_7BIT_ALPHABET;
+        } else {
+            uData.msgEncoding = UserData.ENCODING_UNICODE_16;
+        }
+        uData.msgEncodingSet = true;
+        data = com.android.internal.telephony.cdma.SmsMessage.getSubmitPdu(destinationAddress, uData, false).encodedMessage;
+    }
+    if (data == null) {
+        return new byte[0];
+    }
+    return data;
+}

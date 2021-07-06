@@ -1,0 +1,12 @@
+public AppWidgetProviderInfo getAppWidgetProviderInfo(Context context){
+    try {
+        final AppWidgetProviderInfo info = mInner.getAppWidgetProviderInfo();
+        if (info == null) {
+            return null;
+        }
+        info.updateDimensions(context.getResources().getDisplayMetrics());
+        return info;
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

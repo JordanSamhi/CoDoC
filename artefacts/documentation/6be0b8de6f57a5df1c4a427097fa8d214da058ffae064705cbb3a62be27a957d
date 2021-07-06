@@ -1,0 +1,20 @@
+
+     * Map this record to a URI, or return null if it cannot be mapped.<p>
+     * Currently this method considers the following to be URI records:
+     * <ul>
+     * <li>{@link #TNF_ABSOLUTE_URI} records.</li>
+     * <li>{@link #TNF_WELL_KNOWN} with a type of {@link #RTD_URI}.</li>
+     * <li>{@link #TNF_WELL_KNOWN} with a type of {@link #RTD_SMART_POSTER}
+     * and containing a URI record in the NDEF message nested in the payload.
+     * </li>
+     * <li>{@link #TNF_EXTERNAL_TYPE} records.</li>
+     * </ul>
+     * If this is not a URI record by the above rules, then null is returned.<p>
+     * This method does not perform validation that the URI is
+     * actually valid: it always attempts to create and return a URI if
+     * this record appears to be a URI record by the above rules.<p>
+     * The returned URI will be normalized to have a lower case scheme
+     * using {@link Uri#normalizeScheme}.<p>
+     *
+     * @return URI, or null if this is not a URI record
+     

@@ -1,0 +1,10 @@
+public boolean unregister(E callback){
+    synchronized (mCallbacks) {
+        Callback cb = mCallbacks.remove(callback.asBinder());
+        if (cb != null) {
+            cb.mCallback.asBinder().unlinkToDeath(cb, 0);
+            return true;
+        }
+        return false;
+    }
+}

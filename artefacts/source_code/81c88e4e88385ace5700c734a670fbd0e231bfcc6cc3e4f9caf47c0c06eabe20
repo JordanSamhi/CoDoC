@@ -1,0 +1,12 @@
+public void addKey_havingSamePackageNameButDifferentAlias_doesNotReplaceOldKey() throws Exception{
+    String alias2 = "karl";
+    TertiaryKey key1 = generateTertiaryKey(SECONDARY_ALIAS, PACKAGE_NAME);
+    TertiaryKey key2 = generateTertiaryKey(alias2, PACKAGE_NAME);
+    long primaryKey1 = mTertiaryKeysTable.addKey(key1);
+    long primaryKey2 = mTertiaryKeysTable.addKey(key2);
+    assertThat(primaryKey1).isNotEqualTo(primaryKey2);
+    assertThat(mTertiaryKeysTable.getKey(SECONDARY_ALIAS, PACKAGE_NAME).isPresent()).isTrue();
+    assertTertiaryKeysEqual(mTertiaryKeysTable.getKey(SECONDARY_ALIAS, PACKAGE_NAME).get(), key1);
+    assertThat(mTertiaryKeysTable.getKey(alias2, PACKAGE_NAME).isPresent()).isTrue();
+    assertTertiaryKeysEqual(mTertiaryKeysTable.getKey(alias2, PACKAGE_NAME).get(), key2);
+}

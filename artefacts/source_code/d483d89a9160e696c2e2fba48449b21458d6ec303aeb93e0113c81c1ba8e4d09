@@ -1,0 +1,18 @@
+public Bitmap getUserIcon(@UserIdInt int userId){
+    try {
+        ParcelFileDescriptor fd = mService.getUserIcon(userId);
+        if (fd != null) {
+            try {
+                return BitmapFactory.decodeFileDescriptor(fd.getFileDescriptor());
+            } finally {
+                try {
+                    fd.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+    return null;
+}

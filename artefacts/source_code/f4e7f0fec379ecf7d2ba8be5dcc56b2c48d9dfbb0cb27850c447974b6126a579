@@ -1,0 +1,17 @@
+public void setVoWiFiNonPersistent(boolean isCapable, int mode){
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new RuntimeException("Could not find Telephony Service.");
+    }
+    try {
+        iTelephony.setVoWiFiNonPersistent(mSubId, isCapable, mode);
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == ImsException.CODE_ERROR_INVALID_SUBSCRIPTION) {
+            throw new IllegalArgumentException(e.getMessage());
+        } else {
+            throw new RuntimeException(e.getMessage());
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

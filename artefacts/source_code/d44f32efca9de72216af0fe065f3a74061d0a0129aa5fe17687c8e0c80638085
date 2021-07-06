@@ -1,0 +1,8 @@
+public Builder setSampleRate(int sampleRate) throws IllegalArgumentException{
+    if (((sampleRate < SAMPLE_RATE_HZ_MIN) || (sampleRate > SAMPLE_RATE_HZ_MAX)) && sampleRate != SAMPLE_RATE_UNSPECIFIED) {
+        throw new IllegalArgumentException("Invalid sample rate " + sampleRate);
+    }
+    mSampleRate = sampleRate;
+    mPropertySetMask |= AUDIO_FORMAT_HAS_PROPERTY_SAMPLE_RATE;
+    return this;
+}

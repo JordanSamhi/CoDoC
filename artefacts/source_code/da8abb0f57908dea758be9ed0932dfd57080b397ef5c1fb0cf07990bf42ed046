@@ -1,0 +1,10 @@
+public void end(long token){
+    if (mExpectedObjectTokenStack.get(mDepth) != token) {
+        throw new ProtoParseException("end token " + token + " does not match current message token " + mExpectedObjectTokenStack.get(mDepth) + dumpDebugData());
+    }
+    if (getOffsetFromToken(mExpectedObjectTokenStack.get(mDepth)) > getOffset()) {
+        incOffset(getOffsetFromToken(mExpectedObjectTokenStack.get(mDepth)) - getOffset());
+    }
+    mDepth--;
+    mState &= ~STATE_STARTED_FIELD_READ;
+}

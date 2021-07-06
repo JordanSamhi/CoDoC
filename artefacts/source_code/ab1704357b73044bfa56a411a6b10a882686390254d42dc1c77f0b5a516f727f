@@ -1,0 +1,15 @@
+public void close(@Nullable Integer error){
+    synchronized (mLock) {
+        if (mIsClosed)
+            return;
+        if (error != null) {
+            try {
+                mCallback.onError(error);
+            } catch (RemoteException ex) {
+                Slog.w(TAG, "mCallback.onError() failed: ", ex);
+            }
+        }
+        mIsClosed = true;
+        mModule.onTunerSessionClosed(this);
+    }
+}

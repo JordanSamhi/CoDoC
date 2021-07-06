@@ -1,0 +1,59 @@
+public void reconcileSecondaryDexFiles(String packageName){
+    PackageUseInfo useInfo = getPackageUseInfoOrDefault(packageName);
+    if (useInfo.getDexUseInfoMap().isEmpty()) {
+        if (DEBUG) {
+            Slog.d(TAG, "No secondary dex use for package:" + packageName);
+        }
+        return;
+    }
+    boolean updated = false;
+    for (Map.Entry<String, DexUseInfo> entry : useInfo.getDexUseInfoMap().entrySet()) {
+        String dexPath = entry.getKey();
+        DexUseInfo dexUseInfo = entry.getValue();
+        PackageInfo pkg = null;
+        try {
+            pkg = mPackageManager.getPackageInfo(packageName, 0, dexUseInfo.getOwnerUserId());
+        } catch (RemoteException ignore) {
+        }
+        if (pkg == null) {
+            Slog.d(TAG, "Could not find package when compiling secondary dex " + packageName + " for user " + dexUseInfo.getOwnerUserId());
+            updated = mPackageDexUsage.removeUserPackage(packageName, dexUseInfo.getOwnerUserId()) || updated;
+            continue;
+        }
+        if (PLATFORM_PACKAGE_NAME.equals(packageName)) {
+            if (!Files.exists(Paths.get(dexPath))) {
+                if (DEBUG) {
+                    Slog.w(TAG, "A dex file previously loaded by System Server does not exist " + " anymore: " + dexPath);
+                }
+                updated = mPackageDexUsage.removeUserPackage(packageName, dexUseInfo.getOwnerUserId()) || updated;
+            }
+            continue;
+        }
+        ApplicationInfo info = pkg.applicationInfo;
+        int flags = 0;
+        if (info.deviceProtectedDataDir != null && FileUtils.contains(info.deviceProtectedDataDir, dexPath)) {
+            flags |= StorageManager.FLAG_STORAGE_DE;
+        } else if (info.credentialProtectedDataDir != null && FileUtils.contains(info.credentialProtectedDataDir, dexPath)) {
+            flags |= StorageManager.FLAG_STORAGE_CE;
+        } else {
+            Slog.e(TAG, "Could not infer CE/DE storage for path " + dexPath);
+            updated = mPackageDexUsage.removeDexFile(packageName, dexPath, dexUseInfo.getOwnerUserId()) || updated;
+            continue;
+        }
+        boolean dexStillExists = true;
+        synchronized (mInstallLock) {
+            try {
+                String[] isas = dexUseInfo.getLoaderIsas().toArray(new String[0]);
+                dexStillExists = mInstaller.reconcileSecondaryDexFile(dexPath, packageName, info.uid, isas, info.volumeUuid, flags);
+            } catch (InstallerException e) {
+                Slog.e(TAG, "Got InstallerException when reconciling dex " + dexPath + " : " + e.getMessage());
+            }
+        }
+        if (!dexStillExists) {
+            updated = mPackageDexUsage.removeDexFile(packageName, dexPath, dexUseInfo.getOwnerUserId()) || updated;
+        }
+    }
+    if (updated) {
+        mPackageDexUsage.maybeWriteAsync();
+    }
+}

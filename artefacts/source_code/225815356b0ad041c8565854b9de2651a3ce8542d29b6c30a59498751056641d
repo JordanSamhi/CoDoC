@@ -1,0 +1,44 @@
+public void advanceTo(final int index) throws IllegalStateException, IndexOutOfBoundsException{
+    Trace.beginSection("advance to");
+    final int i = index - mOffset;
+    if (i <= 0) {
+        Trace.endSection();
+        return;
+    } else if (i < mFilled) {
+        shiftToBeginning(i);
+        mOffset = index;
+        mFilled = mFilled - i;
+    } else if (mInputStream != null) {
+        int burn = i - mFilled;
+        boolean empty = false;
+        int fails = 0;
+        try {
+            while (burn > 0) {
+                final long burned = mInputStream.skip(burn);
+                if (burned <= 0) {
+                    fails++;
+                } else {
+                    burn -= burned;
+                }
+                if (fails >= 5) {
+                    empty = true;
+                    break;
+                }
+            }
+        } catch (IOException ignored) {
+            empty = true;
+        }
+        if (empty) {
+            mInputStream = null;
+        }
+        mOffset = index - burn;
+        mFilled = 0;
+    } else {
+        mOffset = index;
+        mFilled = 0;
+    }
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+        Log.d(TAG, String.format("advanceTo %d buffer: %s", i, this));
+    }
+    Trace.endSection();
+}

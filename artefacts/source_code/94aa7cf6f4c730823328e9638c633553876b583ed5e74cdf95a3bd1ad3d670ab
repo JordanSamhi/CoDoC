@@ -1,0 +1,30 @@
+public void skip() throws IOException{
+    if ((mState & STATE_READING_PACKED) == STATE_READING_PACKED) {
+        incOffset(mPackedEnd - getOffset());
+    } else {
+        switch(mWireType) {
+            case WIRE_TYPE_VARINT:
+                byte b;
+                do {
+                    fillBuffer();
+                    b = mBuffer[mOffset];
+                    incOffset(1);
+                } while ((b & 0x80) != 0);
+                break;
+            case WIRE_TYPE_FIXED64:
+                incOffset(8);
+                break;
+            case WIRE_TYPE_LENGTH_DELIMITED:
+                fillBuffer();
+                int length = (int) readVarint();
+                incOffset(length);
+                break;
+            case WIRE_TYPE_FIXED32:
+                incOffset(4);
+                break;
+            default:
+                throw new ProtoParseException("Unexpected wire type: " + mWireType + " at offset 0x" + Integer.toHexString(mOffset) + dumpDebugData());
+        }
+    }
+    mState &= ~STATE_STARTED_FIELD_READ;
+}

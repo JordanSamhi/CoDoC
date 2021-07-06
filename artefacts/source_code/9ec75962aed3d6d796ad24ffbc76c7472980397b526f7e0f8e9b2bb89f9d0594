@@ -1,0 +1,9 @@
+public static DeviceFilterPair<T> findMatch(T dev, @Nullable List<? extends DeviceFilter<T>> filters){
+    if (isEmpty(filters))
+        return new DeviceFilterPair<>(dev, null);
+    final DeviceFilter<T> matchingFilter = CollectionUtils.find(filters, f -> f.matches(dev));
+    DeviceFilterPair<T> result = matchingFilter != null ? new DeviceFilterPair<>(dev, matchingFilter) : null;
+    if (DEBUG)
+        Log.i(LOG_TAG, "findMatch(dev = " + dev + ", filters = " + filters + ") -> " + result);
+    return result;
+}

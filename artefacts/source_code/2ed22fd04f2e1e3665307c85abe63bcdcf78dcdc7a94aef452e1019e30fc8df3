@@ -1,0 +1,15 @@
+public int restorePackage(String packageName, RestoreObserver observer, BackupManagerMonitor monitor){
+    int err = -1;
+    if (mObserver != null) {
+        Log.d(TAG, "restorePackage() called during active restore");
+        return -1;
+    }
+    mObserver = new RestoreObserverWrapper(mContext, observer);
+    BackupManagerMonitorWrapper monitorWrapper = monitor == null ? null : new BackupManagerMonitorWrapper(monitor);
+    try {
+        err = mBinder.restorePackage(packageName, mObserver, monitorWrapper);
+    } catch (RemoteException e) {
+        Log.d(TAG, "Can't contact server to restore package");
+    }
+    return err;
+}

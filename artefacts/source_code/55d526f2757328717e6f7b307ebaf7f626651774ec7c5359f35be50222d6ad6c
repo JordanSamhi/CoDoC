@@ -1,0 +1,25 @@
+public static String modeToString(int mode){
+    StringBuilder modeString = new StringBuilder();
+    if (mode == MODE_NONE) {
+        return "none";
+    }
+    if ((mode & MODE_DUAL) == MODE_DUAL) {
+        modeString.append("dual, ");
+    } else {
+        if ((mode & MODE_DFP) == MODE_DFP) {
+            modeString.append("dfp, ");
+        } else if ((mode & MODE_UFP) == MODE_UFP) {
+            modeString.append("ufp, ");
+        }
+    }
+    if ((mode & MODE_AUDIO_ACCESSORY) == MODE_AUDIO_ACCESSORY) {
+        modeString.append("audio_acc, ");
+    }
+    if ((mode & MODE_DEBUG_ACCESSORY) == MODE_DEBUG_ACCESSORY) {
+        modeString.append("debug_acc, ");
+    }
+    if (modeString.length() == 0) {
+        return Integer.toString(mode);
+    }
+    return modeString.substring(0, modeString.length() - 2);
+}

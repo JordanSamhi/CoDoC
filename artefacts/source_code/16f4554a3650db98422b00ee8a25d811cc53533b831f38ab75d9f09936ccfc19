@@ -1,0 +1,10 @@
+public void draw(@NonNull Canvas canvas){
+    verifyValid();
+    if (mRecordingCanvas != null) {
+        endRecording();
+    }
+    if (mRequiresHwAcceleration && !canvas.isHardwareAccelerated()) {
+        canvas.onHwBitmapInSwMode();
+    }
+    nativeDraw(canvas.getNativeCanvasWrapper(), mNativePicture);
+}

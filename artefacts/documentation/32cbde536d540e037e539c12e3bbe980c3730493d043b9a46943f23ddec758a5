@@ -1,0 +1,18 @@
+
+     * Returns whether the signatures stored {@param storedSigs}, coming from the source apk, match
+     * the signatures of the apk installed on the device, the target apk. If the target resides in
+     * the system partition we return true. Otherwise it's considered a match if both conditions
+     * hold:
+     *
+     * <ul>
+     *   <li>Source and target have at least one signature each
+     *   <li>Target contains all signatures in source, and nothing more
+     * </ul>
+     *
+     * or if both source and target have exactly one signature, and they don't match, we check
+     * if the app was ever signed with source signature (i.e. app has rotated key)
+     * Note: key rotation is only supported for apps ever signed with one key, and those apps will
+     * not be allowed to be signed by more certificates in the future
+     *
+     * Note that if {@param target} is null we return false.
+     

@@ -1,0 +1,20 @@
+public void setOemUnlockAllowedByUser(boolean allowedByUser){
+    if (ActivityManager.isUserAMonkey()) {
+        return;
+    }
+    enforceManageUserOemUnlockPermission();
+    enforceUserIsAdmin();
+    final long token = Binder.clearCallingIdentity();
+    try {
+        if (!isOemUnlockAllowedByAdmin()) {
+            throw new SecurityException("Admin does not allow OEM unlock");
+        }
+        if (!mOemLock.isOemUnlockAllowedByCarrier()) {
+            throw new SecurityException("Carrier does not allow OEM unlock");
+        }
+        mOemLock.setOemUnlockAllowedByDevice(allowedByUser);
+        setPersistentDataBlockOemUnlockAllowedBit(allowedByUser);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

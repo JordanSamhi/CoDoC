@@ -1,0 +1,7 @@
+public void updateRuleSet(@NonNull RuleSet updateRequest, @NonNull IntentSender statusReceiver){
+    try {
+        mManager.updateRuleSet(updateRequest.getVersion(), new ParceledListSlice<>(updateRequest.getRules()), statusReceiver);
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,27 @@
+public boolean reinvoke(int networkId, String peerAddress){
+    if (TextUtils.isEmpty(peerAddress) || networkId < 0)
+        return false;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("reinvoke"))
+            return false;
+        if (peerAddress == null) {
+            Log.e(TAG, "Cannot parse peer mac address.");
+            return false;
+        }
+        byte[] macAddress = null;
+        try {
+            macAddress = NativeUtil.macAddressToByteArray(peerAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse mac address.", e);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("reinvoke(" + networkId + ", " + peerAddress + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.reinvoke(networkId, macAddress));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

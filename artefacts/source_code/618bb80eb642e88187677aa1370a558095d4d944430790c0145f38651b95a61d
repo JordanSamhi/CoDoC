@@ -1,0 +1,13 @@
+public void setImageDrawable(@Nullable Drawable drawable){
+    if (mDrawable != drawable) {
+        mResource = 0;
+        mUri = null;
+        final int oldWidth = mDrawableWidth;
+        final int oldHeight = mDrawableHeight;
+        updateDrawable(drawable);
+        if (oldWidth != mDrawableWidth || oldHeight != mDrawableHeight) {
+            requestLayout();
+        }
+        invalidate();
+    }
+}

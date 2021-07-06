@@ -1,0 +1,20 @@
+public final void drawBitmap(@NonNull int[] colors, int offset, int stride, float x, float y, int width, int height, boolean hasAlpha, @Nullable Paint paint){
+    if (width < 0) {
+        throw new IllegalArgumentException("width must be >= 0");
+    }
+    if (height < 0) {
+        throw new IllegalArgumentException("height must be >= 0");
+    }
+    if (Math.abs(stride) < width) {
+        throw new IllegalArgumentException("abs(stride) must be >= width");
+    }
+    int lastScanline = offset + (height - 1) * stride;
+    int length = colors.length;
+    if (offset < 0 || (offset + width > length) || lastScanline < 0 || (lastScanline + width > length)) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    if (width == 0 || height == 0) {
+        return;
+    }
+    nDrawBitmap(mNativeCanvasWrapper, colors, offset, stride, x, y, width, height, hasAlpha, paint != null ? paint.getNativeInstance() : 0);
+}

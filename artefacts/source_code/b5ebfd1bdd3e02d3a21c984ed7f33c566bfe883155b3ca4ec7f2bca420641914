@@ -1,0 +1,25 @@
+public int getAuthType(){
+    if (allowedKeyManagement.cardinality() > 1) {
+        throw new IllegalStateException("More than one auth type set");
+    }
+    if (allowedKeyManagement.get(KeyMgmt.WPA_PSK)) {
+        return KeyMgmt.WPA_PSK;
+    } else if (allowedKeyManagement.get(KeyMgmt.WPA2_PSK)) {
+        return KeyMgmt.WPA2_PSK;
+    } else if (allowedKeyManagement.get(KeyMgmt.WPA_EAP)) {
+        return KeyMgmt.WPA_EAP;
+    } else if (allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
+        return KeyMgmt.IEEE8021X;
+    } else if (allowedKeyManagement.get(KeyMgmt.SAE)) {
+        return KeyMgmt.SAE;
+    } else if (allowedKeyManagement.get(KeyMgmt.OWE)) {
+        return KeyMgmt.OWE;
+    } else if (allowedKeyManagement.get(KeyMgmt.SUITE_B_192)) {
+        return KeyMgmt.SUITE_B_192;
+    } else if (allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+        return KeyMgmt.WAPI_PSK;
+    } else if (allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+        return KeyMgmt.WAPI_CERT;
+    }
+    return KeyMgmt.NONE;
+}

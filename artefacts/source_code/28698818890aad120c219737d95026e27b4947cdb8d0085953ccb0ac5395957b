@@ -1,0 +1,9 @@
+public static Intent prepare(Context context){
+    try {
+        if (getService().prepareVpn(context.getPackageName(), null, context.getUserId())) {
+            return null;
+        }
+    } catch (RemoteException e) {
+    }
+    return VpnConfig.getIntentForConfirmation();
+}

@@ -1,0 +1,23 @@
+public void changeCursor(Cursor c){
+    if (DBG)
+        Log.d(LOG_TAG, "changeCursor(" + c + ")");
+    if (mClosed) {
+        Log.w(LOG_TAG, "Tried to change cursor after adapter was closed.");
+        if (c != null)
+            c.close();
+        return;
+    }
+    try {
+        super.changeCursor(c);
+        if (c != null) {
+            mText1Col = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1);
+            mText2Col = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2);
+            mText2UrlCol = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_2_URL);
+            mIconName1Col = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_ICON_1);
+            mIconName2Col = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_ICON_2);
+            mFlagsCol = c.getColumnIndex(SearchManager.SUGGEST_COLUMN_FLAGS);
+        }
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "error changing cursor and caching columns", e);
+    }
+}

@@ -1,0 +1,7 @@
+public void testRestoreAtInstall_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.restoreAtInstall(mUserTwoId, TEST_PACKAGE, 0);
+    verify(mUserOneService, never()).restoreAtInstall(TEST_PACKAGE, 0);
+}

@@ -1,0 +1,17 @@
+public static void request(@NonNull Surface source, @Nullable Rect srcRect, @NonNull Bitmap dest, @NonNull OnPixelCopyFinishedListener listener, @NonNull Handler listenerThread){
+    validateBitmapDest(dest);
+    if (!source.isValid()) {
+        throw new IllegalArgumentException("Surface isn't valid, source.isValid() == false");
+    }
+    if (srcRect != null && srcRect.isEmpty()) {
+        throw new IllegalArgumentException("sourceRect is empty");
+    }
+    int result = ThreadedRenderer.copySurfaceInto(source, srcRect, dest);
+    listenerThread.post(new Runnable() {
+
+        @Override
+        public void run() {
+            listener.onPixelCopyFinished(result);
+        }
+    });
+}

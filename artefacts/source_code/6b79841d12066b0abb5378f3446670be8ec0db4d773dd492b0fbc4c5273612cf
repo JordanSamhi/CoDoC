@@ -1,0 +1,10 @@
+public boolean isSummaryOfGroup(StatusBarNotification sbn){
+    if (!isGroupSummary(sbn)) {
+        return false;
+    }
+    NotificationGroup group = mGroupMap.get(getGroupKey(sbn));
+    if (group == null || group.summary == null) {
+        return false;
+    }
+    return !group.children.isEmpty() && Objects.equals(group.summary.getSbn(), sbn);
+}

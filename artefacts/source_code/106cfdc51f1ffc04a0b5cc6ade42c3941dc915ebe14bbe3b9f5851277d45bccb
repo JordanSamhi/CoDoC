@@ -1,0 +1,7 @@
+public static void deprecateStreamTypeForPlayback(int streamType, @NonNull String className, @NonNull String opName) throws IllegalArgumentException{
+    if (streamType == AudioManager.STREAM_ACCESSIBILITY) {
+        throw new IllegalArgumentException("Use of STREAM_ACCESSIBILITY is reserved for " + "volume control");
+    }
+    Log.w(className, "Use of stream types is deprecated for operations other than " + "volume control");
+    Log.w(className, "See the documentation of " + opName + " for what to use instead with " + "android.media.AudioAttributes to qualify your playback use case");
+}

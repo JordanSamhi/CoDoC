@@ -1,0 +1,40 @@
+public void setAdapter(ListAdapter adapter){
+    if (mAdapter != null && mDataSetObserver != null) {
+        mAdapter.unregisterDataSetObserver(mDataSetObserver);
+    }
+    resetList();
+    mRecycler.clear();
+    if (mHeaderViewInfos.size() > 0 || mFooterViewInfos.size() > 0) {
+        mAdapter = wrapHeaderListAdapterInternal(mHeaderViewInfos, mFooterViewInfos, adapter);
+    } else {
+        mAdapter = adapter;
+    }
+    mOldSelectedPosition = INVALID_POSITION;
+    mOldSelectedRowId = INVALID_ROW_ID;
+    super.setAdapter(adapter);
+    if (mAdapter != null) {
+        mAreAllItemsSelectable = mAdapter.areAllItemsEnabled();
+        mOldItemCount = mItemCount;
+        mItemCount = mAdapter.getCount();
+        checkFocus();
+        mDataSetObserver = new AdapterDataSetObserver();
+        mAdapter.registerDataSetObserver(mDataSetObserver);
+        mRecycler.setViewTypeCount(mAdapter.getViewTypeCount());
+        int position;
+        if (mStackFromBottom) {
+            position = lookForSelectablePosition(mItemCount - 1, false);
+        } else {
+            position = lookForSelectablePosition(0, true);
+        }
+        setSelectedPositionInt(position);
+        setNextSelectedPositionInt(position);
+        if (mItemCount == 0) {
+            checkSelectionChanged();
+        }
+    } else {
+        mAreAllItemsSelectable = true;
+        checkFocus();
+        checkSelectionChanged();
+    }
+    requestLayout();
+}

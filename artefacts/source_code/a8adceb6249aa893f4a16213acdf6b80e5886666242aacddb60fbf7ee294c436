@@ -1,0 +1,19 @@
+public void registerImsRegistrationCallback(@NonNull @CallbackExecutor Executor executor, @NonNull RegistrationManager.RegistrationCallback c) throws ImsException{
+    if (c == null) {
+        throw new IllegalArgumentException("Must include a non-null RegistrationCallback.");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Must include a non-null Executor.");
+    }
+    IImsRcsController imsRcsController = getIImsRcsController();
+    if (imsRcsController == null) {
+        Log.e(TAG, "Register registration callback: IImsRcsController is null");
+        throw new ImsException("Cannot find remote IMS service", ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+    c.setExecutor(executor);
+    try {
+        imsRcsController.registerImsRegistrationCallback(mSubId, c.getBinder());
+    } catch (RemoteException | IllegalStateException e) {
+        throw new ImsException(e.getMessage(), ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+}

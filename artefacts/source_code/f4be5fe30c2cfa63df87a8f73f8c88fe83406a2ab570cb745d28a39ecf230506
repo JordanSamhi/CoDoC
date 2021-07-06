@@ -1,0 +1,15 @@
+public boolean isEmpty(){
+    if (!mCachedIsEmpty) {
+        return false;
+    }
+    float[] coords = new float[6];
+    mCachedIsEmpty = Boolean.TRUE;
+    for (PathIterator it = mPath.getPathIterator(null); !it.isDone(); it.next()) {
+        int type = it.currentSegment(coords);
+        if (type != PathIterator.SEG_MOVETO) {
+            mCachedIsEmpty = false;
+            return false;
+        }
+    }
+    return true;
+}

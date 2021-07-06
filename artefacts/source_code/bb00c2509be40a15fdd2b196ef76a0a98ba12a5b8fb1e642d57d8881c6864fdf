@@ -1,0 +1,12 @@
+public String getDeviceId(){
+    TelephonyManager defaultDataTm = mTelephonyManager.createForSubscriptionId(SubscriptionManager.getDefaultDataSubscriptionId());
+    String imei = defaultDataTm.getImei();
+    if (!TextUtils.isEmpty(imei)) {
+        return imei;
+    }
+    String meid = defaultDataTm.getMeid();
+    if (!TextUtils.isEmpty(meid)) {
+        return meid;
+    }
+    return UNKNOWN_INFO;
+}

@@ -1,0 +1,13 @@
+public static void filterContentTypes(@Nullable Bundle bundle){
+    if (bundle == null) {
+        return;
+    }
+    for (String key : bundle.keySet()) {
+        Object o = bundle.get(key);
+        if (o instanceof Bundle) {
+            filterContentTypes((Bundle) o);
+        } else if (o instanceof IBinder) {
+            bundle.remove(key);
+        }
+    }
+}

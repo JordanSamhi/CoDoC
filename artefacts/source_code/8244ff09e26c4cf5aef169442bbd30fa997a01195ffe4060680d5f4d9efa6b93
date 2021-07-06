@@ -1,0 +1,11 @@
+public void sendAppPrivateCommand(@NonNull String action, Bundle data){
+    if (TextUtils.isEmpty(action)) {
+        throw new IllegalArgumentException("action cannot be null or an empty string");
+    }
+    if (mSession != null) {
+        mSession.sendAppPrivateCommand(action, data);
+    } else {
+        Log.w(TAG, "sendAppPrivateCommand - session not yet created (action \"" + action + "\" pending)");
+        mPendingAppPrivateCommands.add(Pair.create(action, data));
+    }
+}

@@ -1,0 +1,26 @@
+public boolean accept(Bundle options){
+    if (!isCallerValid()) {
+        throw new SecurityException("Calling uid mismatch");
+    }
+    Intent extras = null;
+    if (options != null) {
+        try {
+            options.size();
+            extras = new Intent().putExtras(options);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("options cannot be unparceled", e);
+        }
+    }
+    synchronized (this) {
+        if (mAccepted) {
+            throw new IllegalStateException("accept() called already");
+        }
+        mAccepted = true;
+    }
+    if (tryAccept()) {
+        mProcessor.sendResultIntent(mResultIntent, extras);
+        return true;
+    } else {
+        return false;
+    }
+}

@@ -1,0 +1,8 @@
+public void uninstallExistingPackage(@NonNull String packageName, @Nullable IntentSender statusReceiver){
+    Objects.requireNonNull(packageName, "packageName cannot be null");
+    try {
+        mInstaller.uninstallExistingPackage(new VersionedPackage(packageName, PackageManager.VERSION_CODE_HIGHEST), mInstallerPackageName, statusReceiver, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

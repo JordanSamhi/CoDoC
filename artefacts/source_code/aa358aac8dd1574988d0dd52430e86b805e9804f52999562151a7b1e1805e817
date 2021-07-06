@@ -1,0 +1,17 @@
+public boolean isDefaultServiceForCategory(ComponentName service, String category){
+    try {
+        return sService.isDefaultServiceForCategory(mContext.getUserId(), service, category);
+    } catch (RemoteException e) {
+        recoverService();
+        if (sService == null) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return false;
+        }
+        try {
+            return sService.isDefaultServiceForCategory(mContext.getUserId(), service, category);
+        } catch (RemoteException ee) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return false;
+        }
+    }
+}

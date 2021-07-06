@@ -1,0 +1,17 @@
+public boolean add(WorkSource other){
+    synchronized (sTmpWorkSource) {
+        boolean uidAdded = updateLocked(other, false, false);
+        boolean chainAdded = false;
+        if (other.mChains != null) {
+            if (mChains == null) {
+                mChains = new ArrayList<>(other.mChains.size());
+            }
+            for (WorkChain wc : other.mChains) {
+                if (!mChains.contains(wc)) {
+                    mChains.add(new WorkChain(wc));
+                }
+            }
+        }
+        return uidAdded || chainAdded;
+    }
+}

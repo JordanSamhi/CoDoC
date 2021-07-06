@@ -1,0 +1,10 @@
+public boolean isPackageAccessAllowed(@NonNull String packageName, @NonNull byte[] certificate) throws IOException{
+    try {
+        return mSession.isPackageAccessAllowed(packageName, certificate);
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

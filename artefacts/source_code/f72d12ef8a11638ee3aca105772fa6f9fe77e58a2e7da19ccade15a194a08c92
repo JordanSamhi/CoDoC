@@ -1,0 +1,14 @@
+public static void adjustConfigurationForUser(ContentResolver cr, Configuration outConfig, int userHandle, boolean updateSettingsIfEmpty){
+    outConfig.fontScale = Settings.System.getFloatForUser(cr, FONT_SCALE, DEFAULT_FONT_SCALE, userHandle);
+    if (outConfig.fontScale < 0) {
+        outConfig.fontScale = DEFAULT_FONT_SCALE;
+    }
+    final String localeValue = Settings.System.getStringForUser(cr, SYSTEM_LOCALES, userHandle);
+    if (localeValue != null) {
+        outConfig.setLocales(LocaleList.forLanguageTags(localeValue));
+    } else {
+        if (updateSettingsIfEmpty) {
+            Settings.System.putStringForUser(cr, SYSTEM_LOCALES, outConfig.getLocales().toLanguageTags(), userHandle, DEFAULT_OVERRIDEABLE_BY_RESTORE);
+        }
+    }
+}

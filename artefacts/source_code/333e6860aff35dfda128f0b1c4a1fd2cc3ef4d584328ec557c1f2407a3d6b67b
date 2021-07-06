@@ -1,0 +1,12 @@
+public void sendStringSync(String text){
+    if (text == null) {
+        return;
+    }
+    KeyCharacterMap keyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
+    KeyEvent[] events = keyCharacterMap.getEvents(text.toCharArray());
+    if (events != null) {
+        for (int i = 0; i < events.length; i++) {
+            sendKeySync(KeyEvent.changeTimeRepeat(events[i], SystemClock.uptimeMillis(), 0));
+        }
+    }
+}

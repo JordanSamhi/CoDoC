@@ -1,0 +1,19 @@
+public static NotificationChannel createConversationChannelIfNeeded(Context context, INotificationManager notificationManager, NotificationEntry entry, NotificationChannel channel){
+    if (!TextUtils.isEmpty(channel.getConversationId())) {
+        return channel;
+    }
+    final String conversationId = entry.getSbn().getShortcutId();
+    final String pkg = entry.getSbn().getPackageName();
+    final int appUid = entry.getSbn().getUid();
+    if (TextUtils.isEmpty(conversationId) || TextUtils.isEmpty(pkg) || entry.getRanking().getShortcutInfo() == null) {
+        return channel;
+    }
+    try {
+        channel.setName(getName(entry));
+        notificationManager.createConversationNotificationChannelForPackage(pkg, appUid, entry.getSbn().getKey(), channel, conversationId);
+        channel = notificationManager.getConversationNotificationChannel(context.getOpPackageName(), UserHandle.getUserId(appUid), pkg, channel.getId(), false, conversationId);
+    } catch (RemoteException e) {
+        Slog.e(TAG, "Could not create conversation channel", e);
+    }
+    return channel;
+}

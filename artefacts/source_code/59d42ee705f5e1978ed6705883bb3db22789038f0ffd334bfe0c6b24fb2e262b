@@ -1,0 +1,10 @@
+public int getFatVolumeId(){
+    if (mFsUuid == null || mFsUuid.length() != 9) {
+        return -1;
+    }
+    try {
+        return (int) Long.parseLong(mFsUuid.replace("-", ""), 16);
+    } catch (NumberFormatException e) {
+        return -1;
+    }
+}

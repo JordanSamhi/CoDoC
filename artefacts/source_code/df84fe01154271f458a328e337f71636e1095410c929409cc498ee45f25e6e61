@@ -1,0 +1,10 @@
+public UpstreamNetworkState getCurrentPreferredUpstream(){
+    final UpstreamNetworkState dfltState = (mDefaultInternetNetwork != null) ? mNetworkMap.get(mDefaultInternetNetwork) : null;
+    if (isNetworkUsableAndNotCellular(dfltState))
+        return dfltState;
+    if (!isCellularUpstreamPermitted())
+        return null;
+    if (!mDunRequired)
+        return dfltState;
+    return findFirstDunNetwork(mNetworkMap.values());
+}

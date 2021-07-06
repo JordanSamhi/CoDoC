@@ -1,0 +1,21 @@
+public void endConnectionEvent(int level2FailureCode, int connectivityFailureCode, int level2FailureReason){
+    synchronized (mLock) {
+        if (mCurrentConnectionEvent != null) {
+            boolean result = (level2FailureCode == 1) && (connectivityFailureCode == WifiMetricsProto.ConnectionEvent.HLF_NONE);
+            mCurrentConnectionEvent.mConnectionEvent.connectionResult = result ? 1 : 0;
+            mCurrentConnectionEvent.mRealEndTime = mClock.getElapsedSinceBootMillis();
+            mCurrentConnectionEvent.mConnectionEvent.durationTakenToConnectMillis = (int) (mCurrentConnectionEvent.mRealEndTime - mCurrentConnectionEvent.mRealStartTime);
+            mCurrentConnectionEvent.mConnectionEvent.level2FailureCode = level2FailureCode;
+            mCurrentConnectionEvent.mConnectionEvent.connectivityLevelFailureCode = connectivityFailureCode;
+            mCurrentConnectionEvent.mConnectionEvent.level2FailureReason = level2FailureReason;
+            int wwFailureCode = getConnectionResultFailureCode(level2FailureCode, level2FailureReason);
+            if (wwFailureCode != -1) {
+                WifiStatsLog.write(WifiStatsLog.WIFI_CONNECTION_RESULT_REPORTED, result, wwFailureCode, mCurrentConnectionEvent.mConnectionEvent.signalStrength);
+            }
+            mCurrentConnectionEvent = null;
+            if (!result) {
+                mScanResultRssiTimestampMillis = -1;
+            }
+        }
+    }
+}

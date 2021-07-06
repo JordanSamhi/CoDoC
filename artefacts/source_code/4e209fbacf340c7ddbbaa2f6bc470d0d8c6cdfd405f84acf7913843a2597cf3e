@@ -1,0 +1,30 @@
+public static long copyInternalUserspace(InputStream in, OutputStream out, CancellationSignal signal, Executor executor, ProgressListener listener) throws IOException{
+    long progress = 0;
+    long checkpoint = 0;
+    byte[] buffer = new byte[8192];
+    int t;
+    while ((t = in.read(buffer)) != -1) {
+        out.write(buffer, 0, t);
+        progress += t;
+        checkpoint += t;
+        if (checkpoint >= COPY_CHECKPOINT_BYTES) {
+            if (signal != null) {
+                signal.throwIfCanceled();
+            }
+            if (executor != null && listener != null) {
+                final long progressSnapshot = progress;
+                executor.execute(() -> {
+                    listener.onProgress(progressSnapshot);
+                });
+            }
+            checkpoint = 0;
+        }
+    }
+    if (executor != null && listener != null) {
+        final long progressSnapshot = progress;
+        executor.execute(() -> {
+            listener.onProgress(progressSnapshot);
+        });
+    }
+    return progress;
+}

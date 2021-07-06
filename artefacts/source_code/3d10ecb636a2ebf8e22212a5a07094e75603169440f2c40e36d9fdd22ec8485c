@@ -1,0 +1,32 @@
+public void beginLayoutLw(DisplayFrames displayFrames, int uiMode){
+    displayFrames.onBeginLayout();
+    updateInsetsStateForDisplayCutout(displayFrames, mDisplayContent.getInsetsStateController().getRawInsetsState());
+    mSystemGestures.screenWidth = displayFrames.mUnrestricted.width();
+    mSystemGestures.screenHeight = displayFrames.mUnrestricted.height();
+    final int sysui = mLastSystemUiFlags;
+    final int behavior = mLastBehavior;
+    final InsetsSourceProvider provider = mDisplayContent.getInsetsStateController().peekSourceProvider(ITYPE_NAVIGATION_BAR);
+    boolean navVisible = ViewRootImpl.sNewInsetsMode != ViewRootImpl.NEW_INSETS_MODE_FULL ? (sysui & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0 : provider != null ? provider.isClientVisible() : InsetsState.getDefaultVisibility(ITYPE_NAVIGATION_BAR);
+    boolean navTranslucent = (sysui & (View.NAVIGATION_BAR_TRANSLUCENT | View.NAVIGATION_BAR_TRANSPARENT)) != 0;
+    boolean immersive = (sysui & View.SYSTEM_UI_FLAG_IMMERSIVE) != 0 || (behavior & BEHAVIOR_SHOW_BARS_BY_SWIPE) != 0;
+    boolean immersiveSticky = (sysui & View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0 || (behavior & BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE) != 0;
+    boolean navAllowedHidden = immersive || immersiveSticky;
+    navTranslucent &= !immersiveSticky;
+    boolean isKeyguardShowing = isKeyguardShowing() && !isKeyguardOccluded();
+    boolean notificationShadeForcesShowingNavigation = !isKeyguardShowing && mNotificationShade != null && (mNotificationShade.getAttrs().privateFlags & PRIVATE_FLAG_STATUS_FORCE_SHOW_NAVIGATION) != 0;
+    updateHideNavInputEventReceiver();
+    navVisible |= !canHideNavigationBar();
+    boolean updateSysUiVisibility = layoutNavigationBar(displayFrames, uiMode, navVisible, navTranslucent, navAllowedHidden, notificationShadeForcesShowingNavigation, null);
+    if (DEBUG_LAYOUT)
+        Slog.i(TAG, "mDock rect:" + displayFrames.mDock);
+    updateSysUiVisibility |= layoutStatusBar(displayFrames, sysui, null);
+    if (updateSysUiVisibility) {
+        updateSystemUiVisibilityLw();
+    }
+    layoutScreenDecorWindows(displayFrames, null);
+    postAdjustDisplayFrames(displayFrames);
+    mLastNavVisible = navVisible;
+    mLastNavTranslucent = navTranslucent;
+    mLastNavAllowedHidden = navAllowedHidden;
+    mLastNotificationShadeForcesShowingNavigation = notificationShadeForcesShowingNavigation;
+}

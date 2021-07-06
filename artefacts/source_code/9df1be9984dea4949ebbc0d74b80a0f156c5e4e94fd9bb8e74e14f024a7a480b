@@ -1,0 +1,10 @@
+public void asyncNetworkEvent(String host, String[] ipAddresses, int uid){
+    final Message msg = obtainMessage(LOG_WATCHLIST_EVENT_MSG);
+    final Bundle bundle = new Bundle();
+    bundle.putString(WatchlistEventKeys.HOST, host);
+    bundle.putStringArray(WatchlistEventKeys.IP_ADDRESSES, ipAddresses);
+    bundle.putInt(WatchlistEventKeys.UID, uid);
+    bundle.putLong(WatchlistEventKeys.TIMESTAMP, System.currentTimeMillis());
+    msg.setData(bundle);
+    sendMessage(msg);
+}

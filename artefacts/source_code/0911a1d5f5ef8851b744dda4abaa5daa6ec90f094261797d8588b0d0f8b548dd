@@ -1,0 +1,9 @@
+public static RouteInfo makeHostRoute(@Nullable InetAddress host, @Nullable InetAddress gateway, @Nullable String iface){
+    if (host == null)
+        return null;
+    if (host instanceof Inet4Address) {
+        return new RouteInfo(new IpPrefix(host, 32), gateway, iface);
+    } else {
+        return new RouteInfo(new IpPrefix(host, 128), gateway, iface);
+    }
+}

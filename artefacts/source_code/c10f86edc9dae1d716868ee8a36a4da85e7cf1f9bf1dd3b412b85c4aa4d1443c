@@ -1,0 +1,21 @@
+public void dispatchCreate(Bundle state){
+    if (state != null) {
+        for (String id : state.keySet()) {
+            try {
+                final Bundle astate = state.getBundle(id);
+                LocalActivityRecord r = mActivities.get(id);
+                if (r != null) {
+                    r.instanceState = astate;
+                } else {
+                    r = new LocalActivityRecord(id, null);
+                    r.instanceState = astate;
+                    mActivities.put(id, r);
+                    mActivityArray.add(r);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception thrown when restoring LocalActivityManager state", e);
+            }
+        }
+    }
+    mCurState = CREATED;
+}

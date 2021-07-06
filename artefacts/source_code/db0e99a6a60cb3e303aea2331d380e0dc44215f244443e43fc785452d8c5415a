@@ -1,0 +1,17 @@
+public void dispose(){
+    logd("dispose");
+    mPendingMMIs.clear();
+    mExternalCallTracker.tearDown();
+    mCT.unregisterPhoneStateListener(mExternalCallTracker);
+    mCT.unregisterForVoiceCallEnded(this);
+    mCT.dispose();
+    if (mDefaultPhone != null && mDefaultPhone.getServiceStateTracker() != null) {
+        for (int transport : mDefaultPhone.getTransportManager().getAvailableTransports()) {
+            mDefaultPhone.getServiceStateTracker().unregisterForDataRegStateOrRatChanged(transport, this);
+        }
+        mDefaultPhone.unregisterForServiceStateChanged(this);
+    }
+    if (mDefaultPhone != null) {
+        mDefaultPhone.unregisterForVolteSilentRedial(this);
+    }
+}

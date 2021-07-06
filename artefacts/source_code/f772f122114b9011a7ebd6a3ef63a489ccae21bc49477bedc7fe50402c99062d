@@ -1,0 +1,18 @@
+public List<ScanResult> getScanResults(String callingPackage, String callingFeatureId){
+    enforceAccessPermission();
+    int uid = Binder.getCallingUid();
+    long ident = Binder.clearCallingIdentity();
+    if (mVerboseLoggingEnabled) {
+        mLog.info("getScanResults uid=%").c(uid).flush();
+    }
+    try {
+        mWifiPermissionsUtil.enforceCanAccessScanResults(callingPackage, callingFeatureId, uid, null);
+        List<ScanResult> scanResults = mWifiThreadRunner.call(mScanRequestProxy::getScanResults, Collections.emptyList());
+        return scanResults;
+    } catch (SecurityException e) {
+        Log.e(TAG, "Permission violation - getScanResults not allowed for uid=" + uid + ", packageName=" + callingPackage + ", reason=" + e);
+        return new ArrayList<>();
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

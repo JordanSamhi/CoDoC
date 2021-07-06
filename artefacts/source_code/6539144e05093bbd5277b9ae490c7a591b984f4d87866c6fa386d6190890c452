@@ -1,0 +1,10 @@
+public static final int convertLinearToGammaFloat(float val, float min, float max){
+    final float normalizedVal = MathUtils.norm(min, max, val) * 12;
+    final float ret;
+    if (normalizedVal <= 1f) {
+        ret = MathUtils.sqrt(normalizedVal) * R;
+    } else {
+        ret = A * MathUtils.log(normalizedVal - B) + C;
+    }
+    return Math.round(MathUtils.lerp(GAMMA_SPACE_MIN, GAMMA_SPACE_MAX, ret));
+}

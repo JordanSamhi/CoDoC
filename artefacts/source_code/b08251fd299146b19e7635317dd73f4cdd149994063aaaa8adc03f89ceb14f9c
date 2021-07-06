@@ -1,0 +1,10 @@
+public final int getCurrentInterruptionFilter(){
+    if (!isBound())
+        return INTERRUPTION_FILTER_UNKNOWN;
+    try {
+        return getNotificationInterface().getInterruptionFilterFromListener(mWrapper);
+    } catch (android.os.RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+        return INTERRUPTION_FILTER_UNKNOWN;
+    }
+}

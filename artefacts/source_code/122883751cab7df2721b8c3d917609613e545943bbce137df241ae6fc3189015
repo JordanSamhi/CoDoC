@@ -1,0 +1,17 @@
+public boolean updateCurrentCarrierInProvider(){
+    long currentDds = SubscriptionManager.getDefaultDataSubscriptionId();
+    String operatorNumeric = getOperatorNumeric();
+    logd("updateCurrentCarrierInProvider: mSubId = " + getSubId() + " currentDds = " + currentDds + " operatorNumeric = " + operatorNumeric);
+    if (!TextUtils.isEmpty(operatorNumeric) && (getSubId() == currentDds)) {
+        try {
+            Uri uri = Uri.withAppendedPath(Telephony.Carriers.CONTENT_URI, "current");
+            ContentValues map = new ContentValues();
+            map.put(Telephony.Carriers.NUMERIC, operatorNumeric);
+            mContext.getContentResolver().insert(uri, map);
+            return true;
+        } catch (SQLException e) {
+            Rlog.e(LOG_TAG, "Can't store current operator", e);
+        }
+    }
+    return false;
+}

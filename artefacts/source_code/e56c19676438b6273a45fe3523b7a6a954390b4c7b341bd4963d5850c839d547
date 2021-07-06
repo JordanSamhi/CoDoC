@@ -1,0 +1,13 @@
+public void setDisplayedChild(int whichChild){
+    mWhichChild = whichChild;
+    if (whichChild >= getChildCount()) {
+        mWhichChild = 0;
+    } else if (whichChild < 0) {
+        mWhichChild = getChildCount() - 1;
+    }
+    boolean hasFocus = getFocusedChild() != null;
+    showOnly(mWhichChild);
+    if (hasFocus) {
+        requestFocus(FOCUS_FORWARD);
+    }
+}

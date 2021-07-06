@@ -1,0 +1,15 @@
+public static Bitmap drawViewIntoHardwareBitmap(int width, int height, final View view, final float scale, final int eraseColor){
+    return createHardwareBitmap(width, height, new Consumer<Canvas>() {
+
+        @Override
+        public void accept(Canvas c) {
+            c.scale(scale, scale);
+            if (eraseColor != 0) {
+                c.drawColor(eraseColor);
+            }
+            if (view != null) {
+                view.draw(c);
+            }
+        }
+    });
+}

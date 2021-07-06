@@ -1,0 +1,27 @@
+public boolean filter(){
+    Optional<String> carrierAppForFiltering = getCarrierAppPackageForFiltering();
+    List<String> smsFilterPackages = new ArrayList<>();
+    if (carrierAppForFiltering.isPresent()) {
+        smsFilterPackages.add(carrierAppForFiltering.get());
+    }
+    String carrierImsPackage = CarrierSmsUtils.getCarrierImsPackageForIntent(mContext, mPhone, new Intent(CarrierMessagingService.SERVICE_INTERFACE));
+    if (carrierImsPackage != null) {
+        smsFilterPackages.add(carrierImsPackage);
+    }
+    if (mFilterAggregator != null) {
+        String errMsg = "filter: Cannot reuse the same CarrierServiceSmsFilter object for " + "filtering";
+        loge(errMsg);
+        throw new RuntimeException(errMsg);
+    }
+    int numPackages = smsFilterPackages.size();
+    if (numPackages > 0) {
+        mFilterAggregator = new FilterAggregator(numPackages);
+        mCallbackTimeoutHandler.sendMessageDelayed(mCallbackTimeoutHandler.obtainMessage(EVENT_ON_FILTER_COMPLETE_NOT_CALLED), FILTER_COMPLETE_TIMEOUT_MS);
+        for (String smsFilterPackage : smsFilterPackages) {
+            filterWithPackage(smsFilterPackage, mFilterAggregator);
+        }
+        return true;
+    } else {
+        return false;
+    }
+}

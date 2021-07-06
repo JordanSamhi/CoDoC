@@ -1,0 +1,13 @@
+public String format(String pattern, ZoneInfo.WallTime wallTime, ZoneInfo zoneInfo){
+    try {
+        StringBuilder stringBuilder = new StringBuilder();
+        outputBuilder = stringBuilder;
+        numberFormatter = new Formatter(stringBuilder, Locale.US);
+        formatInternal(pattern, wallTime, zoneInfo);
+        String result = stringBuilder.toString();
+        return localizeDigits(result);
+    } finally {
+        outputBuilder = null;
+        numberFormatter = null;
+    }
+}

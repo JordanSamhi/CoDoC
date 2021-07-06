@@ -1,0 +1,15 @@
+
+     * Pre-processes an SMS WAP for Teleservice Id 0xFDEA(65002).
+     *
+     * It requires an additional header parsing to extract new Message Identifier and new User Data
+     * from WDP SMS User Data.
+     *
+     * - WDP SMS User Data Subparameter =
+     *   |User Data SUBPARAMETER_ID ~ NUM_FIELDS| + |CHARi| + |RESERVED|
+     *
+     * - WDP SMS User Data Subparameter CHARi =
+     *   |New Message Identifier Subparameter(HEADER_IND = 0)| +
+     *   |New User Data Subparameter(MSG_ENCODING = ENCODING_OCTET)|
+     *
+     * @return true if preprocessing is successful, false otherwise.
+     

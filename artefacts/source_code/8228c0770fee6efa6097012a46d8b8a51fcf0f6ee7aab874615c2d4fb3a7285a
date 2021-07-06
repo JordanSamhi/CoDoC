@@ -1,0 +1,14 @@
+public static SensorPrivacyManager getInstance(Context context){
+    synchronized (sInstanceLock) {
+        if (sInstance == null) {
+            try {
+                IBinder b = ServiceManager.getServiceOrThrow(Context.SENSOR_PRIVACY_SERVICE);
+                ISensorPrivacyManager service = ISensorPrivacyManager.Stub.asInterface(b);
+                sInstance = new SensorPrivacyManager(context, service);
+            } catch (ServiceManager.ServiceNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return sInstance;
+    }
+}

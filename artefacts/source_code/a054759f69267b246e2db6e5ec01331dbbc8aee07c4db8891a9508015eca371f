@@ -1,0 +1,10 @@
+public ParcelFileDescriptor openDvbDevice(@NonNull DvbDeviceInfo info, @DvbDeviceType int deviceType){
+    try {
+        if (DVB_DEVICE_START > deviceType || DVB_DEVICE_END < deviceType) {
+            throw new IllegalArgumentException("Invalid DVB device: " + deviceType);
+        }
+        return mService.openDvbDevice(info, deviceType);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

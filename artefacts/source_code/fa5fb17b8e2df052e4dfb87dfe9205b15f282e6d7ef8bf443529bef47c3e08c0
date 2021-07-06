@@ -1,0 +1,8 @@
+public void requestNetwork(@NonNull NetworkRequest request, int timeoutMs, int legacyType, @NonNull Handler handler, @NonNull NetworkCallback networkCallback){
+    if (legacyType == TYPE_NONE) {
+        throw new IllegalArgumentException("TYPE_NONE is meaningless legacy type");
+    }
+    CallbackHandler cbHandler = new CallbackHandler(handler);
+    NetworkCapabilities nc = request.networkCapabilities;
+    sendRequestForNetwork(nc, networkCallback, timeoutMs, REQUEST, legacyType, cbHandler);
+}

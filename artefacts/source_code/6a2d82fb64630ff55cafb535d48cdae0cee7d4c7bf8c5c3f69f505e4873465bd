@@ -1,0 +1,13 @@
+public void releaseReference() throws RemoteException{
+    mRefCount--;
+    if (mRefCount > 0) {
+        return;
+    } else if (mRefCount < 0) {
+        throw new IllegalStateException("Invalid operation - resource has already been released.");
+    }
+    mResource.freeUnderlyingResources();
+    for (RefcountedResource<? extends IResource> child : mChildren) {
+        child.releaseReference();
+    }
+    mRefCount--;
+}

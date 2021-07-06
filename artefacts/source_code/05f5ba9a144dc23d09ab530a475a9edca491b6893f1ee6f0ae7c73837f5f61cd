@@ -1,0 +1,12 @@
+public boolean freeze(){
+    if (mBuilderPtr == 0) {
+        throw new IllegalStateException("This FontFamily is already frozen");
+    }
+    mNativePtr = nCreateFamily(mBuilderPtr);
+    mNativeBuilderCleaner.run();
+    mBuilderPtr = 0;
+    if (mNativePtr != 0) {
+        sFamilyRegistry.registerNativeAllocation(this, mNativePtr);
+    }
+    return mNativePtr != 0;
+}

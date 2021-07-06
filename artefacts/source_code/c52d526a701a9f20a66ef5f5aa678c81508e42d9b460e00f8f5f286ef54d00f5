@@ -1,0 +1,27 @@
+public int compareTo(@NonNull AccessPoint other){
+    if (isActive() && !other.isActive())
+        return -1;
+    if (!isActive() && other.isActive())
+        return 1;
+    if (isReachable() && !other.isReachable())
+        return -1;
+    if (!isReachable() && other.isReachable())
+        return 1;
+    if (isSaved() && !other.isSaved())
+        return -1;
+    if (!isSaved() && other.isSaved())
+        return 1;
+    if (getSpeed() != other.getSpeed()) {
+        return other.getSpeed() - getSpeed();
+    }
+    WifiManager wifiManager = getWifiManager();
+    int difference = wifiManager.calculateSignalLevel(other.mRssi) - wifiManager.calculateSignalLevel(mRssi);
+    if (difference != 0) {
+        return difference;
+    }
+    difference = getTitle().compareToIgnoreCase(other.getTitle());
+    if (difference != 0) {
+        return difference;
+    }
+    return getSsidStr().compareTo(other.getSsidStr());
+}

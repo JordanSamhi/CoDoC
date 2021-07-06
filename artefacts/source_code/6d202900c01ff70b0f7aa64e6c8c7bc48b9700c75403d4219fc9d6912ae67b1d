@@ -1,0 +1,22 @@
+public ComponentName resolveSystemService(@NonNull PackageManager pm, @PackageManager.ComponentInfoFlags int flags){
+    if (mComponent != null) {
+        return mComponent;
+    }
+    List<ResolveInfo> results = pm.queryIntentServices(this, flags);
+    if (results == null) {
+        return null;
+    }
+    ComponentName comp = null;
+    for (int i = 0; i < results.size(); i++) {
+        ResolveInfo ri = results.get(i);
+        if ((ri.serviceInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            continue;
+        }
+        ComponentName foundComp = new ComponentName(ri.serviceInfo.applicationInfo.packageName, ri.serviceInfo.name);
+        if (comp != null) {
+            throw new IllegalStateException("Multiple system services handle " + this + ": " + comp + ", " + foundComp);
+        }
+        comp = foundComp;
+    }
+    return comp;
+}

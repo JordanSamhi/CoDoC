@@ -1,0 +1,15 @@
+public Map<Integer, Integer> getLogicalToPhysicalSlotMapping(){
+    Map<Integer, Integer> slotMapping = new HashMap<>();
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            int[] slotMappingArray = telephony.getSlotsMapping();
+            for (int i = 0; i < slotMappingArray.length; i++) {
+                slotMapping.put(i, slotMappingArray[i]);
+            }
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "getSlotsMapping RemoteException", e);
+    }
+    return slotMapping;
+}

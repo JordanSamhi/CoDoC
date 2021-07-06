@@ -1,0 +1,13 @@
+public final void readException(int code, String msg){
+    String remoteStackTrace = null;
+    final int remoteStackPayloadSize = readInt();
+    if (remoteStackPayloadSize > 0) {
+        remoteStackTrace = readString();
+    }
+    Exception e = createException(code, msg);
+    if (remoteStackTrace != null) {
+        RemoteException cause = new RemoteException("Remote stack trace:\n" + remoteStackTrace, null, false, false);
+        ExceptionUtils.appendCause(e, cause);
+    }
+    SneakyThrow.sneakyThrow(e);
+}

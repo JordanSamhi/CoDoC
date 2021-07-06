@@ -1,0 +1,21 @@
+public void enableUiccApplications(boolean enable, Message onCompleteMessage){
+    IRadio radioProxy = getRadioProxy(onCompleteMessage);
+    if (radioProxy == null)
+        return;
+    if (mRadioVersion.less(RADIO_HAL_VERSION_1_5)) {
+        if (onCompleteMessage != null) {
+            AsyncResult.forMessage(onCompleteMessage, null, CommandException.fromRilErrno(REQUEST_NOT_SUPPORTED));
+            onCompleteMessage.sendToTarget();
+        }
+        return;
+    }
+    android.hardware.radio.V1_5.IRadio radioProxy15 = (android.hardware.radio.V1_5.IRadio) radioProxy;
+    RILRequest rr = obtainRequest(RIL_REQUEST_ENABLE_UICC_APPLICATIONS, onCompleteMessage, mRILDefaultWorkSource);
+    if (RILJ_LOGD)
+        riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
+    try {
+        radioProxy15.enableUiccApplications(rr.mSerial, enable);
+    } catch (RemoteException | RuntimeException e) {
+        handleRadioProxyExceptionForRR(rr, "enableUiccApplications", e);
+    }
+}

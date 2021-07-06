@@ -1,0 +1,12 @@
+public synchronized void stopVpnRunnerPrivileged(){
+    if (!isSettingsVpnLocked()) {
+        return;
+    }
+    final boolean isLegacyVpn = mVpnRunner instanceof LegacyVpnRunner;
+    mVpnRunner.exit();
+    mVpnRunner = null;
+    if (isLegacyVpn) {
+        synchronized (LegacyVpnRunner.TAG) {
+        }
+    }
+}

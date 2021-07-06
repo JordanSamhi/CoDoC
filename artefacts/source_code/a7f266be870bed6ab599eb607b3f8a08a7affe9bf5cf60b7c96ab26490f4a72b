@@ -1,0 +1,8 @@
+public void provision(@NonNull String provisionString) throws MediaCasException{
+    validateInternalStates();
+    try {
+        MediaCasException.throwExceptionIfNeeded(mICas.provision(provisionString));
+    } catch (RemoteException e) {
+        cleanupAndRethrowIllegalState();
+    }
+}

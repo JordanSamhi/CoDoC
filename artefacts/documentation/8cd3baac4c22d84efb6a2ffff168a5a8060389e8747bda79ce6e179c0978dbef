@@ -1,0 +1,69 @@
+
+     * Populates a {@link ViewStructure} to fullfil an autofill request.
+     *
+     * <p>The structure should contain at least the following properties:
+     * <ul>
+     *   <li>Autofill id ({@link ViewStructure#setAutofillId(AutofillId, int)}).
+     *   <li>Autofill type ({@link ViewStructure#setAutofillType(int)}).
+     *   <li>Autofill value ({@link ViewStructure#setAutofillValue(AutofillValue)}).
+     *   <li>Whether the data is sensitive ({@link ViewStructure#setDataIsSensitive(boolean)}).
+     * </ul>
+     *
+     * <p>It's also recommended to set the following properties - the more properties the structure
+     * has, the higher the chances of an {@link android.service.autofill.AutofillService} properly
+     * using the structure:
+     *
+     * <ul>
+     *   <li>Autofill hints ({@link ViewStructure#setAutofillHints(String[])}).
+     *   <li>Autofill options ({@link ViewStructure#setAutofillOptions(CharSequence[])}) when the
+     *       view can only be filled with predefined values (typically used when the autofill type
+     *       is {@link #AUTOFILL_TYPE_LIST}).
+     *   <li>Resource id ({@link ViewStructure#setId(int, String, String, String)}).
+     *   <li>Class name ({@link ViewStructure#setClassName(String)}).
+     *   <li>Content description ({@link ViewStructure#setContentDescription(CharSequence)}).
+     *   <li>Visual properties such as visibility ({@link ViewStructure#setVisibility(int)}),
+     *       dimensions ({@link ViewStructure#setDimens(int, int, int, int, int, int)}), and
+     *       opacity ({@link ViewStructure#setOpaque(boolean)}).
+     *   <li>For views representing text fields, text properties such as the text itself
+     *       ({@link ViewStructure#setText(CharSequence)}), text hints
+     *       ({@link ViewStructure#setHint(CharSequence)}, input type
+     *       ({@link ViewStructure#setInputType(int)}),
+     *   <li>For views representing HTML nodes, its web domain
+     *       ({@link ViewStructure#setWebDomain(String)}) and HTML properties
+     *       (({@link ViewStructure#setHtmlInfo(android.view.ViewStructure.HtmlInfo)}).
+     * </ul>
+     *
+     * <p>The default implementation of this method already sets most of these properties based on
+     * related {@link View} methods (for example, the autofill id is set using
+     * {@link #getAutofillId()}, the autofill type set using {@link #getAutofillType()}, etc.),
+     * and views in the standard Android widgets library also override it to set their
+     * relevant properties (for example, {@link android.widget.TextView} already sets the text
+     * properties), so it's recommended to only override this method
+     * (and call {@code super.onProvideAutofillStructure()}) when:
+     *
+     * <ul>
+     *   <li>The view contents does not include PII (Personally Identifiable Information), so it
+     *       can call {@link ViewStructure#setDataIsSensitive(boolean)} passing {@code false}.
+     *   <li>The view can only be autofilled with predefined options, so it can call
+     *       {@link ViewStructure#setAutofillOptions(CharSequence[])}.
+     * </ul>
+     *
+     * <p><b>Note:</b> The {@code left} and {@code top} values set in
+     * {@link ViewStructure#setDimens(int, int, int, int, int, int)} must be relative to the next
+     * {@link ViewGroup#isImportantForAutofill()} predecessor view included in the structure.
+     *
+     * <p>Views support the Autofill Framework mainly by:
+     * <ul>
+     *   <li>Providing the metadata defining what the view means and how it can be autofilled.
+     *   <li>Notifying the Android System when the view value changed by calling
+     *       {@link AutofillManager#notifyValueChanged(View)}.
+     *   <li>Implementing the methods that autofill the view.
+     * </ul>
+     * <p>This method is responsible for the former; {@link #autofill(AutofillValue)} is responsible
+     * for the latter.
+     *
+     * @param structure fill in with structured view data for autofill purposes.
+     * @param flags optional flags.
+     *
+     * @see #AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+     

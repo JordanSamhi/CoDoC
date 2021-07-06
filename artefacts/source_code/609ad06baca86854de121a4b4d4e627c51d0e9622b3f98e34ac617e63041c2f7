@@ -1,0 +1,15 @@
+public int isOptionalCodecsEnabled(@NonNull BluetoothDevice device){
+    verifyDeviceNotNull(device, "isOptionalCodecsEnabled");
+    try {
+        final IBluetoothA2dp service = getService();
+        if (service != null && isEnabled() && isValidDevice(device)) {
+            return service.getOptionalCodecsEnabled(device);
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return OPTIONAL_CODECS_PREF_UNKNOWN;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error talking to BT service in getOptionalCodecsEnabled()", e);
+        return OPTIONAL_CODECS_PREF_UNKNOWN;
+    }
+}

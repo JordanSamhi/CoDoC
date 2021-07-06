@@ -1,0 +1,14 @@
+public void consultativeTransfer(ImsCall transferToImsCall) throws ImsException{
+    logi("consultativeTransfer :: session=" + mSession + ", other call=" + transferToImsCall);
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            throw new ImsException("No call to transfer", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        try {
+            mSession.transfer(transferToImsCall.getSession());
+        } catch (Throwable t) {
+            loge("consultativeTransfer :: ", t);
+            throw new ImsException("consultativeTransfer()", t, 0);
+        }
+    }
+}

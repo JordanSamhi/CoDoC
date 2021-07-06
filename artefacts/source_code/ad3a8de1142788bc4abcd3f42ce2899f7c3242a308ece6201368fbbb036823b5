@@ -1,0 +1,30 @@
+public void allowAutojoin(int netId, boolean choice){
+    enforceNetworkSettingsPermission();
+    int callingUid = Binder.getCallingUid();
+    mLog.info("allowAutojoin=% uid=%").c(choice).c(callingUid).flush();
+    mWifiThreadRunner.post(() -> {
+        WifiConfiguration config = mWifiConfigManager.getConfiguredNetwork(netId);
+        if (config == null) {
+            return;
+        }
+        if (config.fromWifiNetworkSpecifier) {
+            Log.e(TAG, "Auto-join configuration is not permitted for NetworkSpecifier " + "connections: " + config);
+            return;
+        }
+        if (config.isPasspoint() && !config.isEphemeral()) {
+            Log.e(TAG, "Auto-join configuration for a non-ephemeral Passpoint network should be " + "configured using FQDN: " + config);
+            return;
+        }
+        if (config.fromWifiNetworkSuggestion) {
+            if (!mWifiNetworkSuggestionsManager.allowNetworkSuggestionAutojoin(config, choice)) {
+                return;
+            }
+        }
+        if (choice != config.allowAutojoin) {
+            mWifiConfigManager.allowAutojoin(netId, choice);
+            if (!config.isPasspoint()) {
+                mWifiMetrics.logUserActionEvent(choice ? UserActionEvent.EVENT_CONFIGURE_AUTO_CONNECT_ON : UserActionEvent.EVENT_CONFIGURE_AUTO_CONNECT_OFF, netId);
+            }
+        }
+    });
+}

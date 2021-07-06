@@ -1,0 +1,18 @@
+public void requestLatestTetheringEntitlementResult(int downstream, ResultReceiver receiver, boolean showEntitlementUi){
+    if (!isValidDownstreamType(downstream)) {
+        receiver.send(TETHER_ERROR_ENTITLEMENT_UNKNOWN, null);
+        return;
+    }
+    final TetheringConfiguration config = mFetcher.fetchTetheringConfiguration();
+    if (!isTetherProvisioningRequired(config)) {
+        receiver.send(TETHER_ERROR_NO_ERROR, null);
+        return;
+    }
+    final int cacheValue = mEntitlementCacheValue.get(downstream, TETHER_ERROR_ENTITLEMENT_UNKNOWN);
+    if (cacheValue == TETHER_ERROR_NO_ERROR || !showEntitlementUi) {
+        receiver.send(cacheValue, null);
+    } else {
+        ResultReceiver proxy = buildProxyReceiver(downstream, false, receiver);
+        runUiTetherProvisioning(downstream, config, proxy);
+    }
+}

@@ -1,0 +1,12 @@
+public final AccessibilityServiceInfo getServiceInfo(){
+    IAccessibilityServiceConnection connection = AccessibilityInteractionClient.getInstance().getConnection(mConnectionId);
+    if (connection != null) {
+        try {
+            return connection.getServiceInfo();
+        } catch (RemoteException re) {
+            Log.w(LOG_TAG, "Error while getting AccessibilityServiceInfo", re);
+            re.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

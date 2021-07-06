@@ -1,0 +1,18 @@
+public void onPhyRead(String address, int txPhy, int rxPhy, int status){
+    if (DBG) {
+        Log.d(TAG, "onPhyRead() - status=" + status + " address=" + address + " txPhy=" + txPhy + " rxPhy=" + rxPhy);
+    }
+    if (!address.equals(mDevice.getAddress())) {
+        return;
+    }
+    runOrQueueCallback(new Runnable() {
+
+        @Override
+        public void run() {
+            final BluetoothGattCallback callback = mCallback;
+            if (callback != null) {
+                callback.onPhyRead(BluetoothGatt.this, txPhy, rxPhy, status);
+            }
+        }
+    });
+}

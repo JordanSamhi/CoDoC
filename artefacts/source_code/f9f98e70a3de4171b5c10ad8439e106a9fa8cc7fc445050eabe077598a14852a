@@ -1,0 +1,13 @@
+public void setPictureInPictureActionReplacingConnection(@Nullable IAccessibilityInteractionConnection connection) throws RemoteException{
+    synchronized (mLock) {
+        if (mPictureInPictureActionReplacingConnection != null) {
+            mPictureInPictureActionReplacingConnection.unlinkToDeath();
+            mPictureInPictureActionReplacingConnection = null;
+        }
+        if (connection != null) {
+            RemoteAccessibilityConnection wrapper = new RemoteAccessibilityConnection(AccessibilityWindowInfo.PICTURE_IN_PICTURE_ACTION_REPLACER_WINDOW_ID, connection, "foo.bar.baz", Process.SYSTEM_UID, UserHandle.USER_ALL);
+            mPictureInPictureActionReplacingConnection = wrapper;
+            wrapper.linkToDeath();
+        }
+    }
+}

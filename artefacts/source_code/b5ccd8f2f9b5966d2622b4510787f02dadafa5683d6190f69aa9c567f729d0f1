@@ -1,0 +1,13 @@
+public static final Integer getLmkdKillCount(int min_oom_adj, int max_oom_adj){
+    ByteBuffer buf = ByteBuffer.allocate(4 * 3);
+    ByteBuffer repl = ByteBuffer.allocate(4 * 2);
+    buf.putInt(LMK_GETKILLCNT);
+    buf.putInt(min_oom_adj);
+    buf.putInt(max_oom_adj);
+    repl.putInt(LMK_GETKILLCNT);
+    repl.rewind();
+    if (writeLmkd(buf, repl) && repl.getInt() == LMK_GETKILLCNT) {
+        return new Integer(repl.getInt());
+    }
+    return null;
+}

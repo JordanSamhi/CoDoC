@@ -1,0 +1,21 @@
+public SharedPreferences getSharedPreferences(){
+    if (mPreferenceDataStore != null) {
+        return null;
+    }
+    if (mSharedPreferences == null) {
+        final Context storageContext;
+        switch(mStorage) {
+            case STORAGE_DEVICE_PROTECTED:
+                storageContext = mContext.createDeviceProtectedStorageContext();
+                break;
+            case STORAGE_CREDENTIAL_PROTECTED:
+                storageContext = mContext.createCredentialProtectedStorageContext();
+                break;
+            default:
+                storageContext = mContext;
+                break;
+        }
+        mSharedPreferences = storageContext.getSharedPreferences(mSharedPreferencesName, mSharedPreferencesMode);
+    }
+    return mSharedPreferences;
+}

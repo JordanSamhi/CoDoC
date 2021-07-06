@@ -1,0 +1,18 @@
+public static String createLogFromBackupData(byte[] data){
+    StringBuilder sb = new StringBuilder();
+    try {
+        String supplicantConfString = new String(data, StandardCharsets.UTF_8.name());
+        for (String line : supplicantConfString.split("\n")) {
+            if (line.matches(PSK_MASK_LINE_MATCH_PATTERN)) {
+                line = line.replaceAll(PSK_MASK_SEARCH_PATTERN, PSK_MASK_REPLACE_PATTERN);
+            }
+            if (line.matches(WEP_KEYS_MASK_LINE_MATCH_PATTERN)) {
+                line = line.replaceAll(WEP_KEYS_MASK_SEARCH_PATTERN, WEP_KEYS_MASK_REPLACE_PATTERN);
+            }
+            sb.append(line).append("\n");
+        }
+    } catch (UnsupportedEncodingException e) {
+        return "";
+    }
+    return sb.toString();
+}

@@ -1,0 +1,11 @@
+public void update(ArraySet<String> updatedPackages, boolean force){
+    int currentUser = ActivityManager.getCurrentUser();
+    for (int i = mPinKeys.size() - 1; i >= 0; i--) {
+        int key = mPinKeys.valueAt(i);
+        ApplicationInfo info = getInfoForKey(key, currentUser);
+        if (info != null && updatedPackages.contains(info.packageName)) {
+            Slog.i(TAG, "Updating pinned files for " + info.packageName + " force=" + force);
+            sendPinAppMessage(key, currentUser, force);
+        }
+    }
+}

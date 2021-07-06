@@ -1,0 +1,13 @@
+public boolean resetRadioConfig(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.resetModemConfig(getSlotIndex());
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "resetRadioConfig RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "resetRadioConfig NPE", ex);
+    }
+    return false;
+}

@@ -1,0 +1,23 @@
+public void enqueue(IBinder key, boolean value, Runnable runnable){
+    synchronized (mPending) {
+        boolean skip = false;
+        if (!value) {
+            for (int i = mPending.size() - 1; i >= 0; i--) {
+                final Rec r = mPending.get(i);
+                if (r.key == key) {
+                    if (r.value) {
+                        skip = true;
+                        mPending.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
+        if (!skip) {
+            mPending.add(new Rec(key, value, runnable));
+        }
+        if (mStarted) {
+            mHandler.post(mWorker);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public boolean areAllDataDisconnected(){
+    if (mTransportManager != null) {
+        for (int transport : mTransportManager.getAvailableTransports()) {
+            if (getDcTracker(transport) != null && !getDcTracker(transport).isDisconnected()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}

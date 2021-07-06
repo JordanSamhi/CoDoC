@@ -1,0 +1,9 @@
+public static int fixProtectionLevel(int level){
+    if (level == PROTECTION_SIGNATURE_OR_SYSTEM) {
+        level = PROTECTION_SIGNATURE | PROTECTION_FLAG_PRIVILEGED;
+    }
+    if ((level & PROTECTION_FLAG_VENDOR_PRIVILEGED) != 0 && (level & PROTECTION_FLAG_PRIVILEGED) == 0) {
+        level = level & ~PROTECTION_FLAG_VENDOR_PRIVILEGED;
+    }
+    return level;
+}

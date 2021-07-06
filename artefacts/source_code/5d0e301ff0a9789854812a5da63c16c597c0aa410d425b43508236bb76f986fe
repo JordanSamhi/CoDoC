@@ -1,0 +1,8 @@
+public void queueNewFrame(){
+    Handler handler = mGLHandlerThread.getHandler();
+    if (!handler.hasMessages(MSG_NEW_FRAME)) {
+        handler.sendMessage(handler.obtainMessage(MSG_NEW_FRAME));
+    } else {
+        Log.e(TAG, "GLThread dropping frame.  Not consuming frames quickly enough!");
+    }
+}

@@ -1,0 +1,11 @@
+public void currentEmergencyNumberList(int indicationType, ArrayList<android.hardware.radio.V1_4.EmergencyNumber> emergencyNumberList){
+    List<EmergencyNumber> response = new ArrayList<>(emergencyNumberList.size());
+    for (android.hardware.radio.V1_4.EmergencyNumber emergencyNumberHal : emergencyNumberList) {
+        EmergencyNumber emergencyNumber = new EmergencyNumber(emergencyNumberHal.number, MccTable.countryCodeForMcc(emergencyNumberHal.mcc), emergencyNumberHal.mnc, emergencyNumberHal.categories, emergencyNumberHal.urns, emergencyNumberHal.sources, EmergencyNumber.EMERGENCY_CALL_ROUTING_UNKNOWN);
+        response.add(emergencyNumber);
+    }
+    if (RIL.RILJ_LOGD)
+        mRil.unsljLogRet(RIL_UNSOL_EMERGENCY_NUMBER_LIST, response);
+    mRil.cacheEmergencyNumberListIndication(response);
+    mRil.mEmergencyNumberListRegistrants.notifyRegistrants(new AsyncResult(null, response, null));
+}

@@ -1,0 +1,35 @@
+public boolean isFalseTouch(){
+    if (FalsingLog.ENABLED) {
+        if (!mSessionActive && mContext.getSystemService(PowerManager.class).isInteractive() && mPendingWtf == null) {
+            int enabled = isEnabled() ? 1 : 0;
+            int screenOn = mScreenOn ? 1 : 0;
+            String state = StatusBarState.toShortString(mState);
+            Throwable here = new Throwable("here");
+            FalsingLog.wLogcat("isFalseTouch", new StringBuilder().append("Session is not active, yet there's a query for a false touch.").append(" enabled=").append(enabled).append(" mScreenOn=").append(screenOn).append(" mState=").append(state).append(". Escalating to WTF if screen does not turn on soon.").toString());
+            mPendingWtf = () -> FalsingLog.wtf("isFalseTouch", new StringBuilder().append("Session did not become active after query for a false touch.").append(" enabled=").append(enabled).append('/').append(isEnabled() ? 1 : 0).append(" mScreenOn=").append(screenOn).append('/').append(mScreenOn ? 1 : 0).append(" mState=").append(state).append('/').append(StatusBarState.toShortString(mState)).append(". Look for warnings ~1000ms earlier to see root cause.").toString(), here);
+            mHandler.postDelayed(mPendingWtf, 1000);
+        }
+    }
+    if (ActivityManager.isRunningInUserTestHarness()) {
+        return false;
+    }
+    if (mAccessibilityManager.isTouchExplorationEnabled()) {
+        return false;
+    }
+    if (!mIsTouchScreen) {
+        return false;
+    }
+    if (mJustUnlockedWithFace) {
+        return false;
+    }
+    mIsFalseTouchCalls++;
+    boolean isFalse = mHumanInteractionClassifier.isFalseTouch();
+    if (!isFalse) {
+        if (FalsingLog.ENABLED) {
+            FalsingLog.i("isFalseTouchCalls", "Calls before success: " + mIsFalseTouchCalls);
+        }
+        mMetricsLogger.histogram(FALSING_SUCCESS, mIsFalseTouchCalls);
+        mIsFalseTouchCalls = 0;
+    }
+    return isFalse;
+}

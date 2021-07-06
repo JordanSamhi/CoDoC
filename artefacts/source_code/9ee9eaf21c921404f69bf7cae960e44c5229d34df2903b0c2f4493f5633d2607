@@ -1,0 +1,23 @@
+public String getLine1AlphaTag(int subId){
+    String alphaTag = null;
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            alphaTag = telephony.getLine1AlphaTagForDisplay(subId, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    if (alphaTag != null) {
+        return alphaTag;
+    }
+    try {
+        IPhoneSubInfo info = getSubscriberInfoService();
+        if (info == null)
+            return null;
+        return info.getLine1AlphaTagForSubscriber(subId, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

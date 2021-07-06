@@ -1,0 +1,10 @@
+public static void writeCertificates(Parcel dest, X509Certificate[] certs){
+    if (certs == null || certs.length == 0) {
+        dest.writeInt(0);
+        return;
+    }
+    dest.writeInt(certs.length);
+    for (int i = 0; i < certs.length; i++) {
+        writeCertificate(dest, certs[i]);
+    }
+}

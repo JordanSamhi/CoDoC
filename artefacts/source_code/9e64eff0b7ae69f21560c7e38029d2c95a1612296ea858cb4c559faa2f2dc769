@@ -1,0 +1,11 @@
+public void waitForCompletion(long timeout){
+    final long targetTime = SystemClock.elapsedRealtime() + timeout;
+    synchronized (trigger) {
+        while (!done && (timeout <= 0 || SystemClock.elapsedRealtime() < targetTime)) {
+            try {
+                trigger.wait(1000L);
+            } catch (InterruptedException ex) {
+            }
+        }
+    }
+}

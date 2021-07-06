@@ -1,0 +1,27 @@
+public byte[] retrieveBackupDataFromSoftApConfiguration(SoftApConfiguration config){
+    if (config == null) {
+        Log.e(TAG, "Invalid configuration received");
+        return new byte[0];
+    }
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try {
+        DataOutputStream out = new DataOutputStream(baos);
+        out.writeInt(CURRENT_SAP_BACKUP_DATA_VERSION);
+        BackupUtils.writeString(out, config.getSsid());
+        out.writeInt(config.getBand());
+        out.writeInt(config.getChannel());
+        BackupUtils.writeString(out, config.getPassphrase());
+        out.writeInt(config.getSecurityType());
+        out.writeBoolean(config.isHiddenSsid());
+        out.writeInt(config.getMaxNumberOfClients());
+        out.writeLong(config.getShutdownTimeoutMillis());
+        out.writeBoolean(config.isClientControlByUserEnabled());
+        writeMacAddressList(out, config.getBlockedClientList());
+        writeMacAddressList(out, config.getAllowedClientList());
+        out.writeBoolean(config.isAutoShutdownEnabled());
+    } catch (IOException io) {
+        Log.e(TAG, "Invalid configuration received, IOException " + io);
+        return new byte[0];
+    }
+    return baos.toByteArray();
+}

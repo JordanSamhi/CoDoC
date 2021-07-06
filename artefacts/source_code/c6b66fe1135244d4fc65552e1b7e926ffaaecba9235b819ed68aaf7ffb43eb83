@@ -1,0 +1,9 @@
+public void setDefaultSmdpAddress(String defaultSmdpAddress, AsyncResultCallback<Void> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_SET_DEFAULT_SMDP_ADDRESS).addChildAsString(Tags.TAG_CTX_0, defaultSmdpAddress).build().toHex())), response -> {
+        int result = parseSimpleResult(response);
+        if (result != CODE_OK) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_SET_DEFAULT_SMDP_ADDRESS, result);
+        }
+        return null;
+    }, callback, handler);
+}

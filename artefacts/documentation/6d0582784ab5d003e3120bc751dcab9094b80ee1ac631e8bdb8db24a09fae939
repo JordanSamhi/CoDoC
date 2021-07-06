@@ -1,0 +1,30 @@
+
+     * This behaves the same as save(), but in addition it allocates and
+     * redirects drawing to an offscreen bitmap.
+     * <p class="note"><strong>Note:</strong> this method is very expensive,
+     * incurring more than double rendering cost for contained content. Avoid
+     * using this method, especially if the bounds provided are large. It is
+     * recommended to use a {@link android.view.View#LAYER_TYPE_HARDWARE hardware layer} on a View
+     * to apply an xfermode, color filter, or alpha, as it will perform much
+     * better than this method.
+     * <p>
+     * All drawing calls are directed to a newly allocated offscreen bitmap.
+     * Only when the balancing call to restore() is made, is that offscreen
+     * buffer drawn back to the current target of the Canvas (either the
+     * screen, it's target Bitmap, or the previous layer).
+     * <p>
+     * The {@code alpha} parameter is applied when the offscreen bitmap is
+     * drawn back when restore() is called.
+     *
+     * As of API Level API level {@value Build.VERSION_CODES#P} the only valid
+     * {@code saveFlags} is {@link #ALL_SAVE_FLAG}.  All other flags are ignored.
+     *
+     * @deprecated Use {@link #saveLayerAlpha(RectF, int)} instead.
+     * @param bounds    The maximum size the offscreen bitmap needs to be
+     *                  (in local coordinates)
+     * @param alpha     The alpha to apply to the offscreen when it is
+                        drawn during restore()
+     * @param saveFlags see _SAVE_FLAG constants, generally {@link #ALL_SAVE_FLAG} is recommended
+     *                  for performance reasons.
+     * @return          value to pass to restoreToCount() to balance this call
+     

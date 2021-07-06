@@ -1,0 +1,10 @@
+public void draw(Canvas c, Paint p){
+    final boolean hasDisplayListCanvas = !mForceSoftware && c instanceof RecordingCanvas;
+    pruneSwFinished();
+    if (hasDisplayListCanvas) {
+        final RecordingCanvas hw = (RecordingCanvas) c;
+        drawHardware(hw, p);
+    } else {
+        drawSoftware(c, p);
+    }
+}

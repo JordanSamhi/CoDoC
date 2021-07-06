@@ -1,0 +1,16 @@
+public static String getUsbDescriptorString(UsbDeviceConnection connection, byte strIndex){
+    String usbStr = "";
+    if (strIndex != 0) {
+        try {
+            int rdo = connection.controlTransfer(UsbConstants.USB_DIR_IN | UsbConstants.USB_TYPE_STANDARD, REQUEST_GET_DESCRIPTOR, (DESCRIPTORTYPE_STRING << 8) | strIndex, 0, sStringBuffer, 0xFF, USB_CONTROL_TRANSFER_TIMEOUT_MS);
+            if (rdo >= 0) {
+                usbStr = new String(sStringBuffer, 2, rdo - 2, "UTF-16LE");
+            } else {
+                usbStr = "?";
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Can not communicate with USB device", e);
+        }
+    }
+    return usbStr;
+}

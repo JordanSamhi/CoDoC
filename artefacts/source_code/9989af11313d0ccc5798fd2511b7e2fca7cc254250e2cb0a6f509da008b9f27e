@@ -1,0 +1,15 @@
+public Account[] getAccounts(int userId, String opPackageName){
+    int callingUid = Binder.getCallingUid();
+    mAppOpsManager.checkPackage(callingUid, opPackageName);
+    List<String> visibleAccountTypes = getTypesVisibleToCaller(callingUid, userId, opPackageName);
+    if (visibleAccountTypes.isEmpty()) {
+        return EMPTY_ACCOUNT_ARRAY;
+    }
+    long identityToken = clearCallingIdentity();
+    try {
+        UserAccounts accounts = getUserAccounts(userId);
+        return getAccountsInternal(accounts, callingUid, opPackageName, visibleAccountTypes, false);
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+}

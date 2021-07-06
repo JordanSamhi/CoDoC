@@ -1,0 +1,9 @@
+public Set<String> get(int value){
+    final Set<String> enabledFlagNames = new HashSet<>(mFlags.size());
+    for (Flag flag : mFlags) {
+        if (flag.isEnabledFor(value)) {
+            enabledFlagNames.add(flag.mName);
+        }
+    }
+    return Collections.unmodifiableSet(enabledFlagNames);
+}

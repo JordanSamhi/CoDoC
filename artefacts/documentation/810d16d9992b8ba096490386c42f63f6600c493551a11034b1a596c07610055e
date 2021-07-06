@@ -1,0 +1,38 @@
+
+     * Return a list of all the networks configured for the current foreground
+     * user.
+     *
+     * Not all fields of WifiConfiguration are returned. Only the following
+     * fields are filled in:
+     * <ul>
+     * <li>networkId</li>
+     * <li>SSID</li>
+     * <li>BSSID</li>
+     * <li>priority</li>
+     * <li>allowedProtocols</li>
+     * <li>allowedKeyManagement</li>
+     * <li>allowedAuthAlgorithms</li>
+     * <li>allowedPairwiseCiphers</li>
+     * <li>allowedGroupCiphers</li>
+     * <li>status</li>
+     * </ul>
+     * @return a list of network configurations in the form of a list
+     * of {@link WifiConfiguration} objects.
+     *
+     * @deprecated
+     * a) See {@link WifiNetworkSpecifier.Builder#build()} for new
+     * mechanism to trigger connection to a Wi-Fi network.
+     * b) See {@link #addNetworkSuggestions(List)},
+     * {@link #removeNetworkSuggestions(List)} for new API to add Wi-Fi networks for consideration
+     * when auto-connecting to wifi.
+     * <b>Compatibility Note:</b> For applications targeting
+     * {@link android.os.Build.VERSION_CODES#Q} or above, this API will always fail and return an
+     * empty list.
+     * <p>
+     * Deprecation Exemptions:
+     * <ul>
+     * <li>Device Owner (DO), Profile Owner (PO) and system apps will have access to the full list.
+     * <li>Callers with Carrier privilege will receive a restricted list only containing
+     * configurations which they created.
+     * </ul>
+     

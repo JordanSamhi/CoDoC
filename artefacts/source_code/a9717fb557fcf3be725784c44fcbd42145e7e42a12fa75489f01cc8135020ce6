@@ -1,0 +1,8 @@
+public int getShortcutIconResId(@NonNull String packageName, @NonNull String shortcutId, @NonNull UserHandle user){
+    final ShortcutQuery q = new ShortcutQuery();
+    q.setPackage(packageName);
+    q.setShortcutIds(Arrays.asList(shortcutId));
+    q.setQueryFlags(ShortcutQuery.FLAG_GET_ALL_KINDS);
+    final List<ShortcutInfo> shortcuts = getShortcuts(q, user);
+    return shortcuts.size() > 0 ? shortcuts.get(0).getIconResourceId() : 0;
+}

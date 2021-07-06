@@ -1,0 +1,20 @@
+public static UserHandle of(@UserIdInt int userId){
+    if (userId == USER_SYSTEM) {
+        return SYSTEM;
+    }
+    switch(userId) {
+        case USER_ALL:
+            return ALL;
+        case USER_CURRENT:
+            return CURRENT;
+        case USER_CURRENT_OR_SELF:
+            return CURRENT_OR_SELF;
+    }
+    if (userId >= MIN_SECONDARY_USER_ID && userId < (MIN_SECONDARY_USER_ID + CACHED_USER_INFOS.length)) {
+        return CACHED_USER_INFOS[userId - MIN_SECONDARY_USER_ID];
+    }
+    if (userId == USER_NULL) {
+        return NULL;
+    }
+    return new UserHandle(userId);
+}

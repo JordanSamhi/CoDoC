@@ -1,0 +1,28 @@
+public void selectRoute(@NonNull MediaRoute2Info route){
+    Objects.requireNonNull(route, "route must not be null");
+    if (isReleased()) {
+        Log.w(TAG, "selectRoute: Called on released controller. Ignoring.");
+        return;
+    }
+    List<MediaRoute2Info> selectedRoutes = getSelectedRoutes();
+    if (checkRouteListContainsRouteId(selectedRoutes, route.getId())) {
+        Log.w(TAG, "Ignoring selecting a route that is already selected. route=" + route);
+        return;
+    }
+    List<MediaRoute2Info> selectableRoutes = getSelectableRoutes();
+    if (!checkRouteListContainsRouteId(selectableRoutes, route.getId())) {
+        Log.w(TAG, "Ignoring selecting a non-selectable route=" + route);
+        return;
+    }
+    MediaRouter2Stub stub;
+    synchronized (sRouterLock) {
+        stub = mStub;
+    }
+    if (stub != null) {
+        try {
+            mMediaRouterService.selectRouteWithRouter2(stub, getId(), route);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Unable to select route for session.", ex);
+        }
+    }
+}

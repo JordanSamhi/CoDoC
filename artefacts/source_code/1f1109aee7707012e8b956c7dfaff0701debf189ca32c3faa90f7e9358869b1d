@@ -1,0 +1,11 @@
+public ChildZygoteProcess startChildZygote(final String processClass, final String niceName, int uid, int gid, int[] gids, int runtimeFlags, String seInfo, String abi, String acceptedAbiList, String instructionSet, int uidRangeStart, int uidRangeEnd){
+    final LocalSocketAddress serverAddress = new LocalSocketAddress(processClass + "/" + UUID.randomUUID().toString());
+    final String[] extraArgs = { Zygote.CHILD_ZYGOTE_SOCKET_NAME_ARG + serverAddress.getName(), Zygote.CHILD_ZYGOTE_ABI_LIST_ARG + acceptedAbiList, Zygote.CHILD_ZYGOTE_UID_RANGE_START + uidRangeStart, Zygote.CHILD_ZYGOTE_UID_RANGE_END + uidRangeEnd };
+    Process.ProcessStartResult result;
+    try {
+        result = startViaZygote(processClass, niceName, uid, gid, gids, runtimeFlags, 0, 0, seInfo, abi, instructionSet, null, null, true, null, ZYGOTE_POLICY_FLAG_SYSTEM_PROCESS, false, null, null, null, true, false, extraArgs);
+    } catch (ZygoteStartFailedEx ex) {
+        throw new RuntimeException("Starting child-zygote through Zygote failed", ex);
+    }
+    return new ChildZygoteProcess(serverAddress, result.pid);
+}

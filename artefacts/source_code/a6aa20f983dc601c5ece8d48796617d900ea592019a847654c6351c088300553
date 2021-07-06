@@ -1,0 +1,11 @@
+public Session createPartition(String name, long size, boolean readOnly){
+    try {
+        if (mService.createPartition(name, size, readOnly)) {
+            return new Session();
+        } else {
+            return null;
+        }
+    } catch (RemoteException e) {
+        throw new RuntimeException(e.toString());
+    }
+}

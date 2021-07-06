@@ -1,0 +1,15 @@
+public List<Rule> readRules(@Nullable AppInstallMetadata appInstallMetadata) throws IOException, RuleParseException{
+    synchronized (RULES_LOCK) {
+        List<RuleIndexRange> ruleReadingIndexes = Collections.emptyList();
+        if (appInstallMetadata != null) {
+            try {
+                ruleReadingIndexes = mRuleIndexingController.identifyRulesToEvaluate(appInstallMetadata);
+            } catch (Exception e) {
+                Slog.w(TAG, "Error identifying the rule indexes. Trying unindexed.", e);
+            }
+        }
+        File ruleFile = new File(mRulesDir, RULES_FILE);
+        List<Rule> rules = mRuleParser.parse(RandomAccessObject.ofFile(ruleFile), ruleReadingIndexes);
+        return rules;
+    }
+}

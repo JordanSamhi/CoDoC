@@ -1,0 +1,12 @@
+public void setPressed(boolean pressed){
+    final boolean needsRefresh = pressed != ((mPrivateFlags & PFLAG_PRESSED) == PFLAG_PRESSED);
+    if (pressed) {
+        mPrivateFlags |= PFLAG_PRESSED;
+    } else {
+        mPrivateFlags &= ~PFLAG_PRESSED;
+    }
+    if (needsRefresh) {
+        refreshDrawableState();
+    }
+    dispatchSetPressed(pressed);
+}

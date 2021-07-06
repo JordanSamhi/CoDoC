@@ -1,0 +1,23 @@
+public void addSubscriptionInfoRecord(String uniqueId, String displayName, int slotIndex, int subscriptionType){
+    if (VDBG) {
+        logd("[addSubscriptionInfoRecord]+ uniqueId:" + uniqueId + ", displayName:" + displayName + ", slotIndex:" + slotIndex + ", subscriptionType: " + subscriptionType);
+    }
+    if (uniqueId == null) {
+        Log.e(LOG_TAG, "[addSubscriptionInfoRecord]- uniqueId is null");
+        return;
+    }
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub == null) {
+            Log.e(LOG_TAG, "[addSubscriptionInfoRecord]- ISub service is null");
+            return;
+        }
+        int result = iSub.addSubInfo(uniqueId, displayName, slotIndex, subscriptionType);
+        if (result < 0) {
+            Log.e(LOG_TAG, "Adding of subscription didn't succeed: error = " + result);
+        } else {
+            logd("successfully added new subscription");
+        }
+    } catch (RemoteException ex) {
+    }
+}

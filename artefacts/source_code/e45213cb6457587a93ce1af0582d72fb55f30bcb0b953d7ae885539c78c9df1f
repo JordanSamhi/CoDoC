@@ -1,0 +1,28 @@
+public static String bandToString(int band){
+    StringJoiner sj = new StringJoiner(" & ");
+    sj.setEmptyValue("unspecified");
+    if ((band & WifiScanner.WIFI_BAND_24_GHZ) != 0) {
+        sj.add("24Ghz");
+    }
+    band &= ~WifiScanner.WIFI_BAND_24_GHZ;
+    switch(band & WifiScanner.WIFI_BAND_5_GHZ_WITH_DFS) {
+        case WifiScanner.WIFI_BAND_5_GHZ:
+            sj.add("5Ghz (no DFS)");
+            break;
+        case WifiScanner.WIFI_BAND_5_GHZ_DFS_ONLY:
+            sj.add("5Ghz (DFS only)");
+            break;
+        case WifiScanner.WIFI_BAND_5_GHZ_WITH_DFS:
+            sj.add("5Ghz (DFS incl)");
+            break;
+    }
+    band &= ~WifiScanner.WIFI_BAND_5_GHZ_WITH_DFS;
+    if ((band & WifiScanner.WIFI_BAND_6_GHZ) != 0) {
+        sj.add("6Ghz");
+    }
+    band &= ~WifiScanner.WIFI_BAND_6_GHZ;
+    if (band != 0) {
+        return "Invalid band";
+    }
+    return sj.toString();
+}

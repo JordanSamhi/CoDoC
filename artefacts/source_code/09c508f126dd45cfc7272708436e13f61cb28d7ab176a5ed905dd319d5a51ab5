@@ -1,0 +1,15 @@
+public Optional<TertiaryKey> getKey(String secondaryKeyAlias, String packageName) throws EncryptionDbException{
+    SQLiteDatabase db = mHelper.getReadableDatabaseSafe();
+    String[] projection = { TertiaryKeysEntry._ID, TertiaryKeysEntry.COLUMN_NAME_SECONDARY_KEY_ALIAS, TertiaryKeysEntry.COLUMN_NAME_PACKAGE_NAME, TertiaryKeysEntry.COLUMN_NAME_WRAPPED_KEY_BYTES };
+    String selection = TertiaryKeysEntry.COLUMN_NAME_SECONDARY_KEY_ALIAS + " = ? AND " + TertiaryKeysEntry.COLUMN_NAME_PACKAGE_NAME + " = ?";
+    String[] selectionArguments = { secondaryKeyAlias, packageName };
+    try (Cursor cursor = db.query(TertiaryKeysEntry.TABLE_NAME, projection, selection, selectionArguments, null, null, null)) {
+        int count = cursor.getCount();
+        if (count == 0) {
+            return Optional.empty();
+        }
+        cursor.moveToFirst();
+        byte[] wrappedKeyBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(TertiaryKeysEntry.COLUMN_NAME_WRAPPED_KEY_BYTES));
+        return Optional.of(new TertiaryKey(secondaryKeyAlias, packageName, wrappedKeyBytes));
+    }
+}

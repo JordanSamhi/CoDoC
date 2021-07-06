@@ -1,0 +1,27 @@
+public boolean addHlpReq(@NonNull String ifaceName, byte[] dst, byte[] hlpPacket){
+    synchronized (mLock) {
+        final String methodStr = "filsHlpAddRequest";
+        if (isV1_3()) {
+            ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+            if (iface == null) {
+                return false;
+            }
+            android.hardware.wifi.supplicant.V1_3.ISupplicantStaIface staIfaceV13 = getStaIfaceMockableV1_3(iface);
+            if (staIfaceV13 == null) {
+                Log.e(TAG, methodStr + ": ISupplicantStaIface is null, cannot addHlpReq");
+                return false;
+            }
+            try {
+                ArrayList<Byte> payload = NativeUtil.byteArrayToArrayList(hlpPacket);
+                SupplicantStatus status = staIfaceV13.filsHlpAddRequest(dst, payload);
+                return checkStatusAndLogFailure(status, methodStr);
+            } catch (RemoteException e) {
+                handleRemoteException(e, methodStr);
+                return false;
+            }
+        } else {
+            Log.e(TAG, "Method " + methodStr + " is not supported in existing HAL");
+            return false;
+        }
+    }
+}

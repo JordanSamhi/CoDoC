@@ -1,0 +1,13 @@
+public boolean disconnectAllEnabledProfiles(@NonNull BluetoothDevice device){
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.disconnectAllEnabledProfiles(device);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return false;
+}

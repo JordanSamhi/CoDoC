@@ -1,0 +1,14 @@
+public ByteBuffer map(){
+    synchronized (mLock) {
+        if (!mValid) {
+            throw new IllegalStateException("The linear block is invalid");
+        }
+        if (!mMappable) {
+            throw new IllegalStateException("The linear block is not mappable");
+        }
+        if (mMapped == null) {
+            mMapped = native_map();
+        }
+        return mMapped;
+    }
+}

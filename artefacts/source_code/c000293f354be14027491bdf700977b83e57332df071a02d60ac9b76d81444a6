@@ -1,0 +1,25 @@
+public synchronized boolean endMoveObject(MtpObject oldParent, MtpObject newParent, String name, boolean success){
+    if (sDebug)
+        Log.v(TAG, "endMoveObject " + success);
+    MtpObject oldObj = oldParent.getChild(name);
+    MtpObject newObj = newParent.getChild(name);
+    if (oldObj == null || newObj == null)
+        return false;
+    if (oldParent.getStorageId() != newObj.getStorageId()) {
+        boolean ret = endRemoveObject(oldObj, success);
+        return generalEndCopyObject(newObj, success, true) && ret;
+    }
+    if (!success) {
+        MtpObject temp = oldObj;
+        MtpObjectState oldState = oldObj.getState();
+        temp.setParent(newObj.getParent());
+        temp.setState(newObj.getState());
+        oldObj = newObj;
+        oldObj.setParent(oldParent);
+        oldObj.setState(oldState);
+        newObj = temp;
+        newObj.getParent().addChild(newObj);
+        oldParent.addChild(oldObj);
+    }
+    return generalEndRenameObject(oldObj, newObj, success);
+}

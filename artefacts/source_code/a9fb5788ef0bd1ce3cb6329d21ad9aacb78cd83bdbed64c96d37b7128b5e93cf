@@ -1,0 +1,11 @@
+public TypedArray obtainTypedArray(@ArrayRes int id) throws NotFoundException{
+    final ResourcesImpl impl = mResourcesImpl;
+    int len = impl.getAssets().getResourceArraySize(id);
+    if (len < 0) {
+        throw new NotFoundException("Array resource ID #0x" + Integer.toHexString(id));
+    }
+    TypedArray array = TypedArray.obtain(this, len);
+    array.mLength = impl.getAssets().getResourceArray(id, array.mData);
+    array.mIndices[0] = 0;
+    return array;
+}

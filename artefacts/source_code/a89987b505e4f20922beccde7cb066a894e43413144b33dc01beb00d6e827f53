@@ -1,0 +1,11 @@
+public final void addDynamicDataType(String type) throws MalformedMimeTypeException{
+    processMimeType(type, (internalType, isPartial) -> {
+        if (mDataTypes == null) {
+            mDataTypes = new ArrayList<>();
+        }
+        if (!mDataTypes.contains(internalType)) {
+            mDataTypes.add(internalType.intern());
+            mHasDynamicPartialTypes = mHasDynamicPartialTypes || isPartial;
+        }
+    });
+}

@@ -1,0 +1,12 @@
+public WallpaperInfo getWallpaperInfo(int userId){
+    try {
+        if (sGlobals.mService == null) {
+            Log.w(TAG, "WallpaperService not running");
+            throw new RuntimeException(new DeadSystemException());
+        } else {
+            return sGlobals.mService.getWallpaperInfo(userId);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

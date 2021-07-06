@@ -1,0 +1,16 @@
+public boolean isUserSwitcherEnabled(boolean showEvenIfNotActionable){
+    if (!supportsMultipleUsers()) {
+        return false;
+    }
+    if (hasUserRestriction(DISALLOW_USER_SWITCH)) {
+        return false;
+    }
+    if (isDeviceInDemoMode(mContext)) {
+        return false;
+    }
+    final boolean userSwitcherSettingOn = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.USER_SWITCHER_ENABLED, Resources.getSystem().getBoolean(R.bool.config_showUserSwitcherByDefault) ? 1 : 0) != 0;
+    if (!userSwitcherSettingOn) {
+        return false;
+    }
+    return showEvenIfNotActionable || areThereUsersToWhichToSwitch() || !hasUserRestriction(UserManager.DISALLOW_ADD_USER);
+}

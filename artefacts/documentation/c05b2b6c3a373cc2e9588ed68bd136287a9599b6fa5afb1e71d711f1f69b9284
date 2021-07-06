@@ -1,0 +1,69 @@
+
+     * <p>Schedule an alarm.  <b>Note: for timing operations (ticks, timeouts,
+     * etc) it is easier and much more efficient to use {@link android.os.Handler}.</b>
+     * If there is already an alarm scheduled for the same IntentSender, that previous
+     * alarm will first be canceled.
+     *
+     * <p>If the stated trigger time is in the past, the alarm will be triggered
+     * immediately.  If there is already an alarm for this Intent
+     * scheduled (with the equality of two intents being defined by
+     * {@link Intent#filterEquals}), then it will be removed and replaced by
+     * this one.
+     *
+     * <p>
+     * The alarm is an Intent broadcast that goes to a broadcast receiver that
+     * you registered with {@link android.content.Context#registerReceiver}
+     * or through the &lt;receiver&gt; tag in an AndroidManifest.xml file.
+     *
+     * <p>
+     * Alarm intents are delivered with a data extra of type int called
+     * {@link Intent#EXTRA_ALARM_COUNT Intent.EXTRA_ALARM_COUNT} that indicates
+     * how many past alarm events have been accumulated into this intent
+     * broadcast.  Recurring alarms that have gone undelivered because the
+     * phone was asleep may have a count greater than one when delivered.
+     *
+     * <div class="note">
+     * <p>
+     * <b>Note:</b> Beginning in API 19, the trigger time passed to this method
+     * is treated as inexact: the alarm will not be delivered before this time, but
+     * may be deferred and delivered some time later.  The OS will use
+     * this policy in order to "batch" alarms together across the entire system,
+     * minimizing the number of times the device needs to "wake up" and minimizing
+     * battery use.  In general, alarms scheduled in the near future will not
+     * be deferred as long as alarms scheduled far in the future.
+     *
+     * <p>
+     * With the new batching policy, delivery ordering guarantees are not as
+     * strong as they were previously.  If the application sets multiple alarms,
+     * it is possible that these alarms' <em>actual</em> delivery ordering may not match
+     * the order of their <em>requested</em> delivery times.  If your application has
+     * strong ordering requirements there are other APIs that you can use to get
+     * the necessary behavior; see {@link #setWindow(int, long, long, PendingIntent)}
+     * and {@link #setExact(int, long, PendingIntent)}.
+     *
+     * <p>
+     * Applications whose {@code targetSdkVersion} is before API 19 will
+     * continue to get the previous alarm behavior: all of their scheduled alarms
+     * will be treated as exact.
+     * </div>
+     *
+     * @param type type of alarm.
+     * @param triggerAtMillis time in milliseconds that the alarm should go
+     * off, using the appropriate clock (depending on the alarm type).
+     * @param operation Action to perform when the alarm goes off;
+     * typically comes from {@link PendingIntent#getBroadcast
+     * IntentSender.getBroadcast()}.
+     *
+     * @see android.os.Handler
+     * @see #setExact
+     * @see #setRepeating
+     * @see #setWindow
+     * @see #cancel
+     * @see android.content.Context#sendBroadcast
+     * @see android.content.Context#registerReceiver
+     * @see android.content.Intent#filterEquals
+     * @see #ELAPSED_REALTIME
+     * @see #ELAPSED_REALTIME_WAKEUP
+     * @see #RTC
+     * @see #RTC_WAKEUP
+     

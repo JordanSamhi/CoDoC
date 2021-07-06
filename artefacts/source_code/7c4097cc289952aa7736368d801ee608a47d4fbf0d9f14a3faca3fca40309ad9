@@ -1,0 +1,16 @@
+public static void addListener(@NonNull NsdManager nsdManager, @NonNull String serviceType, @NonNull NsdManager.DiscoveryListener newListener){
+    synchronized (sListeners) {
+        DiscoveryListenerSet listenerSet = sListeners.get(serviceType);
+        if (listenerSet == null) {
+            ArrayList<NsdManager.DiscoveryListener> subListeners = new ArrayList<>(1);
+            listenerSet = new DiscoveryListenerSet(subListeners, new MultiListener(subListeners));
+            sListeners.put(serviceType, listenerSet);
+        }
+        synchronized (listenerSet.subListeners) {
+            if (listenerSet.subListeners.isEmpty()) {
+                nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listenerSet.mainListener);
+            }
+            listenerSet.subListeners.add(newListener);
+        }
+    }
+}

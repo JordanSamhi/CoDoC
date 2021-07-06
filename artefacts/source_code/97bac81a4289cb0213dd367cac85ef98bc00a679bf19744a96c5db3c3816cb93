@@ -1,0 +1,8 @@
+public static Pair<Drawable, String> getBtRainbowDrawableWithDescription(Context context, CachedBluetoothDevice cachedDevice){
+    final Resources resources = context.getResources();
+    final Pair<Drawable, String> pair = BluetoothUtils.getBtDrawableWithDescription(context, cachedDevice);
+    if (pair.first instanceof BitmapDrawable) {
+        return new Pair<>(new AdaptiveOutlineDrawable(resources, ((BitmapDrawable) pair.first).getBitmap()), pair.second);
+    }
+    return new Pair<>(buildBtRainbowDrawable(context, pair.first, cachedDevice.getAddress().hashCode()), pair.second);
+}

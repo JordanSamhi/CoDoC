@@ -1,0 +1,15 @@
+public void requestLatestTetheringEntitlementResult(@TetheringType int type, boolean showEntitlementUi, @NonNull Executor executor, @NonNull final OnTetheringEntitlementResultListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("OnTetheringEntitlementResultListener cannot be null.");
+    }
+    ResultReceiver wrappedListener = new ResultReceiver(null) {
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            executor.execute(() -> {
+                listener.onTetheringEntitlementResult(resultCode);
+            });
+        }
+    };
+    requestLatestTetheringEntitlementResult(type, wrappedListener, showEntitlementUi);
+}

@@ -1,0 +1,19 @@
+
+     * Synchronize with periodic advertising pointed to by the {@code scanResult}.
+     * The {@code scanResult} used must contain a valid advertisingSid. First
+     * call to registerSync will use the {@code skip} and {@code timeout} provided.
+     * Subsequent calls from other apps, trying to sync with same set will reuse
+     * existing sync, thus {@code skip} and {@code timeout} values will not take
+     * effect. The values in effect will be returned in
+     * {@link PeriodicAdvertisingCallback#onSyncEstablished}.
+     *
+     * @param scanResult Scan result containing advertisingSid.
+     * @param skip The number of periodic advertising packets that can be skipped after a successful
+     * receive. Must be between 0 and 499.
+     * @param timeout Synchronization timeout for the periodic advertising. One unit is 10ms. Must
+     * be between 10 (100ms) and 16384 (163.84s).
+     * @param callback Callback used to deliver all operations status.
+     * @param handler thread upon which the callbacks will be invoked.
+     * @throws IllegalArgumentException if {@code scanResult} is null or {@code skip} is invalid or
+     * {@code timeout} is invalid or {@code callback} is null.
+     

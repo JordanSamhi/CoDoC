@@ -1,0 +1,21 @@
+public synchronized void dump(PrintWriter pw){
+    cleanUp();
+    long now = SystemClock.uptimeMillis();
+    ArrayMap<Class<?>, Integer> acc = new ArrayMap<>();
+    ArrayMap<Class<?>, Integer> accOld = new ArrayMap<>();
+    for (LeakReference ref : mGarbage) {
+        acc.put(ref.clazz, acc.getOrDefault(ref.clazz, 0) + 1);
+        if (isOld(ref.createdUptimeMillis, now)) {
+            accOld.put(ref.clazz, accOld.getOrDefault(ref.clazz, 0) + 1);
+        }
+    }
+    for (Map.Entry<Class<?>, Integer> entry : acc.entrySet()) {
+        pw.print(entry.getKey().getName());
+        pw.print(": ");
+        pw.print(entry.getValue());
+        pw.print(" total, ");
+        pw.print(accOld.getOrDefault(entry.getKey(), 0));
+        pw.print(" old");
+        pw.println();
+    }
+}

@@ -1,0 +1,8 @@
+public boolean isOpened(String localProfileUri) throws SipException{
+    try {
+        checkSipServiceConnection();
+        return mSipService.isOpened(localProfileUri, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw new SipException("isOpened()", e);
+    }
+}

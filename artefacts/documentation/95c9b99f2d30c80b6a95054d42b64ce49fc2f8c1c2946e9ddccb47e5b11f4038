@@ -1,0 +1,22 @@
+
+     * Executes a statement and populates the specified {@link CursorWindow}
+     * with a range of results.  Returns the number of rows that were counted
+     * during query execution.
+     *
+     * @param sql The SQL statement to execute.
+     * @param bindArgs The arguments to bind, or null if none.
+     * @param window The cursor window to clear and fill.
+     * @param startPos The start position for filling the window.
+     * @param requiredPos The position of a row that MUST be in the window.
+     * If it won't fit, then the query should discard part of what it filled
+     * so that it does.  Must be greater than or equal to <code>startPos</code>.
+     * @param countAllRows True to count all rows that the query would return
+     * regagless of whether they fit in the window.
+     * @param cancellationSignal A signal to cancel the operation in progress, or null if none.
+     * @return The number of rows that were counted during query execution.  Might
+     * not be all rows in the result set unless <code>countAllRows</code> is true.
+     *
+     * @throws SQLiteException if an error occurs, such as a syntax error
+     * or invalid number of bind arguments.
+     * @throws OperationCanceledException if the operation was canceled.
+     

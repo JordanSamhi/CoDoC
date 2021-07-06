@@ -1,0 +1,8 @@
+public void whitelistAppTemporarily(@NonNull String packageName, long durationMs){
+    String reason = "from:" + UserHandle.formatUid(Binder.getCallingUid());
+    try {
+        mService.addPowerSaveTempWhitelistApp(packageName, durationMs, mContext.getUserId(), reason);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

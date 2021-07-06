@@ -1,0 +1,21 @@
+public void runWatchers(){
+    Tracer.trace();
+    if (mInWatcherContext) {
+        return;
+    }
+    for (String watcherName : mWatchers.keySet()) {
+        UiWatcher watcher = mWatchers.get(watcherName);
+        if (watcher != null) {
+            try {
+                mInWatcherContext = true;
+                if (watcher.checkForCondition()) {
+                    setWatcherTriggered(watcherName);
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Exceuting watcher: " + watcherName, e);
+            } finally {
+                mInWatcherContext = false;
+            }
+        }
+    }
+}

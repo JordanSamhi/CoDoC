@@ -1,0 +1,13 @@
+public ShortcutInfo disableWithId(@NonNull String shortcutId, String disabledMessage, int disabledMessageResId, boolean overrideImmutable, boolean ignoreInvisible, int disabledReason){
+    final ShortcutInfo deleted = deleteOrDisableWithId(shortcutId, true, overrideImmutable, ignoreInvisible, disabledReason);
+    final ShortcutInfo disabled = mShortcuts.get(shortcutId);
+    if (disabled != null) {
+        if (disabledMessage != null) {
+            disabled.setDisabledMessage(disabledMessage);
+        } else if (disabledMessageResId != 0) {
+            disabled.setDisabledMessageResId(disabledMessageResId);
+            mShortcutUser.mService.fixUpShortcutResourceNamesAndValues(disabled);
+        }
+    }
+    return deleted;
+}

@@ -1,0 +1,35 @@
+public void setHeadsUpChild(@Nullable View child){
+    if (mHeadsUpChild != null) {
+        mPreviousHeadsUpRemoteInputIntent = null;
+        if (mHeadsUpRemoteInput != null) {
+            mHeadsUpRemoteInput.onNotificationUpdateOrReset();
+            if (mHeadsUpRemoteInput.isActive()) {
+                mPreviousHeadsUpRemoteInputIntent = mHeadsUpRemoteInput.getPendingIntent();
+                mCachedHeadsUpRemoteInput = mHeadsUpRemoteInput;
+                mHeadsUpRemoteInput.dispatchStartTemporaryDetach();
+                ((ViewGroup) mHeadsUpRemoteInput.getParent()).removeView(mHeadsUpRemoteInput);
+            }
+        }
+        mOnContentViewInactiveListeners.remove(mHeadsUpChild);
+        mHeadsUpChild.animate().cancel();
+        removeView(mHeadsUpChild);
+        mHeadsUpRemoteInput = null;
+    }
+    if (child == null) {
+        mHeadsUpChild = null;
+        mHeadsUpWrapper = null;
+        if (mTransformationStartVisibleType == VISIBLE_TYPE_HEADSUP) {
+            mTransformationStartVisibleType = VISIBLE_TYPE_NONE;
+        }
+        if (mVisibleType == VISIBLE_TYPE_HEADSUP) {
+            selectLayout(false, true);
+        }
+        return;
+    }
+    addView(child);
+    mHeadsUpChild = child;
+    mHeadsUpWrapper = NotificationViewWrapper.wrap(getContext(), child, mContainingNotification);
+    if (mContainingNotification != null) {
+        applyBubbleAction(mHeadsUpChild, mContainingNotification.getEntry());
+    }
+}

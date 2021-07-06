@@ -1,0 +1,21 @@
+public void setGravity(int gravity){
+    if ((gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) == 0) {
+        gravity |= Gravity.START;
+    }
+    if ((gravity & Gravity.VERTICAL_GRAVITY_MASK) == 0) {
+        gravity |= Gravity.TOP;
+    }
+    boolean newLayout = false;
+    if ((gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) != (mGravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK)) {
+        newLayout = true;
+    }
+    if (gravity != mGravity) {
+        invalidate();
+    }
+    mGravity = gravity;
+    if (mLayout != null && newLayout) {
+        int want = mLayout.getWidth();
+        int hintWant = mHintLayout == null ? 0 : mHintLayout.getWidth();
+        makeNewLayout(want, hintWant, UNKNOWN_BORING, UNKNOWN_BORING, mRight - mLeft - getCompoundPaddingLeft() - getCompoundPaddingRight(), true);
+    }
+}

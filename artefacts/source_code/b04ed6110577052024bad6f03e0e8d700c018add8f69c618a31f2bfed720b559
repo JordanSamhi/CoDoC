@@ -1,0 +1,15 @@
+public boolean sendNetworkEapIdentityResponse(String identityStr, String encryptedIdentityStr){
+    synchronized (mLock) {
+        try {
+            ArrayList<Byte> unencryptedIdentity = NativeUtil.stringToByteArrayList(identityStr);
+            ArrayList<Byte> encryptedIdentity = null;
+            if (!TextUtils.isEmpty(encryptedIdentityStr)) {
+                encryptedIdentity = NativeUtil.stringToByteArrayList(encryptedIdentityStr);
+            }
+            return sendNetworkEapIdentityResponse(unencryptedIdentity, encryptedIdentity);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + identityStr + "," + encryptedIdentityStr, e);
+            return false;
+        }
+    }
+}

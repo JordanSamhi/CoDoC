@@ -1,0 +1,17 @@
+public static final ArrayMap<String, ?> readThisArrayMapXml(XmlPullParser parser, String endTag, String[] name, ReadMapCallback callback) throws XmlPullParserException, IOException{
+    ArrayMap<String, Object> map = new ArrayMap<>();
+    int eventType = parser.getEventType();
+    do {
+        if (eventType == parser.START_TAG) {
+            Object val = readThisValueXml(parser, name, callback, true);
+            map.put(name[0], val);
+        } else if (eventType == parser.END_TAG) {
+            if (parser.getName().equals(endTag)) {
+                return map;
+            }
+            throw new XmlPullParserException("Expected " + endTag + " end tag at: " + parser.getName());
+        }
+        eventType = parser.next();
+    } while (eventType != parser.END_DOCUMENT);
+    throw new XmlPullParserException("Document ended before " + endTag + " end tag");
+}

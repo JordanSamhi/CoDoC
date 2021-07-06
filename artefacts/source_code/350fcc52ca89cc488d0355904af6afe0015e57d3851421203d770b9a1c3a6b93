@@ -1,0 +1,27 @@
+public boolean setWifiConnectedNetworkScorer(IBinder binder, IWifiConnectedNetworkScorer scorer){
+    if (binder == null || scorer == null)
+        return false;
+    if (mWifiConnectedNetworkScorerHolder != null) {
+        Log.e(TAG, "Failed to set current scorer because one scorer is already set");
+        return false;
+    }
+    WifiConnectedNetworkScorerHolder scorerHolder = new WifiConnectedNetworkScorerHolder(binder, scorer);
+    if (!scorerHolder.linkScorerToDeath()) {
+        return false;
+    }
+    mWifiConnectedNetworkScorerHolder = scorerHolder;
+    try {
+        scorer.onSetScoreUpdateObserver(mScoreUpdateObserver);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Unable to set score update observer " + scorer, e);
+        revertToDefaultConnectedScorer();
+        return false;
+    }
+    mVelocityBasedConnectedScore = null;
+    mWifiMetrics.setIsExternalWifiScorerOn(true);
+    final int netId = getCurrentNetId();
+    if (netId > 0) {
+        startConnectedNetworkScorer(netId);
+    }
+    return true;
+}

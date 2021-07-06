@@ -1,0 +1,24 @@
+public void takeScreenshot(int displayId, @NonNull @CallbackExecutor Executor executor, @NonNull TakeScreenshotCallback callback){
+    Preconditions.checkNotNull(executor, "executor cannot be null");
+    Preconditions.checkNotNull(callback, "callback cannot be null");
+    final IAccessibilityServiceConnection connection = AccessibilityInteractionClient.getInstance().getConnection(mConnectionId);
+    if (connection == null) {
+        sendScreenshotFailure(ERROR_TAKE_SCREENSHOT_INTERNAL_ERROR, executor, callback);
+        return;
+    }
+    try {
+        connection.takeScreenshot(displayId, new RemoteCallback((result) -> {
+            final int status = result.getInt(KEY_ACCESSIBILITY_SCREENSHOT_STATUS);
+            if (status != TAKE_SCREENSHOT_SUCCESS) {
+                sendScreenshotFailure(status, executor, callback);
+                return;
+            }
+            final HardwareBuffer hardwareBuffer = result.getParcelable(KEY_ACCESSIBILITY_SCREENSHOT_HARDWAREBUFFER);
+            final ParcelableColorSpace colorSpace = result.getParcelable(KEY_ACCESSIBILITY_SCREENSHOT_COLORSPACE);
+            final ScreenshotResult screenshot = new ScreenshotResult(hardwareBuffer, colorSpace.getColorSpace(), result.getLong(KEY_ACCESSIBILITY_SCREENSHOT_TIMESTAMP));
+            sendScreenshotSuccess(screenshot, executor, callback);
+        }));
+    } catch (RemoteException re) {
+        throw new RuntimeException(re);
+    }
+}

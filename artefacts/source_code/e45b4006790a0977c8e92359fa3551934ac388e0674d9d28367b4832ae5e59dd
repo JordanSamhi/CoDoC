@@ -1,0 +1,177 @@
+public void setView(View view, WindowManager.LayoutParams attrs, View panelParentView, int userId){
+    synchronized (this) {
+        if (mView == null) {
+            mView = view;
+            mAttachInfo.mDisplayState = mDisplay.getState();
+            mDisplayManager.registerDisplayListener(mDisplayListener, mHandler);
+            mViewLayoutDirectionInitial = mView.getRawLayoutDirection();
+            mFallbackEventHandler.setView(view);
+            mWindowAttributes.copyFrom(attrs);
+            if (mWindowAttributes.packageName == null) {
+                mWindowAttributes.packageName = mBasePackageName;
+            }
+            mWindowAttributes.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_USE_BLAST;
+            attrs = mWindowAttributes;
+            setTag();
+            if (DEBUG_KEEP_SCREEN_ON && (mClientWindowLayoutFlags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) != 0 && (attrs.flags & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) == 0) {
+                Slog.d(mTag, "setView: FLAG_KEEP_SCREEN_ON changed from true to false!");
+            }
+            mClientWindowLayoutFlags = attrs.flags;
+            setAccessibilityFocus(null, null);
+            if (view instanceof RootViewSurfaceTaker) {
+                mSurfaceHolderCallback = ((RootViewSurfaceTaker) view).willYouTakeTheSurface();
+                if (mSurfaceHolderCallback != null) {
+                    mSurfaceHolder = new TakenSurfaceHolder();
+                    mSurfaceHolder.setFormat(PixelFormat.UNKNOWN);
+                    mSurfaceHolder.addCallback(mSurfaceHolderCallback);
+                }
+            }
+            if (!attrs.hasManualSurfaceInsets) {
+                attrs.setSurfaceInsets(view, false, true);
+            }
+            CompatibilityInfo compatibilityInfo = mDisplay.getDisplayAdjustments().getCompatibilityInfo();
+            mTranslator = compatibilityInfo.getTranslator();
+            if (mSurfaceHolder == null) {
+                enableHardwareAcceleration(attrs);
+                final boolean useMTRenderer = MT_RENDERER_AVAILABLE && mAttachInfo.mThreadedRenderer != null;
+                if (mUseMTRenderer != useMTRenderer) {
+                    endDragResizing();
+                    mUseMTRenderer = useMTRenderer;
+                }
+            }
+            boolean restore = false;
+            if (mTranslator != null) {
+                mSurface.setCompatibilityTranslator(mTranslator);
+                restore = true;
+                attrs.backup();
+                mTranslator.translateWindowLayout(attrs);
+            }
+            if (DEBUG_LAYOUT)
+                Log.d(mTag, "WindowLayout in setView:" + attrs);
+            if (!compatibilityInfo.supportsScreen()) {
+                attrs.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_COMPATIBLE_WINDOW;
+                mLastInCompatMode = true;
+            }
+            mSoftInputMode = attrs.softInputMode;
+            mWindowAttributesChanged = true;
+            mAttachInfo.mRootView = view;
+            mAttachInfo.mScalingRequired = mTranslator != null;
+            mAttachInfo.mApplicationScale = mTranslator == null ? 1.0f : mTranslator.applicationScale;
+            if (panelParentView != null) {
+                mAttachInfo.mPanelParentWindowToken = panelParentView.getApplicationWindowToken();
+            }
+            mAdded = true;
+            int res;
+            requestLayout();
+            InputChannel inputChannel = null;
+            if ((mWindowAttributes.inputFeatures & WindowManager.LayoutParams.INPUT_FEATURE_NO_INPUT_CHANNEL) == 0) {
+                inputChannel = new InputChannel();
+            }
+            mForceDecorViewVisibility = (mWindowAttributes.privateFlags & PRIVATE_FLAG_FORCE_DECOR_VIEW_VISIBILITY) != 0;
+            try {
+                mOrigWindowType = mWindowAttributes.type;
+                mAttachInfo.mRecomputeGlobalAttributes = true;
+                collectViewAttributes();
+                adjustLayoutParamsForCompatibility(mWindowAttributes);
+                res = mWindowSession.addToDisplayAsUser(mWindow, mSeq, mWindowAttributes, getHostVisibility(), mDisplay.getDisplayId(), userId, mTmpFrame, mAttachInfo.mContentInsets, mAttachInfo.mStableInsets, mAttachInfo.mDisplayCutout, inputChannel, mTempInsets, mTempControls);
+                setFrame(mTmpFrame);
+            } catch (RemoteException e) {
+                mAdded = false;
+                mView = null;
+                mAttachInfo.mRootView = null;
+                inputChannel = null;
+                mFallbackEventHandler.setView(null);
+                unscheduleTraversals();
+                setAccessibilityFocus(null, null);
+                throw new RuntimeException("Adding window failed", e);
+            } finally {
+                if (restore) {
+                    attrs.restore();
+                }
+            }
+            if (mTranslator != null) {
+                mTranslator.translateRectInScreenToAppWindow(mAttachInfo.mContentInsets);
+            }
+            mPendingDisplayCutout.set(mAttachInfo.mDisplayCutout);
+            mAttachInfo.mAlwaysConsumeSystemBars = (res & WindowManagerGlobal.ADD_FLAG_ALWAYS_CONSUME_SYSTEM_BARS) != 0;
+            mPendingAlwaysConsumeSystemBars = mAttachInfo.mAlwaysConsumeSystemBars;
+            mInsetsController.onStateChanged(mTempInsets);
+            mInsetsController.onControlsChanged(mTempControls);
+            if (DEBUG_LAYOUT)
+                Log.v(mTag, "Added window " + mWindow);
+            if (res < WindowManagerGlobal.ADD_OKAY) {
+                mAttachInfo.mRootView = null;
+                mAdded = false;
+                mFallbackEventHandler.setView(null);
+                unscheduleTraversals();
+                setAccessibilityFocus(null, null);
+                switch(res) {
+                    case WindowManagerGlobal.ADD_BAD_APP_TOKEN:
+                    case WindowManagerGlobal.ADD_BAD_SUBWINDOW_TOKEN:
+                        throw new WindowManager.BadTokenException("Unable to add window -- token " + attrs.token + " is not valid; is your activity running?");
+                    case WindowManagerGlobal.ADD_NOT_APP_TOKEN:
+                        throw new WindowManager.BadTokenException("Unable to add window -- token " + attrs.token + " is not for an application");
+                    case WindowManagerGlobal.ADD_APP_EXITING:
+                        throw new WindowManager.BadTokenException("Unable to add window -- app for token " + attrs.token + " is exiting");
+                    case WindowManagerGlobal.ADD_DUPLICATE_ADD:
+                        throw new WindowManager.BadTokenException("Unable to add window -- window " + mWindow + " has already been added");
+                    case WindowManagerGlobal.ADD_STARTING_NOT_NEEDED:
+                        return;
+                    case WindowManagerGlobal.ADD_MULTIPLE_SINGLETON:
+                        throw new WindowManager.BadTokenException("Unable to add window " + mWindow + " -- another window of type " + mWindowAttributes.type + " already exists");
+                    case WindowManagerGlobal.ADD_PERMISSION_DENIED:
+                        throw new WindowManager.BadTokenException("Unable to add window " + mWindow + " -- permission denied for window type " + mWindowAttributes.type);
+                    case WindowManagerGlobal.ADD_INVALID_DISPLAY:
+                        throw new WindowManager.InvalidDisplayException("Unable to add window " + mWindow + " -- the specified display can not be found");
+                    case WindowManagerGlobal.ADD_INVALID_TYPE:
+                        throw new WindowManager.InvalidDisplayException("Unable to add window " + mWindow + " -- the specified window type " + mWindowAttributes.type + " is not valid");
+                    case WindowManagerGlobal.ADD_INVALID_USER:
+                        throw new WindowManager.BadTokenException("Unable to add Window " + mWindow + " -- requested userId is not valid");
+                }
+                throw new RuntimeException("Unable to add window -- unknown error code " + res);
+            }
+            if ((res & WindowManagerGlobal.ADD_FLAG_USE_BLAST) != 0) {
+                mUseBLASTAdapter = true;
+            }
+            if ((res & WindowManagerGlobal.ADD_FLAG_USE_TRIPLE_BUFFERING) != 0) {
+                mEnableTripleBuffering = true;
+            }
+            if (view instanceof RootViewSurfaceTaker) {
+                mInputQueueCallback = ((RootViewSurfaceTaker) view).willYouTakeTheInputQueue();
+            }
+            if (inputChannel != null) {
+                if (mInputQueueCallback != null) {
+                    mInputQueue = new InputQueue();
+                    mInputQueueCallback.onInputQueueCreated(mInputQueue);
+                }
+                mInputEventReceiver = new WindowInputEventReceiver(inputChannel, Looper.myLooper());
+            }
+            view.assignParent(this);
+            mAddedTouchMode = (res & WindowManagerGlobal.ADD_FLAG_IN_TOUCH_MODE) != 0;
+            mAppVisible = (res & WindowManagerGlobal.ADD_FLAG_APP_VISIBLE) != 0;
+            if (mAccessibilityManager.isEnabled()) {
+                mAccessibilityInteractionConnectionManager.ensureConnection();
+            }
+            if (view.getImportantForAccessibility() == View.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+                view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            }
+            CharSequence counterSuffix = attrs.getTitle();
+            mSyntheticInputStage = new SyntheticInputStage();
+            InputStage viewPostImeStage = new ViewPostImeInputStage(mSyntheticInputStage);
+            InputStage nativePostImeStage = new NativePostImeInputStage(viewPostImeStage, "aq:native-post-ime:" + counterSuffix);
+            InputStage earlyPostImeStage = new EarlyPostImeInputStage(nativePostImeStage);
+            InputStage imeStage = new ImeInputStage(earlyPostImeStage, "aq:ime:" + counterSuffix);
+            InputStage viewPreImeStage = new ViewPreImeInputStage(imeStage);
+            InputStage nativePreImeStage = new NativePreImeInputStage(viewPreImeStage, "aq:native-pre-ime:" + counterSuffix);
+            mFirstInputStage = nativePreImeStage;
+            mFirstPostImeInputStage = earlyPostImeStage;
+            mPendingInputEventQueueLengthCounterName = "aq:pending:" + counterSuffix;
+            if (mView instanceof RootViewSurfaceTaker) {
+                PendingInsetsController pendingInsetsController = ((RootViewSurfaceTaker) mView).providePendingInsetsController();
+                if (pendingInsetsController != null) {
+                    pendingInsetsController.replayAndAttach(mInsetsController);
+                }
+            }
+        }
+    }
+}

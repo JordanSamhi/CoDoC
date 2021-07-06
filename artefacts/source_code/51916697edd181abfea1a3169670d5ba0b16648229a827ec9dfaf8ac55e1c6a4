@@ -1,0 +1,8 @@
+public final void setCallerDisplayName(@NonNull String callerDisplayName, @TelecomManager.Presentation int presentation){
+    Log.d(this, "setCallerDisplayName %s", callerDisplayName);
+    mCallerDisplayName = callerDisplayName;
+    mCallerDisplayNamePresentation = presentation;
+    for (Listener l : mListeners) {
+        l.onCallerDisplayNameChanged(this, callerDisplayName, presentation);
+    }
+}

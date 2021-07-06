@@ -1,0 +1,11 @@
+public void registerDisplayWindowListener(IDisplayWindowListener listener){
+    if (mContext.checkCallingOrSelfPermission(MANAGE_ACTIVITY_STACKS) != PackageManager.PERMISSION_GRANTED) {
+        throw new SecurityException("Must hold permission " + MANAGE_ACTIVITY_STACKS);
+    }
+    long ident = Binder.clearCallingIdentity();
+    try {
+        mDisplayNotificationController.registerListener(listener);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

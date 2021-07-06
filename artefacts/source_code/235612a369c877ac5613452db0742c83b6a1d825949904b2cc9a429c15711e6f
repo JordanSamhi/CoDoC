@@ -1,0 +1,25 @@
+public int noteProxyOpNoThrow(int op, @Nullable String proxiedPackageName, int proxiedUid, @Nullable String proxiedAttributionTag, @Nullable String message){
+    int myUid = Process.myUid();
+    try {
+        collectNoteOpCallsForValidation(op);
+        int collectionMode = getNotedOpCollectionMode(proxiedUid, proxiedPackageName, op);
+        boolean shouldCollectMessage = myUid == Process.SYSTEM_UID ? true : false;
+        if (collectionMode == COLLECT_ASYNC) {
+            if (message == null) {
+                message = getFormattedStackTrace();
+                shouldCollectMessage = true;
+            }
+        }
+        int mode = mService.noteProxyOperation(op, proxiedUid, proxiedPackageName, proxiedAttributionTag, myUid, mContext.getOpPackageName(), mContext.getAttributionTag(), collectionMode == COLLECT_ASYNC, message, shouldCollectMessage);
+        if (mode == MODE_ALLOWED) {
+            if (collectionMode == COLLECT_SELF) {
+                collectNotedOpForSelf(op, proxiedAttributionTag);
+            } else if (collectionMode == COLLECT_SYNC && mContext.checkPermission(Manifest.permission.UPDATE_APP_OPS_STATS, -1, myUid) == PackageManager.PERMISSION_GRANTED) {
+                collectNotedOpSync(op, proxiedAttributionTag);
+            }
+        }
+        return mode;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

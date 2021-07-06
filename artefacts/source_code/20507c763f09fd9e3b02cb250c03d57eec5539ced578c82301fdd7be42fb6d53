@@ -1,0 +1,8 @@
+public void addBlockedRating(@NonNull TvContentRating rating){
+    Preconditions.checkNotNull(rating);
+    try {
+        mService.addBlockedRating(rating.flattenToString(), mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

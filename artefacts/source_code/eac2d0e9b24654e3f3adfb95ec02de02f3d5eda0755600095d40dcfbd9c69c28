@@ -1,0 +1,28 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (super.performAccessibilityActionInternal(action, arguments)) {
+        return true;
+    }
+    if (!isEnabled()) {
+        return false;
+    }
+    int direction = -1;
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+        case android.R.id.accessibilityActionScrollDown:
+            direction = 1;
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+        case android.R.id.accessibilityActionScrollUp:
+            if (ANCHOR_SCROLLING) {
+            } else {
+                final int viewportHeight = getHeight() - mPaddingBottom - mTopPadding - mPaddingTop - mShelf.getIntrinsicHeight();
+                final int targetScrollY = Math.max(0, Math.min(mOwnScrollY + direction * viewportHeight, getScrollRange()));
+                if (targetScrollY != mOwnScrollY) {
+                    mScroller.startScroll(mScrollX, mOwnScrollY, 0, targetScrollY - mOwnScrollY);
+                    animateScroll();
+                    return true;
+                }
+            }
+            break;
+    }
+    return false;
+}

@@ -1,0 +1,11 @@
+public void updateStatusIcon(String packageName, @DrawableRes int iconResId){
+    final IInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.updateStatusIcon(packageName, iconResId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

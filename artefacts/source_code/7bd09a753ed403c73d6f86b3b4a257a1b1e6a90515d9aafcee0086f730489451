@@ -1,0 +1,29 @@
+public List<AccessibilityNodeInfo> findAccessibilityNodeInfosByViewId(int connectionId, int accessibilityWindowId, long accessibilityNodeId, String viewId){
+    try {
+        IAccessibilityServiceConnection connection = getConnection(connectionId);
+        if (connection != null) {
+            final int interactionId = mInteractionIdCounter.getAndIncrement();
+            final long identityToken = Binder.clearCallingIdentity();
+            final String[] packageNames;
+            try {
+                packageNames = connection.findAccessibilityNodeInfosByViewId(accessibilityWindowId, accessibilityNodeId, viewId, interactionId, this, Thread.currentThread().getId());
+            } finally {
+                Binder.restoreCallingIdentity(identityToken);
+            }
+            if (packageNames != null) {
+                List<AccessibilityNodeInfo> infos = getFindAccessibilityNodeInfosResultAndClear(interactionId);
+                if (infos != null) {
+                    finalizeAndCacheAccessibilityNodeInfos(infos, connectionId, false, packageNames);
+                    return infos;
+                }
+            }
+        } else {
+            if (DEBUG) {
+                Log.w(LOG_TAG, "No connection for connection id: " + connectionId);
+            }
+        }
+    } catch (RemoteException re) {
+        Log.w(LOG_TAG, "Error while calling remote" + " findAccessibilityNodeInfoByViewIdInActiveWindow", re);
+    }
+    return Collections.emptyList();
+}

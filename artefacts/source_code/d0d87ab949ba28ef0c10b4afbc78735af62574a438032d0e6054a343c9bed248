@@ -1,0 +1,12 @@
+public boolean clearNetworkConnectChoice(int networkId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Clear network connect choice for " + networkId);
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        return false;
+    }
+    config.getNetworkSelectionStatus().setConnectChoice(null);
+    saveToStore(false);
+    return true;
+}

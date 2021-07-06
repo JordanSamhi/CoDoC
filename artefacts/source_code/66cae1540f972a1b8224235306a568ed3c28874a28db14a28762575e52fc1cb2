@@ -1,0 +1,49 @@
+public void setExtractedText(ExtractedText text){
+    Editable content = getEditableText();
+    if (text.text != null) {
+        if (content == null) {
+            setText(text.text, TextView.BufferType.EDITABLE);
+        } else {
+            int start = 0;
+            int end = content.length();
+            if (text.partialStartOffset >= 0) {
+                final int N = content.length();
+                start = text.partialStartOffset;
+                if (start > N)
+                    start = N;
+                end = text.partialEndOffset;
+                if (end > N)
+                    end = N;
+            }
+            removeParcelableSpans(content, start, end);
+            if (TextUtils.equals(content.subSequence(start, end), text.text)) {
+                if (text.text instanceof Spanned) {
+                    TextUtils.copySpansFrom((Spanned) text.text, 0, end - start, Object.class, content, start);
+                }
+            } else {
+                content.replace(start, end, text.text);
+            }
+        }
+    }
+    Spannable sp = (Spannable) getText();
+    final int N = sp.length();
+    int start = text.selectionStart;
+    if (start < 0) {
+        start = 0;
+    } else if (start > N) {
+        start = N;
+    }
+    int end = text.selectionEnd;
+    if (end < 0) {
+        end = 0;
+    } else if (end > N) {
+        end = N;
+    }
+    Selection.setSelection(sp, start, end);
+    if ((text.flags & ExtractedText.FLAG_SELECTING) != 0) {
+        MetaKeyKeyListener.startSelecting(this, sp);
+    } else {
+        MetaKeyKeyListener.stopSelecting(this, sp);
+    }
+    setHintInternal(text.hint);
+}

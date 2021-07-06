@@ -1,0 +1,24 @@
+public Cursor query(@NonNull Uri uri, @Nullable String[] projection, Bundle queryArgs, @Nullable CancellationSignal cancellationSignal) throws RemoteException{
+    Objects.requireNonNull(uri, "url");
+    beforeRemote();
+    try {
+        ICancellationSignal remoteCancellationSignal = null;
+        if (cancellationSignal != null) {
+            cancellationSignal.throwIfCanceled();
+            remoteCancellationSignal = mContentProvider.createCancellationSignal();
+            cancellationSignal.setRemote(remoteCancellationSignal);
+        }
+        final Cursor cursor = mContentProvider.query(mPackageName, mAttributionTag, uri, projection, queryArgs, remoteCancellationSignal);
+        if (cursor == null) {
+            return null;
+        }
+        return new CursorWrapperInner(cursor);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

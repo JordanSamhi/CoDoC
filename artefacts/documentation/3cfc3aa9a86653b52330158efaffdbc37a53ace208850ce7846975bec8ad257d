@@ -1,0 +1,25 @@
+
+     * Called by a device owner or profile owner to disable account management for a specific type
+     * of account.
+     * <p>
+     * The calling device admin must be a device owner or profile owner. If it is not, a security
+     * exception will be thrown.
+     * <p>
+     * When account management is disabled for an account type, adding or removing an account of
+     * that type will not be possible.
+     * <p>
+     * From {@link android.os.Build.VERSION_CODES#N} the profile or device owner can still use
+     * {@link android.accounts.AccountManager} APIs to add or remove accounts when account
+     * management for a specific type is disabled.
+     * <p>
+     * This method may be called on the {@code DevicePolicyManager} instance returned from
+     * {@link #getParentProfileInstance(ComponentName)} by the profile owner on an
+     * organization-owned device, to restrict accounts that may not be managed on the primary
+     * profile.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param accountType For which account management is disabled or enabled.
+     * @param disabled The boolean indicating that account management will be disabled (true) or
+     *            enabled (false).
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     

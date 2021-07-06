@@ -1,0 +1,51 @@
+public long getSupportedFeatureSet(@NonNull String ifaceName){
+    long featureSet = 0;
+    if (!mHalDeviceManager.isStarted()) {
+        return featureSet;
+    }
+    try {
+        final MutableLong feat = new MutableLong(0);
+        synchronized (sLock) {
+            android.hardware.wifi.V1_3.IWifiChip iWifiChipV13 = getWifiChipForV1_3Mockable();
+            if (iWifiChipV13 != null) {
+                iWifiChipV13.getCapabilities_1_3((status, capabilities) -> {
+                    if (!ok(status))
+                        return;
+                    feat.value = wifiFeatureMaskFromChipCapabilities_1_3(capabilities);
+                });
+            } else if (mIWifiChip != null) {
+                mIWifiChip.getCapabilities((status, capabilities) -> {
+                    if (!ok(status))
+                        return;
+                    feat.value = wifiFeatureMaskFromChipCapabilities(capabilities);
+                });
+            }
+            IWifiStaIface iface = getStaIface(ifaceName);
+            if (iface != null) {
+                iface.getCapabilities((status, capabilities) -> {
+                    if (!ok(status))
+                        return;
+                    feat.value |= wifiFeatureMaskFromStaCapabilities(capabilities);
+                });
+            }
+        }
+        featureSet = feat.value;
+    } catch (RemoteException e) {
+        handleRemoteException(e);
+        return 0;
+    }
+    Set<Integer> supportedIfaceTypes = mHalDeviceManager.getSupportedIfaceTypes();
+    if (supportedIfaceTypes.contains(IfaceType.STA)) {
+        featureSet |= WifiManager.WIFI_FEATURE_INFRA;
+    }
+    if (supportedIfaceTypes.contains(IfaceType.AP)) {
+        featureSet |= WifiManager.WIFI_FEATURE_MOBILE_HOTSPOT;
+    }
+    if (supportedIfaceTypes.contains(IfaceType.P2P)) {
+        featureSet |= WifiManager.WIFI_FEATURE_P2P;
+    }
+    if (supportedIfaceTypes.contains(IfaceType.NAN)) {
+        featureSet |= WifiManager.WIFI_FEATURE_AWARE;
+    }
+    return featureSet;
+}

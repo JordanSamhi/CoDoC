@@ -1,0 +1,15 @@
+public void onMediaStoreDownloadsDeleted(@NonNull LongSparseArray<String> idToMime){
+    try (ContentProviderClient client = mResolver.acquireUnstableContentProviderClient(mBaseUri)) {
+        final Bundle callExtras = new Bundle();
+        final long[] ids = new long[idToMime.size()];
+        final String[] mimeTypes = new String[idToMime.size()];
+        for (int i = idToMime.size() - 1; i >= 0; --i) {
+            ids[i] = idToMime.keyAt(i);
+            mimeTypes[i] = idToMime.valueAt(i);
+        }
+        callExtras.putLongArray(android.provider.Downloads.EXTRA_IDS, ids);
+        callExtras.putStringArray(android.provider.Downloads.EXTRA_MIME_TYPES, mimeTypes);
+        client.call(android.provider.Downloads.CALL_MEDIASTORE_DOWNLOADS_DELETED, null, callExtras);
+    } catch (RemoteException e) {
+    }
+}

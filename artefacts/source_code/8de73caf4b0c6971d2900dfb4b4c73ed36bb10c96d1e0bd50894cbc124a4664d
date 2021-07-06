@@ -1,0 +1,32 @@
+public int enableFirmwareRoaming(@NonNull String ifaceName, int state){
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return WifiNative.SET_FIRMWARE_ROAMING_FAILURE;
+        try {
+            byte val;
+            switch(state) {
+                case WifiNative.DISABLE_FIRMWARE_ROAMING:
+                    val = StaRoamingState.DISABLED;
+                    break;
+                case WifiNative.ENABLE_FIRMWARE_ROAMING:
+                    val = StaRoamingState.ENABLED;
+                    break;
+                default:
+                    mLog.err("enableFirmwareRoaming invalid argument %").c(state).flush();
+                    return WifiNative.SET_FIRMWARE_ROAMING_FAILURE;
+            }
+            WifiStatus status = iface.setRoamingState(val);
+            if (ok(status)) {
+                return WifiNative.SET_FIRMWARE_ROAMING_SUCCESS;
+            } else if (status.code == WifiStatusCode.ERROR_BUSY) {
+                return WifiNative.SET_FIRMWARE_ROAMING_BUSY;
+            } else {
+                return WifiNative.SET_FIRMWARE_ROAMING_FAILURE;
+            }
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return WifiNative.SET_FIRMWARE_ROAMING_FAILURE;
+        }
+    }
+}

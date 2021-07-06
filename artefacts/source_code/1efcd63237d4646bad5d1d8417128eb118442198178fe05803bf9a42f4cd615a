@@ -1,0 +1,20 @@
+public void writeToParcel(@NonNull Parcel dest, int flags){
+    mService.writeToParcel(dest, flags);
+    dest.writeString(mId);
+    dest.writeInt(mType);
+    dest.writeByte(mIsHardwareInput ? (byte) 1 : 0);
+    TextUtils.writeToParcel(mLabel, dest, flags);
+    dest.writeParcelable(mIconUri, flags);
+    dest.writeInt(mLabelResId);
+    dest.writeParcelable(mIcon, flags);
+    dest.writeParcelable(mIconStandby, flags);
+    dest.writeParcelable(mIconDisconnected, flags);
+    dest.writeString(mSetupActivity);
+    dest.writeByte(mCanRecord ? (byte) 1 : 0);
+    dest.writeInt(mTunerCount);
+    dest.writeParcelable(mHdmiDeviceInfo, flags);
+    dest.writeByte(mIsConnectedToHdmiSwitch ? (byte) 1 : 0);
+    dest.writeInt(mHdmiConnectionRelativePosition);
+    dest.writeString(mParentId);
+    dest.writeBundle(mExtras);
+}

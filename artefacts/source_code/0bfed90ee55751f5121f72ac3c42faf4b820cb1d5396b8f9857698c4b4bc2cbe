@@ -1,0 +1,9 @@
+public void dispatchFinishTemporaryDetach(){
+    mPrivateFlags3 &= ~PFLAG3_TEMPORARY_DETACH;
+    onFinishTemporaryDetach();
+    if (hasWindowFocus() && hasFocus()) {
+        notifyFocusChangeToImeFocusController(true);
+    }
+    notifyEnterOrExitForAutoFillIfNeeded(true);
+    notifyAppearedOrDisappearedForContentCaptureIfNeeded(true);
+}

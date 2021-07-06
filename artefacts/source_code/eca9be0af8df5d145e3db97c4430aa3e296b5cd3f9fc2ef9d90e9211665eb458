@@ -1,0 +1,20 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    switch(keyCode) {
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+            if (moveDirection(-1)) {
+                playSoundEffect(SoundEffectConstants.NAVIGATION_LEFT);
+                return true;
+            }
+            break;
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+            if (moveDirection(1)) {
+                playSoundEffect(SoundEffectConstants.NAVIGATION_RIGHT);
+                return true;
+            }
+            break;
+        case KeyEvent.KEYCODE_DPAD_CENTER:
+        case KeyEvent.KEYCODE_ENTER:
+            mReceivedInvokeKeyDown = true;
+    }
+    return super.onKeyDown(keyCode, event);
+}

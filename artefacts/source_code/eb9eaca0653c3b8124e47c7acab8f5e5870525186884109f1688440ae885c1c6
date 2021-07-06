@@ -1,0 +1,54 @@
+public List<MandatoryStreamCombination> getAvailableMandatoryStreamCombinations(){
+    if (!isColorOutputSupported()) {
+        Log.v(TAG, "Device is not backward compatible!");
+        return null;
+    }
+    if ((mCameraId < 0) && !isExternalCamera()) {
+        Log.i(TAG, "Invalid camera id");
+        return null;
+    }
+    ArrayList<StreamCombinationTemplate> availableTemplates = new ArrayList<StreamCombinationTemplate>();
+    if (isHardwareLevelAtLeastLegacy()) {
+        availableTemplates.addAll(Arrays.asList(sLegacyCombinations));
+    }
+    if (isHardwareLevelAtLeastLimited() || isExternalCamera()) {
+        availableTemplates.addAll(Arrays.asList(sLimitedCombinations));
+        if (isPrivateReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sLimitedPrivateReprocCombinations));
+        }
+        if (isYUVReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sLimitedYUVReprocCombinations));
+        }
+    }
+    if (isCapabilitySupported(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BURST_CAPTURE)) {
+        availableTemplates.addAll(Arrays.asList(sBurstCombinations));
+    }
+    if (isHardwareLevelAtLeastFull()) {
+        availableTemplates.addAll(Arrays.asList(sFullCombinations));
+        if (isPrivateReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sFullPrivateReprocCombinations));
+        }
+        if (isYUVReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sFullYUVReprocCombinations));
+        }
+    }
+    if (isCapabilitySupported(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
+        availableTemplates.addAll(Arrays.asList(sRawCombinations));
+        if (isPrivateReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sRAWPrivateReprocCombinations));
+        }
+        if (isYUVReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sRAWYUVReprocCombinations));
+        }
+    }
+    if (isHardwareLevelAtLeastLevel3()) {
+        availableTemplates.addAll(Arrays.asList(sLevel3Combinations));
+        if (isPrivateReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sLevel3PrivateReprocCombinations));
+        }
+        if (isYUVReprocessingSupported()) {
+            availableTemplates.addAll(Arrays.asList(sLevel3YUVReprocCombinations));
+        }
+    }
+    return generateAvailableCombinations(availableTemplates);
+}

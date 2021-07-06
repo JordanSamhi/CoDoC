@@ -1,0 +1,11 @@
+public final T[] readParcelableArray(@Nullable ClassLoader loader, @NonNull Class<T> clazz){
+    int N = readInt();
+    if (N < 0) {
+        return null;
+    }
+    T[] p = (T[]) Array.newInstance(clazz, N);
+    for (int i = 0; i < N; i++) {
+        p[i] = readParcelable(loader);
+    }
+    return p;
+}

@@ -1,0 +1,9 @@
+public static int getVideoStateFromImsCallProfile(ImsCallProfile callProfile){
+    int videostate = getVideoStateFromCallType(callProfile.mCallType);
+    if (callProfile.isVideoPaused() && !VideoProfile.isAudioOnly(videostate)) {
+        videostate |= VideoProfile.STATE_PAUSED;
+    } else {
+        videostate &= ~VideoProfile.STATE_PAUSED;
+    }
+    return videostate;
+}

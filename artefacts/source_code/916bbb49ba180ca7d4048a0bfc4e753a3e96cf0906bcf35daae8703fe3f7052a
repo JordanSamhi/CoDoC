@@ -1,0 +1,11 @@
+public AssetFileDescriptor openNonAssetFd(int cookie, @NonNull String fileName) throws IOException{
+    Objects.requireNonNull(fileName, "fileName");
+    synchronized (this) {
+        ensureOpenLocked();
+        final ParcelFileDescriptor pfd = nativeOpenNonAssetFd(mObject, cookie, fileName, mOffsets);
+        if (pfd == null) {
+            throw new FileNotFoundException("Asset absolute file: " + fileName);
+        }
+        return new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
+    }
+}

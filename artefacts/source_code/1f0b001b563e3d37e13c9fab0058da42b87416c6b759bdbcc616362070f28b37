@@ -1,0 +1,16 @@
+public BluetoothDevice getActiveDevice(){
+    if (VDBG)
+        log("getActiveDevice()");
+    try {
+        final IBluetoothA2dp service = getService();
+        if (service != null && isEnabled()) {
+            return service.getActiveDevice();
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return null;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return null;
+    }
+}

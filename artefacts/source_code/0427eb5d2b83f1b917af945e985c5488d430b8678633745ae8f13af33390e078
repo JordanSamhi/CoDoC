@@ -1,0 +1,18 @@
+public void managedProfileUnlock_usingWhitelist() throws Exception{
+    assumeTrue(mHasManagedUserFeature);
+    final int origMode = getUserTypePackageWhitelistMode();
+    setUserTypePackageWhitelistMode(USER_TYPE_PACKAGE_WHITELIST_MODE_ENFORCE | USER_TYPE_PACKAGE_WHITELIST_MODE_IMPLICIT_WHITELIST);
+    try {
+        while (mRunner.keepRunning()) {
+            mRunner.pauseTiming();
+            final int userId = createManagedProfile();
+            mRunner.resumeTiming();
+            startUserInBackgroundAndWaitForUnlock(userId);
+            mRunner.pauseTiming();
+            removeUser(userId);
+            mRunner.resumeTiming();
+        }
+    } finally {
+        setUserTypePackageWhitelistMode(origMode);
+    }
+}

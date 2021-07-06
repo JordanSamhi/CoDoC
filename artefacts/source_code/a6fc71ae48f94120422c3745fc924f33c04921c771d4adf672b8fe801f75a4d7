@@ -1,0 +1,13 @@
+public boolean isSmsPromptEnabled(){
+    boolean prompt = false;
+    int value = 0;
+    try {
+        value = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.MULTI_SIM_SMS_PROMPT);
+    } catch (SettingNotFoundException snfe) {
+        loge("Settings Exception Reading Dual Sim SMS Prompt Values");
+    }
+    prompt = (value == 0) ? false : true;
+    if (VDBG)
+        logd("SMS Prompt option:" + prompt);
+    return prompt;
+}

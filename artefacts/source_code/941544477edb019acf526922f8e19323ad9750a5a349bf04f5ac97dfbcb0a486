@@ -1,0 +1,46 @@
+public static List<Integer> loadCarrierActionList(Context context, Intent intent){
+    CarrierConfigManager carrierConfigManager = (CarrierConfigManager) context.getSystemService(Context.CARRIER_CONFIG_SERVICE);
+    List<Integer> actionList = new ArrayList<>();
+    if (carrierConfigManager == null) {
+        Log.e(TAG, "load carrier config failure with carrier config manager uninitialized");
+        return actionList;
+    }
+    PersistableBundle b = carrierConfigManager.getConfig();
+    if (b != null) {
+        String[] configs = null;
+        String arg1 = null;
+        String arg2 = null;
+        switch(intent.getAction()) {
+            case TelephonyManager.ACTION_CARRIER_SIGNAL_REDIRECTED:
+                configs = b.getStringArray(CarrierConfigManager.KEY_CARRIER_DEFAULT_ACTIONS_ON_REDIRECTION_STRING_ARRAY);
+                break;
+            case TelephonyManager.ACTION_CARRIER_SIGNAL_REQUEST_NETWORK_FAILED:
+                configs = b.getStringArray(CarrierConfigManager.KEY_CARRIER_DEFAULT_ACTIONS_ON_DCFAILURE_STRING_ARRAY);
+                arg1 = intent.getStringExtra(TelephonyManager.EXTRA_APN_TYPE);
+                arg2 = intent.getStringExtra(TelephonyManager.EXTRA_ERROR_CODE);
+                break;
+            case TelephonyManager.ACTION_CARRIER_SIGNAL_RESET:
+                configs = b.getStringArray(CarrierConfigManager.KEY_CARRIER_DEFAULT_ACTIONS_ON_RESET);
+                break;
+            case TelephonyManager.ACTION_CARRIER_SIGNAL_DEFAULT_NETWORK_AVAILABLE:
+                configs = b.getStringArray(CarrierConfigManager.KEY_CARRIER_DEFAULT_ACTIONS_ON_DEFAULT_NETWORK_AVAILABLE);
+                arg1 = String.valueOf(intent.getBooleanExtra(TelephonyManager.EXTRA_DEFAULT_NETWORK_AVAILABLE, false));
+                break;
+            default:
+                Log.e(TAG, "load carrier config failure with un-configured key: " + intent.getAction());
+                break;
+        }
+        if (!ArrayUtils.isEmpty(configs)) {
+            for (String config : configs) {
+                matchConfig(config, arg1, arg2, actionList);
+                if (!actionList.isEmpty()) {
+                    if (VDBG)
+                        Log.d(TAG, "found match action list: " + actionList.toString());
+                    return actionList;
+                }
+            }
+        }
+        Log.d(TAG, "no matching entry for signal: " + intent.getAction() + "arg1: " + arg1 + "arg2: " + arg2);
+    }
+    return actionList;
+}

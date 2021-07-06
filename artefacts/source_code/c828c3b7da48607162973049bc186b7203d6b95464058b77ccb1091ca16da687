@@ -1,0 +1,10 @@
+public static int[] getOutputFileFormats(){
+    int nFormats = native_get_num_file_formats();
+    if (nFormats == 0)
+        return null;
+    int[] formats = new int[nFormats];
+    for (int i = 0; i < nFormats; ++i) {
+        formats[i] = native_get_file_format(i);
+    }
+    return formats;
+}

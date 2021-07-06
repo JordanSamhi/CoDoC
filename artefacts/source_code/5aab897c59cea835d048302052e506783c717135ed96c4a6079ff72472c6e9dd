@@ -1,0 +1,12 @@
+public synchronized void close(){
+    IBluetoothManager mgr = mAdapter.getBluetoothManager();
+    if (mgr != null) {
+        try {
+            mgr.unregisterStateChangeCallback(mBluetoothStateChangeCallback);
+        } catch (RemoteException re) {
+            Log.e(TAG, "", re);
+        }
+    }
+    doUnbind();
+    mServiceListener = null;
+}

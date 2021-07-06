@@ -1,0 +1,6 @@
+public final void sendNetworkInfo(NetworkInfo networkInfo){
+    if (!mIsLegacy) {
+        throw new UnsupportedOperationException("Only legacy agents can call sendNetworkInfo.");
+    }
+    queueOrSendMessage(EVENT_NETWORK_INFO_CHANGED, new NetworkInfo(networkInfo));
+}

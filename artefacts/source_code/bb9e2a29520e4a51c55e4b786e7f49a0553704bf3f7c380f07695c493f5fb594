@@ -1,0 +1,17 @@
+public Intent createLaunchEmergencyDialerIntent(@Nullable String number){
+    ITelecomService service = getTelecomService();
+    if (service != null) {
+        try {
+            return service.createLaunchEmergencyDialerIntent(number);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error createLaunchEmergencyDialerIntent", e);
+        }
+    } else {
+        Log.w(TAG, "createLaunchEmergencyDialerIntent - Telecom service not available.");
+    }
+    Intent intent = new Intent(Intent.ACTION_DIAL_EMERGENCY);
+    if (!TextUtils.isEmpty(number) && TextUtils.isDigitsOnly(number)) {
+        intent.setData(Uri.fromParts(PhoneAccount.SCHEME_TEL, number, null));
+    }
+    return intent;
+}

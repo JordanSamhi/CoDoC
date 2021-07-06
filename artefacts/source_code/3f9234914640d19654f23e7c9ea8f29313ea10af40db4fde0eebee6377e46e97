@@ -1,0 +1,13 @@
+public final void adjustNotifications(@NonNull List<Adjustment> adjustments){
+    if (!isBound())
+        return;
+    try {
+        for (Adjustment adjustment : adjustments) {
+            setAdjustmentIssuer(adjustment);
+        }
+        getNotificationInterface().applyAdjustmentsFromAssistant(mWrapper, adjustments);
+    } catch (android.os.RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+        throw ex.rethrowFromSystemServer();
+    }
+}

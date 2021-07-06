@@ -1,0 +1,27 @@
+public boolean isEmergencyNumber(String number, boolean exactMatch){
+    if (number == null) {
+        return false;
+    }
+    number = PhoneNumberUtils.stripSeparators(number);
+    if (!mEmergencyNumberListFromRadio.isEmpty()) {
+        for (EmergencyNumber num : mEmergencyNumberList) {
+            if (mCountryIso.equals("br") || mCountryIso.equals("cl") || mCountryIso.equals("ni")) {
+                exactMatch = true;
+            } else {
+                exactMatch = false || exactMatch;
+            }
+            if (exactMatch) {
+                if (num.getNumber().equals(number)) {
+                    return true;
+                }
+            } else {
+                if (number.startsWith(num.getNumber())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    } else {
+        return isEmergencyNumberFromEccList(number, exactMatch) || isEmergencyNumberFromDatabase(number) || isEmergencyNumberForTest(number);
+    }
+}

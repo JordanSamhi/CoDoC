@@ -1,0 +1,19 @@
+public void startConnection(InitialLockListener listener){
+    logVerbose("startConnection");
+    mInitialLockListener = listener;
+    if (mInitialLockSetupService != null || mCurrentlyBinding) {
+        logVerbose("Unable to bind to initial setup service, already connected or connecting.");
+        return;
+    }
+    mTimedOut = false;
+    try {
+        mHandler.postDelayed(mTimeoutRunnable, CONNECTION_TIMEOUT_MS);
+        mCurrentlyBinding = mContext.bindService(INITIAL_LOCK_SERVICE_INTENT, this, Context.BIND_AUTO_CREATE);
+    } catch (Exception e) {
+        e.printStackTrace();
+        mInitialLockListener.onConnectionAttemptFinished(false);
+    }
+    if (!mCurrentlyBinding) {
+        logVerbose("Unable to bind to initial setup service");
+    }
+}

@@ -1,0 +1,8 @@
+public void setLookasideConfig(@IntRange(from = 0) final int slotSize, @IntRange(from = 0) final int slotCount){
+    synchronized (this) {
+        if (mDatabase != null && mDatabase.isOpen()) {
+            throw new IllegalStateException("Lookaside memory config cannot be changed after opening the database");
+        }
+        mOpenParamsBuilder.setLookasideConfig(slotSize, slotCount);
+    }
+}

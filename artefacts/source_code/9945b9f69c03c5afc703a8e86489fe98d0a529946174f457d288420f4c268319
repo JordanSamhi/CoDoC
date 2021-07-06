@@ -1,0 +1,9 @@
+public boolean isConcurrentVoiceAndDataSupported(){
+    try {
+        ITelephony telephony = getITelephony();
+        return (telephony == null ? false : telephony.isConcurrentVoiceAndDataAllowed(getSubId()));
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#isConcurrentVoiceAndDataAllowed", e);
+    }
+    return false;
+}

@@ -1,0 +1,9 @@
+public static ClientTransaction obtain(IApplicationThread client, IBinder activityToken){
+    ClientTransaction instance = ObjectPool.obtain(ClientTransaction.class);
+    if (instance == null) {
+        instance = new ClientTransaction();
+    }
+    instance.mClient = client;
+    instance.mActivityToken = activityToken;
+    return instance;
+}

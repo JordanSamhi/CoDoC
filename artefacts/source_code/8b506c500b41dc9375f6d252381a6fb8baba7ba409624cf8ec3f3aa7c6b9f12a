@@ -1,0 +1,8 @@
+public synchronized void release(){
+    if (mHasQuit) {
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "Ignore wakelock release after quit: " + mPowerManagerWakeLock.getTag()));
+        return;
+    }
+    mPowerManagerWakeLock.release();
+    Slog.v(TAG, addUserIdToLogMessage(mUserId, "Released wakelock:" + mPowerManagerWakeLock.getTag()));
+}

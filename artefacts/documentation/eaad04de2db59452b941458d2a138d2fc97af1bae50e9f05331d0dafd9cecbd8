@@ -1,0 +1,41 @@
+
+     * Lists all accounts of a type which have certain features. The account type identifies the
+     * authenticator (see {@link #getAccountsByType}). Account features are authenticator-specific
+     * string tokens identifying boolean account properties (see {@link #hasFeatures}).
+     *
+     * <p>
+     * Unlike {@link #getAccountsByType}, this method calls the authenticator, which may contact the
+     * server or do other work to check account features, so the method returns an
+     * {@link AccountManagerFuture}.
+     *
+     * <p>
+     * This method may be called from any thread, but the returned {@link AccountManagerFuture} must
+     * not be used on the main thread.
+     *
+     * <p>
+     * Caller targeting API level {@link android.os.Build.VERSION_CODES#O} and above, will get list
+     * of accounts made visible to it by user
+     * (see {@link #newChooseAccountIntent(Account, List, String[], String,
+     * String, String[], Bundle)}) or AbstractAcccountAuthenticator
+     * using {@link #setAccountVisibility}.
+     * {@link android.Manifest.permission#GET_ACCOUNTS} permission is not used.
+     *
+     * <p>
+     * Caller targeting API level below {@link android.os.Build.VERSION_CODES#O} that have not been
+     * granted the {@link android.Manifest.permission#GET_ACCOUNTS} permission, will only see those
+     * accounts managed by AbstractAccountAuthenticators whose signature matches the client.
+     * <p>
+     * <b>NOTE:</b> If targeting your app to work on API level
+     * {@link android.os.Build.VERSION_CODES#LOLLIPOP_MR1} and before,
+     * {@link android.Manifest.permission#GET_ACCOUNTS} permission is
+     * needed for those platforms, irrespective of uid or signature match. See docs for this
+     * function in API level {@link android.os.Build.VERSION_CODES#LOLLIPOP_MR1}.
+     *
+     *
+     * @param type The type of accounts to return, must not be null
+     * @param features An array of the account features to require, may be null or empty *
+     * @param callback Callback to invoke when the request completes, null for no callback
+     * @param handler {@link Handler} identifying the callback thread, null for the main thread
+     * @return An {@link AccountManagerFuture} which resolves to an array of {@link Account}, one
+     *         per account of the specified type which matches the requested features.
+     

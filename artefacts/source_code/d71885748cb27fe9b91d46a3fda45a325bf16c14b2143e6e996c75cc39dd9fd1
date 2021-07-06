@@ -1,0 +1,10 @@
+public void setDataEnabled(int subId, boolean enable){
+    try {
+        Log.d(TAG, "setDataEnabled: enabled=" + enable);
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            telephony.setUserDataEnabled(subId, enable);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#setUserDataEnabled", e);
+    }
+}

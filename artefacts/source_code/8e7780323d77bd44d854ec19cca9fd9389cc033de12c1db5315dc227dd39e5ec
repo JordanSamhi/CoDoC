@@ -1,0 +1,7 @@
+public synchronized SoundTrigger.ModelParamRange queryParameter(int soundModelHandle, @ModelParams int modelParam){
+    try {
+        return ConversionUtil.aidl2apiModelParameterRange(mService.queryModelParameterSupport(soundModelHandle, ConversionUtil.api2aidlModelParameter(modelParam)));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

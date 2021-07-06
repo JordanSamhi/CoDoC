@@ -1,0 +1,14 @@
+public PrintAttributes asPortrait(){
+    if (isPortrait()) {
+        return this;
+    }
+    PrintAttributes attributes = new PrintAttributes();
+    attributes.setMediaSize(getMediaSize().asPortrait());
+    Resolution oldResolution = getResolution();
+    Resolution newResolution = new Resolution(oldResolution.getId(), oldResolution.getLabel(), oldResolution.getVerticalDpi(), oldResolution.getHorizontalDpi());
+    attributes.setResolution(newResolution);
+    attributes.setMinMargins(getMinMargins());
+    attributes.setColorMode(getColorMode());
+    attributes.setDuplexMode(getDuplexMode());
+    return attributes;
+}

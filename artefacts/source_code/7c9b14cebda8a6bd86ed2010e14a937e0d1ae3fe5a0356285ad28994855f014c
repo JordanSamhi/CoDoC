@@ -1,0 +1,32 @@
+public void updateGroupEvent(WifiP2pGroup group){
+    if (group == null) {
+        if (DBG)
+            Log.d(TAG, "Cannot update group event due to null group.");
+        return;
+    }
+    synchronized (mLock) {
+        if (mCurrentGroupEvent == null) {
+            Log.w(TAG, "Cannot update group event due to no current group.");
+            return;
+        }
+        if (mCurrentGroupEvent.netId != group.getNetworkId()) {
+            Log.w(TAG, "Updating group id " + group.getNetworkId() + " is different from current group id " + mCurrentGroupEvent.netId + ".");
+            return;
+        }
+        int delta = group.getClientList().size() - mCurrentGroupEvent.numConnectedClients;
+        mCurrentGroupEvent.numConnectedClients = group.getClientList().size();
+        if (delta > 0) {
+            mCurrentGroupEvent.numCumulativeClients += delta;
+        }
+        if (mCurrentGroupEventIdleStartTime > 0) {
+            if (group.getClientList().size() > 0) {
+                mCurrentGroupEvent.idleDurationMillis += (mClock.getElapsedSinceBootMillis() - mCurrentGroupEventIdleStartTime);
+                mCurrentGroupEventIdleStartTime = 0;
+            }
+        } else {
+            if (group.getClientList().size() == 0) {
+                mCurrentGroupEventIdleStartTime = mClock.getElapsedSinceBootMillis();
+            }
+        }
+    }
+}

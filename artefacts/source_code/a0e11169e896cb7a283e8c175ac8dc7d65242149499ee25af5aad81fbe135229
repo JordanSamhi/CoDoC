@@ -1,0 +1,12 @@
+public PolicyBuilder setGlobalSeinfoOrThrow(String seinfo){
+    if (!validateValue(seinfo)) {
+        String err = "Invalid seinfo value " + seinfo;
+        throw new IllegalArgumentException(err);
+    }
+    if (mSeinfo != null && !mSeinfo.equals(seinfo)) {
+        String err = "Duplicate seinfo tag found";
+        throw new IllegalStateException(err);
+    }
+    mSeinfo = seinfo;
+    return this;
+}

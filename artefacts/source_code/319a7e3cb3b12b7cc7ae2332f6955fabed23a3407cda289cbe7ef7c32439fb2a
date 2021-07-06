@@ -1,0 +1,30 @@
+public void onWakefulnessChangeStarted(final int wakefulness, int reason, long eventTime){
+    final boolean interactive = PowerManagerInternal.isInteractive(wakefulness);
+    if (DEBUG) {
+        Slog.d(TAG, "onWakefulnessChangeStarted: wakefulness=" + wakefulness + ", reason=" + reason + ", interactive=" + interactive);
+    }
+    mHandler.post(new Runnable() {
+
+        @Override
+        public void run() {
+            mActivityManagerInternal.onWakefulnessChanged(wakefulness);
+        }
+    });
+    if (mInteractive != interactive) {
+        if (mInteractiveChanging) {
+            handleLateInteractiveChange();
+        }
+        mInputManagerInternal.setInteractive(interactive);
+        mInputMethodManagerInternal.setInteractive(interactive);
+        try {
+            mBatteryStats.noteInteractive(interactive);
+        } catch (RemoteException ex) {
+        }
+        FrameworkStatsLog.write(FrameworkStatsLog.INTERACTIVE_STATE_CHANGED, interactive ? FrameworkStatsLog.INTERACTIVE_STATE_CHANGED__STATE__ON : FrameworkStatsLog.INTERACTIVE_STATE_CHANGED__STATE__OFF);
+        mInteractive = interactive;
+        mInteractiveChangeReason = reason;
+        mInteractiveChangeStartTime = eventTime;
+        mInteractiveChanging = true;
+        handleEarlyInteractiveChange();
+    }
+}

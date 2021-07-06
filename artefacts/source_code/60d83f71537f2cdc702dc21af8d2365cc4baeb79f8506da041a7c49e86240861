@@ -1,0 +1,9 @@
+public static byte[] decryptApplicationKey(byte[] recoveryKey, byte[] encryptedApplicationKey, @Nullable byte[] applicationKeyMetadata) throws NoSuchAlgorithmException, InvalidKeyException, AEADBadTagException{
+    byte[] header;
+    if (applicationKeyMetadata == null) {
+        header = ENCRYPTED_APPLICATION_KEY_HEADER;
+    } else {
+        header = concat(ENCRYPTED_APPLICATION_KEY_HEADER, applicationKeyMetadata);
+    }
+    return SecureBox.decrypt(null, recoveryKey, header, encryptedApplicationKey);
+}

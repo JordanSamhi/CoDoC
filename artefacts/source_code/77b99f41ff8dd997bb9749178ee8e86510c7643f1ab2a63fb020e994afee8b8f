@@ -1,0 +1,17 @@
+public int processLocation(Location location){
+    mDistanceToCenter = mLocation.distanceTo(location);
+    int prevState = mState;
+    boolean inside = mDistanceToCenter <= Math.max(mFence.getRadius(), location.getAccuracy());
+    if (inside) {
+        mState = STATE_INSIDE;
+        if (prevState != STATE_INSIDE) {
+            return FLAG_ENTER;
+        }
+    } else {
+        mState = STATE_OUTSIDE;
+        if (prevState == STATE_INSIDE) {
+            return FLAG_EXIT;
+        }
+    }
+    return 0;
+}

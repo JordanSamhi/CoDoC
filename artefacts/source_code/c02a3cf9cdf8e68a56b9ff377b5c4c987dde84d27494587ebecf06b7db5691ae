@@ -1,0 +1,19 @@
+public T getLastOperation(Class<T> clazz, UndoOwner owner, int mergeMode){
+    if (mWorking == null) {
+        throw new IllegalStateException("Must be called during an update");
+    }
+    if (mergeMode != MERGE_MODE_NONE && !mMerged && !mWorking.hasData()) {
+        UndoState state = getTopUndo(null);
+        UndoOperation<?> last;
+        if (state != null && (mergeMode == MERGE_MODE_ANY || !state.hasMultipleOwners()) && state.canMerge() && (last = state.getLastOperation(clazz, owner)) != null) {
+            if (last.allowMerge()) {
+                mWorking.destroy();
+                mWorking = state;
+                mUndos.remove(state);
+                mMerged = true;
+                return (T) last;
+            }
+        }
+    }
+    return mWorking.getLastOperation(clazz, owner);
+}

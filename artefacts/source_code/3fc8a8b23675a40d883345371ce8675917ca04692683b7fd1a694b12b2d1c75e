@@ -1,0 +1,14 @@
+public void remove(Face face, int userId, RemovalCallback callback){
+    if (mService != null) {
+        try {
+            mRemovalCallback = callback;
+            mRemovalFace = face;
+            mService.remove(mToken, face.getBiometricId(), userId, mServiceReceiver, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            Log.w(TAG, "Remote exception in remove: ", e);
+            if (callback != null) {
+                callback.onRemovalError(face, FACE_ERROR_HW_UNAVAILABLE, getErrorString(mContext, FACE_ERROR_HW_UNAVAILABLE, 0));
+            }
+        }
+    }
+}

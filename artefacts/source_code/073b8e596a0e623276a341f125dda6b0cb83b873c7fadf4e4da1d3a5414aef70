@@ -1,0 +1,15 @@
+public void init(){
+    DeviceConfig.addOnPropertiesChangedListener(DeviceConfig.NAMESPACE_ACTIVITY_MANAGER, ActivityThread.currentApplication().getMainExecutor(), mOnFlagsChangedListener);
+    synchronized (mPhenotypeFlagLock) {
+        updateUseCompaction();
+        updateCompactionActions();
+        updateCompactionThrottles();
+        updateCompactStatsdSampleRate();
+        updateFreezerStatsdSampleRate();
+        updateFullRssThrottle();
+        updateFullDeltaRssThrottle();
+        updateProcStateThrottle();
+        updateUseFreezer();
+    }
+    Process.setThreadGroupAndCpuset(mCachedAppOptimizerThread.getThreadId(), Process.THREAD_GROUP_SYSTEM);
+}

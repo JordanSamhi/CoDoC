@@ -1,0 +1,22 @@
+public void registerRttControllerLifecycleCallback(@NonNull InterfaceRttControllerLifecycleCallback callback, @NonNull Handler handler){
+    if (VDBG) {
+        Log.d(TAG, "registerRttControllerLifecycleCallback: callback=" + callback + ", handler=" + handler);
+    }
+    if (callback == null || handler == null) {
+        Log.wtf(TAG, "registerRttControllerLifecycleCallback with nulls!? callback=" + callback + ", handler=" + handler);
+        return;
+    }
+    synchronized (mLock) {
+        InterfaceRttControllerLifecycleCallbackProxy proxy = new InterfaceRttControllerLifecycleCallbackProxy(callback, handler);
+        if (!mRttControllerLifecycleCallbacks.add(proxy)) {
+            Log.d(TAG, "registerRttControllerLifecycleCallback: registering an existing callback=" + callback);
+            return;
+        }
+        if (mIWifiRttController == null) {
+            mIWifiRttController = createRttControllerIfPossible();
+        }
+        if (mIWifiRttController != null) {
+            proxy.onNewRttController(mIWifiRttController);
+        }
+    }
+}

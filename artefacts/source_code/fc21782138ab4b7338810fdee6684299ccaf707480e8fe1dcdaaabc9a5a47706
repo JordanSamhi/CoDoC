@@ -1,0 +1,8 @@
+public void recheckLowPriorityViewAndInflate(NotificationEntry entry, ExpandableNotificationRow row){
+    RowContentBindParams params = mRowContentBindStage.getStageParams(entry);
+    final boolean shouldBeLowPriority = shouldUseLowPriorityView(entry);
+    if (!row.isRemoved() && row.isLowPriority() != shouldBeLowPriority) {
+        params.setUseLowPriority(shouldBeLowPriority);
+        mRowContentBindStage.requestRebind(entry, en -> row.setIsLowPriority(shouldBeLowPriority));
+    }
+}

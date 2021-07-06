@@ -1,0 +1,17 @@
+public Builder setClassInstanceLimit(Class klass, int instanceLimit){
+    if (klass == null) {
+        throw new NullPointerException("klass == null");
+    }
+    if (mClassInstanceLimitNeedCow) {
+        if (mClassInstanceLimit.containsKey(klass) && mClassInstanceLimit.get(klass) == instanceLimit) {
+            return this;
+        }
+        mClassInstanceLimitNeedCow = false;
+        mClassInstanceLimit = (HashMap<Class, Integer>) mClassInstanceLimit.clone();
+    } else if (mClassInstanceLimit == null) {
+        mClassInstanceLimit = new HashMap<Class, Integer>();
+    }
+    mMask |= DETECT_VM_INSTANCE_LEAKS;
+    mClassInstanceLimit.put(klass, instanceLimit);
+    return this;
+}

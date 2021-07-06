@@ -1,0 +1,5 @@
+public boolean clickAndWaitForNewWindow(final int x, final int y, long timeout){
+    String logString = String.format("clickAndWaitForNewWindow(%d, %d)", x, y);
+    Log.d(LOG_TAG, logString);
+    return runAndWaitForEvents(clickRunnable(x, y), new WaitForAllEventPredicate(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED), timeout) != null;
+}

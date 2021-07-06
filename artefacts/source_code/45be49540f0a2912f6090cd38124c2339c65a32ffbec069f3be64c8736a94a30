@@ -1,0 +1,10 @@
+public void onImeVisibilityChanged(boolean visible, int height){
+    mStackAnimationController.setImeHeight(visible ? height + mImeOffset : 0);
+    if (!mIsExpanded && getBubbleCount() > 0) {
+        final float stackDestinationY = mStackAnimationController.animateForImeVisibility(visible);
+        final float stackDy = stackDestinationY - mStackAnimationController.getStackPosition().y;
+        if (mFlyout.getVisibility() == VISIBLE) {
+            PhysicsAnimator.getInstance(mFlyout).spring(DynamicAnimation.TRANSLATION_Y, mFlyout.getTranslationY() + stackDy, FLYOUT_IME_ANIMATION_SPRING_CONFIG).start();
+        }
+    }
+}

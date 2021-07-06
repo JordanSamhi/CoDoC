@@ -1,0 +1,14 @@
+public void fixupOwner(List<? extends Component<?>> list){
+    if (list != null) {
+        for (Component<?> c : list) {
+            c.owner = this;
+            if (c instanceof Activity) {
+                ((Activity) c).info.applicationInfo = this.applicationInfo;
+            } else if (c instanceof Service) {
+                ((Service) c).info.applicationInfo = this.applicationInfo;
+            } else if (c instanceof Provider) {
+                ((Provider) c).info.applicationInfo = this.applicationInfo;
+            }
+        }
+    }
+}

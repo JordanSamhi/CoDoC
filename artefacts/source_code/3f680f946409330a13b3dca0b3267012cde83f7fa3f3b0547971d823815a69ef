@@ -1,0 +1,12 @@
+public boolean isConnected(){
+    final IBluetooth service = sService;
+    if (service == null) {
+        return false;
+    }
+    try {
+        return service.getConnectionState(this) != CONNECTION_STATE_DISCONNECTED;
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+}

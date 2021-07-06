@@ -1,0 +1,21 @@
+
+     * Sets an asynchronous callback for actionable MediaCodec events.
+     *
+     * If the client intends to use the component in asynchronous mode,
+     * a valid callback should be provided before {@link #configure} is called.
+     *
+     * When asynchronous callback is enabled, the client should not call
+     * {@link #getInputBuffers}, {@link #getOutputBuffers},
+     * {@link #dequeueInputBuffer(long)} or {@link #dequeueOutputBuffer(BufferInfo, long)}.
+     * <p>
+     * Also, {@link #flush} behaves differently in asynchronous mode.  After calling
+     * {@code flush}, you must call {@link #start} to "resume" receiving input buffers,
+     * even if an input surface was created.
+     *
+     * @param cb The callback that will run.  Use {@code null} to clear a previously
+     *           set callback (before {@link #configure configure} is called and run
+     *           in synchronous mode).
+     * @param handler Callbacks will happen on the handler's thread. If {@code null},
+     *           callbacks are done on the default thread (the caller's thread or the
+     *           main thread.)
+     

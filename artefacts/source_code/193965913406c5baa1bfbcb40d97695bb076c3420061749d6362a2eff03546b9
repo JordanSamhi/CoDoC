@@ -1,0 +1,13 @@
+public boolean processPendingRadioPowerOffAfterDataOff(){
+    synchronized (this) {
+        if (mPendingRadioPowerOffAfterDataOff) {
+            if (DBG)
+                log("Process pending request to turn radio off.");
+            mPendingRadioPowerOffAfterDataOffTag += 1;
+            hangupAndPowerOff();
+            mPendingRadioPowerOffAfterDataOff = false;
+            return true;
+        }
+        return false;
+    }
+}

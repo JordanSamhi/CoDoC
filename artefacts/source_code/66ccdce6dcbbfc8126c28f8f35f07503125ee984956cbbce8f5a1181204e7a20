@@ -1,0 +1,8 @@
+public String getName(){
+    if (Binder.getCallingUid() != android.os.Process.SYSTEM_UID) {
+        throw new RuntimeException("getName() can only be called from the system process");
+    }
+    synchronized (mLock) {
+        return mWallpaperMap.get(0).name;
+    }
+}

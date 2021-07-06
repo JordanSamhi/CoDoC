@@ -1,0 +1,21 @@
+public void moveRestriction(@NonNull RestrictionsSet destRestrictions, String restriction){
+    for (int i = 0; i < mUserRestrictions.size(); i++) {
+        final int userId = mUserRestrictions.keyAt(i);
+        final Bundle from = mUserRestrictions.valueAt(i);
+        if (UserRestrictionsUtils.contains(from, restriction)) {
+            from.remove(restriction);
+            Bundle to = destRestrictions.getRestrictions(userId);
+            if (to == null) {
+                to = new Bundle();
+                to.putBoolean(restriction, true);
+                destRestrictions.updateRestrictions(userId, to);
+            } else {
+                to.putBoolean(restriction, true);
+            }
+            if (from.isEmpty()) {
+                mUserRestrictions.removeAt(i);
+                i--;
+            }
+        }
+    }
+}

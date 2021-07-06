@@ -1,0 +1,47 @@
+public NativeDaemonEvent[] executeForList(long timeoutMs, String cmd, Object... args) throws NativeDaemonConnectorException{
+    if (mWarnIfHeld != null && Thread.holdsLock(mWarnIfHeld)) {
+        Slog.wtf(TAG, "Calling thread " + Thread.currentThread().getName() + " is holding 0x" + Integer.toHexString(System.identityHashCode(mWarnIfHeld)), new Throwable());
+    }
+    final long startTime = SystemClock.elapsedRealtime();
+    final ArrayList<NativeDaemonEvent> events = Lists.newArrayList();
+    final StringBuilder rawBuilder = new StringBuilder();
+    final StringBuilder logBuilder = new StringBuilder();
+    final int sequenceNumber = mSequenceNumber.incrementAndGet();
+    makeCommand(rawBuilder, logBuilder, sequenceNumber, cmd, args);
+    final String rawCmd = rawBuilder.toString();
+    final String logCmd = logBuilder.toString();
+    log("SND -> {" + logCmd + "}");
+    synchronized (mDaemonLock) {
+        if (mOutputStream == null) {
+            throw new NativeDaemonConnectorException("missing output stream");
+        } else {
+            try {
+                mOutputStream.write(rawCmd.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                throw new NativeDaemonConnectorException("problem sending command", e);
+            }
+        }
+    }
+    NativeDaemonEvent event = null;
+    do {
+        event = mResponseQueue.remove(sequenceNumber, timeoutMs, logCmd);
+        if (event == null) {
+            loge("timed-out waiting for response to " + logCmd);
+            throw new NativeDaemonTimeoutException(logCmd, event);
+        }
+        if (VDBG)
+            log("RMV <- {" + event + "}");
+        events.add(event);
+    } while (event.isClassContinue());
+    final long endTime = SystemClock.elapsedRealtime();
+    if (endTime - startTime > WARN_EXECUTE_DELAY_MS) {
+        loge("NDC Command {" + logCmd + "} took too long (" + (endTime - startTime) + "ms)");
+    }
+    if (event.isClassClientError()) {
+        throw new NativeDaemonArgumentException(logCmd, event);
+    }
+    if (event.isClassServerError()) {
+        throw new NativeDaemonFailureException(logCmd, event);
+    }
+    return events.toArray(new NativeDaemonEvent[events.size()]);
+}

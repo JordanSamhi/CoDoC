@@ -1,0 +1,26 @@
+public void incrementWifiScoreCount(int score){
+    if (score < MIN_WIFI_SCORE || score > MAX_WIFI_SCORE) {
+        return;
+    }
+    synchronized (mLock) {
+        int count = mWifiScoreCounts.get(score);
+        mWifiScoreCounts.put(score, count + 1);
+        boolean wifiWins = mWifiWins;
+        if (mWifiWins && score < LOW_WIFI_SCORE) {
+            wifiWins = false;
+        } else if (!mWifiWins && score > LOW_WIFI_SCORE) {
+            wifiWins = true;
+        }
+        mLastScore = score;
+        mLastScoreNoReset = score;
+        if (wifiWins != mWifiWins) {
+            mWifiWins = wifiWins;
+            StaEvent event = new StaEvent();
+            event.type = StaEvent.TYPE_SCORE_BREACH;
+            addStaEvent(event);
+            if (!wifiWins && mScoreBreachLowTimeMillis == -1) {
+                mScoreBreachLowTimeMillis = mClock.getElapsedSinceBootMillis();
+            }
+        }
+    }
+}

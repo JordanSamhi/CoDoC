@@ -1,0 +1,31 @@
+public boolean initialize(){
+    synchronized (mLock) {
+        if (mVerboseLoggingEnabled) {
+            Log.i(TAG, "Registering ISupplicant service ready callback.");
+        }
+        mISupplicant = null;
+        mISupplicantStaIfaces.clear();
+        if (mIServiceManager != null) {
+            return true;
+        }
+        try {
+            mIServiceManager = getServiceManagerMockable();
+            if (mIServiceManager == null) {
+                Log.e(TAG, "Failed to get HIDL Service Manager");
+                return false;
+            }
+            if (!linkToServiceManagerDeath()) {
+                return false;
+            }
+            if (!mIServiceManager.registerForNotifications(ISupplicant.kInterfaceName, "", mServiceNotificationCallback)) {
+                Log.e(TAG, "Failed to register for notifications to " + ISupplicant.kInterfaceName);
+                mIServiceManager = null;
+                return false;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Exception while trying to register a listener for ISupplicant service: " + e);
+            supplicantServiceDiedHandler(mDeathRecipientCookie);
+        }
+        return true;
+    }
+}
