@@ -1,0 +1,28 @@
+
+     * Sets the {@link Surface} to be used for live preview.
+     * Either a surface or surface texture is necessary for preview, and
+     * preview is necessary to take pictures.  The same surface can be re-set
+     * without harm.  Setting a preview surface will un-set any preview surface
+     * texture that was set via {@link #setPreviewTexture}.
+     *
+     * <p>The {@link SurfaceHolder} must already contain a surface when this
+     * method is called.  If you are using {@link android.view.SurfaceView},
+     * you will need to register a {@link SurfaceHolder.Callback} with
+     * {@link SurfaceHolder#addCallback(SurfaceHolder.Callback)} and wait for
+     * {@link SurfaceHolder.Callback#surfaceCreated(SurfaceHolder)} before
+     * calling setPreviewDisplay() or starting preview.
+     *
+     * <p>This method must be called before {@link #startPreview()}.  The
+     * one exception is that if the preview surface is not set (or set to null)
+     * before startPreview() is called, then this method may be called once
+     * with a non-null parameter to set the preview surface.  (This allows
+     * camera setup and surface creation to happen in parallel, saving time.)
+     * The preview surface may not otherwise change while preview is running.
+     *
+     * @param holder containing the Surface on which to place the preview,
+     *     or null to remove the preview surface
+     * @throws IOException if the method fails (for example, if the surface
+     *     is unavailable or unsuitable).
+     * @throws RuntimeException if release() has been called on this Camera
+     *    instance.
+     

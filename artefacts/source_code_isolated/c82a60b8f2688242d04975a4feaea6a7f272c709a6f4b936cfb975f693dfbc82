@@ -1,0 +1,6 @@
+public static AppTargetPredictor create(@NonNull AppPredictionContext predictionContext, @NonNull Consumer<List<AppTarget>> updatePredictionsMethod, @NonNull DataManager dataManager, @UserIdInt int callingUserId){
+    if (UI_SURFACE_SHARE.equals(predictionContext.getUiSurface())) {
+        return new ShareTargetPredictor(predictionContext, updatePredictionsMethod, dataManager, callingUserId);
+    }
+    return new AppTargetPredictor(predictionContext, updatePredictionsMethod, dataManager, callingUserId);
+}

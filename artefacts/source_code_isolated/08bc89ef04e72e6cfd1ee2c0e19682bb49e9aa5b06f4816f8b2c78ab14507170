@@ -1,0 +1,17 @@
+public void queryCLIP(Message result){
+    if (DBG) {
+        log("queryCLIP :: Ut=" + miUt);
+    }
+    synchronized (mLockObj) {
+        try {
+            int id = miUt.queryCLIP();
+            if (id < 0) {
+                sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+                return;
+            }
+            mPendingCmds.put(Integer.valueOf(id), result);
+        } catch (RemoteException e) {
+            sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+        }
+    }
+}

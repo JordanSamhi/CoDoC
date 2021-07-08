@@ -1,0 +1,26 @@
+public void registerRouteCallback(@NonNull @CallbackExecutor Executor executor, @NonNull RouteCallback routeCallback, @NonNull RouteDiscoveryPreference preference){
+    Objects.requireNonNull(executor, "executor must not be null");
+    Objects.requireNonNull(routeCallback, "callback must not be null");
+    Objects.requireNonNull(preference, "preference must not be null");
+    RouteCallbackRecord record = new RouteCallbackRecord(executor, routeCallback, preference);
+    mRouteCallbackRecords.remove(record);
+    mRouteCallbackRecords.addIfAbsent(record);
+    synchronized (sRouterLock) {
+        if (mStub == null) {
+            MediaRouter2Stub stub = new MediaRouter2Stub();
+            try {
+                mMediaRouterService.registerRouter2(stub, mPackageName);
+                mStub = stub;
+            } catch (RemoteException ex) {
+                Log.e(TAG, "registerRouteCallback: Unable to register MediaRouter2.", ex);
+            }
+        }
+        if (mStub != null && updateDiscoveryPreferenceIfNeededLocked()) {
+            try {
+                mMediaRouterService.setDiscoveryRequestWithRouter2(mStub, mDiscoveryPreference);
+            } catch (RemoteException ex) {
+                Log.e(TAG, "registerRouteCallback: Unable to set discovery request.", ex);
+            }
+        }
+    }
+}

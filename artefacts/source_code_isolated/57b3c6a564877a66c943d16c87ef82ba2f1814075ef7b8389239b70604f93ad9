@@ -1,0 +1,16 @@
+public WindowId getWindowId(){
+    AttachInfo ai = mAttachInfo;
+    if (ai == null) {
+        return null;
+    }
+    if (ai.mWindowId == null) {
+        try {
+            ai.mIWindowId = ai.mSession.getWindowId(ai.mWindowToken);
+            if (ai.mIWindowId != null) {
+                ai.mWindowId = new WindowId(ai.mIWindowId);
+            }
+        } catch (RemoteException e) {
+        }
+    }
+    return ai.mWindowId;
+}

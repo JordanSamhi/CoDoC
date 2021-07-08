@@ -1,0 +1,41 @@
+
+     * Removes an account from the AccountManager. Does nothing if the account
+     * does not exist.  Does not delete the account from the server.
+     * The authenticator may have its own policies preventing account
+     * deletion, in which case the account will not be deleted.
+     *
+     * <p>This method may be called from any thread, but the returned
+     * {@link AccountManagerFuture} must not be used on the main thread.
+     *
+     * <p>This method requires the caller to have a signature match with the
+     * authenticator that manages the specified account.
+     *
+     * <p><b>NOTE:</b> If targeting your app to work on API level 22 and before,
+     * MANAGE_ACCOUNTS permission is needed for those platforms. See docs for
+     * this function in API level 22.
+     *
+     * @param account The {@link Account} to remove
+     * @param activity The {@link Activity} context to use for launching a new
+     *     authenticator-defined sub-Activity to prompt the user to delete an
+     *     account; used only to call startActivity(); if null, the prompt
+     *     will not be launched directly, but the {@link Intent} may be
+     *     returned to the caller instead
+     * @param callback Callback to invoke when the request completes,
+     *     null for no callback
+     * @param handler {@link Handler} identifying the callback thread,
+     *     null for the main thread
+     * @return An {@link AccountManagerFuture} which resolves to a Bundle with
+     *     {@link #KEY_BOOLEAN_RESULT} if activity was specified and an account
+     *     was removed or if active. If no activity was specified, the returned
+     *     Bundle contains only {@link #KEY_INTENT} with the {@link Intent}
+     *     needed to launch the actual account removal process, if authenticator
+     *     needs the activity launch. If an error occurred,
+     *     {@link AccountManagerFuture#getResult()} throws:
+     * <ul>
+     * <li> {@link AuthenticatorException} if no authenticator was registered for
+     *      this account type or the authenticator failed to respond
+     * <li> {@link OperationCanceledException} if the operation was canceled for
+     *      any reason, including the user canceling the creation process or
+     *      adding accounts (of this type) has been disabled by policy
+     * </ul>
+     

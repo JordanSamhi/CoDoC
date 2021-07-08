@@ -1,0 +1,19 @@
+public void removeSpan(Object what, int flags){
+    int count = mSpanCount;
+    Object[] spans = mSpans;
+    int[] data = mSpanData;
+    for (int i = count - 1; i >= 0; i--) {
+        if (spans[i] == what) {
+            int ostart = data[i * COLUMNS + START];
+            int oend = data[i * COLUMNS + END];
+            int c = count - (i + 1);
+            System.arraycopy(spans, i + 1, spans, i, c);
+            System.arraycopy(data, (i + 1) * COLUMNS, data, i * COLUMNS, c * COLUMNS);
+            mSpanCount--;
+            if ((flags & Spanned.SPAN_INTERMEDIATE) == 0) {
+                sendSpanRemoved(what, ostart, oend);
+            }
+            return;
+        }
+    }
+}

@@ -1,0 +1,20 @@
+public void sendAppPrivateCommand(View view, String action, Bundle data){
+    final InputMethodManager fallbackImm = getFallbackInputMethodManagerIfNecessary(view);
+    if (fallbackImm != null) {
+        fallbackImm.sendAppPrivateCommand(view, action, data);
+        return;
+    }
+    checkFocus();
+    synchronized (mH) {
+        if (!hasServedByInputMethodLocked(view) || mCurrentTextBoxAttribute == null || mCurMethod == null) {
+            return;
+        }
+        try {
+            if (DEBUG)
+                Log.v(TAG, "APP PRIVATE COMMAND " + action + ": " + data);
+            mCurMethod.appPrivateCommand(action, data);
+        } catch (RemoteException e) {
+            Log.w(TAG, "IME died: " + mCurId, e);
+        }
+    }
+}

@@ -1,0 +1,14 @@
+public static void syncSet(@NonNull Context context, @NonNull String namespace, @NonNull String key, @Nullable String value){
+    if (value == null) {
+        syncDelete(context, namespace, key);
+        return;
+    }
+    String currentValue = get(namespace, key);
+    if (value.equals(currentValue)) {
+        return;
+    }
+    OneTimeSettingsListener observer = new OneTimeSettingsListener(context, namespace, key, DEFAULT_TIMEOUT_MS);
+    set(namespace, key, value);
+    observer.assertCalled();
+    assertNewValue(namespace, key, value);
+}

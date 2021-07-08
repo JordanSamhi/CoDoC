@@ -1,0 +1,7 @@
+public int start(){
+    mSegmentId = (mSegmentId & 0xffff0000) | (((mSegmentId & 0x0000ffff) + 1) & 0x0000ffff);
+    mUnderflow = 0;
+    Log.d(TAG, "Write Stats Log for Playback.");
+    FrameworkStatsLog.write(FrameworkStatsLog.TV_TUNER_DVR_STATUS, mUserId, FrameworkStatsLog.TV_TUNER_DVR_STATUS__TYPE__PLAYBACK, FrameworkStatsLog.TV_TUNER_DVR_STATUS__STATE__STARTED, mSegmentId, 0);
+    return nativeStartDvr();
+}

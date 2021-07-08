@@ -1,0 +1,14 @@
+public static AndroidKeyStoreKey loadAndroidKeyStoreKeyFromKeystore(@NonNull KeyStore keyStore, @NonNull String userKeyAlias, int uid) throws UnrecoverableKeyException, KeyPermanentlyInvalidatedException{
+    KeyCharacteristics keyCharacteristics = getKeyCharacteristics(keyStore, userKeyAlias, uid);
+    Integer keymasterAlgorithm = keyCharacteristics.getEnum(KeymasterDefs.KM_TAG_ALGORITHM);
+    if (keymasterAlgorithm == null) {
+        throw new UnrecoverableKeyException("Key algorithm unknown");
+    }
+    if (keymasterAlgorithm == KeymasterDefs.KM_ALGORITHM_HMAC || keymasterAlgorithm == KeymasterDefs.KM_ALGORITHM_AES || keymasterAlgorithm == KeymasterDefs.KM_ALGORITHM_3DES) {
+        return loadAndroidKeyStoreSecretKeyFromKeystore(userKeyAlias, uid, keyCharacteristics);
+    } else if (keymasterAlgorithm == KeymasterDefs.KM_ALGORITHM_RSA || keymasterAlgorithm == KeymasterDefs.KM_ALGORITHM_EC) {
+        return loadAndroidKeyStorePrivateKeyFromKeystore(keyStore, userKeyAlias, uid, keyCharacteristics);
+    } else {
+        throw new UnrecoverableKeyException("Key algorithm unknown");
+    }
+}

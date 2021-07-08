@@ -1,0 +1,16 @@
+public void reset(){
+    mLastEventSeq = -1;
+    mLastNestingLevel = 0;
+    mTrackballDown = false;
+    mTrackballUnhandled = false;
+    mTouchEventStreamPointers = 0;
+    mTouchEventStreamIsTainted = false;
+    mTouchEventStreamUnhandled = false;
+    mHoverEntered = false;
+    mButtonsPressed = 0;
+    while (mKeyStateList != null) {
+        final KeyState state = mKeyStateList;
+        mKeyStateList = state.next;
+        state.recycle();
+    }
+}

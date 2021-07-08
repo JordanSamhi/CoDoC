@@ -1,0 +1,14 @@
+public boolean add(@NonNull Key key, WifiConfiguration config, @WifiNetworkSelector.NetworkNominator.NominatorId int nominatorId, int scanRssi, int frequency, double lastSelectionWeightBetweenZeroAndOne, boolean isMetered, boolean isCarrierOrPrivileged, int predictedThroughputMbps){
+    Candidate old = mCandidates.get(key);
+    if (old != null) {
+        if (nominatorId > old.getNominatorId())
+            return false;
+        remove(old);
+    }
+    WifiScoreCard.PerBssid perBssid = mWifiScoreCard.lookupBssid(key.matchInfo.networkSsid, key.bssid.toString());
+    perBssid.setSecurityType(WifiScoreCardProto.SecurityType.forNumber(key.matchInfo.networkType));
+    perBssid.setNetworkConfigId(config.networkId);
+    CandidateImpl candidate = new CandidateImpl(key, config, perBssid, nominatorId, scanRssi, frequency, Math.min(Math.max(lastSelectionWeightBetweenZeroAndOne, 0.0), 1.0), config.networkId == mCurrentNetworkId, key.bssid.equals(mCurrentBssid), isMetered, isCarrierOrPrivileged, predictedThroughputMbps);
+    mCandidates.put(key, candidate);
+    return true;
+}

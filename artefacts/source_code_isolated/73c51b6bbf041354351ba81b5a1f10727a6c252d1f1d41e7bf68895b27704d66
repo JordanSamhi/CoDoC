@@ -1,0 +1,11 @@
+public boolean isWfcProvisionedOnDevice(){
+    if (getBooleanCarrierConfig(CarrierConfigManager.KEY_CARRIER_VOLTE_OVERRIDE_WFC_PROVISIONING_BOOL)) {
+        if (!isVolteProvisionedOnDevice()) {
+            return false;
+        }
+    }
+    if (getBooleanCarrierConfig(CarrierConfigManager.KEY_CARRIER_VOLTE_PROVISIONING_REQUIRED_BOOL)) {
+        return isWfcProvisioned();
+    }
+    return true;
+}

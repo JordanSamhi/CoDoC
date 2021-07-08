@@ -1,0 +1,12 @@
+public MenuDialogHelper showDialog(View originalView, IBinder token){
+    if (originalView != null) {
+        originalView.createContextMenu(this);
+    }
+    if (getVisibleItems().size() > 0) {
+        EventLog.writeEvent(50001, 1);
+        MenuDialogHelper helper = new MenuDialogHelper(this);
+        helper.show(token);
+        return helper;
+    }
+    return null;
+}

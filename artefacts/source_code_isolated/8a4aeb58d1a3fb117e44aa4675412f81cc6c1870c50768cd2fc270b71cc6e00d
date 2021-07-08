@@ -1,0 +1,11 @@
+public void addOnFileDescriptorEventListener(@NonNull FileDescriptor fd, @OnFileDescriptorEventListener.Events int events, @NonNull OnFileDescriptorEventListener listener){
+    if (fd == null) {
+        throw new IllegalArgumentException("fd must not be null");
+    }
+    if (listener == null) {
+        throw new IllegalArgumentException("listener must not be null");
+    }
+    synchronized (this) {
+        updateOnFileDescriptorEventListenerLocked(fd, events, listener);
+    }
+}

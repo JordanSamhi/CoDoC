@@ -1,0 +1,25 @@
+public ArrayList<ContentProviderOperation> constructInsertOperations(ContentResolver resolver, ArrayList<ContentProviderOperation> operationList){
+    if (operationList == null) {
+        operationList = new ArrayList<ContentProviderOperation>();
+    }
+    if (isIgnorable()) {
+        return operationList;
+    }
+    final int backReferenceIndex = operationList.size();
+    ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI);
+    if (mAccount != null) {
+        builder.withValue(RawContacts.ACCOUNT_NAME, mAccount.name);
+        builder.withValue(RawContacts.ACCOUNT_TYPE, mAccount.type);
+    } else {
+        builder.withValue(RawContacts.ACCOUNT_NAME, null);
+        builder.withValue(RawContacts.ACCOUNT_TYPE, null);
+    }
+    if (getStarred()) {
+        builder.withValue(RawContacts.STARRED, 1);
+    }
+    operationList.add(builder.build());
+    int start = operationList.size();
+    iterateAllData(new InsertOperationConstrutor(operationList, backReferenceIndex));
+    int end = operationList.size();
+    return operationList;
+}

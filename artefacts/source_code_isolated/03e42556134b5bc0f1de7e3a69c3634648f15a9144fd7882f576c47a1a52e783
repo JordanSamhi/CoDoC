@@ -1,0 +1,7 @@
+public void get_getsKeyGeneratedByController() throws Exception{
+    RecoverableKeyStoreSecondaryKey key = mRecoverableKeyStoreSecondaryKeyManager.generate();
+    Optional<RecoverableKeyStoreSecondaryKey> retrievedKey = mRecoverableKeyStoreSecondaryKeyManager.get(key.getAlias());
+    assertThat(retrievedKey.isPresent()).isTrue();
+    assertThat(retrievedKey.get().getAlias()).isEqualTo(key.getAlias());
+    assertThat(retrievedKey.get().getSecretKey()).isEqualTo(key.getSecretKey());
+}

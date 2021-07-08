@@ -1,0 +1,31 @@
+public double quantileFunction(double probability, int minimum, int maximum){
+    if (minimum > maximum) {
+        throw new IllegalArgumentException("bad bounds");
+    }
+    if (probability < 0.0 || probability > 1.0) {
+        throw new IllegalArgumentException("bad roll, try again");
+    }
+    long sum = 0;
+    for (Bucket bucket : this) {
+        sum += bucket.count;
+    }
+    final double target = sum * probability;
+    double partialSum = 0.0;
+    Bucket hitBucket = null;
+    for (Bucket bucket : this) {
+        if (partialSum + bucket.count >= target) {
+            hitBucket = bucket;
+            break;
+        }
+        partialSum += bucket.count;
+    }
+    if (hitBucket == null) {
+        return minimum + probability * (maximum - minimum);
+    }
+    double highValue = Math.min(hitBucket.end, maximum);
+    double value = Math.max(hitBucket.start, minimum);
+    if (value >= highValue - 1.0 || hitBucket.count == 0)
+        return Math.min(value, highValue);
+    value += (highValue - value) * (target - partialSum) / hitBucket.count;
+    return Math.min(Math.max(value, minimum), maximum);
+}

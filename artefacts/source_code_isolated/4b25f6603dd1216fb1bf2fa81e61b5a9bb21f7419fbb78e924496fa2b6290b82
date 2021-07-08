@@ -1,0 +1,10 @@
+public static ScriptIntrinsicConvolve3x3 create(RenderScript rs, Element e){
+    float[] f = { 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+    if (!e.isCompatible(Element.U8(rs)) && !e.isCompatible(Element.U8_2(rs)) && !e.isCompatible(Element.U8_3(rs)) && !e.isCompatible(Element.U8_4(rs)) && !e.isCompatible(Element.F32(rs)) && !e.isCompatible(Element.F32_2(rs)) && !e.isCompatible(Element.F32_3(rs)) && !e.isCompatible(Element.F32_4(rs))) {
+        throw new RSIllegalArgumentException("Unsupported element type.");
+    }
+    long id = rs.nScriptIntrinsicCreate(1, e.getID(rs));
+    ScriptIntrinsicConvolve3x3 si = new ScriptIntrinsicConvolve3x3(id, rs);
+    si.setCoefficients(f);
+    return si;
+}

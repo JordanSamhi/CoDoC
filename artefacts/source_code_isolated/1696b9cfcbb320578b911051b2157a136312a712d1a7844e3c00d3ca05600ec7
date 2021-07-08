@@ -1,0 +1,16 @@
+public boolean removeOnShowModeChangedListener(@NonNull OnShowModeChangedListener listener){
+    if (mListeners == null) {
+        return false;
+    }
+    synchronized (mLock) {
+        final int keyIndex = mListeners.indexOfKey(listener);
+        final boolean hasKey = keyIndex >= 0;
+        if (hasKey) {
+            mListeners.removeAt(keyIndex);
+        }
+        if (hasKey && mListeners.isEmpty()) {
+            setSoftKeyboardCallbackEnabled(false);
+        }
+        return hasKey;
+    }
+}

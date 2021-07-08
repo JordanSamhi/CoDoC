@@ -1,0 +1,11 @@
+public static Map<String, String> buildPackageApkToDexMetadataMap(List<String> codePaths){
+    ArrayMap<String, String> result = new ArrayMap<>();
+    for (int i = codePaths.size() - 1; i >= 0; i--) {
+        String codePath = codePaths.get(i);
+        String dexMetadataPath = buildDexMetadataPathForFile(new File(codePath));
+        if (Files.exists(Paths.get(dexMetadataPath))) {
+            result.put(codePath, dexMetadataPath);
+        }
+    }
+    return result;
+}

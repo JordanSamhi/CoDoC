@@ -1,0 +1,12 @@
+public void deleteProfile(String iccid, AsyncResultCallback<Void> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> {
+        byte[] iccidBytes = IccUtils.bcdToBytes(padTrailingFs(iccid));
+        requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_DELETE_PROFILE).addChildAsBytes(Tags.TAG_ICCID, iccidBytes).build().toHex());
+    }), response -> {
+        int result = parseSimpleResult(response);
+        if (result != CODE_OK) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_DELETE_PROFILE, result);
+        }
+        return null;
+    }, callback, handler);
+}

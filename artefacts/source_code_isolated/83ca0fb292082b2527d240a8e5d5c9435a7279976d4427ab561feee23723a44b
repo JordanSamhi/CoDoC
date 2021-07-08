@@ -1,0 +1,75 @@
+public void logDynamicCodeLoading(String packageName){
+    PackageDynamicCode info = getPackageDynamicCodeInfo(packageName);
+    if (info == null) {
+        return;
+    }
+    SparseArray<ApplicationInfo> appInfoByUser = new SparseArray<>();
+    boolean needWrite = false;
+    for (Map.Entry<String, DynamicCodeFile> fileEntry : info.mFileUsageMap.entrySet()) {
+        String filePath = fileEntry.getKey();
+        DynamicCodeFile fileInfo = fileEntry.getValue();
+        int userId = fileInfo.mUserId;
+        int index = appInfoByUser.indexOfKey(userId);
+        ApplicationInfo appInfo;
+        if (index >= 0) {
+            appInfo = appInfoByUser.get(userId);
+        } else {
+            appInfo = null;
+            try {
+                PackageInfo ownerInfo = mPackageManager.getPackageInfo(packageName, 0, userId);
+                appInfo = ownerInfo == null ? null : ownerInfo.applicationInfo;
+            } catch (RemoteException ignored) {
+            }
+            appInfoByUser.put(userId, appInfo);
+            if (appInfo == null) {
+                Slog.d(TAG, "Could not find package " + packageName + " for user " + userId);
+                needWrite |= mPackageDynamicCodeLoading.removeUserPackage(packageName, userId);
+            }
+        }
+        if (appInfo == null) {
+            continue;
+        }
+        int storageFlags;
+        if (fileIsUnder(filePath, appInfo.credentialProtectedDataDir)) {
+            storageFlags = StorageManager.FLAG_STORAGE_CE;
+        } else if (fileIsUnder(filePath, appInfo.deviceProtectedDataDir)) {
+            storageFlags = StorageManager.FLAG_STORAGE_DE;
+        } else {
+            Slog.e(TAG, "Could not infer CE/DE storage for path " + filePath);
+            needWrite |= mPackageDynamicCodeLoading.removeFile(packageName, filePath, userId);
+            continue;
+        }
+        byte[] hash = null;
+        try {
+            hash = mInstaller.hashSecondaryDexFile(filePath, packageName, appInfo.uid, appInfo.volumeUuid, storageFlags);
+        } catch (InstallerException e) {
+            Slog.e(TAG, "Got InstallerException when hashing file " + filePath + ": " + e.getMessage());
+        }
+        String subtag = fileInfo.mFileType == FILE_TYPE_DEX ? DCL_DEX_SUBTAG : DCL_NATIVE_SUBTAG;
+        String fileName = new File(filePath).getName();
+        String message = PackageUtils.computeSha256Digest(fileName.getBytes());
+        if (hash != null && hash.length == 32) {
+            message = message + ' ' + HexEncoding.encodeToString(hash);
+        } else {
+            Slog.d(TAG, "Got no hash for " + filePath);
+            needWrite |= mPackageDynamicCodeLoading.removeFile(packageName, filePath, userId);
+        }
+        for (String loadingPackageName : fileInfo.mLoadingPackages) {
+            int loadingUid = -1;
+            if (loadingPackageName.equals(packageName)) {
+                loadingUid = appInfo.uid;
+            } else {
+                try {
+                    loadingUid = mPackageManager.getPackageUid(loadingPackageName, 0, userId);
+                } catch (RemoteException ignored) {
+                }
+            }
+            if (loadingUid != -1) {
+                writeDclEvent(subtag, loadingUid, message);
+            }
+        }
+    }
+    if (needWrite) {
+        mPackageDynamicCodeLoading.maybeWriteAsync();
+    }
+}

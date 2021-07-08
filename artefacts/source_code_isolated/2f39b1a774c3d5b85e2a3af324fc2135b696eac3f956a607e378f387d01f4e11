@@ -1,0 +1,35 @@
+public void validate() throws IllegalArgumentException{
+    if (mMasterPreference < 0) {
+        throw new IllegalArgumentException("Master Preference specification must be non-negative");
+    }
+    if (mMasterPreference == 1 || mMasterPreference == 255 || mMasterPreference > 255) {
+        throw new IllegalArgumentException("Master Preference specification must not " + "exceed 255 or use 1 or 255 (reserved values)");
+    }
+    if (mClusterLow < CLUSTER_ID_MIN) {
+        throw new IllegalArgumentException("Cluster specification must be non-negative");
+    }
+    if (mClusterLow > CLUSTER_ID_MAX) {
+        throw new IllegalArgumentException("Cluster specification must not exceed 0xFFFF");
+    }
+    if (mClusterHigh < CLUSTER_ID_MIN) {
+        throw new IllegalArgumentException("Cluster specification must be non-negative");
+    }
+    if (mClusterHigh > CLUSTER_ID_MAX) {
+        throw new IllegalArgumentException("Cluster specification must not exceed 0xFFFF");
+    }
+    if (mClusterLow > mClusterHigh) {
+        throw new IllegalArgumentException("Invalid argument combination - must have Cluster Low <= Cluster High");
+    }
+    if (mDiscoveryWindowInterval.length != 3) {
+        throw new IllegalArgumentException("Invalid discovery window interval: must have 3 elements (2.4 & 5 & 6");
+    }
+    if (mDiscoveryWindowInterval[NAN_BAND_24GHZ] != DW_INTERVAL_NOT_INIT && (mDiscoveryWindowInterval[NAN_BAND_24GHZ] < 1 || mDiscoveryWindowInterval[NAN_BAND_24GHZ] > 5)) {
+        throw new IllegalArgumentException("Invalid discovery window interval for 2.4GHz: valid is UNSET or [1,5]");
+    }
+    if (mDiscoveryWindowInterval[NAN_BAND_5GHZ] != DW_INTERVAL_NOT_INIT && (mDiscoveryWindowInterval[NAN_BAND_5GHZ] < 0 || mDiscoveryWindowInterval[NAN_BAND_5GHZ] > 5)) {
+        throw new IllegalArgumentException("Invalid discovery window interval for 5GHz: valid is UNSET or [0,5]");
+    }
+    if (mDiscoveryWindowInterval[NAN_BAND_6GHZ] != DW_INTERVAL_NOT_INIT && (mDiscoveryWindowInterval[NAN_BAND_6GHZ] < 0 || mDiscoveryWindowInterval[NAN_BAND_6GHZ] > 5)) {
+        throw new IllegalArgumentException("Invalid discovery window interval for 6GHz: valid is UNSET or [0,5]");
+    }
+}

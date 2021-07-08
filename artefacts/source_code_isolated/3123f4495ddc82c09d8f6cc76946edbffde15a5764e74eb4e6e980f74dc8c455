@@ -1,0 +1,30 @@
+public boolean connectService(){
+    mLocalSocket = new LocalSocket();
+    boolean done = false;
+    for (int retry = 0; retry < SOCKET_CONNECTION_MAX_RETRY; retry++) {
+        try {
+            mLocalSocket.connect(new LocalSocketAddress(UNCRYPT_SOCKET, LocalSocketAddress.Namespace.RESERVED));
+            done = true;
+            break;
+        } catch (IOException ignored) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Slog.w(TAG, "Interrupted:", e);
+            }
+        }
+    }
+    if (!done) {
+        Slog.e(TAG, "Timed out connecting to uncrypt socket");
+        close();
+        return false;
+    }
+    try {
+        mInputStream = new DataInputStream(mLocalSocket.getInputStream());
+        mOutputStream = new DataOutputStream(mLocalSocket.getOutputStream());
+    } catch (IOException e) {
+        close();
+        return false;
+    }
+    return true;
+}

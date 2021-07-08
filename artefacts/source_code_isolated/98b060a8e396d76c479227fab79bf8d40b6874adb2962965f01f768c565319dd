@@ -1,0 +1,45 @@
+public void recordData(long start, long end, NetworkStats.Entry entry){
+    long rxBytes = entry.rxBytes;
+    long rxPackets = entry.rxPackets;
+    long txBytes = entry.txBytes;
+    long txPackets = entry.txPackets;
+    long operations = entry.operations;
+    if (entry.isNegative()) {
+        throw new IllegalArgumentException("tried recording negative data");
+    }
+    if (entry.isEmpty()) {
+        return;
+    }
+    ensureBuckets(start, end);
+    long duration = end - start;
+    final int startIndex = getIndexAfter(end);
+    for (int i = startIndex; i >= 0; i--) {
+        final long curStart = bucketStart[i];
+        final long curEnd = curStart + bucketDuration;
+        if (curEnd < start)
+            break;
+        if (curStart > end)
+            continue;
+        final long overlap = Math.min(curEnd, end) - Math.max(curStart, start);
+        if (overlap <= 0)
+            continue;
+        final long fracRxBytes = rxBytes * overlap / duration;
+        final long fracRxPackets = rxPackets * overlap / duration;
+        final long fracTxBytes = txBytes * overlap / duration;
+        final long fracTxPackets = txPackets * overlap / duration;
+        final long fracOperations = operations * overlap / duration;
+        addLong(activeTime, i, overlap);
+        addLong(this.rxBytes, i, fracRxBytes);
+        rxBytes -= fracRxBytes;
+        addLong(this.rxPackets, i, fracRxPackets);
+        rxPackets -= fracRxPackets;
+        addLong(this.txBytes, i, fracTxBytes);
+        txBytes -= fracTxBytes;
+        addLong(this.txPackets, i, fracTxPackets);
+        txPackets -= fracTxPackets;
+        addLong(this.operations, i, fracOperations);
+        operations -= fracOperations;
+        duration -= overlap;
+    }
+    totalBytes += entry.rxBytes + entry.txBytes;
+}

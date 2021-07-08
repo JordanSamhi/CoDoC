@@ -1,0 +1,37 @@
+public void setDisplayPadding(Rect padding, String callingPackage, int displayId){
+    checkPermission(android.Manifest.permission.SET_WALLPAPER_HINTS);
+    if (!isWallpaperSupported(callingPackage)) {
+        return;
+    }
+    synchronized (mLock) {
+        if (!isValidDisplay(displayId)) {
+            throw new IllegalArgumentException("Cannot find display with id=" + displayId);
+        }
+        int userId = UserHandle.getCallingUserId();
+        WallpaperData wallpaper = getWallpaperSafeLocked(userId, FLAG_SYSTEM);
+        if (padding.left < 0 || padding.top < 0 || padding.right < 0 || padding.bottom < 0) {
+            throw new IllegalArgumentException("padding must be positive: " + padding);
+        }
+        final DisplayData wpdData = getDisplayDataOrCreate(displayId);
+        if (!padding.equals(wpdData.mPadding)) {
+            wpdData.mPadding.set(padding);
+            if (displayId == DEFAULT_DISPLAY)
+                saveSettingsLocked(userId);
+            if (mCurrentUserId != userId)
+                return;
+            if (wallpaper.connection != null) {
+                final WallpaperConnection.DisplayConnector connector = wallpaper.connection.getDisplayConnectorOrCreate(displayId);
+                final IWallpaperEngine engine = connector != null ? connector.mEngine : null;
+                if (engine != null) {
+                    try {
+                        engine.setDisplayPadding(padding);
+                    } catch (RemoteException e) {
+                    }
+                    notifyCallbacksLocked(wallpaper);
+                } else if (wallpaper.connection.mService != null && connector != null) {
+                    connector.mPaddingChanged = true;
+                }
+            }
+        }
+    }
+}

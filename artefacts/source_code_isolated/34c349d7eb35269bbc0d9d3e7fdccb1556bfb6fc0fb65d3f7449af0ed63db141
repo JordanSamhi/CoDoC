@@ -1,0 +1,16 @@
+public void sendMhlVendorCommand(int portId, int offset, int length, byte[] data){
+    if (data == null || data.length != VENDOR_DATA_SIZE) {
+        throw new IllegalArgumentException("Invalid vendor command data.");
+    }
+    if (offset < 0 || offset >= VENDOR_DATA_SIZE) {
+        throw new IllegalArgumentException("Invalid offset:" + offset);
+    }
+    if (length < 0 || offset + length > VENDOR_DATA_SIZE) {
+        throw new IllegalArgumentException("Invalid length:" + length);
+    }
+    try {
+        mService.sendMhlVendorCommand(portId, offset, length, data);
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to send vendor command: ", e);
+    }
+}

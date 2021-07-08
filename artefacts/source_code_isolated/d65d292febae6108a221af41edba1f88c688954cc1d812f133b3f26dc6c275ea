@@ -1,0 +1,24 @@
+public int[] getInputs(){
+    final int[] inputs = new int[mInputCount];
+    int left = mEntry.length;
+    for (int i = 0, j = 0; i < mEntry.length; j++) {
+        final int format = mEntry[i];
+        left--;
+        i++;
+        if (left < 1) {
+            throw new AssertionError(String.format("Input %x had no output format length listed", format));
+        }
+        final int length = mEntry[i];
+        left--;
+        i++;
+        if (length > 0) {
+            if (left < length) {
+                throw new AssertionError(String.format("Input %x had too few output formats listed (actual: %d, " + "expected: %d)", format, left, length));
+            }
+            i += length;
+            left -= length;
+        }
+        inputs[j] = format;
+    }
+    return StreamConfigurationMap.imageFormatToPublic(inputs);
+}

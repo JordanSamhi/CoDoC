@@ -1,0 +1,9 @@
+public KernelWakelockStats removeOldStats(final KernelWakelockStats staleStats){
+    Iterator<KernelWakelockStats.Entry> itr = staleStats.values().iterator();
+    while (itr.hasNext()) {
+        if (itr.next().mVersion != sKernelWakelockUpdateVersion) {
+            itr.remove();
+        }
+    }
+    return staleStats;
+}

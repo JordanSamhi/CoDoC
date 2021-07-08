@@ -1,0 +1,78 @@
+public boolean activateRemoteInput(View view, RemoteInput[] inputs, RemoteInput input, PendingIntent pendingIntent, @Nullable EditedSuggestionInfo editedSuggestionInfo){
+    ViewParent p = view.getParent();
+    RemoteInputView riv = null;
+    ExpandableNotificationRow row = null;
+    while (p != null) {
+        if (p instanceof View) {
+            View pv = (View) p;
+            if (pv.isRootNamespace()) {
+                riv = findRemoteInputView(pv);
+                row = (ExpandableNotificationRow) pv.getTag(R.id.row_tag_for_content_view);
+                break;
+            }
+        }
+        p = p.getParent();
+    }
+    if (row == null) {
+        return false;
+    }
+    row.setUserExpanded(true);
+    if (!mLockscreenUserManager.shouldAllowLockscreenRemoteInput()) {
+        final int userId = pendingIntent.getCreatorUserHandle().getIdentifier();
+        final boolean isLockedManagedProfile = mUserManager.getUserInfo(userId).isManagedProfile() && mKeyguardManager.isDeviceLocked(userId);
+        final boolean isParentUserLocked;
+        if (isLockedManagedProfile) {
+            final UserInfo profileParent = mUserManager.getProfileParent(userId);
+            isParentUserLocked = (profileParent != null) && mKeyguardManager.isDeviceLocked(profileParent.id);
+        } else {
+            isParentUserLocked = false;
+        }
+        if (mLockscreenUserManager.isLockscreenPublicMode(userId) || mStatusBarStateController.getState() == StatusBarState.KEYGUARD) {
+            if (isLockedManagedProfile && !isParentUserLocked) {
+                mCallback.onLockedWorkRemoteInput(userId, row, view);
+            } else {
+                mCallback.onLockedRemoteInput(row, view);
+            }
+            return true;
+        }
+        if (isLockedManagedProfile) {
+            mCallback.onLockedWorkRemoteInput(userId, row, view);
+            return true;
+        }
+    }
+    if (riv != null && !riv.isAttachedToWindow()) {
+        riv = null;
+    }
+    if (riv == null) {
+        riv = findRemoteInputView(row.getPrivateLayout().getExpandedChild());
+        if (riv == null) {
+            return false;
+        }
+    }
+    if (riv == row.getPrivateLayout().getExpandedRemoteInput() && !row.getPrivateLayout().getExpandedChild().isShown()) {
+        mCallback.onMakeExpandedVisibleForRemoteInput(row, view);
+        return true;
+    }
+    if (!riv.isAttachedToWindow()) {
+        return false;
+    }
+    int width = view.getWidth();
+    if (view instanceof TextView) {
+        TextView tv = (TextView) view;
+        if (tv.getLayout() != null) {
+            int innerWidth = (int) tv.getLayout().getLineWidth(0);
+            innerWidth += tv.getCompoundPaddingLeft() + tv.getCompoundPaddingRight();
+            width = Math.min(width, innerWidth);
+        }
+    }
+    int cx = view.getLeft() + width / 2;
+    int cy = view.getTop() + view.getHeight() / 2;
+    int w = riv.getWidth();
+    int h = riv.getHeight();
+    int r = Math.max(Math.max(cx + cy, cx + (h - cy)), Math.max((w - cx) + cy, (w - cx) + (h - cy)));
+    riv.setRevealParameters(cx, cy, r);
+    riv.setPendingIntent(pendingIntent);
+    riv.setRemoteInput(inputs, input, editedSuggestionInfo);
+    riv.focusAnimated();
+    return true;
+}

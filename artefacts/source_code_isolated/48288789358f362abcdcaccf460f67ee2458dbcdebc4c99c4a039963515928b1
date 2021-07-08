@@ -1,0 +1,14 @@
+public void switchMultiSimConfig(int numOfSims){
+    log("switchMultiSimConfig: with numOfSims = " + numOfSims);
+    if (getStaticPhoneCapability().logicalModemList.size() < numOfSims) {
+        log("switchMultiSimConfig: Phone is not capable of enabling " + numOfSims + " sims, exiting!");
+        return;
+    }
+    if (getPhoneCount() != numOfSims) {
+        log("switchMultiSimConfig: sending the request for switching");
+        Message callback = Message.obtain(mHandler, EVENT_SWITCH_DSDS_CONFIG_DONE, numOfSims, 0);
+        mRadioConfig.setModemsConfig(numOfSims, callback);
+    } else {
+        log("switchMultiSimConfig: No need to switch. getNumOfActiveSims is already " + numOfSims);
+    }
+}

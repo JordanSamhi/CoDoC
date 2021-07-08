@@ -1,0 +1,11 @@
+public void setData(ByteBuffer buffer, int offset, int length){
+    assertFrameMutable();
+    byte[] bytes = buffer.array();
+    if ((length + offset) > buffer.limit()) {
+        throw new RuntimeException("Offset and length exceed buffer size in native setData: " + (length + offset) + " bytes given, but only " + buffer.limit() + " bytes available!");
+    } else if (getFormat().getSize() != length) {
+        throw new RuntimeException("Data size in setData does not match native frame size: " + "Frame size is " + getFormat().getSize() + " bytes, but " + length + " bytes given!");
+    } else if (!setNativeData(bytes, offset, length)) {
+        throw new RuntimeException("Could not set native frame data!");
+    }
+}

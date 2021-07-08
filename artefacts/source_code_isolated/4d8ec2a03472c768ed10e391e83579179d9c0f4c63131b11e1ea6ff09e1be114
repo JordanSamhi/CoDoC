@@ -1,0 +1,30 @@
+public List<NetworkScorerAppData> getAllValidScorers(){
+    if (VERBOSE)
+        Log.v(TAG, "getAllValidScorers()");
+    final PackageManager pm = mContext.getPackageManager();
+    final Intent serviceIntent = new Intent(NetworkScoreManager.ACTION_RECOMMEND_NETWORKS);
+    final List<ResolveInfo> resolveInfos = pm.queryIntentServices(serviceIntent, PackageManager.GET_META_DATA);
+    if (resolveInfos == null || resolveInfos.isEmpty()) {
+        if (DEBUG)
+            Log.d(TAG, "Found 0 Services able to handle " + serviceIntent);
+        return Collections.emptyList();
+    }
+    List<NetworkScorerAppData> appDataList = new ArrayList<>();
+    for (int i = 0; i < resolveInfos.size(); i++) {
+        final ServiceInfo serviceInfo = resolveInfos.get(i).serviceInfo;
+        if (hasPermissions(serviceInfo.applicationInfo.uid, serviceInfo.packageName)) {
+            if (VERBOSE) {
+                Log.v(TAG, serviceInfo.packageName + " is a valid scorer/recommender.");
+            }
+            final ComponentName serviceComponentName = new ComponentName(serviceInfo.packageName, serviceInfo.name);
+            final String serviceLabel = getRecommendationServiceLabel(serviceInfo, pm);
+            final ComponentName useOpenWifiNetworksActivity = findUseOpenWifiNetworksActivity(serviceInfo);
+            final String networkAvailableNotificationChannelId = getNetworkAvailableNotificationChannelId(serviceInfo);
+            appDataList.add(new NetworkScorerAppData(serviceInfo.applicationInfo.uid, serviceComponentName, serviceLabel, useOpenWifiNetworksActivity, networkAvailableNotificationChannelId));
+        } else {
+            if (VERBOSE)
+                Log.v(TAG, serviceInfo.packageName + " is NOT a valid scorer/recommender.");
+        }
+    }
+    return appDataList;
+}

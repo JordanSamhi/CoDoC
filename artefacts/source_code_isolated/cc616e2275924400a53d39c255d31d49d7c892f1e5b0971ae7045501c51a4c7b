@@ -1,0 +1,11 @@
+public List<RecommendationInfo> getPrintServiceRecommendations(){
+    try {
+        List<RecommendationInfo> recommendations = mService.getPrintServiceRecommendations(mUserId);
+        if (recommendations != null) {
+            return recommendations;
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+    return Collections.emptyList();
+}

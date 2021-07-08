@@ -1,0 +1,30 @@
+public static void calculateCroppedSrcRect(final int srcW, final int srcH, final int dstW, final int dstH, final int dstSliceH, int sampleSize, final float horizSliceFrac, final float vertSliceFrac, final boolean absoluteFrac, final float verticalMultiplier, final Rect outRect){
+    if (sampleSize < 1) {
+        sampleSize = 1;
+    }
+    final float regularScale;
+    final float wScale = (float) srcW / dstW;
+    final float hScale = (float) srcH / dstH;
+    if (hScale < wScale) {
+        regularScale = hScale / verticalMultiplier;
+    } else {
+        regularScale = wScale;
+    }
+    final float scale = Math.min(sampleSize, regularScale);
+    final int srcCroppedW = Math.round(dstW * scale);
+    final int srcCroppedH = Math.round(dstH * scale);
+    final int srcCroppedSliceH = Math.round(dstSliceH * scale);
+    final int srcHalfSliceH = Math.min(srcCroppedSliceH, srcH) / 2;
+    outRect.left = (int) (horizSliceFrac * (srcW - srcCroppedW));
+    outRect.right = outRect.left + srcCroppedW;
+    final int centerV;
+    if (absoluteFrac) {
+        final int minCenterV = srcHalfSliceH;
+        final int maxCenterV = srcH - srcHalfSliceH;
+        centerV = Math.max(minCenterV, Math.min(maxCenterV, Math.round(srcH * vertSliceFrac)));
+    } else {
+        centerV = Math.round(Math.abs(srcH - srcCroppedSliceH) * vertSliceFrac + srcHalfSliceH);
+    }
+    outRect.top = centerV - srcCroppedH / 2;
+    outRect.bottom = outRect.top + srcCroppedH;
+}

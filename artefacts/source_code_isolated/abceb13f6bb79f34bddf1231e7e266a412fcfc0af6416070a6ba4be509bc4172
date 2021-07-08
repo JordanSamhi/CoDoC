@@ -1,0 +1,8 @@
+public Builder addCorrectionByCategory(@ApplicationInfo.Category int category, @NonNull BrightnessCorrection correction){
+    Objects.requireNonNull(correction, "correction must not be null");
+    if (mCorrectionsByCategory.size() >= getMaxCorrectionsByCategory()) {
+        throw new IllegalArgumentException("Too many corrections by category");
+    }
+    mCorrectionsByCategory.put(category, correction);
+    return this;
+}

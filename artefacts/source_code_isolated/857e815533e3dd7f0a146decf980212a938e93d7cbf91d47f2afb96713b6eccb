@@ -1,0 +1,27 @@
+public static void setWindowImmersiveMode(Window window, String immersiveModeValue){
+    Preconditions.checkNotNull(window);
+    ImmersiveModeTypes immersiveModeType;
+    try {
+        immersiveModeType = ImmersiveModeTypes.valueOf(immersiveModeValue);
+    } catch (IllegalArgumentException | NullPointerException e) {
+        Log.w(TAG, "Immersive Mode value: " + immersiveModeValue + " not valid, using IMMERSIVE");
+        immersiveModeType = ImmersiveModeTypes.IMMERSIVE;
+    }
+    Log.v(TAG, "Enable " + immersiveModeType + " mode");
+    switch(immersiveModeType) {
+        case IMMERSIVE:
+            enableImmersiveMode(window);
+            window.getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> enableImmersiveMode(window));
+            break;
+        case IMMERSIVE_WITH_STATUS:
+            enableImmersiveModeWithStatus(window);
+            window.getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> enableImmersiveModeWithStatus(window));
+            break;
+        case NON_IMMERSIVE:
+            disableImmersiveMode(window);
+            window.getDecorView().setOnSystemUiVisibilityChangeListener(visibility -> disableImmersiveMode(window));
+            break;
+        case SYSTEM_DEFAULT:
+            break;
+    }
+}

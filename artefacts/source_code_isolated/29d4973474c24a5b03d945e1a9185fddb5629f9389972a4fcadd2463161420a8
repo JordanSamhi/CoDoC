@@ -1,0 +1,32 @@
+public boolean isNetworkSufficient(WifiInfo wifiInfo){
+    if (wifiInfo.getSupplicantState() != SupplicantState.COMPLETED) {
+        return false;
+    }
+    localLog("Current connected network: " + wifiInfo.getNetworkId());
+    WifiConfiguration network = mWifiConfigManager.getConfiguredNetwork(wifiInfo.getNetworkId());
+    if (network == null) {
+        localLog("Current network was removed");
+        return false;
+    }
+    if (mWifiConfigManager.getLastSelectedNetwork() == network.networkId && (mClock.getElapsedSinceBootMillis() - mWifiConfigManager.getLastSelectedTimeStamp()) <= mContext.getResources().getInteger(R.integer.config_wifiSufficientDurationAfterUserSelectionMilliseconds)) {
+        localLog("Current network is recently user-selected");
+        return true;
+    }
+    if (network.osu) {
+        localLog("Current connection is OSU");
+        return true;
+    }
+    if (!hasInternetOrExpectNoInternet(wifiInfo)) {
+        localLog("Current network has [" + network.numNoInternetAccessReports + "] no-internet access reports");
+        return false;
+    }
+    if (!hasSufficientLinkQuality(wifiInfo)) {
+        localLog("Current network link quality is not sufficient");
+        return false;
+    }
+    if (!hasActiveStream(wifiInfo)) {
+        localLog("Current network has low ongoing traffic");
+        return false;
+    }
+    return true;
+}

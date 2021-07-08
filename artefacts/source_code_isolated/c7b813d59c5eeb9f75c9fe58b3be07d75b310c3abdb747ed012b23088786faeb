@@ -1,0 +1,8 @@
+public void writeExif(Bitmap bmap, OutputStream exifOutStream) throws IOException{
+    if (bmap == null || exifOutStream == null) {
+        throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
+    }
+    OutputStream s = getExifWriterStream(exifOutStream);
+    bmap.compress(Bitmap.CompressFormat.JPEG, 90, s);
+    s.flush();
+}

@@ -1,0 +1,18 @@
+public synchronized void startExternalSession(Session.Info sessionInfo, String shortMethodName){
+    if (sessionInfo == null) {
+        return;
+    }
+    int threadId = getCallingThreadId();
+    Session threadSession = mSessionMapper.get(threadId);
+    if (threadSession != null) {
+        Log.w(LOGGING_TAG, "trying to start an external session with a session " + "already active.");
+        return;
+    }
+    Log.d(LOGGING_TAG, Session.START_EXTERNAL_SESSION);
+    Session externalSession = new Session(Session.EXTERNAL_INDICATOR + sessionInfo.sessionId, sessionInfo.methodPath, System.currentTimeMillis(), false, sessionInfo.ownerInfo);
+    externalSession.setIsExternal(true);
+    externalSession.markSessionCompleted(Session.UNDEFINED);
+    mSessionMapper.put(threadId, externalSession);
+    Session childSession = createSubsession();
+    continueSession(childSession, shortMethodName);
+}

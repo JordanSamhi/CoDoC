@@ -1,0 +1,13 @@
+public void startDrag(ViewHolder viewHolder){
+    if (!mCallback.hasDragFlag(mRecyclerView, viewHolder)) {
+        Log.e(TAG, "Start drag has been called but dragging is not enabled");
+        return;
+    }
+    if (viewHolder.itemView.getParent() != mRecyclerView) {
+        Log.e(TAG, "Start drag has been called with a view holder which is not a child of " + "the RecyclerView which is controlled by this ItemTouchHelper.");
+        return;
+    }
+    obtainVelocityTracker();
+    mDx = mDy = 0f;
+    select(viewHolder, ACTION_STATE_DRAG);
+}

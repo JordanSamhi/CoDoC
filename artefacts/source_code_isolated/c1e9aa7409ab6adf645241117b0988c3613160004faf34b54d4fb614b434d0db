@@ -1,0 +1,36 @@
+public void removeStatusListener(@NonNull DownloadRequest request, @NonNull DownloadStatusListener listener){
+    try {
+        IMbmsDownloadService downloadService = mService.get();
+        if (downloadService == null) {
+            throw new IllegalStateException("Middleware not yet bound");
+        }
+        InternalDownloadStatusListener internalListener = mInternalDownloadStatusListeners.get(listener);
+        if (internalListener == null) {
+            throw new IllegalArgumentException("Provided listener was never registered");
+        }
+        try {
+            int result = downloadService.removeStatusListener(request, internalListener);
+            if (result == MbmsErrors.UNKNOWN) {
+                close();
+                throw new IllegalStateException("Middleware must not return an" + " unknown error code");
+            }
+            if (result != MbmsErrors.SUCCESS) {
+                if (result == MbmsErrors.DownloadErrors.ERROR_UNKNOWN_DOWNLOAD_REQUEST) {
+                    throw new IllegalArgumentException("Unknown download request.");
+                }
+                sendErrorToApp(result, null);
+                return;
+            }
+        } catch (RemoteException e) {
+            mService.set(null);
+            sIsInitialized.set(false);
+            sendErrorToApp(MbmsErrors.ERROR_MIDDLEWARE_LOST, null);
+            return;
+        }
+    } finally {
+        InternalDownloadStatusListener internalCallback = mInternalDownloadStatusListeners.remove(listener);
+        if (internalCallback != null) {
+            internalCallback.stop();
+        }
+    }
+}

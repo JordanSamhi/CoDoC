@@ -1,0 +1,40 @@
+public WifiNetworkSuggestion build(){
+    validateSecurityParams();
+    WifiConfiguration wifiConfiguration;
+    if (mPasspointConfiguration != null) {
+        if (mSsid != null) {
+            throw new IllegalStateException("setSsid should not be invoked for suggestion " + "with Passpoint configuration");
+        }
+        if (mIsHiddenSSID) {
+            throw new IllegalStateException("setIsHiddenSsid should not be invoked for " + "suggestion with Passpoint configuration");
+        }
+        wifiConfiguration = buildWifiConfigurationForPasspoint();
+    } else {
+        if (mSsid == null) {
+            throw new IllegalStateException("setSsid should be invoked for suggestion");
+        }
+        if (TextUtils.isEmpty(mSsid)) {
+            throw new IllegalStateException("invalid ssid for suggestion");
+        }
+        if (mBssid != null && (mBssid.equals(MacAddress.BROADCAST_ADDRESS) || mBssid.equals(WifiManager.ALL_ZEROS_MAC_ADDRESS))) {
+            throw new IllegalStateException("invalid bssid for suggestion");
+        }
+        wifiConfiguration = buildWifiConfiguration();
+        if (wifiConfiguration.isOpenNetwork()) {
+            if (mIsSharedWithUserSet && mIsSharedWithUser) {
+                throw new IllegalStateException("Open network should not be " + "setCredentialSharedWithUser to true");
+            }
+            mIsSharedWithUser = false;
+        }
+    }
+    if (!mIsSharedWithUser && !mIsInitialAutojoinEnabled) {
+        throw new IllegalStateException("Should have not a network with both " + "setCredentialSharedWithUser and " + "setIsAutojoinEnabled set to false");
+    }
+    if (mIsNetworkUntrusted) {
+        if (mIsSharedWithUserSet && mIsSharedWithUser) {
+            throw new IllegalStateException("Should not be both" + "setCredentialSharedWithUser and +" + "setIsNetworkAsUntrusted to true");
+        }
+        mIsSharedWithUser = false;
+    }
+    return new WifiNetworkSuggestion(wifiConfiguration, mPasspointConfiguration, mIsAppInteractionRequired, mIsUserInteractionRequired, mIsSharedWithUser, mIsInitialAutojoinEnabled);
+}

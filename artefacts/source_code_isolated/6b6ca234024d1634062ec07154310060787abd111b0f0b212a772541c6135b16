@@ -1,0 +1,9 @@
+public void writePage(int pageOffset, byte[] data) throws IOException{
+    validatePageIndex(pageOffset);
+    checkConnected();
+    byte[] cmd = new byte[data.length + 2];
+    cmd[0] = (byte) 0xA2;
+    cmd[1] = (byte) pageOffset;
+    System.arraycopy(data, 0, cmd, 2, data.length);
+    transceive(cmd, false);
+}

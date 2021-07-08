@@ -1,0 +1,28 @@
+public static void validateSyncExtrasBundle(Bundle extras){
+    try {
+        for (String key : extras.keySet()) {
+            Object value = extras.get(key);
+            if (value == null)
+                continue;
+            if (value instanceof Long)
+                continue;
+            if (value instanceof Integer)
+                continue;
+            if (value instanceof Boolean)
+                continue;
+            if (value instanceof Float)
+                continue;
+            if (value instanceof Double)
+                continue;
+            if (value instanceof String)
+                continue;
+            if (value instanceof Account)
+                continue;
+            throw new IllegalArgumentException("unexpected value type: " + value.getClass().getName());
+        }
+    } catch (IllegalArgumentException e) {
+        throw e;
+    } catch (RuntimeException exc) {
+        throw new IllegalArgumentException("error unparceling Bundle", exc);
+    }
+}

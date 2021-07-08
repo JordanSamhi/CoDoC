@@ -1,0 +1,8 @@
+public static LowpanManager getManager(){
+    IBinder binder = ServiceManager.getService(Context.LOWPAN_SERVICE);
+    if (binder != null) {
+        ILowpanManager service = ILowpanManager.Stub.asInterface(binder);
+        return new LowpanManager(service);
+    }
+    return null;
+}

@@ -1,0 +1,15 @@
+public void skipCurrentReceiverLocked(ProcessRecord app){
+    BroadcastRecord r = null;
+    final BroadcastRecord curActive = mDispatcher.getActiveBroadcastLocked();
+    if (curActive != null && curActive.curApp == app) {
+        r = curActive;
+    }
+    if (r == null && mPendingBroadcast != null && mPendingBroadcast.curApp == app) {
+        if (DEBUG_BROADCAST)
+            Slog.v(TAG_BROADCAST, "[" + mQueueName + "] skip & discard pending app " + r);
+        r = mPendingBroadcast;
+    }
+    if (r != null) {
+        skipReceiverLocked(r);
+    }
+}

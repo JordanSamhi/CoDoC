@@ -1,0 +1,11 @@
+public ParceledListSlice<JobSnapshot> getAllJobSnapshots(){
+    final int uid = Binder.getCallingUid();
+    if (uid != Process.SYSTEM_UID) {
+        throw new SecurityException("getAllJobSnapshots() is system internal use only.");
+    }
+    synchronized (mLock) {
+        final ArrayList<JobSnapshot> snapshots = new ArrayList<>(mJobs.size());
+        mJobs.forEachJob((job) -> snapshots.add(new JobSnapshot(job.getJob(), job.getSatisfiedConstraintFlags(), isReadyToBeExecutedLocked(job))));
+        return new ParceledListSlice<>(snapshots);
+    }
+}

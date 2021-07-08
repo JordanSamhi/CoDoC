@@ -1,0 +1,10 @@
+public boolean isPlaybackActiveForUid(int uid){
+    synchronized (mPlayerLock) {
+        for (AudioPlaybackConfiguration apc : mPlayers.values()) {
+            if (apc.isActive() && apc.getClientUid() == uid) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

@@ -1,0 +1,7 @@
+public IntermediateEncryptingTransport get(Intent intent){
+    Intent transportIntent = TransportClientManager.getRealTransportIntent(intent);
+    Log.i(TAG, "get: intent:" + intent + " transportIntent:" + transportIntent);
+    synchronized (mTransportsLock) {
+        return mTransports.computeIfAbsent(transportIntent.getComponent(), c -> create(transportIntent));
+    }
+}

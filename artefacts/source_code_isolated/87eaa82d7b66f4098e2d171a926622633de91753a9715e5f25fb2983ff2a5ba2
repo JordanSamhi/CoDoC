@@ -1,0 +1,15 @@
+public void enable(){
+    String iface = mWifiNative.getClientInterfaceName();
+    if (iface == null) {
+        return;
+    }
+    mIsMboSupported = (mWifiNative.getSupportedFeatureSet(iface) & WIFI_FEATURE_MBO) != 0;
+    mIsOceSupported = (mWifiNative.getSupportedFeatureSet(iface) & WIFI_FEATURE_OCE) != 0;
+    mEnabled = true;
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "Enable MBO-OCE MBO support: " + mIsMboSupported + " OCE support: " + mIsOceSupported);
+    }
+    if (mIsMboSupported) {
+        mTelephonyManager.listen(mDataConnectionStateListener, PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+    }
+}

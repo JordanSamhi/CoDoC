@@ -1,0 +1,12 @@
+public static X509Certificate readCertificate(Parcel in){
+    byte[] certBytes = in.createByteArray();
+    if (certBytes == null) {
+        return null;
+    }
+    try {
+        CertificateFactory cFactory = CertificateFactory.getInstance("X.509");
+        return (X509Certificate) cFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+    } catch (CertificateException e) {
+        return null;
+    }
+}

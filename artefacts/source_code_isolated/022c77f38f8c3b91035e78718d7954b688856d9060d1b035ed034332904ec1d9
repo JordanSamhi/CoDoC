@@ -1,0 +1,13 @@
+public PersistableBundle getConfigForSubId(int subId){
+    try {
+        ICarrierConfigLoader loader = getICarrierConfigLoader();
+        if (loader == null) {
+            Rlog.w(TAG, "Error getting config for subId " + subId + " ICarrierConfigLoader is null");
+            return null;
+        }
+        return loader.getConfigForSubIdWithFeature(subId, mContext.getOpPackageName(), mContext.getAttributionTag());
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "Error getting config for subId " + subId + ": " + ex.toString());
+    }
+    return null;
+}

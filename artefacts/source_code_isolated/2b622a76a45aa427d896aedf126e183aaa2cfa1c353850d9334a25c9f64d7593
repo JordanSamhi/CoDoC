@@ -1,0 +1,30 @@
+public void writeToParcelInternal(Parcel dest, int flags){
+    dest.writeString(mFamilyName);
+    dest.writeInt(mStyle);
+    dest.writeInt(mTextSize);
+    if (mTextColor != null) {
+        dest.writeInt(1);
+        mTextColor.writeToParcel(dest, flags);
+    } else {
+        dest.writeInt(0);
+    }
+    if (mTextColorLink != null) {
+        dest.writeInt(1);
+        mTextColorLink.writeToParcel(dest, flags);
+    } else {
+        dest.writeInt(0);
+    }
+    LeakyTypefaceStorage.writeTypefaceToParcel(mTypeface, dest);
+    dest.writeInt(mTextFontWeight);
+    dest.writeParcelable(mTextLocales, flags);
+    dest.writeFloat(mShadowRadius);
+    dest.writeFloat(mShadowDx);
+    dest.writeFloat(mShadowDy);
+    dest.writeInt(mShadowColor);
+    dest.writeBoolean(mHasElegantTextHeight);
+    dest.writeBoolean(mElegantTextHeight);
+    dest.writeBoolean(mHasLetterSpacing);
+    dest.writeFloat(mLetterSpacing);
+    dest.writeString(mFontFeatureSettings);
+    dest.writeString(mFontVariationSettings);
+}

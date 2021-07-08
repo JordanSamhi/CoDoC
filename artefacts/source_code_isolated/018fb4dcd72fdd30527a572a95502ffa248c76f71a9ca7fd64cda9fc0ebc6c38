@@ -1,0 +1,9 @@
+public SystemService startServiceFromJar(String className, String path){
+    PathClassLoader pathClassLoader = mLoadedPaths.get(path);
+    if (pathClassLoader == null) {
+        pathClassLoader = new PathClassLoader(path, this.getClass().getClassLoader());
+        mLoadedPaths.put(path, pathClassLoader);
+    }
+    final Class<SystemService> serviceClass = loadClassFromLoader(className, pathClassLoader);
+    return startService(serviceClass);
+}

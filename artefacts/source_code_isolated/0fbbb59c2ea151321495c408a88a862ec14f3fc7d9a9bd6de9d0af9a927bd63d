@@ -1,0 +1,12 @@
+public static TrivalentPredicate createIgnoreNitzPropertyCheck(@NonNull DeviceState deviceState){
+    return (oldSignal, newSignal) -> {
+        boolean ignoreNitz = deviceState.getIgnoreNitz();
+        if (ignoreNitz) {
+            if (DBG) {
+                Rlog.d(LOG_TAG, "mustProcessNitzSignal: Not processing NITZ signal because" + " gsm.ignore-nitz is set");
+            }
+            return false;
+        }
+        return null;
+    };
+}

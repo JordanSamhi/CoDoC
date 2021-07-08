@@ -1,0 +1,8 @@
+public void finish(ChunksMetadataProto.ChunksMetadata metadata) throws IOException{
+    Objects.requireNonNull(metadata, "Metadata cannot be null");
+    long startOfMetadata = mBackupWriter.getBytesWritten();
+    mBackupWriter.writeBytes(ChunksMetadataProto.ChunksMetadata.toByteArray(metadata));
+    mBackupWriter.writeBytes(toByteArray(startOfMetadata));
+    mBackupWriter.flush();
+    mFinished = true;
+}

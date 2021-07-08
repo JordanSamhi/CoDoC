@@ -1,0 +1,12 @@
+public void setText(String text){
+    final boolean changed = !TextUtils.equals(mText, text);
+    if (changed || !mTextSet) {
+        mText = text;
+        mTextSet = true;
+        persistString(text);
+        if (changed) {
+            notifyDependencyChange(shouldDisableDependents());
+            notifyChanged();
+        }
+    }
+}

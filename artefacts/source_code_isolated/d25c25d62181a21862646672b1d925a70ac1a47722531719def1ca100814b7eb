@@ -1,0 +1,22 @@
+public void buildLayer(){
+    if (mLayerType == LAYER_TYPE_NONE)
+        return;
+    final AttachInfo attachInfo = mAttachInfo;
+    if (attachInfo == null) {
+        throw new IllegalStateException("This view must be attached to a window first");
+    }
+    if (getWidth() == 0 || getHeight() == 0) {
+        return;
+    }
+    switch(mLayerType) {
+        case LAYER_TYPE_HARDWARE:
+            updateDisplayListIfDirty();
+            if (attachInfo.mThreadedRenderer != null && mRenderNode.hasDisplayList()) {
+                attachInfo.mThreadedRenderer.buildLayer(mRenderNode);
+            }
+            break;
+        case LAYER_TYPE_SOFTWARE:
+            buildDrawingCache(true);
+            break;
+    }
+}

@@ -1,0 +1,13 @@
+public Optional<T> loadProto(String packageName) throws IOException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException{
+    File file = getFileForPackage(packageName);
+    if (!file.exists()) {
+        Slog.d(TAG, "No chunk listing existed for " + packageName + ", returning empty listing.");
+        return Optional.empty();
+    }
+    AtomicFile protoStore = new AtomicFile(file);
+    byte[] data = protoStore.readFully();
+    Constructor<T> constructor = mClazz.getDeclaredConstructor();
+    T proto = constructor.newInstance();
+    MessageNano.mergeFrom(proto, data);
+    return Optional.of(proto);
+}

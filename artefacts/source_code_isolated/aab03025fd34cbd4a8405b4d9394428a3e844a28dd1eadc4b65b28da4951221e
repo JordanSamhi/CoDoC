@@ -1,0 +1,13 @@
+public void addCapabilitiesCallback(ImsMmTelManager.CapabilityCallback callback) throws ImsException{
+    if (callback == null) {
+        throw new NullPointerException("capabilities callback can't be null");
+    }
+    checkAndThrowExceptionIfServiceUnavailable();
+    try {
+        callback.setExecutor(getThreadExecutor());
+        mMmTelFeatureConnection.addCapabilityCallback(callback.getBinder());
+        log("Capability Callback registered.");
+    } catch (IllegalStateException e) {
+        throw new ImsException("addCapabilitiesCallback(IF)", e, ImsReasonInfo.CODE_LOCAL_IMS_SERVICE_DOWN);
+    }
+}

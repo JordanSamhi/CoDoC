@@ -1,0 +1,12 @@
+public void onConnected(){
+    Log.d(TAG, "Service connected for " + mComponentName);
+    if (mMediaBrowser != null && mMediaBrowser.isConnected()) {
+        String root = mMediaBrowser.getRoot();
+        if (!TextUtils.isEmpty(root)) {
+            mCallback.onConnected();
+            mMediaBrowser.subscribe(root, mSubscriptionCallback);
+            return;
+        }
+    }
+    mCallback.onError();
+}

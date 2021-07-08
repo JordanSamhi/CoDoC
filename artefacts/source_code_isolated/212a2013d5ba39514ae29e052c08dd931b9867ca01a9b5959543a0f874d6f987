@@ -1,0 +1,9 @@
+public CharSequence getInitialSelectedText(int flags){
+    final int correctedTextSelStart = initialSelStart > initialSelEnd ? initialSelEnd : initialSelStart;
+    final int correctedTextSelEnd = initialSelStart > initialSelEnd ? initialSelStart : initialSelEnd;
+    final int sourceSelLength = correctedTextSelEnd - correctedTextSelStart;
+    if (initialSelStart < 0 || initialSelEnd < 0 || mInitialSurroundingText.getSelectionLength() != sourceSelLength) {
+        return null;
+    }
+    return mInitialSurroundingText.getInitialSelectedText(flags);
+}

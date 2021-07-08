@@ -1,0 +1,10 @@
+public synchronized void onUserRemoved(int user){
+    if (user < 0) {
+        loge("Invalid user in onUserRemoved: " + user);
+        return;
+    }
+    mUsers.remove(user);
+    Set<Integer> users = new HashSet<>();
+    users.add(user);
+    update(users, mApps, false);
+}

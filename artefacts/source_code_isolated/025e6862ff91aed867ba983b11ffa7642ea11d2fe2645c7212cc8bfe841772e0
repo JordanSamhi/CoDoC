@@ -1,0 +1,17 @@
+public static String generateToken(Context context, String packageName){
+    PackageManager packageManager = context.getPackageManager();
+    String token = generatePackageBasedToken(packageManager, packageName);
+    List<PackageInfo> packages = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
+    for (PackageInfo packageInfo : packages) {
+        String otherPackageName = packageInfo.packageName;
+        if (packageName.equals(otherPackageName)) {
+            continue;
+        }
+        String otherToken = generatePackageBasedToken(packageManager, otherPackageName);
+        if (token.equals(otherToken)) {
+            Log.e(TAG, "token collides with other installed app.");
+            token = null;
+        }
+    }
+    return token;
+}

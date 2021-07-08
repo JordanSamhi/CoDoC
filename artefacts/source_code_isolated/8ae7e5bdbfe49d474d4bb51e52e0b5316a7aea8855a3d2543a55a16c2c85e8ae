@@ -1,0 +1,34 @@
+public boolean setSurface(Surface surface, TvStreamConfig config) throws RemoteException{
+    synchronized (mImplLock) {
+        if (mReleased) {
+            throw new IllegalStateException("Device already released.");
+        }
+        int result = TvInputHal.SUCCESS;
+        if (surface == null) {
+            if (mActiveConfig != null) {
+                result = mHal.removeStream(mInfo.getDeviceId(), mActiveConfig);
+                mActiveConfig = null;
+            } else {
+                return true;
+            }
+        } else {
+            if (config == null) {
+                return false;
+            }
+            if (mActiveConfig != null && !config.equals(mActiveConfig)) {
+                result = mHal.removeStream(mInfo.getDeviceId(), mActiveConfig);
+                if (result != TvInputHal.SUCCESS) {
+                    mActiveConfig = null;
+                }
+            }
+            if (result == TvInputHal.SUCCESS) {
+                result = mHal.addOrUpdateStream(mInfo.getDeviceId(), surface, config);
+                if (result == TvInputHal.SUCCESS) {
+                    mActiveConfig = config;
+                }
+            }
+        }
+        updateAudioConfigLocked();
+        return result == TvInputHal.SUCCESS;
+    }
+}

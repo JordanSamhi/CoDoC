@@ -1,0 +1,14 @@
+public void traceEnd(){
+    assertSameThread();
+    Trace.traceEnd(mTraceTag);
+    if (!DEBUG_BOOT_TIME)
+        return;
+    if (mCurrentLevel < 0) {
+        Slog.w(mTag, "traceEnd called more times than traceBegin");
+        return;
+    }
+    final String name = mStartNames[mCurrentLevel];
+    final long duration = SystemClock.elapsedRealtime() - mStartTimes[mCurrentLevel];
+    mCurrentLevel--;
+    logDuration(name, duration);
+}

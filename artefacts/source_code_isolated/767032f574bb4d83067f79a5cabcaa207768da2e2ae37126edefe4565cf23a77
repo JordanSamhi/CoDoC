@@ -1,0 +1,12 @@
+public String getDeviceSoftwareVersion(int slotIndex){
+    ITelephony telephony = getITelephony();
+    if (telephony == null)
+        return null;
+    try {
+        return telephony.getDeviceSoftwareVersionForSlot(slotIndex, getOpPackageName(), getAttributionTag());
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

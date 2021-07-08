@@ -1,0 +1,11 @@
+public int[] getInputDeviceIds(){
+    synchronized (mInputDevicesLock) {
+        populateInputDevicesLocked();
+        final int count = mInputDevices.size();
+        final int[] ids = new int[count];
+        for (int i = 0; i < count; i++) {
+            ids[i] = mInputDevices.keyAt(i);
+        }
+        return ids;
+    }
+}

@@ -1,0 +1,13 @@
+public String changeProviderAndSetting(String newProvider){
+    if (getContext().checkCallingPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) != PackageManager.PERMISSION_GRANTED) {
+        String msg = "Permission Denial: changeProviderAndSetting() from pid=" + Binder.getCallingPid() + ", uid=" + Binder.getCallingUid() + " requires " + android.Manifest.permission.WRITE_SECURE_SETTINGS;
+        Slog.w(TAG, msg);
+        throw new SecurityException(msg);
+    }
+    long callingId = Binder.clearCallingIdentity();
+    try {
+        return WebViewUpdateService.this.mImpl.changeProviderAndSetting(newProvider);
+    } finally {
+        Binder.restoreCallingIdentity(callingId);
+    }
+}

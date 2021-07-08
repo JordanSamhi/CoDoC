@@ -1,0 +1,20 @@
+public static Bitmap createBitmap(@NonNull DisplayMetrics display, @NonNull @ColorInt int[] colors, int offset, int stride, int width, int height, @NonNull Config config){
+    checkWidthHeight(width, height);
+    if (Math.abs(stride) < width) {
+        throw new IllegalArgumentException("abs(stride) must be >= width");
+    }
+    int lastScanline = offset + (height - 1) * stride;
+    int length = colors.length;
+    if (offset < 0 || (offset + width > length) || lastScanline < 0 || (lastScanline + width > length)) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    if (width <= 0 || height <= 0) {
+        throw new IllegalArgumentException("width and height must be > 0");
+    }
+    ColorSpace sRGB = ColorSpace.get(ColorSpace.Named.SRGB);
+    Bitmap bm = nativeCreate(colors, offset, stride, width, height, config.nativeInt, false, sRGB.getNativeInstance());
+    if (display != null) {
+        bm.mDensity = display.densityDpi;
+    }
+    return bm;
+}

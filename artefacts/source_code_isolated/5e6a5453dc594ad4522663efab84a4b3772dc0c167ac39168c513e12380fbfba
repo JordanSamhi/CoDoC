@@ -1,0 +1,8 @@
+public void abandonAudioFocusForCall(){
+    final IAudioService service = getService();
+    try {
+        service.abandonAudioFocus(null, AudioSystem.IN_VOICE_COMM_FOCUS_ID, null, getContext().getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

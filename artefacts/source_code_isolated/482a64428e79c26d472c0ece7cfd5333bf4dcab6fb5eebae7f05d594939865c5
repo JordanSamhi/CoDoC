@@ -1,0 +1,17 @@
+public ByteBuffer map(int prot, int offset, int length) throws ErrnoException{
+    checkOpen();
+    validateProt(prot);
+    if (offset < 0) {
+        throw new IllegalArgumentException("Offset must be >= 0");
+    }
+    if (length <= 0) {
+        throw new IllegalArgumentException("Length must be > 0");
+    }
+    if (offset + length > mSize) {
+        throw new IllegalArgumentException("offset + length must not exceed getSize()");
+    }
+    long address = Os.mmap(0, length, prot, OsConstants.MAP_SHARED, mFileDescriptor, offset);
+    boolean readOnly = (prot & OsConstants.PROT_WRITE) == 0;
+    Runnable unmapper = new Unmapper(address, length, mMemoryRegistration.acquire());
+    return new DirectByteBuffer(length, address, mFileDescriptor, unmapper, readOnly);
+}

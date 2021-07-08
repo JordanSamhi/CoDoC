@@ -1,0 +1,14 @@
+public static int getNormalizedPageCount(PageRange[] pageRanges, int layoutPageCount){
+    int pageCount = 0;
+    if (pageRanges != null) {
+        final int pageRangeCount = pageRanges.length;
+        for (int i = 0; i < pageRangeCount; i++) {
+            PageRange pageRange = pageRanges[i];
+            if (PageRange.ALL_PAGES.equals(pageRange)) {
+                return layoutPageCount;
+            }
+            pageCount += pageRange.getSize();
+        }
+    }
+    return pageCount;
+}

@@ -1,0 +1,16 @@
+public BluetoothServerSocket listenUsingInsecureL2capChannel() throws IOException{
+    BluetoothServerSocket socket = new BluetoothServerSocket(BluetoothSocket.TYPE_L2CAP_LE, false, false, SOCKET_CHANNEL_AUTO_STATIC_NO_SDP, false, false);
+    int errno = socket.mSocket.bindListen();
+    if (errno != 0) {
+        throw new IOException("Error: " + errno);
+    }
+    int assignedPsm = socket.mSocket.getPort();
+    if (assignedPsm == 0) {
+        throw new IOException("Error: Unable to assign PSM value");
+    }
+    if (DBG) {
+        Log.d(TAG, "listenUsingInsecureL2capChannel: set assigned PSM to " + assignedPsm);
+    }
+    socket.setChannel(assignedPsm);
+    return socket;
+}

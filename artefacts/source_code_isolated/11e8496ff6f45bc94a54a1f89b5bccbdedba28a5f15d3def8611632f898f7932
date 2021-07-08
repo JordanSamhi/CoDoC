@@ -1,0 +1,18 @@
+public int getMode(){
+    final IAudioService service = getService();
+    try {
+        int mode = service.getMode();
+        int sdk;
+        try {
+            sdk = getContext().getApplicationInfo().targetSdkVersion;
+        } catch (NullPointerException e) {
+            sdk = Build.VERSION.SDK_INT;
+        }
+        if (mode == MODE_CALL_SCREENING && sdk <= Build.VERSION_CODES.Q) {
+            mode = MODE_IN_CALL;
+        }
+        return mode;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

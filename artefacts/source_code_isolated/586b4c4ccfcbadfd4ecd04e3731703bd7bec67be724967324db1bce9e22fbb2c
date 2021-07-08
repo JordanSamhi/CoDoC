@@ -1,0 +1,10 @@
+public boolean getBoolean(String property, boolean def){
+    Object value = super.get(property);
+    if (value == null) {
+        return def;
+    }
+    if (value instanceof Boolean) {
+        return ((Boolean) value).booleanValue();
+    }
+    throw new TypeException(property, value, "boolean");
+}

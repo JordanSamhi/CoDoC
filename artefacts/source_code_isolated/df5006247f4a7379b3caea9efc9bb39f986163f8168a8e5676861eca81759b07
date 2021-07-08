@@ -1,0 +1,27 @@
+public void startWatchingMode(int op, String packageName, int flags, final OnOpChangedListener callback){
+    synchronized (mModeWatchers) {
+        IAppOpsCallback cb = mModeWatchers.get(callback);
+        if (cb == null) {
+            cb = new IAppOpsCallback.Stub() {
+
+                public void opChanged(int op, int uid, String packageName) {
+                    if (callback instanceof OnOpChangedInternalListener) {
+                        ((OnOpChangedInternalListener) callback).onOpChanged(op, packageName);
+                    }
+                    if (sOpToString[op] != null) {
+                        callback.onOpChanged(sOpToString[op], packageName);
+                    }
+                }
+            };
+            mModeWatchers.put(callback, cb);
+        }
+        if (!Compatibility.isChangeEnabled(CALL_BACK_ON_CHANGED_LISTENER_WITH_SWITCHED_OP_CHANGE)) {
+            flags |= CALL_BACK_ON_SWITCHED_OP;
+        }
+        try {
+            mService.startWatchingModeWithFlags(op, packageName, flags, cb);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

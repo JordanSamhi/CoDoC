@@ -1,0 +1,13 @@
+public ByteBuffer getInputBuffer(int index){
+    synchronized (mBufferLock) {
+        if (mBufferMode == BUFFER_MODE_BLOCK) {
+            throw new IncompatibleWithBlockModelException("getInputBuffer() " + "is not compatible with CONFIGURE_FLAG_USE_BLOCK_MODEL. " + "Please obtain MediaCodec.LinearBlock or HardwareBuffer " + "objects and attach to QueueRequest objects.");
+        }
+    }
+    ByteBuffer newBuffer = getBuffer(true, index);
+    synchronized (mBufferLock) {
+        invalidateByteBuffer(mCachedInputBuffers, index);
+        mDequeuedInputBuffers.put(index, newBuffer);
+    }
+    return newBuffer;
+}

@@ -1,0 +1,16 @@
+public static int[] filterPublicFormats(int[] formats){
+    if (formats == null) {
+        return null;
+    }
+    int[] myCopy = Arrays.copyOf(formats, formats.length);
+    int size = 0;
+    for (int i = 0; i < myCopy.length; i++) {
+        if (isPublicEncoding(myCopy[i])) {
+            if (size != i) {
+                myCopy[size] = myCopy[i];
+            }
+            size++;
+        }
+    }
+    return Arrays.copyOf(myCopy, size);
+}

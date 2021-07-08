@@ -1,0 +1,9 @@
+public static void cursorLongToContentValues(Cursor cursor, String field, ContentValues values, String key){
+    int colIndex = cursor.getColumnIndex(field);
+    if (!cursor.isNull(colIndex)) {
+        Long value = Long.valueOf(cursor.getLong(colIndex));
+        values.put(key, value);
+    } else {
+        values.put(key, (Long) null);
+    }
+}

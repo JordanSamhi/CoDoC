@@ -1,0 +1,6 @@
+public void markAsDisposed(){
+    synchronized (mStateLock) {
+        Preconditions.checkState(mState < State.BOUND_AND_CONNECTING, "Can't mark as disposed if still bound");
+        mCloseGuard.close();
+    }
+}

@@ -1,0 +1,22 @@
+public static void loadTexture(int target, int level, int border, int fallbackFormat, int fallbackType, ETC1Texture texture){
+    if (fallbackFormat != GLES10.GL_RGB) {
+        throw new IllegalArgumentException("fallbackFormat must be GL_RGB");
+    }
+    if (!(fallbackType == GLES10.GL_UNSIGNED_SHORT_5_6_5 || fallbackType == GLES10.GL_UNSIGNED_BYTE)) {
+        throw new IllegalArgumentException("Unsupported fallbackType");
+    }
+    int width = texture.getWidth();
+    int height = texture.getHeight();
+    Buffer data = texture.getData();
+    if (isETC1Supported()) {
+        int imageSize = data.remaining();
+        GLES10.glCompressedTexImage2D(target, level, ETC1.ETC1_RGB8_OES, width, height, border, imageSize, data);
+    } else {
+        boolean useShorts = fallbackType != GLES10.GL_UNSIGNED_BYTE;
+        int pixelSize = useShorts ? 2 : 3;
+        int stride = pixelSize * width;
+        ByteBuffer decodedData = ByteBuffer.allocateDirect(stride * height).order(ByteOrder.nativeOrder());
+        ETC1.decodeImage(data, decodedData, width, height, pixelSize, stride);
+        GLES10.glTexImage2D(target, level, fallbackFormat, width, height, border, fallbackFormat, fallbackType, decodedData);
+    }
+}

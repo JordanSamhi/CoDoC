@@ -1,0 +1,93 @@
+public void prepareDrm(@NonNull UUID uuid) throws UnsupportedSchemeException, ResourceBusyException, ProvisioningNetworkErrorException, ProvisioningServerErrorException{
+    Log.v(TAG, "prepareDrm: uuid: " + uuid + " mOnDrmConfigHelper: " + mOnDrmConfigHelper);
+    boolean allDoneWithoutProvisioning = false;
+    OnDrmPreparedHandlerDelegate onDrmPreparedHandlerDelegate = null;
+    synchronized (mDrmLock) {
+        if (mDrmInfo == null) {
+            final String msg = "prepareDrm(): Wrong usage: The player must be prepared and " + "DRM info be retrieved before this call.";
+            Log.e(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
+        if (mActiveDrmScheme) {
+            final String msg = "prepareDrm(): Wrong usage: There is already " + "an active DRM scheme with " + mDrmUUID;
+            Log.e(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
+        if (mPrepareDrmInProgress) {
+            final String msg = "prepareDrm(): Wrong usage: There is already " + "a pending prepareDrm call.";
+            Log.e(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
+        if (mDrmProvisioningInProgress) {
+            final String msg = "prepareDrm(): Unexpectd: Provisioning is already in progress.";
+            Log.e(TAG, msg);
+            throw new IllegalStateException(msg);
+        }
+        cleanDrmObj();
+        mPrepareDrmInProgress = true;
+        onDrmPreparedHandlerDelegate = mOnDrmPreparedHandlerDelegate;
+        try {
+            prepareDrm_createDrmStep(uuid);
+        } catch (Exception e) {
+            Log.w(TAG, "prepareDrm(): Exception ", e);
+            mPrepareDrmInProgress = false;
+            throw e;
+        }
+        mDrmConfigAllowed = true;
+    }
+    if (mOnDrmConfigHelper != null) {
+        mOnDrmConfigHelper.onDrmConfig(this);
+    }
+    synchronized (mDrmLock) {
+        mDrmConfigAllowed = false;
+        boolean earlyExit = false;
+        try {
+            prepareDrm_openSessionStep(uuid);
+            mDrmUUID = uuid;
+            mActiveDrmScheme = true;
+            allDoneWithoutProvisioning = true;
+        } catch (IllegalStateException e) {
+            final String msg = "prepareDrm(): Wrong usage: The player must be " + "in the prepared state to call prepareDrm().";
+            Log.e(TAG, msg);
+            earlyExit = true;
+            throw new IllegalStateException(msg);
+        } catch (NotProvisionedException e) {
+            Log.w(TAG, "prepareDrm: NotProvisionedException");
+            int result = HandleProvisioninig(uuid);
+            if (result != PREPARE_DRM_STATUS_SUCCESS) {
+                earlyExit = true;
+                String msg;
+                switch(result) {
+                    case PREPARE_DRM_STATUS_PROVISIONING_NETWORK_ERROR:
+                        msg = "prepareDrm: Provisioning was required but failed " + "due to a network error.";
+                        Log.e(TAG, msg);
+                        throw new ProvisioningNetworkErrorException(msg);
+                    case PREPARE_DRM_STATUS_PROVISIONING_SERVER_ERROR:
+                        msg = "prepareDrm: Provisioning was required but the request " + "was denied by the server.";
+                        Log.e(TAG, msg);
+                        throw new ProvisioningServerErrorException(msg);
+                    case PREPARE_DRM_STATUS_PREPARATION_ERROR:
+                    default:
+                        msg = "prepareDrm: Post-provisioning preparation failed.";
+                        Log.e(TAG, msg);
+                        throw new IllegalStateException(msg);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "prepareDrm: Exception " + e);
+            earlyExit = true;
+            throw e;
+        } finally {
+            if (!mDrmProvisioningInProgress) {
+                mPrepareDrmInProgress = false;
+            }
+            if (earlyExit) {
+                cleanDrmObj();
+            }
+        }
+    }
+    if (allDoneWithoutProvisioning) {
+        if (onDrmPreparedHandlerDelegate != null)
+            onDrmPreparedHandlerDelegate.notifyClient(PREPARE_DRM_STATUS_SUCCESS);
+    }
+}

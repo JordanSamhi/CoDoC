@@ -1,0 +1,19 @@
+public boolean nvResetConfig(int resetType){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            if (resetType == 1) {
+                return telephony.rebootModem(getSlotIndex());
+            } else if (resetType == 3) {
+                return telephony.resetModemConfig(getSlotIndex());
+            } else {
+                Rlog.e(TAG, "nvResetConfig unsupported reset type");
+            }
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "nvResetConfig RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "nvResetConfig NPE", ex);
+    }
+    return false;
+}

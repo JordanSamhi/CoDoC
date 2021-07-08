@@ -1,0 +1,24 @@
+
+     * Build URI representing the children of the target directory in a document
+     * provider. When queried, a provider will return zero or more rows with
+     * columns defined by {@link Document}.
+     * <p>
+     * However, instead of directly accessing the target directory, the returned
+     * URI will leverage access granted through a subtree URI, typically
+     * returned by {@link Intent#ACTION_OPEN_DOCUMENT_TREE}. The target
+     * directory must be a descendant (child, grandchild, etc) of the subtree.
+     * <p>
+     * This is typically used to access documents under a user-selected
+     * directory tree, since it doesn't require the user to separately confirm
+     * each new document access.
+     *
+     * @param treeUri the subtree to leverage to gain access to the target
+     *            document. The target directory must be a descendant of this
+     *            subtree.
+     * @param parentDocumentId the document to return children for, which the
+     *            caller may not have direct access to, and which must be a
+     *            directory with MIME type of {@link Document#MIME_TYPE_DIR}.
+     * @see Intent#ACTION_OPEN_DOCUMENT_TREE
+     * @see DocumentsProvider#isChildDocument(String, String)
+     * @see #buildChildDocumentsUri(String, String)
+     

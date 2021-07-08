@@ -1,0 +1,112 @@
+public void updateNotificationViews(){
+    Assert.isMainThread();
+    beginUpdate();
+    List<NotificationEntry> activeNotifications = mEntryManager.getVisibleNotifications();
+    ArrayList<ExpandableNotificationRow> toShow = new ArrayList<>(activeNotifications.size());
+    final int N = activeNotifications.size();
+    for (int i = 0; i < N; i++) {
+        NotificationEntry ent = activeNotifications.get(i);
+        if (ent.isRowDismissed() || ent.isRowRemoved() || mBubbleController.isBubbleNotificationSuppressedFromShade(ent) || mFgsSectionController.hasEntry(ent)) {
+            continue;
+        }
+        int userId = ent.getSbn().getUserId();
+        int currentUserId = mLockscreenUserManager.getCurrentUserId();
+        boolean devicePublic = mLockscreenUserManager.isLockscreenPublicMode(currentUserId);
+        boolean userPublic = devicePublic || mLockscreenUserManager.isLockscreenPublicMode(userId);
+        if (userPublic && mDynamicPrivacyController.isDynamicallyUnlocked() && (userId == currentUserId || userId == UserHandle.USER_ALL || !mLockscreenUserManager.needsSeparateWorkChallenge(userId))) {
+            userPublic = false;
+        }
+        boolean needsRedaction = mLockscreenUserManager.needsRedaction(ent);
+        boolean sensitive = userPublic && needsRedaction;
+        boolean deviceSensitive = devicePublic && !mLockscreenUserManager.userAllowsPrivateNotificationsInPublic(currentUserId);
+        ent.setSensitive(sensitive, deviceSensitive);
+        ent.getRow().setNeedsRedaction(needsRedaction);
+        mLowPriorityInflationHelper.recheckLowPriorityViewAndInflate(ent, ent.getRow());
+        boolean isChildInGroup = mGroupManager.isChildInGroupWithSummary(ent.getSbn());
+        boolean groupChangesAllowed = mVisualStabilityManager.areGroupChangesAllowed() || !ent.hasFinishedInitialization();
+        NotificationEntry parent = mGroupManager.getGroupSummary(ent.getSbn());
+        if (!groupChangesAllowed) {
+            boolean wasChildInGroup = ent.isChildInGroup();
+            if (isChildInGroup && !wasChildInGroup) {
+                isChildInGroup = wasChildInGroup;
+                mVisualStabilityManager.addGroupChangesAllowedCallback(mEntryManager, false);
+            } else if (!isChildInGroup && wasChildInGroup) {
+                if (mGroupManager.isLogicalGroupExpanded(ent.getSbn())) {
+                    isChildInGroup = wasChildInGroup;
+                    parent = ent.getRow().getNotificationParent().getEntry();
+                    mVisualStabilityManager.addGroupChangesAllowedCallback(mEntryManager, false);
+                }
+            }
+        }
+        if (isChildInGroup) {
+            List<NotificationEntry> orderedChildren = mTmpChildOrderMap.get(parent);
+            if (orderedChildren == null) {
+                orderedChildren = new ArrayList<>();
+                mTmpChildOrderMap.put(parent, orderedChildren);
+            }
+            orderedChildren.add(ent);
+        } else {
+            if (!mTmpChildOrderMap.containsKey(ent)) {
+                mTmpChildOrderMap.put(ent, null);
+            }
+            toShow.add(ent.getRow());
+        }
+    }
+    ArrayList<ExpandableNotificationRow> viewsToRemove = new ArrayList<>();
+    for (int i = 0; i < mListContainer.getContainerChildCount(); i++) {
+        View child = mListContainer.getContainerChildAt(i);
+        if (!toShow.contains(child) && child instanceof ExpandableNotificationRow) {
+            ExpandableNotificationRow row = (ExpandableNotificationRow) child;
+            if (!row.isBlockingHelperShowing()) {
+                viewsToRemove.add((ExpandableNotificationRow) child);
+            }
+        }
+    }
+    for (ExpandableNotificationRow viewToRemove : viewsToRemove) {
+        if (mEntryManager.getPendingOrActiveNotif(viewToRemove.getEntry().getKey()) != null) {
+            mListContainer.setChildTransferInProgress(true);
+        }
+        if (viewToRemove.isSummaryWithChildren()) {
+            viewToRemove.removeAllChildren();
+        }
+        mListContainer.removeContainerView(viewToRemove);
+        mListContainer.setChildTransferInProgress(false);
+    }
+    removeNotificationChildren();
+    for (int i = 0; i < toShow.size(); i++) {
+        View v = toShow.get(i);
+        if (v.getParent() == null) {
+            mVisualStabilityManager.notifyViewAddition(v);
+            mListContainer.addContainerView(v);
+        } else if (!mListContainer.containsView(v)) {
+            toShow.remove(v);
+            i--;
+        }
+    }
+    addNotificationChildrenAndSort();
+    int j = 0;
+    for (int i = 0; i < mListContainer.getContainerChildCount(); i++) {
+        View child = mListContainer.getContainerChildAt(i);
+        if (!(child instanceof ExpandableNotificationRow)) {
+            continue;
+        }
+        if (((ExpandableNotificationRow) child).isBlockingHelperShowing()) {
+            continue;
+        }
+        ExpandableNotificationRow targetChild = toShow.get(j);
+        if (child != targetChild) {
+            if (mVisualStabilityManager.canReorderNotification(targetChild)) {
+                mListContainer.changeViewPosition(targetChild, i);
+            } else {
+                mVisualStabilityManager.addReorderingAllowedCallback(mEntryManager, false);
+            }
+        }
+        j++;
+    }
+    mDynamicChildBindController.updateContentViews(mTmpChildOrderMap);
+    mVisualStabilityManager.onReorderingFinished();
+    mTmpChildOrderMap.clear();
+    updateRowStatesInternal();
+    mListContainer.onNotificationViewUpdateFinished();
+    endUpdate();
+}

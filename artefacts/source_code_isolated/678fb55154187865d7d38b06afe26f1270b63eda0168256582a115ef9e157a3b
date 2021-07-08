@@ -1,0 +1,8 @@
+public boolean dispatchNestedPrePerformAccessibilityAction(int action, Bundle arguments){
+    for (ViewParent p = getParent(); p != null; p = p.getParent()) {
+        if (p.onNestedPrePerformAccessibilityAction(this, action, arguments)) {
+            return true;
+        }
+    }
+    return false;
+}

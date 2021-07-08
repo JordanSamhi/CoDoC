@@ -1,0 +1,28 @@
+public static AllocationAdapter createTyped(RenderScript rs, Allocation a, Type t){
+    rs.validate();
+    if (a.mAdaptedAllocation != null) {
+        throw new RSInvalidStateException("Adapters cannot be nested.");
+    }
+    if (!a.getType().getElement().equals(t.getElement())) {
+        throw new RSInvalidStateException("Element must match Allocation type.");
+    }
+    if (t.hasFaces() || t.hasMipmaps()) {
+        throw new RSInvalidStateException("Adapters do not support window types with Mipmaps or Faces.");
+    }
+    Type at = a.getType();
+    if ((t.getX() > at.getX()) || (t.getY() > at.getY()) || (t.getZ() > at.getZ()) || (t.getArrayCount() > at.getArrayCount())) {
+        throw new RSInvalidStateException("Type cannot have dimension larger than the source allocation.");
+    }
+    if (t.getArrayCount() > 0) {
+        for (int i = 0; i < t.getArray(i); i++) {
+            if (t.getArray(i) > at.getArray(i)) {
+                throw new RSInvalidStateException("Type cannot have dimension larger than the source allocation.");
+            }
+        }
+    }
+    long id = rs.nAllocationAdapterCreate(a.getID(rs), t.getID(rs));
+    if (id == 0) {
+        throw new RSRuntimeException("AllocationAdapter creation failed.");
+    }
+    return new AllocationAdapter(id, rs, a, t);
+}

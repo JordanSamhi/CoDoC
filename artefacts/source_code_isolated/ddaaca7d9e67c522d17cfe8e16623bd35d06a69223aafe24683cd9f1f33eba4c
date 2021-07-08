@@ -1,0 +1,4 @@
+public static boolean isLocationProviderEnabled(ContentResolver cr, String provider){
+    String allowedProviders = Settings.Secure.getStringForUser(cr, LOCATION_PROVIDERS_ALLOWED, cr.getUserId());
+    return TextUtils.delimitedStringContains(allowedProviders, ',', provider);
+}

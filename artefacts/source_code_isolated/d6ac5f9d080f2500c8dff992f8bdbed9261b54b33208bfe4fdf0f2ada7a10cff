@@ -1,0 +1,10 @@
+public byte[] getBytes(int tag, byte[] defaultValue){
+    if (KeymasterDefs.getTagType(tag) != KeymasterDefs.KM_BYTES) {
+        throw new IllegalArgumentException("Not a bytes tag: " + tag);
+    }
+    KeymasterArgument arg = getArgumentByTag(tag);
+    if (arg == null) {
+        return defaultValue;
+    }
+    return ((KeymasterBlobArgument) arg).blob;
+}

@@ -1,0 +1,56 @@
+public void onSetFilter(int filterType, String str, int time){
+    if (DEBUG) {
+        Log.d(TAG, "onSetFilter: " + filterType + " [" + str + "] " + time);
+    }
+    mLastFilterType = filterType;
+    mLastFilterString = str;
+    mLastFilterTime = time;
+    mFilteredTimeZoneLength = 0;
+    int idx = 0;
+    switch(filterType) {
+        case TimeZoneFilterTypeAdapter.FILTER_TYPE_EMPTY:
+            mFilteredTimeZoneIndices[mFilteredTimeZoneLength++] = EMPTY_INDEX;
+            break;
+        case TimeZoneFilterTypeAdapter.FILTER_TYPE_NONE:
+            int defaultTzIndex = mTimeZoneData.getDefaultTimeZoneIndex();
+            if (defaultTzIndex != -1) {
+                mFilteredTimeZoneIndices[mFilteredTimeZoneLength++] = defaultTzIndex;
+            }
+            SharedPreferences prefs = mContext.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+            String recentsString = prefs.getString(KEY_RECENT_TIMEZONES, null);
+            if (!TextUtils.isEmpty(recentsString)) {
+                String[] recents = recentsString.split(RECENT_TIMEZONES_DELIMITER);
+                for (int i = recents.length - 1; i >= 0; i--) {
+                    if (!TextUtils.isEmpty(recents[i]) && !recents[i].equals(mTimeZoneData.mDefaultTimeZoneId)) {
+                        int index = mTimeZoneData.findIndexByTimeZoneIdSlow(recents[i]);
+                        if (index != -1) {
+                            mFilteredTimeZoneIndices[mFilteredTimeZoneLength++] = index;
+                        }
+                    }
+                }
+            }
+            break;
+        case TimeZoneFilterTypeAdapter.FILTER_TYPE_GMT:
+            ArrayList<Integer> indices = mTimeZoneData.getTimeZonesByOffset(time);
+            if (indices != null) {
+                for (Integer i : indices) {
+                    mFilteredTimeZoneIndices[mFilteredTimeZoneLength++] = i;
+                }
+            }
+            break;
+        case TimeZoneFilterTypeAdapter.FILTER_TYPE_COUNTRY:
+            ArrayList<Integer> tzIds = mTimeZoneData.mTimeZonesByCountry.get(str);
+            if (tzIds != null) {
+                for (Integer tzi : tzIds) {
+                    mFilteredTimeZoneIndices[mFilteredTimeZoneLength++] = tzi;
+                }
+            }
+            break;
+        case TimeZoneFilterTypeAdapter.FILTER_TYPE_STATE:
+            break;
+        default:
+            throw new IllegalArgumentException();
+    }
+    mHasResults = mFilteredTimeZoneLength > 0;
+    notifyDataSetChanged();
+}

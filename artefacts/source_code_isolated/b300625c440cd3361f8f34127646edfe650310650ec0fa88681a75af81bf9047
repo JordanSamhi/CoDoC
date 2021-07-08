@@ -1,0 +1,92 @@
+public void checkIntegrity(){
+    synchronized (mLock) {
+        if (mWindowCacheByDisplay.size() <= 0 && mNodeCache.size() == 0) {
+            return;
+        }
+        AccessibilityWindowInfo focusedWindow = null;
+        AccessibilityWindowInfo activeWindow = null;
+        final int displayCounts = mWindowCacheByDisplay.size();
+        for (int i = 0; i < displayCounts; i++) {
+            final SparseArray<AccessibilityWindowInfo> windowsOfDisplay = mWindowCacheByDisplay.valueAt(i);
+            if (windowsOfDisplay == null) {
+                continue;
+            }
+            final int windowCount = windowsOfDisplay.size();
+            for (int j = 0; j < windowCount; j++) {
+                final AccessibilityWindowInfo window = windowsOfDisplay.valueAt(j);
+                if (window.isActive()) {
+                    if (activeWindow != null) {
+                        Log.e(LOG_TAG, "Duplicate active window:" + window);
+                    } else {
+                        activeWindow = window;
+                    }
+                }
+                if (window.isFocused()) {
+                    if (focusedWindow != null) {
+                        Log.e(LOG_TAG, "Duplicate focused window:" + window);
+                    } else {
+                        focusedWindow = window;
+                    }
+                }
+            }
+        }
+        AccessibilityNodeInfo accessFocus = null;
+        AccessibilityNodeInfo inputFocus = null;
+        final int nodesForWindowCount = mNodeCache.size();
+        for (int i = 0; i < nodesForWindowCount; i++) {
+            LongSparseArray<AccessibilityNodeInfo> nodes = mNodeCache.valueAt(i);
+            if (nodes.size() <= 0) {
+                continue;
+            }
+            ArraySet<AccessibilityNodeInfo> seen = new ArraySet<>();
+            final int windowId = mNodeCache.keyAt(i);
+            final int nodeCount = nodes.size();
+            for (int j = 0; j < nodeCount; j++) {
+                AccessibilityNodeInfo node = nodes.valueAt(j);
+                if (!seen.add(node)) {
+                    Log.e(LOG_TAG, "Duplicate node: " + node + " in window:" + windowId);
+                    continue;
+                }
+                if (node.isAccessibilityFocused()) {
+                    if (accessFocus != null) {
+                        Log.e(LOG_TAG, "Duplicate accessibility focus:" + node + " in window:" + windowId);
+                    } else {
+                        accessFocus = node;
+                    }
+                }
+                if (node.isFocused()) {
+                    if (inputFocus != null) {
+                        Log.e(LOG_TAG, "Duplicate input focus: " + node + " in window:" + windowId);
+                    } else {
+                        inputFocus = node;
+                    }
+                }
+                AccessibilityNodeInfo nodeParent = nodes.get(node.getParentNodeId());
+                if (nodeParent != null) {
+                    boolean childOfItsParent = false;
+                    final int childCount = nodeParent.getChildCount();
+                    for (int k = 0; k < childCount; k++) {
+                        AccessibilityNodeInfo child = nodes.get(nodeParent.getChildId(k));
+                        if (child == node) {
+                            childOfItsParent = true;
+                            break;
+                        }
+                    }
+                    if (!childOfItsParent) {
+                        Log.e(LOG_TAG, "Invalid parent-child relation between parent: " + nodeParent + " and child: " + node);
+                    }
+                }
+                final int childCount = node.getChildCount();
+                for (int k = 0; k < childCount; k++) {
+                    AccessibilityNodeInfo child = nodes.get(node.getChildId(k));
+                    if (child != null) {
+                        AccessibilityNodeInfo parent = nodes.get(child.getParentNodeId());
+                        if (parent != node) {
+                            Log.e(LOG_TAG, "Invalid child-parent relation between child: " + node + " and parent: " + nodeParent);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

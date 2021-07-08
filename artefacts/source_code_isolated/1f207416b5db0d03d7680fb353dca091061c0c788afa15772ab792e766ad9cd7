@@ -1,0 +1,12 @@
+public boolean setUserConnectChoice(int netId){
+    localLog("userSelectNetwork: network ID=" + netId);
+    WifiConfiguration selected = mWifiConfigManager.getConfiguredNetwork(netId);
+    if (selected == null || selected.SSID == null) {
+        localLog("userSelectNetwork: Invalid configuration with nid=" + netId);
+        return false;
+    }
+    if (!selected.getNetworkSelectionStatus().isNetworkEnabled()) {
+        mWifiConfigManager.updateNetworkSelectionStatus(netId, WifiConfiguration.NetworkSelectionStatus.DISABLED_NONE);
+    }
+    return setLegacyUserConnectChoice(selected);
+}

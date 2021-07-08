@@ -1,0 +1,9 @@
+public void makeDhcpServer(final String ifName, final DhcpServingParamsParcel params, final IDhcpServerCallbacks cb){
+    requestConnector(connector -> {
+        try {
+            connector.makeDhcpServer(ifName, params, cb);
+        } catch (RemoteException e) {
+            e.rethrowFromSystemServer();
+        }
+    });
+}

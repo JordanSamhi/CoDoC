@@ -1,0 +1,10 @@
+public static Bundle sanitizeResult(Bundle result){
+    if (result != null) {
+        if (result.containsKey(KEY_AUTHTOKEN) && !TextUtils.isEmpty(result.getString(KEY_AUTHTOKEN))) {
+            final Bundle newResult = new Bundle(result);
+            newResult.putString(KEY_AUTHTOKEN, "<omitted for logging purposes>");
+            return newResult;
+        }
+    }
+    return result;
+}

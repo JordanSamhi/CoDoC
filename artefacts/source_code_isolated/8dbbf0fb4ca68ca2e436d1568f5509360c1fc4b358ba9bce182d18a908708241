@@ -1,0 +1,10 @@
+public boolean initiateAnqpQuery(@NonNull String ifaceName, String bssid, ArrayList<Short> infoElements, ArrayList<Integer> hs20SubTypes){
+    synchronized (mLock) {
+        try {
+            return initiateAnqpQuery(ifaceName, NativeUtil.macAddressToByteArray(bssid), infoElements, hs20SubTypes);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + bssid, e);
+            return false;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public static ColorSpace match(@NonNull @Size(9) float[] toXYZD50, @NonNull Rgb.TransferParameters function){
+    for (ColorSpace colorSpace : sNamedColorSpaces) {
+        if (colorSpace.getModel() == Model.RGB) {
+            ColorSpace.Rgb rgb = (ColorSpace.Rgb) adapt(colorSpace, ILLUMINANT_D50_XYZ);
+            if (compare(toXYZD50, rgb.mTransform) && compare(function, rgb.mTransferParameters)) {
+                return colorSpace;
+            }
+        }
+    }
+    return null;
+}

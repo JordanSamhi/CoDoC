@@ -1,0 +1,11 @@
+public void attach(PlayerViewHolder vh){
+    mViewHolder = vh;
+    TransitionLayout player = vh.getPlayer();
+    ImageView albumView = vh.getAlbumView();
+    albumView.setOutlineProvider(mViewOutlineProvider);
+    albumView.setClipToOutline(true);
+    mSeekBarObserver = new SeekBarObserver(vh);
+    mSeekBarViewModel.getProgress().observeForever(mSeekBarObserver);
+    mSeekBarViewModel.attachTouchHandlers(vh.getSeekBar());
+    mMediaViewController.attach(player);
+}

@@ -1,0 +1,18 @@
+public static PostalData constructPostalData(final List<String> propValueList, final int type, final String label, boolean isPrimary, int vcardType){
+    final String[] dataArray = new String[ADDR_MAX_DATA_SIZE];
+    int size = propValueList.size();
+    if (size > ADDR_MAX_DATA_SIZE) {
+        size = ADDR_MAX_DATA_SIZE;
+    }
+    int i = 0;
+    for (String addressElement : propValueList) {
+        dataArray[i] = addressElement;
+        if (++i >= size) {
+            break;
+        }
+    }
+    while (i < ADDR_MAX_DATA_SIZE) {
+        dataArray[i++] = null;
+    }
+    return new PostalData(dataArray[0], dataArray[1], dataArray[2], dataArray[3], dataArray[4], dataArray[5], dataArray[6], type, label, isPrimary, vcardType);
+}

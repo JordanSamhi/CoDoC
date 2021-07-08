@@ -1,0 +1,17 @@
+public static boolean hasDesignator(CharSequence inFormat, char designator){
+    if (inFormat == null)
+        return false;
+    final int length = inFormat.length();
+    boolean insideQuote = false;
+    for (int i = 0; i < length; i++) {
+        final char c = inFormat.charAt(i);
+        if (c == QUOTE) {
+            insideQuote = !insideQuote;
+        } else if (!insideQuote) {
+            if (c == designator) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

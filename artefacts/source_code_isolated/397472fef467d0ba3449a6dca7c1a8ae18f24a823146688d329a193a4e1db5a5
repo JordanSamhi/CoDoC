@@ -1,0 +1,9 @@
+public void addOnCompleteListener(@NonNull OnCompleteListener listener){
+    synchronized (mLock) {
+        if (mIsClosed)
+            return;
+        mOnCompleteListeners.add(Objects.requireNonNull(listener));
+        if (mIsComplete)
+            listener.onComplete();
+    }
+}

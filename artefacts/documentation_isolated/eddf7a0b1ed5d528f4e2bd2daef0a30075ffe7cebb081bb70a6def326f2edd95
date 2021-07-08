@@ -1,0 +1,23 @@
+
+     * Plays the earcon using the specified queueing mode and parameters.
+     * The earcon must already have been added with {@link #addEarcon(String, String)} or
+     * {@link #addEarcon(String, String, int)}.
+     * This method is asynchronous, i.e. the method just adds the request to the queue of TTS
+     * requests and then returns. The synthesis might not have finished (or even started!) at the
+     * time when this method returns. In order to reliably detect errors during synthesis,
+     * we recommend setting an utterance progress listener (see
+     * {@link #setOnUtteranceProgressListener}) and using the
+     * {@link Engine#KEY_PARAM_UTTERANCE_ID} parameter.
+     *
+     * @param earcon The earcon that should be played
+     * @param queueMode {@link #QUEUE_ADD} or {@link #QUEUE_FLUSH}.
+     * @param params Parameters for the request. Can be null.
+     *            Supported parameter names:
+     *            {@link Engine#KEY_PARAM_STREAM},
+     *            Engine specific parameters may be passed in but the parameter keys
+     *            must be prefixed by the name of the engine they are intended for. For example
+     *            the keys "com.svox.pico_foo" and "com.svox.pico:bar" will be passed to the
+     *            engine named "com.svox.pico" if it is being used.
+     *
+     * @return {@link #ERROR} or {@link #SUCCESS} of <b>queuing</b> the playEarcon operation.
+     

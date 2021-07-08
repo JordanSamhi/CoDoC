@@ -1,0 +1,19 @@
+public static boolean printAnnotatedStack(Thread thread, PrintWriter out){
+    AnnotatedStackTraceElement[] stack = VMStack.getAnnotatedThreadStackTrace(thread);
+    if (stack == null) {
+        return false;
+    }
+    out.println(thread.getName() + " annotated stack trace:");
+    for (AnnotatedStackTraceElement element : stack) {
+        out.println("    at " + element.getStackTraceElement());
+        if (element.getBlockedOn() != null) {
+            out.println("    " + getBlockedOnString(element.getBlockedOn()));
+        }
+        if (element.getHeldLocks() != null) {
+            for (Object held : element.getHeldLocks()) {
+                out.println("    " + getLockedString(held));
+            }
+        }
+    }
+    return true;
+}

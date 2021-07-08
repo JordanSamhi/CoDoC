@@ -1,0 +1,19 @@
+public void add(int type, NetworkAgentInfo nai){
+    if (!isTypeSupported(type)) {
+        return;
+    }
+    if (VDBG)
+        log("Adding agent " + nai + " for legacy network type " + type);
+    ArrayList<NetworkAgentInfo> list = mTypeLists[type];
+    if (list.contains(nai)) {
+        return;
+    }
+    synchronized (mTypeLists) {
+        list.add(nai);
+    }
+    final boolean isDefaultNetwork = mService.isDefaultNetwork(nai);
+    if ((list.size() == 1) || isDefaultNetwork) {
+        maybeLogBroadcast(nai, DetailedState.CONNECTED, type, isDefaultNetwork);
+        mService.sendLegacyNetworkBroadcast(nai, DetailedState.CONNECTED, type);
+    }
+}

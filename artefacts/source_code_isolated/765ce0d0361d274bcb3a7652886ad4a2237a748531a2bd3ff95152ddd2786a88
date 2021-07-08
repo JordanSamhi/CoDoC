@@ -1,0 +1,14 @@
+public Builder allowMessages(@PeopleType int audienceType){
+    if (audienceType == STATE_UNSET) {
+        return unsetPriorityCategory(PRIORITY_CATEGORY_MESSAGES);
+    }
+    if (audienceType == PEOPLE_TYPE_NONE) {
+        mZenPolicy.mPriorityCategories.set(PRIORITY_CATEGORY_MESSAGES, STATE_DISALLOW);
+    } else if (audienceType == PEOPLE_TYPE_ANYONE || audienceType == PEOPLE_TYPE_CONTACTS || audienceType == PEOPLE_TYPE_STARRED) {
+        mZenPolicy.mPriorityCategories.set(PRIORITY_CATEGORY_MESSAGES, STATE_ALLOW);
+    } else {
+        return this;
+    }
+    mZenPolicy.mPriorityMessages = audienceType;
+    return this;
+}

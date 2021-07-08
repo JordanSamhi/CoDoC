@@ -1,0 +1,12 @@
+public boolean stop(){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.stop();
+        return true;
+    } catch (RemoteException e) {
+        log("Error stopping IpClient", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

@@ -1,0 +1,7 @@
+public void reportUsageStart(@NonNull Activity activity, @NonNull String token, long timeAgoMs){
+    try {
+        mService.reportPastUsageStart(activity.getActivityToken(), token, timeAgoMs, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

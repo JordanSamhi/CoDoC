@@ -1,0 +1,12 @@
+public int getNetworkId(String deviceAddress){
+    if (deviceAddress == null)
+        return -1;
+    final Collection<WifiP2pGroup> groups = mGroups.snapshot().values();
+    for (WifiP2pGroup grp : groups) {
+        if (deviceAddress.equalsIgnoreCase(grp.getOwner().deviceAddress)) {
+            mGroups.get(grp.getNetworkId());
+            return grp.getNetworkId();
+        }
+    }
+    return -1;
+}

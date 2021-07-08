@@ -1,0 +1,6 @@
+public void setKeyguardFadingAway(long startTime, long delay, long fadeoutDuration, boolean isBypassFading){
+    mCommandQueue.appTransitionStarting(mDisplayId, startTime + fadeoutDuration - LightBarTransitionsController.DEFAULT_TINT_ANIMATION_DURATION, LightBarTransitionsController.DEFAULT_TINT_ANIMATION_DURATION, true);
+    mCommandQueue.recomputeDisableFlags(mDisplayId, fadeoutDuration > 0);
+    mCommandQueue.appTransitionStarting(mDisplayId, startTime - LightBarTransitionsController.DEFAULT_TINT_ANIMATION_DURATION, LightBarTransitionsController.DEFAULT_TINT_ANIMATION_DURATION, true);
+    mKeyguardStateController.notifyKeyguardFadingAway(delay, fadeoutDuration, isBypassFading);
+}

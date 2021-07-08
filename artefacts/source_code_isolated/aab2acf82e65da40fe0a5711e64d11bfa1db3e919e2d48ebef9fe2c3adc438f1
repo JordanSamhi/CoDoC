@@ -1,0 +1,13 @@
+public void recycle(){
+    if (TRACK_RECYCLED_LOCATION) {
+        if (mRecycledLocation != null) {
+            throw new RuntimeException(toString() + " recycled twice!", mRecycledLocation);
+        }
+        mRecycledLocation = new RuntimeException("Last recycled here");
+    } else {
+        if (mRecycled) {
+            throw new RuntimeException(toString() + " recycled twice!");
+        }
+        mRecycled = true;
+    }
+}

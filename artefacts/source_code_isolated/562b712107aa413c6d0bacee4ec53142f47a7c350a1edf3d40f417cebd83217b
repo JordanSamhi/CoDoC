@@ -1,0 +1,10 @@
+public static UinputBridge openGamepad(IBinder token, String name) throws IOException{
+    if (token == null) {
+        throw new IllegalArgumentException("Token cannot be null");
+    }
+    long ptr = nativeGamepadOpen(name, token.toString());
+    if (ptr == 0) {
+        throw new IOException("Could not open uinput device " + name);
+    }
+    return new UinputBridge(token, ptr);
+}

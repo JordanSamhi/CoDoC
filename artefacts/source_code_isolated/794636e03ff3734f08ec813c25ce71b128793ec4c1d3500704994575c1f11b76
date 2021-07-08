@@ -1,0 +1,23 @@
+public void copyFrom(PointerCoords other){
+    final long bits = other.mPackedAxisBits;
+    mPackedAxisBits = bits;
+    if (bits != 0) {
+        final float[] otherValues = other.mPackedAxisValues;
+        final int count = Long.bitCount(bits);
+        float[] values = mPackedAxisValues;
+        if (values == null || count > values.length) {
+            values = new float[otherValues.length];
+            mPackedAxisValues = values;
+        }
+        System.arraycopy(otherValues, 0, values, 0, count);
+    }
+    x = other.x;
+    y = other.y;
+    pressure = other.pressure;
+    size = other.size;
+    touchMajor = other.touchMajor;
+    touchMinor = other.touchMinor;
+    toolMajor = other.toolMajor;
+    toolMinor = other.toolMinor;
+    orientation = other.orientation;
+}

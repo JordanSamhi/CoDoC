@@ -1,0 +1,42 @@
+public List<Access> getAppList(){
+    PackageManager pm = mContext.getPackageManager();
+    AppOpsManager aoManager = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
+    List<AppOpsManager.PackageOps> appOps = aoManager.getPackagesForOps(LOCATION_OPS);
+    final int appOpsCount = appOps != null ? appOps.size() : 0;
+    ArrayList<Access> accesses = new ArrayList<>(appOpsCount);
+    final long now = mClock.millis();
+    final UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+    final List<UserHandle> profiles = um.getUserProfiles();
+    for (int i = 0; i < appOpsCount; ++i) {
+        AppOpsManager.PackageOps ops = appOps.get(i);
+        String packageName = ops.getPackageName();
+        int uid = ops.getUid();
+        UserHandle user = UserHandle.getUserHandleForUid(uid);
+        if (!profiles.contains(user)) {
+            continue;
+        }
+        boolean showApp = true;
+        for (int op : LOCATION_OPS) {
+            final String permission = AppOpsManager.opToPermission(op);
+            final int permissionFlags = pm.getPermissionFlags(permission, packageName, user);
+            if (PermissionChecker.checkPermissionForPreflight(mContext, permission, PermissionChecker.PID_UNKNOWN, uid, packageName) == PermissionChecker.PERMISSION_GRANTED) {
+                if ((permissionFlags & PackageManager.FLAG_PERMISSION_USER_SENSITIVE_WHEN_GRANTED) == 0) {
+                    showApp = false;
+                    break;
+                }
+            } else {
+                if ((permissionFlags & PackageManager.FLAG_PERMISSION_USER_SENSITIVE_WHEN_DENIED) == 0) {
+                    showApp = false;
+                    break;
+                }
+            }
+        }
+        if (showApp) {
+            Access access = getAccessFromOps(now, ops);
+            if (access != null) {
+                accesses.add(access);
+            }
+        }
+    }
+    return accesses;
+}

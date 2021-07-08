@@ -1,0 +1,10 @@
+public ParcelFileDescriptor openRead() throws IOException{
+    try {
+        return mSession.openRead();
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

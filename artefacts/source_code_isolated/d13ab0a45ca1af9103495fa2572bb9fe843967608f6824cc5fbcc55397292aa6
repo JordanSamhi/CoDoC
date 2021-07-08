@@ -1,0 +1,17 @@
+public boolean connect(BluetoothDevice device){
+    if (DBG)
+        Log.d(TAG, "connect(" + device + ")" + "for MAPS MCE");
+    final IBluetoothMapClient service = getService();
+    if (service != null) {
+        try {
+            return service.connect(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+        if (DBG)
+            Log.d(TAG, Log.getStackTraceString(new Throwable()));
+    }
+    return false;
+}

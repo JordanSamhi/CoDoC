@@ -1,0 +1,8 @@
+public List<AccessibilityWindowInfo> getWindows(){
+    final int connectionId;
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+        connectionId = mConnectionId;
+    }
+    return AccessibilityInteractionClient.getInstance().getWindows(connectionId);
+}

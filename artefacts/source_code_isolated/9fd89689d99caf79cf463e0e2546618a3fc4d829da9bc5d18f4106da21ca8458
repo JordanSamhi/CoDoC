@@ -1,0 +1,14 @@
+public boolean isSupplicantTransientState(){
+    SupplicantState supplicantState = mWifiInfo.getSupplicantState();
+    if (supplicantState == SupplicantState.ASSOCIATING || supplicantState == SupplicantState.AUTHENTICATING || supplicantState == SupplicantState.FOUR_WAY_HANDSHAKE || supplicantState == SupplicantState.GROUP_HANDSHAKE) {
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "Supplicant is under transient state: " + supplicantState);
+        }
+        return true;
+    } else {
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "Supplicant is under steady state: " + supplicantState);
+        }
+    }
+    return false;
+}

@@ -1,0 +1,14 @@
+public boolean selectNext() throws IOException{
+    if (!mService.isConnected()) {
+        throw new IllegalStateException("service not connected to system");
+    }
+    try {
+        synchronized (mLock) {
+            return mChannel.selectNext();
+        }
+    } catch (ServiceSpecificException e) {
+        throw new IOException(e.getMessage());
+    } catch (RemoteException e) {
+        throw new IllegalStateException(e.getMessage());
+    }
+}

@@ -1,0 +1,24 @@
+public static void putCustomLabels(Context context, Map<String, String> customLabels, int userId){
+    StringBuilder builder = new StringBuilder();
+    boolean firstItem = true;
+    for (Map.Entry<String, String> entry : customLabels.entrySet()) {
+        ensureValidField(entry.getKey());
+        ensureValidField(entry.getValue());
+        if (firstItem) {
+            firstItem = false;
+        } else {
+            builder.append(TV_INPUT_SEPARATOR);
+        }
+        builder.append(Uri.encode(entry.getKey()));
+        builder.append(CUSTOM_NAME_SEPARATOR);
+        builder.append(Uri.encode(entry.getValue()));
+    }
+    Settings.Secure.putStringForUser(context.getContentResolver(), Settings.Secure.TV_INPUT_CUSTOM_LABELS, builder.toString(), userId);
+    TvInputManager tm = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
+    for (String inputId : customLabels.keySet()) {
+        TvInputInfo info = tm.getTvInputInfo(inputId);
+        if (info != null) {
+            tm.updateTvInputInfo(info);
+        }
+    }
+}

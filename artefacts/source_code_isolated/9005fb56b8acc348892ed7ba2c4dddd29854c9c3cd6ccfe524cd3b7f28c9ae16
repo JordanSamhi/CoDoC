@@ -1,0 +1,9 @@
+public RecoverableKeyStoreSecondaryKey generate() throws InternalRecoveryServiceException, LockScreenRequiredException, UnrecoverableKeyException{
+    String alias = generateId();
+    mRecoveryController.generateKey(alias);
+    SecretKey key = (SecretKey) mRecoveryController.getKey(alias);
+    if (key == null) {
+        throw new InternalRecoveryServiceException(String.format("Generated key %s but could not get it back immediately afterwards.", alias));
+    }
+    return new RecoverableKeyStoreSecondaryKey(alias, key);
+}

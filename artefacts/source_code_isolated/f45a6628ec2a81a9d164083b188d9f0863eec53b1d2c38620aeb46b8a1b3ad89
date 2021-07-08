@@ -1,0 +1,6 @@
+public int requestAudioFocus(OnAudioFocusChangeListener l, @NonNull AudioAttributes requestAttributes, int durationHint, int flags) throws IllegalArgumentException{
+    if (flags != (flags & AUDIOFOCUS_FLAGS_APPS)) {
+        throw new IllegalArgumentException("Invalid flags 0x" + Integer.toHexString(flags).toUpperCase());
+    }
+    return requestAudioFocus(l, requestAttributes, durationHint, flags & AUDIOFOCUS_FLAGS_APPS, null);
+}

@@ -1,0 +1,8 @@
+public void onFilterComplete(int result){
+    log("CarrierSmsFilterCallback::onFilterComplete: Called from " + mPackageName + " with result: " + result);
+    if (!mIsOnFilterCompleteCalled) {
+        mIsOnFilterCompleteCalled = true;
+        mCarrierMessagingServiceWrapper.disposeConnection(mContext);
+        mFilterAggregator.onFilterComplete(result);
+    }
+}

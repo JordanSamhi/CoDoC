@@ -1,0 +1,10 @@
+public void addKey_onEmptyDatabase_putsKeyInDb() throws Exception{
+    byte[] key = generateRandomKey();
+    TertiaryKey keyToInsert = new TertiaryKey(SECONDARY_ALIAS, PACKAGE_NAME, key);
+    long result = mTertiaryKeysTable.addKey(keyToInsert);
+    assertThat(result).isNotEqualTo(-1);
+    Optional<TertiaryKey> maybeKeyInDb = mTertiaryKeysTable.getKey(SECONDARY_ALIAS, PACKAGE_NAME);
+    assertThat(maybeKeyInDb.isPresent()).isTrue();
+    TertiaryKey keyInDb = maybeKeyInDb.get();
+    assertTertiaryKeysEqual(keyInDb, keyToInsert);
+}

@@ -1,0 +1,16 @@
+public List<SubscriptionInfo> getAllSubscriptionInfoList(){
+    if (VDBG)
+        logd("[getAllSubscriptionInfoList]+");
+    List<SubscriptionInfo> result = null;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            result = iSub.getAllSubInfoList(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    if (result == null) {
+        result = new ArrayList<>();
+    }
+    return result;
+}

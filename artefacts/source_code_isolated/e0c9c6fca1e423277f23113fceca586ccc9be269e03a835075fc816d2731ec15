@@ -1,0 +1,10 @@
+public static int onWebViewProviderChanged(PackageInfo packageInfo){
+    int startedRelroProcesses = 0;
+    try {
+        startedRelroProcesses = WebViewLibraryLoader.prepareNativeLibraries(packageInfo);
+    } catch (Throwable t) {
+        Log.e(LOGTAG, "error preparing webview native library", t);
+    }
+    WebViewZygote.onWebViewProviderChanged(packageInfo);
+    return startedRelroProcesses;
+}

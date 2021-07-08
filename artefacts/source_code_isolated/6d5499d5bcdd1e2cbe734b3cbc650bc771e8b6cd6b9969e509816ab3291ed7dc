@@ -1,0 +1,21 @@
+public ArrayList<ApnSetting> sortApnListByPreferred(ArrayList<ApnSetting> list){
+    if (list == null || list.size() <= 1)
+        return list;
+    int preferredApnSetId = getPreferredApnSetId();
+    if (preferredApnSetId != Telephony.Carriers.NO_APN_SET_ID) {
+        list.sort(new Comparator<ApnSetting>() {
+
+            @Override
+            public int compare(ApnSetting apn1, ApnSetting apn2) {
+                if (apn1.getApnSetId() == preferredApnSetId) {
+                    return -1;
+                }
+                if (apn2.getApnSetId() == preferredApnSetId) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+    }
+    return list;
+}

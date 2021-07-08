@@ -1,0 +1,11 @@
+public TextClassifier getTextClassifier(){
+    synchronized (mLock) {
+        if (mCustomTextClassifier != null) {
+            return mCustomTextClassifier;
+        } else if (getSettings().isSystemTextClassifierEnabled()) {
+            return getSystemTextClassifier(SystemTextClassifier.SYSTEM);
+        } else {
+            return getLocalTextClassifier();
+        }
+    }
+}

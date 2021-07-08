@@ -1,0 +1,37 @@
+public int addOrUpdateNetwork(WifiConfiguration config, String packageName){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return -1;
+    }
+    int callingUid = Binder.getCallingUid();
+    if (!isTargetSdkLessThanQOrPrivileged(packageName, Binder.getCallingPid(), callingUid)) {
+        mLog.info("addOrUpdateNetwork not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return -1;
+    }
+    mLog.info("addOrUpdateNetwork uid=%").c(Binder.getCallingUid()).flush();
+    if (config == null) {
+        Log.e(TAG, "bad network configuration");
+        return -1;
+    }
+    mWifiMetrics.incrementNumAddOrUpdateNetworkCalls();
+    if (config.isPasspoint()) {
+        PasspointConfiguration passpointConfig = PasspointProvider.convertFromWifiConfig(config);
+        if (passpointConfig == null || passpointConfig.getCredential() == null) {
+            Log.e(TAG, "Missing credential for Passpoint profile");
+            return -1;
+        }
+        X509Certificate[] x509Certificates = null;
+        if (config.enterpriseConfig.getCaCertificate() != null) {
+            x509Certificates = new X509Certificate[] { config.enterpriseConfig.getCaCertificate() };
+        }
+        passpointConfig.getCredential().setCaCertificates(x509Certificates);
+        passpointConfig.getCredential().setClientCertificateChain(config.enterpriseConfig.getClientCertificateChain());
+        passpointConfig.getCredential().setClientPrivateKey(config.enterpriseConfig.getClientPrivateKey());
+        if (!addOrUpdatePasspointConfiguration(passpointConfig, packageName)) {
+            Log.e(TAG, "Failed to add Passpoint profile");
+            return -1;
+        }
+        return 0;
+    }
+    Log.i("addOrUpdateNetwork", " uid = " + Binder.getCallingUid() + " SSID " + config.SSID + " nid=" + config.networkId);
+    return mWifiThreadRunner.call(() -> mWifiConfigManager.addOrUpdateNetwork(config, callingUid, packageName).getNetworkId(), WifiConfiguration.INVALID_NETWORK_ID);
+}

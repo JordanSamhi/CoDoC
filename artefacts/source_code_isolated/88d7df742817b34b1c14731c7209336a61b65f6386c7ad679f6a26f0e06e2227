@@ -1,0 +1,8 @@
+public static boolean isExternalStorageRemovable(@NonNull File path){
+    final StorageVolume volume = StorageManager.getStorageVolume(path, UserHandle.myUserId());
+    if (volume != null) {
+        return volume.isRemovable();
+    } else {
+        throw new IllegalArgumentException("Failed to find storage device at " + path);
+    }
+}

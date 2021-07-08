@@ -1,0 +1,17 @@
+
+         * Called when the network the framework connected to for this request suspends data
+         * transmission temporarily.
+         *
+         * <p>This generally means that while the TCP connections are still live temporarily
+         * network data fails to transfer. To give a specific example, this is used on cellular
+         * networks to mask temporary outages when driving through a tunnel, etc. In general this
+         * means read operations on sockets on this network will block once the buffers are
+         * drained, and write operations will block once the buffers are full.
+         *
+         * <p>Do NOT call {@link #getNetworkCapabilities(Network)} or
+         * {@link #getLinkProperties(Network)} or other synchronous ConnectivityManager methods in
+         * this callback as this is prone to race conditions (there is no guarantee the objects
+         * returned by these methods will be current).
+         *
+         * @hide
+         

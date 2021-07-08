@@ -1,0 +1,49 @@
+public static boolean isMeteredApnType(@ApnType int apnType, Phone phone){
+    if (phone == null) {
+        return true;
+    }
+    boolean isRoaming = phone.getServiceState().getDataRoaming();
+    int subId = phone.getSubId();
+    String carrierConfig;
+    if (isRoaming) {
+        carrierConfig = CarrierConfigManager.KEY_CARRIER_METERED_ROAMING_APN_TYPES_STRINGS;
+    } else {
+        carrierConfig = CarrierConfigManager.KEY_CARRIER_METERED_APN_TYPES_STRINGS;
+    }
+    if (DBG) {
+        Rlog.d(LOG_TAG, "isMeteredApnType: isRoaming=" + isRoaming);
+    }
+    CarrierConfigManager configManager = (CarrierConfigManager) phone.getContext().getSystemService(Context.CARRIER_CONFIG_SERVICE);
+    if (configManager == null) {
+        Rlog.e(LOG_TAG, "Carrier config service is not available");
+        return true;
+    }
+    PersistableBundle b = configManager.getConfigForSubId(subId);
+    if (b == null) {
+        Rlog.e(LOG_TAG, "Can't get the config. subId = " + subId);
+        return true;
+    }
+    String[] meteredApnTypes = b.getStringArray(carrierConfig);
+    if (meteredApnTypes == null) {
+        Rlog.e(LOG_TAG, carrierConfig + " is not available. " + "subId = " + subId);
+        return true;
+    }
+    HashSet<String> meteredApnSet = new HashSet<>(Arrays.asList(meteredApnTypes));
+    if (DBG) {
+        Rlog.d(LOG_TAG, "For subId = " + subId + ", metered APN types are " + Arrays.toString(meteredApnSet.toArray()));
+    }
+    if (meteredApnSet.contains(ApnSetting.getApnTypeString(apnType))) {
+        if (DBG)
+            Rlog.d(LOG_TAG, ApnSetting.getApnTypeString(apnType) + " is metered.");
+        return true;
+    } else if (apnType == ApnSetting.TYPE_ALL) {
+        if (meteredApnSet.size() > 0) {
+            if (DBG)
+                Rlog.d(LOG_TAG, "APN_TYPE_ALL APN is metered.");
+            return true;
+        }
+    }
+    if (DBG)
+        Rlog.d(LOG_TAG, ApnSetting.getApnTypeString(apnType) + " is not metered.");
+    return false;
+}

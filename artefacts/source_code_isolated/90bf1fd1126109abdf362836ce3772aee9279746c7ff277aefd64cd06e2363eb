@@ -1,0 +1,18 @@
+public List<Asn1Node> getChildren(int tag) throws TagNotFoundException, InvalidAsn1DataException{
+    if (!mConstructed) {
+        return EMPTY_NODE_LIST;
+    }
+    List<Asn1Node> children = getChildren();
+    if (children.isEmpty()) {
+        return EMPTY_NODE_LIST;
+    }
+    List<Asn1Node> output = new ArrayList<>();
+    int size = children.size();
+    for (int i = 0; i < size; i++) {
+        Asn1Node child = children.get(i);
+        if (child.getTag() == tag) {
+            output.add(child);
+        }
+    }
+    return output.isEmpty() ? EMPTY_NODE_LIST : output;
+}

@@ -1,0 +1,37 @@
+public VerifyCredentialResponse verifyChallenge(IGateKeeperService gatekeeper, @NonNull AuthenticationToken auth, long challenge, int userId){
+    byte[] spHandle = loadSyntheticPasswordHandle(userId);
+    if (spHandle == null) {
+        return null;
+    }
+    GateKeeperResponse response;
+    try {
+        response = gatekeeper.verifyChallenge(userId, challenge, spHandle, auth.deriveGkPassword());
+    } catch (RemoteException e) {
+        Slog.e(TAG, "Fail to verify with gatekeeper " + userId, e);
+        return VerifyCredentialResponse.ERROR;
+    }
+    int responseCode = response.getResponseCode();
+    if (responseCode == GateKeeperResponse.RESPONSE_OK) {
+        VerifyCredentialResponse result = new VerifyCredentialResponse(response.getPayload());
+        if (response.getShouldReEnroll()) {
+            try {
+                response = gatekeeper.enroll(userId, spHandle, spHandle, auth.deriveGkPassword());
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Failed to invoke gatekeeper.enroll", e);
+                response = GateKeeperResponse.ERROR;
+            }
+            if (response.getResponseCode() == GateKeeperResponse.RESPONSE_OK) {
+                spHandle = response.getPayload();
+                saveSyntheticPasswordHandle(spHandle, userId);
+                return verifyChallenge(gatekeeper, auth, challenge, userId);
+            } else {
+                Slog.w(TAG, "Fail to re-enroll SP handle for user " + userId);
+            }
+        }
+        return result;
+    } else if (responseCode == GateKeeperResponse.RESPONSE_RETRY) {
+        return new VerifyCredentialResponse(response.getTimeout());
+    } else {
+        return VerifyCredentialResponse.ERROR;
+    }
+}

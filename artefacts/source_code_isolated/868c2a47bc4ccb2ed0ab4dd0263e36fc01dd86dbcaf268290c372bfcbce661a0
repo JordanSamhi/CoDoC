@@ -1,0 +1,30 @@
+public void start(){
+    if (LOG_EGL) {
+        Log.w("EglHelper", "start() tid=" + Thread.currentThread().getId());
+    }
+    mEgl = (EGL10) EGLContext.getEGL();
+    mEglDisplay = mEgl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+    if (mEglDisplay == EGL10.EGL_NO_DISPLAY) {
+        throw new RuntimeException("eglGetDisplay failed");
+    }
+    int[] version = new int[2];
+    if (!mEgl.eglInitialize(mEglDisplay, version)) {
+        throw new RuntimeException("eglInitialize failed");
+    }
+    GLSurfaceView view = mGLSurfaceViewWeakRef.get();
+    if (view == null) {
+        mEglConfig = null;
+        mEglContext = null;
+    } else {
+        mEglConfig = view.mEGLConfigChooser.chooseConfig(mEgl, mEglDisplay);
+        mEglContext = view.mEGLContextFactory.createContext(mEgl, mEglDisplay, mEglConfig);
+    }
+    if (mEglContext == null || mEglContext == EGL10.EGL_NO_CONTEXT) {
+        mEglContext = null;
+        throwEglException("createContext");
+    }
+    if (LOG_EGL) {
+        Log.w("EglHelper", "createContext " + mEglContext + " tid=" + Thread.currentThread().getId());
+    }
+    mEglSurface = null;
+}

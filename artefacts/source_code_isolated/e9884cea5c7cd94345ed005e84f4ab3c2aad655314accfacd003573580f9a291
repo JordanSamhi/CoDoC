@@ -1,0 +1,8 @@
+public CameraDevice openCamera(String cameraId, CameraDevice.StateCallback listener, Handler handler) throws CameraAccessException, BlockingOpenException{
+    if (handler == null) {
+        throw new IllegalArgumentException("handler must not be null");
+    } else if (handler.getLooper() == Looper.myLooper()) {
+        throw new IllegalArgumentException("handler's looper must not be the current looper");
+    }
+    return (new OpenListener(mManager, cameraId, listener, handler)).blockUntilOpen();
+}

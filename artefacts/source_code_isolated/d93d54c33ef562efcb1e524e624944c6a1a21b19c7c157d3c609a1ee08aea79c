@@ -1,0 +1,10 @@
+public static void scanFile(Context context, String[] paths, String[] mimeTypes, OnScanCompletedListener callback){
+    BackgroundThread.getExecutor().execute(() -> {
+        try (ContentProviderClient client = context.getContentResolver().acquireContentProviderClient(MediaStore.AUTHORITY)) {
+            for (String path : paths) {
+                final Uri uri = scanFileQuietly(client, new File(path));
+                runCallBack(context, callback, path, uri);
+            }
+        }
+    });
+}

@@ -1,0 +1,19 @@
+public RegisterStatusBarResult registerStatusBar(IStatusBar bar){
+    enforceStatusBarService();
+    Slog.i(TAG, "registerStatusBar bar=" + bar);
+    mBar = bar;
+    mDeathRecipient.linkToDeath();
+    notifyBarAttachChanged();
+    final ArrayMap<String, StatusBarIcon> icons;
+    synchronized (mIcons) {
+        icons = new ArrayMap<>(mIcons);
+    }
+    synchronized (mLock) {
+        final UiState state = mDisplayUiState.get(DEFAULT_DISPLAY);
+        final int[] transientBarTypes = new int[state.mTransientBarTypes.size()];
+        for (int i = 0; i < transientBarTypes.length; i++) {
+            transientBarTypes[i] = state.mTransientBarTypes.valueAt(i);
+        }
+        return new RegisterStatusBarResult(icons, gatherDisableActionsLocked(mCurrentUserId, 1), state.mAppearance, state.mAppearanceRegions, state.mImeWindowVis, state.mImeBackDisposition, state.mShowImeSwitcher, gatherDisableActionsLocked(mCurrentUserId, 2), state.mImeToken, state.mNavbarColorManagedByIme, state.mFullscreen, state.mImmersive, transientBarTypes);
+    }
+}

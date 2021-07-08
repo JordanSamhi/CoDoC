@@ -1,0 +1,20 @@
+public void addLoaders(@NonNull ResourcesLoader... loaders){
+    synchronized (mUpdateLock) {
+        checkCallbacksRegistered();
+        final List<ResourcesLoader> newLoaders = new ArrayList<>(mResourcesImpl.getAssets().getLoaders());
+        final ArraySet<ResourcesLoader> loaderSet = new ArraySet<>(newLoaders);
+        for (int i = 0; i < loaders.length; i++) {
+            final ResourcesLoader loader = loaders[i];
+            if (!loaderSet.contains(loader)) {
+                newLoaders.add(loader);
+            }
+        }
+        if (loaderSet.size() == newLoaders.size()) {
+            return;
+        }
+        mCallbacks.onLoadersChanged(this, newLoaders);
+        for (int i = loaderSet.size(), n = newLoaders.size(); i < n; i++) {
+            newLoaders.get(i).registerOnProvidersChangedCallback(this, mCallbacks);
+        }
+    }
+}

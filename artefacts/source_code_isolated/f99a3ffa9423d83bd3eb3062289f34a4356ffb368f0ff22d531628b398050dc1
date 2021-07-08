@@ -1,0 +1,56 @@
+public int checkAddPermission(int type, boolean isRoundedCornerOverlay, String packageName, int[] outAppOp){
+    if (isRoundedCornerOverlay && mContext.checkCallingOrSelfPermission(INTERNAL_SYSTEM_WINDOW) != PERMISSION_GRANTED) {
+        return ADD_PERMISSION_DENIED;
+    }
+    outAppOp[0] = AppOpsManager.OP_NONE;
+    if (!((type >= FIRST_APPLICATION_WINDOW && type <= LAST_APPLICATION_WINDOW) || (type >= FIRST_SUB_WINDOW && type <= LAST_SUB_WINDOW) || (type >= FIRST_SYSTEM_WINDOW && type <= LAST_SYSTEM_WINDOW))) {
+        return WindowManagerGlobal.ADD_INVALID_TYPE;
+    }
+    if (type < FIRST_SYSTEM_WINDOW || type > LAST_SYSTEM_WINDOW) {
+        return ADD_OKAY;
+    }
+    if (!isSystemAlertWindowType(type)) {
+        switch(type) {
+            case TYPE_TOAST:
+                outAppOp[0] = OP_TOAST_WINDOW;
+                return ADD_OKAY;
+            case TYPE_INPUT_METHOD:
+            case TYPE_WALLPAPER:
+            case TYPE_PRESENTATION:
+            case TYPE_PRIVATE_PRESENTATION:
+            case TYPE_VOICE_INTERACTION:
+            case TYPE_ACCESSIBILITY_OVERLAY:
+            case TYPE_QS_DIALOG:
+            case TYPE_NAVIGATION_BAR_PANEL:
+                return ADD_OKAY;
+        }
+        return (mContext.checkCallingOrSelfPermission(INTERNAL_SYSTEM_WINDOW) == PERMISSION_GRANTED) ? ADD_OKAY : ADD_PERMISSION_DENIED;
+    }
+    outAppOp[0] = OP_SYSTEM_ALERT_WINDOW;
+    final int callingUid = Binder.getCallingUid();
+    if (UserHandle.getAppId(callingUid) == Process.SYSTEM_UID) {
+        return ADD_OKAY;
+    }
+    ApplicationInfo appInfo;
+    try {
+        appInfo = mPackageManager.getApplicationInfoAsUser(packageName, 0, UserHandle.getUserId(callingUid));
+    } catch (PackageManager.NameNotFoundException e) {
+        appInfo = null;
+    }
+    if (appInfo == null || (type != TYPE_APPLICATION_OVERLAY && appInfo.targetSdkVersion >= O)) {
+        return (mContext.checkCallingOrSelfPermission(INTERNAL_SYSTEM_WINDOW) == PERMISSION_GRANTED) ? ADD_OKAY : ADD_PERMISSION_DENIED;
+    }
+    final int mode = mAppOpsManager.noteOpNoThrow(outAppOp[0], callingUid, packageName, null, "check-add");
+    switch(mode) {
+        case AppOpsManager.MODE_ALLOWED:
+        case AppOpsManager.MODE_IGNORED:
+            return ADD_OKAY;
+        case AppOpsManager.MODE_ERRORED:
+            if (appInfo.targetSdkVersion < M) {
+                return ADD_OKAY;
+            }
+            return ADD_PERMISSION_DENIED;
+        default:
+            return (mContext.checkCallingOrSelfPermission(SYSTEM_ALERT_WINDOW) == PERMISSION_GRANTED) ? ADD_OKAY : ADD_PERMISSION_DENIED;
+    }
+}

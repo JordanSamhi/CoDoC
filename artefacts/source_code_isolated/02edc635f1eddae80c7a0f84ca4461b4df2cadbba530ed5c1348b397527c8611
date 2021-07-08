@@ -1,0 +1,10 @@
+public int getWeekNumber(){
+    int closestThursday = yearDay + sThursdayOffset[weekDay];
+    if (closestThursday >= 0 && closestThursday <= 364) {
+        return closestThursday / 7 + 1;
+    }
+    Time temp = new Time(this);
+    temp.monthDay += sThursdayOffset[weekDay];
+    temp.normalize(true);
+    return temp.yearDay / 7 + 1;
+}

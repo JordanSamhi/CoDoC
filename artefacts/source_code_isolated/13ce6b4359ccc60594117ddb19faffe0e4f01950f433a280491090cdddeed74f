@@ -1,0 +1,37 @@
+public void addTimeTaken(int time){
+    if (mSampleCount == 0 || (mSampleCount == Integer.MAX_VALUE)) {
+        if (mSampleCount == 0) {
+            mMinTimeMs = time;
+            mMaxTimeMs = time;
+            mAverageTimeMs = time;
+        } else {
+            mInitialTimings = new int[RANGE_CALCULATION_COUNT];
+        }
+        mSampleCount = 1;
+        Arrays.fill(mInitialTimings, 0);
+        mInitialTimings[0] = time;
+        Arrays.fill(mBucketEndPoints, 0);
+        Arrays.fill(mBucketCounters, 0);
+    } else {
+        if (time < mMinTimeMs) {
+            mMinTimeMs = time;
+        }
+        if (time > mMaxTimeMs) {
+            mMaxTimeMs = time;
+        }
+        long totalTime = ((long) mAverageTimeMs) * mSampleCount + time;
+        mAverageTimeMs = (int) (totalTime / ++mSampleCount);
+        if (mSampleCount < RANGE_CALCULATION_COUNT) {
+            mInitialTimings[mSampleCount - 1] = time;
+        } else if (mSampleCount == RANGE_CALCULATION_COUNT) {
+            mInitialTimings[mSampleCount - 1] = time;
+            calculateBucketEndPoints(mBucketEndPoints);
+            for (int j = 0; j < RANGE_CALCULATION_COUNT; j++) {
+                addToBucketCounter(mBucketEndPoints, mBucketCounters, mInitialTimings[j]);
+            }
+            mInitialTimings = null;
+        } else {
+            addToBucketCounter(mBucketEndPoints, mBucketCounters, time);
+        }
+    }
+}

@@ -1,0 +1,20 @@
+public void load(){
+    if (mKeyStore != null) {
+        return;
+    }
+    int index = 0;
+    try {
+        mKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        mKeyStore.load(null, null);
+        Set<X509Certificate> certs = WfaCertBuilder.loadCertsFromDisk(DEFAULT_WFA_CERT_DIR);
+        for (X509Certificate cert : certs) {
+            mKeyStore.setCertificateEntry(String.format("%d", index), cert);
+            index++;
+        }
+        if (index <= 0) {
+            Log.wtf(TAG, "No certs loaded");
+        }
+    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+        e.printStackTrace();
+    }
+}

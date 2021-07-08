@@ -1,0 +1,17 @@
+public void failNextPreview(){
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        CaptureHolder h1 = mPreviewCaptureQueue.peek();
+        CaptureHolder h2 = mPreviewProduceQueue.peek();
+        CaptureHolder h = (h1 == null) ? h2 : ((h2 == null) ? h1 : ((h1.compareTo(h2) <= 0) ? h1 : h2));
+        if (h != null) {
+            mPreviewCaptureQueue.remove(h);
+            mPreviewProduceQueue.remove(h);
+            mActiveRequests.remove(h);
+            h.setPreviewFailed();
+        }
+    } finally {
+        lock.unlock();
+    }
+}

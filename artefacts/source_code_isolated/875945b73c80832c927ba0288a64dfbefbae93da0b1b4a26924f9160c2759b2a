@@ -1,0 +1,41 @@
+public boolean update(@NonNull Area area, @NonNull View rootView, long flags){
+    if (sDebug) {
+        Log.d(TAG, "Updating " + area + " + with " + rootView);
+    }
+    Preconditions.checkNotNull(area);
+    Preconditions.checkNotNull(area.proxy);
+    Preconditions.checkNotNull(rootView);
+    final PresentationParams smartSuggestion = area.proxy.getSmartSuggestionParams();
+    if (smartSuggestion == null) {
+        Log.w(TAG, "No SmartSuggestionParams");
+        return false;
+    }
+    final Rect rect = area.getBounds();
+    if (rect == null) {
+        Log.wtf(TAG, "No Rect on SmartSuggestionParams");
+        return false;
+    }
+    synchronized (mLock) {
+        checkNotDestroyedLocked();
+        mProxy = area.proxy;
+        mWm = rootView.getContext().getSystemService(WindowManager.class);
+        mFillView = rootView;
+        mFillView.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                if (sVerbose)
+                    Log.v(TAG, "Outside touch detected, hiding the window");
+                hide();
+            }
+            return false;
+        });
+        mShowing = false;
+        mBounds = new Rect(area.getBounds());
+        if (sDebug) {
+            Log.d(TAG, "Created FillWindow: params= " + smartSuggestion + " view=" + rootView);
+        }
+        mUpdateCalled = true;
+        mDestroyed = false;
+        mProxy.setFillWindow(this);
+        return true;
+    }
+}

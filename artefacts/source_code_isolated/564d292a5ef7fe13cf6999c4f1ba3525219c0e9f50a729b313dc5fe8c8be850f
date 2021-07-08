@@ -1,0 +1,10 @@
+public void setUserControlDisabledPackages(@NonNull ComponentName admin, @NonNull List<String> packages){
+    throwIfParentInstance("setUserControlDisabledPackages");
+    if (mService != null) {
+        try {
+            mService.setUserControlDisabledPackages(admin, packages);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,8 @@
+public AccessibilityNodeInfo getSource(){
+    enforceSealed();
+    if ((mConnectionId == UNDEFINED) || (mSourceWindowId == AccessibilityWindowInfo.UNDEFINED_WINDOW_ID) || (AccessibilityNodeInfo.getAccessibilityViewId(mSourceNodeId) == AccessibilityNodeInfo.UNDEFINED_ITEM_ID)) {
+        return null;
+    }
+    AccessibilityInteractionClient client = AccessibilityInteractionClient.getInstance();
+    return client.findAccessibilityNodeInfoByAccessibilityId(mConnectionId, mSourceWindowId, mSourceNodeId, false, GET_SOURCE_PREFETCH_FLAGS, null);
+}

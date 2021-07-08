@@ -1,0 +1,26 @@
+public void waitForIdle(long idleTimeoutMillis, long globalTimeoutMillis) throws TimeoutException{
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+        final long startTimeMillis = SystemClock.uptimeMillis();
+        if (mLastEventTimeMillis <= 0) {
+            mLastEventTimeMillis = startTimeMillis;
+        }
+        while (true) {
+            final long currentTimeMillis = SystemClock.uptimeMillis();
+            final long elapsedGlobalTimeMillis = currentTimeMillis - startTimeMillis;
+            final long remainingGlobalTimeMillis = globalTimeoutMillis - elapsedGlobalTimeMillis;
+            if (remainingGlobalTimeMillis <= 0) {
+                throw new TimeoutException("No idle state with idle timeout: " + idleTimeoutMillis + " within global timeout: " + globalTimeoutMillis);
+            }
+            final long elapsedIdleTimeMillis = currentTimeMillis - mLastEventTimeMillis;
+            final long remainingIdleTimeMillis = idleTimeoutMillis - elapsedIdleTimeMillis;
+            if (remainingIdleTimeMillis <= 0) {
+                return;
+            }
+            try {
+                mLock.wait(remainingIdleTimeMillis);
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
+}

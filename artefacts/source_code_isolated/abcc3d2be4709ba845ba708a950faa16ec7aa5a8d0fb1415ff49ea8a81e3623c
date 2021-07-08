@@ -1,0 +1,9 @@
+public void onStartSocketKeepalive(int slot, @NonNull Duration interval, @NonNull KeepalivePacketData packet){
+    final long intervalSeconds = interval.getSeconds();
+    if (intervalSeconds < SocketKeepalive.MIN_INTERVAL_SEC || intervalSeconds > SocketKeepalive.MAX_INTERVAL_SEC) {
+        throw new IllegalArgumentException("Interval needs to be comprised between " + SocketKeepalive.MIN_INTERVAL_SEC + " and " + SocketKeepalive.MAX_INTERVAL_SEC + " but was " + intervalSeconds);
+    }
+    final Message msg = mHandler.obtainMessage(CMD_START_SOCKET_KEEPALIVE, slot, (int) intervalSeconds, packet);
+    startSocketKeepalive(msg);
+    msg.recycle();
+}

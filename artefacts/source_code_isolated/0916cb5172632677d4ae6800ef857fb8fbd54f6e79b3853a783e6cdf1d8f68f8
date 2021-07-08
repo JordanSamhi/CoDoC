@@ -1,0 +1,43 @@
+public long[] readFreqs(@NonNull PowerProfile powerProfile){
+    checkNotNull(powerProfile);
+    if (mCpuFreqs != null) {
+        return mCpuFreqs;
+    }
+    if (!mAllUidTimesAvailable) {
+        return null;
+    }
+    if (mBpfTimesAvailable) {
+        readFreqsThroughBpf();
+    }
+    if (mCpuFreqs == null) {
+        final int oldMask = StrictMode.allowThreadDiskReadsMask();
+        try (BufferedReader reader = Files.newBufferedReader(mProcFilePath)) {
+            if (readFreqs(reader.readLine()) == null) {
+                return null;
+            }
+        } catch (IOException e) {
+            if (++mErrors >= MAX_ERROR_COUNT) {
+                mAllUidTimesAvailable = false;
+            }
+            Slog.e(mTag, "Failed to read " + UID_TIMES_PROC_FILE + ": " + e);
+            return null;
+        } finally {
+            StrictMode.setThreadPolicyMask(oldMask);
+        }
+    }
+    final IntArray numClusterFreqs = extractClusterInfoFromProcFileFreqs();
+    final int numClusters = powerProfile.getNumCpuClusters();
+    if (numClusterFreqs.size() == numClusters) {
+        mPerClusterTimesAvailable = true;
+        for (int i = 0; i < numClusters; ++i) {
+            if (numClusterFreqs.get(i) != powerProfile.getNumSpeedStepsInCpuCluster(i)) {
+                mPerClusterTimesAvailable = false;
+                break;
+            }
+        }
+    } else {
+        mPerClusterTimesAvailable = false;
+    }
+    Slog.i(mTag, "mPerClusterTimesAvailable=" + mPerClusterTimesAvailable);
+    return mCpuFreqs;
+}

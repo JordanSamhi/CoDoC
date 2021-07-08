@@ -1,0 +1,36 @@
+public int addAppTask(@NonNull Activity activity, @NonNull Intent intent, @Nullable TaskDescription description, @NonNull Bitmap thumbnail){
+    Point size;
+    synchronized (this) {
+        ensureAppTaskThumbnailSizeLocked();
+        size = mAppTaskThumbnailSize;
+    }
+    final int tw = thumbnail.getWidth();
+    final int th = thumbnail.getHeight();
+    if (tw != size.x || th != size.y) {
+        Bitmap bm = Bitmap.createBitmap(size.x, size.y, thumbnail.getConfig());
+        float scale;
+        float dx = 0, dy = 0;
+        if (tw * size.x > size.y * th) {
+            scale = (float) size.x / (float) th;
+            dx = (size.y - tw * scale) * 0.5f;
+        } else {
+            scale = (float) size.y / (float) tw;
+            dy = (size.x - th * scale) * 0.5f;
+        }
+        Matrix matrix = new Matrix();
+        matrix.setScale(scale, scale);
+        matrix.postTranslate((int) (dx + 0.5f), 0);
+        Canvas canvas = new Canvas(bm);
+        canvas.drawBitmap(thumbnail, matrix, null);
+        canvas.setBitmap(null);
+        thumbnail = bm;
+    }
+    if (description == null) {
+        description = new TaskDescription();
+    }
+    try {
+        return getTaskService().addAppTask(activity.getActivityToken(), intent, description, thumbnail);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

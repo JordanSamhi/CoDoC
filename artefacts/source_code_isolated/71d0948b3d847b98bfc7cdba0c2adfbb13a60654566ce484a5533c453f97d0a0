@@ -1,0 +1,14 @@
+public final void setProjectionLocked(SurfaceControl.Transaction t, int orientation, Rect layerStackRect, Rect displayRect){
+    if (mCurrentOrientation != orientation || mCurrentLayerStackRect == null || !mCurrentLayerStackRect.equals(layerStackRect) || mCurrentDisplayRect == null || !mCurrentDisplayRect.equals(displayRect)) {
+        mCurrentOrientation = orientation;
+        if (mCurrentLayerStackRect == null) {
+            mCurrentLayerStackRect = new Rect();
+        }
+        mCurrentLayerStackRect.set(layerStackRect);
+        if (mCurrentDisplayRect == null) {
+            mCurrentDisplayRect = new Rect();
+        }
+        mCurrentDisplayRect.set(displayRect);
+        t.setDisplayProjection(mDisplayToken, orientation, layerStackRect, displayRect);
+    }
+}

@@ -1,0 +1,25 @@
+public void addCallback(IBinder binder, INetworkRequestMatchCallback callback, int callbackIdentifier){
+    if (mActiveSpecificNetworkRequest == null) {
+        Log.wtf(TAG, "No valid network request. Ignoring callback registration");
+        try {
+            callback.onAbort();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Unable to invoke network request abort callback " + callback, e);
+        }
+        return;
+    }
+    if (!mRegisteredCallbacks.add(binder, callback, callbackIdentifier)) {
+        Log.e(TAG, "Failed to add callback");
+        return;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Adding callback. Num callbacks: " + mRegisteredCallbacks.getNumCallbacks());
+    }
+    try {
+        callback.onUserSelectionCallbackRegistration(new NetworkFactoryUserSelectionCallback(mActiveSpecificNetworkRequest));
+    } catch (RemoteException e) {
+        Log.e(TAG, "Unable to invoke user selection registration callback " + callback, e);
+        return;
+    }
+    sendNetworkRequestMatchCallbacksForActiveRequest(mActiveMatchedScanResults);
+}

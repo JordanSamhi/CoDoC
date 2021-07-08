@@ -1,0 +1,15 @@
+public final void setDataSource(@NonNull String path, @Nullable Map<String, String> headers) throws IOException{
+    String[] keys = null;
+    String[] values = null;
+    if (headers != null) {
+        keys = new String[headers.size()];
+        values = new String[headers.size()];
+        int i = 0;
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            keys[i] = entry.getKey();
+            values[i] = entry.getValue();
+            ++i;
+        }
+    }
+    nativeSetDataSource(MediaHTTPService.createHttpServiceBinderIfNecessary(path), path, keys, values);
+}

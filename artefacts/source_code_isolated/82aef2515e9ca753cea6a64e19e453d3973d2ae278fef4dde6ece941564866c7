@@ -1,0 +1,10 @@
+public void release(){
+    synchronized (mLock) {
+        if (mReleased) {
+            return;
+        }
+        nativeFinalize();
+        mNativeContext = 0;
+        mReleased = true;
+    }
+}

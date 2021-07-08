@@ -1,0 +1,32 @@
+public static SystemUpdatePolicy restoreFromXml(XmlPullParser parser){
+    try {
+        SystemUpdatePolicy policy = new SystemUpdatePolicy();
+        String value = parser.getAttributeValue(null, KEY_POLICY_TYPE);
+        if (value != null) {
+            policy.mPolicyType = Integer.parseInt(value);
+            value = parser.getAttributeValue(null, KEY_INSTALL_WINDOW_START);
+            if (value != null) {
+                policy.mMaintenanceWindowStart = Integer.parseInt(value);
+            }
+            value = parser.getAttributeValue(null, KEY_INSTALL_WINDOW_END);
+            if (value != null) {
+                policy.mMaintenanceWindowEnd = Integer.parseInt(value);
+            }
+            int outerDepth = parser.getDepth();
+            int type;
+            while ((type = parser.next()) != END_DOCUMENT && (type != END_TAG || parser.getDepth() > outerDepth)) {
+                if (type == END_TAG || type == TEXT) {
+                    continue;
+                }
+                if (!parser.getName().equals(KEY_FREEZE_TAG)) {
+                    continue;
+                }
+                policy.mFreezePeriods.add(new FreezePeriod(MonthDay.parse(parser.getAttributeValue(null, KEY_FREEZE_START)), MonthDay.parse(parser.getAttributeValue(null, KEY_FREEZE_END))));
+            }
+            return policy;
+        }
+    } catch (NumberFormatException | XmlPullParserException | IOException e) {
+        Log.w(TAG, "Load xml failed", e);
+    }
+    return null;
+}

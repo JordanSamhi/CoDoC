@@ -1,0 +1,45 @@
+
+         * Returns which fields were available on datasets provided by the service but manually
+         * entered by the user.
+         *
+         * <p>For example, server provides:
+         *
+         * <pre class="prettyprint">
+         *  FillResponse response = new FillResponse.Builder()
+         *      .addDataset(new Dataset.Builder(presentation1)
+         *          .setId("4815")
+         *          .setValue(usernameId, AutofillValue.forText("MrPlow"))
+         *          .setValue(passwordId, AutofillValue.forText("AyCaramba"))
+         *          .build())
+         *      .addDataset(new Dataset.Builder(presentation2)
+         *          .setId("162342")
+         *          .setValue(usernameId, AutofillValue.forText("ElBarto"))
+         *          .setValue(passwordId, AutofillValue.forText("D'OH"))
+         *          .build())
+         *      .addDataset(new Dataset.Builder(presentation3)
+         *          .setId("108")
+         *          .setValue(usernameId, AutofillValue.forText("MrPlow"))
+         *          .setValue(passwordId, AutofillValue.forText("D'OH"))
+         *          .build())
+         *      .build();
+         * </pre>
+         *
+         * <p>User doesn't select a dataset but manually enters:
+         *
+         * <pre class="prettyprint">
+         *   username = "MrPlow";
+         *   password = "D'OH";
+         * </pre>
+         *
+         * <p>Then the result is the following map:
+         *
+         * <pre class="prettyprint">
+         *   usernameId => { "4815", "108"}
+         *   passwordId => { "162342", "108" }
+         * </pre>
+         *
+         * <p><b>Note: </b>Only set on events of type {@link #TYPE_CONTEXT_COMMITTED}.
+         *
+         * @return map map whose key is the id of the manually-entered field, and value is the
+         * ids of the datasets that have that value but were not selected by the user.
+         

@@ -1,0 +1,13 @@
+public void testValueAt_OutOfBounds_EdgeCase(){
+    BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+    ArraySet<Integer> set = new ArraySet<>();
+    set.add(0);
+    while (state.keepRunning()) {
+        for (int i = 0; i < NUM_ITERATIONS; ++i) {
+            try {
+                set.valueAt(1);
+            } catch (ArrayIndexOutOfBoundsException expected) {
+            }
+        }
+    }
+}

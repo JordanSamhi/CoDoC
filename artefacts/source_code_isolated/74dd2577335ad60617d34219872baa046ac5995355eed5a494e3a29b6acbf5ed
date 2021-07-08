@@ -1,0 +1,13 @@
+public Bitmap getBitmap(@NonNull Bitmap bitmap){
+    if (bitmap != null && isAvailable()) {
+        applyUpdate();
+        applyTransformMatrix();
+        if (mLayer == null && mUpdateSurface) {
+            getTextureLayer();
+        }
+        if (mLayer != null) {
+            mLayer.copyInto(bitmap);
+        }
+    }
+    return bitmap;
+}

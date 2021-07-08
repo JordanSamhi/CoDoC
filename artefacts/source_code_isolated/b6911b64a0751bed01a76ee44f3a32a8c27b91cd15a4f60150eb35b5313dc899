@@ -1,0 +1,23 @@
+public float getDimension(@NonNull Context context, PartnerConfig partnerConfig, float defaultValue){
+    if (partnerConfig.getResourceType() != PartnerConfig.ResourceType.DIMENSION) {
+        throw new IllegalArgumentException("Not a dimension resource");
+    }
+    if (mPartnerResourceCache.containsKey(partnerConfig)) {
+        return (float) mPartnerResourceCache.get(partnerConfig);
+    }
+    float result = defaultValue;
+    try {
+        String resourceName = partnerConfig.getResourceName();
+        ResourceEntry resourceEntry = getResourceEntryFromKey(resourceName);
+        if (resourceEntry == null) {
+            Log.w(TAG, "Resource not found: " + resourceName);
+            return defaultValue;
+        }
+        Resources resource = getResourcesByPackageName(context, resourceEntry.getPackageName());
+        result = resource.getDimension(resourceEntry.getResourceId());
+        mPartnerResourceCache.put(partnerConfig, result);
+    } catch (PackageManager.NameNotFoundException exception) {
+        Log.e(TAG, exception.getMessage());
+    }
+    return result;
+}

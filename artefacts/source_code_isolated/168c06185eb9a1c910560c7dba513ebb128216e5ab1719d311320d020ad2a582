@@ -1,0 +1,11 @@
+public NetworkStats querySummary(int networkType, String subscriberId, long startTime, long endTime) throws SecurityException, RemoteException{
+    NetworkTemplate template;
+    try {
+        template = createTemplate(networkType, subscriberId);
+    } catch (IllegalArgumentException e) {
+        if (DBG)
+            Log.e(TAG, "Cannot create template", e);
+        return null;
+    }
+    return querySummary(template, startTime, endTime);
+}

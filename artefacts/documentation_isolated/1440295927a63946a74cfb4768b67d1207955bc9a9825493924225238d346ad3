@@ -1,0 +1,28 @@
+
+         * Configure the Soft AP to require manual user control of client association.
+         * If disabled (the default) then any client which isn't in the blocked list
+         * {@link #getBlockedClientList()} can associate to this Soft AP using the
+         * correct credentials until the Soft AP capacity is reached (capacity is hardware, carrier,
+         * or user limited - using {@link #setMaxNumberOfClients(int)}).
+         *
+         * If manual user control is enabled then clients will be accepted, rejected, or require
+         * a user approval based on the configuration provided by
+         * {@link #setBlockedClientList(List)} and {@link #setAllowedClientList(List)}.
+         *
+         * <p>
+         * This method requires hardware support. Hardware support can be determined using
+         * {@link WifiManager.SoftApCallback#onCapabilityChanged(SoftApCapability)} and
+         * {@link SoftApCapability#areFeaturesSupported(int)}
+         * with {@link SoftApCapability.SOFTAP_FEATURE_CLIENT_FORCE_DISCONNECT}
+         *
+         * <p>
+         * If the method is called on a device without hardware support then starting the soft AP
+         * using {@link WifiManager#startTetheredHotspot(SoftApConfiguration)} will fail with
+         * {@link WifiManager#SAP_START_FAILURE_UNSUPPORTED_CONFIGURATION}.
+         *
+         * <p>
+         * <li>If not set, defaults to false (i.e The authoriztion is not required).</li>
+         *
+         * @param enabled true for enabling the control by user, false otherwise.
+         * @return Builder for chaining.
+         

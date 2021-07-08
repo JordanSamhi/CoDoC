@@ -1,0 +1,16 @@
+public boolean left(){
+    if (mColumn == 0) {
+        mRow--;
+        mColumn = 6;
+    } else {
+        mColumn--;
+    }
+    if (isWithinCurrentMonth(mRow, mColumn)) {
+        return false;
+    }
+    previousMonth();
+    int lastDay = getNumberOfDaysInMonth();
+    mRow = getRowOf(lastDay);
+    mColumn = getColumnOf(lastDay);
+    return true;
+}

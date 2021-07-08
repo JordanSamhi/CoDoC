@@ -1,0 +1,12 @@
+public boolean isSetWallpaperAllowed(){
+    if (sGlobals.mService == null) {
+        Log.w(TAG, "WallpaperService not running");
+        throw new RuntimeException(new DeadSystemException());
+    } else {
+        try {
+            return sGlobals.mService.isSetWallpaperAllowed(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

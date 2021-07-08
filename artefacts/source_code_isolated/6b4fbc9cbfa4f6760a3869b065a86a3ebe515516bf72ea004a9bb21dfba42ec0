@@ -1,0 +1,13 @@
+public DisableInfo getDisableInfo(){
+    try {
+        final int userId = Binder.getCallingUserHandle().getIdentifier();
+        final IStatusBarService svc = getService();
+        int[] flags = new int[] { 0, 0 };
+        if (svc != null) {
+            flags = svc.getDisableFlags(mToken, userId);
+        }
+        return new DisableInfo(flags[0], flags[1]);
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

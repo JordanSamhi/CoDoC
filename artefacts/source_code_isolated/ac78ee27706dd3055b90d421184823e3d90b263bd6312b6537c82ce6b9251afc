@@ -1,0 +1,49 @@
+public void recordSnapshotLocked(NetworkStats snapshot, Map<String, NetworkIdentitySet> ifaceIdent, long currentTimeMillis){
+    final HashSet<String> unknownIfaces = Sets.newHashSet();
+    if (snapshot == null)
+        return;
+    if (mLastSnapshot == null) {
+        mLastSnapshot = snapshot;
+        return;
+    }
+    final NetworkStatsCollection complete = mComplete != null ? mComplete.get() : null;
+    final NetworkStats delta = NetworkStats.subtract(snapshot, mLastSnapshot, mObserver, mCookie);
+    final long end = currentTimeMillis;
+    final long start = end - delta.getElapsedRealtime();
+    NetworkStats.Entry entry = null;
+    for (int i = 0; i < delta.size(); i++) {
+        entry = delta.getValues(i, entry);
+        if (entry.isNegative()) {
+            if (mObserver != null) {
+                mObserver.foundNonMonotonic(delta, i, mCookie);
+            }
+            entry.rxBytes = Math.max(entry.rxBytes, 0);
+            entry.rxPackets = Math.max(entry.rxPackets, 0);
+            entry.txBytes = Math.max(entry.txBytes, 0);
+            entry.txPackets = Math.max(entry.txPackets, 0);
+            entry.operations = Math.max(entry.operations, 0);
+        }
+        final NetworkIdentitySet ident = ifaceIdent.get(entry.iface);
+        if (ident == null) {
+            unknownIfaces.add(entry.iface);
+            continue;
+        }
+        if (entry.isEmpty())
+            continue;
+        if ((entry.tag == TAG_NONE) != mOnlyTags) {
+            if (mPending != null) {
+                mPending.recordData(ident, entry.uid, entry.set, entry.tag, start, end, entry);
+            }
+            if (mSinceBoot != null) {
+                mSinceBoot.recordData(ident, entry.uid, entry.set, entry.tag, start, end, entry);
+            }
+            if (complete != null) {
+                complete.recordData(ident, entry.uid, entry.set, entry.tag, start, end, entry);
+            }
+        }
+    }
+    mLastSnapshot = snapshot;
+    if (LOGV && unknownIfaces.size() > 0) {
+        Slog.w(TAG, "unknown interfaces " + unknownIfaces + ", ignoring those stats");
+    }
+}

@@ -1,0 +1,15 @@
+public long readRawUnsigned(){
+    int bits = 0;
+    long result = 0;
+    while (true) {
+        final byte b = readRawByte();
+        result |= ((long) (b & 0x7F)) << bits;
+        if ((b & 0x80) == 0) {
+            return result;
+        }
+        bits += 7;
+        if (bits > 64) {
+            throw new ProtoParseException("Varint too long -- " + getDebugString());
+        }
+    }
+}

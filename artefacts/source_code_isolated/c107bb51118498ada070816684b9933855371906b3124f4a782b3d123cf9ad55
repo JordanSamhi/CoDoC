@@ -1,0 +1,10 @@
+public boolean canHaveProfile(){
+    if (isProfile() || isGuest() || isRestricted()) {
+        return false;
+    }
+    if (UserManager.isSplitSystemUser() || UserManager.isHeadlessSystemUserMode()) {
+        return id != UserHandle.USER_SYSTEM;
+    } else {
+        return id == UserHandle.USER_SYSTEM;
+    }
+}

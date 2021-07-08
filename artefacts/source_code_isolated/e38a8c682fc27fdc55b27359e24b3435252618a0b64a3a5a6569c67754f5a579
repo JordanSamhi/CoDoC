@@ -1,0 +1,17 @@
+public final View tryCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs){
+    if (name.equals(TAG_1995)) {
+        return new BlinkLayout(context, attrs);
+    }
+    View view;
+    if (mFactory2 != null) {
+        view = mFactory2.onCreateView(parent, name, context, attrs);
+    } else if (mFactory != null) {
+        view = mFactory.onCreateView(name, context, attrs);
+    } else {
+        view = null;
+    }
+    if (view == null && mPrivateFactory != null) {
+        view = mPrivateFactory.onCreateView(parent, name, context, attrs);
+    }
+    return view;
+}

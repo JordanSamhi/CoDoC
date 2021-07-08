@@ -1,0 +1,11 @@
+public long generateChallenge(){
+    long result = 0;
+    if (mService != null) {
+        try {
+            result = mService.generateChallenge(mToken);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return result;
+}

@@ -1,0 +1,69 @@
+public void appendPostalLine(final int type, final String label, final ContentValues contentValues, final boolean isPrimary, final boolean emitEveryTime){
+    final boolean reallyUseQuotedPrintable;
+    final boolean appendCharset;
+    final String addressValue;
+    {
+        PostalStruct postalStruct = tryConstructPostalStruct(contentValues);
+        if (postalStruct == null) {
+            if (emitEveryTime) {
+                reallyUseQuotedPrintable = false;
+                appendCharset = false;
+                addressValue = "";
+            } else {
+                return;
+            }
+        } else {
+            reallyUseQuotedPrintable = postalStruct.reallyUseQuotedPrintable;
+            appendCharset = postalStruct.appendCharset;
+            addressValue = postalStruct.addressData;
+        }
+    }
+    List<String> parameterList = new ArrayList<String>();
+    if (isPrimary) {
+        parameterList.add(VCardConstants.PARAM_TYPE_PREF);
+    }
+    switch(type) {
+        case StructuredPostal.TYPE_HOME:
+            {
+                parameterList.add(VCardConstants.PARAM_TYPE_HOME);
+                break;
+            }
+        case StructuredPostal.TYPE_WORK:
+            {
+                parameterList.add(VCardConstants.PARAM_TYPE_WORK);
+                break;
+            }
+        case StructuredPostal.TYPE_CUSTOM:
+            {
+                if (!TextUtils.isEmpty(label) && VCardUtils.containsOnlyAlphaDigitHyphen(label)) {
+                    parameterList.add("X-" + label);
+                }
+                break;
+            }
+        case StructuredPostal.TYPE_OTHER:
+            {
+                break;
+            }
+        default:
+            {
+                Log.e(LOG_TAG, "Unknown StructuredPostal type: " + type);
+                break;
+            }
+    }
+    mBuilder.append(VCardConstants.PROPERTY_ADR);
+    if (!parameterList.isEmpty()) {
+        mBuilder.append(VCARD_PARAM_SEPARATOR);
+        appendTypeParameters(parameterList);
+    }
+    if (appendCharset) {
+        mBuilder.append(VCARD_PARAM_SEPARATOR);
+        mBuilder.append(mVCardCharsetParameter);
+    }
+    if (reallyUseQuotedPrintable) {
+        mBuilder.append(VCARD_PARAM_SEPARATOR);
+        mBuilder.append(VCARD_PARAM_ENCODING_QP);
+    }
+    mBuilder.append(VCARD_DATA_SEPARATOR);
+    mBuilder.append(addressValue);
+    mBuilder.append(VCARD_END_OF_LINE);
+}

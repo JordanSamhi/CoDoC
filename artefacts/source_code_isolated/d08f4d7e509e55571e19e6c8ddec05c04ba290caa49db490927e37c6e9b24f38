@@ -1,0 +1,25 @@
+public boolean isInEmergencySmsMode(){
+    long lastSmsTimeMs = mTimeLastEmergencySmsSentMs;
+    if (lastSmsTimeMs == EMERGENCY_SMS_NO_TIME_RECORDED) {
+        return false;
+    }
+    CarrierConfigManager configManager = (CarrierConfigManager) getContext().getSystemService(Context.CARRIER_CONFIG_SERVICE);
+    PersistableBundle b = configManager.getConfigForSubId(getSubId());
+    if (b == null) {
+        return false;
+    }
+    int eSmsTimerMs = b.getInt(CarrierConfigManager.KEY_EMERGENCY_SMS_MODE_TIMER_MS_INT, 0);
+    if (eSmsTimerMs == 0) {
+        return false;
+    }
+    if (eSmsTimerMs > EMERGENCY_SMS_TIMER_MAX_MS) {
+        eSmsTimerMs = EMERGENCY_SMS_TIMER_MAX_MS;
+    }
+    boolean isInEmergencySmsMode = SystemClock.elapsedRealtime() <= (lastSmsTimeMs + eSmsTimerMs);
+    if (!isInEmergencySmsMode) {
+        mTimeLastEmergencySmsSentMs = EMERGENCY_SMS_NO_TIME_RECORDED;
+    } else {
+        mLocalLog.log("isInEmergencySmsMode: queried while eSMS mode is active.");
+    }
+    return isInEmergencySmsMode;
+}

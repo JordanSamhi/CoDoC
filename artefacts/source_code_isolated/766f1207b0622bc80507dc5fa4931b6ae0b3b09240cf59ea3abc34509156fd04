@@ -1,0 +1,46 @@
+public void installTrustRootCertificates(int sessionId, @NonNull Map<Integer, List<X509Certificate>> trustRootCertificates){
+    if (sessionId != mCurrentSessionId) {
+        Log.w(TAG, "Expected TrustRootCertificates callback for currentSessionId=" + mCurrentSessionId);
+        return;
+    }
+    if (mState != STATE_WAITING_FOR_TRUST_ROOT_CERTS) {
+        if (mVerboseLoggingEnabled) {
+            Log.v(TAG, "Received an unexpected TrustRootCertificates in state=" + mState);
+        }
+        return;
+    }
+    if (trustRootCertificates.isEmpty()) {
+        Log.e(TAG, "fails to retrieve trust root certificates");
+        resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_RETRIEVE_TRUST_ROOT_CERTIFICATES);
+        return;
+    }
+    List<X509Certificate> certificates = trustRootCertificates.get(OsuServerConnection.TRUST_CERT_TYPE_AAA);
+    if (certificates == null || certificates.isEmpty()) {
+        Log.e(TAG, "fails to retrieve trust root certificate for AAA server");
+        resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_NO_AAA_TRUST_ROOT_CERTIFICATE);
+        return;
+    }
+    mPasspointConfiguration.setServiceFriendlyNames(mOsuProvider.getFriendlyNameList());
+    mPasspointConfiguration.getCredential().setCaCertificates(certificates.toArray(new X509Certificate[0]));
+    certificates = trustRootCertificates.get(OsuServerConnection.TRUST_CERT_TYPE_REMEDIATION);
+    if (certificates == null || certificates.isEmpty()) {
+        Log.e(TAG, "fails to retrieve trust root certificate for Remediation");
+        resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_RETRIEVE_TRUST_ROOT_CERTIFICATES);
+        return;
+    }
+    if (mPasspointConfiguration.getSubscriptionUpdate() != null) {
+        mPasspointConfiguration.getSubscriptionUpdate().setCaCertificate(certificates.get(0));
+    }
+    try {
+        mWifiManager.addOrUpdatePasspointConfiguration(mPasspointConfiguration);
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "fails to add a new PasspointConfiguration: " + e);
+        resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_ADD_PASSPOINT_CONFIGURATION);
+        return;
+    }
+    invokeProvisioningCompleteCallback();
+    if (mVerboseLoggingEnabled) {
+        Log.i(TAG, "Provisioning is complete for " + mPasspointConfiguration.getHomeSp().getFqdn());
+    }
+    resetStateMachine();
+}

@@ -1,0 +1,11 @@
+public long setPlatformKeyGenerationId(int userId, int generationId){
+    SQLiteDatabase db = mKeyStoreDbHelper.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put(UserMetadataEntry.COLUMN_NAME_USER_ID, userId);
+    values.put(UserMetadataEntry.COLUMN_NAME_PLATFORM_KEY_GENERATION_ID, generationId);
+    String selection = UserMetadataEntry.COLUMN_NAME_USER_ID + " = ?";
+    String[] selectionArguments = new String[] { String.valueOf(userId) };
+    ensureUserMetadataEntryExists(userId);
+    invalidateKeysForUser(userId);
+    return db.update(UserMetadataEntry.TABLE_NAME, values, selection, selectionArguments);
+}

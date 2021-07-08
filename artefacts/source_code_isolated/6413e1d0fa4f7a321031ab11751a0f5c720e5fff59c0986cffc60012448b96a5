@@ -1,0 +1,12 @@
+public boolean startWpsRegistrar(@NonNull String ifaceName, String bssidStr, String pin){
+    synchronized (mLock) {
+        if (TextUtils.isEmpty(bssidStr) || TextUtils.isEmpty(pin))
+            return false;
+        try {
+            return startWpsRegistrar(ifaceName, NativeUtil.macAddressToByteArray(bssidStr), pin);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + bssidStr, e);
+            return false;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public void setSupportedSystemUsages(@NonNull @AttributeSystemUsage int[] systemUsages){
+    Objects.requireNonNull(systemUsages, "systemUsages must not be null");
+    final IAudioService service = getService();
+    try {
+        service.setSupportedSystemUsages(systemUsages);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

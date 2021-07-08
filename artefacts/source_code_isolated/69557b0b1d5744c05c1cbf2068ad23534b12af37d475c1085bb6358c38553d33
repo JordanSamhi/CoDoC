@@ -1,0 +1,8 @@
+public void setDataSource(@NonNull AssetFileDescriptor afd) throws IOException, IllegalArgumentException, IllegalStateException{
+    Preconditions.checkNotNull(afd);
+    if (afd.getDeclaredLength() < 0) {
+        setDataSource(afd.getFileDescriptor());
+    } else {
+        setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getDeclaredLength());
+    }
+}

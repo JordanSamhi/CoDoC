@@ -1,0 +1,16 @@
+public Builder addConnection(Type t, Script.KernelID from, Script.KernelID to){
+    Node nf = findNode(from);
+    if (nf == null) {
+        throw new RSInvalidStateException("From script not found.");
+    }
+    Node nt = findNode(to);
+    if (nt == null) {
+        throw new RSInvalidStateException("To script not found.");
+    }
+    ConnectLine cl = new ConnectLine(t, from, to);
+    mLines.add(new ConnectLine(t, from, to));
+    nf.mOutputs.add(cl);
+    nt.mInputs.add(cl);
+    validateCycle(nf, nf);
+    return this;
+}

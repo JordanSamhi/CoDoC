@@ -1,0 +1,17 @@
+public int synthesizeToFile(final CharSequence text, final Bundle params, final File file, final String utteranceId){
+    if (file.exists() && !file.canWrite()) {
+        Log.e(TAG, "Can't write to " + file);
+        return ERROR;
+    }
+    try (ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE)) {
+        int returnValue = synthesizeToFile(text, params, fileDescriptor, utteranceId);
+        fileDescriptor.close();
+        return returnValue;
+    } catch (FileNotFoundException e) {
+        Log.e(TAG, "Opening file " + file + " failed", e);
+        return ERROR;
+    } catch (IOException e) {
+        Log.e(TAG, "Closing file " + file + " failed", e);
+        return ERROR;
+    }
+}

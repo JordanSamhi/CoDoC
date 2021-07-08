@@ -1,0 +1,16 @@
+public void updatePictureInPictureOutlineProvider(boolean isInPictureInPictureMode){
+    if (mIsInPictureInPictureMode == isInPictureInPictureMode) {
+        return;
+    }
+    if (isInPictureInPictureMode) {
+        final Window.WindowControllerCallback callback = mWindow.getWindowControllerCallback();
+        if (callback != null && callback.isTaskRoot()) {
+            super.setOutlineProvider(PIP_OUTLINE_PROVIDER);
+        }
+    } else {
+        if (getOutlineProvider() != mLastOutlineProvider) {
+            setOutlineProvider(mLastOutlineProvider);
+        }
+    }
+    mIsInPictureInPictureMode = isInPictureInPictureMode;
+}

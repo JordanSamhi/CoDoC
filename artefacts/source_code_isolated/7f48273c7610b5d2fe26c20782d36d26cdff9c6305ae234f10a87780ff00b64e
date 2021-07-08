@@ -1,0 +1,69 @@
+public final boolean startDragAndDrop(ClipData data, DragShadowBuilder shadowBuilder, Object myLocalState, int flags){
+    if (ViewDebug.DEBUG_DRAG) {
+        Log.d(VIEW_LOG_TAG, "startDragAndDrop: data=" + data + " flags=" + flags);
+    }
+    if (mAttachInfo == null) {
+        Log.w(VIEW_LOG_TAG, "startDragAndDrop called on a detached view.");
+        return false;
+    }
+    if (!mAttachInfo.mViewRootImpl.mSurface.isValid()) {
+        Log.w(VIEW_LOG_TAG, "startDragAndDrop called with an invalid surface.");
+        return false;
+    }
+    if (data != null) {
+        data.prepareToLeaveProcess((flags & View.DRAG_FLAG_GLOBAL) != 0);
+    }
+    Point shadowSize = new Point();
+    Point shadowTouchPoint = new Point();
+    shadowBuilder.onProvideShadowMetrics(shadowSize, shadowTouchPoint);
+    if ((shadowSize.x < 0) || (shadowSize.y < 0) || (shadowTouchPoint.x < 0) || (shadowTouchPoint.y < 0)) {
+        throw new IllegalStateException("Drag shadow dimensions must not be negative");
+    }
+    if (shadowSize.x == 0 || shadowSize.y == 0) {
+        if (!sAcceptZeroSizeDragShadow) {
+            throw new IllegalStateException("Drag shadow dimensions must be positive");
+        }
+        shadowSize.x = 1;
+        shadowSize.y = 1;
+    }
+    if (ViewDebug.DEBUG_DRAG) {
+        Log.d(VIEW_LOG_TAG, "drag shadow: width=" + shadowSize.x + " height=" + shadowSize.y + " shadowX=" + shadowTouchPoint.x + " shadowY=" + shadowTouchPoint.y);
+    }
+    final ViewRootImpl root = mAttachInfo.mViewRootImpl;
+    final SurfaceSession session = new SurfaceSession();
+    final SurfaceControl surfaceControl = new SurfaceControl.Builder(session).setName("drag surface").setParent(root.getSurfaceControl()).setBufferSize(shadowSize.x, shadowSize.y).setFormat(PixelFormat.TRANSLUCENT).setCallsite("View.startDragAndDrop").build();
+    final Surface surface = new Surface();
+    surface.copyFrom(surfaceControl);
+    IBinder token = null;
+    try {
+        final Canvas canvas = surface.lockCanvas(null);
+        try {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+            shadowBuilder.onDrawShadow(canvas);
+        } finally {
+            surface.unlockCanvasAndPost(canvas);
+        }
+        root.getLastTouchPoint(shadowSize);
+        token = mAttachInfo.mSession.performDrag(mAttachInfo.mWindow, flags, surfaceControl, root.getLastTouchSource(), shadowSize.x, shadowSize.y, shadowTouchPoint.x, shadowTouchPoint.y, data);
+        if (ViewDebug.DEBUG_DRAG) {
+            Log.d(VIEW_LOG_TAG, "performDrag returned " + token);
+        }
+        if (token != null) {
+            if (mAttachInfo.mDragSurface != null) {
+                mAttachInfo.mDragSurface.release();
+            }
+            mAttachInfo.mDragSurface = surface;
+            mAttachInfo.mDragToken = token;
+            root.setLocalDragState(myLocalState);
+        }
+        return token != null;
+    } catch (Exception e) {
+        Log.e(VIEW_LOG_TAG, "Unable to initiate drag", e);
+        return false;
+    } finally {
+        if (token == null) {
+            surface.destroy();
+        }
+        session.kill();
+    }
+}

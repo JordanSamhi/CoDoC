@@ -1,0 +1,8 @@
+public void addKey_havingSameSecondaryAliasAndPackageName_replacesOldKey() throws Exception{
+    mTertiaryKeysTable.addKey(new TertiaryKey(SECONDARY_ALIAS, PACKAGE_NAME, generateRandomKey()));
+    byte[] newKey = generateRandomKey();
+    long result = mTertiaryKeysTable.addKey(new TertiaryKey(SECONDARY_ALIAS, PACKAGE_NAME, newKey));
+    assertThat(result).isNotEqualTo(-1);
+    TertiaryKey keyInDb = mTertiaryKeysTable.getKey(SECONDARY_ALIAS, PACKAGE_NAME).get();
+    assertThat(keyInDb.getWrappedKeyBytes()).isEqualTo(newKey);
+}

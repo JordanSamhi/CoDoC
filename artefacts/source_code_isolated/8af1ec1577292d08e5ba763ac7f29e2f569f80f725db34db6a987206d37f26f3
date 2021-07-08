@@ -1,0 +1,9 @@
+public static void attachJvmtiAgent(@NonNull String library, @Nullable String options, @Nullable ClassLoader classLoader) throws IOException{
+    Preconditions.checkNotNull(library);
+    Preconditions.checkArgument(!library.contains("="));
+    if (options == null) {
+        VMDebug.attachAgent(library, classLoader);
+    } else {
+        VMDebug.attachAgent(library + "=" + options, classLoader);
+    }
+}

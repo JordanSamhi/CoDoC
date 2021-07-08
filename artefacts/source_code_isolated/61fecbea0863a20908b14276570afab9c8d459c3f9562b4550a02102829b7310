@@ -1,0 +1,8 @@
+public String toString(){
+    synchronized (this) {
+        updateDisplayInfoLocked();
+        final DisplayAdjustments adjustments = getDisplayAdjustments();
+        mDisplayInfo.getAppMetrics(mTempMetrics, adjustments);
+        return "Display id " + mDisplayId + ": " + mDisplayInfo + (mMayAdjustByFixedRotation ? (", " + adjustments.getFixedRotationAdjustments() + ", ") : ", ") + mTempMetrics + ", isValid=" + mIsValid;
+    }
+}

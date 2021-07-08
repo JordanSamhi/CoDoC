@@ -1,0 +1,41 @@
+public void onProvisionDiscoveryCompleted(byte[] p2pDeviceAddress, boolean isRequest, byte status, short configMethods, String generatedPin){
+    if (status != ISupplicantP2pIfaceCallback.P2pProvDiscStatusCode.SUCCESS) {
+        Log.e(TAG, "Provision discovery failed: " + status);
+        mMonitor.broadcastP2pProvisionDiscoveryFailure(mInterface);
+        return;
+    }
+    logd("Provision discovery " + (isRequest ? "request" : "response") + " for WPS Config method: " + configMethods);
+    WifiP2pProvDiscEvent event = new WifiP2pProvDiscEvent();
+    event.device = new WifiP2pDevice();
+    try {
+        event.device.deviceAddress = NativeUtil.macAddressFromByteArray(p2pDeviceAddress);
+    } catch (Exception e) {
+        Log.e(TAG, "Could not decode MAC address.", e);
+        return;
+    }
+    if ((configMethods & WpsConfigMethods.PUSHBUTTON) != 0) {
+        if (isRequest) {
+            event.event = WifiP2pProvDiscEvent.PBC_REQ;
+            mMonitor.broadcastP2pProvisionDiscoveryPbcRequest(mInterface, event);
+        } else {
+            event.event = WifiP2pProvDiscEvent.PBC_RSP;
+            mMonitor.broadcastP2pProvisionDiscoveryPbcResponse(mInterface, event);
+        }
+    } else if (!isRequest && (configMethods & WpsConfigMethods.KEYPAD) != 0) {
+        event.event = WifiP2pProvDiscEvent.SHOW_PIN;
+        event.pin = generatedPin;
+        mMonitor.broadcastP2pProvisionDiscoveryShowPin(mInterface, event);
+    } else if (!isRequest && (configMethods & WpsConfigMethods.DISPLAY) != 0) {
+        event.event = WifiP2pProvDiscEvent.ENTER_PIN;
+        mMonitor.broadcastP2pProvisionDiscoveryEnterPin(mInterface, event);
+    } else if (isRequest && (configMethods & WpsConfigMethods.DISPLAY) != 0) {
+        event.event = WifiP2pProvDiscEvent.SHOW_PIN;
+        event.pin = generatedPin;
+        mMonitor.broadcastP2pProvisionDiscoveryShowPin(mInterface, event);
+    } else if (isRequest && (configMethods & WpsConfigMethods.KEYPAD) != 0) {
+        event.event = WifiP2pProvDiscEvent.ENTER_PIN;
+        mMonitor.broadcastP2pProvisionDiscoveryEnterPin(mInterface, event);
+    } else {
+        Log.e(TAG, "Unsupported config methods: " + configMethods);
+    }
+}

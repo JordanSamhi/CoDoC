@@ -1,0 +1,11 @@
+public static int getIntegerSubscriptionProperty(int subId, String propKey, int defValue, Context context){
+    String result = getSubscriptionProperty(subId, propKey, context);
+    if (result != null) {
+        try {
+            return Integer.parseInt(result);
+        } catch (NumberFormatException err) {
+            logd("getIntegerSubscriptionProperty NumberFormat exception");
+        }
+    }
+    return defValue;
+}

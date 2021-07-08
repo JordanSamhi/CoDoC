@@ -1,0 +1,7 @@
+public synchronized void quit(){
+    while (mPowerManagerWakeLock.isHeld()) {
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "Releasing wakelock: " + mPowerManagerWakeLock.getTag()));
+        mPowerManagerWakeLock.release();
+    }
+    mHasQuit = true;
+}

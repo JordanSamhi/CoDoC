@@ -1,0 +1,14 @@
+public void setAdapter(SpinnerAdapter adapter){
+    if (mPopup == null) {
+        mTempAdapter = adapter;
+        return;
+    }
+    super.setAdapter(adapter);
+    mRecycler.clear();
+    final int targetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
+    if (targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP && adapter != null && adapter.getViewTypeCount() != 1) {
+        throw new IllegalArgumentException("Spinner adapter view type count must be 1");
+    }
+    final Context popupContext = mPopupContext == null ? mContext : mPopupContext;
+    mPopup.setAdapter(new DropDownAdapter(adapter, popupContext.getTheme()));
+}

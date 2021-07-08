@@ -1,0 +1,11 @@
+public void dump(DualDumpOutputStream dump, String idName, long id){
+    long token = dump.start(idName, id);
+    dump.write("cards_parser", UsbAlsaManagerProto.CARDS_PARSER, mCardsParser.getScanStatus());
+    for (UsbAlsaDevice usbAlsaDevice : mAlsaDevices) {
+        usbAlsaDevice.dump(dump, "alsa_devices", UsbAlsaManagerProto.ALSA_DEVICES);
+    }
+    for (String deviceAddr : mMidiDevices.keySet()) {
+        mMidiDevices.get(deviceAddr).dump(deviceAddr, dump, "midi_devices", UsbAlsaManagerProto.MIDI_DEVICES);
+    }
+    dump.end(token);
+}

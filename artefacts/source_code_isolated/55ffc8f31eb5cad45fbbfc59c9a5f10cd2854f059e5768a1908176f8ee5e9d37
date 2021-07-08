@@ -1,0 +1,8 @@
+public void setPrivateData(@NonNull byte[] data) throws MediaCasException{
+    validateSessionInternalStates();
+    try {
+        MediaCasException.throwExceptionIfNeeded(mICas.setSessionPrivateData(mSessionId, toByteArray(data, 0, data.length)));
+    } catch (RemoteException e) {
+        cleanupAndRethrowIllegalState();
+    }
+}

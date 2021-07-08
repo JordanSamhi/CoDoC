@@ -1,0 +1,9 @@
+public void onMediaButtonReceiverChanged(MediaSessionRecordImpl record){
+    synchronized (mLock) {
+        FullUserRecord user = getFullUserRecordLocked(record.getUserId());
+        MediaSessionRecordImpl mediaButtonSession = user.mPriorityStack.getMediaButtonSession();
+        if (record == mediaButtonSession) {
+            user.rememberMediaButtonReceiverLocked(mediaButtonSession);
+        }
+    }
+}

@@ -1,0 +1,13 @@
+public int getInt(String key, int defaultValue){
+    unparcel();
+    Object o = mMap.get(key);
+    if (o == null) {
+        return defaultValue;
+    }
+    try {
+        return (Integer) o;
+    } catch (ClassCastException e) {
+        typeWarning(key, o, "Integer", defaultValue, e);
+        return defaultValue;
+    }
+}

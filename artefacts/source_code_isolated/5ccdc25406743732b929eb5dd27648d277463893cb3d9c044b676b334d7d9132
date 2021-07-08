@@ -1,0 +1,11 @@
+public void prunePrintServices(){
+    ArrayList<ComponentName> installedComponents;
+    synchronized (mLock) {
+        installedComponents = getInstalledComponents();
+        boolean disabledServicesUninstalled = mDisabledServices.retainAll(installedComponents);
+        if (disabledServicesUninstalled) {
+            writeDisabledPrintServicesLocked(mDisabledServices);
+        }
+    }
+    mSpooler.pruneApprovedPrintServices(installedComponents);
+}

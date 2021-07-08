@@ -1,0 +1,41 @@
+public static ResponderConfig fromScanResult(ScanResult scanResult){
+    MacAddress macAddress = MacAddress.fromString(scanResult.BSSID);
+    int responderType = RESPONDER_AP;
+    boolean supports80211mc = scanResult.is80211mcResponder();
+    int channelWidth = translateScanResultChannelWidth(scanResult.channelWidth);
+    int frequency = scanResult.frequency;
+    int centerFreq0 = scanResult.centerFreq0;
+    int centerFreq1 = scanResult.centerFreq1;
+    int preamble;
+    if (scanResult.informationElements != null && scanResult.informationElements.length != 0) {
+        boolean htCapabilitiesPresent = false;
+        boolean vhtCapabilitiesPresent = false;
+        boolean heCapabilitiesPresent = false;
+        for (ScanResult.InformationElement ie : scanResult.informationElements) {
+            if (ie.id == EID_HT_CAPABILITIES) {
+                htCapabilitiesPresent = true;
+            } else if (ie.id == EID_VHT_CAPABILITIES) {
+                vhtCapabilitiesPresent = true;
+            } else if (ie.id == EID_EXTENSION_PRESENT && ie.idExt == EID_EXT_HE_CAPABILITIES) {
+                heCapabilitiesPresent = true;
+            }
+        }
+        if (heCapabilitiesPresent) {
+            preamble = PREAMBLE_HE;
+        } else if (vhtCapabilitiesPresent) {
+            preamble = PREAMBLE_VHT;
+        } else if (htCapabilitiesPresent) {
+            preamble = PREAMBLE_HT;
+        } else {
+            preamble = PREAMBLE_LEGACY;
+        }
+    } else {
+        Log.e(TAG, "Scan Results do not contain IEs - using backup method to select preamble");
+        if (channelWidth == CHANNEL_WIDTH_80MHZ || channelWidth == CHANNEL_WIDTH_160MHZ) {
+            preamble = PREAMBLE_VHT;
+        } else {
+            preamble = PREAMBLE_HT;
+        }
+    }
+    return new ResponderConfig(macAddress, responderType, supports80211mc, channelWidth, frequency, centerFreq0, centerFreq1, preamble);
+}

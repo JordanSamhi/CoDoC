@@ -1,0 +1,14 @@
+public void pokeMenu(){
+    if (DEBUG) {
+        Log.d(TAG, "pokeMenu() hasActivity=" + (mToActivityMessenger != null));
+    }
+    if (mToActivityMessenger != null) {
+        Message m = Message.obtain();
+        m.what = PipMenuActivity.MESSAGE_POKE_MENU;
+        try {
+            mToActivityMessenger.send(m);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Could not notify poke menu", e);
+        }
+    }
+}

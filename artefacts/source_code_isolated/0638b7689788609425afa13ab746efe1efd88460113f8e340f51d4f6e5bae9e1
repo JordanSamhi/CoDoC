@@ -1,0 +1,12 @@
+public List<BigInteger> getUnsignedLongs(int tag){
+    if (KeymasterDefs.getTagType(tag) != KeymasterDefs.KM_ULONG_REP) {
+        throw new IllegalArgumentException("Tag is not a repeating long: " + tag);
+    }
+    List<BigInteger> values = new ArrayList<BigInteger>();
+    for (KeymasterArgument arg : mArguments) {
+        if (arg.tag == tag) {
+            values.add(getLongTagValue(arg));
+        }
+    }
+    return values;
+}

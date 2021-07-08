@@ -1,0 +1,8 @@
+public long replace(String table, String nullColumnHack, ContentValues initialValues){
+    try {
+        return insertWithOnConflict(table, nullColumnHack, initialValues, CONFLICT_REPLACE);
+    } catch (SQLException e) {
+        Log.e(TAG, "Error inserting " + initialValues, e);
+        return -1;
+    }
+}

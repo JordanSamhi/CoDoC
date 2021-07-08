@@ -1,0 +1,31 @@
+public static ProgramSelector createAmFmSelector(@RadioManager.Band int band, int frequencyKhz, int subChannel){
+    if (band == RadioManager.BAND_INVALID) {
+        if (frequencyKhz < 50000) {
+            band = (subChannel <= 0) ? RadioManager.BAND_AM : RadioManager.BAND_AM_HD;
+        } else {
+            band = (subChannel <= 0) ? RadioManager.BAND_FM : RadioManager.BAND_FM_HD;
+        }
+    }
+    boolean isAm = (band == RadioManager.BAND_AM || band == RadioManager.BAND_AM_HD);
+    boolean isDigital = (band == RadioManager.BAND_AM_HD || band == RadioManager.BAND_FM_HD);
+    if (!isAm && !isDigital && band != RadioManager.BAND_FM) {
+        throw new IllegalArgumentException("Unknown band: " + band);
+    }
+    if (subChannel < 0 || subChannel > 8) {
+        throw new IllegalArgumentException("Invalid subchannel: " + subChannel);
+    }
+    if (subChannel > 0 && !isDigital) {
+        throw new IllegalArgumentException("Subchannels are not supported for non-HD radio");
+    }
+    if (!isValidAmFmFrequency(isAm, frequencyKhz)) {
+        throw new IllegalArgumentException("Provided value is not a valid AM/FM frequency: " + frequencyKhz);
+    }
+    @ProgramType
+    int programType = isAm ? PROGRAM_TYPE_AM : PROGRAM_TYPE_FM;
+    Identifier primary = new Identifier(IDENTIFIER_TYPE_AMFM_FREQUENCY, frequencyKhz);
+    Identifier[] secondary = null;
+    if (subChannel > 0) {
+        secondary = new Identifier[] { new Identifier(IDENTIFIER_TYPE_HD_SUBCHANNEL, subChannel - 1) };
+    }
+    return new ProgramSelector(programType, primary, secondary, null);
+}

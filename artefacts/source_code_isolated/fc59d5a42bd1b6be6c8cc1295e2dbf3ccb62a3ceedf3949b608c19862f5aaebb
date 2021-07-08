@@ -1,0 +1,9 @@
+public void setNickname(String iccid, String nickname, AsyncResultCallback<Void> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_SET_NICKNAME).addChildAsBytes(Tags.TAG_ICCID, IccUtils.bcdToBytes(padTrailingFs(iccid))).addChildAsString(Tags.TAG_NICKNAME, nickname).build().toHex())), response -> {
+        int result = parseSimpleResult(response);
+        if (result != CODE_OK) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_SET_NICKNAME, result);
+        }
+        return null;
+    }, callback, handler);
+}

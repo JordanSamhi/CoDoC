@@ -1,0 +1,13 @@
+public void onStart(){
+    forceUpdate();
+    registerScoreCache();
+    mNetworkScoringUiEnabled = Settings.Global.getInt(mContext.getContentResolver(), Settings.Global.NETWORK_SCORING_UI_ENABLED, 0) == 1;
+    mMaxSpeedLabelScoreCacheAge = Settings.Global.getLong(mContext.getContentResolver(), Settings.Global.SPEED_LABEL_CACHE_EVICTION_AGE_MILLIS, DEFAULT_MAX_CACHED_SCORE_AGE_MILLIS);
+    resumeScanning();
+    if (!mRegistered) {
+        mContext.registerReceiver(mReceiver, mFilter, null, mWorkHandler);
+        mNetworkCallback = new WifiTrackerNetworkCallback();
+        mConnectivityManager.registerNetworkCallback(mNetworkRequest, mNetworkCallback, mWorkHandler);
+        mRegistered = true;
+    }
+}

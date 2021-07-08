@@ -1,0 +1,16 @@
+public boolean setPlayerApplicationSetting(BluetoothAvrcpPlayerSettings plAppSetting){
+    if (DBG)
+        Log.d(TAG, "setPlayerApplicationSetting");
+    final IBluetoothAvrcpController service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            return service.setPlayerApplicationSetting(plAppSetting);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error talking to BT service in setPlayerApplicationSetting() " + e);
+            return false;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return false;
+}

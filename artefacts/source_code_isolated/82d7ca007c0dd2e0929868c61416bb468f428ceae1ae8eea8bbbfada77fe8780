@@ -1,0 +1,16 @@
+public boolean isNdefPushEnabled(){
+    synchronized (NfcAdapter.class) {
+        if (!sHasNfcFeature) {
+            throw new UnsupportedOperationException();
+        }
+        if (!sHasBeamFeature) {
+            return false;
+        }
+    }
+    try {
+        return sService.isNdefPushEnabled();
+    } catch (RemoteException e) {
+        attemptDeadServiceRecovery(e);
+        return false;
+    }
+}

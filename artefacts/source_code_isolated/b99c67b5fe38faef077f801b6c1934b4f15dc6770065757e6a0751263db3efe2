@@ -1,0 +1,14 @@
+public static String computeSignaturesSha256Digest(@NonNull String[] sha256Digests){
+    if (sha256Digests.length == 1) {
+        return sha256Digests[0];
+    }
+    Arrays.sort(sha256Digests);
+    final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    for (String sha256Digest : sha256Digests) {
+        try {
+            bytes.write(sha256Digest.getBytes());
+        } catch (IOException e) {
+        }
+    }
+    return computeSha256Digest(bytes.toByteArray());
+}

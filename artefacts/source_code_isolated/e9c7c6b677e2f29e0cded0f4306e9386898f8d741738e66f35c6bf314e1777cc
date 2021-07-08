@@ -1,0 +1,25 @@
+public void onInitializeAccessibilityNodeInfoForItem(View view, int position, AccessibilityNodeInfo info){
+    if (position == INVALID_POSITION) {
+        return;
+    }
+    boolean isItemEnabled = view.isEnabled() && isEnabled();
+    final ViewGroup.LayoutParams lp = view.getLayoutParams();
+    if (lp instanceof AbsListView.LayoutParams) {
+        isItemEnabled &= ((AbsListView.LayoutParams) lp).isEnabled;
+    }
+    info.setEnabled(isItemEnabled);
+    if (position == getSelectedItemPosition()) {
+        info.setSelected(true);
+        addAccessibilityActionIfEnabled(info, isItemEnabled, AccessibilityAction.ACTION_CLEAR_SELECTION);
+    } else {
+        addAccessibilityActionIfEnabled(info, isItemEnabled, AccessibilityAction.ACTION_SELECT);
+    }
+    if (isItemClickable(view)) {
+        addAccessibilityActionIfEnabled(info, isItemEnabled, AccessibilityAction.ACTION_CLICK);
+        info.setClickable(isItemEnabled);
+    }
+    if (isLongClickable()) {
+        addAccessibilityActionIfEnabled(info, isItemEnabled, AccessibilityAction.ACTION_LONG_CLICK);
+        info.setLongClickable(true);
+    }
+}

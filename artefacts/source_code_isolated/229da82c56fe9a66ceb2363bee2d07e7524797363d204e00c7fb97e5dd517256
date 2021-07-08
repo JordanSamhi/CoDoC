@@ -1,0 +1,14 @@
+public boolean[] supportsCommands(String[] commands){
+    if (isDestroyed()) {
+        Log.w(TAG, "Cannot interact with a destroyed voice interactor");
+        return new boolean[commands.length];
+    }
+    try {
+        boolean[] res = mInteractor.supportsCommands(mContext.getOpPackageName(), commands);
+        if (DEBUG)
+            Log.d(TAG, "supportsCommands: cmds=" + commands + " res=" + res);
+        return res;
+    } catch (RemoteException e) {
+        throw new RuntimeException("Voice interactor has died", e);
+    }
+}

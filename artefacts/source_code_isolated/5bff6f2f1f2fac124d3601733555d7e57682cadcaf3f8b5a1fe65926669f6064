@@ -1,0 +1,8 @@
+public void processEmm(@NonNull byte[] data, int offset, int length) throws MediaCasException{
+    validateInternalStates();
+    try {
+        MediaCasException.throwExceptionIfNeeded(mICas.processEmm(toByteArray(data, offset, length)));
+    } catch (RemoteException e) {
+        cleanupAndRethrowIllegalState();
+    }
+}

@@ -1,0 +1,12 @@
+public boolean isLocationEnabledForUser(@NonNull UserHandle userHandle){
+    synchronized (mLock) {
+        if (mLocationEnabledCache != null) {
+            return mLocationEnabledCache.query(userHandle.getIdentifier());
+        }
+    }
+    try {
+        return mService.isLocationEnabledForUser(userHandle.getIdentifier());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

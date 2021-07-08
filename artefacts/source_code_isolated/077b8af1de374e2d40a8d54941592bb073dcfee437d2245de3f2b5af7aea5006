@@ -1,0 +1,23 @@
+public long insert(@NonNull SQLiteDatabase db, @NonNull ContentValues values){
+    Objects.requireNonNull(mTables, "No tables defined");
+    Objects.requireNonNull(db, "No database defined");
+    Objects.requireNonNull(values, "No values defined");
+    if (isStrictColumns()) {
+        enforceStrictColumns(values);
+    }
+    final String sql = buildInsert(values);
+    final ArrayMap<String, Object> rawValues = values.getValues();
+    final int valuesLength = rawValues.size();
+    final Object[] sqlArgs = new Object[valuesLength];
+    for (int i = 0; i < sqlArgs.length; i++) {
+        sqlArgs[i] = rawValues.valueAt(i);
+    }
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+        if (Build.IS_DEBUGGABLE) {
+            Log.d(TAG, sql + " with args " + Arrays.toString(sqlArgs));
+        } else {
+            Log.d(TAG, sql);
+        }
+    }
+    return DatabaseUtils.executeInsert(db, sql, sqlArgs);
+}

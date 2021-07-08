@@ -1,0 +1,7 @@
+public void invoke(Parcel request, Parcel reply){
+    int retcode = native_invoke(request, reply);
+    reply.setDataPosition(0);
+    if (retcode != 0) {
+        throw new RuntimeException("failure code: " + retcode);
+    }
+}

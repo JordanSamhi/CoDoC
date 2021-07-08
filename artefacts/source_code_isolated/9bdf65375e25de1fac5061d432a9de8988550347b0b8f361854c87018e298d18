@@ -1,0 +1,46 @@
+public static void write(OutputStream out, IntervalStats stats) throws IOException, IllegalArgumentException{
+    final ProtoOutputStream proto = new ProtoOutputStream(out);
+    proto.write(IntervalStatsObfuscatedProto.END_TIME_MS, getOffsetTimestamp(stats.endTime, stats.beginTime));
+    proto.write(IntervalStatsObfuscatedProto.MAJOR_VERSION, stats.majorVersion);
+    proto.write(IntervalStatsObfuscatedProto.MINOR_VERSION, stats.minorVersion);
+    try {
+        writeCountAndTime(proto, IntervalStatsObfuscatedProto.INTERACTIVE, stats.interactiveTracker.count, stats.interactiveTracker.duration);
+        writeCountAndTime(proto, IntervalStatsObfuscatedProto.NON_INTERACTIVE, stats.nonInteractiveTracker.count, stats.nonInteractiveTracker.duration);
+        writeCountAndTime(proto, IntervalStatsObfuscatedProto.KEYGUARD_SHOWN, stats.keyguardShownTracker.count, stats.keyguardShownTracker.duration);
+        writeCountAndTime(proto, IntervalStatsObfuscatedProto.KEYGUARD_HIDDEN, stats.keyguardHiddenTracker.count, stats.keyguardHiddenTracker.duration);
+    } catch (IllegalArgumentException e) {
+        Slog.e(TAG, "Unable to write some interval stats trackers to proto.", e);
+    }
+    final int statsCount = stats.packageStatsObfuscated.size();
+    for (int i = 0; i < statsCount; i++) {
+        try {
+            final long token = proto.start(IntervalStatsObfuscatedProto.PACKAGES);
+            writeUsageStats(proto, stats.beginTime, stats.packageStatsObfuscated.valueAt(i));
+            proto.end(token);
+        } catch (IllegalArgumentException e) {
+            Slog.e(TAG, "Unable to write some usage stats to proto.", e);
+        }
+    }
+    final int configCount = stats.configurations.size();
+    for (int i = 0; i < configCount; i++) {
+        boolean active = stats.activeConfiguration.equals(stats.configurations.keyAt(i));
+        try {
+            final long token = proto.start(IntervalStatsObfuscatedProto.CONFIGURATIONS);
+            writeConfigStats(proto, stats.beginTime, stats.configurations.valueAt(i), active);
+            proto.end(token);
+        } catch (IllegalArgumentException e) {
+            Slog.e(TAG, "Unable to write some configuration stats to proto.", e);
+        }
+    }
+    final int eventCount = stats.events.size();
+    for (int i = 0; i < eventCount; i++) {
+        try {
+            final long token = proto.start(IntervalStatsObfuscatedProto.EVENT_LOG);
+            writeEvent(proto, stats.beginTime, stats.events.get(i));
+            proto.end(token);
+        } catch (IllegalArgumentException e) {
+            Slog.e(TAG, "Unable to write some events to proto.", e);
+        }
+    }
+    proto.flush();
+}

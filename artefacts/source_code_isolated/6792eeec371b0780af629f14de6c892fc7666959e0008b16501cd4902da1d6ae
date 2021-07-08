@@ -1,0 +1,9 @@
+public boolean isDataAllowed(@ApnType int apnType, DataConnectionReasons reasons){
+    if (mTransportManager != null) {
+        int transport = mTransportManager.getCurrentTransport(apnType);
+        if (getDcTracker(transport) != null) {
+            return getDcTracker(transport).isDataAllowed(reasons);
+        }
+    }
+    return false;
+}

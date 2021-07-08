@@ -1,0 +1,7 @@
+public static DomainNameElement parse(ByteBuffer payload){
+    List<String> domains = new ArrayList<>();
+    while (payload.hasRemaining()) {
+        domains.add(ByteBufferReader.readStringWithByteLength(payload, StandardCharsets.ISO_8859_1));
+    }
+    return new DomainNameElement(domains);
+}

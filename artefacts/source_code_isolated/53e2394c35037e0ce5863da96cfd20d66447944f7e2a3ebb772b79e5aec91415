@@ -1,0 +1,68 @@
+public void setVisibleState(int visibleState, boolean animate, Runnable endRunnable, long duration){
+    boolean runnableAdded = false;
+    if (visibleState != mVisibleState) {
+        mVisibleState = visibleState;
+        if (mIconAppearAnimator != null) {
+            mIconAppearAnimator.cancel();
+        }
+        if (mDotAnimator != null) {
+            mDotAnimator.cancel();
+        }
+        if (animate) {
+            float targetAmount = 0.0f;
+            Interpolator interpolator = Interpolators.FAST_OUT_LINEAR_IN;
+            if (visibleState == STATE_ICON) {
+                targetAmount = 1.0f;
+                interpolator = Interpolators.LINEAR_OUT_SLOW_IN;
+            }
+            float currentAmount = getIconAppearAmount();
+            if (targetAmount != currentAmount) {
+                mIconAppearAnimator = ObjectAnimator.ofFloat(this, ICON_APPEAR_AMOUNT, currentAmount, targetAmount);
+                mIconAppearAnimator.setInterpolator(interpolator);
+                mIconAppearAnimator.setDuration(duration == 0 ? ANIMATION_DURATION_FAST : duration);
+                mIconAppearAnimator.addListener(new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mIconAppearAnimator = null;
+                        runRunnable(endRunnable);
+                    }
+                });
+                mIconAppearAnimator.start();
+                runnableAdded = true;
+            }
+            targetAmount = visibleState == STATE_ICON ? 2.0f : 0.0f;
+            interpolator = Interpolators.FAST_OUT_LINEAR_IN;
+            if (visibleState == STATE_DOT) {
+                targetAmount = 1.0f;
+                interpolator = Interpolators.LINEAR_OUT_SLOW_IN;
+            }
+            currentAmount = getDotAppearAmount();
+            if (targetAmount != currentAmount) {
+                mDotAnimator = ObjectAnimator.ofFloat(this, DOT_APPEAR_AMOUNT, currentAmount, targetAmount);
+                mDotAnimator.setInterpolator(interpolator);
+                ;
+                mDotAnimator.setDuration(duration == 0 ? ANIMATION_DURATION_FAST : duration);
+                final boolean runRunnable = !runnableAdded;
+                mDotAnimator.addListener(new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mDotAnimator = null;
+                        if (runRunnable) {
+                            runRunnable(endRunnable);
+                        }
+                    }
+                });
+                mDotAnimator.start();
+                runnableAdded = true;
+            }
+        } else {
+            setIconAppearAmount(visibleState == STATE_ICON ? 1.0f : 0.0f);
+            setDotAppearAmount(visibleState == STATE_DOT ? 1.0f : visibleState == STATE_ICON ? 2.0f : 0.0f);
+        }
+    }
+    if (!runnableAdded) {
+        runRunnable(endRunnable);
+    }
+}

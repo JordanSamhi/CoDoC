@@ -1,0 +1,16 @@
+public boolean equals(Object o, boolean excludeInvisibleImeFrames){
+    if (this == o)
+        return true;
+    if (o == null || getClass() != o.getClass())
+        return false;
+    InsetsSource that = (InsetsSource) o;
+    if (mType != that.mType)
+        return false;
+    if (mVisible != that.mVisible)
+        return false;
+    if (excludeInvisibleImeFrames && !mVisible && mType == ITYPE_IME)
+        return true;
+    if (!Objects.equals(mVisibleFrame, that.mVisibleFrame))
+        return false;
+    return mFrame.equals(that.mFrame);
+}

@@ -1,0 +1,20 @@
+public int onUserActivity(long eventTime, int event){
+    switch(event) {
+        case PowerManager.USER_ACTIVITY_EVENT_ATTENTION:
+            mConsecutiveTimeoutExtendedCount.incrementAndGet();
+            return 0;
+        case PowerManager.USER_ACTIVITY_EVENT_OTHER:
+        case PowerManager.USER_ACTIVITY_EVENT_BUTTON:
+        case PowerManager.USER_ACTIVITY_EVENT_TOUCH:
+        case PowerManager.USER_ACTIVITY_EVENT_ACCESSIBILITY:
+            cancelCurrentRequestIfAny();
+            mLastUserActivityTime = eventTime;
+            resetConsecutiveExtensionCount();
+            return 1;
+        default:
+            if (DEBUG) {
+                Slog.d(TAG, "Attention not reset. Unknown activity event: " + event);
+            }
+            return -1;
+    }
+}

@@ -1,0 +1,9 @@
+public final void notifyViewAppeared(@NonNull ViewStructure node){
+    Preconditions.checkNotNull(node);
+    if (!isContentCaptureEnabled())
+        return;
+    if (!(node instanceof ViewNode.ViewStructureImpl)) {
+        throw new IllegalArgumentException("Invalid node class: " + node.getClass());
+    }
+    internalNotifyViewAppeared((ViewStructureImpl) node);
+}

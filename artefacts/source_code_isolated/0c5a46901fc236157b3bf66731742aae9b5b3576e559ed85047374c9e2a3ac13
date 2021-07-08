@@ -1,0 +1,14 @@
+public static Uri moveDocument(@NonNull ContentResolver content, @NonNull Uri sourceDocumentUri, @NonNull Uri sourceParentDocumentUri, @NonNull Uri targetParentDocumentUri) throws FileNotFoundException{
+    try {
+        final Bundle in = new Bundle();
+        in.putParcelable(DocumentsContract.EXTRA_URI, sourceDocumentUri);
+        in.putParcelable(DocumentsContract.EXTRA_PARENT_URI, sourceParentDocumentUri);
+        in.putParcelable(DocumentsContract.EXTRA_TARGET_URI, targetParentDocumentUri);
+        final Bundle out = content.call(sourceDocumentUri.getAuthority(), METHOD_MOVE_DOCUMENT, null, in);
+        return out.getParcelable(DocumentsContract.EXTRA_URI);
+    } catch (Exception e) {
+        Log.w(TAG, "Failed to move document", e);
+        rethrowIfNecessary(e);
+        return null;
+    }
+}

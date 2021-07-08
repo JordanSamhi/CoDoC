@@ -1,0 +1,13 @@
+public void snapshotAppData(int rollbackId, PackageRollbackInfo packageRollbackInfo, int[] userIds){
+    for (int user : userIds) {
+        final int storageFlags;
+        if (isUserCredentialLocked(user)) {
+            Slog.v(TAG, "User: " + user + " isn't unlocked, skipping CE userdata backup.");
+            storageFlags = Installer.FLAG_STORAGE_DE;
+            packageRollbackInfo.addPendingBackup(user);
+        } else {
+            storageFlags = Installer.FLAG_STORAGE_CE | Installer.FLAG_STORAGE_DE;
+        }
+        doSnapshot(packageRollbackInfo, user, rollbackId, storageFlags);
+    }
+}

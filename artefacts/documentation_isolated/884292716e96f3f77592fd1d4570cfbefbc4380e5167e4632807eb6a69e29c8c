@@ -1,0 +1,25 @@
+
+         * Set basic description of the kind of network your job requires. If
+         * you need more precise control over network capabilities, see
+         * {@link #setRequiredNetwork(NetworkRequest)}.
+         * <p>
+         * If your job doesn't need a network connection, you don't need to call
+         * this method, as the default value is {@link #NETWORK_TYPE_NONE}.
+         * <p>
+         * Calling this method defines network as a strict requirement for your
+         * job. If the network requested is not available your job will never
+         * run. See {@link #setOverrideDeadline(long)} to change this behavior.
+         * Calling this method will override any requirements previously defined
+         * by {@link #setRequiredNetwork(NetworkRequest)}; you typically only
+         * want to call one of these methods.
+         * <p class="note">
+         * When your job executes in
+         * {@link JobService#onStartJob(JobParameters)}, be sure to use the
+         * specific network returned by {@link JobParameters#getNetwork()},
+         * otherwise you'll use the default network which may not meet this
+         * constraint.
+         *
+         * @see #setRequiredNetwork(NetworkRequest)
+         * @see JobInfo#getNetworkType()
+         * @see JobParameters#getNetwork()
+         

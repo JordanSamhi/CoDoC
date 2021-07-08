@@ -1,0 +1,19 @@
+public void setNickname(String cardId, String iccid, String nickname, @CallbackExecutor Executor executor, ResultCallback<Void> callback){
+    try {
+        getIEuiccCardController().setNickname(mContext.getOpPackageName(), cardId, iccid, nickname, new ISetNicknameCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, null));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling setNickname", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

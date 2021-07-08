@@ -1,0 +1,11 @@
+public byte[] transceive(byte[] in) throws IOException{
+    Bundle b;
+    try {
+        b = mExtras.getService().transceive(mExtras.mPackageName, in);
+    } catch (RemoteException e) {
+        mExtras.attemptDeadServiceRecovery(e);
+        throw new IOException("NFC Service was dead, need to re-open");
+    }
+    throwBundle(b);
+    return b.getByteArray("out");
+}

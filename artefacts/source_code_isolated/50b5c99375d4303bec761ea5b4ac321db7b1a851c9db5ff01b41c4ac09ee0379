@@ -1,0 +1,15 @@
+public void removeUids(int[] uids){
+    final ArrayList<Key> knownKeys = Lists.newArrayList();
+    knownKeys.addAll(mStats.keySet());
+    for (Key key : knownKeys) {
+        if (ArrayUtils.contains(uids, key.uid)) {
+            if (key.tag == TAG_NONE) {
+                final NetworkStatsHistory uidHistory = mStats.get(key);
+                final NetworkStatsHistory removedHistory = findOrCreateHistory(key.ident, UID_REMOVED, SET_DEFAULT, TAG_NONE);
+                removedHistory.recordEntireHistory(uidHistory);
+            }
+            mStats.remove(key);
+            mDirty = true;
+        }
+    }
+}

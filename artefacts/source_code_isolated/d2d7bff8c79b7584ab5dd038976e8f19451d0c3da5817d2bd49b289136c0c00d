@@ -1,0 +1,23 @@
+public boolean endDataPath(short transactionId, int ndpId){
+    if (mDbg) {
+        Log.v(TAG, "endDataPath: transactionId=" + transactionId + ", ndpId=" + ndpId);
+    }
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "endDataPath: null interface");
+        return false;
+    }
+    try {
+        WifiStatus status = iface.terminateDataPathRequest(transactionId, ndpId);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "endDataPath: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "endDataPath: exception: " + e);
+        return false;
+    }
+}

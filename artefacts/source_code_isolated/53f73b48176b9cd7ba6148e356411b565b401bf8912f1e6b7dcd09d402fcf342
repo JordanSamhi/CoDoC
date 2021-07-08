@@ -1,0 +1,13 @@
+public int getNonDecorDisplayWidth(int fullWidth, int fullHeight, int rotation, int uiMode, DisplayCutout displayCutout){
+    int width = fullWidth;
+    if (hasNavigationBar()) {
+        final int navBarPosition = navigationBarPosition(fullWidth, fullHeight, rotation);
+        if (navBarPosition == NAV_BAR_LEFT || navBarPosition == NAV_BAR_RIGHT) {
+            width -= getNavigationBarWidth(rotation, uiMode);
+        }
+    }
+    if (displayCutout != null) {
+        width -= displayCutout.getSafeInsetLeft() + displayCutout.getSafeInsetRight();
+    }
+    return width;
+}

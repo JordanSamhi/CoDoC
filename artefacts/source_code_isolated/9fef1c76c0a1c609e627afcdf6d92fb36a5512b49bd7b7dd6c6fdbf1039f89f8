@@ -1,0 +1,30 @@
+public ParcelFileDescriptor[] executeShellCommandRw(String command){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    warnIfBetterCommand(command);
+    ParcelFileDescriptor source_read = null;
+    ParcelFileDescriptor sink_read = null;
+    ParcelFileDescriptor source_write = null;
+    ParcelFileDescriptor sink_write = null;
+    try {
+        ParcelFileDescriptor[] pipe_read = ParcelFileDescriptor.createPipe();
+        source_read = pipe_read[0];
+        sink_read = pipe_read[1];
+        ParcelFileDescriptor[] pipe_write = ParcelFileDescriptor.createPipe();
+        source_write = pipe_write[0];
+        sink_write = pipe_write[1];
+        mUiAutomationConnection.executeShellCommand(command, sink_read, source_write);
+    } catch (IOException ioe) {
+        Log.e(LOG_TAG, "Error executing shell command!", ioe);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error executing shell command!", re);
+    } finally {
+        IoUtils.closeQuietly(sink_read);
+        IoUtils.closeQuietly(source_write);
+    }
+    ParcelFileDescriptor[] result = new ParcelFileDescriptor[2];
+    result[0] = source_read;
+    result[1] = sink_write;
+    return result;
+}

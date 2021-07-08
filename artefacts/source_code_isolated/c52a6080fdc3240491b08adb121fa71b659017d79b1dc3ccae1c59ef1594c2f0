@@ -1,0 +1,16 @@
+public void unbind(){
+    if (!mBound) {
+        return;
+    }
+    if (mService != null) {
+        try {
+            Message msg = Message.obtain(null, MSG_UNREGISTER_LISTENER);
+            msg.replyTo = mMessenger;
+            mService.send(msg);
+        } catch (RemoteException e) {
+            Slog.e(TAG, "Unable to unregister from installation service");
+        }
+    }
+    mContext.unbindService(mConnection);
+    mBound = false;
+}

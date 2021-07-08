@@ -1,0 +1,11 @@
+public List<ActivityManager.StackInfo> getAllStackInfos(){
+    enforceCallerIsRecentsOrHasPermission(MANAGE_ACTIVITY_STACKS, "getAllStackInfos()");
+    long ident = Binder.clearCallingIdentity();
+    try {
+        synchronized (mGlobalLock) {
+            return mRootWindowContainer.getAllStackInfos(INVALID_DISPLAY);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

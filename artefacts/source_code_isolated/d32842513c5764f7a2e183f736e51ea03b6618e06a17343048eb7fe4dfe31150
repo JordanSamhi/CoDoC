@@ -1,0 +1,9 @@
+public void draw(Canvas canvas, Path highlight, Paint highlightPaint, int cursorOffsetVertical){
+    final long lineRange = getLineRangeForDraw(canvas);
+    int firstLine = TextUtils.unpackRangeStartFromLong(lineRange);
+    int lastLine = TextUtils.unpackRangeEndFromLong(lineRange);
+    if (lastLine < 0)
+        return;
+    drawBackground(canvas, highlight, highlightPaint, cursorOffsetVertical, firstLine, lastLine);
+    drawText(canvas, firstLine, lastLine);
+}

@@ -1,0 +1,25 @@
+public ParcelUuid createSubscriptionGroup(@NonNull List<Integer> subIdList){
+    Preconditions.checkNotNull(subIdList, "can't create group for null subId list");
+    String pkgForDebug = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    if (VDBG) {
+        logd("[createSubscriptionGroup]");
+    }
+    ParcelUuid groupUuid = null;
+    int[] subIdArray = subIdList.stream().mapToInt(i -> i).toArray();
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            groupUuid = iSub.createSubscriptionGroup(subIdArray, pkgForDebug);
+        } else {
+            if (!isSystemProcess()) {
+                throw new IllegalStateException("telephony service is null.");
+            }
+        }
+    } catch (RemoteException ex) {
+        loge("createSubscriptionGroup RemoteException " + ex);
+        if (!isSystemProcess()) {
+            ex.rethrowAsRuntimeException();
+        }
+    }
+    return groupUuid;
+}

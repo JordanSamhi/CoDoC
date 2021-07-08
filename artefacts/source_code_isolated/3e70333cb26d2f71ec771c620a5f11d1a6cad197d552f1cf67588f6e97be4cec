@@ -1,0 +1,9 @@
+public void finishBackupPass(int userId){
+    synchronized (mParamsForUser) {
+        JobParameters jobParameters = mParamsForUser.get(userId);
+        if (jobParameters != null) {
+            jobFinished(jobParameters, false);
+            mParamsForUser.remove(userId);
+        }
+    }
+}

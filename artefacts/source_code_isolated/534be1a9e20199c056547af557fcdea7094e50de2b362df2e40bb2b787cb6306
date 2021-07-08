@@ -1,0 +1,10 @@
+public synchronized ArrayList<C> copyListeners(){
+    ArrayList<C> callbacks = new ArrayList<C>(mCallbacks.size());
+    int numListeners = mCallbacks.size();
+    for (int i = 0; i < numListeners; i++) {
+        if (!isRemovedLocked(i)) {
+            callbacks.add(mCallbacks.get(i));
+        }
+    }
+    return callbacks;
+}

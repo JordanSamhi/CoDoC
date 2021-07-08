@@ -1,0 +1,27 @@
+
+     * Called by a device or profile owner to configure an always-on VPN connection through a
+     * specific application for the current user. This connection is automatically granted and
+     * persisted after a reboot.
+     * <p> To support the always-on feature, an app must
+     * <ul>
+     *     <li>declare a {@link android.net.VpnService} in its manifest, guarded by
+     *         {@link android.Manifest.permission#BIND_VPN_SERVICE};</li>
+     *     <li>target {@link android.os.Build.VERSION_CODES#N API 24} or above; and</li>
+     *     <li><i>not</i> explicitly opt out of the feature through
+     *         {@link android.net.VpnService#SERVICE_META_DATA_SUPPORTS_ALWAYS_ON}.</li>
+     * </ul>
+     * The call will fail if called with the package name of an unsupported VPN app.
+     * <p> Enabling lockdown via {@code lockdownEnabled} argument carries the risk that any failure
+     * of the VPN provider could break networking for all apps. This method clears any lockdown
+     * whitelist set by {@link #setAlwaysOnVpnPackage(ComponentName, String, boolean, Set)}.
+     *
+     * @param vpnPackage The package name for an installed VPN app on the device, or {@code null} to
+     *        remove an existing always-on VPN configuration.
+     * @param lockdownEnabled {@code true} to disallow networking when the VPN is not connected or
+     *        {@code false} otherwise. This has no effect when clearing.
+     * @throws SecurityException if {@code admin} is not a device or a profile owner.
+     * @throws NameNotFoundException if {@code vpnPackage} is not installed.
+     * @throws UnsupportedOperationException if {@code vpnPackage} exists but does not support being
+     *         set as always-on, or if always-on VPN is not available.
+     * @see #setAlwaysOnVpnPackage(ComponentName, String, boolean, Set)
+     

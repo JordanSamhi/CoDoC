@@ -1,0 +1,26 @@
+public void noteUsageStop(String name, int userId) throws IllegalArgumentException{
+    synchronized (mLock) {
+        UserData user = getOrCreateUserDataLocked(userId);
+        if (DEBUG)
+            Slog.d(TAG, "Usage entity " + name + " became inactive");
+        final int index = user.currentlyActive.indexOfKey(name);
+        if (index < 0) {
+            throw new IllegalArgumentException("Unable to stop usage for " + name + ", not in use");
+        }
+        final Integer count = user.currentlyActive.valueAt(index);
+        if (!count.equals(ONE)) {
+            user.currentlyActive.setValueAt(index, count - 1);
+            return;
+        }
+        user.currentlyActive.removeAt(index);
+        final long currentTime = getUptimeMillis();
+        ArrayList<UsageGroup> groups = user.observedMap.get(name);
+        if (groups == null)
+            return;
+        final int size = groups.size();
+        for (int i = 0; i < size; i++) {
+            UsageGroup group = groups.get(i);
+            group.noteUsageStop(currentTime);
+        }
+    }
+}

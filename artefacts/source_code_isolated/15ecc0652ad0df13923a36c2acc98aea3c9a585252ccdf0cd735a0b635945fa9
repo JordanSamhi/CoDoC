@@ -1,0 +1,7 @@
+public void setLegacySubtype(final int legacySubtype, @NonNull final String legacySubtypeName){
+    if (mIsLegacy) {
+        throw new UnsupportedOperationException("Legacy agents can't call setLegacySubtype.");
+    }
+    mNetworkInfo.setSubtype(legacySubtype, legacySubtypeName);
+    queueOrSendMessage(EVENT_NETWORK_INFO_CHANGED, mNetworkInfo);
+}

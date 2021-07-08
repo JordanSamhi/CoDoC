@@ -1,0 +1,6 @@
+public void unwrap_throwsForBadKeyAlgorithm() throws Exception{
+    SecretKey secondaryKey = generateAesKey();
+    WrappedKeyProto.WrappedKey wrappedKey = KeyWrapUtils.wrap(secondaryKey, generateAesKey());
+    wrappedKey.metadata.type = WrappedKeyProto.KeyMetadata.UNKNOWN;
+    KeyWrapUtils.unwrap(secondaryKey, wrappedKey);
+}

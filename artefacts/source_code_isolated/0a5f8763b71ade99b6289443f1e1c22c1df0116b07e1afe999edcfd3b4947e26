@@ -1,0 +1,8 @@
+public void testAdbBackup_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createSystemRegisteredService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    ParcelFileDescriptor parcelFileDescriptor = getFileDescriptorForAdbTest();
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    backupManagerService.adbBackup(mUserOneId, parcelFileDescriptor, true, true, true, true, true, true, true, true, ADB_TEST_PACKAGES);
+    verify(mUserOneService).adbBackup(parcelFileDescriptor, true, true, true, true, true, true, true, true, ADB_TEST_PACKAGES);
+}

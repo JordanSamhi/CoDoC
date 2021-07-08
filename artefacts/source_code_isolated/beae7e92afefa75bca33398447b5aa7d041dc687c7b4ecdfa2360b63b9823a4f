@@ -1,0 +1,76 @@
+public void dumpCheckinLocked(Context context, PrintWriter pw, List<ApplicationInfo> apps, int flags, long histStart){
+    prepareForDumpLocked();
+    dumpLine(pw, 0, "i", VERSION_DATA, CHECKIN_VERSION, getParcelVersion(), getStartPlatformVersion(), getEndPlatformVersion());
+    long now = getHistoryBaseTime() + SystemClock.elapsedRealtime();
+    if ((flags & (DUMP_INCLUDE_HISTORY | DUMP_HISTORY_ONLY)) != 0) {
+        if (startIteratingHistoryLocked()) {
+            try {
+                for (int i = 0; i < getHistoryStringPoolSize(); i++) {
+                    pw.print(BATTERY_STATS_CHECKIN_VERSION);
+                    pw.print(',');
+                    pw.print(HISTORY_STRING_POOL);
+                    pw.print(',');
+                    pw.print(i);
+                    pw.print(",");
+                    pw.print(getHistoryTagPoolUid(i));
+                    pw.print(",\"");
+                    String str = getHistoryTagPoolString(i);
+                    str = str.replace("\\", "\\\\");
+                    str = str.replace("\"", "\\\"");
+                    pw.print(str);
+                    pw.print("\"");
+                    pw.println();
+                }
+                dumpHistoryLocked(pw, flags, histStart, true);
+            } finally {
+                finishIteratingHistoryLocked();
+            }
+        }
+    }
+    if ((flags & DUMP_HISTORY_ONLY) != 0) {
+        return;
+    }
+    if (apps != null) {
+        SparseArray<Pair<ArrayList<String>, MutableBoolean>> uids = new SparseArray<>();
+        for (int i = 0; i < apps.size(); i++) {
+            ApplicationInfo ai = apps.get(i);
+            Pair<ArrayList<String>, MutableBoolean> pkgs = uids.get(UserHandle.getAppId(ai.uid));
+            if (pkgs == null) {
+                pkgs = new Pair<>(new ArrayList<String>(), new MutableBoolean(false));
+                uids.put(UserHandle.getAppId(ai.uid), pkgs);
+            }
+            pkgs.first.add(ai.packageName);
+        }
+        SparseArray<? extends Uid> uidStats = getUidStats();
+        final int NU = uidStats.size();
+        String[] lineArgs = new String[2];
+        for (int i = 0; i < NU; i++) {
+            int uid = UserHandle.getAppId(uidStats.keyAt(i));
+            Pair<ArrayList<String>, MutableBoolean> pkgs = uids.get(uid);
+            if (pkgs != null && !pkgs.second.value) {
+                pkgs.second.value = true;
+                for (int j = 0; j < pkgs.first.size(); j++) {
+                    lineArgs[0] = Integer.toString(uid);
+                    lineArgs[1] = pkgs.first.get(j);
+                    dumpLine(pw, 0, "i", UID_DATA, (Object[]) lineArgs);
+                }
+            }
+        }
+    }
+    if ((flags & DUMP_DAILY_ONLY) == 0) {
+        dumpDurationSteps(pw, "", DISCHARGE_STEP_DATA, getDischargeLevelStepTracker(), true);
+        String[] lineArgs = new String[1];
+        long timeRemaining = computeBatteryTimeRemaining(SystemClock.elapsedRealtime() * 1000);
+        if (timeRemaining >= 0) {
+            lineArgs[0] = Long.toString(timeRemaining);
+            dumpLine(pw, 0, "i", DISCHARGE_TIME_REMAIN_DATA, (Object[]) lineArgs);
+        }
+        dumpDurationSteps(pw, "", CHARGE_STEP_DATA, getChargeLevelStepTracker(), true);
+        timeRemaining = computeChargeTimeRemaining(SystemClock.elapsedRealtime() * 1000);
+        if (timeRemaining >= 0) {
+            lineArgs[0] = Long.toString(timeRemaining);
+            dumpLine(pw, 0, "i", CHARGE_TIME_REMAIN_DATA, (Object[]) lineArgs);
+        }
+        dumpCheckinLocked(context, pw, STATS_SINCE_CHARGED, -1, (flags & DUMP_DEVICE_WIFI_ONLY) != 0);
+    }
+}

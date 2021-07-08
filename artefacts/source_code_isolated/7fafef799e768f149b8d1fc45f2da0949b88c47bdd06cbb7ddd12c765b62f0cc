@@ -1,0 +1,23 @@
+public boolean swipe(int downX, int downY, int upX, int upY, int steps, boolean drag){
+    boolean ret = false;
+    int swipeSteps = steps;
+    double xStep = 0;
+    double yStep = 0;
+    if (swipeSteps == 0)
+        swipeSteps = 1;
+    xStep = ((double) (upX - downX)) / swipeSteps;
+    yStep = ((double) (upY - downY)) / swipeSteps;
+    ret = touchDown(downX, downY);
+    if (drag)
+        SystemClock.sleep(mUiAutomatorBridge.getSystemLongPressTime());
+    for (int i = 1; i < swipeSteps; i++) {
+        ret &= touchMove(downX + (int) (xStep * i), downY + (int) (yStep * i));
+        if (ret == false)
+            break;
+        SystemClock.sleep(MOTION_EVENT_INJECTION_DELAY_MILLIS);
+    }
+    if (drag)
+        SystemClock.sleep(REGULAR_CLICK_LENGTH);
+    ret &= touchUp(upX, upY);
+    return (ret);
+}

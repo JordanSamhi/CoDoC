@@ -1,0 +1,11 @@
+public void setValue(String value){
+    final boolean changed = !TextUtils.equals(mValue, value);
+    if (changed || !mValueSet) {
+        mValue = value;
+        mValueSet = true;
+        persistString(value);
+        if (changed) {
+            notifyChanged();
+        }
+    }
+}

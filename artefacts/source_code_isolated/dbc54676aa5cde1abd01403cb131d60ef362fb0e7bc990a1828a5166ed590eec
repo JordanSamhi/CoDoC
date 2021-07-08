@@ -1,0 +1,91 @@
+public static CallerInfo getCallerInfo(Context context, Uri contactRef, Cursor cursor){
+    CallerInfo info = new CallerInfo();
+    info.photoResource = 0;
+    info.phoneLabel = null;
+    info.numberType = 0;
+    info.numberLabel = null;
+    info.cachedPhoto = null;
+    info.isCachedPhotoCurrent = false;
+    info.contactExists = false;
+    info.userType = USER_TYPE_CURRENT;
+    if (VDBG)
+        Log.v(TAG, "getCallerInfo() based on cursor...");
+    if (cursor != null) {
+        if (cursor.moveToFirst()) {
+            int columnIndex;
+            columnIndex = cursor.getColumnIndex(PhoneLookup.DISPLAY_NAME);
+            if (columnIndex != -1) {
+                info.name = cursor.getString(columnIndex);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.NUMBER);
+            if (columnIndex != -1) {
+                info.phoneNumber = cursor.getString(columnIndex);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.NORMALIZED_NUMBER);
+            if (columnIndex != -1) {
+                info.normalizedNumber = cursor.getString(columnIndex);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.LABEL);
+            if (columnIndex != -1) {
+                int typeColumnIndex = cursor.getColumnIndex(PhoneLookup.TYPE);
+                if (typeColumnIndex != -1) {
+                    info.numberType = cursor.getInt(typeColumnIndex);
+                    info.numberLabel = cursor.getString(columnIndex);
+                    info.phoneLabel = Phone.getDisplayLabel(context, info.numberType, info.numberLabel).toString();
+                }
+            }
+            columnIndex = getColumnIndexForPersonId(contactRef, cursor);
+            if (columnIndex != -1) {
+                final long contactId = cursor.getLong(columnIndex);
+                if (contactId != 0 && !Contacts.isEnterpriseContactId(contactId)) {
+                    info.contactIdOrZero = contactId;
+                    if (VDBG) {
+                        Log.v(TAG, "==> got info.contactIdOrZero: " + info.contactIdOrZero);
+                    }
+                }
+                if (Contacts.isEnterpriseContactId(contactId)) {
+                    info.userType = USER_TYPE_WORK;
+                }
+            } else {
+                Log.w(TAG, "Couldn't find contact_id column for " + contactRef);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.LOOKUP_KEY);
+            if (columnIndex != -1) {
+                info.lookupKey = cursor.getString(columnIndex);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.PHOTO_URI);
+            if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                info.contactDisplayPhotoUri = Uri.parse(cursor.getString(columnIndex));
+            } else {
+                info.contactDisplayPhotoUri = null;
+            }
+            columnIndex = cursor.getColumnIndex(Data.PREFERRED_PHONE_ACCOUNT_COMPONENT_NAME);
+            if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                info.preferredPhoneAccountComponent = ComponentName.unflattenFromString(cursor.getString(columnIndex));
+            }
+            columnIndex = cursor.getColumnIndex(Data.PREFERRED_PHONE_ACCOUNT_ID);
+            if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                info.preferredPhoneAccountId = cursor.getString(columnIndex);
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.CUSTOM_RINGTONE);
+            if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                if (TextUtils.isEmpty(cursor.getString(columnIndex))) {
+                    info.contactRingtoneUri = Uri.EMPTY;
+                } else {
+                    info.contactRingtoneUri = Uri.parse(cursor.getString(columnIndex));
+                }
+            } else {
+                info.contactRingtoneUri = null;
+            }
+            columnIndex = cursor.getColumnIndex(PhoneLookup.SEND_TO_VOICEMAIL);
+            info.shouldSendToVoicemail = (columnIndex != -1) && ((cursor.getInt(columnIndex)) == 1);
+            info.contactExists = true;
+        }
+        cursor.close();
+        cursor = null;
+    }
+    info.needUpdate = false;
+    info.name = normalize(info.name);
+    info.contactRefUri = contactRef;
+    return info;
+}

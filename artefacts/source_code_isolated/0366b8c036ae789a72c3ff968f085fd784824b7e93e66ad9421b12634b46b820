@@ -1,0 +1,14 @@
+public void onServerValidationStatus(int sessionId, boolean succeeded){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "OSU Server Validation status=" + succeeded + " sessionId=" + sessionId);
+    }
+    if (succeeded) {
+        mProvisioningStateMachine.getHandler().post(() -> {
+            mProvisioningStateMachine.handleServerValidationSuccess(sessionId);
+        });
+    } else {
+        mProvisioningStateMachine.getHandler().post(() -> {
+            mProvisioningStateMachine.handleServerValidationFailure(sessionId);
+        });
+    }
+}

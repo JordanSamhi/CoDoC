@@ -1,0 +1,9 @@
+public static boolean canCurrentUserBlockNumbers(Context context){
+    try {
+        final Bundle res = context.getContentResolver().call(AUTHORITY_URI, METHOD_CAN_CURRENT_USER_BLOCK_NUMBERS, null, null);
+        return res != null && res.getBoolean(RES_CAN_BLOCK_NUMBERS, false);
+    } catch (NullPointerException | IllegalArgumentException ex) {
+        Log.w(null, "canCurrentUserBlockNumbers: provider not ready.");
+        return false;
+    }
+}

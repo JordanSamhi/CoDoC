@@ -1,0 +1,12 @@
+public void onMatchNotification(int pubSubId, int requestorInstanceId, byte[] peerMac, byte[] serviceSpecificInfo, byte[] matchFilter, int rangingIndication, int rangeMm){
+    Message msg = mSm.obtainMessage(MESSAGE_TYPE_NOTIFICATION);
+    msg.arg1 = NOTIFICATION_TYPE_MATCH;
+    msg.arg2 = pubSubId;
+    msg.getData().putInt(MESSAGE_BUNDLE_KEY_REQ_INSTANCE_ID, requestorInstanceId);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_MAC_ADDRESS, peerMac);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_SSI_DATA, serviceSpecificInfo);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_FILTER_DATA, matchFilter);
+    msg.getData().putInt(MESSAGE_RANGING_INDICATION, rangingIndication);
+    msg.getData().putInt(MESSAGE_RANGE_MM, rangeMm);
+    mSm.sendMessage(msg);
+}

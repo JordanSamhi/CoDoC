@@ -1,0 +1,35 @@
+public static int[] getSupportedKeepalives(@NonNull Context context){
+    String[] res = null;
+    try {
+        res = context.getResources().getStringArray(R.array.config_networkSupportedKeepaliveCount);
+    } catch (Resources.NotFoundException unused) {
+    }
+    if (res == null)
+        throw new KeepaliveDeviceConfigurationException("invalid resource");
+    final int[] ret = new int[NetworkCapabilities.MAX_TRANSPORT + 1];
+    for (final String row : res) {
+        if (TextUtils.isEmpty(row)) {
+            throw new KeepaliveDeviceConfigurationException("Empty string");
+        }
+        final String[] arr = row.split(",");
+        if (arr.length != 2) {
+            throw new KeepaliveDeviceConfigurationException("Invalid parameter length");
+        }
+        int transport;
+        int supported;
+        try {
+            transport = Integer.parseInt(arr[0]);
+            supported = Integer.parseInt(arr[1]);
+        } catch (NumberFormatException e) {
+            throw new KeepaliveDeviceConfigurationException("Invalid number format");
+        }
+        if (!NetworkCapabilities.isValidTransport(transport)) {
+            throw new KeepaliveDeviceConfigurationException("Invalid transport " + transport);
+        }
+        if (supported < 0) {
+            throw new KeepaliveDeviceConfigurationException("Invalid supported count " + supported + " for " + NetworkCapabilities.transportNameOf(transport));
+        }
+        ret[transport] = supported;
+    }
+    return ret;
+}

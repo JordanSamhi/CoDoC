@@ -1,0 +1,11 @@
+public void SSYR2K(@Uplo int Uplo, @Transpose int Trans, float alpha, Allocation A, Allocation B, float beta, Allocation C){
+    validateUplo(Uplo);
+    validateSYR2K(Element.F32(mRS), Trans, A, B, C);
+    int K = -1;
+    if (Trans != NO_TRANSPOSE) {
+        K = A.getType().getY();
+    } else {
+        K = A.getType().getX();
+    }
+    mRS.nScriptIntrinsicBLAS_Single(getID(mRS), RsBlas_ssyr2k, Trans, 0, 0, Uplo, 0, 0, C.getType().getX(), K, alpha, A.getID(mRS), B.getID(mRS), beta, C.getID(mRS), 0, 0, 0, 0);
+}

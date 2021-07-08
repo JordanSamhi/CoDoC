@@ -1,0 +1,13 @@
+public void setAnchorView(View view){
+    if (mAnchor != null) {
+        mAnchor.removeOnLayoutChangeListener(mLayoutChangeListener);
+    }
+    mAnchor = view;
+    if (mAnchor != null) {
+        mAnchor.addOnLayoutChangeListener(mLayoutChangeListener);
+    }
+    FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    removeAllViews();
+    View v = makeControllerView();
+    addView(v, frameParams);
+}

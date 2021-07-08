@@ -1,0 +1,28 @@
+public void dump(@NonNull DualDumpOutputStream dumpOutputStream, @NonNull String fieldName, long fieldId){
+    int version;
+    String packagesHash;
+    ArrayMap<String, ArraySet<String>> roles;
+    synchronized (mLock) {
+        version = mVersion;
+        packagesHash = mPackagesHash;
+        roles = snapshotRolesLocked();
+    }
+    long fieldToken = dumpOutputStream.start(fieldName, fieldId);
+    dumpOutputStream.write("user_id", RoleUserStateProto.USER_ID, mUserId);
+    dumpOutputStream.write("version", RoleUserStateProto.VERSION, version);
+    dumpOutputStream.write("packages_hash", RoleUserStateProto.PACKAGES_HASH, packagesHash);
+    int rolesSize = roles.size();
+    for (int rolesIndex = 0; rolesIndex < rolesSize; rolesIndex++) {
+        String roleName = roles.keyAt(rolesIndex);
+        ArraySet<String> roleHolders = roles.valueAt(rolesIndex);
+        long rolesToken = dumpOutputStream.start("roles", RoleUserStateProto.ROLES);
+        dumpOutputStream.write("name", RoleProto.NAME, roleName);
+        int roleHoldersSize = roleHolders.size();
+        for (int roleHoldersIndex = 0; roleHoldersIndex < roleHoldersSize; roleHoldersIndex++) {
+            String roleHolder = roleHolders.valueAt(roleHoldersIndex);
+            dumpOutputStream.write("holders", RoleProto.HOLDERS, roleHolder);
+        }
+        dumpOutputStream.end(rolesToken);
+    }
+    dumpOutputStream.end(fieldToken);
+}

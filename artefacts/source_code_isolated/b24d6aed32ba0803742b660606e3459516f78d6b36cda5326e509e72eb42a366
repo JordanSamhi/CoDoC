@@ -1,0 +1,26 @@
+public boolean getValue(int index, TypedValue outValue){
+    outValue.type = getType(index);
+    switch(outValue.type) {
+        case TYPE_NULL:
+            return false;
+        case TYPE_STRING:
+            outValue.string = getString(index);
+            return true;
+        case TYPE_REFERENCE:
+            outValue.resourceId = mResourceId[index];
+            return true;
+        case TYPE_INT_COLOR_ARGB4:
+        case TYPE_INT_COLOR_ARGB8:
+        case TYPE_INT_COLOR_RGB4:
+        case TYPE_INT_COLOR_RGB8:
+            ColorStateList colorStateList = getColorStateList(index);
+            if (colorStateList == null) {
+                return false;
+            }
+            outValue.data = colorStateList.getDefaultColor();
+            return true;
+        default:
+            String s = getString(index);
+            return s != null && ResourceHelper.parseFloatAttribute(mNames[index], s, outValue, false);
+    }
+}

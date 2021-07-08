@@ -1,0 +1,174 @@
+public static Pair<String, WifiConfiguration> parseFromXml(XmlPullParser in, int outerTagDepth, boolean shouldExpectEncryptedCredentials, @Nullable WifiConfigStoreEncryptionUtil encryptionUtil) throws XmlPullParserException, IOException{
+    WifiConfiguration configuration = new WifiConfiguration();
+    String configKeyInData = null;
+    boolean macRandomizationSettingExists = false;
+    while (!XmlUtil.isNextSectionEnd(in, outerTagDepth)) {
+        if (in.getAttributeValue(null, "name") != null) {
+            String[] valueName = new String[1];
+            Object value = XmlUtil.readCurrentValue(in, valueName);
+            if (valueName[0] == null) {
+                throw new XmlPullParserException("Missing value name");
+            }
+            switch(valueName[0]) {
+                case XML_TAG_CONFIG_KEY:
+                    configKeyInData = (String) value;
+                    break;
+                case XML_TAG_SSID:
+                    configuration.SSID = (String) value;
+                    break;
+                case XML_TAG_BSSID:
+                    configuration.BSSID = (String) value;
+                    break;
+                case XML_TAG_PRE_SHARED_KEY:
+                    configuration.preSharedKey = (String) value;
+                    break;
+                case XML_TAG_WEP_KEYS:
+                    populateWepKeysFromXmlValue(value, configuration.wepKeys);
+                    break;
+                case XML_TAG_WEP_TX_KEY_INDEX:
+                    configuration.wepTxKeyIndex = (int) value;
+                    break;
+                case XML_TAG_HIDDEN_SSID:
+                    configuration.hiddenSSID = (boolean) value;
+                    break;
+                case XML_TAG_REQUIRE_PMF:
+                    configuration.requirePmf = (boolean) value;
+                    break;
+                case XML_TAG_ALLOWED_KEY_MGMT:
+                    byte[] allowedKeyMgmt = (byte[]) value;
+                    configuration.allowedKeyManagement = BitSet.valueOf(allowedKeyMgmt);
+                    break;
+                case XML_TAG_ALLOWED_PROTOCOLS:
+                    byte[] allowedProtocols = (byte[]) value;
+                    configuration.allowedProtocols = BitSet.valueOf(allowedProtocols);
+                    break;
+                case XML_TAG_ALLOWED_AUTH_ALGOS:
+                    byte[] allowedAuthAlgorithms = (byte[]) value;
+                    configuration.allowedAuthAlgorithms = BitSet.valueOf(allowedAuthAlgorithms);
+                    break;
+                case XML_TAG_ALLOWED_GROUP_CIPHERS:
+                    byte[] allowedGroupCiphers = (byte[]) value;
+                    configuration.allowedGroupCiphers = BitSet.valueOf(allowedGroupCiphers);
+                    break;
+                case XML_TAG_ALLOWED_PAIRWISE_CIPHERS:
+                    byte[] allowedPairwiseCiphers = (byte[]) value;
+                    configuration.allowedPairwiseCiphers = BitSet.valueOf(allowedPairwiseCiphers);
+                    break;
+                case XML_TAG_ALLOWED_GROUP_MGMT_CIPHERS:
+                    byte[] allowedGroupMgmtCiphers = (byte[]) value;
+                    configuration.allowedGroupManagementCiphers = BitSet.valueOf(allowedGroupMgmtCiphers);
+                    break;
+                case XML_TAG_ALLOWED_SUITE_B_CIPHERS:
+                    byte[] allowedSuiteBCiphers = (byte[]) value;
+                    configuration.allowedSuiteBCiphers = BitSet.valueOf(allowedSuiteBCiphers);
+                    break;
+                case XML_TAG_SHARED:
+                    configuration.shared = (boolean) value;
+                    break;
+                case XML_TAG_STATUS:
+                    int status = (int) value;
+                    if (status == WifiConfiguration.Status.CURRENT) {
+                        status = WifiConfiguration.Status.ENABLED;
+                    }
+                    configuration.status = status;
+                    break;
+                case XML_TAG_FQDN:
+                    configuration.FQDN = (String) value;
+                    break;
+                case XML_TAG_PROVIDER_FRIENDLY_NAME:
+                    configuration.providerFriendlyName = (String) value;
+                    break;
+                case XML_TAG_LINKED_NETWORKS_LIST:
+                    configuration.linkedConfigurations = (HashMap<String, Integer>) value;
+                    break;
+                case XML_TAG_DEFAULT_GW_MAC_ADDRESS:
+                    configuration.defaultGwMacAddress = (String) value;
+                    break;
+                case XML_TAG_VALIDATED_INTERNET_ACCESS:
+                    configuration.validatedInternetAccess = (boolean) value;
+                    break;
+                case XML_TAG_NO_INTERNET_ACCESS_EXPECTED:
+                    configuration.noInternetAccessExpected = (boolean) value;
+                    break;
+                case XML_TAG_METERED_HINT:
+                    configuration.meteredHint = (boolean) value;
+                    break;
+                case XML_TAG_METERED_OVERRIDE:
+                    configuration.meteredOverride = (int) value;
+                    break;
+                case XML_TAG_USE_EXTERNAL_SCORES:
+                    configuration.useExternalScores = (boolean) value;
+                    break;
+                case XML_TAG_CREATOR_UID:
+                    configuration.creatorUid = (int) value;
+                    break;
+                case XML_TAG_CREATOR_NAME:
+                    configuration.creatorName = (String) value;
+                    break;
+                case XML_TAG_LAST_UPDATE_UID:
+                    configuration.lastUpdateUid = (int) value;
+                    break;
+                case XML_TAG_LAST_UPDATE_NAME:
+                    configuration.lastUpdateName = (String) value;
+                    break;
+                case XML_TAG_LAST_CONNECT_UID:
+                    configuration.lastConnectUid = (int) value;
+                    break;
+                case XML_TAG_IS_LEGACY_PASSPOINT_CONFIG:
+                    configuration.isLegacyPasspointConfig = (boolean) value;
+                    break;
+                case XML_TAG_ROAMING_CONSORTIUM_OIS:
+                    configuration.roamingConsortiumIds = (long[]) value;
+                    break;
+                case XML_TAG_RANDOMIZED_MAC_ADDRESS:
+                    configuration.setRandomizedMacAddress(MacAddress.fromString((String) value));
+                    break;
+                case XML_TAG_MAC_RANDOMIZATION_SETTING:
+                    configuration.macRandomizationSetting = (int) value;
+                    macRandomizationSettingExists = true;
+                    break;
+                case XML_TAG_CARRIER_ID:
+                    configuration.carrierId = (int) value;
+                    break;
+                case XML_TAG_IS_AUTO_JOIN:
+                    configuration.allowAutojoin = (boolean) value;
+                    break;
+                case XML_TAG_IS_TRUSTED:
+                    configuration.trusted = (boolean) value;
+                    break;
+                case XML_TAG_IS_MOST_RECENTLY_CONNECTED:
+                    configuration.isMostRecentlyConnected = (boolean) value;
+                    break;
+                default:
+                    Log.w(TAG, "Ignoring unknown value name found: " + valueName[0]);
+                    break;
+            }
+        } else {
+            String tagName = in.getName();
+            if (tagName == null) {
+                throw new XmlPullParserException("Unexpected null tag found");
+            }
+            switch(tagName) {
+                case XML_TAG_PRE_SHARED_KEY:
+                    if (!shouldExpectEncryptedCredentials || encryptionUtil == null) {
+                        throw new XmlPullParserException("Encrypted preSharedKey section not expected");
+                    }
+                    EncryptedData encryptedData = EncryptedDataXmlUtil.parseFromXml(in, outerTagDepth + 1);
+                    byte[] preSharedKeyBytes = encryptionUtil.decrypt(encryptedData);
+                    if (preSharedKeyBytes == null) {
+                        Log.wtf(TAG, "Decryption of preSharedKey failed");
+                    } else {
+                        configuration.preSharedKey = new String(preSharedKeyBytes);
+                    }
+                    break;
+                default:
+                    Log.w(TAG, "Ignoring unknown tag found: " + tagName);
+                    break;
+            }
+        }
+    }
+    if (!macRandomizationSettingExists) {
+        configuration.macRandomizationSetting = WifiConfiguration.RANDOMIZATION_NONE;
+    }
+    return Pair.create(configKeyInData, configuration);
+}

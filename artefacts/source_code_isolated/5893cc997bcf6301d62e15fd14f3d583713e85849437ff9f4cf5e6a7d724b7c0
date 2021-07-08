@@ -1,0 +1,14 @@
+public void closeStorage(@NonNull String path){
+    try {
+        final int id = mService.openStorage(path);
+        if (id < 0) {
+            return;
+        }
+        mService.deleteStorage(id);
+        synchronized (mStorages) {
+            mStorages.remove(id);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

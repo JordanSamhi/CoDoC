@@ -1,0 +1,26 @@
+public static Resources getResourcesForSubId(Context context, int subId, boolean useRootLocale){
+    Pair<Context, Integer> cacheKey = null;
+    if (isValidSubscriptionId(subId) && !useRootLocale) {
+        cacheKey = Pair.create(context, subId);
+        if (sResourcesCache.containsKey(cacheKey)) {
+            return sResourcesCache.get(cacheKey);
+        }
+    }
+    final SubscriptionInfo subInfo = SubscriptionManager.from(context).getActiveSubscriptionInfo(subId);
+    Configuration overrideConfig = new Configuration();
+    if (subInfo != null) {
+        overrideConfig.mcc = subInfo.getMcc();
+        overrideConfig.mnc = subInfo.getMnc();
+        if (overrideConfig.mnc == 0)
+            overrideConfig.mnc = Configuration.MNC_ZERO;
+    }
+    if (useRootLocale) {
+        overrideConfig.setLocale(Locale.ROOT);
+    }
+    Context newContext = context.createConfigurationContext(overrideConfig);
+    Resources res = newContext.getResources();
+    if (cacheKey != null) {
+        sResourcesCache.put(cacheKey, res);
+    }
+    return res;
+}

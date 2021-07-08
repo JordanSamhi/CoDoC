@@ -1,0 +1,11 @@
+public String iccTransmitApduBasicChannelBySlot(int slotIndex, int cla, int instruction, int p1, int p2, int p3, @Nullable String data){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.iccTransmitApduBasicChannelBySlot(slotIndex, getOpPackageName(), cla, instruction, p1, p2, p3, data);
+        }
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    return null;
+}

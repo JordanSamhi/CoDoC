@@ -1,0 +1,29 @@
+public void writeToParcel(Parcel parcel, int flags){
+    parcel.writeInt(isSealed() ? 1 : 0);
+    parcel.writeInt(mEventType);
+    parcel.writeInt(mMovementGranularity);
+    parcel.writeInt(mAction);
+    parcel.writeInt(mContentChangeTypes);
+    parcel.writeInt(mWindowChangeTypes);
+    TextUtils.writeToParcel(mPackageName, parcel, 0);
+    parcel.writeLong(mEventTime);
+    parcel.writeInt(mConnectionId);
+    writeAccessibilityRecordToParcel(this, parcel, flags);
+    final int recordCount = getRecordCount();
+    parcel.writeInt(recordCount);
+    for (int i = 0; i < recordCount; i++) {
+        AccessibilityRecord record = mRecords.get(i);
+        writeAccessibilityRecordToParcel(record, parcel, flags);
+    }
+    if (DEBUG_ORIGIN) {
+        if (originStackTrace == null)
+            originStackTrace = Thread.currentThread().getStackTrace();
+        parcel.writeInt(originStackTrace.length);
+        for (StackTraceElement element : originStackTrace) {
+            parcel.writeString(element.getClassName());
+            parcel.writeString(element.getMethodName());
+            parcel.writeString(element.getFileName());
+            parcel.writeInt(element.getLineNumber());
+        }
+    }
+}

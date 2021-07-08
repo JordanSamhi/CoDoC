@@ -1,0 +1,21 @@
+
+     * Create a new {@link MbmsGroupCallSession} using the given subscription ID.
+     *
+     * You may only have one instance of {@link MbmsGroupCallSession} per UID. If you call this
+     * method while there is an active instance of {@link MbmsGroupCallSession} in your process
+     * (in other words, one that has not had {@link #close()} called on it), this method will
+     * throw an {@link IllegalStateException}. If you call this method in a different process
+     * running under the same UID, an error will be indicated via
+     * {@link MbmsGroupCallSessionCallback#onError(int, String)}.
+     *
+     * Note that initialization may fail asynchronously. If you wish to try again after you
+     * receive such an asynchronous error, you must call {@link #close()} on the instance of
+     * {@link MbmsGroupCallSession} that you received before calling this method again.
+     *
+     * @param context The {@link Context} to use.
+     * @param subscriptionId The subscription ID to use.
+     * @param executor The executor on which you wish to execute callbacks.
+     * @param callback A callback object on which you wish to receive results of asynchronous
+     *                 operations.
+     * @return An instance of {@link MbmsGroupCallSession}, or null if an error occurred.
+     

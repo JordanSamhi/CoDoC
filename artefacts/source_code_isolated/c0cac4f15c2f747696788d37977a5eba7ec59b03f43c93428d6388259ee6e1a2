@@ -1,0 +1,11 @@
+public BluetoothLeAdvertiser getBluetoothLeAdvertiser(){
+    if (!getLeAccess()) {
+        return null;
+    }
+    synchronized (mLock) {
+        if (sBluetoothLeAdvertiser == null) {
+            sBluetoothLeAdvertiser = new BluetoothLeAdvertiser(mManagerService);
+        }
+    }
+    return sBluetoothLeAdvertiser;
+}

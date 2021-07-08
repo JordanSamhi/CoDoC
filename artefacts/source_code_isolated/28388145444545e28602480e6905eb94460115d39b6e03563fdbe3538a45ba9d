@@ -1,0 +1,13 @@
+public final boolean hasDataSchemeSpecificPart(PatternMatcher ssp){
+    if (mDataSchemeSpecificParts == null) {
+        return false;
+    }
+    final int numDataSchemeSpecificParts = mDataSchemeSpecificParts.size();
+    for (int i = 0; i < numDataSchemeSpecificParts; i++) {
+        final PatternMatcher pe = mDataSchemeSpecificParts.get(i);
+        if (pe.getType() == ssp.getType() && pe.getPath().equals(ssp.getPath())) {
+            return true;
+        }
+    }
+    return false;
+}

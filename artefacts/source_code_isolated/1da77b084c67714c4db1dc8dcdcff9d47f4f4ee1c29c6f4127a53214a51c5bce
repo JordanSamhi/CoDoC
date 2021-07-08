@@ -1,0 +1,19 @@
+public void writeRilDataCallEvent(int phoneId, int cid, int apnTypeBitmask, int state){
+    RilDataCall[] dataCalls = new RilDataCall[1];
+    dataCalls[0] = new RilDataCall();
+    dataCalls[0].cid = cid;
+    dataCalls[0].apnTypeBitmask = apnTypeBitmask;
+    dataCalls[0].state = state;
+    SparseArray<RilDataCall> dataCallList;
+    if (mLastRilDataCallEvents.get(phoneId) != null) {
+        if (mLastRilDataCallEvents.get(phoneId).get(cid) != null && Arrays.equals(RilDataCall.toByteArray(mLastRilDataCallEvents.get(phoneId).get(cid)), RilDataCall.toByteArray(dataCalls[0]))) {
+            return;
+        }
+        dataCallList = mLastRilDataCallEvents.get(phoneId);
+    } else {
+        dataCallList = new SparseArray<>();
+    }
+    dataCallList.put(cid, dataCalls[0]);
+    mLastRilDataCallEvents.put(phoneId, dataCallList);
+    addTelephonyEvent(new TelephonyEventBuilder(phoneId).setDataCalls(dataCalls).build());
+}

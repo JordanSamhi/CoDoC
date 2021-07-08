@@ -1,0 +1,11 @@
+public final void unregisterContentObserver(@NonNull ContentObserver observer){
+    Objects.requireNonNull(observer, "observer");
+    try {
+        IContentObserver contentObserver = observer.releaseContentObserver();
+        if (contentObserver != null) {
+            getContentService().unregisterContentObserver(contentObserver);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

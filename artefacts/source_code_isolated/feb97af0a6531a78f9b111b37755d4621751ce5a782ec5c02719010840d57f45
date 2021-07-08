@@ -1,0 +1,15 @@
+public boolean seekTo(long timeMs) throws IllegalArgumentException{
+    if (!mEnabled) {
+        Log.e(TAG, "Cannot use seekTo() from a disabled RemoteController");
+        return false;
+    }
+    if (timeMs < 0) {
+        throw new IllegalArgumentException("illegal negative time value");
+    }
+    synchronized (mInfoLock) {
+        if (mCurrentSession != null) {
+            mCurrentSession.getTransportControls().seekTo(timeMs);
+        }
+    }
+    return true;
+}

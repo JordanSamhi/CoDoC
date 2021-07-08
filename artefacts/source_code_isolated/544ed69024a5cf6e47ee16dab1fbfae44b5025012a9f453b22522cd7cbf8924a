@@ -1,0 +1,10 @@
+public void setRecordListener(@NonNull HdmiRecordListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener must not be null.");
+    }
+    try {
+        mService.setHdmiRecordListener(getListenerWrapper(listener));
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to set record listener.", e);
+    }
+}

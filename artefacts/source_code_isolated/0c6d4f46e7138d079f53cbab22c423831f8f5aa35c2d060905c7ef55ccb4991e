@@ -1,0 +1,16 @@
+public void handleWifiConnected(String ssid){
+    removeNetworkFromBlacklist(ssid);
+    if (mState != STATE_CONNECTING_IN_NOTIFICATION) {
+        clearPendingNotification(true);
+        return;
+    }
+    postNotification(mNotificationBuilder.createNetworkConnectedNotification(mTag, mRecommendedNetwork));
+    Log.d(mTag, "User connected to recommended network: " + "\"" + mRecommendedNetwork.SSID + "\"");
+    mWifiMetrics.incrementConnectToNetworkNotification(mTag, ConnectToNetworkNotificationAndActionCount.NOTIFICATION_CONNECTED_TO_NETWORK);
+    mState = STATE_CONNECTED_NOTIFICATION;
+    mHandler.postDelayed(() -> {
+        if (mState == STATE_CONNECTED_NOTIFICATION) {
+            clearPendingNotification(true);
+        }
+    }, TIME_TO_SHOW_CONNECTED_MILLIS);
+}

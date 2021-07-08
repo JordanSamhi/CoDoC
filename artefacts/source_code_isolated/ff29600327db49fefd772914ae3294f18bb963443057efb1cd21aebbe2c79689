@@ -1,0 +1,12 @@
+public final Theme newTheme(){
+    Theme theme = new Theme();
+    theme.setImpl(mResourcesImpl.newThemeImpl());
+    synchronized (mThemeRefs) {
+        mThemeRefs.add(new WeakReference<>(theme));
+        if (mThemeRefs.size() > mThemeRefsNextFlushSize) {
+            mThemeRefs.removeIf(ref -> ref.get() == null);
+            mThemeRefsNextFlushSize = Math.max(MIN_THEME_REFS_FLUSH_SIZE, 2 * mThemeRefs.size());
+        }
+    }
+    return theme;
+}

@@ -1,0 +1,14 @@
+public void copyRankingInformation(NotificationRecord previous){
+    mContactAffinity = previous.mContactAffinity;
+    mRecentlyIntrusive = previous.mRecentlyIntrusive;
+    mPackagePriority = previous.mPackagePriority;
+    mPackageVisibility = previous.mPackageVisibility;
+    mIntercept = previous.mIntercept;
+    mHidden = previous.mHidden;
+    mRankingTimeMs = calculateRankingTimeMs(previous.getRankingTimeMs());
+    mCreationTimeMs = previous.mCreationTimeMs;
+    mVisibleSinceMs = previous.mVisibleSinceMs;
+    if (previous.getSbn().getOverrideGroupKey() != null && !getSbn().isAppGroup()) {
+        getSbn().setOverrideGroupKey(previous.getSbn().getOverrideGroupKey());
+    }
+}

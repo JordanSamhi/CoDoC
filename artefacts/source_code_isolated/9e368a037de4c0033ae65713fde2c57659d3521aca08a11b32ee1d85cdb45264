@@ -1,0 +1,11 @@
+public void deleteInputMethodWindowToken(IBinder token){
+    IMultiClientInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.deleteInputMethodWindowToken(token);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

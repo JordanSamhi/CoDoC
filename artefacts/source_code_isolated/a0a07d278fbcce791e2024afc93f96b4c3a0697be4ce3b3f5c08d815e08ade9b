@@ -1,0 +1,10 @@
+public int getUserBadgeColorResId(@UserIdInt int userId){
+    checkManageOrInteractPermissionIfCallerInOtherProfileGroup(userId, "getUserBadgeColorResId");
+    final UserInfo userInfo = getUserInfoNoChecks(userId);
+    final UserTypeDetails userTypeDetails = getUserTypeDetails(userInfo);
+    if (userInfo == null || userTypeDetails == null || !userTypeDetails.hasBadge()) {
+        Slog.e(LOG_TAG, "Requested badge dark color for non-badged user " + userId);
+        return Resources.ID_NULL;
+    }
+    return userTypeDetails.getBadgeColor(userInfo.profileBadge);
+}

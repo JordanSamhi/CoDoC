@@ -1,0 +1,10 @@
+public int stopRecognition(UUID soundModelId){
+    if (soundModelId == null) {
+        return STATUS_ERROR;
+    }
+    try {
+        return mSoundTriggerService.stopRecognitionForService(new ParcelUuid(soundModelId));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

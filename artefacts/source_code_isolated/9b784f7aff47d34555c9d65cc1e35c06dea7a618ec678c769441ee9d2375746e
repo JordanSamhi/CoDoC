@@ -1,0 +1,15 @@
+public static void handleNewApplication(Context context){
+    ApplicationConfig config = new ApplicationConfig(new ManifestConfigSource(context));
+    ApplicationConfig defaultConfig = ApplicationConfig.getDefaultInstance();
+    String mProcessName = context.getApplicationInfo().processName;
+    if (defaultConfig != null) {
+        if (defaultConfig.isCleartextTrafficPermitted() != config.isCleartextTrafficPermitted()) {
+            Log.w(LOG_TAG, mProcessName + ": New config does not match the previously set config.");
+            if (defaultConfig.hasPerDomainConfigs() || config.hasPerDomainConfigs()) {
+                throw new RuntimeException("Found multiple conflicting per-domain rules");
+            }
+            config = defaultConfig.isCleartextTrafficPermitted() ? defaultConfig : config;
+        }
+    }
+    ApplicationConfig.setDefaultInstance(config);
+}

@@ -1,0 +1,9 @@
+public final void setOnNotificationPostedTrim(int trim){
+    if (!isBound())
+        return;
+    try {
+        getNotificationInterface().setOnNotificationPostedTrimFromListener(mWrapper, trim);
+    } catch (RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+    }
+}

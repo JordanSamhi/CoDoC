@@ -1,0 +1,33 @@
+
+     * Write the {@link android.graphics.ImageFormat#RAW_SENSOR} pixel data to a DNG file with
+     * the currently configured metadata.
+     *
+     * <p>
+     * Raw pixel data must have 16 bits per pixel, and the input must contain at least
+     * {@code offset + 2 * width * height)} bytes.  The width and height of
+     * the input are taken from the width and height set in the {@link DngCreator} metadata tags,
+     * and will typically be equal to the width and height of
+     * {@link CameraCharacteristics#SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE}.  Prior to
+     * API level 23, this was always the same as
+     * {@link CameraCharacteristics#SENSOR_INFO_ACTIVE_ARRAY_SIZE}.
+     * The pixel layout in the input is determined from the reported color filter arrangement (CFA)
+     * set in {@link CameraCharacteristics#SENSOR_INFO_COLOR_FILTER_ARRANGEMENT}.  If insufficient
+     * metadata is available to write a well-formatted DNG file, an
+     * {@link java.lang.IllegalStateException} will be thrown.
+     * </p>
+     *
+     * <p>
+     * Any mark or limit set on this {@link ByteBuffer} is ignored, and will be cleared by this
+     * method.
+     * </p>
+     *
+     * @param dngOutput an {@link java.io.OutputStream} to write the DNG file to.
+     * @param size the {@link Size} of the image to write, in pixels.
+     * @param pixels an {@link java.nio.ByteBuffer} of pixel data to write.
+     * @param offset the offset of the raw image in bytes.  This indicates how many bytes will
+     *               be skipped in the input before any pixel data is read.
+     *
+     * @throws IOException if an error was encountered in the input or output stream.
+     * @throws java.lang.IllegalStateException if not enough metadata information has been
+     *          set to write a well-formatted DNG file.
+     

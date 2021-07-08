@@ -1,0 +1,28 @@
+public boolean startViewServer(int port){
+    if (isSystemSecure()) {
+        return false;
+    }
+    if (!checkCallingPermission(Manifest.permission.DUMP, "startViewServer")) {
+        return false;
+    }
+    if (port < 1024) {
+        return false;
+    }
+    if (mViewServer != null) {
+        if (!mViewServer.isRunning()) {
+            try {
+                return mViewServer.start();
+            } catch (IOException e) {
+                ProtoLog.w(WM_ERROR, "View server did not start");
+            }
+        }
+        return false;
+    }
+    try {
+        mViewServer = new ViewServer(this, port);
+        return mViewServer.start();
+    } catch (IOException e) {
+        ProtoLog.w(WM_ERROR, "View server did not start");
+    }
+    return false;
+}

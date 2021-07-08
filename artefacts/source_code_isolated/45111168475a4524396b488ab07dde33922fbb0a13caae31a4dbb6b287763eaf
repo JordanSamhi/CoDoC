@@ -1,0 +1,18 @@
+public void notifyRemoteVolumeChanged(int flags, MediaSessionRecord session){
+    if (!session.isActive()) {
+        return;
+    }
+    synchronized (mLock) {
+        int size = mRemoteVolumeControllers.beginBroadcast();
+        MediaSession.Token token = session.getSessionToken();
+        for (int i = size - 1; i >= 0; i--) {
+            try {
+                IRemoteVolumeController cb = mRemoteVolumeControllers.getBroadcastItem(i);
+                cb.remoteVolumeChanged(token, flags);
+            } catch (Exception e) {
+                Log.w(TAG, "Error sending volume change.", e);
+            }
+        }
+        mRemoteVolumeControllers.finishBroadcast();
+    }
+}

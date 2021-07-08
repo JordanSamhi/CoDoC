@@ -1,0 +1,8 @@
+public void setMsisdnNumber(String alphaTag, String number, Message onComplete){
+    mNewMsisdn = number;
+    mNewMsisdnTag = alphaTag;
+    if (DBG)
+        log("Set MSISDN: " + mNewMsisdnTag + " " + Rlog.pii(LOG_TAG, mNewMsisdn));
+    AdnRecord adn = new AdnRecord(mNewMsisdnTag, mNewMsisdn);
+    new AdnRecordLoader(mFh).updateEF(adn, EF_MSISDN, getExtFromEf(EF_MSISDN), 1, null, obtainMessage(EVENT_SET_MSISDN_DONE, onComplete));
+}

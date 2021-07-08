@@ -1,0 +1,12 @@
+public synchronized void onSystemReady(){
+    if (mAppOps != null) {
+        return;
+    }
+    mAppOps = Objects.requireNonNull(mContext.getSystemService(AppOpsManager.class));
+    mAppOps.startWatchingMode(AppOpsManager.OP_COARSE_LOCATION, null, AppOpsManager.WATCH_FOREGROUND_CHANGES, new AppOpsManager.OnOpChangedInternalListener() {
+
+        public void onOpChanged(int op, String packageName) {
+            FgThread.getHandler().sendMessage(PooledLambda.obtainMessage(AppOpsHelper::onAppOpChanged, AppOpsHelper.this, packageName));
+        }
+    });
+}

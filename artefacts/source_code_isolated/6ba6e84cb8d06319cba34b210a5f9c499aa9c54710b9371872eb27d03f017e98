@@ -1,0 +1,13 @@
+public String[] getApkPaths(){
+    synchronized (this) {
+        if (mOpen) {
+            String[] paths = new String[mApkAssets.length];
+            final int count = mApkAssets.length;
+            for (int i = 0; i < count; i++) {
+                paths[i] = mApkAssets[i].getAssetPath();
+            }
+            return paths;
+        }
+    }
+    return new String[0];
+}

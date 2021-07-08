@@ -1,0 +1,9 @@
+public static void blendLAB(@NonNull double[] lab1, @NonNull double[] lab2, @FloatRange(from = 0.0, to = 1.0) double ratio, @NonNull double[] outResult){
+    if (outResult.length != 3) {
+        throw new IllegalArgumentException("outResult must have a length of 3.");
+    }
+    final double inverseRatio = 1 - ratio;
+    outResult[0] = lab1[0] * inverseRatio + lab2[0] * ratio;
+    outResult[1] = lab1[1] * inverseRatio + lab2[1] * ratio;
+    outResult[2] = lab1[2] * inverseRatio + lab2[2] * ratio;
+}

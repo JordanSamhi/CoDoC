@@ -1,0 +1,12 @@
+public void newSidForUser(IGateKeeperService gatekeeper, AuthenticationToken authToken, int userId){
+    GateKeeperResponse response;
+    try {
+        response = gatekeeper.enroll(userId, null, null, authToken.deriveGkPassword());
+    } catch (RemoteException e) {
+        throw new IllegalStateException("Failed to create new SID for user", e);
+    }
+    if (response.getResponseCode() != GateKeeperResponse.RESPONSE_OK) {
+        throw new IllegalStateException("Fail to create new SID for user " + userId + " response: " + response.getResponseCode());
+    }
+    saveSyntheticPasswordHandle(response.getPayload(), userId);
+}

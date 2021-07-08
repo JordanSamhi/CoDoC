@@ -1,0 +1,27 @@
+public void releaseConnection(SQLiteConnection connection){
+    synchronized (mLock) {
+        if (mIdleConnectionHandler != null) {
+            mIdleConnectionHandler.connectionReleased(connection);
+        }
+        AcquiredConnectionStatus status = mAcquiredConnections.remove(connection);
+        if (status == null) {
+            throw new IllegalStateException("Cannot perform this operation " + "because the specified connection was not acquired " + "from this pool or has already been released.");
+        }
+        if (!mIsOpen) {
+            closeConnectionAndLogExceptionsLocked(connection);
+        } else if (connection.isPrimaryConnection()) {
+            if (recycleConnectionLocked(connection, status)) {
+                assert mAvailablePrimaryConnection == null;
+                mAvailablePrimaryConnection = connection;
+            }
+            wakeConnectionWaitersLocked();
+        } else if (mAvailableNonPrimaryConnections.size() >= mMaxConnectionPoolSize - 1) {
+            closeConnectionAndLogExceptionsLocked(connection);
+        } else {
+            if (recycleConnectionLocked(connection, status)) {
+                mAvailableNonPrimaryConnections.add(connection);
+            }
+            wakeConnectionWaitersLocked();
+        }
+    }
+}

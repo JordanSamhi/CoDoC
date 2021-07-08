@@ -1,0 +1,23 @@
+public void insertAt(int row, int[] values){
+    if ((row < 0) || (row > size())) {
+        throw new IndexOutOfBoundsException("row " + row);
+    }
+    if ((values != null) && (values.length < width())) {
+        throw new IndexOutOfBoundsException("value count " + values.length);
+    }
+    moveRowGapTo(row);
+    if (mRowGapLength == 0) {
+        growBuffer();
+    }
+    mRowGapStart++;
+    mRowGapLength--;
+    if (values == null) {
+        for (int i = mColumns - 1; i >= 0; i--) {
+            setValueInternal(row, i, 0);
+        }
+    } else {
+        for (int i = mColumns - 1; i >= 0; i--) {
+            setValueInternal(row, i, values[i]);
+        }
+    }
+}

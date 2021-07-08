@@ -1,0 +1,13 @@
+public static long[] insert(long[] array, int currentSize, int index, long element){
+    assert currentSize <= array.length;
+    if (currentSize + 1 <= array.length) {
+        System.arraycopy(array, index, array, index + 1, currentSize - index);
+        array[index] = element;
+        return array;
+    }
+    long[] newArray = ArrayUtils.newUnpaddedLongArray(growSize(currentSize));
+    System.arraycopy(array, 0, newArray, 0, index);
+    newArray[index] = element;
+    System.arraycopy(array, index, newArray, index + 1, array.length - index);
+    return newArray;
+}

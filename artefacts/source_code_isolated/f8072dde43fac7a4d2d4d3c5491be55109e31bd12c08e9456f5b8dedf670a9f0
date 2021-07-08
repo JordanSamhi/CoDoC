@@ -1,0 +1,9 @@
+public void applyTunnelModeTransform(@NonNull IpSecTunnelInterface tunnel, @PolicyDirection int direction, @NonNull IpSecTransform transform) throws IOException{
+    try {
+        mService.applyTunnelModeTransform(tunnel.getResourceId(), direction, transform.getResourceId(), mContext.getOpPackageName());
+    } catch (ServiceSpecificException e) {
+        throw rethrowCheckedExceptionFromServiceSpecificException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

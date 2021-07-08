@@ -1,0 +1,9 @@
+public int convertPreLayoutPositionToPostLayout(int position){
+    if (position < 0 || position >= mState.getItemCount()) {
+        throw new IndexOutOfBoundsException("invalid position " + position + ". State " + "item count is " + mState.getItemCount());
+    }
+    if (!mState.isPreLayout()) {
+        return position;
+    }
+    return mAdapterHelper.findPositionOffset(position);
+}

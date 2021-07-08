@@ -1,0 +1,12 @@
+public static List<O> mapNotNull(@Nullable List<I> cur, Function<? super I, ? extends O> f){
+    if (isEmpty(cur))
+        return Collections.emptyList();
+    List<O> result = null;
+    for (int i = 0; i < cur.size(); i++) {
+        O transformed = f.apply(cur.get(i));
+        if (transformed != null) {
+            result = add(result, transformed);
+        }
+    }
+    return emptyIfNull(result);
+}

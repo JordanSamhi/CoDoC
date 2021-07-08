@@ -1,0 +1,54 @@
+public static float[] temporalSampling(GestureStroke stroke, int numPoints){
+    final float increment = stroke.length / (numPoints - 1);
+    int vectorLength = numPoints * 2;
+    float[] vector = new float[vectorLength];
+    float distanceSoFar = 0;
+    float[] pts = stroke.points;
+    float lstPointX = pts[0];
+    float lstPointY = pts[1];
+    int index = 0;
+    float currentPointX = Float.MIN_VALUE;
+    float currentPointY = Float.MIN_VALUE;
+    vector[index] = lstPointX;
+    index++;
+    vector[index] = lstPointY;
+    index++;
+    int i = 0;
+    int count = pts.length / 2;
+    while (i < count) {
+        if (currentPointX == Float.MIN_VALUE) {
+            i++;
+            if (i >= count) {
+                break;
+            }
+            currentPointX = pts[i * 2];
+            currentPointY = pts[i * 2 + 1];
+        }
+        float deltaX = currentPointX - lstPointX;
+        float deltaY = currentPointY - lstPointY;
+        float distance = (float) Math.hypot(deltaX, deltaY);
+        if (distanceSoFar + distance >= increment) {
+            float ratio = (increment - distanceSoFar) / distance;
+            float nx = lstPointX + ratio * deltaX;
+            float ny = lstPointY + ratio * deltaY;
+            vector[index] = nx;
+            index++;
+            vector[index] = ny;
+            index++;
+            lstPointX = nx;
+            lstPointY = ny;
+            distanceSoFar = 0;
+        } else {
+            lstPointX = currentPointX;
+            lstPointY = currentPointY;
+            currentPointX = Float.MIN_VALUE;
+            currentPointY = Float.MIN_VALUE;
+            distanceSoFar += distance;
+        }
+    }
+    for (i = index; i < vectorLength; i += 2) {
+        vector[i] = lstPointX;
+        vector[i + 1] = lstPointY;
+    }
+    return vector;
+}

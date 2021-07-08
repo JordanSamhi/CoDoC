@@ -1,0 +1,13 @@
+public void setWhitelist(@UserIdInt int userId, @Nullable List<String> packageNames, @Nullable List<ComponentName> components){
+    synchronized (mGlobalWhitelistStateLock) {
+        if (mWhitelisterHelpers == null) {
+            mWhitelisterHelpers = new SparseArray<>(1);
+        }
+        WhitelistHelper helper = mWhitelisterHelpers.get(userId);
+        if (helper == null) {
+            helper = new WhitelistHelper();
+            mWhitelisterHelpers.put(userId, helper);
+        }
+        helper.setWhitelist(packageNames, components);
+    }
+}

@@ -1,0 +1,22 @@
+public void setSensorPrivacy(boolean enable){
+    enforceSensorPrivacyPermission();
+    synchronized (mLock) {
+        mEnabled = enable;
+        FileOutputStream outputStream = null;
+        try {
+            XmlSerializer serializer = new FastXmlSerializer();
+            outputStream = mAtomicFile.startWrite();
+            serializer.setOutput(outputStream, StandardCharsets.UTF_8.name());
+            serializer.startDocument(null, true);
+            serializer.startTag(null, XML_TAG_SENSOR_PRIVACY);
+            serializer.attribute(null, XML_ATTRIBUTE_ENABLED, String.valueOf(enable));
+            serializer.endTag(null, XML_TAG_SENSOR_PRIVACY);
+            serializer.endDocument();
+            mAtomicFile.finishWrite(outputStream);
+        } catch (IOException e) {
+            Log.e(TAG, "Caught an exception persisting the sensor privacy state: ", e);
+            mAtomicFile.failWrite(outputStream);
+        }
+    }
+    mHandler.onSensorPrivacyChanged(enable);
+}

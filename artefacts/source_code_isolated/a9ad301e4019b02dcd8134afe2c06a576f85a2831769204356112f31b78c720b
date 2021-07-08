@@ -1,0 +1,23 @@
+public static void serializePasspointConfiguration(XmlSerializer out, PasspointConfiguration config) throws XmlPullParserException, IOException{
+    XmlUtil.writeNextValue(out, XML_TAG_UPDATE_IDENTIFIER, config.getUpdateIdentifier());
+    XmlUtil.writeNextValue(out, XML_TAG_CREDENTIAL_PRIORITY, config.getCredentialPriority());
+    XmlUtil.writeNextValue(out, XML_TAG_TRUST_ROOT_CERT_LIST, config.getTrustRootCertList());
+    XmlUtil.writeNextValue(out, XML_TAG_SUBSCRIPTION_CREATION_TIME, config.getSubscriptionCreationTimeInMillis());
+    XmlUtil.writeNextValue(out, XML_TAG_SUBSCRIPTION_EXPIRATION_TIME, config.getSubscriptionExpirationTimeMillis());
+    XmlUtil.writeNextValue(out, XML_TAG_SUBSCRIPTION_TYPE, config.getSubscriptionType());
+    XmlUtil.writeNextValue(out, XML_TAG_USAGE_LIMIT_TIME_PERIOD, config.getUsageLimitUsageTimePeriodInMinutes());
+    XmlUtil.writeNextValue(out, XML_TAG_USAGE_LIMIT_START_TIME, config.getUsageLimitStartTimeInMillis());
+    XmlUtil.writeNextValue(out, XML_TAG_USAGE_LIMIT_DATA_LIMIT, config.getUsageLimitDataLimit());
+    XmlUtil.writeNextValue(out, XML_TAG_USAGE_LIMIT_TIME_LIMIT, config.getUsageLimitTimeLimitInMinutes());
+    serializeHomeSp(out, config.getHomeSp());
+    serializeCredential(out, config.getCredential());
+    serializePolicy(out, config.getPolicy());
+    serializeUpdateParameter(out, XML_TAG_SECTION_HEADER_SUBSCRIPTION_UPDATE, config.getSubscriptionUpdate());
+    if (config.getServiceFriendlyNames() != null) {
+        XmlUtil.writeNextValue(out, XML_TAG_FRIENDLY_NAME_LIST, config.getServiceFriendlyNames());
+    }
+    XmlUtil.writeNextValue(out, XML_TAG_CARRIER_ID, config.getCarrierId());
+    XmlUtil.writeNextValue(out, XML_TAG_IS_AUTO_JOIN, config.isAutojoinEnabled());
+    XmlUtil.writeNextValue(out, XML_TAG_IS_MAC_RANDOMIZATION_ENABLED, config.isMacRandomizationEnabled());
+    XmlUtil.writeNextValue(out, XML_TAG_METERED_OVERRIDE, config.getMeteredOverride());
+}

@@ -1,0 +1,24 @@
+public void setEnhanced4gLteModeSetting(boolean enabled){
+    if (enabled && !isVolteProvisionedOnDevice()) {
+        log("setEnhanced4gLteModeSetting: Not possible to enable VoLTE due to provisioning.");
+        return;
+    }
+    int subId = getSubId();
+    if (!getBooleanCarrierConfig(CarrierConfigManager.KEY_EDITABLE_ENHANCED_4G_LTE_BOOL) || getBooleanCarrierConfig(CarrierConfigManager.KEY_HIDE_ENHANCED_4G_LTE_BOOL)) {
+        enabled = getBooleanCarrierConfig(CarrierConfigManager.KEY_ENHANCED_4G_LTE_ON_BY_DEFAULT_BOOL);
+    }
+    int prevSetting = SubscriptionManager.getIntegerSubscriptionProperty(subId, SubscriptionManager.ENHANCED_4G_MODE_ENABLED, SUB_PROPERTY_NOT_INITIALIZED, mContext);
+    if (prevSetting != (enabled ? ProvisioningManager.PROVISIONING_VALUE_ENABLED : ProvisioningManager.PROVISIONING_VALUE_DISABLED)) {
+        if (isSubIdValid(subId)) {
+            SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.ENHANCED_4G_MODE_ENABLED, booleanToPropertyString(enabled));
+        } else {
+            loge("setEnhanced4gLteModeSetting: invalid sub id, can not set property in " + " siminfo db; subId=" + subId);
+        }
+        if (isNonTtyOrTtyOnVolteEnabled()) {
+            try {
+                setAdvanced4GMode(enabled);
+            } catch (ImsException ie) {
+            }
+        }
+    }
+}

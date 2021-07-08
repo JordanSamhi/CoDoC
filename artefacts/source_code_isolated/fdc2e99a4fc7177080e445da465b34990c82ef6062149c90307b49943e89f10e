@@ -1,0 +1,31 @@
+public void dismissNotifications(List<Pair<NotificationEntry, DismissedByUserStats>> entriesToDismiss){
+    Assert.isMainThread();
+    checkForReentrantCall();
+    final List<NotificationEntry> entriesToLocallyDismiss = new ArrayList<>();
+    for (int i = 0; i < entriesToDismiss.size(); i++) {
+        NotificationEntry entry = entriesToDismiss.get(i).first;
+        DismissedByUserStats stats = entriesToDismiss.get(i).second;
+        requireNonNull(stats);
+        if (entry != mNotificationSet.get(entry.getKey())) {
+            throw mEulogizer.record(new IllegalStateException("Invalid entry: " + entry.getKey()));
+        }
+        if (entry.getDismissState() == DISMISSED) {
+            continue;
+        }
+        updateDismissInterceptors(entry);
+        if (isDismissIntercepted(entry)) {
+            mLogger.logNotifDismissedIntercepted(entry.getKey());
+            continue;
+        }
+        entriesToLocallyDismiss.add(entry);
+        if (!isCanceled(entry)) {
+            try {
+                mStatusBarService.onNotificationClear(entry.getSbn().getPackageName(), entry.getSbn().getTag(), entry.getSbn().getId(), entry.getSbn().getUser().getIdentifier(), entry.getSbn().getKey(), stats.dismissalSurface, stats.dismissalSentiment, stats.notificationVisibility);
+            } catch (RemoteException e) {
+                mLogger.logRemoteExceptionOnNotificationClear(entry.getKey(), e);
+            }
+        }
+    }
+    locallyDismissNotifications(entriesToLocallyDismiss);
+    dispatchEventsAndRebuildList();
+}

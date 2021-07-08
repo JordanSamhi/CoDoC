@@ -1,0 +1,22 @@
+public static int toKeymasterDigest(@NonNull @KeyAlgorithmEnum String algorithm){
+    String algorithmUpper = algorithm.toUpperCase(Locale.US);
+    if (algorithmUpper.startsWith("HMAC")) {
+        String digestUpper = algorithmUpper.substring("HMAC".length());
+        switch(digestUpper) {
+            case "SHA1":
+                return KeymasterDefs.KM_DIGEST_SHA1;
+            case "SHA224":
+                return KeymasterDefs.KM_DIGEST_SHA_2_224;
+            case "SHA256":
+                return KeymasterDefs.KM_DIGEST_SHA_2_256;
+            case "SHA384":
+                return KeymasterDefs.KM_DIGEST_SHA_2_384;
+            case "SHA512":
+                return KeymasterDefs.KM_DIGEST_SHA_2_512;
+            default:
+                throw new IllegalArgumentException("Unsupported HMAC digest: " + digestUpper);
+        }
+    } else {
+        return -1;
+    }
+}

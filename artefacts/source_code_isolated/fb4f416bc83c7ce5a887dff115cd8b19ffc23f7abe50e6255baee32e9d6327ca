@@ -1,0 +1,11 @@
+public static MotionEvent obtain(long downTime, long eventTime, int action, int pointerCount, int[] pointerIds, PointerCoords[] pointerCoords, int metaState, float xPrecision, float yPrecision, int deviceId, int edgeFlags, int source, int flags){
+    synchronized (gSharedTempLock) {
+        ensureSharedTempPointerCapacity(pointerCount);
+        final PointerProperties[] pp = gSharedTempPointerProperties;
+        for (int i = 0; i < pointerCount; i++) {
+            pp[i].clear();
+            pp[i].id = pointerIds[i];
+        }
+        return obtain(downTime, eventTime, action, pointerCount, pp, pointerCoords, metaState, 0, xPrecision, yPrecision, deviceId, edgeFlags, source, flags);
+    }
+}

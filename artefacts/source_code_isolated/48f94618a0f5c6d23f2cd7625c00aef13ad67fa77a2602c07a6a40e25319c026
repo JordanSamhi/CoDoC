@@ -1,0 +1,6 @@
+public void putAll(Set<ExtendedWifiNetworkSuggestion> wifiNetworkSuggestions, WifiConfiguration wCmConfiguredNetwork, ScanDetail matchingScanDetail){
+    for (ExtendedWifiNetworkSuggestion wifiNetworkSuggestion : wifiNetworkSuggestions) {
+        PerAppMatchMetaInfo appInfo = mAppInfos.computeIfAbsent(wifiNetworkSuggestion.perAppInfo.packageName, k -> new PerAppMatchMetaInfo());
+        appInfo.put(wifiNetworkSuggestion, wCmConfiguredNetwork, matchingScanDetail);
+    }
+}

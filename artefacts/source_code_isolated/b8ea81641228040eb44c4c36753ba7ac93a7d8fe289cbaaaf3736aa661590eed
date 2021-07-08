@@ -1,0 +1,11 @@
+public void setNotificationDelegate(@Nullable String delegate){
+    INotificationManager service = getService();
+    String pkg = mContext.getPackageName();
+    if (localLOGV)
+        Log.v(TAG, pkg + ": cancelAll()");
+    try {
+        service.setNotificationDelegate(pkg, delegate);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

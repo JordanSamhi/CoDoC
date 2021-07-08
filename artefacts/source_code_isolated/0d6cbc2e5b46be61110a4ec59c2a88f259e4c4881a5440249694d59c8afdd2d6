@@ -1,0 +1,14 @@
+public Builder addIntAnnotation(final byte annotationId, final int value){
+    if (mNumElements < 2) {
+        mErrorMask |= ERROR_ANNOTATION_DOES_NOT_FOLLOW_FIELD;
+    } else if (mCurrentAnnotationCount >= MAX_ANNOTATION_COUNT) {
+        mErrorMask |= ERROR_TOO_MANY_ANNOTATIONS;
+    } else {
+        mPos += mBuffer.putByte(mPos, annotationId);
+        mPos += mBuffer.putByte(mPos, TYPE_INT);
+        mPos += mBuffer.putInt(mPos, value);
+        mCurrentAnnotationCount++;
+        writeAnnotationCount();
+    }
+    return this;
+}

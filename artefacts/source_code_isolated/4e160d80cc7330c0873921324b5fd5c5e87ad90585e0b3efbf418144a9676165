@@ -1,0 +1,8 @@
+public boolean shouldEvaluateWhetherToSendExplicitlySelected(WifiConfiguration currentConfig){
+    if (currentConfig == null) {
+        Log.wtf(TAG, "Current WifiConfiguration is null, but IP provisioning just succeeded");
+        return false;
+    }
+    long currentTimeMillis = mClock.getElapsedSinceBootMillis();
+    return (mWifiConfigManager.getLastSelectedNetwork() == currentConfig.networkId && currentTimeMillis - mWifiConfigManager.getLastSelectedTimeStamp() < LAST_SELECTED_NETWORK_EXPIRATION_AGE_MILLIS);
+}

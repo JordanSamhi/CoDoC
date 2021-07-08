@@ -1,0 +1,25 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeInt(mMessageFormat);
+    dest.writeInt(mGeographicalScope);
+    dest.writeInt(mSerialNumber);
+    mLocation.writeToParcel(dest, flags);
+    dest.writeInt(mServiceCategory);
+    dest.writeString(mLanguage);
+    dest.writeInt(mDataCodingScheme);
+    dest.writeString(mBody);
+    dest.writeInt(mPriority);
+    if (mEtwsWarningInfo != null) {
+        dest.writeInt('E');
+        mEtwsWarningInfo.writeToParcel(dest, flags);
+    } else if (mCmasWarningInfo != null) {
+        dest.writeInt('C');
+        mCmasWarningInfo.writeToParcel(dest, flags);
+    } else {
+        dest.writeInt('0');
+    }
+    dest.writeLong(mReceivedTimeMillis);
+    dest.writeString(mGeometries != null ? CbGeoUtils.encodeGeometriesToString(mGeometries) : null);
+    dest.writeInt(mMaximumWaitTimeSec);
+    dest.writeInt(mSlotIndex);
+    dest.writeInt(mSubId);
+}

@@ -1,0 +1,10 @@
+public static boolean compareTypes(SliceItem item, String desiredType){
+    final int typeLength = desiredType.length();
+    if (typeLength == 3 && desiredType.equals("*/*")) {
+        return true;
+    }
+    if (item.getSubType() == null && desiredType.indexOf('/') < 0) {
+        return item.getFormat().equals(desiredType);
+    }
+    return (item.getFormat() + "/" + item.getSubType()).matches(desiredType.replaceAll("\\*", ".*"));
+}

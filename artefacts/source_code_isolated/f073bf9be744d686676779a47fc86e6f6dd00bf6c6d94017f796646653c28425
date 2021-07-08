@@ -1,0 +1,41 @@
+public String requestServiceDiscovery(String peerAddress, String query){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("requestServiceDiscovery"))
+            return null;
+        if (peerAddress == null) {
+            Log.e(TAG, "Cannot parse peer mac address.");
+            return null;
+        }
+        byte[] macAddress = null;
+        try {
+            macAddress = NativeUtil.macAddressToByteArray(peerAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not process peer MAC address.", e);
+            return null;
+        }
+        if (query == null) {
+            Log.e(TAG, "Cannot parse service discovery query: " + query);
+            return null;
+        }
+        ArrayList<Byte> binQuery = null;
+        try {
+            binQuery = NativeUtil.byteArrayToArrayList(NativeUtil.hexStringToByteArray(query));
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse service query.", e);
+            return null;
+        }
+        SupplicantResult<Long> result = new SupplicantResult("requestServiceDiscovery(" + peerAddress + ", " + query + ")");
+        try {
+            mISupplicantP2pIface.requestServiceDiscovery(macAddress, binQuery, (SupplicantStatus status, long identifier) -> {
+                result.setResult(status, new Long(identifier));
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        Long value = result.getResult();
+        if (value == null)
+            return null;
+        return value.toString();
+    }
+}

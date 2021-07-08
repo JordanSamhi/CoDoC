@@ -1,0 +1,9 @@
+public String getCdmaEriText(){
+    if (isPhoneTypeGsm()) {
+        return super.getCdmaEriText();
+    } else {
+        int roamInd = getServiceState().getCdmaRoamingIndicator();
+        int defRoamInd = getServiceState().getCdmaDefaultRoamingIndicator();
+        return mSST.getCdmaEriText(roamInd, defRoamInd);
+    }
+}

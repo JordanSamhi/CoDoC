@@ -1,0 +1,32 @@
+
+     * Starts swiping the provided ViewHolder. By default, ItemTouchHelper starts swiping a View
+     * when user swipes their finger (or mouse pointer) over the View. You can disable this
+     * behavior
+     * by overriding {@link ItemTouchHelper.Callback}
+     * <p>
+     * For this method to work:
+     * <ul>
+     * <li>The provided ViewHolder must be a child of the RecyclerView to which this
+     * ItemTouchHelper is attached.</li>
+     * <li>{@link ItemTouchHelper.Callback} must have swiping enabled.</li>
+     * <li>There must be a previous touch event that was reported to the ItemTouchHelper
+     * through RecyclerView's ItemTouchListener mechanism. As long as no other ItemTouchListener
+     * grabs previous events, this should work as expected.</li>
+     * </ul>
+     *
+     * For example, if you would like to let your user to be able to swipe an Item by touching one
+     * of its descendants, you may implement it as follows:
+     * <pre>
+     *     viewHolder.dragButton.setOnTouchListener(new View.OnTouchListener() {
+     *         public boolean onTouch(View v, MotionEvent event) {
+     *             if (MotionEvent.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+     *                 mItemTouchHelper.startSwipe(viewHolder);
+     *             }
+     *             return false;
+     *         }
+     *     });
+     * </pre>
+     *
+     * @param viewHolder The ViewHolder to start swiping. It must be a direct child of
+     *                   RecyclerView.
+     

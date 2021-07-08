@@ -1,0 +1,10 @@
+public void requestBindListener(ComponentName component){
+    checkCallerIsSystemOrSameApp(component.getPackageName());
+    long identity = Binder.clearCallingIdentity();
+    try {
+        ManagedServices manager = mAssistants.isComponentEnabledForCurrentProfiles(component) ? mAssistants : mListeners;
+        manager.setComponentState(component, true);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

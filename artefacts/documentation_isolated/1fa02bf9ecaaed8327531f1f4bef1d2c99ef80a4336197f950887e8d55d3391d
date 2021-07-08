@@ -1,0 +1,19 @@
+
+     * Determines whether Telecom would permit an incoming call to be added via the
+     * {@link #addNewIncomingCall(PhoneAccountHandle, Bundle)} API for the specified
+     * {@link PhoneAccountHandle}.
+     * <p>
+     * A {@link ConnectionService} may not add a call for the specified {@link PhoneAccountHandle}
+     * in the following situations:
+     * <ul>
+     *     <li>{@link PhoneAccount} does not have property
+     *     {@link PhoneAccount#CAPABILITY_SELF_MANAGED} set (i.e. it is a managed
+     *     {@link ConnectionService}), and the active or held call limit has
+     *     been reached.</li>
+     *     <li>There is an ongoing emergency call.</li>
+     * </ul>
+     *
+     * @param phoneAccountHandle The {@link PhoneAccountHandle} the call will be added for.
+     * @return {@code true} if telecom will permit an incoming call to be added, {@code false}
+     *      otherwise.
+     

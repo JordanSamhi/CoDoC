@@ -1,0 +1,14 @@
+public boolean isSnoozed(@NonNull String packageName){
+    final String key = snoozeKey(packageName, mUser);
+    Long snoozedUntil = mSnoozedPackages.get(key);
+    if (snoozedUntil != null) {
+        if (snoozedUntil > mClock.currentTimeMillis()) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, key + " snoozed");
+            }
+            return true;
+        }
+        mSnoozedPackages.remove(packageName);
+    }
+    return false;
+}

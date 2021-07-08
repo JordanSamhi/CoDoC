@@ -1,0 +1,17 @@
+public void setBroadcastSubscriber(PendingIntent pendingIntent, long configKey, long subscriberId) throws StatsUnavailableException{
+    synchronized (sLock) {
+        try {
+            IStatsManagerService service = getIStatsManagerServiceLocked();
+            if (pendingIntent != null) {
+                service.setBroadcastSubscriber(configKey, subscriberId, pendingIntent, mContext.getOpPackageName());
+            } else {
+                service.unsetBroadcastSubscriber(configKey, subscriberId, mContext.getOpPackageName());
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to connect to statsmanager when adding broadcast subscriber", e);
+            throw new StatsUnavailableException("could not connect", e);
+        } catch (SecurityException e) {
+            throw new StatsUnavailableException(e.getMessage(), e);
+        }
+    }
+}

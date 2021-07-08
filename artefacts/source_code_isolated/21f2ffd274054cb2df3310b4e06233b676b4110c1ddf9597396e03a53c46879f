@@ -1,0 +1,24 @@
+public synchronized void addIconToDBAndMemCache(T object, CachingLogic<T> cachingLogic, PackageInfo info, long userSerial, boolean replaceExisting){
+    UserHandle user = cachingLogic.getUser(object);
+    ComponentName componentName = cachingLogic.getComponent(object);
+    final ComponentKey key = new ComponentKey(componentName, user);
+    CacheEntry entry = null;
+    if (!replaceExisting) {
+        entry = mCache.get(key);
+        if (entry == null || entry.bitmap.isNullOrLowRes()) {
+            entry = null;
+        }
+    }
+    if (entry == null) {
+        entry = new CacheEntry();
+        entry.bitmap = cachingLogic.loadIcon(mContext, object);
+    }
+    if (entry.bitmap.isNullOrLowRes())
+        return;
+    entry.title = cachingLogic.getLabel(object);
+    entry.contentDescription = mPackageManager.getUserBadgedLabel(entry.title, user);
+    if (cachingLogic.addToMemCache())
+        mCache.put(key, entry);
+    ContentValues values = newContentValues(entry.bitmap, entry.title.toString(), componentName.getPackageName(), cachingLogic.getKeywords(object, mLocaleList));
+    addIconToDB(values, componentName, info, userSerial, cachingLogic.getLastUpdatedTime(object, info));
+}

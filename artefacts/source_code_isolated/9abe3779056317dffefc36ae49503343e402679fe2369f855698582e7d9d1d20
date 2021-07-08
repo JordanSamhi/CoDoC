@@ -1,0 +1,14 @@
+public static ImsManager getInstance(Context context, int phoneId){
+    synchronized (sImsManagerInstances) {
+        if (sImsManagerInstances.containsKey(phoneId)) {
+            ImsManager m = sImsManagerInstances.get(phoneId);
+            if (m != null) {
+                m.connectIfServiceIsAvailable();
+            }
+            return m;
+        }
+        ImsManager mgr = new ImsManager(context, phoneId);
+        sImsManagerInstances.put(phoneId, mgr);
+        return mgr;
+    }
+}

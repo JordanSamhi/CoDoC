@@ -1,0 +1,28 @@
+public void setKeepUpdated(boolean keepUpdated){
+    if (keepUpdated == mKeepUpdated)
+        return;
+    mKeepUpdated = keepUpdated;
+    if (!mKeepUpdated) {
+        mCursor.unregisterContentObserver(mContentObserver);
+        mContentObserver = null;
+    } else {
+        if (mHandlerForUpdateNotifications == null) {
+            mHandlerForUpdateNotifications = new Handler();
+        }
+        if (mContentObserver == null) {
+            mContentObserver = new ContentObserver(mHandlerForUpdateNotifications) {
+
+                @Override
+                public void onChange(boolean selfChange) {
+                    if (countObservers() != 0) {
+                        requery();
+                    } else {
+                        mDirty = true;
+                    }
+                }
+            };
+        }
+        mCursor.registerContentObserver(mContentObserver);
+        mDirty = true;
+    }
+}

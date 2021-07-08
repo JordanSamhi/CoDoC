@@ -1,0 +1,8 @@
+public void disable(){
+    if (VDBG)
+        Log.v(TAG, "disable");
+    sendRttStateChangedBroadcast(false);
+    mRttServiceSynchronized.mHandler.post(() -> {
+        mRttServiceSynchronized.cleanUpOnDisable();
+    });
+}

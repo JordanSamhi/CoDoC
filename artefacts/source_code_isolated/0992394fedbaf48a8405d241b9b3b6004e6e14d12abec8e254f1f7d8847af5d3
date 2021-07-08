@@ -1,0 +1,13 @@
+public static int getIntAtIndex(android.content.ContentResolver cr, String name, int index) throws android.provider.Settings.SettingNotFoundException{
+    String v = android.provider.Settings.Global.getString(cr, name);
+    if (v != null) {
+        String[] valArray = v.split(",");
+        if ((index >= 0) && (index < valArray.length) && (valArray[index] != null)) {
+            try {
+                return Integer.parseInt(valArray[index]);
+            } catch (NumberFormatException e) {
+            }
+        }
+    }
+    throw new android.provider.Settings.SettingNotFoundException(name);
+}

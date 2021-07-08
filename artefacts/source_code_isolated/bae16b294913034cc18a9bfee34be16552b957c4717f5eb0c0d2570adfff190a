@@ -1,0 +1,14 @@
+public boolean compress(CompressFormat format, int quality, OutputStream stream){
+    checkRecycled("Can't compress a recycled bitmap");
+    if (stream == null) {
+        throw new NullPointerException();
+    }
+    if (quality < 0 || quality > 100) {
+        throw new IllegalArgumentException("quality must be 0..100");
+    }
+    StrictMode.noteSlowCall("Compression of a bitmap is slow");
+    Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "Bitmap.compress");
+    boolean result = nativeCompress(mNativePtr, format.nativeInt, quality, stream, new byte[WORKING_COMPRESS_STORAGE]);
+    Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    return result;
+}

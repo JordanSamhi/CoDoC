@@ -1,0 +1,8 @@
+public String getCurrentNetworkWpsNfcConfigurationToken(@NonNull String ifaceName){
+    synchronized (mLock) {
+        SupplicantStaNetworkHal networkHandle = checkSupplicantStaNetworkAndLogFailure(ifaceName, "getCurrentNetworkWpsNfcConfigurationToken");
+        if (networkHandle == null)
+            return null;
+        return networkHandle.getWpsNfcConfigurationToken();
+    }
+}

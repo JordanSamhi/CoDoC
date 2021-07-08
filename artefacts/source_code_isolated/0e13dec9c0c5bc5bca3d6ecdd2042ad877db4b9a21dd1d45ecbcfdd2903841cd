@@ -1,0 +1,9 @@
+public void requestCellIdentity(WorkSource workSource, Message rspMsg){
+    if (mCellIdentity != null) {
+        AsyncResult.forMessage(rspMsg, mCellIdentity, null);
+        rspMsg.sendToTarget();
+        return;
+    }
+    Message cellLocRsp = obtainMessage(EVENT_CELL_LOCATION_RESPONSE, rspMsg);
+    requestAllCellInfo(workSource, cellLocRsp);
+}

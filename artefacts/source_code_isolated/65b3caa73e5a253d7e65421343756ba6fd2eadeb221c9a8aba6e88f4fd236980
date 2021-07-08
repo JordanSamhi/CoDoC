@@ -1,0 +1,7 @@
+public boolean isDataExist(String x_app_id, String content_type, String package_name, String class_name){
+    WapPushManDBHelper dbh = getDatabase(this);
+    SQLiteDatabase db = dbh.getReadableDatabase();
+    boolean ret = dbh.queryLastApp(db, x_app_id, content_type) != null;
+    db.close();
+    return ret;
+}

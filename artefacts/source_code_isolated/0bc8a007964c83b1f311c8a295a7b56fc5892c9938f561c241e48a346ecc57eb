@@ -1,0 +1,15 @@
+public boolean cancelWps(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final String methodStr = "cancelWps";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return false;
+        try {
+            SupplicantStatus status = iface.cancelWps();
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

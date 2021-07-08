@@ -1,0 +1,8 @@
+public static int getWfcMode(Context context){
+    ImsManager mgr = ImsManager.getInstance(context, SubscriptionManager.getDefaultVoicePhoneId());
+    if (mgr != null) {
+        return mgr.getWfcMode();
+    }
+    Rlog.e(TAG, "getWfcMode: ImsManager null, returning default value.");
+    return ImsMmTelManager.WIFI_MODE_WIFI_ONLY;
+}

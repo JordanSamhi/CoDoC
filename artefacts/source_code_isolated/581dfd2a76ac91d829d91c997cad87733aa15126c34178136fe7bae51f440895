@@ -1,0 +1,16 @@
+public TransitionManager inflateTransitionManager(@TransitionRes int resource, ViewGroup sceneRoot){
+    XmlResourceParser parser = mContext.getResources().getXml(resource);
+    try {
+        return createTransitionManagerFromXml(parser, Xml.asAttributeSet(parser), sceneRoot);
+    } catch (XmlPullParserException e) {
+        InflateException ex = new InflateException(e.getMessage());
+        ex.initCause(e);
+        throw ex;
+    } catch (IOException e) {
+        InflateException ex = new InflateException(parser.getPositionDescription() + ": " + e.getMessage());
+        ex.initCause(e);
+        throw ex;
+    } finally {
+        parser.close();
+    }
+}

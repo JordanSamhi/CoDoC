@@ -1,0 +1,12 @@
+public void addAll(T... items){
+    synchronized (mLock) {
+        if (mOriginalValues != null) {
+            Collections.addAll(mOriginalValues, items);
+        } else {
+            Collections.addAll(mObjects, items);
+        }
+        mObjectsFromResources = false;
+    }
+    if (mNotifyOnChange)
+        notifyDataSetChanged();
+}

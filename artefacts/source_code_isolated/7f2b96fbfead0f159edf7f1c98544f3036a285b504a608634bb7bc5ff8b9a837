@@ -1,0 +1,21 @@
+public void updateContentDescription(){
+    if (mBubbleData.getBubbles().isEmpty()) {
+        return;
+    }
+    for (int i = 0; i < mBubbleData.getBubbles().size(); i++) {
+        final Bubble bubble = mBubbleData.getBubbles().get(i);
+        final String appName = bubble.getAppName();
+        String titleStr = bubble.getTitle();
+        if (titleStr == null) {
+            titleStr = getResources().getString(R.string.notification_bubble_title);
+        }
+        if (bubble.getIconView() != null) {
+            if (mIsExpanded || i > 0) {
+                bubble.getIconView().setContentDescription(getResources().getString(R.string.bubble_content_description_single, titleStr, appName));
+            } else {
+                final int moreCount = mBubbleContainer.getChildCount() - 1;
+                bubble.getIconView().setContentDescription(getResources().getString(R.string.bubble_content_description_stack, titleStr, appName, moreCount));
+            }
+        }
+    }
+}

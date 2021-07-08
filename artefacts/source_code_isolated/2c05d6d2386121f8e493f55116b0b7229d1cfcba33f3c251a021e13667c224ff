@@ -1,0 +1,21 @@
+public boolean setLogLevel(){
+    synchronized (mLock) {
+        final String methodStr = "setDebugParams";
+        if (!checkHostapdAndLogFailure(methodStr))
+            return false;
+        if (isV1_2()) {
+            try {
+                android.hardware.wifi.hostapd.V1_2.IHostapd iHostapdV1_2 = getHostapdMockableV1_2();
+                if (iHostapdV1_2 == null)
+                    return false;
+                android.hardware.wifi.hostapd.V1_2.HostapdStatus status = iHostapdV1_2.setDebugParams(mVerboseLoggingEnabled ? DebugLevel.DEBUG : DebugLevel.INFO);
+                return checkStatusAndLogFailure12(status, methodStr);
+            } catch (RemoteException e) {
+                handleRemoteException(e, methodStr);
+            }
+        } else {
+            Log.d(TAG, "HIDL doesn't support setDebugParams");
+        }
+        return false;
+    }
+}

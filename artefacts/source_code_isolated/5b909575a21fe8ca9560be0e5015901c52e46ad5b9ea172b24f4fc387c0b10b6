@@ -1,0 +1,15 @@
+public void sendGroupNavigationCmd(BluetoothDevice device, int keyCode, int keyState){
+    Log.d(TAG, "sendGroupNavigationCmd dev = " + device + " key " + keyCode + " State = " + keyState);
+    final IBluetoothAvrcpController service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            service.sendGroupNavigationCmd(device, keyCode, keyState);
+            return;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error talking to BT service in sendGroupNavigationCmd()", e);
+            return;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+}

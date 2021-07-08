@@ -1,0 +1,12 @@
+public void setMultiAudioFocusEnabled(boolean enabled){
+    enforceModifyAudioRoutingPermission();
+    if (mMediaFocusControl != null) {
+        boolean mafEnabled = mMediaFocusControl.getMultiAudioFocusEnabled();
+        if (mafEnabled != enabled) {
+            mMediaFocusControl.updateMultiAudioFocus(enabled);
+            if (!enabled) {
+                mDeviceBroker.postBroadcastBecomingNoisy();
+            }
+        }
+    }
+}

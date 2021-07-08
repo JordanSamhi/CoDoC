@@ -1,0 +1,5 @@
+public void testCreateAndInitializeService_doesNotRegisterTransportsSynchronously(){
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService.createAndInitializeService(USER_ID, mContext, new BackupManagerService(mContext), mBackupThread, mBaseStateDir, mDataDir, mTransportManager);
+    verify(mTransportManager, never()).registerTransports();
+}

@@ -1,0 +1,8 @@
+public UserInfo createProfileForUserEvenWhenDisallowedWithThrow(String name, @NonNull String userType, @UserInfoFlag int flags, @UserIdInt int userId, @Nullable String[] disallowedPackages) throws ServiceSpecificException{
+    checkManageOrCreateUsersPermission(flags);
+    try {
+        return createUserInternalUnchecked(name, userType, flags, userId, false, disallowedPackages);
+    } catch (UserManager.CheckedUserOperationException e) {
+        throw e.toServiceSpecificException();
+    }
+}

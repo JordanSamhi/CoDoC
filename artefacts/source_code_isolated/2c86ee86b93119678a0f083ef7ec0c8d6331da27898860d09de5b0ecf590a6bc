@@ -1,0 +1,11 @@
+public void linkToDeath(@NonNull IBinder.DeathRecipient recipient, int flags){
+    if (mISession != null) {
+        try {
+            mISession.asBinder().linkToDeath(recipient, flags);
+        } catch (RemoteException e) {
+            if (DEBUG) {
+                Log.d(TAG, "Session died too early.", e);
+            }
+        }
+    }
+}

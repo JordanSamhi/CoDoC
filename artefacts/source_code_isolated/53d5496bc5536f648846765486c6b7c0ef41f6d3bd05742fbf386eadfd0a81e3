@@ -1,0 +1,6 @@
+public EncryptedKvBackupTask newInstance(Context context, SecureRandom secureRandom, CryptoBackupServer cryptoBackupServer, CryptoSettings cryptoSettings, RecoverableKeyStoreSecondaryKeyManager.RecoverableKeyStoreSecondaryKeyManagerProvider recoverableSecondaryKeyManagerProvider, ParcelFileDescriptor fileDescriptor, String packageName) throws IOException, UnrecoverableKeyException, LockScreenRequiredException, InternalRecoveryServiceException, InvalidKeyException{
+    RecoverableKeyStoreSecondaryKey secondaryKey = new InitializeRecoverableSecondaryKeyTask(context, cryptoSettings, recoverableSecondaryKeyManagerProvider.get(), cryptoBackupServer).run();
+    KvBackupEncrypter backupEncrypter = new KvBackupEncrypter(new BackupDataInput(fileDescriptor.getFileDescriptor()));
+    TertiaryKeyManager tertiaryKeyManager = new TertiaryKeyManager(context, secureRandom, TertiaryKeyRotationScheduler.getInstance(context), secondaryKey, packageName);
+    return new EncryptedKvBackupTask(tertiaryKeyManager, ProtoStore.createKeyValueListingStore(context), secondaryKey, ProtoStore.createChunkListingStore(context), backupEncrypter, new EncryptedBackupTask(cryptoBackupServer, secureRandom, packageName, backupEncrypter), packageName);
+}

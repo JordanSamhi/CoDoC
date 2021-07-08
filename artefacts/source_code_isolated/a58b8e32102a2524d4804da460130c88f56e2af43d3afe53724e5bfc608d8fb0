@@ -1,0 +1,22 @@
+public void addUserApprovalCarrierUiReaction(@WifiCarrierInfoManager.UserActionCode int actionType, boolean isDialog){
+    int actionCode;
+    switch(actionType) {
+        case WifiCarrierInfoManager.ACTION_USER_ALLOWED_CARRIER:
+            actionCode = UserReactionToApprovalUiEvent.ACTION_ALLOWED;
+            break;
+        case WifiCarrierInfoManager.ACTION_USER_DISALLOWED_CARRIER:
+            actionCode = UserReactionToApprovalUiEvent.ACTION_DISALLOWED;
+            break;
+        case WifiCarrierInfoManager.ACTION_USER_DISMISS:
+            actionCode = UserReactionToApprovalUiEvent.ACTION_DISMISS;
+            break;
+        default:
+            actionCode = UserReactionToApprovalUiEvent.ACTION_UNKNOWN;
+    }
+    UserReaction event = new UserReaction();
+    event.userAction = actionCode;
+    event.isDialog = isDialog;
+    synchronized (mLock) {
+        mUserApprovalCarrierUiReactionList.add(event);
+    }
+}

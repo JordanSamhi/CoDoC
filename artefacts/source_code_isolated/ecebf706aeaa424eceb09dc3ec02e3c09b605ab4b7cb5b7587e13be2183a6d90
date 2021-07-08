@@ -1,0 +1,18 @@
+public static int deepHashCode(Object o){
+    if (o == null) {
+        return 0;
+    }
+    Class<?> clazz = o.getClass();
+    if (clazz.isArray()) {
+        Class<?> elementType = clazz.getComponentType();
+        if (elementType.isPrimitive()) {
+            return primitiveArrayHashCode(o);
+        }
+        return Arrays.hashCode(Arrays.stream((Object[]) o).mapToInt(element -> deepHashCode(element)).toArray());
+    }
+    if (o instanceof List<?>) {
+        return Arrays.hashCode(((List<Object>) o).stream().mapToInt(element -> deepHashCode(element)).toArray());
+    }
+    throwErrorIfUnsupportedType(o);
+    return o.hashCode();
+}

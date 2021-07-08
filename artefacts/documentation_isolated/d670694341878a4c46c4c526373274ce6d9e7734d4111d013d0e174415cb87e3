@@ -1,0 +1,45 @@
+
+     * Force device into car mode, like it had been placed in the car dock.  This will cause the
+     * device to switch to the car home UI as part of the mode switch.
+     * <p>
+     * An app may request to enter car mode when the system is already in car mode.  The app may
+     * specify a "priority" when entering car mode.  The device will remain in car mode
+     * (i.e. {@link #getCurrentModeType()} is {@link Configuration#UI_MODE_TYPE_CAR}) as long as
+     * there is a priority level at which car mode have been enabled.
+     * <p>
+     * Specifying a priority level when entering car mode is important in cases where multiple apps
+     * on a device implement a car-mode {@link android.telecom.InCallService} (see
+     * {@link android.telecom.TelecomManager#METADATA_IN_CALL_SERVICE_CAR_MODE_UI}).  The
+     * {@link android.telecom.InCallService} associated with the highest priority app which entered
+     * car mode will be bound to by Telecom and provided with information about ongoing calls on
+     * the device.
+     * <p>
+     * System apps holding the required permission can enable car mode when the app determines the
+     * correct conditions exist for that app to be in car mode.  The device maker should ensure that
+     * where multiple apps exist on the device which can potentially enter car mode, appropriate
+     * priorities are used to ensure that calls delivered by the
+     * {@link android.telecom.InCallService} API are sent to the highest priority app given the
+     * desired behavior of the car mode experience on the device.
+     * <p>
+     * If app A and app B both meet their own criteria to enable car mode, and it is desired that
+     * app B should be the one which should receive call information in that scenario, the priority
+     * for app B should be higher than the one for app A.  The higher priority of app B compared to
+     * A means it will be bound to during calls and app A will not.  When app B no longer meets its
+     * criteria for providing a car mode experience it uses {@link #disableCarMode(int)} to disable
+     * car mode at its priority level.  The system will then unbind from app B and bind to app A as
+     * it has the next highest priority.
+     * <p>
+     * When an app enables car mode at a certain priority, it can disable car mode at the specified
+     * priority level using {@link #disableCarMode(int)}.  An app may only enable car mode at a
+     * single priority.
+     * <p>
+     * Public apps are assumed to enter/exit car mode at the lowest priority,
+     * {@link #DEFAULT_PRIORITY}.
+     *
+     * @param priority The declared priority for the caller, where {@link #DEFAULT_PRIORITY} (0) is
+     *                 the lowest priority and higher numbers represent a higher priority.
+     *                 The priorities apps declare when entering car mode is determined by the
+     *                 device manufacturer based on the desired car mode experience.
+     * @param flags Car mode flags.
+     * @hide
+     

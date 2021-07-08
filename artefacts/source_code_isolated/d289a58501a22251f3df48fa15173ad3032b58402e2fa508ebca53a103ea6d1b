@@ -1,0 +1,12 @@
+public void listenForSubscriber(int subId, @NonNull String pkg, @NonNull String featureId, @NonNull PhoneStateListener listener, int events, boolean notifyNow){
+    try {
+        if (Compatibility.isChangeEnabled(LISTEN_CODE_CHANGE)) {
+            listener.mSubId = (events == PhoneStateListener.LISTEN_NONE) ? SubscriptionManager.INVALID_SUBSCRIPTION_ID : subId;
+        } else if (listener.mSubId != null) {
+            subId = listener.mSubId;
+        }
+        sRegistry.listenForSubscriber(subId, pkg, featureId, listener.callback, events, notifyNow);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,11 @@
+public static boolean runIdleOptimizationsNow(PackageManagerService pm, Context context, @Nullable List<String> packageNames){
+    BackgroundDexOptService bdos = new BackgroundDexOptService();
+    ArraySet<String> packagesToOptimize;
+    if (packageNames == null) {
+        packagesToOptimize = pm.getOptimizablePackages();
+    } else {
+        packagesToOptimize = new ArraySet<>(packageNames);
+    }
+    int result = bdos.idleOptimization(pm, packagesToOptimize, context);
+    return result == OPTIMIZE_PROCESSED;
+}

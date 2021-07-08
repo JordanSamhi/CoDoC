@@ -1,0 +1,27 @@
+public boolean startScan(int callingUid, String packageName){
+    if (!mScanningEnabled || !retrieveWifiScannerIfNecessary()) {
+        Log.e(TAG, "Failed to retrieve wifiscanner");
+        sendScanResultFailureBroadcastToPackage(packageName);
+        return false;
+    }
+    boolean fromSettingsOrSetupWizard = mWifiPermissionsUtil.checkNetworkSettingsPermission(callingUid) || mWifiPermissionsUtil.checkNetworkSetupWizardPermission(callingUid);
+    if (!fromSettingsOrSetupWizard && mThrottleEnabled && shouldScanRequestBeThrottledForApp(callingUid, packageName)) {
+        Log.i(TAG, "Scan request from " + packageName + " throttled");
+        sendScanResultFailureBroadcastToPackage(packageName);
+        return false;
+    }
+    WorkSource workSource = new WorkSource(callingUid, packageName);
+    WifiScanner.ScanSettings settings = new WifiScanner.ScanSettings();
+    if (fromSettingsOrSetupWizard) {
+        settings.type = WifiScanner.SCAN_TYPE_HIGH_ACCURACY;
+    }
+    settings.band = WifiScanner.WIFI_BAND_ALL;
+    settings.reportEvents = WifiScanner.REPORT_EVENT_AFTER_EACH_SCAN | WifiScanner.REPORT_EVENT_FULL_SCAN_RESULT;
+    if (mScanningForHiddenNetworksEnabled) {
+        settings.hiddenNetworks.clear();
+        settings.hiddenNetworks.addAll(mWifiConfigManager.retrieveHiddenNetworkList());
+        settings.hiddenNetworks.addAll(mWifiInjector.getWifiNetworkSuggestionsManager().retrieveHiddenNetworkList());
+    }
+    mWifiScanner.startScan(settings, new HandlerExecutor(mHandler), new ScanRequestProxyScanListener(), workSource);
+    return true;
+}

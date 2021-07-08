@@ -1,0 +1,13 @@
+public void setZOrderOnTop(boolean onTop){
+    if (onTop) {
+        mWindowZOrder = ZORDER_ON_TOP;
+        removeSessionOverlayView();
+    } else {
+        mWindowZOrder = ZORDER_MEDIA;
+        createSessionOverlayView();
+    }
+    if (mSurfaceView != null) {
+        mSurfaceView.setZOrderMediaOverlay(false);
+        mSurfaceView.setZOrderOnTop(onTop);
+    }
+}

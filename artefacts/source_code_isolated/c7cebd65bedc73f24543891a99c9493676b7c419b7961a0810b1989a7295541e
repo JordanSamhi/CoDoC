@@ -1,0 +1,11 @@
+public void strokeSegment(Path path, float startCoord, float endCoord){
+    path.reset();
+    startCoord = ((startCoord % 1) + 1) % 1;
+    endCoord = ((endCoord % 1) + 1) % 1;
+    boolean outOfOrder = startCoord > endCoord;
+    if (outOfOrder) {
+        strokeSegmentInternal(path, startCoord, 1f);
+        startCoord = 0;
+    }
+    strokeSegmentInternal(path, startCoord, endCoord);
+}

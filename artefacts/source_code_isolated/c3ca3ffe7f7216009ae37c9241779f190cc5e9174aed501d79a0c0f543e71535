@@ -1,0 +1,38 @@
+public WifiInfo getConnectionInfo(String callingPackage, String callingFeatureId){
+    enforceAccessPermission();
+    int uid = Binder.getCallingUid();
+    if (mVerboseLoggingEnabled) {
+        mLog.info("getConnectionInfo uid=%").c(uid).flush();
+    }
+    long ident = Binder.clearCallingIdentity();
+    try {
+        WifiInfo result = mClientModeImpl.syncRequestConnectionInfo();
+        boolean hideDefaultMacAddress = true;
+        boolean hideBssidSsidNetworkIdAndFqdn = true;
+        try {
+            if (mWifiInjector.getWifiPermissionsWrapper().getLocalMacAddressPermission(uid) == PERMISSION_GRANTED) {
+                hideDefaultMacAddress = false;
+            }
+            mWifiPermissionsUtil.enforceCanAccessScanResults(callingPackage, callingFeatureId, uid, null);
+            hideBssidSsidNetworkIdAndFqdn = false;
+        } catch (SecurityException ignored) {
+        }
+        if (hideDefaultMacAddress) {
+            result.setMacAddress(WifiInfo.DEFAULT_MAC_ADDRESS);
+        }
+        if (hideBssidSsidNetworkIdAndFqdn) {
+            result.setBSSID(WifiInfo.DEFAULT_MAC_ADDRESS);
+            result.setSSID(WifiSsid.createFromHex(null));
+            result.setNetworkId(WifiConfiguration.INVALID_NETWORK_ID);
+            result.setFQDN(null);
+            result.setProviderFriendlyName(null);
+            result.setPasspointUniqueId(null);
+        }
+        if (mVerboseLoggingEnabled && (hideBssidSsidNetworkIdAndFqdn || hideDefaultMacAddress)) {
+            mLog.v("getConnectionInfo: hideBssidSsidAndNetworkId=" + hideBssidSsidNetworkIdAndFqdn + ", hideDefaultMacAddress=" + hideDefaultMacAddress);
+        }
+        return result;
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

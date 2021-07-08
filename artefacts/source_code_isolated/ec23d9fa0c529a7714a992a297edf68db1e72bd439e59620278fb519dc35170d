@@ -1,0 +1,10 @@
+public void unregisterConnectivityDiagnosticsCallback(@NonNull ConnectivityDiagnosticsCallback callback){
+    final ConnectivityDiagnosticsBinder binder = sCallbacks.remove(callback);
+    if (binder == null)
+        return;
+    try {
+        mService.unregisterConnectivityDiagnosticsCallback(binder);
+    } catch (RemoteException exception) {
+        exception.rethrowFromSystemServer();
+    }
+}

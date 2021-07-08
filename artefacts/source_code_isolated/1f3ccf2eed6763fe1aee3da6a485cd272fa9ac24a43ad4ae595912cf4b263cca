@@ -1,0 +1,18 @@
+public static Pair<String, Integer> getIconFromUri(Context context, String packageName, Uri uri, Map<String, IContentProvider> providerMap){
+    final Bundle bundle = getBundleFromUri(context, uri, providerMap, null);
+    if (bundle == null) {
+        return null;
+    }
+    final String iconPackageName = bundle.getString(EXTRA_PREFERENCE_ICON_PACKAGE);
+    if (TextUtils.isEmpty(iconPackageName)) {
+        return null;
+    }
+    int resId = bundle.getInt(META_DATA_PREFERENCE_ICON, 0);
+    if (resId == 0) {
+        return null;
+    }
+    if (iconPackageName.equals(packageName) || iconPackageName.equals(context.getPackageName())) {
+        return Pair.create(iconPackageName, resId);
+    }
+    return null;
+}

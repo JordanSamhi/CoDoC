@@ -1,0 +1,40 @@
+public void persistKeyStore(){
+    filterOutOldKeys();
+    if (mKeyMap.isEmpty() && mTrustedNetworks.isEmpty()) {
+        deleteKeyStore();
+        return;
+    }
+    if (mAtomicKeyFile == null) {
+        initKeyFile();
+        if (mAtomicKeyFile == null) {
+            Slog.e(TAG, "Unable to obtain the key file, " + mKeyFile + ", for writing");
+            return;
+        }
+    }
+    FileOutputStream keyStream = null;
+    try {
+        XmlSerializer serializer = new FastXmlSerializer();
+        keyStream = mAtomicKeyFile.startWrite();
+        serializer.setOutput(keyStream, StandardCharsets.UTF_8.name());
+        serializer.startDocument(null, true);
+        serializer.startTag(null, XML_KEYSTORE_START_TAG);
+        serializer.attribute(null, XML_ATTRIBUTE_VERSION, String.valueOf(KEYSTORE_VERSION));
+        for (Map.Entry<String, Long> keyEntry : mKeyMap.entrySet()) {
+            serializer.startTag(null, XML_TAG_ADB_KEY);
+            serializer.attribute(null, XML_ATTRIBUTE_KEY, keyEntry.getKey());
+            serializer.attribute(null, XML_ATTRIBUTE_LAST_CONNECTION, String.valueOf(keyEntry.getValue()));
+            serializer.endTag(null, XML_TAG_ADB_KEY);
+        }
+        for (String bssid : mTrustedNetworks) {
+            serializer.startTag(null, XML_TAG_WIFI_ACCESS_POINT);
+            serializer.attribute(null, XML_ATTRIBUTE_WIFI_BSSID, bssid);
+            serializer.endTag(null, XML_TAG_WIFI_ACCESS_POINT);
+        }
+        serializer.endTag(null, XML_KEYSTORE_START_TAG);
+        serializer.endDocument();
+        mAtomicKeyFile.finishWrite(keyStream);
+    } catch (IOException e) {
+        Slog.e(TAG, "Caught an exception writing the key map: ", e);
+        mAtomicKeyFile.failWrite(keyStream);
+    }
+}

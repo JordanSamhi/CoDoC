@@ -1,0 +1,12 @@
+public synchronized void onCustomPrinterIconLoaded(@NonNull PrinterId printerId, @Nullable Icon icon){
+    File iconFile = getIconFileName(printerId);
+    if (iconFile == null) {
+        return;
+    }
+    try (FileOutputStream os = new FileOutputStream(iconFile)) {
+        icon.writeToStream(os);
+    } catch (IOException e) {
+        Log.e(LOG_TAG, "Could not write icon for " + printerId + " to storage", e);
+    }
+    removeOldFiles(MAX_SIZE);
+}

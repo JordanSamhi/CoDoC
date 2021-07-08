@@ -1,0 +1,13 @@
+public static void addFilterLibrary(String libraryPath){
+    if (mLogVerbose)
+        Log.v(TAG, "Adding filter library " + libraryPath);
+    synchronized (mClassLoaderGuard) {
+        if (mLibraries.contains(libraryPath)) {
+            if (mLogVerbose)
+                Log.v(TAG, "Library already added");
+            return;
+        }
+        mLibraries.add(libraryPath);
+        mCurrentClassLoader = new PathClassLoader(libraryPath, mCurrentClassLoader);
+    }
+}

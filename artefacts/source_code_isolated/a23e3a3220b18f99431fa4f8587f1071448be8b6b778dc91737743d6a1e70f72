@@ -1,0 +1,6 @@
+public static AndroidFuture<Void> sendBytes(ThrowingConsumer<ParcelFileDescriptor> ipc, ThrowingConsumer<OutputStream> write){
+    return sendBytes(ipc, os -> {
+        write.acceptOrThrow(os);
+        return null;
+    });
+}

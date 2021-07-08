@@ -1,0 +1,105 @@
+public static String staEventToString(StaEvent event){
+    if (event == null)
+        return "<NULL>";
+    StringBuilder sb = new StringBuilder();
+    switch(event.type) {
+        case StaEvent.TYPE_ASSOCIATION_REJECTION_EVENT:
+            sb.append("ASSOCIATION_REJECTION_EVENT").append(" timedOut=").append(event.associationTimedOut).append(" status=").append(event.status).append(":").append(ISupplicantStaIfaceCallback.StatusCode.toString(event.status));
+            break;
+        case StaEvent.TYPE_AUTHENTICATION_FAILURE_EVENT:
+            sb.append("AUTHENTICATION_FAILURE_EVENT reason=").append(event.authFailureReason).append(":").append(authFailureReasonToString(event.authFailureReason));
+            break;
+        case StaEvent.TYPE_NETWORK_CONNECTION_EVENT:
+            sb.append("NETWORK_CONNECTION_EVENT");
+            break;
+        case StaEvent.TYPE_NETWORK_DISCONNECTION_EVENT:
+            sb.append("NETWORK_DISCONNECTION_EVENT").append(" local_gen=").append(event.localGen).append(" reason=").append(event.reason).append(":").append(ISupplicantStaIfaceCallback.ReasonCode.toString((event.reason >= 0 ? event.reason : -1 * event.reason)));
+            break;
+        case StaEvent.TYPE_CMD_ASSOCIATED_BSSID:
+            sb.append("CMD_ASSOCIATED_BSSID");
+            break;
+        case StaEvent.TYPE_CMD_IP_CONFIGURATION_SUCCESSFUL:
+            sb.append("CMD_IP_CONFIGURATION_SUCCESSFUL");
+            break;
+        case StaEvent.TYPE_CMD_IP_CONFIGURATION_LOST:
+            sb.append("CMD_IP_CONFIGURATION_LOST");
+            break;
+        case StaEvent.TYPE_CMD_IP_REACHABILITY_LOST:
+            sb.append("CMD_IP_REACHABILITY_LOST");
+            break;
+        case StaEvent.TYPE_CMD_TARGET_BSSID:
+            sb.append("CMD_TARGET_BSSID");
+            break;
+        case StaEvent.TYPE_CMD_START_CONNECT:
+            sb.append("CMD_START_CONNECT");
+            break;
+        case StaEvent.TYPE_CMD_START_ROAM:
+            sb.append("CMD_START_ROAM");
+            break;
+        case StaEvent.TYPE_CONNECT_NETWORK:
+            sb.append("CONNECT_NETWORK");
+            break;
+        case StaEvent.TYPE_NETWORK_AGENT_VALID_NETWORK:
+            sb.append("NETWORK_AGENT_VALID_NETWORK");
+            break;
+        case StaEvent.TYPE_FRAMEWORK_DISCONNECT:
+            sb.append("FRAMEWORK_DISCONNECT").append(" reason=").append(frameworkDisconnectReasonToString(event.frameworkDisconnectReason));
+            break;
+        case StaEvent.TYPE_SCORE_BREACH:
+            sb.append("SCORE_BREACH");
+            break;
+        case StaEvent.TYPE_MAC_CHANGE:
+            sb.append("MAC_CHANGE");
+            break;
+        case StaEvent.TYPE_WIFI_ENABLED:
+            sb.append("WIFI_ENABLED");
+            break;
+        case StaEvent.TYPE_WIFI_DISABLED:
+            sb.append("WIFI_DISABLED");
+            break;
+        case StaEvent.TYPE_WIFI_USABILITY_SCORE_BREACH:
+            sb.append("WIFI_USABILITY_SCORE_BREACH");
+            break;
+        case StaEvent.TYPE_LINK_PROBE:
+            sb.append("LINK_PROBE");
+            sb.append(" linkProbeWasSuccess=").append(event.linkProbeWasSuccess);
+            if (event.linkProbeWasSuccess) {
+                sb.append(" linkProbeSuccessElapsedTimeMs=").append(event.linkProbeSuccessElapsedTimeMs);
+            } else {
+                sb.append(" linkProbeFailureReason=").append(event.linkProbeFailureReason);
+            }
+            break;
+        default:
+            sb.append("UNKNOWN " + event.type + ":");
+            break;
+    }
+    if (event.lastRssi != -127)
+        sb.append(" lastRssi=").append(event.lastRssi);
+    if (event.lastFreq != -1)
+        sb.append(" lastFreq=").append(event.lastFreq);
+    if (event.lastLinkSpeed != -1)
+        sb.append(" lastLinkSpeed=").append(event.lastLinkSpeed);
+    if (event.lastScore != -1)
+        sb.append(" lastScore=").append(event.lastScore);
+    if (event.lastWifiUsabilityScore != -1) {
+        sb.append(" lastWifiUsabilityScore=").append(event.lastWifiUsabilityScore);
+        sb.append(" lastPredictionHorizonSec=").append(event.lastPredictionHorizonSec);
+    }
+    if (event.mobileTxBytes > 0)
+        sb.append(" mobileTxBytes=").append(event.mobileTxBytes);
+    if (event.mobileRxBytes > 0)
+        sb.append(" mobileRxBytes=").append(event.mobileRxBytes);
+    if (event.totalTxBytes > 0)
+        sb.append(" totalTxBytes=").append(event.totalTxBytes);
+    if (event.totalRxBytes > 0)
+        sb.append(" totalRxBytes=").append(event.totalRxBytes);
+    sb.append(" screenOn=").append(event.screenOn);
+    sb.append(" cellularData=").append(event.isCellularDataAvailable);
+    if (event.supplicantStateChangesBitmask != 0) {
+        sb.append(", ").append(supplicantStateChangesBitmaskToString(event.supplicantStateChangesBitmask));
+    }
+    if (event.configInfo != null) {
+        sb.append(", ").append(configInfoToString(event.configInfo));
+    }
+    return sb.toString();
+}

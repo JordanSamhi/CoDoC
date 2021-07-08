@@ -1,0 +1,21 @@
+public boolean startActivityIfNeeded(@RequiresPermission @NonNull Intent intent, int requestCode, @Nullable Bundle options){
+    if (mParent == null) {
+        int result = ActivityManager.START_RETURN_INTENT_TO_CALLER;
+        try {
+            Uri referrer = onProvideReferrer();
+            if (referrer != null) {
+                intent.putExtra(Intent.EXTRA_REFERRER, referrer);
+            }
+            intent.migrateExtraStreamToClipData(this);
+            intent.prepareToLeaveProcess(this);
+            result = ActivityTaskManager.getService().startActivity(mMainThread.getApplicationThread(), getBasePackageName(), getAttributionTag(), intent, intent.resolveTypeIfNeeded(getContentResolver()), mToken, mEmbeddedID, requestCode, ActivityManager.START_FLAG_ONLY_IF_NEEDED, null, options);
+        } catch (RemoteException e) {
+        }
+        Instrumentation.checkStartActivityResult(result, intent);
+        if (requestCode >= 0) {
+            mStartedActivity = true;
+        }
+        return result != ActivityManager.START_RETURN_INTENT_TO_CALLER;
+    }
+    throw new UnsupportedOperationException("startActivityIfNeeded can only be called from a top-level activity");
+}

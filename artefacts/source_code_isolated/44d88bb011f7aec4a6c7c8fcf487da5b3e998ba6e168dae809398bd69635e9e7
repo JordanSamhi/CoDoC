@@ -1,0 +1,36 @@
+public boolean computeScrollOffset(){
+    if (isFinished()) {
+        return false;
+    }
+    switch(mMode) {
+        case SCROLL_MODE:
+            long time = AnimationUtils.currentAnimationTimeMillis();
+            final long elapsedTime = time - mScrollerX.mStartTime;
+            final int duration = mScrollerX.mDuration;
+            if (elapsedTime < duration) {
+                final float q = mInterpolator.getInterpolation(elapsedTime / (float) duration);
+                mScrollerX.updateScroll(q);
+                mScrollerY.updateScroll(q);
+            } else {
+                abortAnimation();
+            }
+            break;
+        case FLING_MODE:
+            if (!mScrollerX.mFinished) {
+                if (!mScrollerX.update()) {
+                    if (!mScrollerX.continueWhenFinished()) {
+                        mScrollerX.finish();
+                    }
+                }
+            }
+            if (!mScrollerY.mFinished) {
+                if (!mScrollerY.update()) {
+                    if (!mScrollerY.continueWhenFinished()) {
+                        mScrollerY.finish();
+                    }
+                }
+            }
+            break;
+    }
+    return true;
+}

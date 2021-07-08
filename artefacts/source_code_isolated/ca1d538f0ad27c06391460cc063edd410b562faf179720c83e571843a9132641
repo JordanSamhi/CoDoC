@@ -1,0 +1,11 @@
+public String readImmediately() throws IOException{
+    if (mReceiveStream.ready()) {
+        int numRead = mReceiveStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
+        if (numRead < 0) {
+            return null;
+        }
+        return new String(mReadBuffer, 0, numRead);
+    } else {
+        return null;
+    }
+}

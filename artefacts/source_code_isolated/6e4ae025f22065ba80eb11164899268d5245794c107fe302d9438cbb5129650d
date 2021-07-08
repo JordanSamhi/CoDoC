@@ -1,0 +1,11 @@
+public static DigitsKeyListener getInstance(@NonNull String accepted){
+    DigitsKeyListener result;
+    synchronized (sStringCacheLock) {
+        result = sStringInstanceCache.get(accepted);
+        if (result == null) {
+            result = new DigitsKeyListener(accepted);
+            sStringInstanceCache.put(accepted, result);
+        }
+    }
+    return result;
+}

@@ -1,0 +1,15 @@
+public WindowInsets onApplyWindowInsets(WindowInsets insets){
+    if ((mPrivateFlags4 & PFLAG4_FRAMEWORK_OPTIONAL_FITS_SYSTEM_WINDOWS) != 0 && (mViewFlags & FITS_SYSTEM_WINDOWS) != 0) {
+        return onApplyFrameworkOptionalFitSystemWindows(insets);
+    }
+    if ((mPrivateFlags3 & PFLAG3_FITTING_SYSTEM_WINDOWS) == 0) {
+        if (fitSystemWindows(insets.getSystemWindowInsetsAsRect())) {
+            return insets.consumeSystemWindowInsets();
+        }
+    } else {
+        if (fitSystemWindowsInt(insets.getSystemWindowInsetsAsRect())) {
+            return insets.consumeSystemWindowInsets();
+        }
+    }
+    return insets;
+}

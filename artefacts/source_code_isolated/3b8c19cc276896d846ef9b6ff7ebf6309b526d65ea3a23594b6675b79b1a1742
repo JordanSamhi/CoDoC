@@ -1,0 +1,50 @@
+public static boolean parseFloatAttribute(String attribute, @NonNull String value, TypedValue outValue, boolean requireUnit){
+    assert !requireUnit || attribute != null;
+    value = value.trim();
+    int len = value.length();
+    if (len <= 0) {
+        return false;
+    }
+    char[] buf = value.toCharArray();
+    for (int i = 0; i < len; i++) {
+        if (buf[i] > 255) {
+            return false;
+        }
+    }
+    if ((buf[0] < '0' || buf[0] > '9') && buf[0] != '.' && buf[0] != '-' && buf[0] != '+') {
+        return false;
+    }
+    Matcher m = sFloatPattern.matcher(value);
+    if (m.matches()) {
+        String f_str = m.group(1);
+        String end = m.group(2);
+        float f;
+        try {
+            f = Float.parseFloat(f_str);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        if (end.length() > 0 && end.charAt(0) != ' ') {
+            if (parseUnit(end, outValue, sFloatOut)) {
+                computeTypedValue(outValue, f, sFloatOut[0]);
+                return true;
+            }
+            return false;
+        }
+        end = end.trim();
+        if (end.length() == 0) {
+            if (outValue != null) {
+                if (!requireUnit) {
+                    outValue.type = TypedValue.TYPE_FLOAT;
+                    outValue.data = Float.floatToIntBits(f);
+                } else {
+                    applyUnit(sUnitNames[1], outValue, sFloatOut);
+                    computeTypedValue(outValue, f, sFloatOut[0]);
+                    Bridge.getLog().error(LayoutLog.TAG_RESOURCES_RESOLVE, String.format("Dimension \"%1$s\" in attribute \"%2$s\" is missing unit!", value, attribute), null, null);
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}

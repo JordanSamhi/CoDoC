@@ -1,0 +1,15 @@
+public void showAsDialog(Activity activity){
+    final LocalDialog dialog = new LocalDialog();
+    final Bundle args = new Bundle();
+    args.putParcelable(TAG, this);
+    dialog.setArguments(args);
+    final String tag = TAG + "_" + mUserAction.getActionIntent().getCreatorUid();
+    final FragmentManager fm = activity.getFragmentManager();
+    final FragmentTransaction ft = fm.beginTransaction();
+    final Fragment old = fm.findFragmentByTag(tag);
+    if (old != null) {
+        ft.remove(old);
+    }
+    ft.add(dialog, tag);
+    ft.commitAllowingStateLoss();
+}

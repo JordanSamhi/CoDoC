@@ -1,0 +1,18 @@
+public static void writeCommonElementsToXml(XmlSerializer out, WifiConfiguration configuration, @Nullable WifiConfigStoreEncryptionUtil encryptionUtil) throws XmlPullParserException, IOException{
+    XmlUtil.writeNextValue(out, XML_TAG_CONFIG_KEY, configuration.getKey());
+    XmlUtil.writeNextValue(out, XML_TAG_SSID, configuration.SSID);
+    writePreSharedKeyToXml(out, configuration.preSharedKey, encryptionUtil);
+    writeWepKeysToXml(out, configuration.wepKeys);
+    XmlUtil.writeNextValue(out, XML_TAG_WEP_TX_KEY_INDEX, configuration.wepTxKeyIndex);
+    XmlUtil.writeNextValue(out, XML_TAG_HIDDEN_SSID, configuration.hiddenSSID);
+    XmlUtil.writeNextValue(out, XML_TAG_REQUIRE_PMF, configuration.requirePmf);
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_KEY_MGMT, configuration.allowedKeyManagement.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_PROTOCOLS, configuration.allowedProtocols.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_AUTH_ALGOS, configuration.allowedAuthAlgorithms.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_GROUP_CIPHERS, configuration.allowedGroupCiphers.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_PAIRWISE_CIPHERS, configuration.allowedPairwiseCiphers.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_GROUP_MGMT_CIPHERS, configuration.allowedGroupManagementCiphers.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_ALLOWED_SUITE_B_CIPHERS, configuration.allowedSuiteBCiphers.toByteArray());
+    XmlUtil.writeNextValue(out, XML_TAG_SHARED, configuration.shared);
+    XmlUtil.writeNextValue(out, XML_TAG_IS_AUTO_JOIN, configuration.allowAutojoin);
+}

@@ -1,0 +1,85 @@
+public static Bundle toBundle(ByteBuffer buffer){
+    final Bundle bundle = new Bundle();
+    final int totalSize = buffer.getInt();
+    final int headerSize = buffer.getInt();
+    final char version = buffer.getChar();
+    final char keySize = buffer.getChar();
+    if (totalSize < 0 || headerSize < 0) {
+        throw new IllegalArgumentException("Item size cannot be > " + Integer.MAX_VALUE);
+    }
+    final String key;
+    if (keySize > 0) {
+        key = getStringFromBuffer(buffer, keySize);
+    } else {
+        throw new IllegalArgumentException("Illegal null key");
+    }
+    final int pid = buffer.getInt();
+    final int uid = buffer.getInt();
+    final long timestamp = buffer.getLong();
+    final int headerRead = buffer.position();
+    if (version == 0) {
+        if (headerRead != headerSize) {
+            throw new IllegalArgumentException("Item key:" + key + " headerRead:" + headerRead + " != headerSize:" + headerSize);
+        }
+    } else {
+        if (headerRead > headerSize) {
+            throw new IllegalArgumentException("Item key:" + key + " headerRead:" + headerRead + " > headerSize:" + headerSize);
+        } else if (headerRead < headerSize) {
+            buffer.position(headerSize);
+        }
+    }
+    final int propertyCount = buffer.getInt();
+    if (propertyCount < 0) {
+        throw new IllegalArgumentException("Cannot have more than " + Integer.MAX_VALUE + " properties");
+    }
+    bundle.putInt(BUNDLE_TOTAL_SIZE, totalSize);
+    bundle.putInt(BUNDLE_HEADER_SIZE, headerSize);
+    bundle.putChar(BUNDLE_VERSION, version);
+    bundle.putChar(BUNDLE_KEY_SIZE, keySize);
+    bundle.putString(BUNDLE_KEY, key);
+    bundle.putInt(BUNDLE_PID, pid);
+    bundle.putInt(BUNDLE_UID, uid);
+    bundle.putLong(BUNDLE_TIMESTAMP, timestamp);
+    bundle.putInt(BUNDLE_PROPERTY_COUNT, propertyCount);
+    for (int i = 0; i < propertyCount; ++i) {
+        final int initialBufferPosition = buffer.position();
+        final char propSize = buffer.getChar();
+        final byte type = buffer.get();
+        final String propKey = getStringFromBuffer(buffer);
+        switch(type) {
+            case TYPE_INT32:
+                bundle.putInt(propKey, buffer.getInt());
+                break;
+            case TYPE_INT64:
+                bundle.putLong(propKey, buffer.getLong());
+                break;
+            case TYPE_DOUBLE:
+                bundle.putDouble(propKey, buffer.getDouble());
+                break;
+            case TYPE_CSTRING:
+                bundle.putString(propKey, getStringFromBuffer(buffer));
+                break;
+            case TYPE_NONE:
+                break;
+            case TYPE_RATE:
+                buffer.getLong();
+                buffer.getLong();
+                break;
+            default:
+                if (version == 0) {
+                    throw new IllegalArgumentException("Property " + propKey + " has unsupported type " + type);
+                }
+                buffer.position(initialBufferPosition + propSize);
+                break;
+        }
+        final int deltaPosition = buffer.position() - initialBufferPosition;
+        if (deltaPosition != propSize) {
+            throw new IllegalArgumentException("propSize:" + propSize + " != deltaPosition:" + deltaPosition);
+        }
+    }
+    final int finalPosition = buffer.position();
+    if (finalPosition != totalSize) {
+        throw new IllegalArgumentException("totalSize:" + totalSize + " != finalPosition:" + finalPosition);
+    }
+    return bundle;
+}

@@ -1,0 +1,7 @@
+public String getKey(@NonNull String alias) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    Objects.requireNonNull(alias, "alias is null");
+    int uid = Binder.getCallingUid();
+    int userId = UserHandle.getCallingUserId();
+    return getAlias(userId, uid, alias);
+}

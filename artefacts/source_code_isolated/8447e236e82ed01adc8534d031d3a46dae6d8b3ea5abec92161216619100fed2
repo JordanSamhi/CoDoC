@@ -1,0 +1,15 @@
+public void notifyCarrierSignalReceivers(Intent intent){
+    Set<ComponentName> receiverSet;
+    synchronized (mCachedWakeSignalConfigs) {
+        receiverSet = mCachedWakeSignalConfigs.get(intent.getAction());
+        if (!ArrayUtils.isEmpty(receiverSet)) {
+            broadcast(intent, receiverSet, WAKE);
+        }
+    }
+    synchronized (mCachedNoWakeSignalConfigs) {
+        receiverSet = mCachedNoWakeSignalConfigs.get(intent.getAction());
+        if (!ArrayUtils.isEmpty(receiverSet)) {
+            broadcast(intent, receiverSet, NO_WAKE);
+        }
+    }
+}

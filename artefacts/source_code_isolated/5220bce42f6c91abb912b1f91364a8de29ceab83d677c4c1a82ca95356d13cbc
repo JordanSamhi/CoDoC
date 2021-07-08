@@ -1,0 +1,13 @@
+public boolean onDragEvent(@NonNull DragEvent event){
+    switch(event.getAction()) {
+        case DragEvent.ACTION_DRAG_STARTED:
+            return event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
+        case DragEvent.ACTION_DRAG_ENTERED:
+            requestFocus();
+            return true;
+        case DragEvent.ACTION_DROP:
+            handlePasteClip(event.getClipData());
+            return true;
+    }
+    return false;
+}

@@ -1,0 +1,15 @@
+public static List<ComprehensionTlv> decodeMany(byte[] data, int startIndex) throws ResultException{
+    ArrayList<ComprehensionTlv> items = new ArrayList<ComprehensionTlv>();
+    int endIndex = data.length;
+    while (startIndex < endIndex) {
+        ComprehensionTlv ctlv = ComprehensionTlv.decode(data, startIndex);
+        if (ctlv != null) {
+            items.add(ctlv);
+            startIndex = ctlv.mValueIndex + ctlv.mLength;
+        } else {
+            CatLog.d(LOG_TAG, "decodeMany: ctlv is null, stop decoding");
+            break;
+        }
+    }
+    return items;
+}

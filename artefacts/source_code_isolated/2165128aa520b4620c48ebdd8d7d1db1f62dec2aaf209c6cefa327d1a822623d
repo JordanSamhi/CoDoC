@@ -1,0 +1,13 @@
+public void onExecuteWrite(String address, int transId, boolean execWrite){
+    if (DBG) {
+        Log.d(TAG, "onExecuteWrite() - " + "device=" + address + ", transId=" + transId + "execWrite=" + execWrite);
+    }
+    BluetoothDevice device = mAdapter.getRemoteDevice(address);
+    if (device == null)
+        return;
+    try {
+        mCallback.onExecuteWrite(device, transId, execWrite);
+    } catch (Exception ex) {
+        Log.w(TAG, "Unhandled exception in callback", ex);
+    }
+}

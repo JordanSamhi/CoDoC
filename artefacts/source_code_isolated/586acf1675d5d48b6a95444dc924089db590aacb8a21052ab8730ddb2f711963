@@ -1,0 +1,12 @@
+public ArraySet<PublicKey> getPublicKeysFromKeySetLPr(long id){
+    ArraySet<Long> pkIds = mKeySetMapping.get(id);
+    if (pkIds == null) {
+        return null;
+    }
+    ArraySet<PublicKey> mPubKeys = new ArraySet<PublicKey>();
+    final int pkSize = pkIds.size();
+    for (int i = 0; i < pkSize; i++) {
+        mPubKeys.add(mPublicKeys.get(pkIds.valueAt(i)).getKey());
+    }
+    return mPubKeys;
+}

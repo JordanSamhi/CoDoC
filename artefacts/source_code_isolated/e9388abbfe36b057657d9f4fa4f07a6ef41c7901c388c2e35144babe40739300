@@ -1,0 +1,34 @@
+public static final boolean addLinks(@NonNull Spannable spannable, @NonNull Pattern pattern, @Nullable String defaultScheme, @Nullable String[] schemes, @Nullable MatchFilter matchFilter, @Nullable TransformFilter transformFilter, @Nullable Function<String, URLSpan> urlSpanFactory){
+    if (spannable != null && containsUnsupportedCharacters(spannable.toString())) {
+        android.util.EventLog.writeEvent(0x534e4554, "116321860", -1, "");
+        return false;
+    }
+    final String[] schemesCopy;
+    if (defaultScheme == null)
+        defaultScheme = "";
+    if (schemes == null || schemes.length < 1) {
+        schemes = EmptyArray.STRING;
+    }
+    schemesCopy = new String[schemes.length + 1];
+    schemesCopy[0] = defaultScheme.toLowerCase(Locale.ROOT);
+    for (int index = 0; index < schemes.length; index++) {
+        String scheme = schemes[index];
+        schemesCopy[index + 1] = (scheme == null) ? "" : scheme.toLowerCase(Locale.ROOT);
+    }
+    boolean hasMatches = false;
+    Matcher m = pattern.matcher(spannable);
+    while (m.find()) {
+        int start = m.start();
+        int end = m.end();
+        boolean allowed = true;
+        if (matchFilter != null) {
+            allowed = matchFilter.acceptMatch(spannable, start, end);
+        }
+        if (allowed) {
+            String url = makeUrl(m.group(0), schemesCopy, m, transformFilter);
+            applyLink(url, start, end, spannable, urlSpanFactory);
+            hasMatches = true;
+        }
+    }
+    return hasMatches;
+}

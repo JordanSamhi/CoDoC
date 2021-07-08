@@ -1,0 +1,36 @@
+
+     * Prepares the DRM for the current source
+     * <p>
+     * If {@code OnDrmConfigHelper} is registered, it will be called during
+     * preparation to allow configuration of the DRM properties before opening the
+     * DRM session. Note that the callback is called synchronously in the thread that called
+     * {@code prepareDrm}. It should be used only for a series of {@code getDrmPropertyString}
+     * and {@code setDrmPropertyString} calls and refrain from any lengthy operation.
+     * <p>
+     * If the device has not been provisioned before, this call also provisions the device
+     * which involves accessing the provisioning server and can take a variable time to
+     * complete depending on the network connectivity.
+     * If {@code OnDrmPreparedListener} is registered, prepareDrm() runs in non-blocking
+     * mode by launching the provisioning in the background and returning. The listener
+     * will be called when provisioning and preparation has finished. If a
+     * {@code OnDrmPreparedListener} is not registered, prepareDrm() waits till provisioning
+     * and preparation has finished, i.e., runs in blocking mode.
+     * <p>
+     * If {@code OnDrmPreparedListener} is registered, it is called to indicate the DRM
+     * session being ready. The application should not make any assumption about its call
+     * sequence (e.g., before or after prepareDrm returns), or the thread context that will
+     * execute the listener (unless the listener is registered with a handler thread).
+     * <p>
+     *
+     * @param uuid The UUID of the crypto scheme. If not known beforehand, it can be retrieved
+     * from the source through {@code getDrmInfo} or registering a {@code onDrmInfoListener}.
+     *
+     * @throws IllegalStateException              if called before prepare(), or the DRM was
+     *                                            prepared already
+     * @throws UnsupportedSchemeException         if the crypto scheme is not supported
+     * @throws ResourceBusyException              if required DRM resources are in use
+     * @throws ProvisioningNetworkErrorException  if provisioning is required but failed due to a
+     *                                            network error
+     * @throws ProvisioningServerErrorException   if provisioning is required but failed due to
+     *                                            the request denied by the provisioning server
+     

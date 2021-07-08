@@ -1,0 +1,12 @@
+public boolean isTargetSdkLessThan(String packageName, int versionCode, int callingUid){
+    long ident = Binder.clearCallingIdentity();
+    try {
+        if (mContext.getPackageManager().getApplicationInfoAsUser(packageName, 0, UserHandle.getUserHandleForUid(callingUid)).targetSdkVersion < versionCode) {
+            return true;
+        }
+    } catch (PackageManager.NameNotFoundException e) {
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    return false;
+}

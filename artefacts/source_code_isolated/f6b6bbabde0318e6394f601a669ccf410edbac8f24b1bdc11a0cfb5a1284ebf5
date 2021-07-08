@@ -1,0 +1,12 @@
+public Range<T> extend(Range<T> range){
+    checkNotNull(range, "range must not be null");
+    int cmpLower = range.mLower.compareTo(mLower);
+    int cmpUpper = range.mUpper.compareTo(mUpper);
+    if (cmpLower <= 0 && cmpUpper >= 0) {
+        return range;
+    } else if (cmpLower >= 0 && cmpUpper <= 0) {
+        return this;
+    } else {
+        return Range.create(cmpLower >= 0 ? mLower : range.mLower, cmpUpper <= 0 ? mUpper : range.mUpper);
+    }
+}

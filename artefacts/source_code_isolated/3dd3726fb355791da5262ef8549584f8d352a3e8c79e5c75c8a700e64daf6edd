@@ -1,0 +1,17 @@
+public boolean enableNetwork(int netId, boolean disableOthers, String packageName){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return false;
+    }
+    if (!isTargetSdkLessThanQOrPrivileged(packageName, Binder.getCallingPid(), Binder.getCallingUid())) {
+        mLog.info("enableNetwork not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return false;
+    }
+    int callingUid = Binder.getCallingUid();
+    mLog.info("enableNetwork uid=% disableOthers=%").c(callingUid).c(disableOthers).flush();
+    mWifiMetrics.incrementNumEnableNetworkCalls();
+    if (disableOthers) {
+        return triggerConnectAndReturnStatus(netId, callingUid);
+    } else {
+        return mWifiThreadRunner.call(() -> mWifiConfigManager.enableNetwork(netId, false, callingUid, packageName), false);
+    }
+}

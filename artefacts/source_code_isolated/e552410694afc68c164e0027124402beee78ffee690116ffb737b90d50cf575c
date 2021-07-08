@@ -1,0 +1,21 @@
+public void addFooterView(View v, Object data, boolean isSelectable){
+    if (v.getParent() != null && v.getParent() != this) {
+        if (Log.isLoggable(TAG, Log.WARN)) {
+            Log.w(TAG, "The specified child already has a parent. " + "You must call removeView() on the child's parent first.");
+        }
+    }
+    final FixedViewInfo info = new FixedViewInfo();
+    info.view = v;
+    info.data = data;
+    info.isSelectable = isSelectable;
+    mFooterViewInfos.add(info);
+    mAreAllItemsSelectable &= isSelectable;
+    if (mAdapter != null) {
+        if (!(mAdapter instanceof HeaderViewListAdapter)) {
+            wrapHeaderListAdapterInternal();
+        }
+        if (mDataSetObserver != null) {
+            mDataSetObserver.onChanged();
+        }
+    }
+}

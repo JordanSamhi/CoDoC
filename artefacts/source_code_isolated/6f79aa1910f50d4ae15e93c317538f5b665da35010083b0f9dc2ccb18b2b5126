@@ -1,0 +1,10 @@
+public void getHitRect(Rect outRect){
+    if (hasIdentityMatrix() || mAttachInfo == null) {
+        outRect.set(mLeft, mTop, mRight, mBottom);
+    } else {
+        final RectF tmpRect = mAttachInfo.mTmpTransformRect;
+        tmpRect.set(0, 0, getWidth(), getHeight());
+        getMatrix().mapRect(tmpRect);
+        outRect.set((int) tmpRect.left + mLeft, (int) tmpRect.top + mTop, (int) tmpRect.right + mLeft, (int) tmpRect.bottom + mTop);
+    }
+}

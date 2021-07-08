@@ -1,0 +1,19 @@
+public void getPhoneCapability(Message result){
+    IRadioConfig radioConfigProxy = getRadioConfigProxy(null);
+    if (radioConfigProxy == null || mRadioConfigVersion.less(RADIO_CONFIG_HAL_VERSION_1_1)) {
+        if (result != null) {
+            AsyncResult.forMessage(result, null, CommandException.fromRilErrno(REQUEST_NOT_SUPPORTED));
+            result.sendToTarget();
+        }
+        return;
+    }
+    RILRequest rr = obtainRequest(RIL_REQUEST_GET_PHONE_CAPABILITY, result, mDefaultWorkSource);
+    if (DBG) {
+        logd(rr.serialString() + "> " + requestToString(rr.mRequest));
+    }
+    try {
+        ((android.hardware.radio.config.V1_1.IRadioConfig) mRadioConfigProxy).getPhoneCapability(rr.mSerial);
+    } catch (RemoteException | RuntimeException e) {
+        resetProxyAndRequestList("getPhoneCapability", e);
+    }
+}

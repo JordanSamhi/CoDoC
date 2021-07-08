@@ -1,0 +1,26 @@
+public int setStream(InputStream bitmapData, Rect visibleCropHint, boolean allowBackup, @SetWallpaperFlags int which) throws IOException{
+    validateRect(visibleCropHint);
+    if (sGlobals.mService == null) {
+        Log.w(TAG, "WallpaperService not running");
+        throw new RuntimeException(new DeadSystemException());
+    }
+    final Bundle result = new Bundle();
+    final WallpaperSetCompletion completion = new WallpaperSetCompletion();
+    try {
+        ParcelFileDescriptor fd = sGlobals.mService.setWallpaper(null, mContext.getOpPackageName(), visibleCropHint, allowBackup, result, which, completion, mContext.getUserId());
+        if (fd != null) {
+            FileOutputStream fos = null;
+            try {
+                fos = new ParcelFileDescriptor.AutoCloseOutputStream(fd);
+                copyStreamToWallpaperFile(bitmapData, fos);
+                fos.close();
+                completion.waitForCompletion();
+            } finally {
+                IoUtils.closeQuietly(fos);
+            }
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return result.getInt(EXTRA_NEW_WALLPAPER_ID, 0);
+}

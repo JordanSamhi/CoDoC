@@ -1,0 +1,12 @@
+public void closeSessions(){
+    if (!mService.isConnected()) {
+        Log.e(TAG, "service is not connected");
+        return;
+    }
+    synchronized (mLock) {
+        try {
+            mReader.closeSessions();
+        } catch (RemoteException ignore) {
+        }
+    }
+}

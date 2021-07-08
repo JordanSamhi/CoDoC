@@ -1,0 +1,10 @@
+public void write(char[] buf, int offset, int count){
+    synchronized (lock) {
+        try {
+            appendLocked(buf, offset, count);
+        } catch (IOException e) {
+            Log.w("FastPrintWriter", "Write failure", e);
+            setError();
+        }
+    }
+}

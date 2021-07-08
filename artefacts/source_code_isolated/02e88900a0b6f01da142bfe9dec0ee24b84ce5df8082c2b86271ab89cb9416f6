@@ -1,0 +1,11 @@
+public void writePackedSFixed64(long fieldId, @Nullable long[] val){
+    assertNotCompacted();
+    final int id = checkFieldId(fieldId, FIELD_COUNT_PACKED | FIELD_TYPE_SFIXED64);
+    final int N = val != null ? val.length : 0;
+    if (N > 0) {
+        writeKnownLengthHeader(id, N * 8);
+        for (int i = 0; i < N; i++) {
+            mBuffer.writeRawFixed64(val[i]);
+        }
+    }
+}

@@ -1,0 +1,26 @@
+public static ProviderInfo getProvider(PackageManager packageManager, FontRequest request) throws NameNotFoundException{
+    String providerAuthority = request.getProviderAuthority();
+    ProviderInfo info = packageManager.resolveContentProvider(providerAuthority, 0);
+    if (info == null) {
+        throw new NameNotFoundException("No package found for authority: " + providerAuthority);
+    }
+    if (!info.packageName.equals(request.getProviderPackage())) {
+        throw new NameNotFoundException("Found content provider " + providerAuthority + ", but package was not " + request.getProviderPackage());
+    }
+    if (info.applicationInfo.isSystemApp()) {
+        return info;
+    }
+    List<byte[]> signatures;
+    PackageInfo packageInfo = packageManager.getPackageInfo(info.packageName, PackageManager.GET_SIGNATURES);
+    signatures = convertToByteArrayList(packageInfo.signatures);
+    Collections.sort(signatures, sByteArrayComparator);
+    List<List<byte[]>> requestCertificatesList = request.getCertificates();
+    for (int i = 0; i < requestCertificatesList.size(); ++i) {
+        List<byte[]> requestSignatures = new ArrayList<>(requestCertificatesList.get(i));
+        Collections.sort(requestSignatures, sByteArrayComparator);
+        if (equalsByteArrayList(signatures, requestSignatures)) {
+            return info;
+        }
+    }
+    return null;
+}

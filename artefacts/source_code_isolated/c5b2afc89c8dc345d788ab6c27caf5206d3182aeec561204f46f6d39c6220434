@@ -1,0 +1,19 @@
+public SubtitleTrack addTrack(MediaFormat format){
+    synchronized (mRenderers) {
+        for (Renderer renderer : mRenderers) {
+            if (renderer.supports(format)) {
+                SubtitleTrack track = renderer.createTrack(format);
+                if (track != null) {
+                    synchronized (mTracks) {
+                        if (mTracks.size() == 0) {
+                            mCaptioningManager.addCaptioningChangeListener(mCaptioningChangeListener);
+                        }
+                        mTracks.add(track);
+                    }
+                    return track;
+                }
+            }
+        }
+    }
+    return null;
+}

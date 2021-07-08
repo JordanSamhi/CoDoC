@@ -1,0 +1,20 @@
+public List<SubscriptionInfo> getSubscriptionInfoListForEmbeddedSubscriptionUpdate(String[] embeddedIccids, boolean isEuiccRemovable){
+    StringBuilder whereClause = new StringBuilder();
+    whereClause.append("(").append(SubscriptionManager.IS_EMBEDDED).append("=1");
+    if (isEuiccRemovable) {
+        whereClause.append(" AND ").append(SubscriptionManager.IS_REMOVABLE).append("=1");
+    }
+    whereClause.append(") OR ").append(SubscriptionManager.ICC_ID).append(" IN (");
+    for (int i = 0; i < embeddedIccids.length; i++) {
+        if (i > 0) {
+            whereClause.append(",");
+        }
+        whereClause.append("\"").append(embeddedIccids[i]).append("\"");
+    }
+    whereClause.append(")");
+    List<SubscriptionInfo> list = getSubInfo(whereClause.toString(), null);
+    if (list == null) {
+        return Collections.emptyList();
+    }
+    return list;
+}

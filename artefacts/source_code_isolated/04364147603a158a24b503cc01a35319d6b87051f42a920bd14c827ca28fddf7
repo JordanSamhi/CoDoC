@@ -1,0 +1,15 @@
+public void setupUri(String uriString){
+    if (uriString == null) {
+        uriString = KeyguardSliceProvider.KEYGUARD_SLICE_URI;
+    }
+    boolean wasObserving = false;
+    if (mLiveData != null && mLiveData.hasActiveObservers()) {
+        wasObserving = true;
+        mLiveData.removeObserver(this);
+    }
+    mKeyguardSliceUri = Uri.parse(uriString);
+    mLiveData = SliceLiveData.fromUri(mContext, mKeyguardSliceUri);
+    if (wasObserving) {
+        mLiveData.observeForever(this);
+    }
+}

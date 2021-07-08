@@ -1,0 +1,20 @@
+public boolean roamToNetwork(@NonNull String ifaceName, WifiConfiguration config){
+    synchronized (mLock) {
+        if (getCurrentNetworkId(ifaceName) != config.networkId) {
+            Log.w(TAG, "Cannot roam to a different network, initiate new connection. " + "Current network ID: " + getCurrentNetworkId(ifaceName));
+            return connectToNetwork(ifaceName, config);
+        }
+        String bssid = config.getNetworkSelectionStatus().getNetworkSelectionBSSID();
+        logd("roamToNetwork" + config.getKey() + " (bssid " + bssid + ")");
+        SupplicantStaNetworkHal networkHandle = checkSupplicantStaNetworkAndLogFailure(ifaceName, "roamToNetwork");
+        if (networkHandle == null || !networkHandle.setBssid(bssid)) {
+            loge("Failed to set new bssid on network: " + config.getKey());
+            return false;
+        }
+        if (!reassociate(ifaceName)) {
+            loge("Failed to trigger reassociate");
+            return false;
+        }
+        return true;
+    }
+}

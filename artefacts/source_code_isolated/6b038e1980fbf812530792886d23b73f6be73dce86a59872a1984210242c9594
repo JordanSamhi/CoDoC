@@ -1,0 +1,11 @@
+public static GenericBucket[] logHistogramToGenericBuckets(SparseIntArray histogram, LogHistParms hp){
+    GenericBucket[] protoArray = new GenericBucket[histogram.size()];
+    for (int i = 0; i < histogram.size(); ++i) {
+        int key = histogram.keyAt(i);
+        protoArray[i] = new GenericBucket();
+        protoArray[i].start = (long) (hp.bb[key / hp.s] + hp.sbw[key / hp.s] * (key % hp.s));
+        protoArray[i].end = (long) (protoArray[i].start + hp.sbw[key / hp.s]);
+        protoArray[i].count = histogram.valueAt(i);
+    }
+    return protoArray;
+}

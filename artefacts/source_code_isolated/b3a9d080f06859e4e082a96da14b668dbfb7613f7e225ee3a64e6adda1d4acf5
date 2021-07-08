@@ -1,0 +1,31 @@
+public int getMaxAvailableHeight(@NonNull View anchor, int yOffset, boolean ignoreBottomDecorations){
+    Rect displayFrame = null;
+    final Rect visibleDisplayFrame = new Rect();
+    final View appView = getAppRootView(anchor);
+    appView.getWindowVisibleDisplayFrame(visibleDisplayFrame);
+    if (ignoreBottomDecorations) {
+        displayFrame = new Rect();
+        anchor.getWindowDisplayFrame(displayFrame);
+        displayFrame.top = visibleDisplayFrame.top;
+        displayFrame.right = visibleDisplayFrame.right;
+        displayFrame.left = visibleDisplayFrame.left;
+    } else {
+        displayFrame = visibleDisplayFrame;
+    }
+    final int[] anchorPos = mTmpDrawingLocation;
+    anchor.getLocationOnScreen(anchorPos);
+    final int bottomEdge = displayFrame.bottom;
+    final int distanceToBottom;
+    if (mOverlapAnchor) {
+        distanceToBottom = bottomEdge - anchorPos[1] - yOffset;
+    } else {
+        distanceToBottom = bottomEdge - (anchorPos[1] + anchor.getHeight()) - yOffset;
+    }
+    final int distanceToTop = anchorPos[1] - displayFrame.top + yOffset;
+    int returnedHeight = Math.max(distanceToBottom, distanceToTop);
+    if (mBackground != null) {
+        mBackground.getPadding(mTempRect);
+        returnedHeight -= mTempRect.top + mTempRect.bottom;
+    }
+    return returnedHeight;
+}

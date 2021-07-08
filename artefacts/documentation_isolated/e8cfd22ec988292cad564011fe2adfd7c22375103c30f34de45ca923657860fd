@@ -1,0 +1,17 @@
+
+     * Sets the next output file to be used when the maximum filesize is reached on the prior
+     * output {@link #setOutputFile} or {@link #setNextOutputFile}). File should be seekable.
+     * After setting the next output file, application should not use the file until {@link #stop}.
+     * Application must call this after receiving on the
+     * {@link android.media.MediaRecorder.OnInfoListener} a "what" code of
+     * {@link #MEDIA_RECORDER_INFO_MAX_FILESIZE_APPROACHING} and before receiving a "what" code of
+     * {@link #MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED}. The file is not used until switching to
+     * that output. Application will receive {@link #MEDIA_RECORDER_INFO_NEXT_OUTPUT_FILE_STARTED}
+     * when the next output file is used. Application will not be able to set a new output file if
+     * the previous one has not been used. Application is responsible for cleaning up unused files
+     * after {@link #stop} is called.
+     *
+     * @param  file The file to use.
+     * @throws IllegalStateException if it is called before prepare().
+     * @throws IOException if setNextOutputFile fails otherwise.
+     

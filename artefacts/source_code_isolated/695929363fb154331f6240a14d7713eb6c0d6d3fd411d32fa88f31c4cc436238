@@ -1,0 +1,11 @@
+public void setCaptionEnabled(boolean enabled){
+    if (mToken == null) {
+        Log.w(TAG, "The session has been already released");
+        return;
+    }
+    try {
+        mService.setCaptionEnabled(mToken, enabled, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

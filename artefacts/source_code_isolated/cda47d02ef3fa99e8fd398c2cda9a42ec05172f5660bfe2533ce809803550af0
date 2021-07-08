@@ -1,0 +1,14 @@
+public RILRequest processResponse(RadioResponseInfo responseInfo){
+    int serial = responseInfo.serial;
+    int error = responseInfo.error;
+    int type = responseInfo.type;
+    if (type != RadioResponseType.SOLICITED) {
+        loge("processResponse: Unexpected response type " + type);
+    }
+    RILRequest rr = findAndRemoveRequestFromList(serial);
+    if (rr == null) {
+        loge("processResponse: Unexpected response! serial: " + serial + " error: " + error);
+        return null;
+    }
+    return rr;
+}

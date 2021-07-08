@@ -1,0 +1,15 @@
+public ContextHubClient createClient(@NonNull ContextHubInfo hubInfo, @NonNull ContextHubClientCallback callback, @NonNull @CallbackExecutor Executor executor){
+    Objects.requireNonNull(callback, "Callback cannot be null");
+    Objects.requireNonNull(hubInfo, "ContextHubInfo cannot be null");
+    Objects.requireNonNull(executor, "Executor cannot be null");
+    ContextHubClient client = new ContextHubClient(hubInfo, false);
+    IContextHubClientCallback clientInterface = createClientCallback(client, callback, executor);
+    IContextHubClient clientProxy;
+    try {
+        clientProxy = mService.createClient(hubInfo.getId(), clientInterface);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    client.setClientProxy(clientProxy);
+    return client;
+}

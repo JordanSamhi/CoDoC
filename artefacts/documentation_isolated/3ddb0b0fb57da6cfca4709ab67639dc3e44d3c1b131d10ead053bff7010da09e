@@ -1,0 +1,29 @@
+
+     * Performs attestation of the device's identifiers. This method returns a certificate chain
+     * whose first element contains the requested device identifiers in an extension. The device's
+     * manufacturer, model, brand, device and product are always also included in the attestation.
+     * If the device supports attestation in secure hardware, the chain will be rooted at a
+     * trustworthy CA key. Otherwise, the chain will be rooted at an untrusted certificate. See
+     * <a href="https://developer.android.com/training/articles/security-key-attestation.html">
+     * Key Attestation</a> for the format of the certificate extension.
+     * <p>
+     * Attestation will only be successful when all of the following are true:
+     * 1) The device has been set up to support device identifier attestation at the factory.
+     * 2) The user has not permanently disabled device identifier attestation.
+     * 3) You have permission to access the device identifiers you are requesting attestation for.
+     * <p>
+     * For privacy reasons, you cannot distinguish between (1) and (2). If attestation is
+     * unsuccessful, the device may not support it in general or the user may have permanently
+     * disabled it.
+     *
+     * @param context the context to use for retrieving device identifiers.
+     * @param idTypes the types of device identifiers to attest.
+     * @param attestationChallenge a blob to include in the certificate alongside the device
+     * identifiers.
+     *
+     * @return a certificate chain containing the requested device identifiers in the first element
+     *
+     * @exception SecurityException if you are not permitted to obtain an attestation of the
+     * device's identifiers.
+     * @exception DeviceIdAttestationException if the attestation operation fails.
+     

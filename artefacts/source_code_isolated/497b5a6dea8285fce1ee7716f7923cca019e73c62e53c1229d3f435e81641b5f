@@ -1,0 +1,31 @@
+public static int chooseApChannel(int apBand, WifiNative wifiNative, Resources resources){
+    if (!isBandValid(apBand)) {
+        Log.e(TAG, "Invalid band: " + apBand);
+        return -1;
+    }
+    List<Integer> allowedFreqList = null;
+    if ((apBand & SoftApConfiguration.BAND_6GHZ) != 0) {
+        allowedFreqList = getAvailableChannelFreqsForBand(SoftApConfiguration.BAND_6GHZ, wifiNative, resources);
+        if (allowedFreqList != null && allowedFreqList.size() > 0) {
+            return allowedFreqList.get(sRandom.nextInt(allowedFreqList.size())).intValue();
+        }
+    }
+    if ((apBand & SoftApConfiguration.BAND_5GHZ) != 0) {
+        allowedFreqList = getAvailableChannelFreqsForBand(SoftApConfiguration.BAND_5GHZ, wifiNative, resources);
+        if (allowedFreqList != null && allowedFreqList.size() > 0) {
+            return allowedFreqList.get(sRandom.nextInt(allowedFreqList.size())).intValue();
+        }
+    }
+    if ((apBand & SoftApConfiguration.BAND_2GHZ) != 0) {
+        allowedFreqList = getAvailableChannelFreqsForBand(SoftApConfiguration.BAND_2GHZ, wifiNative, resources);
+        if (allowedFreqList != null && allowedFreqList.size() > 0) {
+            return allowedFreqList.get(sRandom.nextInt(allowedFreqList.size())).intValue();
+        }
+    }
+    if (containsBand(apBand, DEFAULT_AP_BAND)) {
+        Log.e(TAG, "Allowed channel list not specified, selecting default channel");
+        return convertChannelToFrequency(DEFAULT_AP_CHANNEL, DEFAULT_AP_BAND);
+    }
+    Log.e(TAG, "No available channels");
+    return -1;
+}

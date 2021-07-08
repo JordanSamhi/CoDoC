@@ -1,0 +1,18 @@
+public boolean registerAidsForService(ComponentName service, String category, List<String> aids){
+    AidGroup aidGroup = new AidGroup(aids, category);
+    try {
+        return sService.registerAidGroupForService(mContext.getUserId(), service, aidGroup);
+    } catch (RemoteException e) {
+        recoverService();
+        if (sService == null) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return false;
+        }
+        try {
+            return sService.registerAidGroupForService(mContext.getUserId(), service, aidGroup);
+        } catch (RemoteException ee) {
+            Log.e(TAG, "Failed to reach CardEmulationService.");
+            return false;
+        }
+    }
+}

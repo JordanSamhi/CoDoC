@@ -1,0 +1,9 @@
+public void setWhitelistedRestrictedPermissions(@Nullable Set<String> permissions){
+    if (permissions == RESTRICTED_PERMISSIONS_ALL) {
+        installFlags |= PackageManager.INSTALL_ALL_WHITELIST_RESTRICTED_PERMISSIONS;
+        whitelistedRestrictedPermissions = null;
+    } else {
+        installFlags &= ~PackageManager.INSTALL_ALL_WHITELIST_RESTRICTED_PERMISSIONS;
+        whitelistedRestrictedPermissions = (permissions != null) ? new ArrayList<>(permissions) : null;
+    }
+}

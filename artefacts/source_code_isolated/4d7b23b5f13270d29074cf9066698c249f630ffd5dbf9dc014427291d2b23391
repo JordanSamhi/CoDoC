@@ -1,0 +1,7 @@
+public int reserveNetId(){
+    synchronized (mNetIdInUse) {
+        mLastNetId = getNextAvailableNetIdLocked(mLastNetId, mNetIdInUse);
+        mNetIdInUse.put(mLastNetId, true);
+        return mLastNetId;
+    }
+}

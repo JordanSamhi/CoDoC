@@ -1,0 +1,27 @@
+public static StringBuilder formatDurationHMS(StringBuilder sb, long duration){
+    duration /= 1000;
+    if (duration < 0) {
+        sb.append('-');
+        duration = -duration;
+    }
+    final long seconds = duration % 60;
+    duration /= 60;
+    final long minutes = duration % 60;
+    duration /= 60;
+    final long hours = duration % 24;
+    duration /= 24;
+    final long days = duration;
+    boolean print = false;
+    if (days > 0) {
+        sb.append(days);
+        sb.append('d');
+        print = true;
+    }
+    print = printTwoDigitNumber(sb, hours, 'h', print);
+    print = printTwoDigitNumber(sb, minutes, 'm', print);
+    print = printTwoDigitNumber(sb, seconds, 's', print);
+    if (!print) {
+        sb.append("0s");
+    }
+    return sb;
+}

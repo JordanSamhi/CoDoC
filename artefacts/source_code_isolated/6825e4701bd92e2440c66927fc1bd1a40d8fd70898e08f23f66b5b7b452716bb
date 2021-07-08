@@ -1,0 +1,16 @@
+public void setY(int y){
+    if (mAdaptedAllocation.getType().getY() == 0) {
+        throw new RSInvalidStateException("Cannot set Y when the allocation type does not include Y dim.");
+    }
+    if (mAdaptedAllocation.getType().getY() <= y) {
+        throw new RSInvalidStateException("Cannot set Y greater than dimension of allocation.");
+    }
+    if (mWindow.getY() == mAdaptedAllocation.getType().getY()) {
+        throw new RSInvalidStateException("Cannot set Y when the adapter includes Y.");
+    }
+    if ((mWindow.getY() + y) >= mAdaptedAllocation.getType().getY()) {
+        throw new RSInvalidStateException("Cannot set (Y + window) which would be larger than dimension of allocation.");
+    }
+    mSelectedY = y;
+    updateOffsets();
+}

@@ -1,0 +1,11 @@
+public void notifyInteraction(@NonNull String requestId, @NonNull Bundle interaction){
+    if (mService == null) {
+        Log.e(TAG, "notifyInteraction called, but no ContentSuggestionsManager configured");
+        return;
+    }
+    try {
+        mService.notifyInteraction(mUser, requestId, interaction);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

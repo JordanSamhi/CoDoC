@@ -1,0 +1,14 @@
+public void setImageURI(@Nullable Uri uri){
+    if (mResource != 0 || (mUri != uri && (uri == null || mUri == null || !uri.equals(mUri)))) {
+        updateDrawable(null);
+        mResource = 0;
+        mUri = uri;
+        final int oldWidth = mDrawableWidth;
+        final int oldHeight = mDrawableHeight;
+        resolveUri();
+        if (oldWidth != mDrawableWidth || oldHeight != mDrawableHeight) {
+            requestLayout();
+        }
+        invalidate();
+    }
+}

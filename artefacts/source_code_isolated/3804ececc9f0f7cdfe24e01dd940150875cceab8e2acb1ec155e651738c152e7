@@ -1,0 +1,10 @@
+public void sendPointerSync(IBinder token) throws RuntimeException{
+    Objects.requireNonNull(token);
+    if (DEBUG_KEYS)
+        Log.d(TAG, "sendPointerSync() token: " + token);
+    try {
+        mRemoteServiceInput.sendPointerSync(token);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

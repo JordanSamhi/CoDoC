@@ -1,0 +1,13 @@
+public boolean isHardwareDetected(String opPackageName){
+    checkPermission(USE_BIOMETRIC_INTERNAL);
+    if (!canUseBiometric(opPackageName, false, Binder.getCallingUid(), Binder.getCallingPid(), UserHandle.getCallingUserId())) {
+        return false;
+    }
+    final long token = Binder.clearCallingIdentity();
+    try {
+        IBiometricsFace daemon = getFaceDaemon();
+        return daemon != null && mHalDeviceId != 0;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

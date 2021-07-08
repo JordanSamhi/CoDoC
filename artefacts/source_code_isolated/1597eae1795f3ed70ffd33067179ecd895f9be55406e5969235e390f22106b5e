@@ -1,0 +1,23 @@
+public int read() throws IOException{
+    if (!mIsSparse) {
+        return mIn.read();
+    }
+    if (prepareChunk())
+        return -1;
+    int ret = -1;
+    switch(mCur.mChunkType) {
+        case SparseChunk.RAW:
+            ret = mIn.read();
+            break;
+        case SparseChunk.DONTCARE:
+            ret = 0;
+            break;
+        case SparseChunk.FILL:
+            ret = mCur.fill[(4 - ((int) mLeft & 0x3)) & 0x3];
+            break;
+        default:
+            throw new IOException("Unsupported Chunk:" + mCur.toString());
+    }
+    mLeft--;
+    return ret;
+}

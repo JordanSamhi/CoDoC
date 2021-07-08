@@ -1,0 +1,26 @@
+public static synchronized boolean setPowerSaveMode(Context context, boolean enable, boolean needFirstTimeWarning){
+    if (DEBUG) {
+        Log.d(TAG, "Battery saver turning " + (enable ? "ON" : "OFF"));
+    }
+    final ContentResolver cr = context.getContentResolver();
+    final Bundle confirmationExtras = new Bundle(1);
+    confirmationExtras.putBoolean(EXTRA_CONFIRM_TEXT_ONLY, false);
+    if (enable && needFirstTimeWarning && maybeShowBatterySaverConfirmation(context, confirmationExtras)) {
+        return false;
+    }
+    if (enable && !needFirstTimeWarning) {
+        setBatterySaverConfirmationAcknowledged(context);
+    }
+    if (context.getSystemService(PowerManager.class).setPowerSaveModeEnabled(enable)) {
+        if (enable) {
+            final int count = Secure.getInt(cr, Secure.LOW_POWER_MANUAL_ACTIVATION_COUNT, 0) + 1;
+            Secure.putInt(cr, Secure.LOW_POWER_MANUAL_ACTIVATION_COUNT, count);
+            final Parameters parameters = new Parameters(context);
+            if ((count >= parameters.startNth) && (count <= parameters.endNth) && Global.getInt(cr, Global.LOW_POWER_MODE_TRIGGER_LEVEL, 0) == 0 && Secure.getInt(cr, Secure.SUPPRESS_AUTO_BATTERY_SAVER_SUGGESTION, 0) == 0) {
+                showAutoBatterySaverSuggestion(context, confirmationExtras);
+            }
+        }
+        return true;
+    }
+    return false;
+}

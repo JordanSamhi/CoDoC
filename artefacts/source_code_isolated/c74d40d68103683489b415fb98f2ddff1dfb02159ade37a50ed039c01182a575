@@ -1,0 +1,5 @@
+public void setUp() throws Exception{
+    MockitoAnnotations.initMocks(this);
+    mFile = temporaryFolder.newFile();
+    mScheduler = new TertiaryKeyRotationScheduler(new TertiaryKeyRotationTracker(application.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE), MAX_BACKUPS_TILL_ROTATION), new TertiaryKeyRotationWindowedCount(mFile, mClock), MAXIMUM_ROTATIONS_PER_WINDOW);
+}

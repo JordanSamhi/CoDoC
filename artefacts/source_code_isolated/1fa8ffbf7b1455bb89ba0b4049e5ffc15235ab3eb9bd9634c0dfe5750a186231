@@ -1,0 +1,32 @@
+public static ParcelFileDescriptor fromFd(FileDescriptor fd, Handler handler, final OnCloseListener listener) throws IOException{
+    if (handler == null) {
+        throw new IllegalArgumentException("Handler must not be null");
+    }
+    if (listener == null) {
+        throw new IllegalArgumentException("Listener must not be null");
+    }
+    final FileDescriptor[] comm = createCommSocketPair();
+    final ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd, comm[0]);
+    final MessageQueue queue = handler.getLooper().getQueue();
+    queue.addOnFileDescriptorEventListener(comm[1], OnFileDescriptorEventListener.EVENT_INPUT, new OnFileDescriptorEventListener() {
+
+        @Override
+        public int onFileDescriptorEvents(FileDescriptor fd, int events) {
+            Status status = null;
+            if ((events & OnFileDescriptorEventListener.EVENT_INPUT) != 0) {
+                final byte[] buf = new byte[MAX_STATUS];
+                status = readCommStatus(fd, buf);
+            } else if ((events & OnFileDescriptorEventListener.EVENT_ERROR) != 0) {
+                status = new Status(Status.DEAD);
+            }
+            if (status != null) {
+                queue.removeOnFileDescriptorEventListener(fd);
+                IoUtils.closeQuietly(fd);
+                listener.onClose(status.asIOException());
+                return 0;
+            }
+            return EVENT_INPUT;
+        }
+    });
+    return pfd;
+}

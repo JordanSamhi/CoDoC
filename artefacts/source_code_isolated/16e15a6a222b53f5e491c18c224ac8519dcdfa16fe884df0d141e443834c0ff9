@@ -1,0 +1,21 @@
+public void setAudioServerStateCallback(@NonNull Executor executor, @NonNull AudioServerStateCallback stateCallback){
+    if (stateCallback == null) {
+        throw new IllegalArgumentException("Illegal null AudioServerStateCallback");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Illegal null Executor for the AudioServerStateCallback");
+    }
+    synchronized (mAudioServerStateCbLock) {
+        if (mAudioServerStateCb != null) {
+            throw new IllegalStateException("setAudioServerStateCallback called with already registered callabck");
+        }
+        final IAudioService service = getService();
+        try {
+            service.registerAudioServerStateDispatcher(mAudioServerStateDispatcher);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+        mAudioServerStateExec = executor;
+        mAudioServerStateCb = stateCallback;
+    }
+}

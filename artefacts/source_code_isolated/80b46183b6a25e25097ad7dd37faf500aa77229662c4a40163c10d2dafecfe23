@@ -1,0 +1,15 @@
+public void update(String packageName, String className, long timeStamp, int eventType, int instanceId){
+    if (eventType == DEVICE_SHUTDOWN || eventType == FLUSH_TO_DISK) {
+        final int size = packageStats.size();
+        for (int i = 0; i < size; i++) {
+            UsageStats usageStats = packageStats.valueAt(i);
+            usageStats.update(null, timeStamp, eventType, instanceId);
+        }
+    } else {
+        UsageStats usageStats = getOrCreateUsageStats(packageName);
+        usageStats.update(className, timeStamp, eventType, instanceId);
+    }
+    if (timeStamp > endTime) {
+        endTime = timeStamp;
+    }
+}

@@ -1,0 +1,9 @@
+public void setOpenParams(@NonNull SQLiteDatabase.OpenParams openParams){
+    Objects.requireNonNull(openParams);
+    synchronized (this) {
+        if (mDatabase != null && mDatabase.isOpen()) {
+            throw new IllegalStateException("OpenParams cannot be set after opening the database");
+        }
+        setOpenParamsBuilder(new SQLiteDatabase.OpenParams.Builder(openParams));
+    }
+}

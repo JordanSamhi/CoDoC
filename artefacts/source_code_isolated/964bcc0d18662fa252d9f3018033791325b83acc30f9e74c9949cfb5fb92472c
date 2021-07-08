@@ -1,0 +1,40 @@
+public void dump(String prefix, PrintWriter pw){
+    pw.print(prefix);
+    pw.println("ContentCaptureManager");
+    final String prefix2 = prefix + "  ";
+    synchronized (mLock) {
+        pw.print(prefix2);
+        pw.print("isContentCaptureEnabled(): ");
+        pw.println(isContentCaptureEnabled());
+        pw.print(prefix2);
+        pw.print("Debug: ");
+        pw.print(sDebug);
+        pw.print(" Verbose: ");
+        pw.println(sVerbose);
+        pw.print(prefix2);
+        pw.print("Context: ");
+        pw.println(mContext);
+        pw.print(prefix2);
+        pw.print("User: ");
+        pw.println(mContext.getUserId());
+        pw.print(prefix2);
+        pw.print("Service: ");
+        pw.println(mService);
+        pw.print(prefix2);
+        pw.print("Flags: ");
+        pw.println(mFlags);
+        pw.print(prefix2);
+        pw.print("Options: ");
+        mOptions.dumpShort(pw);
+        pw.println();
+        if (mMainSession != null) {
+            final String prefix3 = prefix2 + "  ";
+            pw.print(prefix2);
+            pw.println("Main session:");
+            mMainSession.dump(prefix3, pw);
+        } else {
+            pw.print(prefix2);
+            pw.println("No sessions");
+        }
+    }
+}

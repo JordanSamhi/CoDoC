@@ -1,0 +1,26 @@
+public void cancelBackups(){
+    mContext.enforceCallingPermission(android.Manifest.permission.BACKUP, "cancelBackups");
+    if (MORE_DEBUG) {
+        Slog.i(TAG, addUserIdToLogMessage(mUserId, "cancelBackups() called."));
+    }
+    final long oldToken = Binder.clearCallingIdentity();
+    try {
+        List<Integer> operationsToCancel = new ArrayList<>();
+        synchronized (mCurrentOpLock) {
+            for (int i = 0; i < mCurrentOperations.size(); i++) {
+                Operation op = mCurrentOperations.valueAt(i);
+                int token = mCurrentOperations.keyAt(i);
+                if (op.type == OP_TYPE_BACKUP) {
+                    operationsToCancel.add(token);
+                }
+            }
+        }
+        for (Integer token : operationsToCancel) {
+            handleCancel(token, true);
+        }
+        KeyValueBackupJob.schedule(mUserId, mContext, BUSY_BACKOFF_MIN_MILLIS, mConstants);
+        FullBackupJob.schedule(mUserId, mContext, 2 * BUSY_BACKOFF_MIN_MILLIS, mConstants);
+    } finally {
+        Binder.restoreCallingIdentity(oldToken);
+    }
+}

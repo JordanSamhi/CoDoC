@@ -1,0 +1,10 @@
+public String getProfileOwnerName() throws IllegalArgumentException{
+    if (mService != null) {
+        try {
+            return mService.getProfileOwnerName(mContext.getUserId());
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

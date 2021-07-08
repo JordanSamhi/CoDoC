@@ -1,0 +1,9 @@
+public void stopScan(PendingIntent callbackIntent){
+    BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
+    IBluetoothGatt gatt;
+    try {
+        gatt = mBluetoothManager.getBluetoothGatt();
+        gatt.stopScanForIntent(callbackIntent, mOpPackageName);
+    } catch (RemoteException e) {
+    }
+}

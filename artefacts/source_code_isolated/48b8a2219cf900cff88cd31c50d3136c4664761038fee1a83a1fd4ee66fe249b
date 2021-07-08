@@ -1,0 +1,30 @@
+public static void setAccessibilityServiceState(Context context, ComponentName toggledService, boolean enabled, int userId){
+    Set<ComponentName> enabledServices = AccessibilityUtils.getEnabledServicesFromSettings(context, userId);
+    if (enabledServices.isEmpty()) {
+        enabledServices = new ArraySet<>(1);
+    }
+    boolean accessibilityEnabled = false;
+    if (enabled) {
+        enabledServices.add(toggledService);
+        accessibilityEnabled = true;
+    } else {
+        enabledServices.remove(toggledService);
+        Set<ComponentName> installedServices = getInstalledServices(context);
+        for (ComponentName enabledService : enabledServices) {
+            if (installedServices.contains(enabledService)) {
+                accessibilityEnabled = true;
+                break;
+            }
+        }
+    }
+    StringBuilder enabledServicesBuilder = new StringBuilder();
+    for (ComponentName enabledService : enabledServices) {
+        enabledServicesBuilder.append(enabledService.flattenToString());
+        enabledServicesBuilder.append(AccessibilityUtils.ENABLED_ACCESSIBILITY_SERVICES_SEPARATOR);
+    }
+    final int enabledServicesBuilderLength = enabledServicesBuilder.length();
+    if (enabledServicesBuilderLength > 0) {
+        enabledServicesBuilder.deleteCharAt(enabledServicesBuilderLength - 1);
+    }
+    Settings.Secure.putStringForUser(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, enabledServicesBuilder.toString(), userId);
+}

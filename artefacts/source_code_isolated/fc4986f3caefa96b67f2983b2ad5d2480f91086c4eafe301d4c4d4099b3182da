@@ -1,0 +1,17 @@
+public void switchUser_stopped() throws Exception{
+    while (mRunner.keepRunning()) {
+        mRunner.pauseTiming();
+        final int startUser = mAm.getCurrentUser();
+        final int testUser = initializeNewUserAndSwitchBack(true);
+        final CountDownLatch latch = new CountDownLatch(1);
+        registerBroadcastReceiver(Intent.ACTION_USER_UNLOCKED, latch, testUser);
+        mRunner.resumeTiming();
+        mAm.switchUser(testUser);
+        boolean success = latch.await(TIMEOUT_IN_SECOND, TimeUnit.SECONDS);
+        mRunner.pauseTiming();
+        attestTrue("Failed to achieve 2nd ACTION_USER_UNLOCKED for user " + testUser, success);
+        switchUser(startUser);
+        removeUser(testUser);
+        mRunner.resumeTiming();
+    }
+}

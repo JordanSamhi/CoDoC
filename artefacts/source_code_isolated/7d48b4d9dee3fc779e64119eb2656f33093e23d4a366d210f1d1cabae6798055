@@ -1,0 +1,20 @@
+public int start(){
+    mStarted = true;
+    onStart();
+    try {
+        mStartTimeMs = System.currentTimeMillis();
+        final int result = getDaemonWrapper().authenticate(mOpId, getGroupId());
+        if (result != 0) {
+            Slog.w(getLogTag(), "startAuthentication failed, result=" + result);
+            mMetricsLogger.histogram(mConstants.tagAuthStartError(), result);
+            onError(getHalDeviceId(), BiometricConstants.BIOMETRIC_ERROR_HW_UNAVAILABLE, 0);
+            return result;
+        }
+        if (DEBUG)
+            Slog.w(getLogTag(), "client " + getOwnerString() + " is authenticating...");
+    } catch (RemoteException e) {
+        Slog.e(getLogTag(), "startAuthentication failed", e);
+        return ERROR_ESRCH;
+    }
+    return 0;
+}

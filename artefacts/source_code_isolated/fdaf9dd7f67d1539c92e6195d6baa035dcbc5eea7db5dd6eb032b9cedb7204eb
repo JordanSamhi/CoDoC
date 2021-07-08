@@ -1,0 +1,11 @@
+public static X509Certificate[] readCertificates(Parcel in){
+    int length = in.readInt();
+    if (length == 0) {
+        return null;
+    }
+    X509Certificate[] certs = new X509Certificate[length];
+    for (int i = 0; i < length; i++) {
+        certs[i] = readCertificate(in);
+    }
+    return certs;
+}

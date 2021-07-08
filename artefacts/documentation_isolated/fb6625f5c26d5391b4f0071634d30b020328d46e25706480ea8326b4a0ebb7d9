@@ -1,0 +1,41 @@
+
+     * Launches an {@code Activity} for the user to select the alias
+     * for a private key and certificate pair for authentication. The
+     * selected alias or null will be returned via the
+     * KeyChainAliasCallback callback.
+     *
+     * <p>A device policy controller (as a device or profile owner) can
+     * intercept the request before the activity is shown, to pick a
+     * specific private key alias by implementing
+     * {@link android.app.admin.DeviceAdminReceiver#onChoosePrivateKeyAlias
+     * onChoosePrivateKeyAlias}.
+     *
+     * <p>{@code keyTypes} and {@code issuers} may be used to
+     * narrow down suggested choices to the user. If either {@code keyTypes}
+     * or {@code issuers} is specified and non-empty, and there are no
+     * matching certificates in the KeyChain, then the certificate
+     * selection prompt would be suppressed entirely.
+     *
+     * <p>{@code uri} may be used to give the user more context about
+     * the server requesting the credentials.
+     *
+     * <p>{@code alias} allows the caller to preselect an existing
+     * alias which will still be subject to user confirmation.
+     *
+     * @param activity The {@link Activity} context to use for
+     *     launching the new sub-Activity to prompt the user to select
+     *     a private key; used only to call startActivity(); must not
+     *     be null.
+     * @param response Callback to invoke when the request completes;
+     *     must not be null.
+     * @param keyTypes The acceptable types of asymmetric keys such as
+     *     "RSA", "EC" or null.
+     * @param issuers The acceptable certificate issuers for the
+     *     certificate matching the private key, or null.
+     * @param uri The full URI the server is requesting the certificate
+     *     for, or null if unavailable.
+     * @param alias The alias to preselect if available, or null if
+     *     unavailable.
+     * @throws IllegalArgumentException if the specified issuers are not
+     *     of type {@code X500Principal}.
+     

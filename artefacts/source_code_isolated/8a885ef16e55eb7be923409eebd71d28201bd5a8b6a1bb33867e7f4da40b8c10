@@ -1,0 +1,15 @@
+public static int[] parseNumberList(String listStr, int minVal, int maxVal, boolean allowZero){
+    int[] values;
+    if (listStr.indexOf(",") < 0) {
+        values = new int[1];
+        values[0] = parseIntRange(listStr, minVal, maxVal, allowZero);
+    } else {
+        String[] valueStrs = listStr.split(",");
+        int len = valueStrs.length;
+        values = new int[len];
+        for (int i = 0; i < len; i++) {
+            values[i] = parseIntRange(valueStrs[i], minVal, maxVal, allowZero);
+        }
+    }
+    return values;
+}

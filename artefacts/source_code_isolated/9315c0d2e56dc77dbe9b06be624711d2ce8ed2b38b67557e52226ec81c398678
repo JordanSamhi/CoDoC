@@ -1,0 +1,19 @@
+public TxPacketCounters getTxPacketCounters(@NonNull String ifaceName){
+    IClientInterface iface = getClientInterface(ifaceName);
+    if (iface == null) {
+        Log.e(TAG, "No valid wificond client interface handler");
+        return null;
+    }
+    int[] resultArray;
+    try {
+        resultArray = iface.getPacketCounters();
+        if (resultArray == null || resultArray.length != 2) {
+            Log.e(TAG, "Invalid signal poll result from wificond");
+            return null;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to do signal polling due to remote exception");
+        return null;
+    }
+    return new TxPacketCounters(resultArray[0], resultArray[1]);
+}

@@ -1,0 +1,16 @@
+public boolean checkCredential(@NonNull LockscreenCredential credential, int userId, @Nullable CheckCredentialProgressCallback progressCallback) throws RequestThrottledException{
+    throwIfCalledOnMainThread();
+    try {
+        VerifyCredentialResponse response = getLockSettings().checkCredential(credential, userId, wrapCallback(progressCallback));
+        if (response.getResponseCode() == VerifyCredentialResponse.RESPONSE_OK) {
+            return true;
+        } else if (response.getResponseCode() == VerifyCredentialResponse.RESPONSE_RETRY) {
+            throw new RequestThrottledException(response.getTimeout());
+        } else {
+            return false;
+        }
+    } catch (RemoteException re) {
+        Log.e(TAG, "failed to check credential", re);
+        return false;
+    }
+}

@@ -1,0 +1,18 @@
+public boolean onDisconnect(int cause){
+    boolean changed = false;
+    mCause = cause;
+    if (!mDisconnected) {
+        doDisconnect();
+        if (DBG)
+            Rlog.d(LOG_TAG, "onDisconnect: cause=" + cause);
+        mOwner.getPhone().notifyDisconnect(this);
+        notifyDisconnect(cause);
+        if (mParent != null) {
+            changed = mParent.connectionDisconnected(this);
+        }
+        mOrigConnection = null;
+    }
+    clearPostDialListeners();
+    releaseWakeLock();
+    return changed;
+}

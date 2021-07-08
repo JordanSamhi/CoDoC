@@ -1,0 +1,17 @@
+public void set(@NonNull Path src){
+    if (this == src) {
+        return;
+    }
+    isSimplePath = src.isSimplePath;
+    nSet(mNativePath, src.mNativePath);
+    if (!isSimplePath) {
+        return;
+    }
+    if (rects != null && src.rects != null) {
+        rects.set(src.rects);
+    } else if (rects != null && src.rects == null) {
+        rects.setEmpty();
+    } else if (src.rects != null) {
+        rects = new Region(src.rects);
+    }
+}

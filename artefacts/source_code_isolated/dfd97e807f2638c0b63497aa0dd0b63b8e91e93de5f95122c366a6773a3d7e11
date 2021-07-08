@@ -1,0 +1,43 @@
+public void update(CommandsInterface ci, IccCardStatus ics, int phoneId, int slotIndex){
+    if (DBG)
+        log("cardStatus update: " + ics.toString());
+    synchronized (mLock) {
+        CardState oldState = mCardState;
+        mCardState = ics.mCardState;
+        mIccId = ics.iccid;
+        mPhoneId = phoneId;
+        parseAtr(ics.atr);
+        mCi = ci;
+        mIsRemovable = isSlotRemovable(slotIndex);
+        int radioState = mCi.getRadioState();
+        if (DBG) {
+            log("update: radioState=" + radioState + " mLastRadioState=" + mLastRadioState);
+        }
+        if (absentStateUpdateNeeded(oldState)) {
+            updateCardStateAbsent();
+        } else if ((oldState == null || oldState == CardState.CARDSTATE_ABSENT || mUiccCard == null) && mCardState != CardState.CARDSTATE_ABSENT) {
+            if (radioState != TelephonyManager.RADIO_POWER_UNAVAILABLE && mLastRadioState != TelephonyManager.RADIO_POWER_UNAVAILABLE) {
+                if (DBG)
+                    log("update: notify card added");
+                sendMessage(obtainMessage(EVENT_CARD_ADDED, null));
+            }
+            if (mUiccCard != null) {
+                loge("update: mUiccCard != null when card was present; disposing it now");
+                mUiccCard.dispose();
+            }
+            if (!mIsEuicc) {
+                mUiccCard = new UiccCard(mContext, mCi, ics, mPhoneId, mLock);
+            } else {
+                if (TextUtils.isEmpty(ics.eid)) {
+                    loge("update: eid is missing. ics.eid=" + ics.eid);
+                }
+                mUiccCard = new EuiccCard(mContext, mCi, ics, phoneId, mLock);
+            }
+        } else {
+            if (mUiccCard != null) {
+                mUiccCard.update(mContext, mCi, ics);
+            }
+        }
+        mLastRadioState = radioState;
+    }
+}

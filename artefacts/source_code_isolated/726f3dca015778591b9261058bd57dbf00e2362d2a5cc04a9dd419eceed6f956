@@ -1,0 +1,26 @@
+public void testRunTask_whenBackupHasCompletedAndThenNoDataChanges_transportGetsNotified() throws Exception{
+    TransportMock transportMock = setUpInitializedTransport(mTransport);
+    when(transportMock.transport.getCurrentRestoreSet()).thenReturn(1234L);
+    when(transportMock.transport.isAppEligibleForBackup(argThat(packageInfo(PACKAGE_1)), eq(false))).thenReturn(true);
+    when(transportMock.transport.isAppEligibleForBackup(argThat(packageInfo(PACKAGE_2)), eq(false))).thenReturn(true);
+    setUpAgentWithData(PACKAGE_1);
+    setUpAgentWithData(PACKAGE_2);
+    PackageInfo endSentinel = new PackageInfo();
+    endSentinel.packageName = KeyValueBackupTask.NO_DATA_END_SENTINEL;
+    KeyValueBackupTask task = createKeyValueBackupTask(transportMock, PACKAGE_1, PACKAGE_2);
+    runTask(task);
+    InOrder order = Mockito.inOrder(transportMock.transport);
+    order.verify(transportMock.transport).performBackup(argThat(packageInfo(PACKAGE_1)), any(), eq(BackupTransport.FLAG_NON_INCREMENTAL));
+    order.verify(transportMock.transport).finishBackup();
+    order.verify(transportMock.transport).performBackup(argThat(packageInfo(PACKAGE_2)), any(), eq(BackupTransport.FLAG_NON_INCREMENTAL));
+    order.verify(transportMock.transport).finishBackup();
+    task = createKeyValueBackupTask(transportMock, PACKAGE_1);
+    runTask(task);
+    order.verify(transportMock.transport).performBackup(argThat(packageInfo(PACKAGE_1)), any(), eq(BackupTransport.FLAG_INCREMENTAL));
+    order.verify(transportMock.transport).finishBackup();
+    order.verify(transportMock.transport).performBackup(argThat(packageInfo(PACKAGE_2)), any(), eq(BackupTransport.FLAG_DATA_NOT_CHANGED));
+    order.verify(transportMock.transport).finishBackup();
+    order.verify(transportMock.transport).performBackup(argThat(packageInfo(endSentinel)), any(), eq(BackupTransport.FLAG_DATA_NOT_CHANGED));
+    order.verify(transportMock.transport).finishBackup();
+    order.verifyNoMoreInteractions();
+}

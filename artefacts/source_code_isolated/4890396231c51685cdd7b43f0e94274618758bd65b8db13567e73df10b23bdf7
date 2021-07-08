@@ -1,0 +1,7 @@
+public static void notify(Object thisReference, int uniqueId, int infoType, String message){
+    DrmManagerClient instance = (DrmManagerClient) ((WeakReference) thisReference).get();
+    if (null != instance && null != instance.mInfoHandler) {
+        Message m = instance.mInfoHandler.obtainMessage(InfoHandler.INFO_EVENT_TYPE, uniqueId, infoType, message);
+        instance.mInfoHandler.sendMessage(m);
+    }
+}

@@ -1,0 +1,7 @@
+public static int staticGetMemoryClass(){
+    String vmHeapSize = SystemProperties.get("dalvik.vm.heapgrowthlimit", "");
+    if (vmHeapSize != null && !"".equals(vmHeapSize)) {
+        return Integer.parseInt(vmHeapSize.substring(0, vmHeapSize.length() - 1));
+    }
+    return staticGetLargeMemoryClass();
+}

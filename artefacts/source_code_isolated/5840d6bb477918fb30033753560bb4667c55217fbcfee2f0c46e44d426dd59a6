@@ -1,0 +1,16 @@
+public static void copySpansFrom(Spanned source, int start, int end, Class kind, Spannable dest, int destoff){
+    if (kind == null) {
+        kind = Object.class;
+    }
+    Object[] spans = source.getSpans(start, end, kind);
+    for (int i = 0; i < spans.length; i++) {
+        int st = source.getSpanStart(spans[i]);
+        int en = source.getSpanEnd(spans[i]);
+        int fl = source.getSpanFlags(spans[i]);
+        if (st < start)
+            st = start;
+        if (en > end)
+            en = end;
+        dest.setSpan(spans[i], st - start + destoff, en - start + destoff, fl);
+    }
+}

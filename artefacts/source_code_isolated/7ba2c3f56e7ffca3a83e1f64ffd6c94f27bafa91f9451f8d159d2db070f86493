@@ -1,0 +1,14 @@
+public boolean copyMessageToIcc(@Nullable byte[] smsc, @NonNull byte[] pdu, @StatusOnIcc int status){
+    boolean success = false;
+    if (pdu == null) {
+        throw new IllegalArgumentException("pdu is null");
+    }
+    try {
+        ISms iSms = getISmsService();
+        if (iSms != null) {
+            success = iSms.copyMessageToIccEfForSubscriber(getSubscriptionId(), null, status, pdu, smsc);
+        }
+    } catch (RemoteException ex) {
+    }
+    return success;
+}

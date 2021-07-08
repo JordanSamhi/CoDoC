@@ -1,0 +1,14 @@
+public IWifiChip getChip(IWifiIface iface){
+    String name = getName(iface);
+    int type = getType(iface);
+    if (VDBG)
+        Log.d(TAG, "getChip: iface(name)=" + name);
+    synchronized (mLock) {
+        InterfaceCacheEntry cacheEntry = mInterfaceInfoCache.get(Pair.create(name, type));
+        if (cacheEntry == null) {
+            Log.e(TAG, "getChip: no entry for iface(name)=" + name);
+            return null;
+        }
+        return cacheEntry.chip;
+    }
+}

@@ -1,0 +1,8 @@
+public static final boolean isZip64EndOfCentralDirectoryLocatorPresent(RandomAccessFile zip, long zipEndOfCentralDirectoryPosition) throws IOException{
+    long locatorPosition = zipEndOfCentralDirectoryPosition - ZIP64_EOCD_LOCATOR_SIZE;
+    if (locatorPosition < 0) {
+        return false;
+    }
+    zip.seek(locatorPosition);
+    return zip.readInt() == ZIP64_EOCD_LOCATOR_SIG_REVERSE_BYTE_ORDER;
+}

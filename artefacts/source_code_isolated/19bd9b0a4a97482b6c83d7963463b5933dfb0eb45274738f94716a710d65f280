@@ -1,0 +1,20 @@
+public String[] filterAppsEligibleForBackup(String[] packages){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "filterAppsEligibleForBackup");
+    long oldToken = Binder.clearCallingIdentity();
+    try {
+        String callerLogString = "BMS.filterAppsEligibleForBackup";
+        TransportClient transportClient = mTransportManager.getCurrentTransportClient(callerLogString);
+        List<String> eligibleApps = new LinkedList<>();
+        for (String packageName : packages) {
+            if (AppBackupUtils.appIsRunningAndEligibleForBackupWithTransport(transportClient, packageName, mPackageManager, mUserId)) {
+                eligibleApps.add(packageName);
+            }
+        }
+        if (transportClient != null) {
+            mTransportManager.disposeOfTransportClient(transportClient, callerLogString);
+        }
+        return eligibleApps.toArray(new String[eligibleApps.size()]);
+    } finally {
+        Binder.restoreCallingIdentity(oldToken);
+    }
+}

@@ -1,0 +1,28 @@
+public static boolean putIntAtIndex(android.content.ContentResolver cr, String name, int index, int value){
+    String data = "";
+    String[] valArray = null;
+    String v = android.provider.Settings.Global.getString(cr, name);
+    if (index == Integer.MAX_VALUE) {
+        throw new IllegalArgumentException("putIntAtIndex index == MAX_VALUE index=" + index);
+    }
+    if (index < 0) {
+        throw new IllegalArgumentException("putIntAtIndex index < 0 index=" + index);
+    }
+    if (v != null) {
+        valArray = v.split(",");
+    }
+    for (int i = 0; i < index; i++) {
+        String str = "";
+        if ((valArray != null) && (i < valArray.length)) {
+            str = valArray[i];
+        }
+        data = data + str + ",";
+    }
+    data = data + value;
+    if (valArray != null) {
+        for (int i = index + 1; i < valArray.length; i++) {
+            data = data + "," + valArray[i];
+        }
+    }
+    return android.provider.Settings.Global.putString(cr, name, data);
+}

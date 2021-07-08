@@ -1,0 +1,35 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (super.performAccessibilityActionInternal(action, arguments)) {
+        return true;
+    }
+    if (!isEnabled()) {
+        return false;
+    }
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+            {
+                return goForward();
+            }
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+            {
+                return goBackward();
+            }
+        case R.id.accessibilityActionPageUp:
+            {
+                if (mStackMode == ITEMS_SLIDE_UP) {
+                    return goBackward();
+                } else {
+                    return goForward();
+                }
+            }
+        case R.id.accessibilityActionPageDown:
+            {
+                if (mStackMode == ITEMS_SLIDE_UP) {
+                    return goForward();
+                } else {
+                    return goBackward();
+                }
+            }
+    }
+    return false;
+}

@@ -1,0 +1,16 @@
+public void timeMeasure() throws Exception{
+    final BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+    state.pauseTiming();
+    Canvas.freeTextLayoutCaches();
+    final String text = createRandomText();
+    if (mCached)
+        mTextPaint.measureText(text);
+    state.resumeTiming();
+    while (state.keepRunning()) {
+        state.pauseTiming();
+        if (!mCached)
+            Canvas.freeTextLayoutCaches();
+        state.resumeTiming();
+        mTextPaint.measureText(text);
+    }
+}

@@ -1,0 +1,26 @@
+public long readLong(long fieldId) throws IOException{
+    assertFreshData();
+    assertFieldNumber(fieldId);
+    checkPacked(fieldId);
+    long value;
+    switch((int) ((fieldId & FIELD_TYPE_MASK) >>> FIELD_TYPE_SHIFT)) {
+        case (int) (FIELD_TYPE_FIXED64 >>> FIELD_TYPE_SHIFT):
+        case (int) (FIELD_TYPE_SFIXED64 >>> FIELD_TYPE_SHIFT):
+            assertWireType(WIRE_TYPE_FIXED64);
+            value = readFixed64();
+            break;
+        case (int) (FIELD_TYPE_SINT64 >>> FIELD_TYPE_SHIFT):
+            assertWireType(WIRE_TYPE_VARINT);
+            value = decodeZigZag64(readVarint());
+            break;
+        case (int) (FIELD_TYPE_INT64 >>> FIELD_TYPE_SHIFT):
+        case (int) (FIELD_TYPE_UINT64 >>> FIELD_TYPE_SHIFT):
+            assertWireType(WIRE_TYPE_VARINT);
+            value = readVarint();
+            break;
+        default:
+            throw new IllegalArgumentException("Requested field id (" + getFieldIdString(fieldId) + ") is not an long" + dumpDebugData());
+    }
+    mState &= ~STATE_STARTED_FIELD_READ;
+    return value;
+}

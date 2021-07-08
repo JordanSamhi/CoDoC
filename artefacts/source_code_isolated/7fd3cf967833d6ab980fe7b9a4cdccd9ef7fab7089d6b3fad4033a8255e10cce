@@ -1,0 +1,28 @@
+public byte[] retrieveBackupDataFromConfigurations(List<WifiConfiguration> configurations){
+    if (configurations == null) {
+        Log.e(TAG, "Invalid configuration list received");
+        return new byte[0];
+    }
+    try {
+        final XmlSerializer out = new FastXmlSerializer();
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        out.setOutput(outputStream, StandardCharsets.UTF_8.name());
+        XmlUtil.writeDocumentStart(out, XML_TAG_DOCUMENT_HEADER);
+        Float version = getVersion();
+        if (version == null)
+            return null;
+        XmlUtil.writeNextValue(out, XML_TAG_VERSION, version.floatValue());
+        writeNetworkConfigurationsToXml(out, configurations);
+        XmlUtil.writeDocumentEnd(out, XML_TAG_DOCUMENT_HEADER);
+        byte[] data = outputStream.toByteArray();
+        if (mVerboseLoggingEnabled) {
+            mDebugLastBackupDataRetrieved = data;
+        }
+        return data;
+    } catch (XmlPullParserException e) {
+        Log.e(TAG, "Error retrieving the backup data: " + e);
+    } catch (IOException e) {
+        Log.e(TAG, "Error retrieving the backup data: " + e);
+    }
+    return new byte[0];
+}

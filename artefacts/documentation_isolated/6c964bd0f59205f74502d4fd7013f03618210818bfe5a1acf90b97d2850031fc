@@ -1,0 +1,24 @@
+
+     * Set voice mail number to SIM record
+     *
+     * The voice mail number can be stored either in EF_MBDN (TS 51.011) or
+     * EF_MAILBOX_CPHS (CPHS 4.2)
+     *
+     * If EF_MBDN is available, store the voice mail number to EF_MBDN
+     *
+     * If EF_MAILBOX_CPHS is enabled, store the voice mail number to EF_CHPS
+     *
+     * So the voice mail number will be stored in both EFs if both are available
+     *
+     * Return error only if both EF_MBDN and EF_MAILBOX_CPHS fail.
+     *
+     * When the operation is complete, onComplete will be sent to its handler
+     *
+     * @param alphaTag alpha-tagging of the dailing nubmer (upto 10 characters)
+     * @param voiceNumber dailing nubmer (upto 20 digits)
+     *        if the number is start with '+', then set to international TOA
+     * @param onComplete
+     *        onComplete.obj will be an AsyncResult
+     *        ((AsyncResult)onComplete.obj).exception == null on success
+     *        ((AsyncResult)onComplete.obj).exception != null on fail
+     

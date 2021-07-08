@@ -1,0 +1,14 @@
+public void captureTransitioningViews(List<View> transitioningViews){
+    if (getVisibility() != View.VISIBLE) {
+        return;
+    }
+    if (isTransitionGroup()) {
+        transitioningViews.add(this);
+    } else {
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = getChildAt(i);
+            child.captureTransitioningViews(transitioningViews);
+        }
+    }
+}

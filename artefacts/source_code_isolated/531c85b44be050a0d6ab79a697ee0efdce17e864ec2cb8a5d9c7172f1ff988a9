@@ -1,0 +1,44 @@
+public String dumpGnssMetricsAsProtoString(){
+    GnssLog msg = new GnssLog();
+    if (mLocationFailureStatistics.getCount() > 0) {
+        msg.numLocationReportProcessed = mLocationFailureStatistics.getCount();
+        msg.percentageLocationFailure = (int) (100.0 * mLocationFailureStatistics.getMean());
+    }
+    if (mTimeToFirstFixSecStatistics.getCount() > 0) {
+        msg.numTimeToFirstFixProcessed = mTimeToFirstFixSecStatistics.getCount();
+        msg.meanTimeToFirstFixSecs = (int) mTimeToFirstFixSecStatistics.getMean();
+        msg.standardDeviationTimeToFirstFixSecs = (int) mTimeToFirstFixSecStatistics.getStandardDeviation();
+    }
+    if (mPositionAccuracyMeterStatistics.getCount() > 0) {
+        msg.numPositionAccuracyProcessed = mPositionAccuracyMeterStatistics.getCount();
+        msg.meanPositionAccuracyMeters = (int) mPositionAccuracyMeterStatistics.getMean();
+        msg.standardDeviationPositionAccuracyMeters = (int) mPositionAccuracyMeterStatistics.getStandardDeviation();
+    }
+    if (mTopFourAverageCn0Statistics.getCount() > 0) {
+        msg.numTopFourAverageCn0Processed = mTopFourAverageCn0Statistics.getCount();
+        msg.meanTopFourAverageCn0DbHz = mTopFourAverageCn0Statistics.getMean();
+        msg.standardDeviationTopFourAverageCn0DbHz = mTopFourAverageCn0Statistics.getStandardDeviation();
+    }
+    if (mNumSvStatus > 0) {
+        msg.numSvStatusProcessed = mNumSvStatus;
+    }
+    if (mNumL5SvStatus > 0) {
+        msg.numL5SvStatusProcessed = mNumL5SvStatus;
+    }
+    if (mNumSvStatusUsedInFix > 0) {
+        msg.numSvStatusUsedInFix = mNumSvStatusUsedInFix;
+    }
+    if (mNumL5SvStatusUsedInFix > 0) {
+        msg.numL5SvStatusUsedInFix = mNumL5SvStatusUsedInFix;
+    }
+    if (mTopFourAverageCn0StatisticsL5.getCount() > 0) {
+        msg.numL5TopFourAverageCn0Processed = mTopFourAverageCn0StatisticsL5.getCount();
+        msg.meanL5TopFourAverageCn0DbHz = mTopFourAverageCn0StatisticsL5.getMean();
+        msg.standardDeviationL5TopFourAverageCn0DbHz = mTopFourAverageCn0StatisticsL5.getStandardDeviation();
+    }
+    msg.powerMetrics = mGnssPowerMetrics.buildProto();
+    msg.hardwareRevision = SystemProperties.get("ro.boot.revision", "");
+    String s = Base64.encodeToString(GnssLog.toByteArray(msg), Base64.DEFAULT);
+    reset();
+    return s;
+}

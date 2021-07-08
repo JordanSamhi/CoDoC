@@ -1,0 +1,16 @@
+public void setClipBounds(Rect clipBounds){
+    if (clipBounds == mClipBounds || (clipBounds != null && clipBounds.equals(mClipBounds))) {
+        return;
+    }
+    if (clipBounds != null) {
+        if (mClipBounds == null) {
+            mClipBounds = new Rect(clipBounds);
+        } else {
+            mClipBounds.set(clipBounds);
+        }
+    } else {
+        mClipBounds = null;
+    }
+    mRenderNode.setClipRect(mClipBounds);
+    invalidateViewProperty(false, false);
+}

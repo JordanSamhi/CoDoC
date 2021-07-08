@@ -1,0 +1,7 @@
+public boolean isBiometricAllowedForUser(boolean isStrongBiometric, int userId){
+    boolean allowed = ((getStrongAuthForUser(userId) & ~ALLOWING_BIOMETRIC) == 0);
+    if (!isStrongBiometric) {
+        allowed &= isNonStrongBiometricAllowedAfterIdleTimeout(userId);
+    }
+    return allowed;
+}

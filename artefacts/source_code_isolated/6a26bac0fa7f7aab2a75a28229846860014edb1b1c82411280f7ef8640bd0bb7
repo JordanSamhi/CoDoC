@@ -1,0 +1,11 @@
+public boolean isRadioOffOrAirplaneMode(){
+    Context context = mPhone.getContext();
+    int airplaneMode = -1;
+    try {
+        airplaneMode = Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0);
+    } catch (Exception e) {
+        Rlog.e(LOG_TAG, "Unable to get AIRPLACE_MODE_ON.");
+        return true;
+    }
+    return (!mSST.isRadioOn() || (airplaneMode != 0));
+}

@@ -1,0 +1,70 @@
+public static CharSequence ellipsize(CharSequence text, TextPaint paint, float avail, TruncateAt where, boolean preserveLength, @Nullable EllipsizeCallback callback, TextDirectionHeuristic textDir, String ellipsis){
+    int len = text.length();
+    MeasuredParagraph mt = null;
+    try {
+        mt = MeasuredParagraph.buildForMeasurement(paint, text, 0, text.length(), textDir, mt);
+        float width = mt.getWholeWidth();
+        if (width <= avail) {
+            if (callback != null) {
+                callback.ellipsized(0, 0);
+            }
+            return text;
+        }
+        float ellipsiswid = paint.measureText(ellipsis);
+        avail -= ellipsiswid;
+        int left = 0;
+        int right = len;
+        if (avail < 0) {
+        } else if (where == TruncateAt.START) {
+            right = len - mt.breakText(len, false, avail);
+        } else if (where == TruncateAt.END || where == TruncateAt.END_SMALL) {
+            left = mt.breakText(len, true, avail);
+        } else {
+            right = len - mt.breakText(len, false, avail / 2);
+            avail -= mt.measure(right, len);
+            left = mt.breakText(right, true, avail);
+        }
+        if (callback != null) {
+            callback.ellipsized(left, right);
+        }
+        final char[] buf = mt.getChars();
+        Spanned sp = text instanceof Spanned ? (Spanned) text : null;
+        final int removed = right - left;
+        final int remaining = len - removed;
+        if (preserveLength) {
+            if (remaining > 0 && removed >= ellipsis.length()) {
+                ellipsis.getChars(0, ellipsis.length(), buf, left);
+                left += ellipsis.length();
+            }
+            for (int i = left; i < right; i++) {
+                buf[i] = ELLIPSIS_FILLER;
+            }
+            String s = new String(buf, 0, len);
+            if (sp == null) {
+                return s;
+            }
+            SpannableString ss = new SpannableString(s);
+            copySpansFrom(sp, 0, len, Object.class, ss, 0);
+            return ss;
+        }
+        if (remaining == 0) {
+            return "";
+        }
+        if (sp == null) {
+            StringBuilder sb = new StringBuilder(remaining + ellipsis.length());
+            sb.append(buf, 0, left);
+            sb.append(ellipsis);
+            sb.append(buf, right, len - right);
+            return sb.toString();
+        }
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append(text, 0, left);
+        ssb.append(ellipsis);
+        ssb.append(text, right, len);
+        return ssb;
+    } finally {
+        if (mt != null) {
+            mt.recycle();
+        }
+    }
+}

@@ -1,0 +1,8 @@
+public boolean isWhitelisted(@UserIdInt int userId, @NonNull ComponentName componentName){
+    synchronized (mGlobalWhitelistStateLock) {
+        if (mWhitelisterHelpers == null)
+            return false;
+        final WhitelistHelper helper = mWhitelisterHelpers.get(userId);
+        return helper == null ? false : helper.isWhitelisted(componentName);
+    }
+}

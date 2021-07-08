@@ -1,0 +1,22 @@
+public int requestAudioFocus(OnAudioFocusChangeListener l, @NonNull AudioAttributes requestAttributes, int durationHint, int flags, AudioPolicy ap) throws IllegalArgumentException{
+    if (requestAttributes == null) {
+        throw new IllegalArgumentException("Illegal null AudioAttributes argument");
+    }
+    if (!AudioFocusRequest.isValidFocusGain(durationHint)) {
+        throw new IllegalArgumentException("Invalid duration hint");
+    }
+    if (flags != (flags & AUDIOFOCUS_FLAGS_SYSTEM)) {
+        throw new IllegalArgumentException("Illegal flags 0x" + Integer.toHexString(flags).toUpperCase());
+    }
+    if (((flags & AUDIOFOCUS_FLAG_DELAY_OK) == AUDIOFOCUS_FLAG_DELAY_OK) && (l == null)) {
+        throw new IllegalArgumentException("Illegal null focus listener when flagged as accepting delayed focus grant");
+    }
+    if (((flags & AUDIOFOCUS_FLAG_PAUSES_ON_DUCKABLE_LOSS) == AUDIOFOCUS_FLAG_PAUSES_ON_DUCKABLE_LOSS) && (l == null)) {
+        throw new IllegalArgumentException("Illegal null focus listener when flagged as pausing instead of ducking");
+    }
+    if (((flags & AUDIOFOCUS_FLAG_LOCK) == AUDIOFOCUS_FLAG_LOCK) && (ap == null)) {
+        throw new IllegalArgumentException("Illegal null audio policy when locking audio focus");
+    }
+    final AudioFocusRequest afr = new AudioFocusRequest.Builder(durationHint).setOnAudioFocusChangeListenerInt(l, null).setAudioAttributes(requestAttributes).setAcceptsDelayedFocusGain((flags & AUDIOFOCUS_FLAG_DELAY_OK) == AUDIOFOCUS_FLAG_DELAY_OK).setWillPauseWhenDucked((flags & AUDIOFOCUS_FLAG_PAUSES_ON_DUCKABLE_LOSS) == AUDIOFOCUS_FLAG_PAUSES_ON_DUCKABLE_LOSS).setLocksFocus((flags & AUDIOFOCUS_FLAG_LOCK) == AUDIOFOCUS_FLAG_LOCK).build();
+    return requestAudioFocus(afr, ap);
+}

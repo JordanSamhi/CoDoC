@@ -1,0 +1,19 @@
+public int getDimensionPixelOffset(@StyleableRes int index, int defValue){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    final int attrIndex = index;
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    final int type = data[index + STYLE_TYPE];
+    if (type == TypedValue.TYPE_NULL) {
+        return defValue;
+    } else if (type == TypedValue.TYPE_DIMENSION) {
+        return TypedValue.complexToDimensionPixelOffset(data[index + STYLE_DATA], mMetrics);
+    } else if (type == TypedValue.TYPE_ATTRIBUTE) {
+        final TypedValue value = mValue;
+        getValueAt(index, value);
+        throw new UnsupportedOperationException("Failed to resolve attribute at index " + attrIndex + ": " + value);
+    }
+    throw new UnsupportedOperationException("Can't convert value at index " + attrIndex + " to dimension: type=0x" + Integer.toHexString(type));
+}

@@ -1,0 +1,11 @@
+public long getCpuTimeForPid(int pid){
+    synchronized (mSinglePidStatsData) {
+        final String statFile = "/proc/" + pid + "/stat";
+        final long[] statsData = mSinglePidStatsData;
+        if (Process.readProcFile(statFile, PROCESS_STATS_FORMAT, null, statsData, null)) {
+            long time = statsData[PROCESS_STAT_UTIME] + statsData[PROCESS_STAT_STIME];
+            return time * mJiffyMillis;
+        }
+        return 0;
+    }
+}

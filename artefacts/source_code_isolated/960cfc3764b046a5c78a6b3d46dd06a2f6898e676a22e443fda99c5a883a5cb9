@@ -1,0 +1,47 @@
+public Notification.Builder extend(Notification.Builder builder){
+    Bundle wearableBundle = new Bundle();
+    if (!mActions.isEmpty()) {
+        wearableBundle.putParcelableArrayList(KEY_ACTIONS, mActions);
+    }
+    if (mFlags != DEFAULT_FLAGS) {
+        wearableBundle.putInt(KEY_FLAGS, mFlags);
+    }
+    if (mDisplayIntent != null) {
+        wearableBundle.putParcelable(KEY_DISPLAY_INTENT, mDisplayIntent);
+    }
+    if (!mPages.isEmpty()) {
+        wearableBundle.putParcelableArray(KEY_PAGES, mPages.toArray(new Notification[mPages.size()]));
+    }
+    if (mBackground != null) {
+        wearableBundle.putParcelable(KEY_BACKGROUND, mBackground);
+    }
+    if (mContentIcon != 0) {
+        wearableBundle.putInt(KEY_CONTENT_ICON, mContentIcon);
+    }
+    if (mContentIconGravity != DEFAULT_CONTENT_ICON_GRAVITY) {
+        wearableBundle.putInt(KEY_CONTENT_ICON_GRAVITY, mContentIconGravity);
+    }
+    if (mContentActionIndex != UNSET_ACTION_INDEX) {
+        wearableBundle.putInt(KEY_CONTENT_ACTION_INDEX, mContentActionIndex);
+    }
+    if (mCustomSizePreset != SIZE_DEFAULT) {
+        wearableBundle.putInt(KEY_CUSTOM_SIZE_PRESET, mCustomSizePreset);
+    }
+    if (mCustomContentHeight != 0) {
+        wearableBundle.putInt(KEY_CUSTOM_CONTENT_HEIGHT, mCustomContentHeight);
+    }
+    if (mGravity != DEFAULT_GRAVITY) {
+        wearableBundle.putInt(KEY_GRAVITY, mGravity);
+    }
+    if (mHintScreenTimeout != 0) {
+        wearableBundle.putInt(KEY_HINT_SCREEN_TIMEOUT, mHintScreenTimeout);
+    }
+    if (mDismissalId != null) {
+        wearableBundle.putString(KEY_DISMISSAL_ID, mDismissalId);
+    }
+    if (mBridgeTag != null) {
+        wearableBundle.putString(KEY_BRIDGE_TAG, mBridgeTag);
+    }
+    builder.getExtras().putBundle(EXTRA_WEARABLE_EXTENSIONS, wearableBundle);
+    return builder;
+}

@@ -1,0 +1,12 @@
+public void attachView(View child, int index, LayoutParams lp){
+    ViewHolder vh = getChildViewHolderInt(child);
+    if (vh.isRemoved()) {
+        mRecyclerView.mViewInfoStore.addToDisappearedInLayout(vh);
+    } else {
+        mRecyclerView.mViewInfoStore.removeFromDisappearedInLayout(vh);
+    }
+    mChildHelper.attachViewToParent(child, index, lp, vh.isRemoved());
+    if (DISPATCH_TEMP_DETACH) {
+        child.dispatchFinishTemporaryDetach();
+    }
+}

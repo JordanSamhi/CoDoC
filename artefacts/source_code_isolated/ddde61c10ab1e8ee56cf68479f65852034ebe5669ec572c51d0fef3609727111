@@ -1,0 +1,19 @@
+public SubscriptionInfo getActiveSubscriptionInfo(int subId){
+    if (VDBG)
+        logd("[getActiveSubscriptionInfo]+ subId=" + subId);
+    if (!isValidSubscriptionId(subId)) {
+        if (DBG) {
+            logd("[getActiveSubscriptionInfo]- invalid subId");
+        }
+        return null;
+    }
+    SubscriptionInfo subInfo = null;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            subInfo = iSub.getActiveSubscriptionInfo(subId, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return subInfo;
+}

@@ -1,0 +1,23 @@
+public void updateConfiguration(int newDisplayId){
+    if (mView == null) {
+        return;
+    }
+    final Resources localResources = mView.getResources();
+    final Configuration config = localResources.getConfiguration();
+    if (newDisplayId != INVALID_DISPLAY) {
+        onMovedToDisplay(newDisplayId, config);
+    }
+    if (mForceNextConfigUpdate || mLastConfigurationFromResources.diff(config) != 0) {
+        updateInternalDisplay(mDisplay.getDisplayId(), localResources);
+        final int lastLayoutDirection = mLastConfigurationFromResources.getLayoutDirection();
+        final int currentLayoutDirection = config.getLayoutDirection();
+        mLastConfigurationFromResources.setTo(config);
+        if (lastLayoutDirection != currentLayoutDirection && mViewLayoutDirectionInitial == View.LAYOUT_DIRECTION_INHERIT) {
+            mView.setLayoutDirection(currentLayoutDirection);
+        }
+        mView.dispatchConfigurationChanged(config);
+        mForceNextWindowRelayout = true;
+        requestLayout();
+    }
+    updateForceDarkMode();
+}

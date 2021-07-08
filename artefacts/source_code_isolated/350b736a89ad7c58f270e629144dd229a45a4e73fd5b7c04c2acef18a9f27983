@@ -1,0 +1,16 @@
+public boolean requestConnectionPriority(int connectionPriority){
+    if (connectionPriority < CONNECTION_PRIORITY_BALANCED || connectionPriority > CONNECTION_PRIORITY_LOW_POWER) {
+        throw new IllegalArgumentException("connectionPriority not within valid range");
+    }
+    if (DBG)
+        Log.d(TAG, "requestConnectionPriority() - params: " + connectionPriority);
+    if (mService == null || mClientIf == 0)
+        return false;
+    try {
+        mService.connectionParameterUpdate(mClientIf, mDevice.getAddress(), connectionPriority);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

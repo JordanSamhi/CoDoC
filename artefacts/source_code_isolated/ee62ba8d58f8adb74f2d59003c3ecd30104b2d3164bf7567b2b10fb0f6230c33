@@ -1,0 +1,19 @@
+public void registerSection(int id, @NonNull String name, @NonNull @CallbackExecutor Executor executor, @NonNull DumpCallback callback){
+    Objects.requireNonNull(executor, "executor cannot be null");
+    Objects.requireNonNull(callback, "callback cannot be null");
+    try {
+        if (callback.mExecutor != null) {
+            throw new RuntimeException("Do not reuse DumpCallback objects when calling" + " registerSection");
+        }
+        callback.mExecutor = executor;
+        callback.mId = id;
+        final IIncidentManager service = getIIncidentManagerLocked();
+        if (service == null) {
+            Slog.e(TAG, "registerSection can't find incident binder service");
+            return;
+        }
+        service.registerSection(id, name, callback.mBinder);
+    } catch (RemoteException ex) {
+        Slog.e(TAG, "registerSection failed", ex);
+    }
+}

@@ -1,0 +1,9 @@
+public int playEarcon(final String earcon, final int queueMode, final Bundle params, final String utteranceId){
+    return runAction((ITextToSpeechService service) -> {
+        Uri earconUri = mEarcons.get(earcon);
+        if (earconUri == null) {
+            return ERROR;
+        }
+        return service.playAudio(getCallerIdentity(), earconUri, queueMode, getParams(params), utteranceId);
+    }, ERROR, "playEarcon");
+}

@@ -1,0 +1,14 @@
+public boolean dismiss(SurfaceControl.Transaction t, long maxAnimationDuration, float animationScale, int finalWidth, int finalHeight, int exitAnim, int enterAnim){
+    if (mScreenshotLayer == null) {
+        return false;
+    }
+    if (!mStarted) {
+        mEndLuma = RotationAnimationUtils.getLumaOfSurfaceControl(mDisplayContent.getDisplay(), mDisplayContent.getWindowingLayer());
+        startAnimation(t, maxAnimationDuration, animationScale, finalWidth, finalHeight, exitAnim, enterAnim);
+    }
+    if (!mStarted) {
+        return false;
+    }
+    mFinishAnimReady = true;
+    return true;
+}

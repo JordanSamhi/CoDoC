@@ -1,0 +1,16 @@
+public void setZ(int z){
+    if (mAdaptedAllocation.getType().getZ() == 0) {
+        throw new RSInvalidStateException("Cannot set Z when the allocation type does not include Z dim.");
+    }
+    if (mAdaptedAllocation.getType().getZ() <= z) {
+        throw new RSInvalidStateException("Cannot set Z greater than dimension of allocation.");
+    }
+    if (mWindow.getZ() == mAdaptedAllocation.getType().getZ()) {
+        throw new RSInvalidStateException("Cannot set Z when the adapter includes Z.");
+    }
+    if ((mWindow.getZ() + z) >= mAdaptedAllocation.getType().getZ()) {
+        throw new RSInvalidStateException("Cannot set (Z + window) which would be larger than dimension of allocation.");
+    }
+    mSelectedZ = z;
+    updateOffsets();
+}

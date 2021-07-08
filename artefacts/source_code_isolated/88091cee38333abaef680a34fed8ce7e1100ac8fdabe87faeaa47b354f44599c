@@ -1,0 +1,10 @@
+public void requestHideFillUi(AutofillId id){
+    synchronized (mLock) {
+        try {
+            mClient.requestHideFillUi(this.id, id);
+        } catch (RemoteException e) {
+            Slog.e(TAG, "Error requesting to hide fill UI", e);
+        }
+        mInlineSessionController.hideInlineSuggestionsUiLocked(id);
+    }
+}

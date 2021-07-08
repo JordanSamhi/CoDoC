@@ -1,0 +1,8 @@
+public Builder addChildAsInteger(int tag, int value){
+    if (isConstructedTag(tag)) {
+        throw new IllegalStateException("Cannot set value of a constructed tag: " + tag);
+    }
+    byte[] dataBytes = IccUtils.signedIntToBytes(value);
+    addChild(new Asn1Node(tag, dataBytes, 0, dataBytes.length));
+    return this;
+}

@@ -1,0 +1,14 @@
+public final void readBinderList(@NonNull List<IBinder> list){
+    int M = list.size();
+    int N = readInt();
+    int i = 0;
+    for (; i < M && i < N; i++) {
+        list.set(i, readStrongBinder());
+    }
+    for (; i < N; i++) {
+        list.add(readStrongBinder());
+    }
+    for (; i < M; i++) {
+        list.remove(N);
+    }
+}

@@ -1,0 +1,13 @@
+public List<UiccCardInfo> getUiccCardsInfo(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null) {
+            Log.e(TAG, "Error in getUiccCardsInfo: unable to connect to Telephony service.");
+            return new ArrayList<UiccCardInfo>();
+        }
+        return telephony.getUiccCardsInfo(mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error in getUiccCardsInfo: " + e);
+        return new ArrayList<UiccCardInfo>();
+    }
+}

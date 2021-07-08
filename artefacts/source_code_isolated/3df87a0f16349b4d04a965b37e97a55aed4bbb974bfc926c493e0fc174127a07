@@ -1,0 +1,51 @@
+public static double convert(String coordinate){
+    if (coordinate == null) {
+        throw new NullPointerException("coordinate");
+    }
+    boolean negative = false;
+    if (coordinate.charAt(0) == '-') {
+        coordinate = coordinate.substring(1);
+        negative = true;
+    }
+    StringTokenizer st = new StringTokenizer(coordinate, ":");
+    int tokens = st.countTokens();
+    if (tokens < 1) {
+        throw new IllegalArgumentException("coordinate=" + coordinate);
+    }
+    try {
+        String degrees = st.nextToken();
+        double val;
+        if (tokens == 1) {
+            val = Double.parseDouble(degrees);
+            return negative ? -val : val;
+        }
+        String minutes = st.nextToken();
+        int deg = Integer.parseInt(degrees);
+        double min;
+        double sec = 0.0;
+        boolean secPresent = false;
+        if (st.hasMoreTokens()) {
+            min = Integer.parseInt(minutes);
+            String seconds = st.nextToken();
+            sec = Double.parseDouble(seconds);
+            secPresent = true;
+        } else {
+            min = Double.parseDouble(minutes);
+        }
+        boolean isNegative180 = negative && (deg == 180) && (min == 0) && (sec == 0);
+        if ((deg < 0.0) || (deg > 179 && !isNegative180)) {
+            throw new IllegalArgumentException("coordinate=" + coordinate);
+        }
+        if (min < 0 || min >= 60 || (secPresent && (min > 59))) {
+            throw new IllegalArgumentException("coordinate=" + coordinate);
+        }
+        if (sec < 0 || sec >= 60) {
+            throw new IllegalArgumentException("coordinate=" + coordinate);
+        }
+        val = deg * 3600.0 + min * 60.0 + sec;
+        val /= 3600.0;
+        return negative ? -val : val;
+    } catch (NumberFormatException nfe) {
+        throw new IllegalArgumentException("coordinate=" + coordinate);
+    }
+}

@@ -1,0 +1,8 @@
+public List<LauncherActivityInfo> getShortcutConfigActivityList(@Nullable String packageName, @NonNull UserHandle user){
+    logErrorForInvalidProfileAccess(user);
+    try {
+        return convertToActivityList(mService.getShortcutConfigActivities(mContext.getPackageName(), packageName, user), user);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

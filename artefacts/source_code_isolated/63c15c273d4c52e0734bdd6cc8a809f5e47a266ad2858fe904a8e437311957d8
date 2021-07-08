@@ -1,0 +1,11 @@
+public IImsRegistration getImsRegistration(int slotIndex, int feature){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getImsRegistration(slotIndex, feature);
+        }
+    } catch (RemoteException e) {
+        Rlog.e(TAG, "getImsRegistration, RemoteException: " + e.getMessage());
+    }
+    return null;
+}

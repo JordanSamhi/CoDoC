@@ -1,0 +1,25 @@
+public boolean noteEvent(int userId, @NonNull String packageName, @Nullable String tag){
+    synchronized (mLock) {
+        if (!isEnabledLocked() || isQuotaFreeLocked(userId, packageName)) {
+            return true;
+        }
+        final long nowElapsed = mInjector.getElapsedRealtime();
+        final LongArrayQueue times = mEventTimes.getOrCreate(userId, packageName, tag, mCreateLongArrayQueue);
+        times.addLast(nowElapsed);
+        final ExecutionStats stats = getExecutionStatsLocked(userId, packageName, tag);
+        stats.countInWindow++;
+        stats.expirationTimeElapsed = Math.min(stats.expirationTimeElapsed, nowElapsed + stats.windowSizeMs);
+        if (stats.countInWindow == stats.countLimit) {
+            final long windowEdgeElapsed = nowElapsed - stats.windowSizeMs;
+            while (times.size() > 0 && times.peekFirst() < windowEdgeElapsed) {
+                times.removeFirst();
+            }
+            stats.inQuotaTimeElapsed = times.peekFirst() + stats.windowSizeMs;
+            postQuotaStatusChanged(userId, packageName, tag);
+        } else if (stats.countLimit > 9 && stats.countInWindow == stats.countLimit * 4 / 5) {
+            Slog.w(TAG, string(userId, packageName, tag) + " has reached 80% of it's count limit of " + stats.countLimit);
+        }
+        maybeScheduleCleanupAlarmLocked();
+        return isWithinQuotaLocked(stats);
+    }
+}

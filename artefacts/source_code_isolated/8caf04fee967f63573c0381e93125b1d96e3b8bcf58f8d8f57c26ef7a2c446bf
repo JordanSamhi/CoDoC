@@ -1,0 +1,14 @@
+public int[] getCompatArray(@ImsSsData.ServiceType int type){
+    int[] result = new int[2];
+    if (type == ImsSsData.SS_CLIR) {
+        result[0] = getClirOutgoingState();
+        result[1] = getClirInterrogationStatus();
+        return result;
+    }
+    if (type == ImsSsData.SS_COLR) {
+        result[0] = getProvisionStatus();
+    }
+    result[0] = getStatus();
+    result[1] = getProvisionStatus();
+    return result;
+}

@@ -1,0 +1,23 @@
+public boolean removeDppUri(@NonNull String ifaceName, int bootstrapId){
+    final String methodStr = "removeDppUri";
+    if (!isV1_2()) {
+        Log.e(TAG, "Method " + methodStr + " is not supported in existing HAL");
+        return false;
+    }
+    ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+    if (iface == null) {
+        return false;
+    }
+    android.hardware.wifi.supplicant.V1_2.ISupplicantStaIface staIfaceV12 = getStaIfaceMockableV1_2(iface);
+    if (staIfaceV12 == null) {
+        Log.e(TAG, methodStr + ": ISupplicantStaIface is null");
+        return false;
+    }
+    try {
+        SupplicantStatus status = staIfaceV12.removeDppUri(bootstrapId);
+        return checkStatusAndLogFailure(status, methodStr);
+    } catch (RemoteException e) {
+        handleRemoteException(e, methodStr);
+    }
+    return false;
+}

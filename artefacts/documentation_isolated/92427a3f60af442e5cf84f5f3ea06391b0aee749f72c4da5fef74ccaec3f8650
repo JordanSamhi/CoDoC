@@ -1,0 +1,20 @@
+
+     * Synchronously runs code on the main Wifi thread and return a value.
+     * <b>Blocks</b> the calling thread until the callable completes execution on the main Wifi
+     * thread.
+     *
+     * BEWARE OF DEADLOCKS!!!
+     *
+     * @param <T> the return type
+     * @param supplier the lambda that should be run on the main Wifi thread
+     *                 e.g. wifiThreadRunner.call(() -> mWifiApConfigStore.getApConfiguration())
+     *                 or wifiThreadRunner.call(mWifiApConfigStore::getApConfiguration)
+     * @param valueToReturnOnTimeout If the lambda provided could not be run within the timeout (
+     *                 {@link #RUN_WITH_SCISSORS_TIMEOUT_MILLIS}), will return this provided value
+     *                 instead.
+     * @return value retrieved from Wifi thread, or |valueToReturnOnTimeout| if the call failed.
+     *         Beware of NullPointerExceptions when expecting a primitive (e.g. int, long) return
+     *         type, it may still return null and throw a NullPointerException when auto-unboxing!
+     *         Recommend capturing the return value in an Integer or Long instead and explicitly
+     *         handling nulls.
+     

@@ -1,0 +1,26 @@
+public boolean setLockCredential(LockscreenCredential credential, LockscreenCredential savedCredential, int userId){
+    if (!mHasSecureLockScreen) {
+        throw new UnsupportedOperationException("This operation requires secure lock screen feature");
+    }
+    checkWritePermission(userId);
+    enforceFrpResolved();
+    if (!savedCredential.isNone() && isManagedProfileWithUnifiedLock(userId)) {
+        verifyCredential(savedCredential, 0, mUserManager.getProfileParent(userId).id);
+        savedCredential.zeroize();
+        savedCredential = LockscreenCredential.createNone();
+    }
+    synchronized (mSeparateChallengeLock) {
+        if (!setLockCredentialInternal(credential, savedCredential, userId, false)) {
+            scheduleGc();
+            return false;
+        }
+        setSeparateProfileChallengeEnabledLocked(userId, true, null);
+        notifyPasswordChanged(userId);
+    }
+    if (mUserManager.getUserInfo(userId).isManagedProfile()) {
+        setDeviceUnlockedForUser(userId);
+    }
+    notifySeparateProfileChallengeChanged(userId);
+    scheduleGc();
+    return true;
+}

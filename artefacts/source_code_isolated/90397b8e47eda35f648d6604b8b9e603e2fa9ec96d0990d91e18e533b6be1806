@@ -1,0 +1,15 @@
+public boolean reconnect(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final String methodStr = "reconnect";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return false;
+        try {
+            SupplicantStatus status = iface.reconnect();
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

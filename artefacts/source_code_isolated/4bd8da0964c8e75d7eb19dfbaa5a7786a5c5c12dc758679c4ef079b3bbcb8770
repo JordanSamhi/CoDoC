@@ -1,0 +1,9 @@
+public void sendMultipartTextSms(@NonNull List<String> parts, int subId, @NonNull String destAddress, int sendSmsFlag, @NonNull final CarrierMessagingCallbackWrapper callback){
+    if (mICarrierMessagingService != null) {
+        try {
+            mICarrierMessagingService.sendMultipartTextSms(parts, subId, destAddress, sendSmsFlag, new CarrierMessagingCallbackWrapperInternal(callback));
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

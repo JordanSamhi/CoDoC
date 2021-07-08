@@ -1,0 +1,33 @@
+public boolean onMenuItemSelected(int featureId, @NonNull MenuItem item){
+    CharSequence titleCondensed = item.getTitleCondensed();
+    switch(featureId) {
+        case Window.FEATURE_OPTIONS_PANEL:
+            if (titleCondensed != null) {
+                EventLog.writeEvent(50000, 0, titleCondensed.toString());
+            }
+            if (onOptionsItemSelected(item)) {
+                return true;
+            }
+            if (mFragments.dispatchOptionsItemSelected(item)) {
+                return true;
+            }
+            if (item.getItemId() == android.R.id.home && mActionBar != null && (mActionBar.getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) != 0) {
+                if (mParent == null) {
+                    return onNavigateUp();
+                } else {
+                    return mParent.onNavigateUpFromChild(this);
+                }
+            }
+            return false;
+        case Window.FEATURE_CONTEXT_MENU:
+            if (titleCondensed != null) {
+                EventLog.writeEvent(50000, 1, titleCondensed.toString());
+            }
+            if (onContextItemSelected(item)) {
+                return true;
+            }
+            return mFragments.dispatchContextItemSelected(item);
+        default:
+            return false;
+    }
+}

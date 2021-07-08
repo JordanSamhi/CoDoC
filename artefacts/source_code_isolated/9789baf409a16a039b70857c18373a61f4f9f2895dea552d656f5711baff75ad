@@ -1,0 +1,9 @@
+public void requestBugreport(@NonNull BugreportParams params, @Nullable CharSequence shareTitle, @Nullable CharSequence shareDescription){
+    try {
+        String title = shareTitle == null ? null : shareTitle.toString();
+        String description = shareDescription == null ? null : shareDescription.toString();
+        ActivityManager.getService().requestBugReportWithDescription(title, description, params.getMode());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

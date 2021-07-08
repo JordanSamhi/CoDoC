@@ -1,0 +1,10 @@
+public void disable(){
+    if (mEnabled == false) {
+        return;
+    }
+    mEnabled = false;
+    mPhone.mCi.unSetOnNewGsmBroadcastSms(mModuleCellBroadcastHandler);
+    if (sServiceConnection.mService != null) {
+        mContext.unbindService(sServiceConnection);
+    }
+}

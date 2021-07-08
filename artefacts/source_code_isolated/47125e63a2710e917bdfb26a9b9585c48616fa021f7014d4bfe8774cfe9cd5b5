@@ -1,0 +1,12 @@
+public void onDismiss(DialogInterface dialog){
+    if (mOnDismiss != null) {
+        mOnDismiss.run();
+    }
+    if (mShowSilentToggle) {
+        try {
+            mContext.unregisterReceiver(mRingerModeReceiver);
+        } catch (IllegalArgumentException ie) {
+            Log.w(TAG, ie);
+        }
+    }
+}

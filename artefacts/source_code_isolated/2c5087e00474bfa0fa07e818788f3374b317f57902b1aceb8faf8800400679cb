@@ -1,0 +1,12 @@
+public void notifySrvccState(Call.SrvccState state){
+    if (DBG)
+        log("notifySrvccState state=" + state);
+    mSrvccState = state;
+    if (mSrvccState == Call.SrvccState.COMPLETED) {
+        resetState();
+        transferHandoverConnections(mForegroundCall);
+        transferHandoverConnections(mBackgroundCall);
+        transferHandoverConnections(mRingingCall);
+        updatePhoneState();
+    }
+}

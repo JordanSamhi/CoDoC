@@ -1,0 +1,20 @@
+public float animateForImeVisibility(boolean imeVisible){
+    final float maxBubbleY = getAllowableStackPositionRegion().bottom;
+    float destinationY = UNSET;
+    if (imeVisible) {
+        if (mStackPosition.y > maxBubbleY && mPreImeY == UNSET) {
+            mPreImeY = mStackPosition.y;
+            destinationY = maxBubbleY;
+        }
+    } else {
+        if (mPreImeY != UNSET) {
+            destinationY = mPreImeY;
+            mPreImeY = UNSET;
+        }
+    }
+    if (destinationY != UNSET) {
+        springFirstBubbleWithStackFollowing(DynamicAnimation.TRANSLATION_Y, getSpringForce(DynamicAnimation.TRANSLATION_Y, null).setStiffness(IME_ANIMATION_STIFFNESS), 0f, destinationY);
+        notifyFloatingCoordinatorStackAnimatingTo(mStackPosition.x, destinationY);
+    }
+    return destinationY != UNSET ? destinationY : mStackPosition.y;
+}

@@ -1,0 +1,11 @@
+public void removeProximityAlert(@NonNull PendingIntent intent){
+    Preconditions.checkArgument(intent != null, "invalid null pending intent");
+    if (Compatibility.isChangeEnabled(TARGETED_PENDING_INTENT)) {
+        Preconditions.checkArgument(intent.isTargetedToPackage(), "pending intent must be targeted to a package");
+    }
+    try {
+        mService.removeGeofence(null, intent, mContext.getPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

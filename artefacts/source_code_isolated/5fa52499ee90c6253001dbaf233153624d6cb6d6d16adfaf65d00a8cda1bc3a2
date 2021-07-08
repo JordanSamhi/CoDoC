@@ -1,0 +1,11 @@
+public void enableVerboseLogging(boolean verbose){
+    synchronized (sLock) {
+        if (verbose) {
+            mVerboseLog = mLog;
+            enter("verbose=true").flush();
+        } else {
+            enter("verbose=false").flush();
+            mVerboseLog = sNoLog;
+        }
+    }
+}

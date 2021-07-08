@@ -1,0 +1,11 @@
+public boolean isConnected(){
+    synchronized (mProfileLock) {
+        for (LocalBluetoothProfile profile : mProfiles) {
+            int status = getProfileConnectionState(profile);
+            if (status == BluetoothProfile.STATE_CONNECTED) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

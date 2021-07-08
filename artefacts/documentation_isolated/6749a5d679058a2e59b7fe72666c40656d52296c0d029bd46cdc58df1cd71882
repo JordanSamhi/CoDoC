@@ -1,0 +1,37 @@
+
+         * Adds a sanitizer for one or more field.
+         *
+         * <p>When a sanitizer is set for a field, the {@link AutofillValue} is sent to the
+         * sanitizer before a save request is <a href="#TriggeringSaveRequest">triggered</a>.
+         *
+         * <p>Typically used to avoid displaying the save UI for values that are autofilled but
+         * reformattedby the app. For example, to remove spaces between every 4 digits of a
+         * credit card number:
+         *
+         * <pre class="prettyprint">
+         * builder.addSanitizer(new TextValueSanitizer(
+         *     Pattern.compile("^(\\d{4})\\s?(\\d{4})\\s?(\\d{4})\\s?(\\d{4})$", "$1$2$3$4")),
+         *     ccNumberId);
+         * </pre>
+         *
+         * <p>The same sanitizer can be reused to sanitize multiple fields. For example, to trim
+         * both the username and password fields:
+         *
+         * <pre class="prettyprint">
+         * builder.addSanitizer(
+         *     new TextValueSanitizer(Pattern.compile("^\\s*(.*)\\s*$"), "$1"),
+         *         usernameId, passwordId);
+         * </pre>
+         *
+         * <p>The sanitizer can also be used as an alternative for a
+         * {@link #setValidator(Validator) validator}. If any of the {@code ids} is a
+         * {@link #Builder(int, AutofillId[]) required id} and the {@code sanitizer} fails
+         * because of it, then the save UI is not shown.
+         *
+         * @param sanitizer an implementation provided by the Android System.
+         * @param ids id of fields whose value will be sanitized.
+         * @return this builder.
+         *
+         * @throws IllegalArgumentException if a sanitizer for any of the {@code ids} has already
+         * been added or if {@code ids} is empty.
+         

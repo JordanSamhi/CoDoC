@@ -1,0 +1,13 @@
+public boolean prune(){
+    int cueCount = mRegionCueBoxes.size();
+    for (int i = 0; i < cueCount; i++) {
+        final CueLayout cueBox = mRegionCueBoxes.get(i);
+        if (!cueBox.isActive()) {
+            mRegionCueBoxes.remove(i);
+            removeView(cueBox);
+            cueCount--;
+            i--;
+        }
+    }
+    return mRegionCueBoxes.isEmpty();
+}

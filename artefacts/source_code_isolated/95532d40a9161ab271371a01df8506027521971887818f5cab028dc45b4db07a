@@ -1,0 +1,22 @@
+public boolean handleBackInTextActionModeIfNeeded(KeyEvent event){
+    if (mEditor == null || mEditor.getTextActionMode() == null) {
+        return false;
+    }
+    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+        KeyEvent.DispatcherState state = getKeyDispatcherState();
+        if (state != null) {
+            state.startTracking(event, this);
+        }
+        return true;
+    } else if (event.getAction() == KeyEvent.ACTION_UP) {
+        KeyEvent.DispatcherState state = getKeyDispatcherState();
+        if (state != null) {
+            state.handleUpEvent(event);
+        }
+        if (event.isTracking() && !event.isCanceled()) {
+            stopTextActionMode();
+            return true;
+        }
+    }
+    return false;
+}

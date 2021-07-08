@@ -1,0 +1,11 @@
+public void open(SipProfile localProfile, PendingIntent incomingCallPendingIntent, SipRegistrationListener listener) throws SipException{
+    if (incomingCallPendingIntent == null) {
+        throw new NullPointerException("incomingCallPendingIntent cannot be null");
+    }
+    try {
+        checkSipServiceConnection();
+        mSipService.open3(localProfile, incomingCallPendingIntent, createRelay(listener, localProfile.getUriString()), mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw new SipException("open()", e);
+    }
+}

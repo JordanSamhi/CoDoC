@@ -1,0 +1,19 @@
+public boolean open(@NonNull UsbDeviceConnection connection){
+    boolean result = false;
+    Context context = connection.getContext();
+    synchronized (mLock) {
+        if (context != null) {
+            UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+            if (!userManager.hasUserRestriction(UserManager.DISALLOW_USB_FILE_TRANSFER)) {
+                result = native_open(mDevice.getDeviceName(), connection.getFileDescriptor());
+            }
+        }
+        if (!result) {
+            connection.close();
+        } else {
+            mConnection = connection;
+            mCloseGuard.open("close");
+        }
+    }
+    return result;
+}

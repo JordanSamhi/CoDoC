@@ -1,0 +1,19 @@
+public StorageUserConnection onVolumeRemove(VolumeInfo vol){
+    if (!shouldHandle(vol)) {
+        return null;
+    }
+    Slog.i(TAG, "On volume remove " + vol);
+    String sessionId = vol.getId();
+    int userId = vol.getMountUserId();
+    synchronized (mLock) {
+        StorageUserConnection connection = mConnections.get(userId);
+        if (connection != null) {
+            Slog.i(TAG, "Removed session for vol with id: " + sessionId);
+            connection.removeSession(sessionId);
+            return connection;
+        } else {
+            Slog.w(TAG, "Session already removed for vol with id: " + sessionId);
+            return null;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public void deleteSubscription(int subscriptionId, PendingIntent callbackIntent){
+    if (!isEnabled()) {
+        sendUnavailableError(callbackIntent);
+        return;
+    }
+    try {
+        getIEuiccController().deleteSubscription(mCardId, subscriptionId, mContext.getOpPackageName(), callbackIntent);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,46 @@
+
+     * <p>Set an {@link android.renderscript.Allocation Allocation} as the
+     * target of preview callback data. Use this method for efficient processing
+     * of camera preview data with RenderScript. The Allocation must be created
+     * with the {@link #createPreviewAllocation createPreviewAllocation }
+     * method.</p>
+     *
+     * <p>Setting a preview allocation will disable any active preview callbacks
+     * set by {@link #setPreviewCallback setPreviewCallback} or
+     * {@link #setPreviewCallbackWithBuffer setPreviewCallbackWithBuffer}, and
+     * vice versa. Using a preview allocation still requires an active standard
+     * preview target to be set, either with
+     * {@link #setPreviewTexture setPreviewTexture} or
+     * {@link #setPreviewDisplay setPreviewDisplay}.</p>
+     *
+     * <p>To be notified when new frames are available to the Allocation, use
+     * {@link android.renderscript.Allocation#setIoInputNotificationHandler Allocation.setIoInputNotificationHandler}. To
+     * update the frame currently accessible from the Allocation to the latest
+     * preview frame, call
+     * {@link android.renderscript.Allocation#ioReceive Allocation.ioReceive}.</p>
+     *
+     * <p>To disable preview into the Allocation, call this method with a
+     * {@code null} parameter.</p>
+     *
+     * <p>Once a preview allocation is set, the preview size set by
+     * {@link Parameters#setPreviewSize setPreviewSize} cannot be changed. If
+     * you wish to change the preview size, first remove the preview allocation
+     * by calling {@code setPreviewCallbackAllocation(null)}, then change the
+     * preview size, create a new preview Allocation with
+     * {@link #createPreviewAllocation createPreviewAllocation}, and set it as
+     * the new preview callback allocation target.</p>
+     *
+     * <p>If you are using the preview data to create video or still images,
+     * strongly consider using {@link android.media.MediaActionSound} to
+     * properly indicate image capture or recording start/stop to the user.</p>
+     *
+     * @param previewAllocation the allocation to use as destination for preview
+     * @throws IOException if configuring the camera to use the Allocation for
+     *   preview fails.
+     * @throws IllegalArgumentException if the Allocation's dimensions or other
+     *   parameters don't meet the requirements.
+     * @see #createPreviewAllocation
+     * @see #setPreviewCallback
+     * @see #setPreviewCallbackWithBuffer
+     * @hide
+     

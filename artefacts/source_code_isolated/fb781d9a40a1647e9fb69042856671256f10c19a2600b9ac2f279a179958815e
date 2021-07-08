@@ -1,0 +1,35 @@
+public NetworkStats readNetworkStatsDetail(int limitUid, String[] limitIfaces, int limitTag) throws IOException{
+    synchronized (mPersistentDataLock) {
+        final VpnInfo[] vpnArray = mVpnInfos;
+        final NetworkStats prev = mPersistSnapshot.clone();
+        if (USE_NATIVE_PARSING) {
+            final NetworkStats stats = new NetworkStats(SystemClock.elapsedRealtime(), 0);
+            if (mUseBpfStats) {
+                try {
+                    requestSwapActiveStatsMapLocked();
+                } catch (RemoteException e) {
+                    throw new IOException(e);
+                }
+                if (nativeReadNetworkStatsDetail(stats, mStatsXtUid.getAbsolutePath(), UID_ALL, INTERFACES_ALL, TAG_ALL, mUseBpfStats) != 0) {
+                    throw new IOException("Failed to parse network stats");
+                }
+                mPersistSnapshot.setElapsedRealtime(stats.getElapsedRealtime());
+                mPersistSnapshot.combineAllValues(stats);
+            } else {
+                if (nativeReadNetworkStatsDetail(stats, mStatsXtUid.getAbsolutePath(), UID_ALL, INTERFACES_ALL, TAG_ALL, mUseBpfStats) != 0) {
+                    throw new IOException("Failed to parse network stats");
+                }
+                if (SANITY_CHECK_NATIVE) {
+                    final NetworkStats javaStats = javaReadNetworkStatsDetail(mStatsXtUid, UID_ALL, INTERFACES_ALL, TAG_ALL);
+                    assertEquals(javaStats, stats);
+                }
+                mPersistSnapshot = stats;
+            }
+        } else {
+            mPersistSnapshot = javaReadNetworkStatsDetail(mStatsXtUid, UID_ALL, INTERFACES_ALL, TAG_ALL);
+        }
+        NetworkStats adjustedStats = adjustForTunAnd464Xlat(mPersistSnapshot, prev, vpnArray);
+        adjustedStats.filter(limitUid, limitIfaces, limitTag);
+        return adjustedStats;
+    }
+}

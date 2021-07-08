@@ -1,0 +1,10 @@
+public Set<String> getPersistedStringSet(Set<String> defaultReturnValue){
+    if (!shouldPersist()) {
+        return defaultReturnValue;
+    }
+    PreferenceDataStore dataStore = getPreferenceDataStore();
+    if (dataStore != null) {
+        return dataStore.getStringSet(mKey, defaultReturnValue);
+    }
+    return mPreferenceManager.getSharedPreferences().getStringSet(mKey, defaultReturnValue);
+}

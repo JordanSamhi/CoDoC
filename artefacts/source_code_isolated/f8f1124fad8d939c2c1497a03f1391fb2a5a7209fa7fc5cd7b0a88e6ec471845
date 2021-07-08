@@ -1,0 +1,13 @@
+public static AccessibilityNodeInfo obtainRootAccessibilityNodeInfo(Context context){
+    AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
+    info.setSourceNodeId(AccessibilityNodeInfo.ROOT_NODE_ID, AccessibilityWindowInfo.PICTURE_IN_PICTURE_ACTION_REPLACER_WINDOW_ID);
+    info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_CLICK);
+    info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_DISMISS);
+    info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_MOVE_WINDOW);
+    info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_EXPAND);
+    info.addAction(new AccessibilityNodeInfo.AccessibilityAction(R.id.action_pip_resize, context.getString(R.string.accessibility_action_pip_resize)));
+    info.setImportantForAccessibility(true);
+    info.setClickable(true);
+    info.setVisibleToUser(true);
+    return info;
+}

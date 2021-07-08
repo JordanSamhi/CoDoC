@@ -1,0 +1,14 @@
+public void closeWithError(String msg) throws IOException{
+    if (mWrapped != null) {
+        try {
+            mWrapped.closeWithError(msg);
+        } finally {
+            releaseResources();
+        }
+    } else {
+        if (msg == null) {
+            throw new IllegalArgumentException("Message must not be null");
+        }
+        closeWithStatus(Status.ERROR, msg);
+    }
+}

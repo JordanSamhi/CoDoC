@@ -1,0 +1,8 @@
+public final void setDisconnected(DisconnectCause disconnectCause){
+    mDisconnectCause = disconnectCause;
+    ;
+    setState(Connection.STATE_DISCONNECTED);
+    for (Listener l : mListeners) {
+        l.onDisconnected(this, mDisconnectCause);
+    }
+}

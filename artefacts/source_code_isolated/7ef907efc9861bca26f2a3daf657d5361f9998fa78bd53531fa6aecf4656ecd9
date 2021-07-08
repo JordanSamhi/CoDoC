@@ -1,0 +1,16 @@
+public ArrayList<UsbDescriptor> getInterfaceDescriptorsForClass(int usbClass){
+    ArrayList<UsbDescriptor> list = new ArrayList<UsbDescriptor>();
+    for (UsbDescriptor descriptor : mDescriptors) {
+        if (descriptor.getType() == UsbDescriptor.DESCRIPTORTYPE_INTERFACE) {
+            if (descriptor instanceof UsbInterfaceDescriptor) {
+                UsbInterfaceDescriptor intrDesc = (UsbInterfaceDescriptor) descriptor;
+                if (intrDesc.getUsbClass() == usbClass) {
+                    list.add(descriptor);
+                }
+            } else {
+                Log.w(TAG, "Unrecognized Interface l: " + descriptor.getLength() + " t:0x" + Integer.toHexString(descriptor.getType()));
+            }
+        }
+    }
+    return list;
+}

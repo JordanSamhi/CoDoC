@@ -1,0 +1,10 @@
+public void sendToCommissioner(@NonNull byte[] packet){
+    if (!mIsClosed) {
+        try {
+            mBinder.sendToCommissioner(packet);
+        } catch (DeadObjectException x) {
+        } catch (RemoteException x) {
+            throw x.rethrowAsRuntimeException();
+        }
+    }
+}

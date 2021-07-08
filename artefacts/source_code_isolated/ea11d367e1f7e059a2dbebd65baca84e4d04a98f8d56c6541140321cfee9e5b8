@@ -1,0 +1,18 @@
+public boolean removeRoleHolder(@NonNull String roleName, @NonNull String packageName){
+    boolean changed;
+    synchronized (mLock) {
+        ArraySet<String> roleHolders = mRoles.get(roleName);
+        if (roleHolders == null) {
+            Slog.e(LOG_TAG, "Cannot remove role holder for unknown role, role: " + roleName + ", package: " + packageName);
+            return false;
+        }
+        changed = roleHolders.remove(packageName);
+        if (changed) {
+            scheduleWriteFileLocked();
+        }
+    }
+    if (changed) {
+        mCallback.onRoleHoldersChanged(roleName, mUserId, packageName, null);
+    }
+    return true;
+}

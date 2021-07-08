@@ -1,0 +1,13 @@
+public void addCountryListener(CountryListener listener, Looper looper){
+    synchronized (mListeners) {
+        if (!mListeners.containsKey(listener)) {
+            ListenerTransport transport = new ListenerTransport(listener, looper);
+            try {
+                mService.addCountryListener(transport);
+                mListeners.put(listener, transport);
+            } catch (RemoteException e) {
+                Log.e(TAG, "addCountryListener: RemoteException", e);
+            }
+        }
+    }
+}

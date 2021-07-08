@@ -1,0 +1,10 @@
+public void dump(PrintWriter pw){
+    mLog.dump(null, pw, null);
+    ConnectivityModuleConnector.getInstance().dump(pw);
+    final int requestsQueueLength;
+    synchronized (mPendingNetStackRequests) {
+        requestsQueueLength = mPendingNetStackRequests.size();
+    }
+    pw.println();
+    pw.println("pendingNetStackRequests length: " + requestsQueueLength);
+}

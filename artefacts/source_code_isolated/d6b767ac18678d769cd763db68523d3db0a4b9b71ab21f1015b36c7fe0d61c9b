@@ -1,0 +1,7 @@
+public static void rotateM(float[] m, int mOffset, float a, float x, float y, float z){
+    synchronized (sTemp) {
+        setRotateM(sTemp, 0, a, x, y, z);
+        multiplyMM(sTemp, 16, m, mOffset, sTemp, 0);
+        System.arraycopy(sTemp, 16, m, mOffset, 16);
+    }
+}

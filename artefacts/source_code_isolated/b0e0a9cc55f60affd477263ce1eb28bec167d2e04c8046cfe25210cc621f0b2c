@@ -1,0 +1,10 @@
+public boolean isTrustUsuallyManaged(int userId){
+    if (!(mLockSettingsService instanceof ILockSettings.Stub)) {
+        throw new IllegalStateException("May only be called by TrustManagerService. " + "Use TrustManager.isTrustUsuallyManaged()");
+    }
+    try {
+        return getLockSettings().getBoolean(IS_TRUST_USUALLY_MANAGED, false, userId);
+    } catch (RemoteException e) {
+        return false;
+    }
+}

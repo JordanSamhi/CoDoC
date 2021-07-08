@@ -1,0 +1,13 @@
+public long getNativeInstance(){
+    long newNativeShader = mShader == null ? 0 : mShader.getNativeInstance();
+    if (newNativeShader != mNativeShader) {
+        mNativeShader = newNativeShader;
+        nSetShader(mNativePaint, mNativeShader);
+    }
+    long newNativeColorFilter = mColorFilter == null ? 0 : mColorFilter.getNativeInstance();
+    if (newNativeColorFilter != mNativeColorFilter) {
+        mNativeColorFilter = newNativeColorFilter;
+        nSetColorFilter(mNativePaint, mNativeColorFilter);
+    }
+    return mNativePaint;
+}

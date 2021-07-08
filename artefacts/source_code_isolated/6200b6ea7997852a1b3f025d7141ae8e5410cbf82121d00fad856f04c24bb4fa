@@ -1,0 +1,49 @@
+public void send(RequestProvider requestProvider, ApduSenderResultCallback resultCallback, Handler handler){
+    synchronized (mChannelLock) {
+        if (mChannelOpened) {
+            if (!Looper.getMainLooper().equals(Looper.myLooper())) {
+                logd("Logical channel has already been opened. Wait.");
+                try {
+                    mChannelLock.wait(WAIT_TIME_MS);
+                } catch (InterruptedException e) {
+                }
+                if (mChannelOpened) {
+                    AsyncResultHelper.throwException(new ApduException("The logical channel is still in use."), resultCallback, handler);
+                    return;
+                }
+            } else {
+                AsyncResultHelper.throwException(new ApduException("The logical channel is in use."), resultCallback, handler);
+                return;
+            }
+        }
+        mChannelOpened = true;
+    }
+    mOpenChannel.invoke(mAid, new AsyncResultCallback<IccOpenLogicalChannelResponse>() {
+
+        @Override
+        public void onResult(IccOpenLogicalChannelResponse openChannelResponse) {
+            int channel = openChannelResponse.getChannel();
+            int status = openChannelResponse.getStatus();
+            if (channel == IccOpenLogicalChannelResponse.INVALID_CHANNEL || status != IccOpenLogicalChannelResponse.STATUS_NO_ERROR) {
+                synchronized (mChannelLock) {
+                    mChannelOpened = false;
+                    mChannelLock.notify();
+                }
+                resultCallback.onException(new ApduException("Failed to open logical channel opened for AID: " + mAid + ", with status: " + status));
+                return;
+            }
+            RequestBuilder builder = new RequestBuilder(channel, mSupportExtendedApdu);
+            Throwable requestException = null;
+            try {
+                requestProvider.buildRequest(openChannelResponse.getSelectResponse(), builder);
+            } catch (Throwable e) {
+                requestException = e;
+            }
+            if (builder.getCommands().isEmpty() || requestException != null) {
+                closeAndReturn(channel, null, requestException, resultCallback, handler);
+                return;
+            }
+            sendCommand(builder.getCommands(), 0, resultCallback, handler);
+        }
+    }, handler);
+}

@@ -1,0 +1,12 @@
+public static boolean setInt(Context context, String settingName, int subId, int value){
+    settingName = getSettingName(context, settingName, subId);
+    boolean needChange;
+    try {
+        needChange = Settings.Global.getInt(context.getContentResolver(), settingName) != value;
+    } catch (SettingNotFoundException exception) {
+        needChange = true;
+    }
+    if (needChange)
+        Settings.Global.putInt(context.getContentResolver(), settingName, value);
+    return needChange;
+}

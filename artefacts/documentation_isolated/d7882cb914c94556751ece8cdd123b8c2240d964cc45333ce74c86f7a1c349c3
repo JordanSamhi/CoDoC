@@ -1,0 +1,14 @@
+
+     * Commit the last finished undo state.  This undo state can no longer be
+     * modified with further {@link #MERGE_MODE_UNIQUE} or
+     * {@link #MERGE_MODE_ANY} merge modes.  If called while inside of an update,
+     * this will push any changes in the current update on to the undo stack
+     * and result with a fresh undo state, behaving as if {@link #endUpdate()}
+     * had been called enough to unwind the current update, then the last state
+     * committed, and {@link #beginUpdate} called to restore the update nesting.
+     * @param owner The optional owner to determine whether to perform the commit.
+     * If this is non-null, the commit will only execute if the current top undo
+     * state contains an operation with the given owner.
+     * @return Returns an integer identifier for the committed undo state, which
+     * can later be used to try to uncommit the state to perform further edits on it.
+     

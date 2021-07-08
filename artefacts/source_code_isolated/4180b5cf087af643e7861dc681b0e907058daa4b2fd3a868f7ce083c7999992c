@@ -1,0 +1,8 @@
+public synchronized int setConfigString(int item, String value) throws RemoteException{
+    mProvisionedStringValue.remove(item);
+    int retVal = getImsConfigImpl().setConfig(item, value);
+    if (retVal == ImsConfig.OperationStatusConstants.SUCCESS) {
+        updateCachedValue(item, value, true);
+    }
+    return retVal;
+}

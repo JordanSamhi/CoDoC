@@ -1,0 +1,8 @@
+public List<RoutingController> getControllers(){
+    List<RoutingController> result = new ArrayList<>();
+    result.add(0, mSystemController);
+    synchronized (sRouterLock) {
+        result.addAll(mNonSystemRoutingControllers.values());
+    }
+    return result;
+}

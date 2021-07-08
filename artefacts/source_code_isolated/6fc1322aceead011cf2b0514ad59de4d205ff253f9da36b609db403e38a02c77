@@ -1,0 +1,11 @@
+public int parseRawDescriptors(ByteStream stream){
+    int numRead = stream.getReadCount();
+    int dataLen = mLength - numRead;
+    if (dataLen > 0) {
+        mRawData = new byte[dataLen];
+        for (int index = 0; index < dataLen; index++) {
+            mRawData[index] = stream.getByte();
+        }
+    }
+    return mLength;
+}

@@ -1,0 +1,12 @@
+public static Pair<Integer, Integer> paddingNeededForCutoutAndRoundedCorner(DisplayCutout cutout, Pair<Integer, Integer> cornerCutoutPadding, int roundedCornerContentPadding){
+    if (cutout == null) {
+        return new Pair<>(roundedCornerContentPadding, roundedCornerContentPadding);
+    }
+    int leftCornerCutoutPadding = cutout.getSafeInsetLeft();
+    int rightCornerCutoutPadding = cutout.getSafeInsetRight();
+    if (cornerCutoutPadding != null) {
+        leftCornerCutoutPadding = Math.max(leftCornerCutoutPadding, cornerCutoutPadding.first);
+        rightCornerCutoutPadding = Math.max(rightCornerCutoutPadding, cornerCutoutPadding.second);
+    }
+    return new Pair<>(Math.max(leftCornerCutoutPadding, roundedCornerContentPadding), Math.max(rightCornerCutoutPadding, roundedCornerContentPadding));
+}

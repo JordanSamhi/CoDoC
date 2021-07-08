@@ -1,0 +1,24 @@
+public String getIddByMcc(int mcc){
+    if (DBG)
+        Log.d(LOG_TAG, "Enter getHbpcdInfoByMCC.");
+    String idd = "";
+    Cursor c = null;
+    String[] projection = { MccIdd.IDD };
+    Cursor cur = resolver.query(MccIdd.CONTENT_URI, projection, MccIdd.MCC + "=" + mcc, null, null);
+    if (cur != null) {
+        if (cur.getCount() > 0) {
+            if (DBG)
+                Log.d(LOG_TAG, "Query Idd returned the cursor " + cur);
+            cur.moveToFirst();
+            idd = cur.getString(0);
+            if (DBG)
+                Log.d(LOG_TAG, "IDD = " + idd);
+        }
+        cur.close();
+    }
+    if (c != null)
+        c.close();
+    if (DBG)
+        Log.d(LOG_TAG, "Exit getHbpcdInfoByMCC.");
+    return idd;
+}

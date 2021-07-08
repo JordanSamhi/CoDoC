@@ -1,0 +1,22 @@
+
+     * Call to grant trust on the device.
+     *
+     * @param message describes why the device is trusted, e.g. "Trusted by location".
+     * @param durationMs amount of time in milliseconds to keep the device in a trusted state.
+     *    Trust for this agent will automatically be revoked when the timeout expires unless
+     *    extended by a subsequent call to this function. The timeout is measured from the
+     *    invocation of this function as dictated by {@link SystemClock#elapsedRealtime())}.
+     *    For security reasons, the value should be no larger than necessary.
+     *    The value may be adjusted by the system as necessary to comply with a policy controlled
+     *    by the system or {@link DevicePolicyManager} restrictions. See {@link #onTrustTimeout()}
+     *    for determining when trust expires.
+     * @param initiatedByUser this is a hint to the system that trust is being granted as the
+     *    direct result of user action - such as solving a security challenge. The hint is used
+     *    by the system to optimize the experience. Behavior may vary by device and release, so
+     *    one should only set this parameter if it meets the above criteria rather than relying on
+     *    the behavior of any particular device or release. Corresponds to
+     *    {@link #FLAG_GRANT_TRUST_INITIATED_BY_USER}.
+     * @throws IllegalStateException if the agent is not currently managing trust.
+     *
+     * @deprecated use {@link #grantTrust(CharSequence, long, int)} instead.
+     

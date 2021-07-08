@@ -1,0 +1,17 @@
+public boolean isWithinTouchRegion(int x, int y){
+    final Rect currentPipBounds = mMotionHelper.getBounds();
+    if (currentPipBounds == null) {
+        return false;
+    }
+    resetDragCorners();
+    mTmpTopLeftCorner.offset(currentPipBounds.left - mDelta / 2, currentPipBounds.top - mDelta / 2);
+    mTmpTopRightCorner.offset(currentPipBounds.right - mDelta / 2, currentPipBounds.top - mDelta / 2);
+    mTmpBottomLeftCorner.offset(currentPipBounds.left - mDelta / 2, currentPipBounds.bottom - mDelta / 2);
+    mTmpBottomRightCorner.offset(currentPipBounds.right - mDelta / 2, currentPipBounds.bottom - mDelta / 2);
+    mTmpRegion.setEmpty();
+    mTmpRegion.op(mTmpTopLeftCorner, Region.Op.UNION);
+    mTmpRegion.op(mTmpTopRightCorner, Region.Op.UNION);
+    mTmpRegion.op(mTmpBottomLeftCorner, Region.Op.UNION);
+    mTmpRegion.op(mTmpBottomRightCorner, Region.Op.UNION);
+    return mTmpRegion.contains(x, y);
+}

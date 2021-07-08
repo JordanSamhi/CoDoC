@@ -1,0 +1,67 @@
+public WifiAwareNetworkSpecifier onDataPathConfirm(int ndpId, byte[] mac, boolean accept, int reason, byte[] message, List<NanDataPathChannelInfo> channelInfo){
+    if (mDbg) {
+        Log.v(TAG, "onDataPathConfirm: ndpId=" + ndpId + ", mac=" + String.valueOf(HexEncoding.encode(mac)) + ", accept=" + accept + ", reason=" + reason + ", message.length=" + ((message == null) ? 0 : message.length) + ", channelInfo=" + channelInfo);
+    }
+    Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> nnriE = getNetworkRequestByNdpId(ndpId);
+    if (nnriE == null) {
+        Log.w(TAG, "onDataPathConfirm: network request not found for ndpId=" + ndpId);
+        if (accept) {
+            mMgr.endDataPath(ndpId);
+        }
+        return null;
+    }
+    WifiAwareNetworkSpecifier networkSpecifier = nnriE.getKey();
+    AwareNetworkRequestInformation nnri = nnriE.getValue();
+    if (nnri.state != AwareNetworkRequestInformation.STATE_WAIT_FOR_CONFIRM) {
+        Log.w(TAG, "onDataPathConfirm: invalid state=" + nnri.state);
+        mNetworkRequestsCache.remove(networkSpecifier);
+        mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+        if (accept) {
+            mMgr.endDataPath(ndpId);
+        }
+        return networkSpecifier;
+    }
+    if (accept) {
+        nnri.state = AwareNetworkRequestInformation.STATE_CONFIRMED;
+        nnri.peerDataMac = mac;
+        nnri.channelInfo = channelInfo;
+        if (!isInterfaceUpAndUsedByAnotherNdp(nnri)) {
+            try {
+                mNetdWrapper.setInterfaceUp(nnri.interfaceName);
+                mNetdWrapper.enableIpv6(nnri.interfaceName);
+            } catch (Exception e) {
+                Log.e(TAG, "onDataPathConfirm: ACCEPT nnri=" + nnri + ": can't configure network - " + e);
+                declareUnfullfillableAndEndDp(nnri, ndpId);
+                return networkSpecifier;
+            }
+        } else {
+            if (VDBG) {
+                Log.v(TAG, "onDataPathConfirm: interface already configured: " + nnri.interfaceName);
+            }
+        }
+        if (nnri.networkSpecifier.role == WifiAwareManager.WIFI_AWARE_DATA_PATH_ROLE_INITIATOR) {
+            NetworkInformationData.ParsedResults peerServerInfo = NetworkInformationData.parseTlv(message);
+            if (peerServerInfo != null) {
+                if (peerServerInfo.port != 0) {
+                    nnri.peerPort = peerServerInfo.port;
+                }
+                if (peerServerInfo.transportProtocol != -1) {
+                    nnri.peerTransportProtocol = peerServerInfo.transportProtocol;
+                }
+                if (peerServerInfo.ipv6Override != null) {
+                    nnri.peerIpv6Override = peerServerInfo.ipv6Override;
+                }
+            }
+        }
+        nnri.startValidationTimestamp = mClock.getElapsedSinceBootMillis();
+        handleAddressValidation(nnri, ndpId, networkSpecifier.isOutOfBand(), mac);
+    } else {
+        if (VDBG) {
+            Log.v(TAG, "onDataPathConfirm: data-path for networkSpecifier=" + networkSpecifier + " rejected - reason=" + reason);
+        }
+        mNetworkRequestsCache.remove(networkSpecifier);
+        mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+        mAwareMetrics.recordNdpStatus(reason, networkSpecifier.isOutOfBand(), nnri.startTimestamp);
+    }
+    return networkSpecifier;
+}

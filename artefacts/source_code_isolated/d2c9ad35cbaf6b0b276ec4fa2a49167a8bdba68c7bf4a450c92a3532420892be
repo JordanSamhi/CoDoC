@@ -1,0 +1,10 @@
+public boolean requestImeShow(IBinder windowToken){
+    synchronized (mH) {
+        final View servedView = getServedViewLocked();
+        if (servedView == null || servedView.getWindowToken() != windowToken) {
+            return false;
+        }
+        showSoftInput(servedView, 0, null);
+        return true;
+    }
+}

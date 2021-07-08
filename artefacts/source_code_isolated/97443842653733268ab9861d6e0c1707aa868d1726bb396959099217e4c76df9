@@ -1,0 +1,11 @@
+public static Uri getUriFor(String name){
+    if (MOVED_TO_SECURE.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.System" + " to android.provider.Settings.Secure, returning Secure URI.");
+        return Secure.getUriFor(Secure.CONTENT_URI, name);
+    }
+    if (MOVED_TO_GLOBAL.contains(name) || MOVED_TO_SECURE_THEN_GLOBAL.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.System" + " to android.provider.Settings.Global, returning read-only global URI.");
+        return Global.getUriFor(Global.CONTENT_URI, name);
+    }
+    return getUriFor(CONTENT_URI, name);
+}

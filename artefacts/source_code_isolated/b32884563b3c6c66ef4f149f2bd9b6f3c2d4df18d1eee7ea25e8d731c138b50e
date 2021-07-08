@@ -1,0 +1,49 @@
+public Pair<String, Integer> getMatchingImsiCarrierId(String imsiPrefix){
+    IMSIParameter imsiParameter = IMSIParameter.build(imsiPrefix);
+    if (imsiParameter == null) {
+        return null;
+    }
+    List<SubscriptionInfo> infos = mSubscriptionManager.getActiveSubscriptionInfoList();
+    if (infos == null) {
+        return null;
+    }
+    int dataSubId = SubscriptionManager.getDefaultDataSubscriptionId();
+    Pair<String, Integer> matchedPair = null;
+    Pair<String, Integer> matchedDataPair = null;
+    Pair<String, Integer> matchedMnoPair = null;
+    for (SubscriptionInfo subInfo : infos) {
+        int subId = subInfo.getSubscriptionId();
+        if (requiresImsiEncryption(subId) && !isImsiEncryptionInfoAvailable(subId)) {
+            vlogd("required IMSI encryption information is not available.");
+            continue;
+        }
+        TelephonyManager specifiedTm = mTelephonyManager.createForSubscriptionId(subId);
+        String operatorNumeric = specifiedTm.getSimOperator();
+        if (operatorNumeric != null && imsiParameter.matchesMccMnc(operatorNumeric)) {
+            String curImsi = specifiedTm.getSubscriberId();
+            if (TextUtils.isEmpty(curImsi)) {
+                continue;
+            }
+            matchedPair = new Pair<>(curImsi, subInfo.getCarrierId());
+            if (subId == dataSubId) {
+                matchedDataPair = matchedPair;
+                if (getCarrierType(subId) == CARRIER_MNO_TYPE) {
+                    vlogd("MNO data is matched via IMSI.");
+                    return matchedDataPair;
+                }
+            }
+            if (getCarrierType(subId) == CARRIER_MNO_TYPE) {
+                matchedMnoPair = matchedPair;
+            }
+        }
+    }
+    if (matchedMnoPair != null) {
+        vlogd("MNO sub is matched via IMSI.");
+        return matchedMnoPair;
+    }
+    if (matchedDataPair != null) {
+        vlogd("MVNO data sub is matched via IMSI.");
+        return matchedDataPair;
+    }
+    return matchedPair;
+}

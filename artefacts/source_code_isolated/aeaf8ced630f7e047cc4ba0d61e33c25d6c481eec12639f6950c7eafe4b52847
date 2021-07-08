@@ -1,0 +1,22 @@
+public static IMSIParameter build(String imsi){
+    if (TextUtils.isEmpty(imsi)) {
+        return null;
+    }
+    if (imsi.length() > MAX_IMSI_LENGTH) {
+        return null;
+    }
+    int nonDigitIndex;
+    char stopChar = '\0';
+    for (nonDigitIndex = 0; nonDigitIndex < imsi.length(); nonDigitIndex++) {
+        stopChar = imsi.charAt(nonDigitIndex);
+        if (stopChar < '0' || stopChar > '9') {
+            break;
+        }
+    }
+    if (nonDigitIndex == imsi.length()) {
+        return new IMSIParameter(imsi, false);
+    } else if (nonDigitIndex == imsi.length() - 1 && stopChar == '*' && (nonDigitIndex == MCC_MNC_LENGTH_5 || nonDigitIndex == MCC_MNC_LENGTH_6)) {
+        return new IMSIParameter(imsi.substring(0, nonDigitIndex), true);
+    }
+    return null;
+}

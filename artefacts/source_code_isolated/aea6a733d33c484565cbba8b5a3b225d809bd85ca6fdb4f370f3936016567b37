@@ -1,0 +1,12 @@
+public boolean startVendorHalSta(){
+    synchronized (sLock) {
+        if (!startVendorHal()) {
+            return false;
+        }
+        if (TextUtils.isEmpty(createStaIface(null))) {
+            stopVendorHal();
+            return false;
+        }
+        return true;
+    }
+}

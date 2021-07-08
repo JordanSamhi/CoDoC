@@ -1,0 +1,36 @@
+public Set<ExtendedWifiNetworkSuggestion> getNetworkSuggestionsForScanDetail(@NonNull ScanDetail scanDetail){
+    ScanResult scanResult = scanDetail.getScanResult();
+    if (scanResult == null) {
+        Log.e(TAG, "No scan result found in scan detail");
+        return null;
+    }
+    Set<ExtendedWifiNetworkSuggestion> extNetworkSuggestions = null;
+    try {
+        ScanResultMatchInfo scanResultMatchInfo = ScanResultMatchInfo.fromScanResult(scanResult);
+        extNetworkSuggestions = getNetworkSuggestionsForScanResultMatchInfo(scanResultMatchInfo, MacAddress.fromString(scanResult.BSSID));
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Failed to lookup network from scan result match info map", e);
+    }
+    if (extNetworkSuggestions == null) {
+        return null;
+    }
+    final String activeScorerPackage = mNetworkScoreManager.getActiveScorerPackage();
+    Set<ExtendedWifiNetworkSuggestion> approvedExtNetworkSuggestions = new HashSet<>();
+    for (ExtendedWifiNetworkSuggestion ewns : extNetworkSuggestions) {
+        if (!ewns.perAppInfo.isApproved(activeScorerPackage)) {
+            sendUserApprovalNotificationIfNotApproved(ewns.perAppInfo.packageName, ewns.perAppInfo.uid);
+            continue;
+        }
+        if (isSimBasedSuggestion(ewns)) {
+            mWifiCarrierInfoManager.sendImsiProtectionExemptionNotificationIfRequired(getCarrierIdFromSuggestion(ewns));
+        }
+        approvedExtNetworkSuggestions.add(ewns);
+    }
+    if (approvedExtNetworkSuggestions.isEmpty()) {
+        return null;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "getNetworkSuggestionsForScanDetail Found " + approvedExtNetworkSuggestions + " for " + scanResult.SSID + "[" + scanResult.capabilities + "]");
+    }
+    return approvedExtNetworkSuggestions;
+}

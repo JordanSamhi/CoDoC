@@ -1,0 +1,12 @@
+public void update(long totalTime, int count){
+    if (mTimeBaseRunning && !mTrackingReportedValues) {
+        mUnpluggedReportedTotalTime = totalTime;
+        mUnpluggedReportedCount = count;
+    }
+    mTrackingReportedValues = true;
+    if (totalTime < mCurrentReportedTotalTime || count < mCurrentReportedCount) {
+        endSample();
+    }
+    mCurrentReportedTotalTime = totalTime;
+    mCurrentReportedCount = count;
+}

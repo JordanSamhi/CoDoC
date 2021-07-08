@@ -1,0 +1,26 @@
+public boolean updateKeyphraseSoundModel(KeyphraseSoundModel soundModel){
+    synchronized (this) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(SoundModelContract.KEY_MODEL_UUID, soundModel.getUuid().toString());
+        if (soundModel.getVendorUuid() != null) {
+            values.put(SoundModelContract.KEY_VENDOR_UUID, soundModel.getVendorUuid().toString());
+        }
+        values.put(SoundModelContract.KEY_TYPE, SoundTrigger.SoundModel.TYPE_KEYPHRASE);
+        values.put(SoundModelContract.KEY_DATA, soundModel.getData());
+        values.put(SoundModelContract.KEY_MODEL_VERSION, soundModel.getVersion());
+        if (soundModel.getKeyphrases() != null && soundModel.getKeyphrases().length == 1) {
+            values.put(SoundModelContract.KEY_KEYPHRASE_ID, soundModel.getKeyphrases()[0].getId());
+            values.put(SoundModelContract.KEY_RECOGNITION_MODES, soundModel.getKeyphrases()[0].getRecognitionModes());
+            values.put(SoundModelContract.KEY_USERS, getCommaSeparatedString(soundModel.getKeyphrases()[0].getUsers()));
+            values.put(SoundModelContract.KEY_LOCALE, soundModel.getKeyphrases()[0].getLocale().toLanguageTag());
+            values.put(SoundModelContract.KEY_HINT_TEXT, soundModel.getKeyphrases()[0].getText());
+            try {
+                return db.insertWithOnConflict(SoundModelContract.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE) != -1;
+            } finally {
+                db.close();
+            }
+        }
+        return false;
+    }
+}

@@ -1,0 +1,19 @@
+public String getString(@StyleableRes int index){
+    if (mRecycled) {
+        throw new RuntimeException("Cannot make calls to a recycled instance!");
+    }
+    index *= STYLE_NUM_ENTRIES;
+    final int[] data = mData;
+    final int type = data[index + STYLE_TYPE];
+    if (type == TypedValue.TYPE_NULL) {
+        return null;
+    } else if (type == TypedValue.TYPE_STRING) {
+        return loadStringValueAt(index).toString();
+    }
+    final TypedValue v = mValue;
+    if (getValueAt(index, v)) {
+        final CharSequence cs = v.coerceToString();
+        return cs != null ? cs.toString() : null;
+    }
+    throw new RuntimeException("getString of bad type: 0x" + Integer.toHexString(type));
+}

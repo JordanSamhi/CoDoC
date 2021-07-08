@@ -1,0 +1,22 @@
+
+         * Returns the Adapter position of the item represented by this ViewHolder.
+         * <p>
+         * Note that this might be different than the {@link #getLayoutPosition()} if there are
+         * pending adapter updates but a new layout pass has not happened yet.
+         * <p>
+         * RecyclerView does not handle any adapter updates until the next layout traversal. This
+         * may create temporary inconsistencies between what user sees on the screen and what
+         * adapter contents have. This inconsistency is not important since it will be less than
+         * 16ms but it might be a problem if you want to use ViewHolder position to access the
+         * adapter. Sometimes, you may need to get the exact adapter position to do
+         * some actions in response to user events. In that case, you should use this method which
+         * will calculate the Adapter position of the ViewHolder.
+         * <p>
+         * Note that if you've called {@link RecyclerView.Adapter#notifyDataSetChanged()}, until the
+         * next layout pass, the return value of this method will be {@link #NO_POSITION}.
+         *
+         * @return The adapter position of the item if it still exists in the adapter.
+         * {@link RecyclerView#NO_POSITION} if item has been removed from the adapter,
+         * {@link RecyclerView.Adapter#notifyDataSetChanged()} has been called after the last
+         * layout pass or the ViewHolder has already been recycled.
+         

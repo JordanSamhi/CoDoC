@@ -1,0 +1,18 @@
+public Builder addChildAsBits(int tag, int value){
+    if (isConstructedTag(tag)) {
+        throw new IllegalStateException("Cannot set value of a constructed tag: " + tag);
+    }
+    byte[] dataBytes = new byte[INT_BYTES + 1];
+    value = Integer.reverse(value);
+    int dataLength = 0;
+    for (int i = 1; i < dataBytes.length; i++) {
+        dataBytes[i] = (byte) (value >> ((INT_BYTES - i) * Byte.SIZE));
+        if (dataBytes[i] != 0) {
+            dataLength = i;
+        }
+    }
+    dataLength++;
+    dataBytes[0] = IccUtils.countTrailingZeros(dataBytes[dataLength - 1]);
+    addChild(new Asn1Node(tag, dataBytes, 0, dataLength));
+    return this;
+}

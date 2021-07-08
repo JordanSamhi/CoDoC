@@ -1,0 +1,12 @@
+public WindowInsetsController getWindowInsetsController(){
+    if (mAttachInfo != null) {
+        return mAttachInfo.mViewRootImpl.getInsetsController();
+    }
+    ViewParent parent = getParent();
+    if (parent instanceof View) {
+        return ((View) parent).getWindowInsetsController();
+    } else if (parent instanceof ViewRootImpl) {
+        return ((ViewRootImpl) parent).getInsetsController();
+    }
+    return null;
+}

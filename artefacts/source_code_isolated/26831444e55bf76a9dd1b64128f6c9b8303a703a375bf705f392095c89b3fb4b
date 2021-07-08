@@ -1,0 +1,76 @@
+public void show(){
+    int height = buildDropDown();
+    final boolean noInputMethod = isInputMethodNotNeeded();
+    mPopup.setAllowScrollingAnchorParent(!noInputMethod);
+    mPopup.setWindowLayoutType(mDropDownWindowLayoutType);
+    if (mPopup.isShowing()) {
+        if (!getAnchorView().isAttachedToWindow()) {
+            return;
+        }
+        final int widthSpec;
+        if (mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT) {
+            widthSpec = -1;
+        } else if (mDropDownWidth == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            widthSpec = getAnchorView().getWidth();
+        } else {
+            widthSpec = mDropDownWidth;
+        }
+        final int heightSpec;
+        if (mDropDownHeight == ViewGroup.LayoutParams.MATCH_PARENT) {
+            heightSpec = noInputMethod ? height : ViewGroup.LayoutParams.MATCH_PARENT;
+            if (noInputMethod) {
+                mPopup.setWidth(mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT ? ViewGroup.LayoutParams.MATCH_PARENT : 0);
+                mPopup.setHeight(0);
+            } else {
+                mPopup.setWidth(mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT ? ViewGroup.LayoutParams.MATCH_PARENT : 0);
+                mPopup.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+            }
+        } else if (mDropDownHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            heightSpec = height;
+        } else {
+            heightSpec = mDropDownHeight;
+        }
+        mPopup.setOutsideTouchable(!mForceIgnoreOutsideTouch && !mDropDownAlwaysVisible);
+        mPopup.update(getAnchorView(), mDropDownHorizontalOffset, mDropDownVerticalOffset, (widthSpec < 0) ? -1 : widthSpec, (heightSpec < 0) ? -1 : heightSpec);
+        mPopup.getContentView().restoreDefaultFocus();
+    } else {
+        final int widthSpec;
+        if (mDropDownWidth == ViewGroup.LayoutParams.MATCH_PARENT) {
+            widthSpec = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            if (mDropDownWidth == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                widthSpec = getAnchorView().getWidth();
+            } else {
+                widthSpec = mDropDownWidth;
+            }
+        }
+        final int heightSpec;
+        if (mDropDownHeight == ViewGroup.LayoutParams.MATCH_PARENT) {
+            heightSpec = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
+            if (mDropDownHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                heightSpec = height;
+            } else {
+                heightSpec = mDropDownHeight;
+            }
+        }
+        mPopup.setWidth(widthSpec);
+        mPopup.setHeight(heightSpec);
+        mPopup.setIsClippedToScreen(true);
+        mPopup.setOutsideTouchable(!mForceIgnoreOutsideTouch && !mDropDownAlwaysVisible);
+        mPopup.setTouchInterceptor(mTouchInterceptor);
+        mPopup.setEpicenterBounds(mEpicenterBounds);
+        if (mOverlapAnchorSet) {
+            mPopup.setOverlapAnchor(mOverlapAnchor);
+        }
+        mPopup.showAsDropDown(getAnchorView(), mDropDownHorizontalOffset, mDropDownVerticalOffset, mDropDownGravity);
+        mDropDownList.setSelection(ListView.INVALID_POSITION);
+        mPopup.getContentView().restoreDefaultFocus();
+        if (!mModal || mDropDownList.isInTouchMode()) {
+            clearListSelection();
+        }
+        if (!mModal) {
+            mHandler.post(mHideSelector);
+        }
+    }
+}

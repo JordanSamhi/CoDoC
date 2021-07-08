@@ -1,0 +1,9 @@
+public void attach(@NonNull LowpanProvision provision) throws LowpanException{
+    try {
+        mBinder.attach(provision);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

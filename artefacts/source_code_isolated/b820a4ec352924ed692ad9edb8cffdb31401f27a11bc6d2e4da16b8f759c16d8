@@ -1,0 +1,12 @@
+public WindowInsets dispatchApplyWindowInsets(WindowInsets insets){
+    try {
+        mPrivateFlags3 |= PFLAG3_APPLYING_INSETS;
+        if (mListenerInfo != null && mListenerInfo.mOnApplyWindowInsetsListener != null) {
+            return mListenerInfo.mOnApplyWindowInsetsListener.onApplyWindowInsets(this, insets);
+        } else {
+            return onApplyWindowInsets(insets);
+        }
+    } finally {
+        mPrivateFlags3 &= ~PFLAG3_APPLYING_INSETS;
+    }
+}

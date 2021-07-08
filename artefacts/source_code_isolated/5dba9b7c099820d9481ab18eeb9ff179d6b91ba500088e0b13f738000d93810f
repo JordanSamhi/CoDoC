@@ -1,0 +1,12 @@
+public void runJob(Runnable job){
+    if (isEnded()) {
+        throw new IllegalStateException("Trying to run job on interrupted dispatcher thread");
+    }
+    synchronized (mJobQueue) {
+        if (mJobQueue.size() == MAX_MESSAGE_QUEUE_LENGTH) {
+            throw new RuntimeException("Camera master thread job queue full");
+        }
+        mJobQueue.add(job);
+        mJobQueue.notifyAll();
+    }
+}

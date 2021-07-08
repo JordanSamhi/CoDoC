@@ -1,0 +1,28 @@
+public void parseBundleExtra(String tagName, AttributeSet attrs, Bundle outBundle) throws XmlPullParserException{
+    TypedArray sa = obtainAttributes(attrs, com.android.internal.R.styleable.Extra);
+    String name = sa.getString(com.android.internal.R.styleable.Extra_name);
+    if (name == null) {
+        sa.recycle();
+        throw new XmlPullParserException("<" + tagName + "> requires an android:name attribute at " + attrs.getPositionDescription());
+    }
+    TypedValue v = sa.peekValue(com.android.internal.R.styleable.Extra_value);
+    if (v != null) {
+        if (v.type == TypedValue.TYPE_STRING) {
+            CharSequence cs = v.coerceToString();
+            outBundle.putCharSequence(name, cs);
+        } else if (v.type == TypedValue.TYPE_INT_BOOLEAN) {
+            outBundle.putBoolean(name, v.data != 0);
+        } else if (v.type >= TypedValue.TYPE_FIRST_INT && v.type <= TypedValue.TYPE_LAST_INT) {
+            outBundle.putInt(name, v.data);
+        } else if (v.type == TypedValue.TYPE_FLOAT) {
+            outBundle.putFloat(name, v.getFloat());
+        } else {
+            sa.recycle();
+            throw new XmlPullParserException("<" + tagName + "> only supports string, integer, float, color, and boolean at " + attrs.getPositionDescription());
+        }
+    } else {
+        sa.recycle();
+        throw new XmlPullParserException("<" + tagName + "> requires an android:value or android:resource attribute at " + attrs.getPositionDescription());
+    }
+    sa.recycle();
+}

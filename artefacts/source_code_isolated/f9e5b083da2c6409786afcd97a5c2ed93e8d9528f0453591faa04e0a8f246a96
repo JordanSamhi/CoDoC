@@ -1,0 +1,43 @@
+public static NitzData parse(String nitz){
+    try {
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        c.clear();
+        c.set(Calendar.DST_OFFSET, 0);
+        String[] nitzSubs = nitz.split("[/:,+-]");
+        int year = 2000 + Integer.parseInt(nitzSubs[0]);
+        if (year > MAX_NITZ_YEAR) {
+            if (ServiceStateTracker.DBG) {
+                Rlog.e(LOG_TAG, "NITZ year: " + year + " exceeds limit, skip NITZ time update");
+            }
+            return null;
+        }
+        c.set(Calendar.YEAR, year);
+        int month = Integer.parseInt(nitzSubs[1]) - 1;
+        c.set(Calendar.MONTH, month);
+        int date = Integer.parseInt(nitzSubs[2]);
+        c.set(Calendar.DATE, date);
+        int hour = Integer.parseInt(nitzSubs[3]);
+        c.set(Calendar.HOUR, hour);
+        int minute = Integer.parseInt(nitzSubs[4]);
+        c.set(Calendar.MINUTE, minute);
+        int second = Integer.parseInt(nitzSubs[5]);
+        c.set(Calendar.SECOND, second);
+        boolean sign = (nitz.indexOf('-') == -1);
+        int totalUtcOffsetQuarterHours = Integer.parseInt(nitzSubs[6]);
+        int totalUtcOffsetMillis = (sign ? 1 : -1) * totalUtcOffsetQuarterHours * MS_PER_QUARTER_HOUR;
+        Integer dstAdjustmentHours = (nitzSubs.length >= 8) ? Integer.parseInt(nitzSubs[7]) : null;
+        Integer dstAdjustmentMillis = null;
+        if (dstAdjustmentHours != null) {
+            dstAdjustmentMillis = dstAdjustmentHours * MS_PER_HOUR;
+        }
+        TimeZone zone = null;
+        if (nitzSubs.length >= 9) {
+            String tzname = nitzSubs[8].replace('!', '/');
+            zone = TimeZone.getTimeZone(tzname);
+        }
+        return new NitzData(nitz, totalUtcOffsetMillis, dstAdjustmentMillis, c.getTimeInMillis(), zone);
+    } catch (RuntimeException ex) {
+        Rlog.e(LOG_TAG, "NITZ: Parsing NITZ time " + nitz + " ex=" + ex);
+        return null;
+    }
+}

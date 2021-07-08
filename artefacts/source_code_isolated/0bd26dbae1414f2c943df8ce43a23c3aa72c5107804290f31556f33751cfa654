@@ -1,0 +1,11 @@
+public TtmlCue getNextResult(){
+    while (mTimeEvents.size() >= 2) {
+        long start = mTimeEvents.pollFirst();
+        long end = mTimeEvents.first();
+        List<TtmlNode> activeCues = getActiveNodes(start, end);
+        if (!activeCues.isEmpty()) {
+            return new TtmlCue(start, end, TtmlUtils.applySpacePolicy(TtmlUtils.extractText(mRootNode, start, end), false), TtmlUtils.extractTtmlFragment(mRootNode, start, end));
+        }
+    }
+    return null;
+}

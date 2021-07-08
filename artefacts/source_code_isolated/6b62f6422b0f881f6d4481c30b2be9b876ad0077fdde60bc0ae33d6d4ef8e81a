@@ -1,0 +1,15 @@
+public static boolean isEnabled(Context context, String feature){
+    String value;
+    if (context != null) {
+        value = Settings.Global.getString(context.getContentResolver(), feature);
+        if (!TextUtils.isEmpty(value)) {
+            return Boolean.parseBoolean(value);
+        }
+    }
+    value = SystemProperties.get(FFLAG_OVERRIDE_PREFIX + feature);
+    if (!TextUtils.isEmpty(value)) {
+        return Boolean.parseBoolean(value);
+    }
+    value = getAllFeatureFlags().get(feature);
+    return Boolean.parseBoolean(value);
+}

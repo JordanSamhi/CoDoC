@@ -1,0 +1,31 @@
+public InlineSuggestionsResponse getInlineSuggestionsResponse(){
+    final int size = mInlineSuggestions.size();
+    if (size == 0) {
+        return new InlineSuggestionsResponse(Collections.emptyList());
+    }
+    final List<InlineSuggestion> inlineSuggestions = new ArrayList<>();
+    if (mDatasets == null || mDatasets.size() != size) {
+        for (int i = 0; i < size; i++) {
+            inlineSuggestions.add(copy(i, mInlineSuggestions.get(i)));
+        }
+        return new InlineSuggestionsResponse(inlineSuggestions);
+    }
+    for (int i = 0; i < size; i++) {
+        final Dataset dataset = mDatasets.get(i);
+        final int fieldIndex = dataset.getFieldIds().indexOf(mAutofillId);
+        if (fieldIndex < 0) {
+            Slog.w(TAG, "AutofillId=" + mAutofillId + " not found in dataset");
+            continue;
+        }
+        final InlinePresentation inlinePresentation = dataset.getFieldInlinePresentation(fieldIndex);
+        if (inlinePresentation == null) {
+            Slog.w(TAG, "InlinePresentation not found in dataset");
+            continue;
+        }
+        if (!inlinePresentation.isPinned() && !includeDataset(dataset, fieldIndex)) {
+            continue;
+        }
+        inlineSuggestions.add(copy(i, mInlineSuggestions.get(i)));
+    }
+    return new InlineSuggestionsResponse(inlineSuggestions);
+}

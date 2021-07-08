@@ -1,0 +1,17 @@
+public void updateEmergencyCountryIsoAllPhones(String countryIso){
+    mIsCountrySetByAnotherSub = false;
+    updateEmergencyNumberDatabaseCountryChange(countryIso);
+    for (Phone phone : PhoneFactory.getPhones()) {
+        if (phone.getPhoneId() == mPhone.getPhoneId()) {
+            continue;
+        }
+        EmergencyNumberTracker emergencyNumberTracker;
+        if (phone != null && phone.getEmergencyNumberTracker() != null) {
+            emergencyNumberTracker = phone.getEmergencyNumberTracker();
+            if (TextUtils.isEmpty(emergencyNumberTracker.getEmergencyCountryIso()) || emergencyNumberTracker.mIsCountrySetByAnotherSub) {
+                emergencyNumberTracker.mIsCountrySetByAnotherSub = true;
+                emergencyNumberTracker.updateEmergencyNumberDatabaseCountryChange(countryIso);
+            }
+        }
+    }
+}

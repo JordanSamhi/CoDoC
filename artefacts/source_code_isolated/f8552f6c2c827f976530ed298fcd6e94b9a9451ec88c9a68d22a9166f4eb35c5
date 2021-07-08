@@ -1,0 +1,12 @@
+public int setSpeechRate(float speechRate){
+    if (speechRate > 0.0f) {
+        int intRate = (int) (speechRate * 100);
+        if (intRate > 0) {
+            synchronized (mStartLock) {
+                mParams.putInt(Engine.KEY_PARAM_RATE, intRate);
+            }
+            return SUCCESS;
+        }
+    }
+    return ERROR;
+}

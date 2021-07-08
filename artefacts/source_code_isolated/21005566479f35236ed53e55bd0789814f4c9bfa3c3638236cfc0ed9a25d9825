@@ -1,0 +1,20 @@
+public void addPrintServiceRecommendationsChangeListener(@NonNull PrintServiceRecommendationsChangeListener listener, @Nullable Handler handler){
+    Preconditions.checkNotNull(listener);
+    if (handler == null) {
+        handler = mHandler;
+    }
+    if (mService == null) {
+        Log.w(LOG_TAG, "Feature android.software.print not available");
+        return;
+    }
+    if (mPrintServiceRecommendationsChangeListeners == null) {
+        mPrintServiceRecommendationsChangeListeners = new ArrayMap<>();
+    }
+    PrintServiceRecommendationsChangeListenerWrapper wrappedListener = new PrintServiceRecommendationsChangeListenerWrapper(listener, handler);
+    try {
+        mService.addPrintServiceRecommendationsChangeListener(wrappedListener, mUserId);
+        mPrintServiceRecommendationsChangeListeners.put(listener, wrappedListener);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

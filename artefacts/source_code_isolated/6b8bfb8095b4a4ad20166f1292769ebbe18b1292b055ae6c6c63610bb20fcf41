@@ -1,0 +1,12 @@
+public final void setContentCaptureConditions(@NonNull String packageName, @Nullable Set<ContentCaptureCondition> conditions){
+    final IContentCaptureServiceCallback callback = mCallback;
+    if (callback == null) {
+        Log.w(TAG, "setContentCaptureConditions(): no server callback");
+        return;
+    }
+    try {
+        callback.setContentCaptureConditions(packageName, toList(conditions));
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

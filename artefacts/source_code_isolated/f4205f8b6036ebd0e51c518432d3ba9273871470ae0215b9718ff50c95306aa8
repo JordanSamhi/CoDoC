@@ -1,0 +1,58 @@
+public static void requestFonts(@NonNull Context context, @NonNull FontRequest request, @NonNull Handler handler, @Nullable CancellationSignal cancellationSignal, @NonNull FontRequestCallback callback){
+    final Handler callerThreadHandler = new Handler();
+    final Typeface cachedTypeface = sTypefaceCache.get(request.getIdentifier());
+    if (cachedTypeface != null) {
+        callerThreadHandler.post(() -> callback.onTypefaceRetrieved(cachedTypeface));
+        return;
+    }
+    handler.post(() -> {
+        FontFamilyResult result;
+        try {
+            result = fetchFonts(context, cancellationSignal, request);
+        } catch (NameNotFoundException e) {
+            callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_PROVIDER_NOT_FOUND));
+            return;
+        }
+        final Typeface anotherCachedTypeface = sTypefaceCache.get(request.getIdentifier());
+        if (anotherCachedTypeface != null) {
+            callerThreadHandler.post(() -> callback.onTypefaceRetrieved(anotherCachedTypeface));
+            return;
+        }
+        if (result.getStatusCode() != FontFamilyResult.STATUS_OK) {
+            switch(result.getStatusCode()) {
+                case FontFamilyResult.STATUS_WRONG_CERTIFICATES:
+                    callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_WRONG_CERTIFICATES));
+                    return;
+                case FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED:
+                    callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR));
+                    return;
+                default:
+                    callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR));
+                    return;
+            }
+        }
+        final FontInfo[] fonts = result.getFonts();
+        if (fonts == null || fonts.length == 0) {
+            callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND));
+            return;
+        }
+        for (final FontInfo font : fonts) {
+            if (font.getResultCode() != Columns.RESULT_CODE_OK) {
+                final int resultCode = font.getResultCode();
+                if (resultCode < 0) {
+                    callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR));
+                } else {
+                    callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(resultCode));
+                }
+                return;
+            }
+        }
+        final Typeface typeface = buildTypeface(context, cancellationSignal, fonts);
+        if (typeface == null) {
+            callerThreadHandler.post(() -> callback.onTypefaceRequestFailed(FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR));
+            return;
+        }
+        sTypefaceCache.put(request.getIdentifier(), typeface);
+        callerThreadHandler.post(() -> callback.onTypefaceRetrieved(typeface));
+    });
+}

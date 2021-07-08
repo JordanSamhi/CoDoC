@@ -1,0 +1,10 @@
+public void addOnWindowShownListener(OnWindowShownListener listener){
+    checkIsAlive();
+    if (mOnWindowShownListeners == null) {
+        mOnWindowShownListeners = new CopyOnWriteArray<OnWindowShownListener>();
+    }
+    mOnWindowShownListeners.add(listener);
+    if (mWindowShown) {
+        listener.onWindowShown();
+    }
+}

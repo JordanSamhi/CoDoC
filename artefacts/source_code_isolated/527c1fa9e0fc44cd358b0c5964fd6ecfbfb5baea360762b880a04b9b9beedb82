@@ -1,0 +1,8 @@
+public void setTestProviderEnabled(@NonNull String provider, boolean enabled){
+    Preconditions.checkArgument(provider != null, "invalid null provider");
+    try {
+        mService.setTestProviderEnabled(provider, enabled, mContext.getOpPackageName(), mContext.getAttributionTag());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

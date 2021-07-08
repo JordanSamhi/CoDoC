@@ -1,0 +1,14 @@
+public void appendRecipientEntry(final RecipientEntry entry){
+    clearComposingText();
+    final Editable editable = getText();
+    int chipInsertionPoint = 0;
+    final DrawableRecipientChip[] recips = getSortedRecipients();
+    if (recips != null && recips.length > 0) {
+        final DrawableRecipientChip last = recips[recips.length - 1];
+        chipInsertionPoint = editable.getSpanEnd(last) + 1;
+    }
+    final CharSequence chip = createChip(entry);
+    if (chip != null) {
+        editable.insert(chipInsertionPoint, chip);
+    }
+}

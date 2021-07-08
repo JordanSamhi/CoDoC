@@ -1,0 +1,13 @@
+public void addCallback(int types, Callback cb, int flags){
+    CallbackInfo info;
+    int index = findCallbackInfo(cb);
+    if (index >= 0) {
+        info = sStatic.mCallbacks.get(index);
+        info.type |= types;
+        info.flags |= flags;
+    } else {
+        info = new CallbackInfo(cb, types, flags, this);
+        sStatic.mCallbacks.add(info);
+    }
+    sStatic.updateDiscoveryRequest();
+}

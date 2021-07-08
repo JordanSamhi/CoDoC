@@ -1,0 +1,43 @@
+
+         * Create a VPN interface using the parameters supplied to this
+         * builder. The interface works on IP packets, and a file descriptor
+         * is returned for the application to access them. Each read
+         * retrieves an outgoing packet which was routed to the interface.
+         * Each write injects an incoming packet just like it was received
+         * from the interface. The file descriptor is put into non-blocking
+         * mode by default to avoid blocking Java threads. To use the file
+         * descriptor completely in native space, see
+         * {@link ParcelFileDescriptor#detachFd()}. The application MUST
+         * close the file descriptor when the VPN connection is terminated.
+         * The VPN interface will be removed and the network will be
+         * restored by the system automatically.
+         *
+         * <p>To avoid conflicts, there can be only one active VPN interface
+         * at the same time. Usually network parameters are never changed
+         * during the lifetime of a VPN connection. It is also common for an
+         * application to create a new file descriptor after closing the
+         * previous one. However, it is rare but not impossible to have two
+         * interfaces while performing a seamless handover. In this case, the
+         * old interface will be deactivated when the new one is created
+         * successfully. Both file descriptors are valid but now outgoing
+         * packets will be routed to the new interface. Therefore, after
+         * draining the old file descriptor, the application MUST close it
+         * and start using the new file descriptor. If the new interface
+         * cannot be created, the existing interface and its file descriptor
+         * remain untouched.
+         *
+         * <p>An exception will be thrown if the interface cannot be created
+         * for any reason. However, this method returns {@code null} if the
+         * application is not prepared or is revoked. This helps solve
+         * possible race conditions between other VPN applications.
+         *
+         * @return {@link ParcelFileDescriptor} of the VPN interface, or
+         *         {@code null} if the application is not prepared.
+         * @throws IllegalArgumentException if a parameter is not accepted
+         *         by the operating system.
+         * @throws IllegalStateException if a parameter cannot be applied
+         *         by the operating system.
+         * @throws SecurityException if the service is not properly declared
+         *         in {@code AndroidManifest.xml}.
+         * @see VpnService
+         

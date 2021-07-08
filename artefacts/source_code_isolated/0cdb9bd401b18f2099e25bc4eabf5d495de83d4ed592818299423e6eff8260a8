@@ -1,0 +1,9 @@
+public boolean syncQueryPasspointIcon(AsyncChannel channel, long bssid, String fileName){
+    Bundle bundle = new Bundle();
+    bundle.putLong(EXTRA_OSU_ICON_QUERY_BSSID, bssid);
+    bundle.putString(EXTRA_OSU_ICON_QUERY_FILENAME, fileName);
+    Message resultMsg = channel.sendMessageSynchronously(CMD_QUERY_OSU_ICON, bundle);
+    int result = resultMsg.arg1;
+    resultMsg.recycle();
+    return result == 1;
+}

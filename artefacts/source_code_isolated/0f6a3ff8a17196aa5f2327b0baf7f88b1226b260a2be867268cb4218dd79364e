@@ -1,0 +1,21 @@
+public MacAddress calculatePersistentMac(String key, Mac hashFunction){
+    if (key == null || hashFunction == null) {
+        return null;
+    }
+    byte[] hashedBytes;
+    try {
+        hashedBytes = hashFunction.doFinal(key.getBytes(StandardCharsets.UTF_8));
+    } catch (ProviderException | IllegalStateException e) {
+        Log.e(TAG, "Failure in calculatePersistentMac", e);
+        return null;
+    }
+    ByteBuffer bf = ByteBuffer.wrap(hashedBytes);
+    long longFromSsid = bf.getLong();
+    longFromSsid &= MAC_ADDRESS_VALID_LONG_MASK;
+    longFromSsid |= MAC_ADDRESS_LOCALLY_ASSIGNED_MASK;
+    longFromSsid &= ~MAC_ADDRESS_MULTICAST_MASK;
+    bf.clear();
+    bf.putLong(0, longFromSsid);
+    MacAddress macAddress = MacAddress.fromBytes(Arrays.copyOfRange(bf.array(), 2, 8));
+    return macAddress;
+}

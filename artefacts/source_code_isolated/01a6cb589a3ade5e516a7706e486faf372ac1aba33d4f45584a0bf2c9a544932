@@ -1,0 +1,10 @@
+public SurfaceControl mirrorDisplay(final int displayId){
+    try {
+        SurfaceControl outSurfaceControl = new SurfaceControl();
+        WindowManagerGlobal.getWindowManagerService().mirrorDisplay(displayId, outSurfaceControl);
+        return outSurfaceControl;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Unable to reach window manager", e);
+    }
+    return null;
+}

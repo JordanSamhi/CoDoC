@@ -1,0 +1,23 @@
+public boolean isTransitionRequired(@Nullable TransitionValues startValues, @Nullable TransitionValues endValues){
+    boolean valuesChanged = false;
+    if (startValues != null && endValues != null) {
+        String[] properties = getTransitionProperties();
+        if (properties != null) {
+            int count = properties.length;
+            for (int i = 0; i < count; i++) {
+                if (isValueChanged(startValues, endValues, properties[i])) {
+                    valuesChanged = true;
+                    break;
+                }
+            }
+        } else {
+            for (String key : startValues.values.keySet()) {
+                if (isValueChanged(startValues, endValues, key)) {
+                    valuesChanged = true;
+                    break;
+                }
+            }
+        }
+    }
+    return valuesChanged;
+}

@@ -1,0 +1,17 @@
+public static synchronized HttpResponseCache install(File directory, long maxSize) throws IOException{
+    ResponseCache installed = ResponseCache.getDefault();
+    if (installed instanceof HttpResponseCache) {
+        HttpResponseCache installedResponseCache = (HttpResponseCache) installed;
+        CacheHolder cacheHolder = installedResponseCache.getCacheHolder();
+        if (cacheHolder.isEquivalent(directory, maxSize)) {
+            return installedResponseCache;
+        } else {
+            installedResponseCache.close();
+        }
+    }
+    CacheHolder cacheHolder = CacheHolder.create(directory, maxSize);
+    AndroidResponseCacheAdapter androidResponseCacheAdapter = new AndroidResponseCacheAdapter(cacheHolder);
+    HttpResponseCache responseCache = new HttpResponseCache(androidResponseCacheAdapter);
+    ResponseCache.setDefault(responseCache);
+    return responseCache;
+}

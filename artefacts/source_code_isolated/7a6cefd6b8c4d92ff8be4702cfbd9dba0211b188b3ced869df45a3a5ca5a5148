@@ -1,0 +1,11 @@
+public void receiveSessionModifyResponse(int status, VideoProfile requestedProfile, VideoProfile responseProfile){
+    if (mVideoCallbacks != null) {
+        for (IVideoCallback callback : mVideoCallbacks.values()) {
+            try {
+                callback.receiveSessionModifyResponse(status, requestedProfile, responseProfile);
+            } catch (RemoteException ignored) {
+                Log.w(this, "receiveSessionModifyResponse callback failed", ignored);
+            }
+        }
+    }
+}

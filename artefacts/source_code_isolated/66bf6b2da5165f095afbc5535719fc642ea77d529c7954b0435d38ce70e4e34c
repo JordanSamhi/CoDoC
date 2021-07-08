@@ -1,0 +1,26 @@
+public void tune(String inputId, Uri channelUri, Bundle params){
+    if (DEBUG)
+        Log.d(TAG, "tune(" + channelUri + ")");
+    if (TextUtils.isEmpty(inputId)) {
+        throw new IllegalArgumentException("inputId cannot be null or an empty string");
+    }
+    synchronized (sMainTvViewLock) {
+        if (sMainTvView.get() == null) {
+            sMainTvView = new WeakReference<>(this);
+        }
+    }
+    if (mSessionCallback != null && TextUtils.equals(mSessionCallback.mInputId, inputId)) {
+        if (mSession != null) {
+            mSession.tune(channelUri, params);
+        } else {
+            mSessionCallback.mChannelUri = channelUri;
+            mSessionCallback.mTuneParams = params;
+        }
+    } else {
+        resetInternal();
+        mSessionCallback = new MySessionCallback(inputId, channelUri, params);
+        if (mTvInputManager != null) {
+            mTvInputManager.createSession(inputId, mSessionCallback, mHandler);
+        }
+    }
+}

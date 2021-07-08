@@ -1,0 +1,12 @@
+public List<PerNetworkSuggestionMatchMetaInfo> getHighestPriorityNetworks(){
+    Map<Integer, List<PerNetworkSuggestionMatchMetaInfo>> matchedNetworkInfosPerPriority = networkInfos.stream().collect(Collectors.toMap(e -> e.extWifiNetworkSuggestion.wns.wifiConfiguration.priority, e -> Arrays.asList(e), (v1, v2) -> {
+        List<PerNetworkSuggestionMatchMetaInfo> concatList = new ArrayList<>(v1);
+        concatList.addAll(v2);
+        return concatList;
+    }));
+    if (matchedNetworkInfosPerPriority.isEmpty()) {
+        Log.wtf(TAG, "Unexepectedly got empty");
+        return Collections.EMPTY_LIST;
+    }
+    return matchedNetworkInfosPerPriority.get(Collections.max(matchedNetworkInfosPerPriority.keySet()));
+}

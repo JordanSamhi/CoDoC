@@ -1,0 +1,17 @@
+public boolean removeRxFilter(@NonNull String ifaceName, int type){
+    synchronized (mLock) {
+        byte halType;
+        switch(type) {
+            case WifiNative.RX_FILTER_TYPE_V4_MULTICAST:
+                halType = ISupplicantStaIface.RxFilterType.V4_MULTICAST;
+                break;
+            case WifiNative.RX_FILTER_TYPE_V6_MULTICAST:
+                halType = ISupplicantStaIface.RxFilterType.V6_MULTICAST;
+                break;
+            default:
+                Log.e(TAG, "Invalid Rx Filter type: " + type);
+                return false;
+        }
+        return removeRxFilter(ifaceName, halType);
+    }
+}

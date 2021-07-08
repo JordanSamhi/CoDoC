@@ -1,0 +1,9 @@
+public int getVolumeIndexForAttributes(@NonNull AudioAttributes attr){
+    Preconditions.checkNotNull(attr, "attr must not be null");
+    final IAudioService service = getService();
+    try {
+        return service.getVolumeIndexForAttributes(attr);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

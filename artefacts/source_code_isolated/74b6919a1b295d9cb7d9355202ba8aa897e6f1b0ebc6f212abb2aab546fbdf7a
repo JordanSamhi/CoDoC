@@ -1,0 +1,10 @@
+public int get(int keyCode, int metaState){
+    metaState = KeyEvent.normalizeMetaState(metaState);
+    char ch = nativeGetCharacter(mPtr, keyCode, metaState);
+    int map = sCombiningToAccent.get(ch);
+    if (map != 0) {
+        return map | COMBINING_ACCENT;
+    } else {
+        return ch;
+    }
+}

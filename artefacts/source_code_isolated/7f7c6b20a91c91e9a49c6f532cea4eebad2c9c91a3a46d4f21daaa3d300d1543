@@ -1,0 +1,10 @@
+public boolean restoreAppDataSnapshot(String pkg, @AppIdInt int appId, String seInfo, @UserIdInt int userId, int snapshotId, int storageFlags) throws InstallerException{
+    if (!checkBeforeRemote())
+        return false;
+    try {
+        mInstalld.restoreAppDataSnapshot(null, pkg, appId, seInfo, userId, snapshotId, storageFlags);
+        return true;
+    } catch (Exception e) {
+        throw InstallerException.from(e);
+    }
+}

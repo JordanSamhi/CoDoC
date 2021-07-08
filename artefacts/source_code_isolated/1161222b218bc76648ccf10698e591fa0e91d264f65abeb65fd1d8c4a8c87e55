@@ -1,0 +1,13 @@
+public boolean beginReliableWrite(){
+    if (VDBG)
+        Log.d(TAG, "beginReliableWrite() - device: " + mDevice.getAddress());
+    if (mService == null || mClientIf == 0)
+        return false;
+    try {
+        mService.beginReliableWrite(mClientIf, mDevice.getAddress());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

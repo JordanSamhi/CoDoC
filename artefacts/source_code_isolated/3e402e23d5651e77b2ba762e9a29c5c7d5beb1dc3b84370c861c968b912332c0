@@ -1,0 +1,7 @@
+public int unsafeCheckOpRawNoThrow(int op, int uid, @NonNull String packageName){
+    try {
+        return mService.checkOperationRaw(op, uid, packageName);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

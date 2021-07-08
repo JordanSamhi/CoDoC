@@ -1,0 +1,15 @@
+public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec, Params... params){
+    if (mStatus != Status.PENDING) {
+        switch(mStatus) {
+            case RUNNING:
+                throw new IllegalStateException("Cannot execute task:" + " the task is already running.");
+            case FINISHED:
+                throw new IllegalStateException("Cannot execute task:" + " the task has already been executed " + "(a task can be executed only once)");
+        }
+    }
+    mStatus = Status.RUNNING;
+    onPreExecute();
+    mWorker.mParams = params;
+    exec.execute(mFuture);
+    return this;
+}

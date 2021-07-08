@@ -1,0 +1,14 @@
+public LogMaker getLogMaker(){
+    LogMaker logMaker = new LogMaker(MetricsEvent.VIEW_UNKNOWN).setPackageName(getPackageName()).addTaggedData(MetricsEvent.NOTIFICATION_ID, getId()).addTaggedData(MetricsEvent.NOTIFICATION_TAG, getTag()).addTaggedData(MetricsEvent.FIELD_NOTIFICATION_CHANNEL_ID, getChannelIdLogTag()).addTaggedData(MetricsEvent.FIELD_NOTIFICATION_GROUP_ID, getGroupLogTag()).addTaggedData(MetricsEvent.FIELD_NOTIFICATION_GROUP_SUMMARY, getNotification().isGroupSummary() ? 1 : 0).addTaggedData(MetricsProto.MetricsEvent.FIELD_NOTIFICATION_CATEGORY, getNotification().category);
+    if (getNotification().extras != null) {
+        String template = getNotification().extras.getString(Notification.EXTRA_TEMPLATE);
+        if (template != null && !template.isEmpty()) {
+            logMaker.addTaggedData(MetricsEvent.FIELD_NOTIFICATION_STYLE, template.hashCode());
+        }
+        ArrayList<Person> people = getNotification().extras.getParcelableArrayList(Notification.EXTRA_PEOPLE_LIST);
+        if (people != null && !people.isEmpty()) {
+            logMaker.addTaggedData(MetricsEvent.FIELD_NOTIFICATION_PEOPLE, people.size());
+        }
+    }
+    return logMaker;
+}

@@ -1,0 +1,9 @@
+public void dump(IndentingPrintWriter ipw){
+    long systemElapsedOffsetMillis = System.currentTimeMillis() - SystemClock.elapsedRealtime();
+    ipw.println("Last Several Location Requests:");
+    ipw.increaseIndent();
+    for (RequestSummary requestSummary : mList) {
+        requestSummary.dump(ipw, systemElapsedOffsetMillis);
+    }
+    ipw.decreaseIndent();
+}

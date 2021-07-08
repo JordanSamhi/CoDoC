@@ -1,0 +1,7 @@
+public void testClearBackupData_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.clearBackupData(mUserTwoId, TEST_TRANSPORT, TEST_PACKAGE);
+    verify(mUserOneService, never()).clearBackupData(TEST_TRANSPORT, TEST_PACKAGE);
+}

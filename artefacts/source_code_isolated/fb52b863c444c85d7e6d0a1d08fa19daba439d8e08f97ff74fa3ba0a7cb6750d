@@ -1,0 +1,12 @@
+public boolean getBoolean(@BoolRes int id) throws NotFoundException{
+    final TypedValue value = obtainTempTypedValue();
+    try {
+        mResourcesImpl.getValue(id, value, true);
+        if (value.type >= TypedValue.TYPE_FIRST_INT && value.type <= TypedValue.TYPE_LAST_INT) {
+            return value.data != 0;
+        }
+        throw new NotFoundException("Resource ID #0x" + Integer.toHexString(id) + " type #0x" + Integer.toHexString(value.type) + " is not valid");
+    } finally {
+        releaseTempTypedValue(value);
+    }
+}

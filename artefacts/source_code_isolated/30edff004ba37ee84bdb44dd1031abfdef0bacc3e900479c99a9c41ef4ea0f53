@@ -1,0 +1,16 @@
+public void writeResConfigToProto(ProtoOutputStream protoOutputStream, long fieldId, DisplayMetrics metrics){
+    final int width, height;
+    if (metrics.widthPixels >= metrics.heightPixels) {
+        width = metrics.widthPixels;
+        height = metrics.heightPixels;
+    } else {
+        width = metrics.heightPixels;
+        height = metrics.widthPixels;
+    }
+    final long token = protoOutputStream.start(fieldId);
+    dumpDebug(protoOutputStream, CONFIGURATION);
+    protoOutputStream.write(SDK_VERSION, Build.VERSION.RESOURCES_SDK_INT);
+    protoOutputStream.write(SCREEN_WIDTH_PX, width);
+    protoOutputStream.write(SCREEN_HEIGHT_PX, height);
+    protoOutputStream.end(token);
+}

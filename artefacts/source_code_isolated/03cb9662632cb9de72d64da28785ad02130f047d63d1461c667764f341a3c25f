@@ -1,0 +1,32 @@
+public void invalidateCaptorsAndInjectors(){
+    if (!policyReadyToUse()) {
+        return;
+    }
+    synchronized (mLock) {
+        if (mInjectors != null) {
+            for (final WeakReference<AudioTrack> weakTrack : mInjectors) {
+                final AudioTrack track = weakTrack.get();
+                if (track == null) {
+                    break;
+                }
+                try {
+                    track.stop();
+                    track.flush();
+                } catch (IllegalStateException e) {
+                }
+            }
+        }
+        if (mCaptors != null) {
+            for (final WeakReference<AudioRecord> weakRecord : mCaptors) {
+                final AudioRecord record = weakRecord.get();
+                if (record == null) {
+                    break;
+                }
+                try {
+                    record.stop();
+                } catch (IllegalStateException e) {
+                }
+            }
+        }
+    }
+}

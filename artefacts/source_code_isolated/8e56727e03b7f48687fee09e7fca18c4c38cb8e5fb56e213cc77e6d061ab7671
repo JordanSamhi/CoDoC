@@ -1,0 +1,10 @@
+public void prepareFromSearch(String query, Bundle extras){
+    if (query == null) {
+        query = "";
+    }
+    try {
+        mSessionBinder.prepareFromSearch(mContext.getPackageName(), query, extras);
+    } catch (RemoteException e) {
+        Log.wtf(TAG, "Error calling prepare(" + query + ").", e);
+    }
+}

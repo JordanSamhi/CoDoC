@@ -1,0 +1,10 @@
+public int getStorageEncryptionStatus(int userHandle){
+    if (mService != null) {
+        try {
+            return mService.getStorageEncryptionStatus(mContext.getPackageName(), userHandle);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return ENCRYPTION_STATUS_UNSUPPORTED;
+}

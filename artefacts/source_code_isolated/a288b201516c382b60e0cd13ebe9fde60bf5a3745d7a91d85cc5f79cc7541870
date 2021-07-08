@@ -1,0 +1,42 @@
+public static FontInfo[] getFontFromProvider(Context context, FontRequest request, String authority, CancellationSignal cancellationSignal){
+    ArrayList<FontInfo> result = new ArrayList<>();
+    final Uri uri = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority).build();
+    final Uri fileBaseUri = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(authority).appendPath("file").build();
+    try (Cursor cursor = context.getContentResolver().query(uri, new String[] { Columns._ID, Columns.FILE_ID, Columns.TTC_INDEX, Columns.VARIATION_SETTINGS, Columns.WEIGHT, Columns.ITALIC, Columns.RESULT_CODE }, "query = ?", new String[] { request.getQuery() }, null, cancellationSignal)) {
+        if (cursor != null && cursor.getCount() > 0) {
+            final int resultCodeColumnIndex = cursor.getColumnIndex(Columns.RESULT_CODE);
+            result = new ArrayList<>();
+            final int idColumnIndex = cursor.getColumnIndexOrThrow(Columns._ID);
+            final int fileIdColumnIndex = cursor.getColumnIndex(Columns.FILE_ID);
+            final int ttcIndexColumnIndex = cursor.getColumnIndex(Columns.TTC_INDEX);
+            final int vsColumnIndex = cursor.getColumnIndex(Columns.VARIATION_SETTINGS);
+            final int weightColumnIndex = cursor.getColumnIndex(Columns.WEIGHT);
+            final int italicColumnIndex = cursor.getColumnIndex(Columns.ITALIC);
+            while (cursor.moveToNext()) {
+                int resultCode = resultCodeColumnIndex != -1 ? cursor.getInt(resultCodeColumnIndex) : Columns.RESULT_CODE_OK;
+                final int ttcIndex = ttcIndexColumnIndex != -1 ? cursor.getInt(ttcIndexColumnIndex) : 0;
+                final String variationSettings = vsColumnIndex != -1 ? cursor.getString(vsColumnIndex) : null;
+                Uri fileUri;
+                if (fileIdColumnIndex == -1) {
+                    long id = cursor.getLong(idColumnIndex);
+                    fileUri = ContentUris.withAppendedId(uri, id);
+                } else {
+                    long id = cursor.getLong(fileIdColumnIndex);
+                    fileUri = ContentUris.withAppendedId(fileBaseUri, id);
+                }
+                int weight;
+                boolean italic;
+                if (weightColumnIndex != -1 && italicColumnIndex != -1) {
+                    weight = cursor.getInt(weightColumnIndex);
+                    italic = cursor.getInt(italicColumnIndex) == 1;
+                } else {
+                    weight = Typeface.Builder.NORMAL_WEIGHT;
+                    italic = false;
+                }
+                FontVariationAxis[] axes = FontVariationAxis.fromFontVariationSettings(variationSettings);
+                result.add(new FontInfo(fileUri, ttcIndex, axes, weight, italic, resultCode));
+            }
+        }
+    }
+    return result.toArray(new FontInfo[0]);
+}

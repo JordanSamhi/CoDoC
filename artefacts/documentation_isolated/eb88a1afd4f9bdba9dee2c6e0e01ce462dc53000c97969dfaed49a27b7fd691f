@@ -1,0 +1,24 @@
+
+     * Notify registered observers that a row was updated.
+     * <p>
+     * To observe events sent through this call, use
+     * {@link #registerContentObserver(Uri, boolean, ContentObserver)}.
+     * <p>
+     * If {@link #NOTIFY_SYNC_TO_NETWORK} is set, this will attempt to schedule
+     * a local sync using the sync adapter that's registered for the authority
+     * of the provided uri. No account will be passed to the sync adapter, so
+     * all matching accounts will be synchronized.
+     * <p>
+     * Starting in {@link android.os.Build.VERSION_CODES#O}, all content
+     * notifications must be backed by a valid {@link ContentProvider}.
+     *
+     * @param uri The uri of the content that was changed.
+     * @param observer The observer that originated the change, may be
+     *            <code>null</null>. The observer that originated the change
+     *            will only receive the notification if it has requested to
+     *            receive self-change notifications by implementing
+     *            {@link ContentObserver#deliverSelfNotifications()} to return
+     *            true.
+     * @param flags Additional flags: {@link #NOTIFY_SYNC_TO_NETWORK}.
+     * @see #requestSync(android.accounts.Account, String, android.os.Bundle)
+     

@@ -1,0 +1,17 @@
+public int setGlobalPrivateDnsModeSpecifiedHost(@NonNull ComponentName admin, @NonNull String privateDnsHost){
+    throwIfParentInstance("setGlobalPrivateDnsModeSpecifiedHost");
+    Objects.requireNonNull(privateDnsHost, "dns resolver is null");
+    if (mService == null) {
+        return PRIVATE_DNS_SET_ERROR_FAILURE_SETTING;
+    }
+    if (NetworkUtils.isWeaklyValidatedHostname(privateDnsHost)) {
+        if (!PrivateDnsConnectivityChecker.canConnectToPrivateDnsServer(privateDnsHost)) {
+            return PRIVATE_DNS_SET_ERROR_HOST_NOT_SERVING;
+        }
+    }
+    try {
+        return mService.setGlobalPrivateDns(admin, PRIVATE_DNS_MODE_PROVIDER_HOSTNAME, privateDnsHost);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

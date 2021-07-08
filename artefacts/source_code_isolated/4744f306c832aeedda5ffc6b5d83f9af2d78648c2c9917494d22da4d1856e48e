@@ -1,0 +1,18 @@
+public boolean addFont(String path, int ttcIndex, FontVariationAxis[] axes, int weight, int italic){
+    if (mBuilderPtr == 0) {
+        throw new IllegalStateException("Unable to call addFont after freezing.");
+    }
+    try (FileInputStream file = new FileInputStream(path)) {
+        FileChannel fileChannel = file.getChannel();
+        long fontSize = fileChannel.size();
+        ByteBuffer fontBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fontSize);
+        if (axes != null) {
+            for (FontVariationAxis axis : axes) {
+                nAddAxisValue(mBuilderPtr, axis.getOpenTypeTagValue(), axis.getStyleValue());
+            }
+        }
+        return nAddFont(mBuilderPtr, fontBuffer, ttcIndex, weight, italic);
+    } catch (IOException e) {
+        return false;
+    }
+}

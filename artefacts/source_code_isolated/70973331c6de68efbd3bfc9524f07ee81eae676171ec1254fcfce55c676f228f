@@ -1,0 +1,27 @@
+public void notifyRankingUpdateLocked(List<NotificationRecord> changedHiddenNotifications){
+    boolean isHiddenRankingUpdate = changedHiddenNotifications != null && changedHiddenNotifications.size() > 0;
+    for (final ManagedServiceInfo serviceInfo : getServices()) {
+        if (!serviceInfo.isEnabledForCurrentProfiles()) {
+            continue;
+        }
+        boolean notifyThisListener = false;
+        if (isHiddenRankingUpdate && serviceInfo.targetSdkVersion >= Build.VERSION_CODES.P) {
+            for (NotificationRecord rec : changedHiddenNotifications) {
+                if (isVisibleToListener(rec.getSbn(), serviceInfo)) {
+                    notifyThisListener = true;
+                    break;
+                }
+            }
+        }
+        if (notifyThisListener || !isHiddenRankingUpdate) {
+            final NotificationRankingUpdate update = makeRankingUpdateLocked(serviceInfo);
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    notifyRankingUpdate(serviceInfo, update);
+                }
+            });
+        }
+    }
+}

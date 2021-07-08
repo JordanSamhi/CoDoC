@@ -1,0 +1,11 @@
+public void setGestureDetectionPassthroughRegion(int displayId, @NonNull Region region){
+    Preconditions.checkNotNull(region, "region cannot be null");
+    final IAccessibilityServiceConnection connection = AccessibilityInteractionClient.getInstance().getConnection(mConnectionId);
+    if (connection != null) {
+        try {
+            connection.setGestureDetectionPassthroughRegion(displayId, region);
+        } catch (RemoteException re) {
+            throw new RuntimeException(re);
+        }
+    }
+}

@@ -1,0 +1,22 @@
+public NetworkStats groupedByUid(){
+    final NetworkStats stats = new NetworkStats(elapsedRealtime, 10);
+    final Entry entry = new Entry();
+    entry.iface = IFACE_ALL;
+    entry.set = SET_ALL;
+    entry.tag = TAG_NONE;
+    entry.metered = METERED_ALL;
+    entry.roaming = ROAMING_ALL;
+    entry.defaultNetwork = DEFAULT_NETWORK_ALL;
+    for (int i = 0; i < size; i++) {
+        if (tag[i] != TAG_NONE)
+            continue;
+        entry.uid = uid[i];
+        entry.rxBytes = rxBytes[i];
+        entry.rxPackets = rxPackets[i];
+        entry.txBytes = txBytes[i];
+        entry.txPackets = txPackets[i];
+        entry.operations = operations[i];
+        stats.combineValues(entry);
+    }
+    return stats;
+}

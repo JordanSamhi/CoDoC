@@ -1,0 +1,13 @@
+public void update(NetworkAgentInfo nai){
+    final boolean isDefault = mService.isDefaultNetwork(nai);
+    final DetailedState state = nai.networkInfo.getDetailedState();
+    for (int type = 0; type < mTypeLists.length; type++) {
+        final ArrayList<NetworkAgentInfo> list = mTypeLists[type];
+        final boolean contains = (list != null && list.contains(nai));
+        final boolean isFirst = contains && (nai == list.get(0));
+        if (isFirst || contains && isDefault) {
+            maybeLogBroadcast(nai, state, type, isDefault);
+            mService.sendLegacyNetworkBroadcast(nai, state, type);
+        }
+    }
+}

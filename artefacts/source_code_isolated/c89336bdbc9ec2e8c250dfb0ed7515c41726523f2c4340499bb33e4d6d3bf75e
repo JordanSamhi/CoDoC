@@ -1,0 +1,5 @@
+public static void enforceSystemOrPhoneCaller(String methodName, int callingUid){
+    if (callingUid != Process.PHONE_UID && callingUid != Process.SYSTEM_UID) {
+        throw new SecurityException("Cannot call " + methodName + " from UID " + callingUid);
+    }
+}

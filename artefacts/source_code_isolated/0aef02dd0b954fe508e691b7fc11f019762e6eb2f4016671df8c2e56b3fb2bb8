@@ -1,0 +1,18 @@
+public void setColorMatrix(int level, float[] value){
+    if (value != null && value.length != 16) {
+        throw new IllegalArgumentException("Expected length: 16 (4x4 matrix)" + ", actual length: " + value.length);
+    }
+    synchronized (mColorMatrix) {
+        final float[] oldValue = mColorMatrix.get(level);
+        if (!Arrays.equals(oldValue, value)) {
+            if (value == null) {
+                mColorMatrix.remove(level);
+            } else if (oldValue == null) {
+                mColorMatrix.put(level, Arrays.copyOf(value, value.length));
+            } else {
+                System.arraycopy(value, 0, oldValue, 0, value.length);
+            }
+            applyColorMatrix(computeColorMatrixLocked());
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public void truncate(long minTime){
+    if (isEmpty() || getTime(0) >= minTime) {
+        return;
+    }
+    final int index = getLatestIndexBefore(minTime);
+    mStart = offsetOf(index);
+    mCount -= index;
+    mTimes[mStart] = minTime;
+}

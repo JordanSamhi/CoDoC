@@ -1,0 +1,10 @@
+public synchronized boolean setAlwaysAllowMmsData(boolean alwaysAllow){
+    localLog("setAlwaysAllowMmsData", alwaysAllow);
+    mDataEnabledOverride.setAlwaysAllowMms(alwaysAllow);
+    boolean changed = SubscriptionController.getInstance().setDataEnabledOverrideRules(mPhone.getSubId(), mDataEnabledOverride.getRules());
+    if (changed) {
+        updateDataEnabledAndNotify(REASON_OVERRIDE_RULE_CHANGED);
+        notifyDataEnabledOverrideChanged();
+    }
+    return changed;
+}

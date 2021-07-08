@@ -1,0 +1,10 @@
+public void tetherOffloadRuleClear(@NonNull final IpServer ipServer){
+    if (!mIsBpfEnabled)
+        return;
+    final LinkedHashMap<Inet6Address, Ipv6ForwardingRule> rules = mIpv6ForwardingRules.get(ipServer);
+    if (rules == null)
+        return;
+    for (final Ipv6ForwardingRule rule : new ArrayList<Ipv6ForwardingRule>(rules.values())) {
+        tetherOffloadRuleRemove(ipServer, rule);
+    }
+}

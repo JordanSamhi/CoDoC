@@ -1,0 +1,6 @@
+public void onReceivedSoapMessage(int sessionId, @Nullable SppResponseMessage responseMessage){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "onReceivedSoapMessage with sessionId=" + sessionId);
+    }
+    mProvisioningStateMachine.getHandler().post(() -> mProvisioningStateMachine.handleSoapMessageResponse(sessionId, responseMessage));
+}

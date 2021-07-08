@@ -1,0 +1,24 @@
+
+     * Returns the current grant state of a runtime permission for a specific application. This
+     * function can be called by a device owner, profile owner, or by a delegate given the
+     * {@link #DELEGATION_PERMISSION_GRANT} scope via {@link #setDelegatedScopes}.
+     *
+     * @param admin Which profile or device owner this request is associated with, or {@code null}
+     *            if the caller is a permission grant delegate.
+     * @param packageName The application to check the grant state for.
+     * @param permission The permission to check for.
+     * @return the current grant state specified by device policy. If the profile or device owner
+     *         has not set a grant state, the return value is
+     *         {@link #PERMISSION_GRANT_STATE_DEFAULT}. This does not indicate whether or not the
+     *         permission is currently granted for the package.
+     *         <p/>
+     *         If a grant state was set by the profile or device owner, then the return value will
+     *         be one of {@link #PERMISSION_GRANT_STATE_DENIED} or
+     *         {@link #PERMISSION_GRANT_STATE_GRANTED}, which indicates if the permission is
+     *         currently denied or granted.
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     * @see #setPermissionGrantState(ComponentName, String, String, int)
+     * @see PackageManager#checkPermission(String, String)
+     * @see #setDelegatedScopes
+     * @see #DELEGATION_PERMISSION_GRANT
+     

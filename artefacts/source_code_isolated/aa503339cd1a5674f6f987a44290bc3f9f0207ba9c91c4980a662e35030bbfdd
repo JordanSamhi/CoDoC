@@ -1,0 +1,48 @@
+public float[] measureAllOffsets(boolean[] trailing, FontMetricsInt fmi){
+    float[] measurement = new float[mLen + 1];
+    int[] target = new int[mLen + 1];
+    for (int offset = 0; offset < target.length; ++offset) {
+        target[offset] = trailing[offset] ? offset - 1 : offset;
+    }
+    if (target[0] < 0) {
+        measurement[0] = 0;
+    }
+    float h = 0;
+    for (int runIndex = 0; runIndex < mDirections.getRunCount(); runIndex++) {
+        final int runStart = mDirections.getRunStart(runIndex);
+        if (runStart > mLen)
+            break;
+        final int runLimit = Math.min(runStart + mDirections.getRunLength(runIndex), mLen);
+        final boolean runIsRtl = mDirections.isRunRtl(runIndex);
+        int segStart = runStart;
+        for (int j = mHasTabs ? runStart : runLimit; j <= runLimit; ++j) {
+            if (j == runLimit || charAt(j) == TAB_CHAR) {
+                final float oldh = h;
+                final boolean advance = (mDir == Layout.DIR_RIGHT_TO_LEFT) == runIsRtl;
+                final float w = measureRun(segStart, j, j, runIsRtl, fmi);
+                h += advance ? w : -w;
+                final float baseh = advance ? oldh : h;
+                FontMetricsInt crtfmi = advance ? fmi : null;
+                for (int offset = segStart; offset <= j && offset <= mLen; ++offset) {
+                    if (target[offset] >= segStart && target[offset] < j) {
+                        measurement[offset] = baseh + measureRun(segStart, offset, j, runIsRtl, crtfmi);
+                    }
+                }
+                if (j != runLimit) {
+                    if (target[j] == j) {
+                        measurement[j] = h;
+                    }
+                    h = mDir * nextTab(h * mDir);
+                    if (target[j + 1] == j) {
+                        measurement[j + 1] = h;
+                    }
+                }
+                segStart = j + 1;
+            }
+        }
+    }
+    if (target[mLen] == mLen) {
+        measurement[mLen] = h;
+    }
+    return measurement;
+}

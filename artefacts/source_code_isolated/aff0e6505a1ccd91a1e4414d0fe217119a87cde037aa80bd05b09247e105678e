@@ -1,0 +1,10 @@
+public final void finish(){
+    Message message = Message.obtain();
+    try {
+        message.what = MSG_TASK_ENDED;
+        message.arg1 = mTaskId;
+        mReplyTo.send(message);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Cannot send MSG_TASK_ENDED, remote handler no longer exist");
+    }
+}

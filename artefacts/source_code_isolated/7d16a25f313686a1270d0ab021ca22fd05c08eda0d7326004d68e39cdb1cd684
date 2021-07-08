@@ -1,0 +1,14 @@
+public WindowAnimationFrameStats getWindowAnimationFrameStats(){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "Getting window animation frame stats");
+        }
+        return mUiAutomationConnection.getWindowAnimationFrameStats();
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error getting window animation frame stats!", re);
+    }
+    return null;
+}

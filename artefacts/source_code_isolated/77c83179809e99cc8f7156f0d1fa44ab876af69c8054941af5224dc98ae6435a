@@ -1,0 +1,11 @@
+public List<String> getPermittedAccessibilityServices(@NonNull ComponentName admin){
+    throwIfParentInstance("getPermittedAccessibilityServices");
+    if (mService != null) {
+        try {
+            return mService.getPermittedAccessibilityServices(admin);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

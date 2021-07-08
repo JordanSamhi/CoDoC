@@ -1,0 +1,10 @@
+public static OnClickListener createIntentOnClickListener(@NonNull final PendingIntent intent){
+    Objects.requireNonNull(intent);
+    return v -> {
+        try {
+            intent.send();
+        } catch (PendingIntent.CanceledException e) {
+            Log.e(LOG_TAG, "Error sending PendingIntent", e);
+        }
+    };
+}

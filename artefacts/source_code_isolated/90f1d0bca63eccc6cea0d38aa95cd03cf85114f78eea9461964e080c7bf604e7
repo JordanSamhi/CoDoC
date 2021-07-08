@@ -1,0 +1,21 @@
+public StorageVolume getStorageVolume(@NonNull Uri uri){
+    String volumeName = MediaStore.getVolumeName(uri);
+    if (Objects.equals(volumeName, MediaStore.VOLUME_EXTERNAL)) {
+        try (Cursor c = mContext.getContentResolver().query(uri, new String[] { MediaStore.MediaColumns.VOLUME_NAME }, null, null)) {
+            if (c.moveToFirst()) {
+                volumeName = c.getString(0);
+            }
+        }
+    }
+    switch(volumeName) {
+        case MediaStore.VOLUME_EXTERNAL_PRIMARY:
+            return getPrimaryStorageVolume();
+        default:
+            for (StorageVolume vol : getStorageVolumes()) {
+                if (Objects.equals(vol.getMediaStoreVolumeName(), volumeName)) {
+                    return vol;
+                }
+            }
+    }
+    throw new IllegalStateException("Unknown volume for " + uri);
+}

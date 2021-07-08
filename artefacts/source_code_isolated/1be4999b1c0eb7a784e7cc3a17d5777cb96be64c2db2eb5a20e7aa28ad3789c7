@@ -1,0 +1,8 @@
+public void handleDhcpProvisioningSuccess(@NonNull String bssid, @NonNull String ssid){
+    mWifiScoreCard.resetBssidBlocklistStreak(ssid, bssid, REASON_DHCP_FAILURE);
+    BssidStatus status = mBssidStatusMap.get(bssid);
+    if (status == null) {
+        return;
+    }
+    status.failureCount[REASON_DHCP_FAILURE] = 0;
+}

@@ -1,0 +1,14 @@
+public NotificationHistory getNotificationHistory(String callingPkg, String callingAttributionTag){
+    getContext().enforceCallingOrSelfPermission(android.Manifest.permission.ACCESS_NOTIFICATIONS, "NotificationManagerService.getNotificationHistory");
+    int uid = Binder.getCallingUid();
+    if (mAppOps.noteOpNoThrow(AppOpsManager.OP_ACCESS_NOTIFICATIONS, uid, callingPkg, callingAttributionTag, null) == AppOpsManager.MODE_ALLOWED) {
+        IntArray currentUserIds = mUserProfiles.getCurrentProfileIds();
+        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "notifHistoryReadHistory");
+        try {
+            return mHistoryManager.readNotificationHistory(currentUserIds.toArray());
+        } finally {
+            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        }
+    }
+    return new NotificationHistory();
+}

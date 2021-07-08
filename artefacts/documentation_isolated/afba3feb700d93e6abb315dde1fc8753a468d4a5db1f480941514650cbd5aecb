@@ -1,0 +1,19 @@
+
+     * If you are done with a buffer, use this call to return the buffer to the codec
+     * or to render it on the output surface. If you configured the codec with an
+     * output surface, setting {@code render} to {@code true} will first send the buffer
+     * to that output surface. The surface will release the buffer back to the codec once
+     * it is no longer used/displayed.
+     *
+     * Once an output buffer is released to the codec, it MUST NOT
+     * be used until it is later retrieved by {@link #getOutputBuffer} in response
+     * to a {@link #dequeueOutputBuffer} return value or a
+     * {@link Callback#onOutputBufferAvailable} callback.
+     *
+     * @param index The index of a client-owned output buffer previously returned
+     *              from a call to {@link #dequeueOutputBuffer}.
+     * @param render If a valid surface was specified when configuring the codec,
+     *               passing true renders this output buffer to the surface.
+     * @throws IllegalStateException if not in the Executing state.
+     * @throws MediaCodec.CodecException upon codec error.
+     

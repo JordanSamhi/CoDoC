@@ -1,0 +1,10 @@
+public boolean deletePackage(String x_app_id, String content_type, String package_name, String class_name){
+    WapPushManDBHelper dbh = getDatabase(mContext);
+    SQLiteDatabase db = dbh.getWritableDatabase();
+    String where = "x_wap_application=\'" + x_app_id + "\'" + " and content_type=\'" + content_type + "\'" + " and package_name=\'" + package_name + "\'" + " and class_name=\'" + class_name + "\'";
+    int num_removed = db.delete(APPID_TABLE_NAME, where, null);
+    db.close();
+    if (LOCAL_LOGV)
+        Log.v(LOG_TAG, "deleted " + num_removed + " rows:" + x_app_id + ":" + content_type + " " + package_name + "." + class_name);
+    return num_removed > 0;
+}

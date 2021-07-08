@@ -1,0 +1,22 @@
+
+     * Called by an application that is administering the device to set the
+     * global proxy and exclusion list.
+     * <p>
+     * The calling device admin must have requested
+     * {@link DeviceAdminInfo#USES_POLICY_SETS_GLOBAL_PROXY} to be able to call
+     * this method; if it has not, a security exception will be thrown.
+     * Only the first device admin can set the proxy. If a second admin attempts
+     * to set the proxy, the {@link ComponentName} of the admin originally setting the
+     * proxy will be returned. If successful in setting the proxy, {@code null} will
+     * be returned.
+     * The method can be called repeatedly by the device admin alrady setting the
+     * proxy to update the proxy and exclusion list.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param proxySpec the global proxy desired. Must be an HTTP Proxy.
+     *            Pass Proxy.NO_PROXY to reset the proxy.
+     * @param exclusionList a list of domains to be excluded from the global proxy.
+     * @return {@code null} if the proxy was successfully set, or otherwise a {@link ComponentName}
+     *            of the device admin that sets the proxy.
+     * @hide
+     

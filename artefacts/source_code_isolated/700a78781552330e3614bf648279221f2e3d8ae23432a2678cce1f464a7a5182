@@ -1,0 +1,9 @@
+public void testSelectBackupTransport() throws Exception{
+    setUpForSelectTransport();
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    String oldTransport = backupManagerService.selectBackupTransport(mNewTransport.transportName);
+    assertThat(getSettingsTransport()).isEqualTo(mNewTransport.transportName);
+    assertThat(oldTransport).isEqualTo(mOldTransport.transportName);
+    verify(mTransportManager).disposeOfTransportClient(eq(mNewTransportMock.transportClient), any());
+}

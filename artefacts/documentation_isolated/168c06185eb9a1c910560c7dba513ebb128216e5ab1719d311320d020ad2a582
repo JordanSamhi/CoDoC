@@ -1,0 +1,25 @@
+
+     * Query network usage statistics summaries. Result filtered to include only uids belonging to
+     * calling user. Result is aggregated over time, hence all buckets will have the same start and
+     * end timestamps. Not aggregated over state, uid, default network, metered, or roaming. This
+     * means buckets' start and end timestamps are going to be the same as the 'startTime' and
+     * 'endTime' parameters. State, uid, metered, and roaming are going to vary, and tag is going to
+     * be the same.
+     *
+     * @param networkType As defined in {@link ConnectivityManager}, e.g.
+     *            {@link ConnectivityManager#TYPE_MOBILE}, {@link ConnectivityManager#TYPE_WIFI}
+     *            etc.
+     * @param subscriberId If applicable, the subscriber id of the network interface.
+     *                     <p>Starting with API level 29, the {@code subscriberId} is guarded by
+     *                     additional restrictions. Calling apps that do not meet the new
+     *                     requirements to access the {@code subscriberId} can provide a {@code
+     *                     null} value when querying for the mobile network type to receive usage
+     *                     for all mobile networks. For additional details see {@link
+     *                     TelephonyManager#getSubscriberId()}.
+     * @param startTime Start of period. Defined in terms of "Unix time", see
+     *            {@link java.lang.System#currentTimeMillis}.
+     * @param endTime End of period. Defined in terms of "Unix time", see
+     *            {@link java.lang.System#currentTimeMillis}.
+     * @return Statistics object or null if permissions are insufficient or error happened during
+     *         statistics collection.
+     

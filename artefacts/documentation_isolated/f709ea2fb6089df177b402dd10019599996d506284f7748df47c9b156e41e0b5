@@ -1,0 +1,17 @@
+
+     * Reads backup data from the file descriptor provided in the construtor, encrypts it and
+     * uploads it to the server.
+     *
+     * <p>The {@code incremental} flag indicates if the backup data provided is incremental or a
+     * complete set. Incremental backup is not possible if no previous crypto state exists, or the
+     * tertiary key must be rotated in the next backup. If the caller requests incremental backup
+     * but it is not possible, then the backup will not start and this method will throw {@link
+     * NonIncrementalBackupRequiredException}.
+     *
+     * <p>TODO(b/70704456): Update return code to indicate that we require non-incremental backup.
+     *
+     * @param incremental {@code true} if the data provided is a diff from the previous backup,
+     *     {@code false} if it is a complete set
+     * @throws NonIncrementalBackupRequiredException if the caller provides an incremental backup but the task
+     *     requires non-incremental backup
+     

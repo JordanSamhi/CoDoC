@@ -1,0 +1,9 @@
+public void restoreEntity(BackupDataInputStream data){
+    if (DEBUG)
+        Log.d(TAG, "got entity '" + data.getKey() + "' size=" + data.size());
+    String key = data.getKey();
+    if (isKeyInList(key, mFiles)) {
+        File f = new File(mFilesDir, key);
+        writeFile(f, data);
+    }
+}

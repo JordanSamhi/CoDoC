@@ -1,0 +1,23 @@
+public void readFromProto(@NonNull ProtoInputStream proto, long fieldId) throws IOException, WireTypeMismatchException{
+    final long token = proto.start(fieldId);
+    try {
+        while (proto.nextField() != ProtoInputStream.NO_MORE_FIELDS) {
+            switch(proto.getFieldNumber()) {
+                case (int) RectProto.LEFT:
+                    left = proto.readInt(RectProto.LEFT);
+                    break;
+                case (int) RectProto.TOP:
+                    top = proto.readInt(RectProto.TOP);
+                    break;
+                case (int) RectProto.RIGHT:
+                    right = proto.readInt(RectProto.RIGHT);
+                    break;
+                case (int) RectProto.BOTTOM:
+                    bottom = proto.readInt(RectProto.BOTTOM);
+                    break;
+            }
+        }
+    } finally {
+        proto.end(token);
+    }
+}

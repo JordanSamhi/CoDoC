@@ -1,0 +1,13 @@
+public boolean isAutofillSupported(){
+    if (mService == null)
+        return false;
+    final SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        mService.isServiceSupported(mContext.getUserId(), receiver);
+        return receiver.getIntResult() == 1;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get autofill supported status.");
+    }
+}

@@ -1,0 +1,8 @@
+public VoiceCallRatTracker mergeWith(VoiceCallRatTracker that){
+    if (that == null) {
+        Rlog.e(TAG, "mergeWith: attempting to merge with null", new Throwable());
+    } else {
+        that.mRatUsageMap.entrySet().stream().forEach(e -> this.mRatUsageMap.merge(e.getKey(), e.getValue(), Value::mergeInPlace));
+    }
+    return this;
+}

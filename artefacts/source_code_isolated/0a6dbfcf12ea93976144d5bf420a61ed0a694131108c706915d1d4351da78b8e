@@ -1,0 +1,43 @@
+public boolean setupAngle(Context context, Bundle bundle, PackageManager pm, String packageName){
+    if (!shouldUseAngle(context, bundle, packageName)) {
+        return false;
+    }
+    ApplicationInfo angleInfo = null;
+    String anglePkgName = getAngleDebugPackage(context, bundle);
+    if (!anglePkgName.isEmpty()) {
+        Log.i(TAG, "ANGLE debug package enabled: " + anglePkgName);
+        try {
+            angleInfo = pm.getApplicationInfo(anglePkgName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "ANGLE debug package '" + anglePkgName + "' not installed");
+            return false;
+        }
+    }
+    if (angleInfo == null) {
+        anglePkgName = getAnglePackageName(pm);
+        if (!anglePkgName.isEmpty()) {
+            Log.i(TAG, "ANGLE package enabled: " + anglePkgName);
+            try {
+                angleInfo = pm.getApplicationInfo(anglePkgName, PackageManager.MATCH_SYSTEM_ONLY);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.w(TAG, "ANGLE package '" + anglePkgName + "' not installed");
+                return false;
+            }
+        } else {
+            Log.e(TAG, "Failed to find ANGLE package.");
+            return false;
+        }
+    }
+    final String abi = chooseAbi(angleInfo);
+    final String paths = angleInfo.nativeLibraryDir + File.pathSeparator + angleInfo.sourceDir + "!/lib/" + abi;
+    if (DEBUG)
+        Log.v(TAG, "ANGLE package libs: " + paths);
+    final String devOptIn = getDriverForPkg(context, bundle, packageName);
+    if (setupAngleWithTempRulesFile(context, packageName, paths, devOptIn)) {
+        return true;
+    }
+    if (setupAngleRulesApk(anglePkgName, angleInfo, pm, packageName, paths, devOptIn)) {
+        return true;
+    }
+    return false;
+}

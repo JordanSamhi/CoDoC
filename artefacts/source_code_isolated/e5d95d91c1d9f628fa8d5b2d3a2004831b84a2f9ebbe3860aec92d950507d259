@@ -1,0 +1,4 @@
+public static void bindSocketToInterface(@NonNull FileDescriptor socket, @NonNull String iface) throws ErrnoException{
+    Os.setsockoptIfreq(socket, SOL_SOCKET, SO_BINDTODEVICE, iface);
+    NetworkUtils.protectFromVpn(socket);
+}

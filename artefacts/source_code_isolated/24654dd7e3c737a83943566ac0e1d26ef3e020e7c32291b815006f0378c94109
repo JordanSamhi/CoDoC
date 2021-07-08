@@ -1,0 +1,11 @@
+public static void clearForcedDisplayDensity(final int displayId){
+    final int userId = UserHandle.myUserId();
+    AsyncTask.execute(() -> {
+        try {
+            final IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+            wm.clearForcedDisplayDensityForUser(displayId, userId);
+        } catch (RemoteException exc) {
+            Log.w(LOG_TAG, "Unable to clear forced display density setting");
+        }
+    });
+}

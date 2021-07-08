@@ -1,0 +1,12 @@
+public void onMovementBoundsChanged(Rect insetBounds, Rect normalBounds, Rect animatingBounds, DisplayInfo displayInfo){
+    getInsetBounds(insetBounds);
+    final Rect defaultBounds = getDefaultBounds(INVALID_SNAP_FRACTION, null);
+    normalBounds.set(defaultBounds);
+    if (animatingBounds.isEmpty()) {
+        animatingBounds.set(defaultBounds);
+    }
+    if (isValidPictureInPictureAspectRatio(mAspectRatio)) {
+        transformBoundsToAspectRatio(normalBounds, mAspectRatio, false);
+    }
+    displayInfo.copyFrom(mDisplayInfo);
+}

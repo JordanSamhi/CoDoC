@@ -1,0 +1,8 @@
+public String buildDelete(String selection){
+    StringBuilder sql = new StringBuilder(120);
+    sql.append("DELETE FROM ");
+    sql.append(SQLiteDatabase.findEditTable(mTables));
+    final String where = computeWhere(selection);
+    appendClause(sql, " WHERE ", where);
+    return sql.toString();
+}

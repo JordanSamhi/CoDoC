@@ -1,0 +1,13 @@
+public Builder setAuthDigitalSignature(@NonNull X509Certificate userCert, @NonNull PrivateKey key, @Nullable X509Certificate serverRootCa){
+    checkNotNull(userCert, MISSING_PARAM_MSG_TMPL, "userCert");
+    checkNotNull(key, MISSING_PARAM_MSG_TMPL, "key");
+    checkCert(userCert);
+    if (serverRootCa != null)
+        checkCert(serverRootCa);
+    resetAuthParams();
+    mUserCert = userCert;
+    mRsaPrivateKey = key;
+    mServerRootCaCert = serverRootCa;
+    mType = VpnProfile.TYPE_IKEV2_IPSEC_RSA;
+    return this;
+}

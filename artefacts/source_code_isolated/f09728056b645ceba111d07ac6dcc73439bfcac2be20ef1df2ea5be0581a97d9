@@ -1,0 +1,10 @@
+public void setSecondaryLockscreenEnabled(@NonNull ComponentName admin, boolean enabled){
+    throwIfParentInstance("setSecondaryLockscreenEnabled");
+    if (mService != null) {
+        try {
+            mService.setSecondaryLockscreenEnabled(admin, enabled);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

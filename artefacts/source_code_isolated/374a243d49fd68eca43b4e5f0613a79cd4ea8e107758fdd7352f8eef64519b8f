@@ -1,0 +1,11 @@
+public int focusChangedLw(WindowState lastFocus, WindowState newFocus){
+    mFocusedWindow = newFocus;
+    mLastFocusedWindow = lastFocus;
+    if (mDisplayContent.isDefaultDisplay) {
+        mService.mPolicy.onDefaultDisplayFocusChangedLw(newFocus);
+    }
+    if ((updateSystemUiVisibilityLw() & SYSTEM_UI_CHANGING_LAYOUT) != 0) {
+        return FINISH_LAYOUT_REDO_LAYOUT;
+    }
+    return 0;
+}

@@ -1,0 +1,19 @@
+
+     * Called by device owner or profile owner of an organization-owned managed profile to retrieve
+     * all new security logging entries since the last call to this API after device boots.
+     *
+     * <p> Access to the logs is rate limited and it will only return new logs after the device
+     * owner has been notified via {@link DeviceAdminReceiver#onSecurityLogsAvailable}.
+     *
+     * <p> When called by a device owner, if there is any other user or profile on the device,
+     * it must be affiliated with the device. Otherwise a {@link SecurityException} will be thrown.
+     * See {@link #isAffiliatedUser}.
+     *
+     * @param admin Which device admin this request is associated with.
+     * @return the new batch of security logs which is a list of {@link SecurityEvent},
+     * or {@code null} if rate limitation is exceeded or if logging is currently disabled.
+     * @throws SecurityException if {@code admin} is not allowed to access security logging,
+     * or there is at least one profile or secondary user that is not affiliated with the device.
+     * @see #isAffiliatedUser
+     * @see DeviceAdminReceiver#onSecurityLogsAvailable
+     

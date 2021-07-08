@@ -1,0 +1,14 @@
+public void removeThermalStatusListener(@NonNull OnThermalStatusChangedListener listener){
+    Preconditions.checkNotNull(listener, "listener cannot be null");
+    IThermalStatusListener internalListener = mListenerMap.get(listener);
+    Preconditions.checkArgument(internalListener != null, "Listener was not added");
+    try {
+        if (mThermalService.unregisterThermalStatusListener(internalListener)) {
+            mListenerMap.remove(listener);
+        } else {
+            throw new RuntimeException("Listener failed to remove");
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

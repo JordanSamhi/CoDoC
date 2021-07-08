@@ -1,0 +1,25 @@
+
+     * Sets the global Private DNS host to be used.
+     * May only be called by the device owner.
+     *
+     * <p>Note that the method is blocking as it will perform a connectivity check to the resolver,
+     * to ensure it is valid. Because of that, the method should not be called on any thread that
+     * relates to user interaction, such as the UI thread.
+     *
+     * <p>In case a VPN is used in conjunction with Private DNS resolver, the Private DNS resolver
+     * must be reachable both from within and outside the VPN. Otherwise, the device may lose
+     * the ability to resolve hostnames as system traffic to the resolver may not go through the
+     * VPN.
+     *
+     * @param admin which {@link DeviceAdminReceiver} this request is associated with.
+     * @param privateDnsHost The hostname of a server that implements DNS over TLS (RFC7858).
+     *
+     * @return {@code PRIVATE_DNS_SET_NO_ERROR} if the mode was set successfully,
+     *         {@code PRIVATE_DNS_SET_ERROR_FAILURE_SETTING} if it could not be set or
+     *         {@code PRIVATE_DNS_SET_ERROR_HOST_NOT_SERVING} if the specified host does not
+     *         implement RFC7858.
+     *
+     * @throws IllegalArgumentException if the {@code privateDnsHost} is not a valid hostname.
+     *
+     * @throws SecurityException if the caller is not the device owner.
+     

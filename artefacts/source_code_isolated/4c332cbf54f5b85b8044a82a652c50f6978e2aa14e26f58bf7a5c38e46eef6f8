@@ -1,0 +1,12 @@
+public boolean onFailureLocked(){
+    final long now = mSystemClock.uptimeMillis();
+    mFailureHistory.addLast(now);
+    while (now - mFailureHistory.peekFirst() > mTriggerFailureDurationMs) {
+        mFailureHistory.removeFirst();
+    }
+    boolean failed = mFailureHistory.size() >= mTriggerFailureCount;
+    if (failed) {
+        mFailureHistory.clear();
+    }
+    return failed;
+}

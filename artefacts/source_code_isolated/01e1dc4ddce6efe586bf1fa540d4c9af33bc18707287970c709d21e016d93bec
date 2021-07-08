@@ -1,0 +1,11 @@
+public void setPrintServiceEnabled(@NonNull ComponentName service, boolean isEnabled){
+    if (mService == null) {
+        Log.w(LOG_TAG, "Feature android.software.print not available");
+        return;
+    }
+    try {
+        mService.setPrintServiceEnabled(service, isEnabled, mUserId);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error enabling or disabling " + service, re);
+    }
+}

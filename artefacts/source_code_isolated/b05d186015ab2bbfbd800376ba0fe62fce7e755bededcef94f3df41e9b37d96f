@@ -1,0 +1,14 @@
+public int getAsuLevel(){
+    int asuLevel;
+    int nrDbm = getDbm();
+    if (nrDbm == CellInfo.UNAVAILABLE) {
+        asuLevel = UNKNOWN_ASU_LEVEL;
+    } else if (nrDbm <= -140) {
+        asuLevel = 0;
+    } else if (nrDbm >= -43) {
+        asuLevel = 97;
+    } else {
+        asuLevel = nrDbm + 140;
+    }
+    return asuLevel;
+}

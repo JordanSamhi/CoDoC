@@ -1,0 +1,22 @@
+public static int translateModePosixToPfd(int mode){
+    int res = 0;
+    if ((mode & O_ACCMODE) == O_RDWR) {
+        res = MODE_READ_WRITE;
+    } else if ((mode & O_ACCMODE) == O_WRONLY) {
+        res = MODE_WRITE_ONLY;
+    } else if ((mode & O_ACCMODE) == O_RDONLY) {
+        res = MODE_READ_ONLY;
+    } else {
+        throw new IllegalArgumentException("Bad mode: " + mode);
+    }
+    if ((mode & O_CREAT) == O_CREAT) {
+        res |= MODE_CREATE;
+    }
+    if ((mode & O_TRUNC) == O_TRUNC) {
+        res |= MODE_TRUNCATE;
+    }
+    if ((mode & O_APPEND) == O_APPEND) {
+        res |= MODE_APPEND;
+    }
+    return res;
+}

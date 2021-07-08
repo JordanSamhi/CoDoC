@@ -1,0 +1,8 @@
+public void onError(@BugreportErrorCode int errorCode){
+    synchronized (mLock) {
+        stopProgressLocked(mInfo.id);
+        mInfo.deleteEmptyFiles();
+    }
+    Log.e(TAG, "Bugreport API callback onError() errorCode = " + errorCode);
+    return;
+}

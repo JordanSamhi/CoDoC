@@ -1,0 +1,39 @@
+public void onCreate(Bundle savedInstanceState){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    synchronized (mLock) {
+        mLastAutofilledData = savedInstanceState.getParcelable(LAST_AUTOFILLED_DATA_TAG);
+        if (isActiveLocked()) {
+            Log.w(TAG, "New session was started before onCreate()");
+            return;
+        }
+        mSessionId = savedInstanceState.getInt(SESSION_ID_TAG, NO_SESSION);
+        mState = savedInstanceState.getInt(STATE_TAG, STATE_UNKNOWN);
+        if (mSessionId != NO_SESSION) {
+            ensureServiceClientAddedIfNeededLocked();
+            final AutofillClient client = getClient();
+            if (client != null) {
+                final SyncResultReceiver receiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+                try {
+                    mService.restoreSession(mSessionId, client.autofillClientGetActivityToken(), mServiceClient.asBinder(), receiver);
+                    final boolean sessionWasRestored = receiver.getIntResult() == 1;
+                    if (!sessionWasRestored) {
+                        Log.w(TAG, "Session " + mSessionId + " could not be restored");
+                        mSessionId = NO_SESSION;
+                        mState = STATE_UNKNOWN;
+                    } else {
+                        if (sDebug) {
+                            Log.d(TAG, "session " + mSessionId + " was restored");
+                        }
+                        client.autofillClientResetableStateAvailable();
+                    }
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Could not figure out if there was an autofill session", e);
+                } catch (SyncResultReceiver.TimeoutException e) {
+                    Log.e(TAG, "Fail to get session restore status: " + e);
+                }
+            }
+        }
+    }
+}

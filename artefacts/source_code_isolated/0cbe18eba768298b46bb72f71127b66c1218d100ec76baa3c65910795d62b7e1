@@ -1,0 +1,12 @@
+public void setText(CharSequence text){
+    enforceNotSealed();
+    mOriginalText = text;
+    if (text instanceof Spanned) {
+        CharSequence tmpText = text;
+        tmpText = replaceClickableSpan(tmpText);
+        tmpText = replaceReplacementSpan(tmpText);
+        mText = tmpText;
+        return;
+    }
+    mText = (text == null) ? null : text.subSequence(0, text.length());
+}

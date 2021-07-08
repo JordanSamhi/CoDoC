@@ -1,0 +1,13 @@
+public static boolean removeDocument(@NonNull ContentResolver content, @NonNull Uri documentUri, @NonNull Uri parentDocumentUri) throws FileNotFoundException{
+    try {
+        final Bundle in = new Bundle();
+        in.putParcelable(DocumentsContract.EXTRA_URI, documentUri);
+        in.putParcelable(DocumentsContract.EXTRA_PARENT_URI, parentDocumentUri);
+        content.call(documentUri.getAuthority(), METHOD_REMOVE_DOCUMENT, null, in);
+        return true;
+    } catch (Exception e) {
+        Log.w(TAG, "Failed to remove document", e);
+        rethrowIfNecessary(e);
+        return false;
+    }
+}

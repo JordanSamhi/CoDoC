@@ -1,0 +1,18 @@
+public void getTransformedBoundingBox(View child, boolean includeDecorInsets, Rect out){
+    if (includeDecorInsets) {
+        Rect insets = ((LayoutParams) child.getLayoutParams()).mDecorInsets;
+        out.set(-insets.left, -insets.top, child.getWidth() + insets.right, child.getHeight() + insets.bottom);
+    } else {
+        out.set(0, 0, child.getWidth(), child.getHeight());
+    }
+    if (mRecyclerView != null) {
+        final Matrix childMatrix = child.getMatrix();
+        if (childMatrix != null && !childMatrix.isIdentity()) {
+            final RectF tempRectF = mRecyclerView.mTempRectF;
+            tempRectF.set(out);
+            childMatrix.mapRect(tempRectF);
+            out.set((int) Math.floor(tempRectF.left), (int) Math.floor(tempRectF.top), (int) Math.ceil(tempRectF.right), (int) Math.ceil(tempRectF.bottom));
+        }
+    }
+    out.offset(child.getLeft(), child.getTop());
+}

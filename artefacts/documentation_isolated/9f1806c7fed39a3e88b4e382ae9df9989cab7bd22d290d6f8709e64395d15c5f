@@ -1,0 +1,34 @@
+
+     * Writes the audio data to the audio sink for playback (streaming mode),
+     * or copies audio data for later playback (static buffer mode).
+     * The format specified in the AudioTrack constructor should be
+     * {@link AudioFormat#ENCODING_PCM_16BIT} to correspond to the data in the array.
+     * <p>
+     * In streaming mode, the write will normally block until all the data has been enqueued for
+     * playback, and will return a full transfer count.  However, if the track is stopped or paused
+     * on entry, or another thread interrupts the write by calling stop or pause, or an I/O error
+     * occurs during the write, then the write may return a short transfer count.
+     * <p>
+     * In static buffer mode, copies the data to the buffer starting at offset 0.
+     * Note that the actual playback of this data might occur after this function returns.
+     *
+     * @param audioData the array that holds the data to play.
+     * @param offsetInShorts the offset expressed in shorts in audioData where the data to play
+     *     starts.
+     *    Must not be negative, or cause the data access to go out of bounds of the array.
+     * @param sizeInShorts the number of shorts to read in audioData after the offset.
+     *    Must not be negative, or cause the data access to go out of bounds of the array.
+     * @return zero or the positive number of shorts that were written, or one of the following
+     *    error codes. The number of shorts will be a multiple of the channel count not to
+     *    exceed sizeInShorts.
+     * <ul>
+     * <li>{@link #ERROR_INVALID_OPERATION} if the track isn't properly initialized</li>
+     * <li>{@link #ERROR_BAD_VALUE} if the parameters don't resolve to valid data and indexes</li>
+     * <li>{@link #ERROR_DEAD_OBJECT} if the AudioTrack is not valid anymore and
+     *    needs to be recreated. The dead object error code is not returned if some data was
+     *    successfully transferred. In this case, the error is returned at the next write()</li>
+     * <li>{@link #ERROR} in case of other error</li>
+     * </ul>
+     * This is equivalent to {@link #write(short[], int, int, int)} with <code>writeMode</code>
+     * set to  {@link #WRITE_BLOCKING}.
+     

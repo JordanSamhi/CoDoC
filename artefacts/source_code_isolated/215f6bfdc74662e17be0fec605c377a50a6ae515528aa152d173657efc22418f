@@ -1,0 +1,10 @@
+public byte[] getATR(){
+    if (!mService.isConnected()) {
+        throw new IllegalStateException("service not connected to system");
+    }
+    try {
+        return mSession.getAtr();
+    } catch (RemoteException e) {
+        throw new IllegalStateException(e.getMessage());
+    }
+}

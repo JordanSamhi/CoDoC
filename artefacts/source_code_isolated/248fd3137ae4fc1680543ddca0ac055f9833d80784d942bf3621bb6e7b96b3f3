@@ -1,0 +1,7 @@
+public void onDestroyPredictionSessionLocked(@NonNull AppPredictionSessionId sessionId){
+    final boolean serviceExists = resolveService(sessionId, s -> s.onDestroyPredictionSession(sessionId), false);
+    final AppPredictionSessionInfo sessionInfo = mSessionInfos.get(sessionId);
+    if (serviceExists && sessionInfo != null) {
+        sessionInfo.destroy();
+    }
+}

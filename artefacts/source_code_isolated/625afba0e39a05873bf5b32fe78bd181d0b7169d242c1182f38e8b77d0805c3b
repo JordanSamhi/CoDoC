@@ -1,0 +1,14 @@
+public boolean mountObb(String rawPath, String key, OnObbStateChangeListener listener){
+    Preconditions.checkNotNull(rawPath, "rawPath cannot be null");
+    Preconditions.checkNotNull(listener, "listener cannot be null");
+    try {
+        final String canonicalPath = new File(rawPath).getCanonicalPath();
+        final int nonce = mObbActionListener.addListener(listener);
+        mStorageManager.mountObb(rawPath, canonicalPath, key, mObbActionListener, nonce, getObbInfo(canonicalPath));
+        return true;
+    } catch (IOException e) {
+        throw new IllegalArgumentException("Failed to resolve path: " + rawPath, e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

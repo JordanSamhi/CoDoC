@@ -1,0 +1,26 @@
+public ParceledListSlice<BrightnessChangeEvent> getEvents(int userId, boolean includePackage){
+    BrightnessChangeEvent[] events;
+    synchronized (mEventsLock) {
+        events = mEvents.toArray();
+    }
+    int[] profiles = mInjector.getProfileIds(mUserManager, userId);
+    Map<Integer, Boolean> toRedact = new HashMap<>();
+    for (int i = 0; i < profiles.length; ++i) {
+        int profileId = profiles[i];
+        boolean redact = (!includePackage) || profileId != userId;
+        toRedact.put(profiles[i], redact);
+    }
+    ArrayList<BrightnessChangeEvent> out = new ArrayList<>(events.length);
+    for (int i = 0; i < events.length; ++i) {
+        Boolean redact = toRedact.get(events[i].userId);
+        if (redact != null) {
+            if (!redact) {
+                out.add(events[i]);
+            } else {
+                BrightnessChangeEvent event = new BrightnessChangeEvent((events[i]), true);
+                out.add(event);
+            }
+        }
+    }
+    return new ParceledListSlice<>(out);
+}

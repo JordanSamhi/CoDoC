@@ -1,0 +1,22 @@
+public void restoreEntity(BackupDataInputStream data){
+    byte[] dataBytes = new byte[data.size()];
+    try {
+        data.read(dataBytes);
+        String dataString = new String(dataBytes, JSON_FORMAT_ENCODING);
+        JSONObject dataJSON = new JSONObject(dataString);
+        boolean masterSyncEnabled = dataJSON.getBoolean(KEY_MASTER_SYNC_ENABLED);
+        JSONArray accountJSONArray = dataJSON.getJSONArray(KEY_ACCOUNTS);
+        boolean currentMasterSyncEnabled = ContentResolver.getMasterSyncAutomaticallyAsUser(mUserId);
+        if (currentMasterSyncEnabled) {
+            ContentResolver.setMasterSyncAutomaticallyAsUser(false, mUserId);
+        }
+        try {
+            restoreFromJsonArray(accountJSONArray, mUserId);
+        } finally {
+            ContentResolver.setMasterSyncAutomaticallyAsUser(masterSyncEnabled, mUserId);
+        }
+        Log.i(TAG, "Restore successful.");
+    } catch (IOException | JSONException e) {
+        Log.e(TAG, "Couldn't restore account sync settings\n" + e);
+    }
+}

@@ -1,0 +1,13 @@
+public void registerNetworkRequestMatchCallback(@NonNull @CallbackExecutor Executor executor, @NonNull NetworkRequestMatchCallback callback){
+    if (executor == null)
+        throw new IllegalArgumentException("executor cannot be null");
+    if (callback == null)
+        throw new IllegalArgumentException("callback cannot be null");
+    Log.v(TAG, "registerNetworkRequestMatchCallback: callback=" + callback + ", executor=" + executor);
+    Binder binder = new Binder();
+    try {
+        mService.registerNetworkRequestMatchCallback(binder, new NetworkRequestMatchCallbackProxy(executor, callback), callback.hashCode());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

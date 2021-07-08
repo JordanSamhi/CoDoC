@@ -1,0 +1,11 @@
+public FactoryResetProtectionPolicy getFactoryResetProtectionPolicy(@Nullable ComponentName admin){
+    throwIfParentInstance("getFactoryResetProtectionPolicy");
+    if (mService != null) {
+        try {
+            return mService.getFactoryResetProtectionPolicy(admin);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

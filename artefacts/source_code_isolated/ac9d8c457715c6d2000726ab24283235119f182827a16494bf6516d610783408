@@ -1,0 +1,53 @@
+public static CharSequence commaEllipsize(CharSequence text, TextPaint p, float avail, String oneMore, String more, TextDirectionHeuristic textDir){
+    MeasuredParagraph mt = null;
+    MeasuredParagraph tempMt = null;
+    try {
+        int len = text.length();
+        mt = MeasuredParagraph.buildForMeasurement(p, text, 0, len, textDir, mt);
+        final float width = mt.getWholeWidth();
+        if (width <= avail) {
+            return text;
+        }
+        char[] buf = mt.getChars();
+        int commaCount = 0;
+        for (int i = 0; i < len; i++) {
+            if (buf[i] == ',') {
+                commaCount++;
+            }
+        }
+        int remaining = commaCount + 1;
+        int ok = 0;
+        String okFormat = "";
+        int w = 0;
+        int count = 0;
+        float[] widths = mt.getWidths().getRawArray();
+        for (int i = 0; i < len; i++) {
+            w += widths[i];
+            if (buf[i] == ',') {
+                count++;
+                String format;
+                if (--remaining == 1) {
+                    format = " " + oneMore;
+                } else {
+                    format = " " + String.format(more, remaining);
+                }
+                tempMt = MeasuredParagraph.buildForMeasurement(p, format, 0, format.length(), textDir, tempMt);
+                float moreWid = tempMt.getWholeWidth();
+                if (w + moreWid <= avail) {
+                    ok = i + 1;
+                    okFormat = format;
+                }
+            }
+        }
+        SpannableStringBuilder out = new SpannableStringBuilder(okFormat);
+        out.insert(0, text, 0, ok);
+        return out;
+    } finally {
+        if (mt != null) {
+            mt.recycle();
+        }
+        if (tempMt != null) {
+            tempMt.recycle();
+        }
+    }
+}

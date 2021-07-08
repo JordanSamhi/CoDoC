@@ -1,0 +1,45 @@
+public Builder writeKeyValuePairs(@Nullable final SparseIntArray intMap, @Nullable final SparseLongArray longMap, @Nullable final SparseArray<String> stringMap, @Nullable final SparseArray<Float> floatMap){
+    final int intMapSize = null == intMap ? 0 : intMap.size();
+    final int longMapSize = null == longMap ? 0 : longMap.size();
+    final int stringMapSize = null == stringMap ? 0 : stringMap.size();
+    final int floatMapSize = null == floatMap ? 0 : floatMap.size();
+    final int totalCount = intMapSize + longMapSize + stringMapSize + floatMapSize;
+    if (totalCount > MAX_KEY_VALUE_PAIRS) {
+        mErrorMask |= ERROR_TOO_MANY_KEY_VALUE_PAIRS;
+    } else {
+        writeTypeId(TYPE_KEY_VALUE_PAIRS);
+        mPos += mBuffer.putByte(mPos, (byte) totalCount);
+        for (int i = 0; i < intMapSize; i++) {
+            final int key = intMap.keyAt(i);
+            final int value = intMap.valueAt(i);
+            mPos += mBuffer.putInt(mPos, key);
+            writeTypeId(TYPE_INT);
+            mPos += mBuffer.putInt(mPos, value);
+        }
+        for (int i = 0; i < longMapSize; i++) {
+            final int key = longMap.keyAt(i);
+            final long value = longMap.valueAt(i);
+            mPos += mBuffer.putInt(mPos, key);
+            writeTypeId(TYPE_LONG);
+            mPos += mBuffer.putLong(mPos, value);
+        }
+        for (int i = 0; i < stringMapSize; i++) {
+            final int key = stringMap.keyAt(i);
+            final String value = stringMap.valueAt(i);
+            mPos += mBuffer.putInt(mPos, key);
+            writeTypeId(TYPE_STRING);
+            final byte[] valueBytes = stringToBytes(value);
+            mPos += mBuffer.putInt(mPos, valueBytes.length);
+            mPos += mBuffer.putByteArray(mPos, valueBytes);
+        }
+        for (int i = 0; i < floatMapSize; i++) {
+            final int key = floatMap.keyAt(i);
+            final float value = floatMap.valueAt(i);
+            mPos += mBuffer.putInt(mPos, key);
+            writeTypeId(TYPE_FLOAT);
+            mPos += mBuffer.putFloat(mPos, value);
+        }
+        mNumElements++;
+    }
+    return this;
+}

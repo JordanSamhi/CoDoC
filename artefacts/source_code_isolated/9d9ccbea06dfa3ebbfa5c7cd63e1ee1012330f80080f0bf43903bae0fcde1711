@@ -1,0 +1,40 @@
+public void parseJsonAndPersistKey(String jsonStr, String mccMnc){
+    if (TextUtils.isEmpty(jsonStr) || TextUtils.isEmpty(mccMnc)) {
+        Log.e(LOG_TAG, "jsonStr or mcc, mnc: is empty");
+        return;
+    }
+    try {
+        String mcc = "";
+        String mnc = "";
+        String[] splitValue = mccMnc.split(SEPARATOR);
+        mcc = splitValue[0];
+        mnc = splitValue[1];
+        JSONObject jsonObj = new JSONObject(jsonStr);
+        JSONArray keys = jsonObj.getJSONArray(JSON_CARRIER_KEYS);
+        for (int i = 0; i < keys.length(); i++) {
+            JSONObject key = keys.getJSONObject(i);
+            String cert = null;
+            if (key.has(JSON_CERTIFICATE)) {
+                cert = key.getString(JSON_CERTIFICATE);
+            } else {
+                cert = key.getString(JSON_CERTIFICATE_ALTERNATE);
+            }
+            int type = TelephonyManager.KEY_TYPE_WLAN;
+            if (key.has(JSON_TYPE)) {
+                String typeString = key.getString(JSON_TYPE);
+                if (typeString.equals(JSON_TYPE_VALUE_EPDG)) {
+                    type = TelephonyManager.KEY_TYPE_EPDG;
+                } else if (!typeString.equals(JSON_TYPE_VALUE_WLAN)) {
+                    Log.e(LOG_TAG, "Invalid key-type specified: " + typeString);
+                }
+            }
+            String identifier = key.getString(JSON_IDENTIFIER);
+            Pair<PublicKey, Long> keyInfo = getKeyInformation(cleanCertString(cert).getBytes());
+            savePublicKey(keyInfo.first, type, identifier, keyInfo.second, mcc, mnc);
+        }
+    } catch (final JSONException e) {
+        Log.e(LOG_TAG, "Json parsing error: " + e.getMessage());
+    } catch (final Exception e) {
+        Log.e(LOG_TAG, "Exception getting certificate: " + e);
+    }
+}

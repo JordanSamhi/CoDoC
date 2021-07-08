@@ -1,0 +1,9 @@
+public void enablePhoneStateListener(){
+    if (mTelephonyManager == null) {
+        mTelephonyManager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+    }
+    if (mTelephonyManager != null && !mPhoneStateListenerEnabled) {
+        mPhoneStateListenerEnabled = true;
+        mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+    }
+}

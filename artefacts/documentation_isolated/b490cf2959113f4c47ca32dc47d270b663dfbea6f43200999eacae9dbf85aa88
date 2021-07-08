@@ -1,0 +1,32 @@
+
+     * Called by a device owner to bind to a service from a secondary managed user or vice versa.
+     * See {@link #getBindDeviceAdminTargetUsers} for the pre-requirements of a
+     * device owner to bind to services of another managed user.
+     * <p>
+     * The service must be protected by {@link android.Manifest.permission#BIND_DEVICE_ADMIN}.
+     * Note that the {@link Context} used to obtain this
+     * {@link DevicePolicyManager} instance via {@link Context#getSystemService(Class)} will be used
+     * to bind to the {@link android.app.Service}.
+     * <p>
+     * Note: This method used to be available for communication between device owner and profile
+     * owner. However, since Android 11, this combination is not possible. This method is now
+     * only useful for communication between device owner and managed secondary users.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param serviceIntent Identifies the service to connect to.  The Intent must specify either an
+     *        explicit component name or a package name to match an
+     *        {@link IntentFilter} published by a service.
+     * @param conn Receives information as the service is started and stopped in main thread. This
+     *        must be a valid {@link ServiceConnection} object; it must not be {@code null}.
+     * @param flags Operation options for the binding operation. See
+     *        {@link Context#bindService(Intent, ServiceConnection, int)}.
+     * @param targetUser Which user to bind to. Must be one of the users returned by
+     *        {@link #getBindDeviceAdminTargetUsers}, otherwise a {@link SecurityException} will
+     *        be thrown.
+     * @return If you have successfully bound to the service, {@code true} is returned;
+     *         {@code false} is returned if the connection is not made and you will not
+     *         receive the service object.
+     *
+     * @see Context#bindService(Intent, ServiceConnection, int)
+     * @see #getBindDeviceAdminTargetUsers(ComponentName)
+     

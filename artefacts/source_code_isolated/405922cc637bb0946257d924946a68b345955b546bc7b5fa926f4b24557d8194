@@ -1,0 +1,17 @@
+public boolean isMatch(boolean isSystem, boolean isPackageEnabled, boolean isComponentEnabled, boolean isComponentDirectBootAware, String componentName, int flags){
+    final boolean matchUninstalled = (flags & PackageManager.MATCH_KNOWN_PACKAGES) != 0;
+    if (!isAvailable(flags) && !(isSystem && matchUninstalled)) {
+        return reportIfDebug(false, flags);
+    }
+    if (!isEnabled(isPackageEnabled, isComponentEnabled, componentName, flags)) {
+        return reportIfDebug(false, flags);
+    }
+    if ((flags & MATCH_SYSTEM_ONLY) != 0) {
+        if (!isSystem) {
+            return reportIfDebug(false, flags);
+        }
+    }
+    final boolean matchesUnaware = ((flags & MATCH_DIRECT_BOOT_UNAWARE) != 0) && !isComponentDirectBootAware;
+    final boolean matchesAware = ((flags & MATCH_DIRECT_BOOT_AWARE) != 0) && isComponentDirectBootAware;
+    return reportIfDebug(matchesUnaware || matchesAware, flags);
+}

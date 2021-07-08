@@ -1,0 +1,58 @@
+public MediaDescription getDescription(){
+    if (mDescription != null) {
+        return mDescription;
+    }
+    String mediaId = getString(METADATA_KEY_MEDIA_ID);
+    CharSequence[] text = new CharSequence[3];
+    Bitmap icon = null;
+    Uri iconUri = null;
+    CharSequence displayText = getText(METADATA_KEY_DISPLAY_TITLE);
+    if (!TextUtils.isEmpty(displayText)) {
+        text[0] = displayText;
+        text[1] = getText(METADATA_KEY_DISPLAY_SUBTITLE);
+        text[2] = getText(METADATA_KEY_DISPLAY_DESCRIPTION);
+    } else {
+        int textIndex = 0;
+        int keyIndex = 0;
+        while (textIndex < text.length && keyIndex < PREFERRED_DESCRIPTION_ORDER.length) {
+            CharSequence next = getText(PREFERRED_DESCRIPTION_ORDER[keyIndex++]);
+            if (!TextUtils.isEmpty(next)) {
+                text[textIndex++] = next;
+            }
+        }
+    }
+    for (int i = 0; i < PREFERRED_BITMAP_ORDER.length; i++) {
+        Bitmap next = getBitmap(PREFERRED_BITMAP_ORDER[i]);
+        if (next != null) {
+            icon = next;
+            break;
+        }
+    }
+    for (int i = 0; i < PREFERRED_URI_ORDER.length; i++) {
+        String next = getString(PREFERRED_URI_ORDER[i]);
+        if (!TextUtils.isEmpty(next)) {
+            iconUri = Uri.parse(next);
+            break;
+        }
+    }
+    Uri mediaUri = null;
+    String mediaUriStr = getString(METADATA_KEY_MEDIA_URI);
+    if (!TextUtils.isEmpty(mediaUriStr)) {
+        mediaUri = Uri.parse(mediaUriStr);
+    }
+    MediaDescription.Builder bob = new MediaDescription.Builder();
+    bob.setMediaId(mediaId);
+    bob.setTitle(text[0]);
+    bob.setSubtitle(text[1]);
+    bob.setDescription(text[2]);
+    bob.setIconBitmap(icon);
+    bob.setIconUri(iconUri);
+    bob.setMediaUri(mediaUri);
+    if (mBundle.containsKey(METADATA_KEY_BT_FOLDER_TYPE)) {
+        Bundle bundle = new Bundle();
+        bundle.putLong(MediaDescription.EXTRA_BT_FOLDER_TYPE, getLong(METADATA_KEY_BT_FOLDER_TYPE));
+        bob.setExtras(bundle);
+    }
+    mDescription = bob.build();
+    return mDescription;
+}

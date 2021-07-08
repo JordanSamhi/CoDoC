@@ -1,0 +1,31 @@
+
+     * Gets the size of the display, in pixels.
+     * Value returned by this method does not necessarily represent the actual raw size
+     * (native resolution) of the display.
+     * <p>
+     * 1. The returned size may be adjusted to exclude certain system decor elements
+     * that are always visible.
+     * </p><p>
+     * 2. It may be scaled to provide compatibility with older applications that
+     * were originally designed for smaller displays.
+     * </p><p>
+     * 3. It can be different depending on the WindowManager to which the display belongs.
+     * </p><p>
+     * - If requested from non-Activity context (e.g. Application context via
+     * {@code (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE)})
+     * it will report the size of the entire display based on current rotation and with subtracted
+     * system decoration areas.
+     * </p><p>
+     * - If requested from activity (either using {@code getWindowManager()} or
+     * {@code (WindowManager) getSystemService(Context.WINDOW_SERVICE)}) resulting size will
+     * correspond to current app window size. In this case it can be smaller than physical size in
+     * multi-window mode.
+     * </p><p>
+     * Typically for the purposes of layout apps should make a request from activity context
+     * to obtain size available for the app content.
+     * </p>
+     *
+     * @param outSize A {@link Point} object to receive the size information.
+     * @deprecated Use {@link WindowManager#getCurrentWindowMetrics()} to obtain an instance of
+     * {@link WindowMetrics} and use {@link WindowMetrics#getBounds()} instead.
+     

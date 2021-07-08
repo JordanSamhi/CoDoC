@@ -1,0 +1,16 @@
+public boolean exchangeSoapMessage(@NonNull SoapSerializationEnvelope soapEnvelope){
+    if (mNetwork == null) {
+        Log.e(TAG, "Network is not established");
+        return false;
+    }
+    if (mUrlConnection == null) {
+        Log.e(TAG, "Server certificate is not validated");
+        return false;
+    }
+    if (soapEnvelope == null) {
+        Log.e(TAG, "soapEnvelope is null");
+        return false;
+    }
+    mHandler.post(() -> performSoapMessageExchange(soapEnvelope));
+    return true;
+}

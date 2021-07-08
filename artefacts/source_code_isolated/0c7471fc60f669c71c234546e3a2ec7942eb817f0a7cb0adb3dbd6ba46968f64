@@ -1,0 +1,16 @@
+public static WifiP2pUpnpServiceInfo newInstance(String uuid, String device, List<String> services){
+    if (uuid == null || device == null) {
+        throw new IllegalArgumentException("uuid or device cannnot be null");
+    }
+    UUID.fromString(uuid);
+    ArrayList<String> info = new ArrayList<String>();
+    info.add(createSupplicantQuery(uuid, null));
+    info.add(createSupplicantQuery(uuid, "upnp:rootdevice"));
+    info.add(createSupplicantQuery(uuid, device));
+    if (services != null) {
+        for (String service : services) {
+            info.add(createSupplicantQuery(uuid, service));
+        }
+    }
+    return new WifiP2pUpnpServiceInfo(info);
+}

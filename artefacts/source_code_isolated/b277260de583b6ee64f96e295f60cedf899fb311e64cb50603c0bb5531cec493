@@ -1,0 +1,16 @@
+public List<WifiScanner.ScanSettings.HiddenNetwork> retrieveHiddenNetworkList(){
+    List<WifiScanner.ScanSettings.HiddenNetwork> hiddenNetworks = new ArrayList<>();
+    for (PerAppInfo appInfo : mActiveNetworkSuggestionsPerApp.values()) {
+        if (!appInfo.hasUserApproved)
+            continue;
+        for (ExtendedWifiNetworkSuggestion ewns : appInfo.extNetworkSuggestions) {
+            if (!ewns.wns.wifiConfiguration.hiddenSSID)
+                continue;
+            hiddenNetworks.add(new WifiScanner.ScanSettings.HiddenNetwork(ewns.wns.wifiConfiguration.SSID));
+            if (hiddenNetworks.size() >= NUMBER_OF_HIDDEN_NETWORK_FOR_ONE_SCAN) {
+                return hiddenNetworks;
+            }
+        }
+    }
+    return hiddenNetworks;
+}

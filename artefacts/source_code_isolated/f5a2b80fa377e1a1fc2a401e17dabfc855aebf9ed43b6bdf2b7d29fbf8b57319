@@ -1,0 +1,22 @@
+public void sendSms(SmsTracker tracker){
+    int ss = mPhone.getServiceState().getState();
+    Rlog.d(TAG, "sendSms: " + " isIms()=" + isIms() + " mRetryCount=" + tracker.mRetryCount + " mImsRetry=" + tracker.mImsRetry + " mMessageRef=" + tracker.mMessageRef + " mUsesImsServiceForIms=" + tracker.mUsesImsServiceForIms + " SS=" + ss + " id=" + tracker.mMessageId);
+    if (!isIms() && ss != ServiceState.STATE_IN_SERVICE) {
+        tracker.onFailed(mContext, getNotInServiceError(ss), NO_ERROR_CODE);
+        return;
+    }
+    Message reply = obtainMessage(EVENT_SEND_SMS_COMPLETE, tracker);
+    byte[] pdu = (byte[]) tracker.getData().get("pdu");
+    int currentDataNetwork = mPhone.getServiceState().getDataNetworkType();
+    boolean imsSmsDisabled = (currentDataNetwork == TelephonyManager.NETWORK_TYPE_EHRPD || (currentDataNetwork == TelephonyManager.NETWORK_TYPE_LTE || currentDataNetwork == TelephonyManager.NETWORK_TYPE_LTE_CA || currentDataNetwork == TelephonyManager.NETWORK_TYPE_NR) && !mPhone.getServiceStateTracker().isConcurrentVoiceAndDataAllowed()) && mPhone.getServiceState().getVoiceNetworkType() == TelephonyManager.NETWORK_TYPE_1xRTT && ((GsmCdmaPhone) mPhone).mCT.mState != PhoneConstants.State.IDLE;
+    if (0 == tracker.mImsRetry && !isIms() || imsSmsDisabled || tracker.mUsesImsServiceForIms) {
+        if (tracker.mRetryCount == 0 && tracker.mExpectMore) {
+            mCi.sendCdmaSMSExpectMore(pdu, reply);
+        } else {
+            mCi.sendCdmaSms(pdu, reply);
+        }
+    } else {
+        mCi.sendImsCdmaSms(pdu, tracker.mImsRetry, tracker.mMessageRef, reply);
+        tracker.mImsRetry++;
+    }
+}

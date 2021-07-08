@@ -1,0 +1,36 @@
+
+         * <p>Sets the auto-white balance lock state. Applications should check
+         * {@link #isAutoWhiteBalanceLockSupported} before using this
+         * method.</p>
+         *
+         * <p>If set to true, the camera auto-white balance routine will
+         * immediately pause until the lock is set to false.</p>
+         *
+         * <p>If auto-white balance is already locked, setting this to true
+         * again has no effect (the driver will not recalculate white balance
+         * values).</p>
+         *
+         * <p>Stopping preview with {@link #stopPreview()}, or triggering still
+         * image capture with {@link #takePicture(Camera.ShutterCallback,
+         * Camera.PictureCallback, Camera.PictureCallback)}, will not change the
+         * the lock.</p>
+         *
+         * <p> Changing the white balance mode with {@link #setWhiteBalance}
+         * will release the auto-white balance lock if it is set.</p>
+         *
+         * <p>Exposure compensation, AE lock, and AWB lock can be used to
+         * capture an exposure-bracketed burst of images, for example.
+         * Auto-white balance state, including the lock state, will not be
+         * maintained after camera {@link #release()} is called.  Locking
+         * auto-white balance after {@link #open()} but before the first call to
+         * {@link #startPreview()} will not allow the auto-white balance routine
+         * to run at all, and may result in severely incorrect color in captured
+         * images.</p>
+         *
+         * @param toggle new state of the auto-white balance lock. True means
+         *        that auto-white balance is locked, false means that the
+         *        auto-white balance routine is free to run normally.
+         *
+         * @see #getAutoWhiteBalanceLock()
+         * @see #setWhiteBalance(String)
+         

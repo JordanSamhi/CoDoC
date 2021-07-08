@@ -1,0 +1,20 @@
+public static Iterator<Pair<ZonedDateTime, ZonedDateTime>> cycleIterator(NetworkPolicy policy){
+    final Iterator<Range<ZonedDateTime>> it = policy.cycleIterator();
+    return new Iterator<Pair<ZonedDateTime, ZonedDateTime>>() {
+
+        @Override
+        public boolean hasNext() {
+            return it.hasNext();
+        }
+
+        @Override
+        public Pair<ZonedDateTime, ZonedDateTime> next() {
+            if (hasNext()) {
+                final Range<ZonedDateTime> r = it.next();
+                return Pair.create(r.getLower(), r.getUpper());
+            } else {
+                return Pair.create(null, null);
+            }
+        }
+    };
+}

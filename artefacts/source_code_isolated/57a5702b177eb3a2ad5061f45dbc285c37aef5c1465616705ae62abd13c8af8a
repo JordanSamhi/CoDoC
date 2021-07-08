@@ -1,0 +1,40 @@
+public boolean seekXWapApplicationId(int startIndex, int endIndex){
+    int index = startIndex;
+    try {
+        for (index = startIndex; index <= endIndex; ) {
+            if (decodeIntegerValue(index)) {
+                int fieldValue = (int) getValue32();
+                if (fieldValue == PARAMETER_ID_X_WAP_APPLICATION_ID) {
+                    mUnsigned32bit = index + 1;
+                    return true;
+                }
+            } else {
+                if (!decodeTextString(index))
+                    return false;
+            }
+            index += getDecodedDataLength();
+            if (index > endIndex)
+                return false;
+            byte val = mWspData[index];
+            if (0 <= val && val <= WAP_PDU_SHORT_LENGTH_MAX) {
+                index += mWspData[index] + 1;
+            } else if (val == WAP_PDU_LENGTH_QUOTE) {
+                if (index + 1 >= endIndex)
+                    return false;
+                index++;
+                if (!decodeUintvarInteger(index))
+                    return false;
+                index += getDecodedDataLength();
+            } else if (WAP_PDU_LENGTH_QUOTE < val && val <= 127) {
+                if (!decodeTextString(index))
+                    return false;
+                index += getDecodedDataLength();
+            } else {
+                index++;
+            }
+        }
+    } catch (ArrayIndexOutOfBoundsException e) {
+        return false;
+    }
+    return false;
+}

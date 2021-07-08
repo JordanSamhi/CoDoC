@@ -1,0 +1,31 @@
+public void update(){
+    switch(mState) {
+        case IDLE:
+            if (isPrefixDiscoveryNeeded()) {
+                startPrefixDiscovery();
+                mState = State.DISCOVERING;
+            } else if (requiresClat(mNetwork)) {
+                start();
+            }
+            break;
+        case DISCOVERING:
+            if (shouldStartClat(mNetwork)) {
+                start();
+                return;
+            }
+            if (!requiresClat(mNetwork)) {
+                stopPrefixDiscovery();
+                mState = State.IDLE;
+                return;
+            }
+            break;
+        case STARTING:
+        case RUNNING:
+            if (!shouldStartClat(mNetwork)) {
+                stop();
+                break;
+            }
+            maybeHandleNat64PrefixChange();
+            break;
+    }
+}

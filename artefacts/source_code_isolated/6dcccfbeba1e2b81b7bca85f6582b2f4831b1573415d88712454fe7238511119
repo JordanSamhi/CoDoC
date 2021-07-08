@@ -1,0 +1,9 @@
+public boolean shouldHideFromSuggestions(@NonNull String packageName, @NonNull UserHandle user){
+    Objects.requireNonNull(packageName, "packageName");
+    Objects.requireNonNull(user, "user");
+    try {
+        return mService.shouldHideFromSuggestions(packageName, user);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

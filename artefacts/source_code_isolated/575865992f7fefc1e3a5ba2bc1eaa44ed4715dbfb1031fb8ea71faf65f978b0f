@@ -1,0 +1,7 @@
+public void processDisconnectReason(ImsReasonInfo imsReasonInfo){
+    if (imsReasonInfo.mCode == imsReasonInfo.CODE_REGISTRATION_ERROR && imsReasonInfo.mExtraMessage != null) {
+        if (ImsManager.getInstance(mContext, mPhoneId).isWfcEnabledByUser()) {
+            processWfcDisconnectForNotification(imsReasonInfo);
+        }
+    }
+}

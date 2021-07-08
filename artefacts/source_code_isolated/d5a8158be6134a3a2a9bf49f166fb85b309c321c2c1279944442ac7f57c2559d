@@ -1,0 +1,12 @@
+public void stopWaitingForOpenPanelGesture(boolean cancel, final float velocity){
+    if (mExpectingSynthesizedDown) {
+        mExpectingSynthesizedDown = false;
+        if (cancel) {
+            collapse(false, 1.0f);
+        } else {
+            maybeVibrateOnOpening();
+            fling(velocity > 1f ? 1000f * velocity : 0, true);
+        }
+        onTrackingStopped(false);
+    }
+}

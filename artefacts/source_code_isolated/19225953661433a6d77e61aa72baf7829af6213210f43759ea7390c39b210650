@@ -1,0 +1,8 @@
+public boolean isUidActive(int uid){
+    if (UserHandle.isCore(uid)) {
+        return true;
+    }
+    synchronized (mLock) {
+        return mActiveUids.get(uid);
+    }
+}

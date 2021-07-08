@@ -1,0 +1,17 @@
+public void onDataPathSchedUpdate(byte[] peerMac, List<Integer> ndpIds, List<NanDataPathChannelInfo> channelInfo){
+    if (mDbg) {
+        Log.v(TAG, "onDataPathSchedUpdate: peerMac=" + MacAddress.fromBytes(peerMac).toString() + ", ndpIds=" + ndpIds + ", channelInfo=" + channelInfo);
+    }
+    for (int ndpId : ndpIds) {
+        Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> nnriE = getNetworkRequestByNdpId(ndpId);
+        if (nnriE == null) {
+            Log.e(TAG, "onDataPathSchedUpdate: ndpId=" + ndpId + " - not found");
+            continue;
+        }
+        if (!Arrays.equals(peerMac, nnriE.getValue().peerDiscoveryMac)) {
+            Log.e(TAG, "onDataPathSchedUpdate: ndpId=" + ndpId + ", report NMI=" + MacAddress.fromBytes(peerMac).toString() + " doesn't match NDP NMI=" + MacAddress.fromBytes(nnriE.getValue().peerDiscoveryMac).toString());
+            continue;
+        }
+        nnriE.getValue().channelInfo = channelInfo;
+    }
+}

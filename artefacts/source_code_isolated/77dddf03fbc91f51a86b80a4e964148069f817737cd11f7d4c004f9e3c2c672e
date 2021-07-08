@@ -1,0 +1,12 @@
+public static ComponentName unflattenFromString(@NonNull String str){
+    int sep = str.indexOf('/');
+    if (sep < 0 || (sep + 1) >= str.length()) {
+        return null;
+    }
+    String pkg = str.substring(0, sep);
+    String cls = str.substring(sep + 1);
+    if (cls.length() > 0 && cls.charAt(0) == '.') {
+        cls = pkg + cls;
+    }
+    return new ComponentName(pkg, cls);
+}

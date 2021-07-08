@@ -1,0 +1,17 @@
+public Slice createPermissionSlice(Context context, Uri sliceUri, String callingPackage){
+    PendingIntent action;
+    mCallback = "onCreatePermissionRequest";
+    Handler.getMain().postDelayed(mAnr, SLICE_BIND_ANR);
+    try {
+        action = onCreatePermissionRequest(sliceUri);
+    } finally {
+        Handler.getMain().removeCallbacks(mAnr);
+    }
+    Slice.Builder parent = new Slice.Builder(sliceUri);
+    Slice.Builder childAction = new Slice.Builder(parent).addIcon(Icon.createWithResource(context, com.android.internal.R.drawable.ic_permission), null, Collections.emptyList()).addHints(Arrays.asList(Slice.HINT_TITLE, Slice.HINT_SHORTCUT)).addAction(action, new Slice.Builder(parent).build(), null);
+    TypedValue tv = new TypedValue();
+    new ContextThemeWrapper(context, android.R.style.Theme_DeviceDefault_Light).getTheme().resolveAttribute(android.R.attr.colorAccent, tv, true);
+    int deviceDefaultAccent = tv.data;
+    parent.addSubSlice(new Slice.Builder(sliceUri.buildUpon().appendPath("permission").build()).addIcon(Icon.createWithResource(context, com.android.internal.R.drawable.ic_arrow_forward), null, Collections.emptyList()).addText(getPermissionString(context, callingPackage), null, Collections.emptyList()).addInt(deviceDefaultAccent, SUBTYPE_COLOR, Collections.emptyList()).addSubSlice(childAction.build(), null).build(), null);
+    return parent.addHints(Arrays.asList(Slice.HINT_PERMISSION_REQUEST)).build();
+}

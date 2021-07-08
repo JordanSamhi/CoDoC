@@ -1,0 +1,57 @@
+public void populateCharacterBounds(CursorAnchorInfo.Builder builder, int startIndex, int endIndex, float viewportToContentHorizontalOffset, float viewportToContentVerticalOffset){
+    final int minLine = mLayout.getLineForOffset(startIndex);
+    final int maxLine = mLayout.getLineForOffset(endIndex - 1);
+    for (int line = minLine; line <= maxLine; ++line) {
+        final int lineStart = mLayout.getLineStart(line);
+        final int lineEnd = mLayout.getLineEnd(line);
+        final int offsetStart = Math.max(lineStart, startIndex);
+        final int offsetEnd = Math.min(lineEnd, endIndex);
+        final boolean ltrLine = mLayout.getParagraphDirection(line) == Layout.DIR_LEFT_TO_RIGHT;
+        final float[] widths = new float[offsetEnd - offsetStart];
+        mLayout.getPaint().getTextWidths(mTransformed, offsetStart, offsetEnd, widths);
+        final float top = mLayout.getLineTop(line);
+        final float bottom = mLayout.getLineBottom(line);
+        for (int offset = offsetStart; offset < offsetEnd; ++offset) {
+            final float charWidth = widths[offset - offsetStart];
+            final boolean isRtl = mLayout.isRtlCharAt(offset);
+            final float primary = mLayout.getPrimaryHorizontal(offset);
+            final float secondary = mLayout.getSecondaryHorizontal(offset);
+            final float left;
+            final float right;
+            if (ltrLine) {
+                if (isRtl) {
+                    left = secondary - charWidth;
+                    right = secondary;
+                } else {
+                    left = primary;
+                    right = primary + charWidth;
+                }
+            } else {
+                if (!isRtl) {
+                    left = secondary;
+                    right = secondary + charWidth;
+                } else {
+                    left = primary - charWidth;
+                    right = primary;
+                }
+            }
+            final float localLeft = left + viewportToContentHorizontalOffset;
+            final float localRight = right + viewportToContentHorizontalOffset;
+            final float localTop = top + viewportToContentVerticalOffset;
+            final float localBottom = bottom + viewportToContentVerticalOffset;
+            final boolean isTopLeftVisible = isPositionVisible(localLeft, localTop);
+            final boolean isBottomRightVisible = isPositionVisible(localRight, localBottom);
+            int characterBoundsFlags = 0;
+            if (isTopLeftVisible || isBottomRightVisible) {
+                characterBoundsFlags |= FLAG_HAS_VISIBLE_REGION;
+            }
+            if (!isTopLeftVisible || !isBottomRightVisible) {
+                characterBoundsFlags |= CursorAnchorInfo.FLAG_HAS_INVISIBLE_REGION;
+            }
+            if (isRtl) {
+                characterBoundsFlags |= CursorAnchorInfo.FLAG_IS_RTL;
+            }
+            builder.addCharacterBounds(offset, localLeft, localTop, localRight, localBottom, characterBoundsFlags);
+        }
+    }
+}

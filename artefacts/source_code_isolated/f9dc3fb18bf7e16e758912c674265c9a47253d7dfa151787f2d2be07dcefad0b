@@ -1,0 +1,66 @@
+public void startRanging(IBinder binder, String callingPackage, String callingFeatureId, WorkSource workSource, RangingRequest request, IRttCallback callback) throws RemoteException{
+    if (VDBG) {
+        Log.v(TAG, "startRanging: binder=" + binder + ", callingPackage=" + callingPackage + ", workSource=" + workSource + ", request=" + request + ", callback=" + callback);
+    }
+    if (binder == null) {
+        throw new IllegalArgumentException("Binder must not be null");
+    }
+    if (request == null || request.mRttPeers == null || request.mRttPeers.size() == 0) {
+        throw new IllegalArgumentException("Request must not be null or empty");
+    }
+    for (ResponderConfig responder : request.mRttPeers) {
+        if (responder == null) {
+            throw new IllegalArgumentException("Request must not contain null Responders");
+        }
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("Callback must not be null");
+    }
+    request.enforceValidity(mAwareManager != null);
+    if (!isAvailable()) {
+        try {
+            mRttMetrics.recordOverallStatus(WifiMetricsProto.WifiRttLog.OVERALL_RTT_NOT_AVAILABLE);
+            callback.onRangingFailure(RangingResultCallback.STATUS_CODE_FAIL_RTT_NOT_AVAILABLE);
+        } catch (RemoteException e) {
+            Log.e(TAG, "startRanging: disabled, callback failed -- " + e);
+        }
+        return;
+    }
+    final int uid = getMockableCallingUid();
+    enforceAccessPermission();
+    enforceChangePermission();
+    mWifiPermissionsUtil.enforceFineLocationPermission(callingPackage, callingFeatureId, uid);
+    final WorkSource ws;
+    if (workSource != null) {
+        enforceLocationHardware();
+        ws = workSource.withoutNames();
+    } else {
+        ws = null;
+    }
+    boolean isCalledFromPrivilegedContext = checkLocationHardware() && mShellCommand.getControlParam(CONTROL_PARAM_OVERRIDE_ASSUME_NO_PRIVILEGE_NAME) == 0;
+    IBinder.DeathRecipient dr = new IBinder.DeathRecipient() {
+
+        @Override
+        public void binderDied() {
+            if (mDbg)
+                Log.v(TAG, "binderDied: uid=" + uid);
+            binder.unlinkToDeath(this, 0);
+            mRttServiceSynchronized.mHandler.post(() -> {
+                mRttServiceSynchronized.cleanUpClientRequests(uid, null);
+            });
+        }
+    };
+    try {
+        binder.linkToDeath(dr, 0);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error on linkToDeath - " + e);
+        return;
+    }
+    mRttServiceSynchronized.mHandler.post(() -> {
+        WorkSource sourceToUse = ws;
+        if (ws == null || ws.isEmpty()) {
+            sourceToUse = new WorkSource(uid);
+        }
+        mRttServiceSynchronized.queueRangingRequest(uid, sourceToUse, binder, dr, callingPackage, callingFeatureId, request, callback, isCalledFromPrivilegedContext);
+    });
+}

@@ -1,0 +1,25 @@
+public int delete(@NonNull SQLiteDatabase db, @Nullable String selection, @Nullable String[] selectionArgs){
+    Objects.requireNonNull(mTables, "No tables defined");
+    Objects.requireNonNull(db, "No database defined");
+    final String sql;
+    final String unwrappedSql = buildDelete(selection);
+    if (isStrictGrammar()) {
+        enforceStrictGrammar(selection, null, null, null, null);
+    }
+    if (isStrict()) {
+        db.validateSql(unwrappedSql, null);
+        final String wrappedSql = buildDelete(wrap(selection));
+        sql = wrappedSql;
+    } else {
+        sql = unwrappedSql;
+    }
+    final String[] sqlArgs = selectionArgs;
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+        if (Build.IS_DEBUGGABLE) {
+            Log.d(TAG, sql + " with args " + Arrays.toString(sqlArgs));
+        } else {
+            Log.d(TAG, sql);
+        }
+    }
+    return DatabaseUtils.executeUpdateDelete(db, sql, sqlArgs);
+}

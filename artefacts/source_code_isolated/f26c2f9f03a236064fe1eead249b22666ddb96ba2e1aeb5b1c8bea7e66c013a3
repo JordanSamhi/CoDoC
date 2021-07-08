@@ -1,0 +1,18 @@
+public static NetworkKey createFromScanResult(@NonNull ScanResult result){
+    Objects.requireNonNull(result);
+    final String ssid = result.SSID;
+    if (TextUtils.isEmpty(ssid) || ssid.equals(WifiManager.UNKNOWN_SSID)) {
+        return null;
+    }
+    final String bssid = result.BSSID;
+    if (TextUtils.isEmpty(bssid)) {
+        return null;
+    }
+    try {
+        WifiKey wifiKey = new WifiKey(String.format("\"%s\"", ssid), bssid);
+        return new NetworkKey(wifiKey);
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Unable to create WifiKey.", e);
+        return null;
+    }
+}

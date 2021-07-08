@@ -1,0 +1,10 @@
+public void onReady(){
+    mSystemService = IVoiceInteractionManagerService.Stub.asInterface(ServiceManager.getService(Context.VOICE_INTERACTION_MANAGER_SERVICE));
+    Objects.requireNonNull(mSystemService);
+    try {
+        mSystemService.asBinder().linkToDeath(mDeathRecipient, 0);
+    } catch (RemoteException e) {
+        Log.wtf(TAG, "unable to link to death with system service");
+    }
+    mKeyphraseEnrollmentInfo = new KeyphraseEnrollmentInfo(getPackageManager());
+}

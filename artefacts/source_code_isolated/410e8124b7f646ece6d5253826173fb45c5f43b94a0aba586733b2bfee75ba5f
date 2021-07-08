@@ -1,0 +1,23 @@
+public Uri insert(Uri uri, ContentValues values){
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+    int length = uri.getPathSegments().size();
+    if (length < 1) {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    long rowID = -1;
+    String base = uri.getPathSegments().get(0);
+    Uri newUri = null;
+    if (base.equals(sSuggestions)) {
+        if (length == 1) {
+            rowID = db.insert(sSuggestions, NULL_COLUMN, values);
+            if (rowID > 0) {
+                newUri = Uri.withAppendedPath(mSuggestionsUri, String.valueOf(rowID));
+            }
+        }
+    }
+    if (rowID < 0) {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    getContext().getContentResolver().notifyChange(newUri, null);
+    return newUri;
+}

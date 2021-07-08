@@ -1,0 +1,25 @@
+public int closestIndexOnOrAfter(long time){
+    final int size = size();
+    int lo = 0;
+    int hi = size - 1;
+    int mid = -1;
+    long key = -1;
+    while (lo <= hi) {
+        mid = lo + ((hi - lo) / 2);
+        key = keyAt(mid);
+        if (time > key) {
+            lo = mid + 1;
+        } else if (time < key) {
+            hi = mid - 1;
+        } else {
+            return mid;
+        }
+    }
+    if (time < key) {
+        return mid;
+    } else if (time > key && lo < size) {
+        return lo;
+    } else {
+        return -1;
+    }
+}

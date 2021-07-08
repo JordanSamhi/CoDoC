@@ -1,0 +1,11 @@
+public Range<T> extend(T lower, T upper){
+    checkNotNull(lower, "lower must not be null");
+    checkNotNull(upper, "upper must not be null");
+    int cmpLower = lower.compareTo(mLower);
+    int cmpUpper = upper.compareTo(mUpper);
+    if (cmpLower >= 0 && cmpUpper <= 0) {
+        return this;
+    } else {
+        return Range.create(cmpLower >= 0 ? mLower : lower, cmpUpper <= 0 ? mUpper : upper);
+    }
+}

@@ -1,0 +1,11 @@
+public void parcel(List<ParsedIntentInfo> item, Parcel dest, int parcelFlags){
+    if (item == null) {
+        dest.writeInt(-1);
+        return;
+    }
+    final int size = item.size();
+    dest.writeInt(size);
+    for (int index = 0; index < size; index++) {
+        PARCELER.parcel(item.get(index), dest, parcelFlags);
+    }
+}

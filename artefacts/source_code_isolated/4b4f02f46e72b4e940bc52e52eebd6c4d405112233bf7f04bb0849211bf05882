@@ -1,0 +1,5 @@
+public ProgramSelector withSecondaryPreferred(@NonNull Identifier preferred){
+    int preferredType = preferred.getType();
+    Identifier[] secondaryIds = Stream.concat(Arrays.stream(mSecondaryIds).filter(id -> id.getType() != preferredType), Stream.of(preferred)).toArray(Identifier[]::new);
+    return new ProgramSelector(mProgramType, mPrimaryId, secondaryIds, mVendorIds);
+}

@@ -1,0 +1,38 @@
+public static ObserverInternal read(XmlPullParser parser, PackageWatchdog watchdog){
+    String observerName = null;
+    if (TAG_OBSERVER.equals(parser.getName())) {
+        observerName = parser.getAttributeValue(null, ATTR_NAME);
+        if (TextUtils.isEmpty(observerName)) {
+            Slog.wtf(TAG, "Unable to read observer name");
+            return null;
+        }
+    }
+    List<MonitoredPackage> packages = new ArrayList<>();
+    int innerDepth = parser.getDepth();
+    try {
+        while (XmlUtils.nextElementWithin(parser, innerDepth)) {
+            if (TAG_PACKAGE.equals(parser.getName())) {
+                try {
+                    String packageName = parser.getAttributeValue(null, ATTR_NAME);
+                    long duration = Long.parseLong(parser.getAttributeValue(null, ATTR_DURATION));
+                    long healthCheckDuration = Long.parseLong(parser.getAttributeValue(null, ATTR_EXPLICIT_HEALTH_CHECK_DURATION));
+                    boolean hasPassedHealthCheck = Boolean.parseBoolean(parser.getAttributeValue(null, ATTR_PASSED_HEALTH_CHECK));
+                    MonitoredPackage pkg = watchdog.newMonitoredPackage(packageName, duration, healthCheckDuration, hasPassedHealthCheck);
+                    if (pkg != null) {
+                        packages.add(pkg);
+                    }
+                } catch (NumberFormatException e) {
+                    Slog.wtf(TAG, "Skipping package for observer " + observerName, e);
+                    continue;
+                }
+            }
+        }
+    } catch (XmlPullParserException | IOException e) {
+        Slog.wtf(TAG, "Unable to read observer " + observerName, e);
+        return null;
+    }
+    if (packages.isEmpty()) {
+        return null;
+    }
+    return new ObserverInternal(observerName, packages);
+}

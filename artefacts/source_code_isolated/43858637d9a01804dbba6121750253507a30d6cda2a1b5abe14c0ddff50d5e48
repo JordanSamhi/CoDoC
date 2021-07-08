@@ -1,0 +1,44 @@
+public static String getDescription(Context context, boolean zenOn, ZenModeConfig config, boolean describeForeverCondition){
+    if (!zenOn || config == null) {
+        return null;
+    }
+    String secondaryText = "";
+    long latestEndTime = -1;
+    if (config.manualRule != null) {
+        final Uri id = config.manualRule.conditionId;
+        if (config.manualRule.enabler != null) {
+            String appName = getOwnerCaption(context, config.manualRule.enabler);
+            if (!appName.isEmpty()) {
+                secondaryText = appName;
+            }
+        } else {
+            if (id == null) {
+                if (describeForeverCondition) {
+                    return context.getString(R.string.zen_mode_forever);
+                } else {
+                    return null;
+                }
+            } else {
+                latestEndTime = tryParseCountdownConditionId(id);
+                if (latestEndTime > 0) {
+                    final CharSequence formattedTime = getFormattedTime(context, latestEndTime, isToday(latestEndTime), context.getUserId());
+                    secondaryText = context.getString(R.string.zen_mode_until, formattedTime);
+                }
+            }
+        }
+    }
+    for (ZenRule automaticRule : config.automaticRules.values()) {
+        if (automaticRule.isAutomaticActive()) {
+            if (isValidEventConditionId(automaticRule.conditionId) || isValidScheduleConditionId(automaticRule.conditionId)) {
+                long endTime = parseAutomaticRuleEndTime(context, automaticRule.conditionId);
+                if (endTime > latestEndTime) {
+                    latestEndTime = endTime;
+                    secondaryText = automaticRule.name;
+                }
+            } else {
+                return automaticRule.name;
+            }
+        }
+    }
+    return !secondaryText.equals("") ? secondaryText : null;
+}

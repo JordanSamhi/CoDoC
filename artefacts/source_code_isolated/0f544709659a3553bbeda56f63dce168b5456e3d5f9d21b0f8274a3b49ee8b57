@@ -1,0 +1,11 @@
+public void setDeviceVolumeBehavior(@NonNull AudioDeviceAttributes device, @AudioManager.DeviceVolumeBehavior int deviceVolumeBehavior, @Nullable String pkgName){
+    enforceModifyAudioRoutingPermission();
+    Objects.requireNonNull(device);
+    AudioManager.enforceValidVolumeBehavior(deviceVolumeBehavior);
+    if (pkgName == null) {
+        pkgName = "";
+    }
+    int audioSystemDeviceOut = AudioDeviceInfo.convertDeviceTypeToInternalDevice(device.getType());
+    setDeviceVolumeBehaviorInternal(audioSystemDeviceOut, deviceVolumeBehavior, pkgName);
+    persistDeviceVolumeBehavior(audioSystemDeviceOut, deviceVolumeBehavior);
+}

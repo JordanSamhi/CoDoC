@@ -1,0 +1,30 @@
+public boolean removeOnMetadataChangedListener(@NonNull BluetoothDevice device, @NonNull OnMetadataChangedListener listener){
+    if (DBG)
+        Log.d(TAG, "removeOnMetadataChangedListener()");
+    if (device == null) {
+        throw new NullPointerException("device is null");
+    }
+    if (listener == null) {
+        throw new NullPointerException("listener is null");
+    }
+    synchronized (sMetadataListeners) {
+        if (!sMetadataListeners.containsKey(device)) {
+            throw new IllegalArgumentException("device was not registered");
+        }
+        sMetadataListeners.get(device).removeIf((pair) -> (pair.first.equals(listener)));
+        if (sMetadataListeners.get(device).isEmpty()) {
+            sMetadataListeners.remove(device);
+            final IBluetooth service = mService;
+            if (service == null) {
+                return true;
+            }
+            try {
+                return service.unregisterMetadataListener(device);
+            } catch (RemoteException e) {
+                Log.e(TAG, "unregisterMetadataListener fail", e);
+                return false;
+            }
+        }
+    }
+    return true;
+}

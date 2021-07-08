@@ -1,0 +1,10 @@
+public void setTextLocale(@NonNull Locale locale){
+    if (locale == null) {
+        throw new IllegalArgumentException("locale cannot be null");
+    }
+    if (mLocales != null && mLocales.size() == 1 && locale.equals(mLocales.get(0))) {
+        return;
+    }
+    mLocales = new LocaleList(locale);
+    syncTextLocalesWithMinikin();
+}

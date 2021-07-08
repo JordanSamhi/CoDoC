@@ -1,0 +1,13 @@
+public boolean restoreFocusInCluster(@FocusRealDirection int direction){
+    if (isKeyboardNavigationCluster()) {
+        final boolean blockedFocus = getTouchscreenBlocksFocus();
+        try {
+            setTouchscreenBlocksFocusNoRefocus(false);
+            return restoreFocusInClusterInternal(direction);
+        } finally {
+            setTouchscreenBlocksFocusNoRefocus(blockedFocus);
+        }
+    } else {
+        return restoreFocusInClusterInternal(direction);
+    }
+}

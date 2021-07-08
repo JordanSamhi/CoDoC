@@ -1,0 +1,7 @@
+public void enforceCallerIsImsAppOrCarrierApp(String message){
+    String carrierImsPackage = CarrierSmsUtils.getCarrierImsPackageForIntent(mContext, mPhone, new Intent(CarrierMessagingService.SERVICE_INTERFACE));
+    if (carrierImsPackage != null && packageNameMatchesCallingUid(carrierImsPackage)) {
+        return;
+    }
+    TelephonyPermissions.enforceCallingOrSelfCarrierPrivilege(mContext, mPhone.getSubId(), message);
+}

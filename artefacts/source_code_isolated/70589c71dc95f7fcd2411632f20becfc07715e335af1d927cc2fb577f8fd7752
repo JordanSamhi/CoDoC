@@ -1,0 +1,14 @@
+public boolean isColorizedMedia(){
+    Class<? extends Style> style = getNotificationStyle();
+    if (MediaStyle.class.equals(style)) {
+        Boolean colorized = (Boolean) extras.get(EXTRA_COLORIZED);
+        if ((colorized == null || colorized) && hasMediaSession()) {
+            return true;
+        }
+    } else if (DecoratedMediaCustomViewStyle.class.equals(style)) {
+        if (extras.getBoolean(EXTRA_COLORIZED) && hasMediaSession()) {
+            return true;
+        }
+    }
+    return false;
+}

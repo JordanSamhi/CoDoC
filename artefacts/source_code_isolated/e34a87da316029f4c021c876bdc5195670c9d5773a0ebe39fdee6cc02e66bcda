@@ -1,0 +1,77 @@
+public void onAccessibilityEvent(AccessibilityEvent event){
+    synchronized (mLock) {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "onAccessibilityEvent(" + event + ")");
+        }
+        final int eventType = event.getEventType();
+        switch(eventType) {
+            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                {
+                    if (mAccessibilityFocus != AccessibilityNodeInfo.UNDEFINED_ITEM_ID) {
+                        refreshCachedNodeLocked(mAccessibilityFocusedWindow, mAccessibilityFocus);
+                    }
+                    mAccessibilityFocus = event.getSourceNodeId();
+                    mAccessibilityFocusedWindow = event.getWindowId();
+                    refreshCachedNodeLocked(mAccessibilityFocusedWindow, mAccessibilityFocus);
+                }
+                break;
+            case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+                {
+                    if (mAccessibilityFocus == event.getSourceNodeId() && mAccessibilityFocusedWindow == event.getWindowId()) {
+                        refreshCachedNodeLocked(mAccessibilityFocusedWindow, mAccessibilityFocus);
+                        mAccessibilityFocus = AccessibilityNodeInfo.UNDEFINED_ITEM_ID;
+                        mAccessibilityFocusedWindow = AccessibilityWindowInfo.UNDEFINED_WINDOW_ID;
+                    }
+                }
+                break;
+            case AccessibilityEvent.TYPE_VIEW_FOCUSED:
+                {
+                    if (mInputFocus != AccessibilityNodeInfo.UNDEFINED_ITEM_ID) {
+                        refreshCachedNodeLocked(event.getWindowId(), mInputFocus);
+                    }
+                    mInputFocus = event.getSourceNodeId();
+                    refreshCachedNodeLocked(event.getWindowId(), mInputFocus);
+                }
+                break;
+            case AccessibilityEvent.TYPE_VIEW_SELECTED:
+            case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
+            case AccessibilityEvent.TYPE_VIEW_CLICKED:
+            case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                {
+                    refreshCachedNodeLocked(event.getWindowId(), event.getSourceNodeId());
+                }
+                break;
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                {
+                    synchronized (mLock) {
+                        final int windowId = event.getWindowId();
+                        final long sourceId = event.getSourceNodeId();
+                        if ((event.getContentChangeTypes() & AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE) != 0) {
+                            clearSubTreeLocked(windowId, sourceId);
+                        } else {
+                            refreshCachedNodeLocked(windowId, sourceId);
+                        }
+                    }
+                }
+                break;
+            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                {
+                    clearSubTreeLocked(event.getWindowId(), event.getSourceNodeId());
+                }
+                break;
+            case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
+                if (event.getWindowChanges() == AccessibilityEvent.WINDOWS_CHANGE_ACCESSIBILITY_FOCUSED) {
+                    refreshCachedWindowLocked(event.getWindowId());
+                    break;
+                }
+            case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+                {
+                    clear();
+                }
+                break;
+        }
+    }
+    if (CHECK_INTEGRITY) {
+        checkIntegrity();
+    }
+}

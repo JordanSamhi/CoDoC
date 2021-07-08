@@ -1,0 +1,20 @@
+public CharSequence unicodeWrap(@Nullable CharSequence str, TextDirectionHeuristic heuristic, boolean isolate){
+    if (str == null)
+        return null;
+    final boolean isRtl = heuristic.isRtl(str, 0, str.length());
+    SpannableStringBuilder result = new SpannableStringBuilder();
+    if (getStereoReset() && isolate) {
+        result.append(markBefore(str, isRtl ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR));
+    }
+    if (isRtl != mIsRtlContext) {
+        result.append(isRtl ? RLE : LRE);
+        result.append(str);
+        result.append(PDF);
+    } else {
+        result.append(str);
+    }
+    if (isolate) {
+        result.append(markAfter(str, isRtl ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR));
+    }
+    return result;
+}

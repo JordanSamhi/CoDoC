@@ -1,0 +1,14 @@
+public Notification createConnectToAvailableNetworkNotification(String notifierTag, ScanResult network){
+    CharSequence title;
+    switch(notifierTag) {
+        case OpenNetworkNotifier.TAG:
+            title = mContext.getText(R.string.wifi_available_title);
+            break;
+        default:
+            Log.wtf("ConnectToNetworkNotificationBuilder", "Unknown network notifier." + notifierTag);
+            return null;
+    }
+    Notification.Action connectAction = new Notification.Action.Builder(null, mContext.getResources().getText(R.string.wifi_available_action_connect), getPrivateBroadcast(ACTION_CONNECT_TO_NETWORK, notifierTag)).build();
+    Notification.Action allNetworksAction = new Notification.Action.Builder(null, mContext.getResources().getText(R.string.wifi_available_action_all_networks), getPrivateBroadcast(ACTION_PICK_WIFI_NETWORK, notifierTag)).build();
+    return createNotificationBuilder(title, network.SSID, notifierTag).setContentIntent(getPrivateBroadcast(ACTION_PICK_WIFI_NETWORK, notifierTag)).addAction(connectAction).addAction(allNetworksAction).build();
+}

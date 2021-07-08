@@ -1,0 +1,52 @@
+public String connect(WifiP2pConfig config, boolean joinExistingGroup){
+    if (config == null)
+        return null;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("setSsidPostfix"))
+            return null;
+        if (config == null) {
+            Log.e(TAG, "Could not connect: null config.");
+            return null;
+        }
+        if (config.deviceAddress == null) {
+            Log.e(TAG, "Could not parse null mac address.");
+            return null;
+        }
+        if (config.wps.setup == WpsInfo.PBC && !TextUtils.isEmpty(config.wps.pin)) {
+            Log.e(TAG, "Expected empty pin for PBC.");
+            return null;
+        }
+        byte[] peerAddress = null;
+        try {
+            peerAddress = NativeUtil.macAddressToByteArray(config.deviceAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse peer mac address.", e);
+            return null;
+        }
+        int provisionMethod = wpsInfoToConfigMethod(config.wps.setup);
+        if (provisionMethod == RESULT_NOT_VALID) {
+            Log.e(TAG, "Invalid WPS config method: " + config.wps.setup);
+            return null;
+        }
+        String preSelectedPin = TextUtils.isEmpty(config.wps.pin) ? "" : config.wps.pin;
+        boolean persistent = (config.netId == WifiP2pGroup.NETWORK_ID_PERSISTENT);
+        int goIntent = 0;
+        if (!joinExistingGroup) {
+            int groupOwnerIntent = config.groupOwnerIntent;
+            if (groupOwnerIntent < 0 || groupOwnerIntent > 15) {
+                groupOwnerIntent = DEFAULT_GROUP_OWNER_INTENT;
+            }
+            goIntent = groupOwnerIntent;
+        }
+        SupplicantResult<String> result = new SupplicantResult("connect(" + config.deviceAddress + ")");
+        try {
+            mISupplicantP2pIface.connect(peerAddress, provisionMethod, preSelectedPin, joinExistingGroup, persistent, goIntent, (SupplicantStatus status, String generatedPin) -> {
+                result.setResult(status, generatedPin);
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.getResult();
+    }
+}

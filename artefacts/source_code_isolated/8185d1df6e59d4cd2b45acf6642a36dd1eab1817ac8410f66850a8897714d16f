@@ -1,0 +1,10 @@
+public void writeTraceToFile(File traceFile, S encapsulatingProto) throws IOException{
+    synchronized (mBufferLock) {
+        traceFile.delete();
+        try (OutputStream os = new FileOutputStream(traceFile)) {
+            traceFile.setReadable(true, false);
+            mProtoProvider.write(encapsulatingProto, mBuffer, os);
+            os.flush();
+        }
+    }
+}

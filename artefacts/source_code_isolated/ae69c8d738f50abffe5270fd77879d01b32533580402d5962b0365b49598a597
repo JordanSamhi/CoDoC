@@ -1,0 +1,20 @@
+public Range<Integer> getSupportedWidthsFor(int height){
+    try {
+        Range<Integer> range = mWidthRange;
+        if (!mHeightRange.contains(height) || (height % mHeightAlignment) != 0) {
+            throw new IllegalArgumentException("unsupported height");
+        }
+        final int heightInBlocks = Utils.divUp(height, mBlockHeight);
+        final int minWidthInBlocks = Math.max(Utils.divUp(mBlockCountRange.getLower(), heightInBlocks), (int) Math.ceil(mBlockAspectRatioRange.getLower().doubleValue() * heightInBlocks));
+        final int maxWidthInBlocks = Math.min(mBlockCountRange.getUpper() / heightInBlocks, (int) (mBlockAspectRatioRange.getUpper().doubleValue() * heightInBlocks));
+        range = range.intersect((minWidthInBlocks - 1) * mBlockWidth + mWidthAlignment, maxWidthInBlocks * mBlockWidth);
+        if (height > mSmallerDimensionUpperLimit) {
+            range = range.intersect(1, mSmallerDimensionUpperLimit);
+        }
+        range = range.intersect((int) Math.ceil(mAspectRatioRange.getLower().doubleValue() * height), (int) (mAspectRatioRange.getUpper().doubleValue() * height));
+        return range;
+    } catch (IllegalArgumentException e) {
+        Log.v(TAG, "could not get supported widths for " + height);
+        throw new IllegalArgumentException("unsupported height");
+    }
+}

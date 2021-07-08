@@ -1,0 +1,17 @@
+public boolean setActiveDevice(@Nullable BluetoothDevice device){
+    if (DBG) {
+        Log.d(TAG, "setActiveDevice: " + device);
+    }
+    final IBluetoothHeadset service = mService;
+    if (service != null && isEnabled() && (device == null || isValidDevice(device))) {
+        try {
+            return service.setActiveDevice(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+        }
+    }
+    if (service == null) {
+        Log.w(TAG, "Proxy not attached to service");
+    }
+    return false;
+}

@@ -1,0 +1,7 @@
+public void killUid(int uid, String reason){
+    try {
+        getService().killUid(UserHandle.getAppId(uid), UserHandle.getUserId(uid), reason);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

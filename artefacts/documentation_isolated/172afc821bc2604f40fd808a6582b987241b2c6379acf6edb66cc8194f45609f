@@ -1,0 +1,25 @@
+
+     * Start filtering out Multicast V4 packets
+     * @param ifaceName Name of the interface.
+     * @return {@code true} if the operation succeeded, {@code false} otherwise
+     *
+     * Multicast filtering rules work as follows:
+     *
+     * The driver can filter multicast (v4 and/or v6) and broadcast packets when in
+     * a power optimized mode (typically when screen goes off).
+     *
+     * In order to prevent the driver from filtering the multicast/broadcast packets, we have to
+     * add a DRIVER RXFILTER-ADD rule followed by DRIVER RXFILTER-START to make the rule effective
+     *
+     * DRIVER RXFILTER-ADD Num
+     *   where Num = 0 - Unicast, 1 - Broadcast, 2 - Mutil4 or 3 - Multi6
+     *
+     * and DRIVER RXFILTER-START
+     * In order to stop the usage of these rules, we do
+     *
+     * DRIVER RXFILTER-STOP
+     * DRIVER RXFILTER-REMOVE Num
+     *   where Num is as described for RXFILTER-ADD
+     *
+     * The  SETSUSPENDOPT driver command overrides the filtering rules
+     

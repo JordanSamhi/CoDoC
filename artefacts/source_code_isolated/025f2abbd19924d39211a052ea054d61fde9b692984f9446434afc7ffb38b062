@@ -1,0 +1,10 @@
+public void addPersistentPreferredActivity(@NonNull ComponentName admin, IntentFilter filter, @NonNull ComponentName activity){
+    throwIfParentInstance("addPersistentPreferredActivity");
+    if (mService != null) {
+        try {
+            mService.addPersistentPreferredActivity(admin, filter, activity);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public RectF getAllowableStackPositionRegion(){
+    final WindowInsets insets = mLayout.getRootWindowInsets();
+    final RectF allowableRegion = new RectF();
+    if (insets != null) {
+        allowableRegion.left = -mBubbleOffscreen + Math.max(insets.getSystemWindowInsetLeft(), insets.getDisplayCutout() != null ? insets.getDisplayCutout().getSafeInsetLeft() : 0);
+        allowableRegion.right = mLayout.getWidth() - mBubbleSize + mBubbleOffscreen - Math.max(insets.getSystemWindowInsetRight(), insets.getDisplayCutout() != null ? insets.getDisplayCutout().getSafeInsetRight() : 0);
+        allowableRegion.top = mBubblePaddingTop + Math.max(mStatusBarHeight, insets.getDisplayCutout() != null ? insets.getDisplayCutout().getSafeInsetTop() : 0);
+        allowableRegion.bottom = mLayout.getHeight() - mBubbleSize - mBubblePaddingTop - (mImeHeight != UNSET ? mImeHeight + mBubblePaddingTop : 0f) - Math.max(insets.getStableInsetBottom(), insets.getDisplayCutout() != null ? insets.getDisplayCutout().getSafeInsetBottom() : 0);
+    }
+    return allowableRegion;
+}

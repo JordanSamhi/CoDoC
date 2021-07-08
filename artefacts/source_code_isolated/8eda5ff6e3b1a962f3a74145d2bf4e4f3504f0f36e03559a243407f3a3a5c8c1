@@ -1,0 +1,10 @@
+public final MagnificationController getMagnificationController(int displayId){
+    synchronized (mLock) {
+        MagnificationController controller = mMagnificationControllers.get(displayId);
+        if (controller == null) {
+            controller = new MagnificationController(this, mLock, displayId);
+            mMagnificationControllers.put(displayId, controller);
+        }
+        return controller;
+    }
+}

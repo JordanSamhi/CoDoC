@@ -1,0 +1,68 @@
+public final IBinder onBind(Intent intent){
+    return new ISoundTriggerDetectionService.Stub() {
+
+        private final Object mBinderLock = new Object();
+
+        @GuardedBy("mBinderLock")
+        public final ArrayMap<UUID, Bundle> mParams = new ArrayMap<>();
+
+        @Override
+        public void setClient(ParcelUuid puuid, Bundle params, ISoundTriggerDetectionServiceClient client) {
+            UUID uuid = puuid.getUuid();
+            synchronized (mBinderLock) {
+                mParams.put(uuid, params);
+            }
+            if (DEBUG)
+                Log.i(LOG_TAG, uuid + ": setClient(" + params + ")");
+            mHandler.sendMessage(obtainMessage(SoundTriggerDetectionService::setClient, SoundTriggerDetectionService.this, uuid, params, client));
+        }
+
+        @Override
+        public void removeClient(ParcelUuid puuid) {
+            UUID uuid = puuid.getUuid();
+            Bundle params;
+            synchronized (mBinderLock) {
+                params = mParams.remove(uuid);
+            }
+            if (DEBUG)
+                Log.i(LOG_TAG, uuid + ": removeClient");
+            mHandler.sendMessage(obtainMessage(SoundTriggerDetectionService::removeClient, SoundTriggerDetectionService.this, uuid, params));
+        }
+
+        @Override
+        public void onGenericRecognitionEvent(ParcelUuid puuid, int opId, SoundTrigger.GenericRecognitionEvent event) {
+            UUID uuid = puuid.getUuid();
+            Bundle params;
+            synchronized (mBinderLock) {
+                params = mParams.get(uuid);
+            }
+            if (DEBUG)
+                Log.i(LOG_TAG, uuid + "(" + opId + "): onGenericRecognitionEvent");
+            mHandler.sendMessage(obtainMessage(SoundTriggerDetectionService::onGenericRecognitionEvent, SoundTriggerDetectionService.this, uuid, params, opId, event));
+        }
+
+        @Override
+        public void onError(ParcelUuid puuid, int opId, int status) {
+            UUID uuid = puuid.getUuid();
+            Bundle params;
+            synchronized (mBinderLock) {
+                params = mParams.get(uuid);
+            }
+            if (DEBUG)
+                Log.i(LOG_TAG, uuid + "(" + opId + "): onError(" + status + ")");
+            mHandler.sendMessage(obtainMessage(SoundTriggerDetectionService::onError, SoundTriggerDetectionService.this, uuid, params, opId, status));
+        }
+
+        @Override
+        public void onStopOperation(ParcelUuid puuid, int opId) {
+            UUID uuid = puuid.getUuid();
+            Bundle params;
+            synchronized (mBinderLock) {
+                params = mParams.get(uuid);
+            }
+            if (DEBUG)
+                Log.i(LOG_TAG, uuid + "(" + opId + "): onStopOperation");
+            mHandler.sendMessage(obtainMessage(SoundTriggerDetectionService::onStopOperation, SoundTriggerDetectionService.this, uuid, params, opId));
+        }
+    };
+}

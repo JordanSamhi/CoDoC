@@ -1,0 +1,47 @@
+public Result inflate(){
+    checkLock();
+    try {
+        mViewRoot = new Layout(mLayoutBuilder);
+        mLayoutBuilder = null;
+        mContentRoot = ((Layout) mViewRoot).getContentRoot();
+        SessionParams params = getParams();
+        BridgeContext context = getContext();
+        if (Bridge.isLocaleRtl(params.getLocale())) {
+            if (!params.isRtlSupported()) {
+                Bridge.getLog().warning(LayoutLog.TAG_RTL_NOT_ENABLED, "You are using a right-to-left " + "(RTL) locale but RTL is not enabled", null, null);
+            } else if (params.getSimulatedPlatformVersion() != 0 && params.getSimulatedPlatformVersion() < 17) {
+                Bridge.getLog().warning(LayoutLog.TAG_RTL_NOT_SUPPORTED, "You are using a " + "right-to-left " + "(RTL) locale but RTL is not supported for API level < 17", null, null);
+            }
+        }
+        String rootTag = params.getFlag(RenderParamsFlags.FLAG_KEY_ROOT_TAG);
+        boolean isPreference = "PreferenceScreen".equals(rootTag) || SupportPreferencesUtil.isSupportRootTag(rootTag);
+        View view;
+        if (isPreference) {
+            view = SupportPreferencesUtil.inflatePreference(context, mBlockParser, mContentRoot);
+            if (view == null) {
+                view = Preference_Delegate.inflatePreference(context, mBlockParser, mContentRoot);
+            }
+        } else {
+            view = mInflater.inflate(mBlockParser, mContentRoot);
+        }
+        context.popParser();
+        AttachInfo_Accessor.setAttachInfo(mViewRoot);
+        postInflateProcess(view, params.getLayoutlibCallback(), isPreference ? view : null);
+        mInflater.onDoneInflation();
+        setActiveToolbar(view, context, params);
+        measureLayout(params);
+        measureView(mViewRoot, null, mMeasuredScreenWidth, MeasureSpec.EXACTLY, mMeasuredScreenHeight, MeasureSpec.EXACTLY);
+        mViewRoot.layout(0, 0, mMeasuredScreenWidth, mMeasuredScreenHeight);
+        mSystemViewInfoList = visitAllChildren(mViewRoot, 0, 0, params.getExtendedViewInfoMode(), false);
+        Choreographer_Delegate.clearFrames();
+        return SUCCESS.createResult();
+    } catch (PostInflateException e) {
+        return ERROR_INFLATION.createResult(e.getMessage(), e);
+    } catch (Throwable e) {
+        Throwable t = e;
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        return ERROR_INFLATION.createResult(t.getMessage(), t);
+    }
+}

@@ -1,0 +1,47 @@
+
+     * Return the Activity component that should be used to handle this intent.
+     * The appropriate component is determined based on the information in the
+     * intent, evaluated as follows:
+     *
+     * <p>If {@link #getComponent} returns an explicit class, that is returned
+     * without any further consideration.
+     *
+     * <p>The activity must handle the {@link Intent#CATEGORY_DEFAULT} Intent
+     * category to be considered.
+     *
+     * <p>If {@link #getAction} is non-NULL, the activity must handle this
+     * action.
+     *
+     * <p>If {@link #resolveType} returns non-NULL, the activity must handle
+     * this type.
+     *
+     * <p>If {@link #addCategory} has added any categories, the activity must
+     * handle ALL of the categories specified.
+     *
+     * <p>If {@link #getPackage} is non-NULL, only activity components in
+     * that application package will be considered.
+     *
+     * <p>If there are no activities that satisfy all of these conditions, a
+     * null string is returned.
+     *
+     * <p>If multiple activities are found to satisfy the intent, the one with
+     * the highest priority will be used.  If there are multiple activities
+     * with the same priority, the system will either pick the best activity
+     * based on user preference, or resolve to a system class that will allow
+     * the user to pick an activity and forward from there.
+     *
+     * <p>This method is implemented simply by calling
+     * {@link PackageManager#resolveActivity} with the "defaultOnly" parameter
+     * true.</p>
+     * <p> This API is called for you as part of starting an activity from an
+     * intent.  You do not normally need to call it yourself.</p>
+     *
+     * @param pm The package manager with which to resolve the Intent.
+     *
+     * @return Name of the component implementing an activity that can
+     *         display the intent.
+     *
+     * @see #setComponent
+     * @see #getComponent
+     * @see #resolveActivityInfo
+     

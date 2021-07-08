@@ -1,0 +1,12 @@
+public static DcRequest create(@NonNull final NetworkRequest networkRequest, @NonNull final ApnConfigTypeRepository apnConfigTypeRepository){
+    final int apnType = ApnContext.getApnTypeFromNetworkRequest(networkRequest);
+    final ApnConfigType apnConfigType = apnConfigTypeRepository.getByType(apnType);
+    if (apnConfigType == null) {
+        Rlog.d(LOG_TAG, "Non cellular request ignored: " + networkRequest.toString());
+        checkForAnomalousNetworkRequest(networkRequest);
+        return null;
+    } else {
+        Rlog.d(LOG_TAG, "Cellular request confirmed: " + networkRequest.toString());
+        return new DcRequest(networkRequest, apnType, apnConfigType.getPriority());
+    }
+}

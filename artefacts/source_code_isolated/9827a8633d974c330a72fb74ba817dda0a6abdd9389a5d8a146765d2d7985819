@@ -1,0 +1,17 @@
+public int getState(){
+    if (VDBG)
+        log("getState()");
+    final IBluetoothSap service = getService();
+    if (service != null) {
+        try {
+            return service.getState();
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+        if (DBG)
+            log(Log.getStackTraceString(new Throwable()));
+    }
+    return BluetoothSap.STATE_ERROR;
+}

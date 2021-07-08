@@ -1,0 +1,34 @@
+public void onClientRegistered(int status, int clientIf){
+    if (DBG) {
+        Log.d(TAG, "onClientRegistered() - status=" + status + " clientIf=" + clientIf);
+    }
+    if (VDBG) {
+        synchronized (mStateLock) {
+            if (mConnState != CONN_STATE_CONNECTING) {
+                Log.e(TAG, "Bad connection state: " + mConnState);
+            }
+        }
+    }
+    mClientIf = clientIf;
+    if (status != GATT_SUCCESS) {
+        runOrQueueCallback(new Runnable() {
+
+            @Override
+            public void run() {
+                final BluetoothGattCallback callback = mCallback;
+                if (callback != null) {
+                    callback.onConnectionStateChange(BluetoothGatt.this, GATT_FAILURE, BluetoothProfile.STATE_DISCONNECTED);
+                }
+            }
+        });
+        synchronized (mStateLock) {
+            mConnState = CONN_STATE_IDLE;
+        }
+        return;
+    }
+    try {
+        mService.clientConnect(mClientIf, mDevice.getAddress(), !mAutoConnect, mTransport, mOpportunistic, mPhy);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+}

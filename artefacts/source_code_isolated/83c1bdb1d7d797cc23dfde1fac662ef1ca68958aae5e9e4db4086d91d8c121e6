@@ -1,0 +1,10 @@
+public void makeLink(@NonNull String sourcePath, IncrementalStorage destStorage, @NonNull String destPath) throws IOException{
+    try {
+        int res = mService.makeLink(mId, sourcePath, destStorage.getId(), destPath);
+        if (res < 0) {
+            throw new IOException("makeLink() failed with errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

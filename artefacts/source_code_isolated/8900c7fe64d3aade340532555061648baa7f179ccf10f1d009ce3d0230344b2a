@@ -1,0 +1,12 @@
+public static ArrayList<Byte> hexOrQuotedStringToBytes(String str){
+    if (str == null) {
+        throw new IllegalArgumentException("null string");
+    }
+    int length = str.length();
+    if ((length > 1) && (str.charAt(0) == '"') && (str.charAt(length - 1) == '"')) {
+        str = str.substring(1, str.length() - 1);
+        return stringToByteArrayList(str);
+    } else {
+        return byteArrayToArrayList(hexStringToByteArray(str));
+    }
+}

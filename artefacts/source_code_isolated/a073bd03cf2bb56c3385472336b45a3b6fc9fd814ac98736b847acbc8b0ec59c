@@ -1,0 +1,9 @@
+public void snapshotRuntimeProfile(@ProfileType int profileType, @Nullable String packageName, @Nullable String codePath, @NonNull @CallbackExecutor Executor executor, @NonNull SnapshotRuntimeProfileCallback callback){
+    Slog.d(TAG, "Requesting profile snapshot for " + packageName + ":" + codePath);
+    SnapshotRuntimeProfileCallbackDelegate delegate = new SnapshotRuntimeProfileCallbackDelegate(callback, executor);
+    try {
+        mArtManager.snapshotRuntimeProfile(profileType, packageName, codePath, delegate, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

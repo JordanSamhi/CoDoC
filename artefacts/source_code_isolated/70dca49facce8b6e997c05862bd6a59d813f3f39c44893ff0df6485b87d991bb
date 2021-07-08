@@ -1,0 +1,17 @@
+public CallForwardInfo[] handleCfQueryResult(ImsCallForwardInfo[] infos){
+    CallForwardInfo[] cfInfos = null;
+    if (infos != null && infos.length != 0) {
+        cfInfos = new CallForwardInfo[infos.length];
+    }
+    if (infos == null || infos.length == 0) {
+        setVoiceCallForwardingFlag(getIccRecords(), 1, false, null);
+    } else {
+        for (int i = 0, s = infos.length; i < s; i++) {
+            if (infos[i].getCondition() == ImsUtInterface.CDIV_CF_UNCONDITIONAL) {
+                setVoiceCallForwardingFlag(getIccRecords(), 1, (infos[i].getStatus() == 1), infos[i].getNumber());
+            }
+            cfInfos[i] = getCallForwardInfo(infos[i]);
+        }
+    }
+    return cfInfos;
+}

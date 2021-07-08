@@ -1,0 +1,14 @@
+public final void readTypedList(@NonNull List<T> list, @NonNull Parcelable.Creator<T> c){
+    int M = list.size();
+    int N = readInt();
+    int i = 0;
+    for (; i < M && i < N; i++) {
+        list.set(i, readTypedObject(c));
+    }
+    for (; i < N; i++) {
+        list.add(readTypedObject(c));
+    }
+    for (; i < M; i++) {
+        list.remove(N);
+    }
+}

@@ -1,0 +1,8 @@
+public void unregisterNetworkProvider(@NonNull NetworkProvider provider){
+    try {
+        mService.unregisterNetworkProvider(provider.getMessenger());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    provider.setProviderId(NetworkProvider.ID_NONE);
+}

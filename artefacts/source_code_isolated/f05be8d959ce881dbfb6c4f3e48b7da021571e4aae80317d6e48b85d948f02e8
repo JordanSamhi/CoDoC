@@ -1,0 +1,10 @@
+public void putAll_putsAllWrappedKeysInTheStore() throws Exception{
+    String packageName = "com.android.example";
+    SecretKey key = generateAesKey();
+    WrappedKeyProto.WrappedKey wrappedKey = KeyWrapUtils.wrap(mSecretKey, key);
+    Map<String, WrappedKeyProto.WrappedKey> testElements = new HashMap<>();
+    testElements.put(packageName, wrappedKey);
+    mTertiaryKeyStore.putAll(testElements);
+    assertThat(mTertiaryKeyStore.getAll()).containsKey(packageName);
+    assertThat(mTertiaryKeyStore.getAll().get(packageName).getEncoded()).isEqualTo(key.getEncoded());
+}

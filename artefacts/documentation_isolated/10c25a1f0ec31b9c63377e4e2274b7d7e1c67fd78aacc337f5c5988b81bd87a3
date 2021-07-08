@@ -1,0 +1,23 @@
+
+     * Requests the download of a file or set of files that the carrier has indicated to be
+     * available.
+     *
+     * May throw an {@link IllegalArgumentException}
+     *
+     * If {@link #setTempFileRootDirectory(File)} has not called after the app has been installed,
+     * this method will create a directory at the default location defined at
+     * {@link MbmsDownloadSession#DEFAULT_TOP_LEVEL_TEMP_DIRECTORY} and store that as the temp
+     * file root directory.
+     *
+     * If the {@link DownloadRequest} has a destination that is not on the same filesystem as the
+     * temp file directory provided via {@link #getTempFileRootDirectory()}, an
+     * {@link IllegalArgumentException} will be thrown.
+     *
+     * Asynchronous errors through the callback may include any error not specific to the
+     * streaming use-case.
+     *
+     * If no error is delivered via the callback after calling this method, that means that the
+     * middleware has successfully started the download or scheduled the download, if the download
+     * is at a future time.
+     * @param request The request that specifies what should be downloaded.
+     

@@ -1,0 +1,21 @@
+public static byte[] decode(char[] encoded, boolean allowSingleChar) throws IllegalArgumentException{
+    int encodedLength = encoded.length;
+    int resultLengthBytes = (encodedLength + 1) / 2;
+    byte[] result = new byte[resultLengthBytes];
+    int resultOffset = 0;
+    int i = 0;
+    if (allowSingleChar) {
+        if ((encodedLength % 2) != 0) {
+            result[resultOffset++] = (byte) toDigit(encoded, i);
+            i++;
+        }
+    } else {
+        if ((encodedLength % 2) != 0) {
+            throw new IllegalArgumentException("Invalid input length: " + encodedLength);
+        }
+    }
+    for (; i < encodedLength; i += 2) {
+        result[resultOffset++] = (byte) ((toDigit(encoded, i) << 4) | toDigit(encoded, i + 1));
+    }
+    return result;
+}

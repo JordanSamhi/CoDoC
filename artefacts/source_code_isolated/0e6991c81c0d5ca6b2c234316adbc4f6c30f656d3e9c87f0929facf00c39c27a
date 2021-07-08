@@ -1,0 +1,23 @@
+public static WrappedMessageData parse(String clientPrefix, String smsBody){
+    try {
+        if (!smsBody.startsWith(clientPrefix)) {
+            return null;
+        }
+        int prefixEnd = clientPrefix.length();
+        if (!(smsBody.charAt(prefixEnd) == ':')) {
+            return null;
+        }
+        int eventTypeEnd = smsBody.indexOf(":", prefixEnd + 1);
+        if (eventTypeEnd == -1) {
+            return null;
+        }
+        String eventType = smsBody.substring(prefixEnd + 1, eventTypeEnd);
+        Bundle fields = parseSmsBody(smsBody.substring(eventTypeEnd + 1));
+        if (fields == null) {
+            return null;
+        }
+        return new WrappedMessageData(eventType, fields);
+    } catch (IndexOutOfBoundsException e) {
+        return null;
+    }
+}

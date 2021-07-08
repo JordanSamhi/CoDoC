@@ -1,0 +1,24 @@
+public int getDeviceVolumeBehavior(@NonNull AudioDeviceAttributes device){
+    enforceModifyAudioRoutingPermission();
+    final int audioSystemDeviceOut = AudioDeviceInfo.convertDeviceTypeToInternalDevice(device.getType());
+    if (!sDeviceVolumeBehaviorSupportedDeviceOutSet.contains(audioSystemDeviceOut) && audioSystemDeviceOut != AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP && audioSystemDeviceOut != AudioSystem.DEVICE_OUT_HEARING_AID) {
+        throw new IllegalArgumentException("Unsupported volume behavior " + audioSystemDeviceOut);
+    }
+    int setDeviceVolumeBehavior = retrieveStoredDeviceVolumeBehavior(audioSystemDeviceOut);
+    if (setDeviceVolumeBehavior != AudioManager.DEVICE_VOLUME_BEHAVIOR_UNSET) {
+        return setDeviceVolumeBehavior;
+    }
+    if ((mFullVolumeDevices.contains(audioSystemDeviceOut))) {
+        return AudioManager.DEVICE_VOLUME_BEHAVIOR_FULL;
+    }
+    if ((mFixedVolumeDevices.contains(audioSystemDeviceOut))) {
+        return AudioManager.DEVICE_VOLUME_BEHAVIOR_FIXED;
+    }
+    if ((mAbsVolumeMultiModeCaseDevices.contains(audioSystemDeviceOut))) {
+        return AudioManager.DEVICE_VOLUME_BEHAVIOR_ABSOLUTE_MULTI_MODE;
+    }
+    if (audioSystemDeviceOut == AudioSystem.DEVICE_OUT_BLUETOOTH_A2DP && mAvrcpAbsVolSupported) {
+        return AudioManager.DEVICE_VOLUME_BEHAVIOR_ABSOLUTE;
+    }
+    return AudioManager.DEVICE_VOLUME_BEHAVIOR_VARIABLE;
+}

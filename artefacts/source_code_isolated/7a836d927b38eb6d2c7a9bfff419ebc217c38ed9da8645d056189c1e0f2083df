@@ -1,0 +1,12 @@
+public void dumpAsync(FileDescriptor fd, String[] args) throws RemoteException{
+    Parcel data = Parcel.obtain();
+    Parcel reply = Parcel.obtain();
+    data.writeFileDescriptor(fd);
+    data.writeStringArray(args);
+    try {
+        transact(DUMP_TRANSACTION, data, reply, FLAG_ONEWAY);
+    } finally {
+        data.recycle();
+        reply.recycle();
+    }
+}

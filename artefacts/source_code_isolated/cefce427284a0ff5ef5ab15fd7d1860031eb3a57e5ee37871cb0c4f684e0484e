@@ -1,0 +1,34 @@
+public static Bitmap createViewBitmap(View view, Matrix matrix, RectF bounds, ViewGroup sceneRoot){
+    final boolean addToOverlay = !view.isAttachedToWindow();
+    ViewGroup parent = null;
+    int indexInParent = 0;
+    if (addToOverlay) {
+        if (sceneRoot == null || !sceneRoot.isAttachedToWindow()) {
+            return null;
+        }
+        parent = (ViewGroup) view.getParent();
+        indexInParent = parent.indexOfChild(view);
+        sceneRoot.getOverlay().add(view);
+    }
+    Bitmap bitmap = null;
+    int bitmapWidth = Math.round(bounds.width());
+    int bitmapHeight = Math.round(bounds.height());
+    if (bitmapWidth > 0 && bitmapHeight > 0) {
+        float scale = Math.min(1f, ((float) MAX_IMAGE_SIZE) / (bitmapWidth * bitmapHeight));
+        bitmapWidth *= scale;
+        bitmapHeight *= scale;
+        matrix.postTranslate(-bounds.left, -bounds.top);
+        matrix.postScale(scale, scale);
+        final Picture picture = new Picture();
+        final Canvas canvas = picture.beginRecording(bitmapWidth, bitmapHeight);
+        canvas.concat(matrix);
+        view.draw(canvas);
+        picture.endRecording();
+        bitmap = Bitmap.createBitmap(picture);
+    }
+    if (addToOverlay) {
+        sceneRoot.getOverlay().remove(view);
+        parent.addView(view, indexInParent);
+    }
+    return bitmap;
+}

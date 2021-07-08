@@ -1,0 +1,21 @@
+public void forget(final T key){
+    if (key == null) {
+        throw new IllegalArgumentException("Do not use null keys.");
+    }
+    if (!contains(key)) {
+        return;
+    }
+    Trace.beginSection("pool forget");
+    final boolean removedFirst = key.equals(mExpected.peek());
+    mExpected.remove(key);
+    mTasks.delete(key.hashCode());
+    if (DEBUG) {
+        Log.d(TAG, String.format("ContiguousFIFOAggregator  < tasks: %s", prettyPrint()));
+    }
+    final T second;
+    if (removedFirst && (second = mExpected.peek()) != null) {
+        onFirstExpectedChanged(second);
+    }
+    maybeExecuteNow();
+    Trace.endSection();
+}

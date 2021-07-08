@@ -1,0 +1,14 @@
+public static KeyButtonDrawable create(Context context, @ColorInt int lightColor, @ColorInt int darkColor, @DrawableRes int iconResId, boolean hasShadow, Color ovalBackgroundColor){
+    final Resources res = context.getResources();
+    boolean isRtl = res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+    Drawable d = context.getDrawable(iconResId);
+    final KeyButtonDrawable drawable = new KeyButtonDrawable(d, lightColor, darkColor, isRtl && d.isAutoMirrored(), ovalBackgroundColor);
+    if (hasShadow) {
+        int offsetX = res.getDimensionPixelSize(R.dimen.nav_key_button_shadow_offset_x);
+        int offsetY = res.getDimensionPixelSize(R.dimen.nav_key_button_shadow_offset_y);
+        int radius = res.getDimensionPixelSize(R.dimen.nav_key_button_shadow_radius);
+        int color = context.getColor(R.color.nav_key_button_shadow_color);
+        drawable.setShadowProperties(offsetX, offsetY, radius, color);
+    }
+    return drawable;
+}

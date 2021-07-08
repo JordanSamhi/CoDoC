@@ -1,0 +1,30 @@
+public boolean isLayerTracing(){
+    mAtmInternal.enforceCallerIsRecentsOrHasPermission(android.Manifest.permission.DUMP, "isLayerTracing");
+    long token = Binder.clearCallingIdentity();
+    try {
+        Parcel data = null;
+        Parcel reply = null;
+        try {
+            IBinder sf = ServiceManager.getService("SurfaceFlinger");
+            if (sf != null) {
+                reply = Parcel.obtain();
+                data = Parcel.obtain();
+                data.writeInterfaceToken("android.ui.ISurfaceComposer");
+                sf.transact(1026, data, reply, 0);
+                return reply.readBoolean();
+            }
+        } catch (RemoteException e) {
+            Slog.e(TAG, "Failed to get layer tracing");
+        } finally {
+            if (data != null) {
+                data.recycle();
+            }
+            if (reply != null) {
+                reply.recycle();
+            }
+        }
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+    return false;
+}

@@ -1,0 +1,11 @@
+public void onRequestNetworkRegistrationInfoComplete(int result, @Nullable NetworkRegistrationInfo state){
+    if (mCallback != null) {
+        try {
+            mCallback.onRequestNetworkRegistrationInfoComplete(result, state);
+        } catch (RemoteException e) {
+            Rlog.e(mTag, "Failed to onRequestNetworkRegistrationInfoComplete on the remote");
+        }
+    } else {
+        Rlog.e(mTag, "onRequestNetworkRegistrationInfoComplete callback is null.");
+    }
+}

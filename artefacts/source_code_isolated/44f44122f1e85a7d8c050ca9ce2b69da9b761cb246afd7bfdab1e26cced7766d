@@ -1,0 +1,9 @@
+public void SSYMM(@Side int Side, @Uplo int Uplo, float alpha, Allocation A, Allocation B, float beta, Allocation C){
+    validateSide(Side);
+    validateUplo(Uplo);
+    if (A.getType().getX() != A.getType().getY()) {
+        throw new RSRuntimeException("Matrix A is not symmetric");
+    }
+    validateL3(Element.F32(mRS), 0, 0, Side, A, B, C);
+    mRS.nScriptIntrinsicBLAS_Single(getID(mRS), RsBlas_ssymm, 0, 0, Side, Uplo, 0, C.getType().getY(), C.getType().getX(), 0, alpha, A.getID(mRS), B.getID(mRS), beta, C.getID(mRS), 0, 0, 0, 0);
+}

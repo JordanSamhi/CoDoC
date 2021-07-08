@@ -1,0 +1,16 @@
+public void setPremiumSmsPermission(String packageName, int permission){
+    checkCallerIsSystemOrPhoneApp();
+    if (permission < PREMIUM_SMS_PERMISSION_ASK_USER || permission > PREMIUM_SMS_PERMISSION_ALWAYS_ALLOW) {
+        throw new IllegalArgumentException("invalid SMS permission type " + permission);
+    }
+    synchronized (mPremiumSmsPolicy) {
+        mPremiumSmsPolicy.put(packageName, permission);
+    }
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            writePremiumSmsPolicyDb();
+        }
+    }).start();
+}

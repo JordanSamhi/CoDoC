@@ -1,0 +1,8 @@
+public void unwrapTertiaryKey_returnsUnwrappedKey() throws Exception{
+    RecoverableKeyStoreSecondaryKey secondaryKey = createSecondaryKey();
+    SecretKey tertiaryKey = createTertiaryKey();
+    WrappedKeyProto.WrappedKey wrappedTertiaryKey = KeyWrapUtils.wrap(secondaryKey.getSecretKey(), tertiaryKey);
+    when(mSecondaryKeyManager.get(TEST_SECONDARY_KEY_ALIAS)).thenReturn(Optional.of(secondaryKey));
+    SecretKey actualTertiaryKey = RestoreKeyFetcher.unwrapTertiaryKey(() -> mSecondaryKeyManager, TEST_SECONDARY_KEY_ALIAS, wrappedTertiaryKey);
+    assertThat(actualTertiaryKey).isEqualTo(tertiaryKey);
+}

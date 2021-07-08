@@ -1,0 +1,26 @@
+public void onSaveRequestFailure(@Nullable CharSequence message, @NonNull String servicePackageName){
+    boolean showMessage = !TextUtils.isEmpty(message);
+    synchronized (mLock) {
+        mIsSaving = false;
+        if (mDestroyed) {
+            Slog.w(TAG, "Call to Session#onSaveRequestFailure() rejected - session: " + id + " destroyed");
+            return;
+        }
+        if (showMessage) {
+            final int targetSdk = mService.getTargedSdkLocked();
+            if (targetSdk >= Build.VERSION_CODES.Q) {
+                showMessage = false;
+                Slog.w(TAG, "onSaveRequestFailure(): not showing '" + message + "' because service's targetting API " + targetSdk);
+            }
+        }
+    }
+    final LogMaker log = newLogMaker(MetricsEvent.AUTOFILL_DATA_SAVE_REQUEST, servicePackageName).setType(MetricsEvent.TYPE_FAILURE);
+    if (message != null) {
+        log.addTaggedData(MetricsEvent.FIELD_AUTOFILL_TEXT_LEN, message.length());
+    }
+    mMetricsLogger.write(log);
+    if (showMessage) {
+        getUiForShowing().showError(message, this);
+    }
+    removeSelf();
+}

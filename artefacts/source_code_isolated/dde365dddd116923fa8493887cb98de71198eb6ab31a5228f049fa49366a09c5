@@ -1,0 +1,14 @@
+public int dispatchFocusChange(AudioFocusInfo afi, int focusChange, IAudioPolicyCallback pcb){
+    if (afi == null) {
+        throw new IllegalArgumentException("Illegal null AudioFocusInfo");
+    }
+    if (pcb == null) {
+        throw new IllegalArgumentException("Illegal null AudioPolicy callback");
+    }
+    synchronized (mAudioPolicies) {
+        if (!mAudioPolicies.containsKey(pcb.asBinder())) {
+            throw new IllegalStateException("Unregistered AudioPolicy for focus dispatch");
+        }
+        return mMediaFocusControl.dispatchFocusChange(afi, focusChange);
+    }
+}

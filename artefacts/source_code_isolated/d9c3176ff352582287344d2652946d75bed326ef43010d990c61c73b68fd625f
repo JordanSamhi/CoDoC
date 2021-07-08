@@ -1,0 +1,12 @@
+public Session openSession(int sessionId) throws IOException{
+    try {
+        try {
+            return new Session(mInstaller.openSession(sessionId));
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } catch (RuntimeException e) {
+        ExceptionUtils.maybeUnwrapIOException(e);
+        throw e;
+    }
+}

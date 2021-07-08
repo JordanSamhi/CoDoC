@@ -1,0 +1,13 @@
+public Notification buildUnstyled(){
+    if (mActions.size() > 0) {
+        mN.actions = new Action[mActions.size()];
+        mActions.toArray(mN.actions);
+    }
+    if (!mPersonList.isEmpty()) {
+        mN.extras.putParcelableArrayList(EXTRA_PEOPLE_LIST, mPersonList);
+    }
+    if (mN.bigContentView != null || mN.contentView != null || mN.headsUpContentView != null) {
+        mN.extras.putBoolean(EXTRA_CONTAINS_CUSTOM_VIEW, true);
+    }
+    return mN;
+}

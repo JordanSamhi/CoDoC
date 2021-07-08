@@ -1,0 +1,17 @@
+public final void setDefaultKeyMode(@DefaultKeyMode int mode){
+    mDefaultKeyMode = mode;
+    switch(mode) {
+        case DEFAULT_KEYS_DISABLE:
+        case DEFAULT_KEYS_SHORTCUT:
+            mDefaultKeySsb = null;
+            break;
+        case DEFAULT_KEYS_DIALER:
+        case DEFAULT_KEYS_SEARCH_LOCAL:
+        case DEFAULT_KEYS_SEARCH_GLOBAL:
+            mDefaultKeySsb = new SpannableStringBuilder();
+            Selection.setSelection(mDefaultKeySsb, 0);
+            break;
+        default:
+            throw new IllegalArgumentException();
+    }
+}

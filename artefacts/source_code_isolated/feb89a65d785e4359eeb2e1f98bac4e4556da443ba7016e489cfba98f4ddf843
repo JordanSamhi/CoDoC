@@ -1,0 +1,23 @@
+public void parse(){
+    File file = new File(PATH_TO_VENDOR_CONFIG_XML);
+    if (file.exists()) {
+        try {
+            InputStream in = new FileInputStream(file);
+            parseInternal(in);
+            return;
+        } catch (IOException e) {
+            Slog.e(TAG, "Error reading vendor file: " + file, e);
+        } catch (XmlPullParserException e) {
+            Slog.e(TAG, "Unable to parse vendor file: " + file, e);
+        }
+    } else {
+        if (DEBUG) {
+            Slog.i(TAG, "no vendor priority configuration available. Using default priority");
+        }
+        addNewUseCasePriority(TvInputService.PRIORITY_HINT_USE_CASE_TYPE_BACKGROUND, 180, 100);
+        addNewUseCasePriority(TvInputService.PRIORITY_HINT_USE_CASE_TYPE_SCAN, 450, 200);
+        addNewUseCasePriority(TvInputService.PRIORITY_HINT_USE_CASE_TYPE_PLAYBACK, 480, 300);
+        addNewUseCasePriority(TvInputService.PRIORITY_HINT_USE_CASE_TYPE_LIVE, 490, 400);
+        addNewUseCasePriority(TvInputService.PRIORITY_HINT_USE_CASE_TYPE_RECORD, 600, 500);
+    }
+}

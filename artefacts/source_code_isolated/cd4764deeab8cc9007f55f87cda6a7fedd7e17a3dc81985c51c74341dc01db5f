@@ -1,0 +1,31 @@
+public Result next(){
+    if (!hasNext()) {
+        throw new IllegalStateException("you must only call next() when hasNext() is true");
+    }
+    incrementCursors();
+    assert hasNext();
+    boolean hasLeft = !mCursorLeft.isAfterLast();
+    boolean hasRight = !mCursorRight.isAfterLast();
+    if (hasLeft && hasRight) {
+        populateValues(mValues, mCursorLeft, mColumnsLeft, 0);
+        populateValues(mValues, mCursorRight, mColumnsRight, 1);
+        switch(compareStrings(mValues)) {
+            case -1:
+                mCompareResult = Result.LEFT;
+                break;
+            case 0:
+                mCompareResult = Result.BOTH;
+                break;
+            case 1:
+                mCompareResult = Result.RIGHT;
+                break;
+        }
+    } else if (hasLeft) {
+        mCompareResult = Result.LEFT;
+    } else {
+        assert hasRight;
+        mCompareResult = Result.RIGHT;
+    }
+    mCompareResultIsValid = true;
+    return mCompareResult;
+}

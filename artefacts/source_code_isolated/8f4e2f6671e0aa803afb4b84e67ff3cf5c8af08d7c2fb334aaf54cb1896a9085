@@ -1,0 +1,13 @@
+public UserInfo findCurrentGuestUser(){
+    checkManageUsersPermission("findCurrentGuestUser");
+    synchronized (mUsersLock) {
+        final int size = mUsers.size();
+        for (int i = 0; i < size; i++) {
+            final UserInfo user = mUsers.valueAt(i).info;
+            if (user.isGuest() && !user.guestToRemove && !user.preCreated && !mRemovingUserIds.get(user.id)) {
+                return user;
+            }
+        }
+    }
+    return null;
+}

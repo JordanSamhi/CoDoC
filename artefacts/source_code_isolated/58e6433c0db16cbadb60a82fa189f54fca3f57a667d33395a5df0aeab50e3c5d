@@ -1,0 +1,12 @@
+public void installMemoryStoreSetUpDetectionAlarm(@NonNull MemoryStore memoryStore){
+    if (mMemoryStore == null) {
+        mMemoryStore = memoryStore;
+        Log.i(TAG, "Installing MemoryStore");
+    } else {
+        mMemoryStore = memoryStore;
+        Log.e(TAG, "Reinstalling MemoryStore");
+    }
+    requestReadForPostBootDetection();
+    setFirstHealthDetectionAlarm();
+    setPostBootDetectionAlarm();
+}

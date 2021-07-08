@@ -1,0 +1,28 @@
+public void tetherOffloadRuleRemove(@NonNull final IpServer ipServer, @NonNull final Ipv6ForwardingRule rule){
+    if (!mIsBpfEnabled)
+        return;
+    try {
+        mNetd.tetherOffloadRuleRemove(rule.toTetherOffloadRuleParcel());
+    } catch (RemoteException | ServiceSpecificException e) {
+        mLog.e("Could not remove IPv6 forwarding rule: ", e);
+        return;
+    }
+    LinkedHashMap<Inet6Address, Ipv6ForwardingRule> rules = mIpv6ForwardingRules.get(ipServer);
+    if (rules == null)
+        return;
+    if (rules.remove(rule.address) == null)
+        return;
+    if (rules.isEmpty()) {
+        mIpv6ForwardingRules.remove(ipServer);
+    }
+    final int upstreamIfindex = rule.upstreamIfindex;
+    if (!isAnyRuleOnUpstream(upstreamIfindex)) {
+        try {
+            final TetherStatsParcel stats = mNetd.tetherOffloadGetAndClearStats(upstreamIfindex);
+            updateQuotaAndStatsFromSnapshot(new TetherStatsParcel[] { stats });
+            mStats.remove(upstreamIfindex);
+        } catch (RemoteException | ServiceSpecificException e) {
+            Log.wtf(TAG, "Exception when cleanup tether stats for upstream index " + upstreamIfindex + ": ", e);
+        }
+    }
+}

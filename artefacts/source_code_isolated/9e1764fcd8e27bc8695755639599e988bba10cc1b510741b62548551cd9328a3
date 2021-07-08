@@ -1,0 +1,7 @@
+public void testOpComplete_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.opComplete(mUserTwoId, 0, 0L);
+    verify(mUserOneService, never()).opComplete(0, 0L);
+}

@@ -1,0 +1,15 @@
+public void connectedStateTransition(boolean isEntering){
+    logv("connectedStateTransition: isEntering = " + isEntering);
+    mWifiIsConnected = isEntering;
+    if (!isEntering) {
+        return;
+    }
+    if (!mWatchdogAllowedToTrigger && mWatchdogFixedWifi && getWifiWatchdogFeature() && checkIfAtleastOneNetworkHasEverConnected() && checkIfConnectedBackToSameSsid() && checkIfConnectedBssidHasEverFailed()) {
+        takeBugReportWithCurrentProbability("Wifi fixed after restart");
+        mWifiMetrics.incrementNumLastResortWatchdogSuccesses();
+        long durationMs = mClock.getElapsedSinceBootMillis() - mTimeLastTrigger;
+        mWifiMetrics.setWatchdogSuccessTimeDurationMs(durationMs);
+    }
+    localLog("connectedStateTransition: setWatchdogTriggerEnabled to true");
+    setWatchdogTriggerEnabled(true);
+}

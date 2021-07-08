@@ -1,0 +1,35 @@
+public static PasswordMetrics computeForPassword(@NonNull byte[] password){
+    int letters = 0;
+    int upperCase = 0;
+    int lowerCase = 0;
+    int numeric = 0;
+    int symbols = 0;
+    int nonLetter = 0;
+    int nonNumeric = 0;
+    final int length = password.length;
+    for (byte b : password) {
+        switch(categoryChar((char) b)) {
+            case CHAR_LOWER_CASE:
+                letters++;
+                lowerCase++;
+                nonNumeric++;
+                break;
+            case CHAR_UPPER_CASE:
+                letters++;
+                upperCase++;
+                nonNumeric++;
+                break;
+            case CHAR_DIGIT:
+                numeric++;
+                nonLetter++;
+                break;
+            case CHAR_SYMBOL:
+                symbols++;
+                nonLetter++;
+                nonNumeric++;
+                break;
+        }
+    }
+    final int seqLength = maxLengthSequence(password);
+    return new PasswordMetrics(CREDENTIAL_TYPE_PASSWORD, length, letters, upperCase, lowerCase, numeric, symbols, nonLetter, nonNumeric, seqLength);
+}

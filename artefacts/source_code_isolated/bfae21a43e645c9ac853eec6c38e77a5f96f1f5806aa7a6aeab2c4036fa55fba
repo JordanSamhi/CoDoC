@@ -1,0 +1,9 @@
+public synchronized void unregister(DataConnection dc){
+    if (!isOwned(dc, "unregister"))
+        return;
+    if (dc.getLinkProperties() != null && !TextUtils.isEmpty(dc.getLinkProperties().getInterfaceName())) {
+        sInterfaceNames.remove(dc.getLinkProperties().getInterfaceName());
+    }
+    logd("Unregister from connectivity service");
+    super.unregister();
+}

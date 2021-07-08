@@ -1,0 +1,15 @@
+public synchronized void addVoiceCallSession(VoiceCallSession call){
+    int newLength = mAtoms.voiceCallSession.length + 1;
+    if (newLength > MAX_NUM_CALL_SESSIONS) {
+        newLength = MAX_NUM_CALL_SESSIONS;
+    } else {
+        mAtoms.voiceCallSession = Arrays.copyOf(mAtoms.voiceCallSession, newLength);
+    }
+    int insertAt = 0;
+    if (newLength > 1) {
+        insertAt = sRandom.nextInt(newLength);
+        mAtoms.voiceCallSession[newLength - 1] = mAtoms.voiceCallSession[insertAt];
+    }
+    mAtoms.voiceCallSession[insertAt] = call;
+    saveAtomsToFile();
+}

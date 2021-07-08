@@ -1,0 +1,48 @@
+public void logWifiIsUnusableEvent(int triggerType, int firmwareAlertCode){
+    mScoreBreachLowTimeMillis = -1;
+    if (!mContext.getResources().getBoolean(R.bool.config_wifiIsUnusableEventMetricsEnabled)) {
+        return;
+    }
+    long currentBootTime = mClock.getElapsedSinceBootMillis();
+    switch(triggerType) {
+        case WifiIsUnusableEvent.TYPE_DATA_STALL_BAD_TX:
+        case WifiIsUnusableEvent.TYPE_DATA_STALL_TX_WITHOUT_RX:
+        case WifiIsUnusableEvent.TYPE_DATA_STALL_BOTH:
+            if (currentBootTime < mLastDataStallTime + MIN_DATA_STALL_WAIT_MS) {
+                return;
+            }
+            mLastDataStallTime = currentBootTime;
+            break;
+        case WifiIsUnusableEvent.TYPE_FIRMWARE_ALERT:
+            break;
+        case WifiIsUnusableEvent.TYPE_IP_REACHABILITY_LOST:
+            break;
+        default:
+            Log.e(TAG, "Unknown WifiIsUnusableEvent: " + triggerType);
+            return;
+    }
+    WifiIsUnusableEvent event = new WifiIsUnusableEvent();
+    event.type = triggerType;
+    if (triggerType == WifiIsUnusableEvent.TYPE_FIRMWARE_ALERT) {
+        event.firmwareAlertCode = firmwareAlertCode;
+    }
+    event.startTimeMillis = currentBootTime;
+    event.lastScore = mLastScoreNoReset;
+    event.lastWifiUsabilityScore = mLastWifiUsabilityScoreNoReset;
+    event.lastPredictionHorizonSec = mLastPredictionHorizonSecNoReset;
+    event.txSuccessDelta = mTxScucessDelta;
+    event.txRetriesDelta = mTxRetriesDelta;
+    event.txBadDelta = mTxBadDelta;
+    event.rxSuccessDelta = mRxSuccessDelta;
+    event.packetUpdateTimeDelta = mLlStatsUpdateTimeDelta;
+    event.lastLinkLayerStatsUpdateTime = mLlStatsLastUpdateTime;
+    event.screenOn = mScreenOn;
+    event.mobileTxBytes = mFacade.getMobileTxBytes();
+    event.mobileRxBytes = mFacade.getMobileRxBytes();
+    event.totalTxBytes = mFacade.getTotalTxBytes();
+    event.totalRxBytes = mFacade.getTotalRxBytes();
+    mWifiIsUnusableList.add(new WifiIsUnusableWithTime(event, mClock.getWallClockMillis()));
+    if (mWifiIsUnusableList.size() > MAX_UNUSABLE_EVENTS) {
+        mWifiIsUnusableList.removeFirst();
+    }
+}

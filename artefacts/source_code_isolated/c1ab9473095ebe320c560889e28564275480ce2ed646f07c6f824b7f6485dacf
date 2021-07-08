@@ -1,0 +1,26 @@
+public void noteNetworkInterfaceType(String iface, int networkType){
+    if (TextUtils.isEmpty(iface))
+        return;
+    synchronized (mModemNetworkLock) {
+        if (ConnectivityManager.isNetworkTypeMobile(networkType)) {
+            mModemIfaces = includeInStringArray(mModemIfaces, iface);
+            if (DEBUG)
+                Slog.d(TAG, "Note mobile iface " + iface + ": " + mModemIfaces);
+        } else {
+            mModemIfaces = excludeFromStringArray(mModemIfaces, iface);
+            if (DEBUG)
+                Slog.d(TAG, "Note non-mobile iface " + iface + ": " + mModemIfaces);
+        }
+    }
+    synchronized (mWifiNetworkLock) {
+        if (ConnectivityManager.isNetworkTypeWifi(networkType)) {
+            mWifiIfaces = includeInStringArray(mWifiIfaces, iface);
+            if (DEBUG)
+                Slog.d(TAG, "Note wifi iface " + iface + ": " + mWifiIfaces);
+        } else {
+            mWifiIfaces = excludeFromStringArray(mWifiIfaces, iface);
+            if (DEBUG)
+                Slog.d(TAG, "Note non-wifi iface " + iface + ": " + mWifiIfaces);
+        }
+    }
+}

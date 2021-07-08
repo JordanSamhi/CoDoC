@@ -1,0 +1,87 @@
+public static String reasonToString(int standbyReason){
+    final int subReason = standbyReason & REASON_SUB_MASK;
+    StringBuilder sb = new StringBuilder();
+    switch(standbyReason & REASON_MAIN_MASK) {
+        case REASON_MAIN_DEFAULT:
+            sb.append("d");
+            switch(subReason) {
+                case REASON_SUB_DEFAULT_UNDEFINED:
+                    break;
+                case REASON_SUB_DEFAULT_APP_UPDATE:
+                    sb.append("-au");
+                    break;
+            }
+            break;
+        case REASON_MAIN_FORCED_BY_SYSTEM:
+            sb.append("s");
+            if (subReason > 0) {
+                sb.append("-").append(Integer.toBinaryString(subReason));
+            }
+            break;
+        case REASON_MAIN_FORCED_BY_USER:
+            sb.append("f");
+            break;
+        case REASON_MAIN_PREDICTED:
+            sb.append("p");
+            switch(subReason) {
+                case REASON_SUB_PREDICTED_RESTORED:
+                    sb.append("-r");
+                    break;
+            }
+            break;
+        case REASON_MAIN_TIMEOUT:
+            sb.append("t");
+            break;
+        case REASON_MAIN_USAGE:
+            sb.append("u");
+            switch(subReason) {
+                case REASON_SUB_USAGE_SYSTEM_INTERACTION:
+                    sb.append("-si");
+                    break;
+                case REASON_SUB_USAGE_NOTIFICATION_SEEN:
+                    sb.append("-ns");
+                    break;
+                case REASON_SUB_USAGE_USER_INTERACTION:
+                    sb.append("-ui");
+                    break;
+                case REASON_SUB_USAGE_MOVE_TO_FOREGROUND:
+                    sb.append("-mf");
+                    break;
+                case REASON_SUB_USAGE_MOVE_TO_BACKGROUND:
+                    sb.append("-mb");
+                    break;
+                case REASON_SUB_USAGE_SYSTEM_UPDATE:
+                    sb.append("-su");
+                    break;
+                case REASON_SUB_USAGE_ACTIVE_TIMEOUT:
+                    sb.append("-at");
+                    break;
+                case REASON_SUB_USAGE_SYNC_ADAPTER:
+                    sb.append("-sa");
+                    break;
+                case REASON_SUB_USAGE_SLICE_PINNED:
+                    sb.append("-lp");
+                    break;
+                case REASON_SUB_USAGE_SLICE_PINNED_PRIV:
+                    sb.append("-lv");
+                    break;
+                case REASON_SUB_USAGE_EXEMPTED_SYNC_SCHEDULED_NON_DOZE:
+                    sb.append("-en");
+                    break;
+                case REASON_SUB_USAGE_EXEMPTED_SYNC_SCHEDULED_DOZE:
+                    sb.append("-ed");
+                    break;
+                case REASON_SUB_USAGE_EXEMPTED_SYNC_START:
+                    sb.append("-es");
+                    break;
+                case REASON_SUB_USAGE_UNEXEMPTED_SYNC_SCHEDULED:
+                    sb.append("-uss");
+                    break;
+                case REASON_SUB_USAGE_FOREGROUND_SERVICE_START:
+                    sb.append("-fss");
+                    break;
+            }
+            break;
+    }
+    return sb.toString();
+}

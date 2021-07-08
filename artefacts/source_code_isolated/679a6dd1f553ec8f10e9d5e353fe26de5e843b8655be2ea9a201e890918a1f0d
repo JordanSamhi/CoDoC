@@ -1,0 +1,11 @@
+public void setLayoutParams(ViewGroup.LayoutParams params){
+    if (params == null) {
+        throw new NullPointerException("Layout parameters cannot be null");
+    }
+    mLayoutParams = params;
+    resolveLayoutParams();
+    if (mParent instanceof ViewGroup) {
+        ((ViewGroup) mParent).onSetLayoutParams(this, params);
+    }
+    requestLayout();
+}

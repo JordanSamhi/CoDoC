@@ -1,0 +1,42 @@
+public static int getChildMeasureSpec(int parentSize, int parentMode, int padding, int childDimension, boolean canScroll){
+    int size = Math.max(0, parentSize - padding);
+    int resultSize = 0;
+    int resultMode = 0;
+    if (canScroll) {
+        if (childDimension >= 0) {
+            resultSize = childDimension;
+            resultMode = MeasureSpec.EXACTLY;
+        } else if (childDimension == LayoutParams.MATCH_PARENT) {
+            switch(parentMode) {
+                case MeasureSpec.AT_MOST:
+                case MeasureSpec.EXACTLY:
+                    resultSize = size;
+                    resultMode = parentMode;
+                    break;
+                case MeasureSpec.UNSPECIFIED:
+                    resultSize = 0;
+                    resultMode = MeasureSpec.UNSPECIFIED;
+                    break;
+            }
+        } else if (childDimension == LayoutParams.WRAP_CONTENT) {
+            resultSize = 0;
+            resultMode = MeasureSpec.UNSPECIFIED;
+        }
+    } else {
+        if (childDimension >= 0) {
+            resultSize = childDimension;
+            resultMode = MeasureSpec.EXACTLY;
+        } else if (childDimension == LayoutParams.MATCH_PARENT) {
+            resultSize = size;
+            resultMode = parentMode;
+        } else if (childDimension == LayoutParams.WRAP_CONTENT) {
+            resultSize = size;
+            if (parentMode == MeasureSpec.AT_MOST || parentMode == MeasureSpec.EXACTLY) {
+                resultMode = MeasureSpec.AT_MOST;
+            } else {
+                resultMode = MeasureSpec.UNSPECIFIED;
+            }
+        }
+    }
+    return MeasureSpec.makeMeasureSpec(resultSize, resultMode);
+}

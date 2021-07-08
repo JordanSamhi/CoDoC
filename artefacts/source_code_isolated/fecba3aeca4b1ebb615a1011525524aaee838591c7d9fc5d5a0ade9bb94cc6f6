@@ -1,0 +1,15 @@
+public static IExtractedTextResultCallback.Stub of(@NonNull CancellationGroup.Completable.ExtractedText value){
+    final AtomicReference<WeakReference<CancellationGroup.Completable.ExtractedText>> atomicRef = new AtomicReference<>(new WeakReference<>(value));
+    return new IExtractedTextResultCallback.Stub() {
+
+        @BinderThread
+        @Override
+        public void onResult(android.view.inputmethod.ExtractedText result) {
+            final CancellationGroup.Completable.ExtractedText value = unwrap(atomicRef);
+            if (value == null) {
+                return;
+            }
+            value.onComplete(result);
+        }
+    };
+}

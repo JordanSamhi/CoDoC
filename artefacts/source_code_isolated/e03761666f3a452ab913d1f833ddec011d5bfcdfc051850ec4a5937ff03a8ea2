@@ -1,0 +1,10 @@
+public List<InetAddress> getAllAddresses(){
+    List<InetAddress> addresses = new ArrayList<>();
+    for (LinkAddress linkAddress : mLinkAddresses) {
+        addresses.add(linkAddress.getAddress());
+    }
+    for (LinkProperties stacked : mStackedLinks.values()) {
+        addresses.addAll(stacked.getAllAddresses());
+    }
+    return addresses;
+}

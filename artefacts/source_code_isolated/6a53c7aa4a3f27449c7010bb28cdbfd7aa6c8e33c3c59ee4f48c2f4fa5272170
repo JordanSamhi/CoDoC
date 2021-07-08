@@ -1,0 +1,8 @@
+public void saveLockPattern(byte[] pattern){
+    if (mCurrentSaveLockTask != null && mCurrentSaveLockTask.getStatus() != AsyncTask.Status.FINISHED) {
+        Log.e(TAG, "Can't save multiple passwords at once");
+        return;
+    }
+    mCurrentSaveLockTask = new SaveLockAsyncTask(mInitialLockListener, mInitialLockSetupService, LockTypes.PATTERN);
+    mCurrentSaveLockTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, pattern);
+}

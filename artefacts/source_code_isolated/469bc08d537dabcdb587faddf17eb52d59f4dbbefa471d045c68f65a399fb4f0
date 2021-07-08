@@ -1,0 +1,95 @@
+public void readKernelUidCpuFreqTimesLocked(@Nullable ArrayList<StopwatchTimer> partialTimers, boolean onBattery, boolean onBatteryScreenOff){
+    final boolean perClusterTimesAvailable = mCpuUidFreqTimeReader.perClusterTimesAvailable();
+    final int numWakelocks = partialTimers == null ? 0 : partialTimers.size();
+    final int numClusters = mPowerProfile.getNumCpuClusters();
+    mWakeLockAllocationsUs = null;
+    final long startTimeMs = mClocks.uptimeMillis();
+    mCpuUidFreqTimeReader.readDelta((uid, cpuFreqTimeMs) -> {
+        uid = mapUid(uid);
+        if (Process.isIsolated(uid)) {
+            mCpuUidFreqTimeReader.removeUid(uid);
+            Slog.d(TAG, "Got freq readings for an isolated uid with no mapping: " + uid);
+            return;
+        }
+        if (!mUserInfoProvider.exists(UserHandle.getUserId(uid))) {
+            Slog.d(TAG, "Got freq readings for an invalid user's uid " + uid);
+            mCpuUidFreqTimeReader.removeUid(uid);
+            return;
+        }
+        final Uid u = getUidStatsLocked(uid);
+        if (u.mCpuFreqTimeMs == null || u.mCpuFreqTimeMs.getSize() != cpuFreqTimeMs.length) {
+            detachIfNotNull(u.mCpuFreqTimeMs);
+            u.mCpuFreqTimeMs = new LongSamplingCounterArray(mOnBatteryTimeBase);
+        }
+        u.mCpuFreqTimeMs.addCountLocked(cpuFreqTimeMs, onBattery);
+        if (u.mScreenOffCpuFreqTimeMs == null || u.mScreenOffCpuFreqTimeMs.getSize() != cpuFreqTimeMs.length) {
+            detachIfNotNull(u.mScreenOffCpuFreqTimeMs);
+            u.mScreenOffCpuFreqTimeMs = new LongSamplingCounterArray(mOnBatteryScreenOffTimeBase);
+        }
+        u.mScreenOffCpuFreqTimeMs.addCountLocked(cpuFreqTimeMs, onBatteryScreenOff);
+        if (perClusterTimesAvailable) {
+            if (u.mCpuClusterSpeedTimesUs == null || u.mCpuClusterSpeedTimesUs.length != numClusters) {
+                detachIfNotNull(u.mCpuClusterSpeedTimesUs);
+                u.mCpuClusterSpeedTimesUs = new LongSamplingCounter[numClusters][];
+            }
+            if (numWakelocks > 0 && mWakeLockAllocationsUs == null) {
+                mWakeLockAllocationsUs = new long[numClusters][];
+            }
+            int freqIndex = 0;
+            for (int cluster = 0; cluster < numClusters; ++cluster) {
+                final int speedsInCluster = mPowerProfile.getNumSpeedStepsInCpuCluster(cluster);
+                if (u.mCpuClusterSpeedTimesUs[cluster] == null || u.mCpuClusterSpeedTimesUs[cluster].length != speedsInCluster) {
+                    detachIfNotNull(u.mCpuClusterSpeedTimesUs[cluster]);
+                    u.mCpuClusterSpeedTimesUs[cluster] = new LongSamplingCounter[speedsInCluster];
+                }
+                if (numWakelocks > 0 && mWakeLockAllocationsUs[cluster] == null) {
+                    mWakeLockAllocationsUs[cluster] = new long[speedsInCluster];
+                }
+                final LongSamplingCounter[] cpuTimesUs = u.mCpuClusterSpeedTimesUs[cluster];
+                for (int speed = 0; speed < speedsInCluster; ++speed) {
+                    if (cpuTimesUs[speed] == null) {
+                        cpuTimesUs[speed] = new LongSamplingCounter(mOnBatteryTimeBase);
+                    }
+                    final long appAllocationUs;
+                    if (mWakeLockAllocationsUs != null) {
+                        appAllocationUs = (cpuFreqTimeMs[freqIndex] * 1000 * WAKE_LOCK_WEIGHT) / 100;
+                        mWakeLockAllocationsUs[cluster][speed] += (cpuFreqTimeMs[freqIndex] * 1000 - appAllocationUs);
+                    } else {
+                        appAllocationUs = cpuFreqTimeMs[freqIndex] * 1000;
+                    }
+                    cpuTimesUs[speed].addCountLocked(appAllocationUs, onBattery);
+                    freqIndex++;
+                }
+            }
+        }
+    });
+    final long elapsedTimeMs = mClocks.uptimeMillis() - startTimeMs;
+    if (DEBUG_ENERGY_CPU || elapsedTimeMs >= 100) {
+        Slog.d(TAG, "Reading cpu freq times took " + elapsedTimeMs + "ms");
+    }
+    if (mWakeLockAllocationsUs != null) {
+        for (int i = 0; i < numWakelocks; ++i) {
+            final Uid u = partialTimers.get(i).mUid;
+            if (u.mCpuClusterSpeedTimesUs == null || u.mCpuClusterSpeedTimesUs.length != numClusters) {
+                detachIfNotNull(u.mCpuClusterSpeedTimesUs);
+                u.mCpuClusterSpeedTimesUs = new LongSamplingCounter[numClusters][];
+            }
+            for (int cluster = 0; cluster < numClusters; ++cluster) {
+                final int speedsInCluster = mPowerProfile.getNumSpeedStepsInCpuCluster(cluster);
+                if (u.mCpuClusterSpeedTimesUs[cluster] == null || u.mCpuClusterSpeedTimesUs[cluster].length != speedsInCluster) {
+                    detachIfNotNull(u.mCpuClusterSpeedTimesUs[cluster]);
+                    u.mCpuClusterSpeedTimesUs[cluster] = new LongSamplingCounter[speedsInCluster];
+                }
+                final LongSamplingCounter[] cpuTimeUs = u.mCpuClusterSpeedTimesUs[cluster];
+                for (int speed = 0; speed < speedsInCluster; ++speed) {
+                    if (cpuTimeUs[speed] == null) {
+                        cpuTimeUs[speed] = new LongSamplingCounter(mOnBatteryTimeBase);
+                    }
+                    final long allocationUs = mWakeLockAllocationsUs[cluster][speed] / (numWakelocks - i);
+                    cpuTimeUs[speed].addCountLocked(allocationUs, onBattery);
+                    mWakeLockAllocationsUs[cluster][speed] -= allocationUs;
+                }
+            }
+        }
+    }
+}

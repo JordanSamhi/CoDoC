@@ -1,0 +1,9 @@
+public static void dispose(){
+    synchronized (UiThread.class) {
+        if (sInstance == null) {
+            return;
+        }
+        getHandler().runWithScissors(sInstance::quit, 0);
+        sInstance = null;
+    }
+}

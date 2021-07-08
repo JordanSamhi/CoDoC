@@ -1,0 +1,18 @@
+public void smoothScrollBy(int dx, int dy, Interpolator interpolator){
+    if (mLayout == null) {
+        Log.e(TAG, "Cannot smooth scroll without a LayoutManager set. " + "Call setLayoutManager with a non-null argument.");
+        return;
+    }
+    if (mLayoutFrozen) {
+        return;
+    }
+    if (!mLayout.canScrollHorizontally()) {
+        dx = 0;
+    }
+    if (!mLayout.canScrollVertically()) {
+        dy = 0;
+    }
+    if (dx != 0 || dy != 0) {
+        mViewFlinger.smoothScrollBy(dx, dy, interpolator);
+    }
+}

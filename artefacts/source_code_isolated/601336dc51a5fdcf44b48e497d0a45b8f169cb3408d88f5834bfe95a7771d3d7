@@ -1,0 +1,73 @@
+public static void calculateShadow(float[] lightPoly, float[] poly, int polyLength, float strength, float[][] retstrips){
+    float[] outerStrip = retstrips[0];
+    int roundedEdgeSegments = ((polyLength == 4) ? 0 : ShadowConstants.SPLICE_ROUNDED_EDGE);
+    int sideLength = (roundedEdgeSegments / 2 + 1) * 2;
+    float[] umbra = new float[4 * 2 * sideLength];
+    int idx = (roundedEdgeSegments + 1) / 2;
+    int uShift = 0;
+    int rollBack = (((polyLength % 8) == 0) ? 0 : 1);
+    for (int s = 0; s < 4; ++s) {
+        float lx = lightPoly[s * 3 + 0];
+        float ly = lightPoly[s * 3 + 1];
+        float lz = lightPoly[s * 3 + 2];
+        for (int i = 0; i < sideLength; ++i, uShift += 2, ++idx) {
+            int shift = (idx % polyLength) * 3;
+            float t = lz / (lz - poly[shift + 2]);
+            umbra[uShift + 0] = lx - t * (lx - poly[shift + 0]);
+            umbra[uShift + 1] = ly - t * (ly - poly[shift + 1]);
+        }
+        idx -= rollBack;
+    }
+    idx = roundedEdgeSegments;
+    float[] penumbraRect = new float[4];
+    for (int s = 0; s < 4; ++s, idx += (roundedEdgeSegments + 1)) {
+        int sp = (s + 2) % 4;
+        float lz = lightPoly[sp * 3 + 2];
+        int shift = (idx % polyLength) * 3;
+        float t = lz / (lz - poly[shift + 2]);
+        int c = (s + 1) % 2;
+        penumbraRect[s] = lightPoly[sp * 3 + c] - t * (lightPoly[sp * 3 + c] - poly[shift + c]);
+    }
+    if (penumbraRect[0] > penumbraRect[2]) {
+        float tmp = (penumbraRect[0] + penumbraRect[2]) / 2.0f;
+        penumbraRect[0] = penumbraRect[2] = tmp;
+    }
+    if (penumbraRect[3] > penumbraRect[1]) {
+        float tmp = (penumbraRect[1] + penumbraRect[3]) / 2.0f;
+        penumbraRect[1] = penumbraRect[3] = tmp;
+    }
+    idx = sideLength * 4 - sideLength / 2;
+    int rsShift = 0;
+    for (int s = 0; s < 4; ++s) {
+        int xidx = (((s + 3) % 4) / 2) * 2 + 1;
+        int yidx = (s / 2) * 2;
+        float penumbraX = penumbraRect[xidx];
+        float penumbraY = penumbraRect[yidx];
+        for (int i = 0; i < sideLength; ++i, rsShift += 6, ++idx) {
+            int shift = (idx % (sideLength * 4)) * 2;
+            outerStrip[rsShift + 0] = umbra[shift + 0];
+            outerStrip[rsShift + 1] = umbra[shift + 1];
+            outerStrip[rsShift + 3] = penumbraX;
+            outerStrip[rsShift + 4] = penumbraY;
+            outerStrip[rsShift + 5] = strength;
+        }
+    }
+    outerStrip[rsShift + 0] = outerStrip[0];
+    outerStrip[rsShift + 1] = outerStrip[1];
+    outerStrip[rsShift + 3] = outerStrip[3];
+    outerStrip[rsShift + 4] = outerStrip[4];
+    outerStrip[rsShift + 5] = strength;
+    float[] innerStrip = retstrips[1];
+    innerStrip[0] = penumbraRect[3];
+    innerStrip[1] = penumbraRect[0];
+    innerStrip[2] = strength;
+    innerStrip[3] = penumbraRect[1];
+    innerStrip[4] = penumbraRect[0];
+    innerStrip[5] = strength;
+    innerStrip[6] = penumbraRect[3];
+    innerStrip[7] = penumbraRect[2];
+    innerStrip[8] = strength;
+    innerStrip[9] = penumbraRect[1];
+    innerStrip[10] = penumbraRect[2];
+    innerStrip[11] = strength;
+}

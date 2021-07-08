@@ -1,0 +1,14 @@
+public List<String> getAllCodePathsExcludingResourceOnly(){
+    ArrayList<String> paths = new ArrayList<>();
+    if ((applicationInfo.flags & ApplicationInfo.FLAG_HAS_CODE) != 0) {
+        paths.add(baseCodePath);
+    }
+    if (!ArrayUtils.isEmpty(splitCodePaths)) {
+        for (int i = 0; i < splitCodePaths.length; i++) {
+            if ((splitFlags[i] & ApplicationInfo.FLAG_HAS_CODE) != 0) {
+                paths.add(splitCodePaths[i]);
+            }
+        }
+    }
+    return paths;
+}

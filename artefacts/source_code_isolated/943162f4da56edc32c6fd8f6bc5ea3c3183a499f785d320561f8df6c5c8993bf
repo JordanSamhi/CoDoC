@@ -1,0 +1,11 @@
+public void suggestContentSelections(@NonNull SelectionsRequest request, @NonNull @CallbackExecutor Executor callbackExecutor, @NonNull SelectionsCallback callback){
+    if (mService == null) {
+        Log.e(TAG, "suggestContentSelections called, but no ContentSuggestionsManager configured");
+        return;
+    }
+    try {
+        mService.suggestContentSelections(mUser, request, new SelectionsCallbackWrapper(callback, callbackExecutor));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

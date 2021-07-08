@@ -1,0 +1,11 @@
+public static long routedIPv4AddressCount(final TreeSet<IpPrefix> prefixes){
+    long routedIPCount = 0;
+    for (final IpPrefix prefix : deduplicatePrefixSet(prefixes)) {
+        if (!prefix.isIPv4()) {
+            Log.wtf(TAG, "Non-IPv4 prefix in routedIPv4AddressCount");
+        }
+        int rank = 32 - prefix.getPrefixLength();
+        routedIPCount += 1L << rank;
+    }
+    return routedIPCount;
+}

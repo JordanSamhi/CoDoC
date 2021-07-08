@@ -1,0 +1,10 @@
+public int getPasswordComplexity(){
+    if (mService == null) {
+        return PASSWORD_COMPLEXITY_NONE;
+    }
+    try {
+        return mService.getPasswordComplexity(mParentInstance);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,14 @@
+public static void assertContentsInAnyOrder(String message, Iterable<?> actual, Object... expected){
+    HashMap<Object, Object> expectedMap = new HashMap<Object, Object>(expected.length);
+    for (Object expectedObj : expected) {
+        expectedMap.put(expectedObj, expectedObj);
+    }
+    for (Object actualObj : actual) {
+        if (expectedMap.remove(actualObj) == null) {
+            failWithMessage(message, "Extra object in actual: (" + actualObj.toString() + ")");
+        }
+    }
+    if (expectedMap.size() > 0) {
+        failWithMessage(message, "Extra objects in expected.");
+    }
+}

@@ -1,0 +1,28 @@
+public void logStaEvent(int type, int frameworkDisconnectReason, WifiConfiguration config){
+    switch(type) {
+        case StaEvent.TYPE_CMD_IP_CONFIGURATION_SUCCESSFUL:
+        case StaEvent.TYPE_CMD_IP_CONFIGURATION_LOST:
+        case StaEvent.TYPE_CMD_IP_REACHABILITY_LOST:
+        case StaEvent.TYPE_CMD_START_CONNECT:
+        case StaEvent.TYPE_CMD_START_ROAM:
+        case StaEvent.TYPE_CONNECT_NETWORK:
+        case StaEvent.TYPE_NETWORK_AGENT_VALID_NETWORK:
+        case StaEvent.TYPE_FRAMEWORK_DISCONNECT:
+        case StaEvent.TYPE_SCORE_BREACH:
+        case StaEvent.TYPE_MAC_CHANGE:
+        case StaEvent.TYPE_WIFI_ENABLED:
+        case StaEvent.TYPE_WIFI_DISABLED:
+        case StaEvent.TYPE_WIFI_USABILITY_SCORE_BREACH:
+            break;
+        default:
+            Log.e(TAG, "Unknown StaEvent:" + type);
+            return;
+    }
+    StaEvent event = new StaEvent();
+    event.type = type;
+    if (frameworkDisconnectReason != StaEvent.DISCONNECT_UNKNOWN) {
+        event.frameworkDisconnectReason = frameworkDisconnectReason;
+    }
+    event.configInfo = createConfigInfo(config);
+    addStaEvent(event);
+}

@@ -1,0 +1,11 @@
+public static PasswordMetrics computeForCredential(LockscreenCredential credential){
+    if (credential.isPassword() || credential.isPin()) {
+        return PasswordMetrics.computeForPassword(credential.getCredential());
+    } else if (credential.isPattern()) {
+        return new PasswordMetrics(CREDENTIAL_TYPE_PATTERN);
+    } else if (credential.isNone()) {
+        return new PasswordMetrics(CREDENTIAL_TYPE_NONE);
+    } else {
+        throw new IllegalArgumentException("Unknown credential type " + credential.getType());
+    }
+}

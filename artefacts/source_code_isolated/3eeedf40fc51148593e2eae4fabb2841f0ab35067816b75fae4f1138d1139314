@@ -1,0 +1,12 @@
+public void setDisabledForSetup(boolean disabled){
+    try {
+        final int userId = Binder.getCallingUserHandle().getIdentifier();
+        final IStatusBarService svc = getService();
+        if (svc != null) {
+            svc.disableForUser(disabled ? DEFAULT_SETUP_DISABLE_FLAGS : DISABLE_NONE, mToken, mContext.getPackageName(), userId);
+            svc.disable2ForUser(disabled ? DEFAULT_SETUP_DISABLE2_FLAGS : DISABLE2_NONE, mToken, mContext.getPackageName(), userId);
+        }
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public void setSupportedCountries(@NonNull List<String> supportedCountries){
+    if (!isEnabled()) {
+        return;
+    }
+    try {
+        getIEuiccController().setSupportedCountries(true, supportedCountries.stream().map(String::toUpperCase).collect(Collectors.toList()));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

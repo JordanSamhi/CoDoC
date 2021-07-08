@@ -1,0 +1,24 @@
+public void openGamepadBridge(@NonNull IBinder token, @NonNull String name) throws RuntimeException{
+    final IBinder finalToken = Objects.requireNonNull(token);
+    final String finalName = Objects.requireNonNull(name);
+    synchronized (mOpenBridgeRunnables) {
+        if (mRemoteServiceInput == null) {
+            Log.d(TAG, "Delaying openGamepadBridge() for " + finalName);
+            mOpenBridgeRunnables.add(() -> {
+                try {
+                    mRemoteServiceInput.openGamepadBridge(finalToken, finalName);
+                    Log.d(TAG, "Delayed openGamepadBridge() for " + finalName + ": success");
+                } catch (RemoteException re) {
+                    Log.e(TAG, "Delayed openGamepadBridge() for " + finalName + ": failure", re);
+                }
+            });
+            return;
+        }
+    }
+    try {
+        mRemoteServiceInput.openGamepadBridge(token, finalName);
+        Log.d(TAG, "openGamepadBridge() for " + finalName + ": success");
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

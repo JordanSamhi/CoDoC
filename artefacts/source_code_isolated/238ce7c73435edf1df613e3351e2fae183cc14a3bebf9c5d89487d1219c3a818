@@ -1,0 +1,14 @@
+public static ArrayList<Byte> stringToByteArrayList(String str){
+    if (str == null) {
+        throw new IllegalArgumentException("null string");
+    }
+    CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+    try {
+        ByteBuffer encoded = encoder.encode(CharBuffer.wrap(str));
+        byte[] byteArray = new byte[encoded.remaining()];
+        encoded.get(byteArray);
+        return byteArrayToArrayList(byteArray);
+    } catch (CharacterCodingException cce) {
+        throw new IllegalArgumentException("cannot be utf-8 encoded", cce);
+    }
+}

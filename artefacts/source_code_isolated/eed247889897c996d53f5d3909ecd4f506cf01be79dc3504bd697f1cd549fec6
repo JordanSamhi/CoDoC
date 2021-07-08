@@ -1,0 +1,7 @@
+public void maybeStartTrackingJobLocked(JobStatus taskStatus, JobStatus lastJob){
+    if (taskStatus.hasIdleConstraint()) {
+        mTrackedTasks.add(taskStatus);
+        taskStatus.setTrackingController(JobStatus.TRACKING_IDLE);
+        taskStatus.setIdleConstraintSatisfied(mIdleTracker.isIdle());
+    }
+}

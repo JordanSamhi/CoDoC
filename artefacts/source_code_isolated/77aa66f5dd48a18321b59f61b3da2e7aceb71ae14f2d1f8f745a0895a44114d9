@@ -1,0 +1,19 @@
+public void notifyContentBlocked(@NonNull final TvContentRating rating){
+    Preconditions.checkNotNull(rating);
+    executeOrPostRunnableOnMainThread(new Runnable() {
+
+        @MainThread
+        @Override
+        public void run() {
+            try {
+                if (DEBUG)
+                    Log.d(TAG, "notifyContentBlocked");
+                if (mSessionCallback != null) {
+                    mSessionCallback.onContentBlocked(rating.flattenToString());
+                }
+            } catch (RemoteException e) {
+                Log.w(TAG, "error in notifyContentBlocked", e);
+            }
+        }
+    });
+}

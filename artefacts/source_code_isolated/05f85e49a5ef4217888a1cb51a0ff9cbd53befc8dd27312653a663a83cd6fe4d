@@ -1,0 +1,37 @@
+public void updateApplicationInfo(@NonNull ApplicationInfo aInfo, @Nullable List<String> oldPaths){
+    setApplicationInfo(aInfo);
+    final List<String> newPaths = new ArrayList<>();
+    makePaths(mActivityThread, aInfo, newPaths);
+    final List<String> addedPaths = new ArrayList<>(newPaths.size());
+    if (oldPaths != null) {
+        for (String path : newPaths) {
+            final String apkName = path.substring(path.lastIndexOf(File.separator));
+            boolean match = false;
+            for (String oldPath : oldPaths) {
+                final String oldApkName = oldPath.substring(oldPath.lastIndexOf(File.separator));
+                if (apkName.equals(oldApkName)) {
+                    match = true;
+                    break;
+                }
+            }
+            if (!match) {
+                addedPaths.add(path);
+            }
+        }
+    } else {
+        addedPaths.addAll(newPaths);
+    }
+    synchronized (this) {
+        createOrUpdateClassLoaderLocked(addedPaths);
+        if (mResources != null) {
+            final String[] splitPaths;
+            try {
+                splitPaths = getSplitPaths(null);
+            } catch (NameNotFoundException e) {
+                throw new AssertionError("null split not found");
+            }
+            mResources = ResourcesManager.getInstance().getResources(null, mResDir, splitPaths, mOverlayDirs, mApplicationInfo.sharedLibraryFiles, Display.DEFAULT_DISPLAY, null, getCompatibilityInfo(), getClassLoader(), mApplication == null ? null : mApplication.getResources().getLoaders());
+        }
+    }
+    mAppComponentFactory = createAppFactory(aInfo, mDefaultClassLoader);
+}

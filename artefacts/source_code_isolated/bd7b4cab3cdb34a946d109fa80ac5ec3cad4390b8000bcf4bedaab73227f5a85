@@ -1,0 +1,9 @@
+public void setAdbEnabled(boolean enabled, byte transportType){
+    if (transportType == AdbTransportType.USB) {
+        mHandler.sendEmptyMessage(enabled ? AdbDebuggingHandler.MESSAGE_ADB_ENABLED : AdbDebuggingHandler.MESSAGE_ADB_DISABLED);
+    } else if (transportType == AdbTransportType.WIFI) {
+        mHandler.sendEmptyMessage(enabled ? AdbDebuggingHandler.MSG_ADBDWIFI_ENABLE : AdbDebuggingHandler.MSG_ADBDWIFI_DISABLE);
+    } else {
+        throw new IllegalArgumentException("setAdbEnabled called with unimplemented transport type=" + transportType);
+    }
+}

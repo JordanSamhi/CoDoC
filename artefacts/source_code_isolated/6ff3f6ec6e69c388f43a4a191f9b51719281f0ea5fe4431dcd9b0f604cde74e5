@@ -1,0 +1,13 @@
+public ImsCallProfile getLocalCallProfile() throws ImsException{
+    synchronized (mLockObj) {
+        if (mSession == null) {
+            throw new ImsException("No call session", ImsReasonInfo.CODE_LOCAL_CALL_TERMINATED);
+        }
+        try {
+            return mSession.getLocalCallProfile();
+        } catch (Throwable t) {
+            loge("getLocalCallProfile :: ", t);
+            throw new ImsException("getLocalCallProfile()", t, 0);
+        }
+    }
+}

@@ -1,0 +1,7 @@
+public static void preForkInit(){
+    if (DEBUG)
+        Slog.d(TAG, "Entered preForkInit.");
+    RuntimeHooks.setThreadPrioritySetter(new RuntimeThreadPrioritySetter());
+    RuntimeInit.enableDdms();
+    MimeMap.setDefaultSupplier(DefaultMimeMapFactory::create);
+}

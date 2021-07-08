@@ -1,0 +1,9 @@
+public void startPreload(@NonNull PageRange visiblePages, @NonNull PageRange[] selectedPages, @NonNull PageRange[] writtenPages){
+    if (mLastRenderSpec == null) {
+        mScheduledPreloadVisiblePages = visiblePages;
+        mScheduledPreloadSelectedPages = selectedPages;
+        mScheduledPreloadWrittenPages = writtenPages;
+    } else if (mState == STATE_OPENED) {
+        mRenderer.startPreload(visiblePages, selectedPages, writtenPages, mLastRenderSpec);
+    }
+}

@@ -1,0 +1,37 @@
+public long updateUserActivity(long nextScreenDimming, long dimDurationMillis){
+    if (nextScreenDimming == mLastActedOnNextScreenDimming || !mIsSettingEnabled || mWindowManager.isKeyguardShowingAndNotOccluded()) {
+        return nextScreenDimming;
+    }
+    if (!isAttentionServiceSupported() || !serviceHasSufficientPermissions()) {
+        return nextScreenDimming;
+    }
+    final long now = SystemClock.uptimeMillis();
+    final long whenToCheck = nextScreenDimming - getPreDimCheckDurationMillis();
+    final long whenToStopExtending = mLastUserActivityTime + mMaximumExtensionMillis;
+    if (now < whenToCheck) {
+        if (DEBUG) {
+            Slog.d(TAG, "Do not check for attention yet, wait " + (whenToCheck - now));
+        }
+        return whenToCheck;
+    } else if (whenToStopExtending < whenToCheck) {
+        if (DEBUG) {
+            Slog.d(TAG, "Let device sleep to avoid false results and improve security " + (whenToCheck - whenToStopExtending));
+        }
+        return nextScreenDimming;
+    } else if (mRequested.get()) {
+        if (DEBUG) {
+            Slog.d(TAG, "Pending attention callback with ID=" + mCallback.mId + ", wait.");
+        }
+        return whenToCheck;
+    }
+    mRequested.set(true);
+    mRequestId++;
+    mLastActedOnNextScreenDimming = nextScreenDimming;
+    mCallback = new AttentionCallbackInternalImpl(mRequestId);
+    Slog.v(TAG, "Checking user attention, ID: " + mRequestId);
+    final boolean sent = mAttentionManager.checkAttention(getPreDimCheckDurationMillis() + getPostDimCheckDurationMillis(dimDurationMillis), mCallback);
+    if (!sent) {
+        mRequested.set(false);
+    }
+    return whenToCheck;
+}

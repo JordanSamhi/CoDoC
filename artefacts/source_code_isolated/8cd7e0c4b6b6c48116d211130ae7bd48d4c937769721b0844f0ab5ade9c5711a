@@ -1,0 +1,22 @@
+public static boolean syncExtrasEquals(Bundle b1, Bundle b2, boolean includeSyncSettings){
+    if (b1 == b2) {
+        return true;
+    }
+    if (includeSyncSettings && b1.size() != b2.size()) {
+        return false;
+    }
+    Bundle bigger = b1.size() > b2.size() ? b1 : b2;
+    Bundle smaller = b1.size() > b2.size() ? b2 : b1;
+    for (String key : bigger.keySet()) {
+        if (!includeSyncSettings && isSyncSetting(key)) {
+            continue;
+        }
+        if (!smaller.containsKey(key)) {
+            return false;
+        }
+        if (!Objects.equals(bigger.get(key), smaller.get(key))) {
+            return false;
+        }
+    }
+    return true;
+}

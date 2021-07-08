@@ -1,0 +1,12 @@
+public Message next(){
+    while (!mLooperBlocked) {
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+    checkReleased();
+    return mQueue.next();
+}

@@ -1,0 +1,9 @@
+public void updateParent(GsmCdmaCall oldParent, GsmCdmaCall newParent){
+    if (newParent != oldParent) {
+        if (oldParent != null) {
+            oldParent.detach(this);
+        }
+        newParent.attachFake(this, GsmCdmaCall.State.ACTIVE);
+        mParent = newParent;
+    }
+}

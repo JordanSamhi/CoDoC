@@ -1,0 +1,12 @@
+public void subscribe(@NonNull SubscribeConfig subscribeConfig, @NonNull DiscoverySessionCallback callback, @Nullable Handler handler){
+    WifiAwareManager mgr = mMgr.get();
+    if (mgr == null) {
+        Log.e(TAG, "publish: called post GC on WifiAwareManager");
+        return;
+    }
+    if (mTerminated) {
+        Log.e(TAG, "publish: called after termination");
+        return;
+    }
+    mgr.subscribe(mClientId, (handler == null) ? Looper.getMainLooper() : handler.getLooper(), subscribeConfig, callback);
+}

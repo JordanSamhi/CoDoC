@@ -1,0 +1,11 @@
+public void removeOnOpportunisticSubscriptionsChangedListener(@NonNull OnOpportunisticSubscriptionsChangedListener listener){
+    Preconditions.checkNotNull(listener, "listener cannot be null");
+    String pkgForDebug = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    if (DBG) {
+        logd("unregister OnOpportunisticSubscriptionsChangedListener pkgForDebug=" + pkgForDebug + " listener=" + listener);
+    }
+    TelephonyRegistryManager telephonyRegistryManager = (TelephonyRegistryManager) mContext.getSystemService(Context.TELEPHONY_REGISTRY_SERVICE);
+    if (telephonyRegistryManager != null) {
+        telephonyRegistryManager.removeOnOpportunisticSubscriptionsChangedListener(listener);
+    }
+}

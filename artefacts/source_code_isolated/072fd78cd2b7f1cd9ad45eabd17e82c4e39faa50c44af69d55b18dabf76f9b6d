@@ -1,0 +1,19 @@
+public void updateKernelMemoryBandwidthLocked(){
+    mKernelMemoryBandwidthStats.updateStats();
+    LongSparseLongArray bandwidthEntries = mKernelMemoryBandwidthStats.getBandwidthEntries();
+    final int bandwidthEntryCount = bandwidthEntries.size();
+    int index;
+    for (int i = 0; i < bandwidthEntryCount; i++) {
+        SamplingTimer timer;
+        if ((index = mKernelMemoryStats.indexOfKey(bandwidthEntries.keyAt(i))) >= 0) {
+            timer = mKernelMemoryStats.valueAt(index);
+        } else {
+            timer = new SamplingTimer(mClocks, mOnBatteryTimeBase);
+            mKernelMemoryStats.put(bandwidthEntries.keyAt(i), timer);
+        }
+        timer.update(bandwidthEntries.valueAt(i), 1);
+        if (DEBUG_MEMORY) {
+            Slog.d(TAG, String.format("Added entry %d and updated timer to: " + "mUnpluggedReportedTotalTime %d size %d", bandwidthEntries.keyAt(i), mKernelMemoryStats.get(bandwidthEntries.keyAt(i)).mUnpluggedReportedTotalTime, mKernelMemoryStats.size()));
+        }
+    }
+}

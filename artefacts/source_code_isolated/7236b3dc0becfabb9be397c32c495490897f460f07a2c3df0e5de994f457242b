@@ -1,0 +1,13 @@
+public static void optInValueToSettings(Context context, @UserShortcutType int shortcutType, @NonNull String componentId){
+    final StringJoiner joiner = new StringJoiner(String.valueOf(SERVICES_SEPARATOR));
+    final String targetKey = convertToKey(shortcutType);
+    final String targetString = Settings.Secure.getString(context.getContentResolver(), targetKey);
+    if (isComponentIdExistingInSettings(context, shortcutType, componentId)) {
+        return;
+    }
+    if (!TextUtils.isEmpty(targetString)) {
+        joiner.add(targetString);
+    }
+    joiner.add(componentId);
+    Settings.Secure.putString(context.getContentResolver(), targetKey, joiner.toString());
+}

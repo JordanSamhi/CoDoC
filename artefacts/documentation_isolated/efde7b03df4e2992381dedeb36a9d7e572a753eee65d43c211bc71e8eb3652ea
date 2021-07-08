@@ -1,0 +1,35 @@
+
+     * Query the given URI, returning a {@link Cursor} over the result set
+     * with support for cancellation.
+     *
+     * <p>For best performance, the caller should follow these guidelines:
+     *
+     * <li>Provide an explicit projection, to prevent reading data from storage
+     * that aren't going to be used.
+     *
+     * Provider must identify which QUERY_ARG_SORT* arguments were honored during
+     * the preparation of the result set by including the respective argument keys
+     * in the {@link Cursor} extras {@link Bundle}. See {@link #EXTRA_HONORED_ARGS}
+     * for details.
+     *
+     * @see #QUERY_ARG_SORT_COLUMNS
+     * @see #QUERY_ARG_SORT_DIRECTION
+     * @see #QUERY_ARG_SORT_COLLATION
+     *
+     * @param uri The URI, using the content:// scheme, for the content to
+     *         retrieve.
+     * @param projection A list of which columns to return. Passing null will
+     *         return all columns, which is inefficient.
+     * @param queryArgs A Bundle containing additional information necessary for
+     *            the operation. Arguments may include SQL style arguments, such
+     *            as {@link ContentResolver#QUERY_ARG_SQL_LIMIT}, but note that
+     *            the documentation for each individual provider will indicate
+     *            which arguments they support.
+     * @param cancellationSignal A signal to cancel the operation in progress, or null if none.
+     * If the operation is canceled, then {@link OperationCanceledException} will be thrown
+     * when the query is executed.
+     * @return A Cursor object, which is positioned before the first entry. May return
+     *         <code>null</code> if the underlying content provider returns <code>null</code>,
+     *         or if it crashes.
+     * @see Cursor
+     

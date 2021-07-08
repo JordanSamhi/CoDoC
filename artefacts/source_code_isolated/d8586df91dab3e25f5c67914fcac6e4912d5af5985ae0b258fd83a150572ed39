@@ -1,0 +1,18 @@
+public void testWriteReadNoCrash() throws Exception{
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    XmlSerializer serializer = Xml.newSerializer();
+    serializer.setOutput(os, StandardCharsets.UTF_8.name());
+    serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+    serializer.startDocument(null, true);
+    for (int ch = 0; ch < 0x10000; ch++) {
+        checkWriteSingleSetting("char=0x" + Integer.toString(ch, 16), serializer, "key", String.valueOf((char) ch));
+    }
+    checkWriteSingleSetting(serializer, "k", "");
+    checkWriteSingleSetting(serializer, "x", "abc");
+    checkWriteSingleSetting(serializer, "abc", CRAZY_STRING);
+    checkWriteSingleSetting(serializer, "def", null);
+    checkWriteSingleSetting(serializer, null, null);
+    checkWriteSingleSetting(serializer, CRAZY_STRING, null);
+    SettingsState.writeSingleSetting(SettingsState.SETTINGS_VERSION_NEW_ENCODING, serializer, null, "k", "v", null, "package", null, false, false);
+    SettingsState.writeSingleSetting(SettingsState.SETTINGS_VERSION_NEW_ENCODING, serializer, "1", "k", "v", null, null, null, false, false);
+}

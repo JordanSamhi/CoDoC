@@ -1,0 +1,9 @@
+public void handleUserStop(int userId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Handling user stop for " + userId);
+    }
+    if (userId == mCurrentUserId && mUserManager.isUserUnlockingOrUnlocked(UserHandle.of(mCurrentUserId))) {
+        saveToStore(true);
+        clearInternalDataForCurrentUser();
+    }
+}

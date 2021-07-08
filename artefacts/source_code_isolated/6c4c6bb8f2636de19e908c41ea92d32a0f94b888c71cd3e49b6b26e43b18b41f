@@ -1,0 +1,29 @@
+public void injectSmsPdu(SmsMessage msg, String format, SmsInjectionCallback callback, boolean ignoreClass){
+    Rlog.d(TAG, "SmsDispatchersController:injectSmsPdu");
+    try {
+        if (msg == null) {
+            Rlog.e(TAG, "injectSmsPdu: createFromPdu returned null");
+            callback.onSmsInjectedResult(Intents.RESULT_SMS_GENERIC_ERROR);
+            return;
+        }
+        if (!ignoreClass && msg.getMessageClass() != android.telephony.SmsMessage.MessageClass.CLASS_1) {
+            Rlog.e(TAG, "injectSmsPdu: not class 1");
+            callback.onSmsInjectedResult(Intents.RESULT_SMS_GENERIC_ERROR);
+            return;
+        }
+        AsyncResult ar = new AsyncResult(callback, msg, null);
+        if (format.equals(SmsConstants.FORMAT_3GPP)) {
+            Rlog.i(TAG, "SmsDispatchersController:injectSmsText Sending msg=" + msg + ", format=" + format + "to mGsmInboundSmsHandler");
+            mGsmInboundSmsHandler.sendMessage(InboundSmsHandler.EVENT_INJECT_SMS, ar);
+        } else if (format.equals(SmsConstants.FORMAT_3GPP2)) {
+            Rlog.i(TAG, "SmsDispatchersController:injectSmsText Sending msg=" + msg + ", format=" + format + "to mCdmaInboundSmsHandler");
+            mCdmaInboundSmsHandler.sendMessage(InboundSmsHandler.EVENT_INJECT_SMS, ar);
+        } else {
+            Rlog.e(TAG, "Invalid pdu format: " + format);
+            callback.onSmsInjectedResult(Intents.RESULT_SMS_GENERIC_ERROR);
+        }
+    } catch (Exception e) {
+        Rlog.e(TAG, "injectSmsPdu failed: ", e);
+        callback.onSmsInjectedResult(Intents.RESULT_SMS_GENERIC_ERROR);
+    }
+}

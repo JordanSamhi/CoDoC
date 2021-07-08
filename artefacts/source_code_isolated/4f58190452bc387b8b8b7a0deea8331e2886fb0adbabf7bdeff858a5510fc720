@@ -1,0 +1,41 @@
+public void onOptsChanged(){
+    mOpts.validate();
+    if ((mOpts.features & ExtendedOptions.FEATURE_STATE_CHANGES) != 0) {
+        final int fadeOutDurationMs = mResources.getInteger(R.integer.bitmap_fade_animation_duration);
+        mProgressDelayMs = mResources.getInteger(R.integer.bitmap_progress_animation_delay);
+        Drawable placeholder = null;
+        int placeholderWidth = mResources.getDimensionPixelSize(R.dimen.placeholder_size);
+        int placeholderHeight = mResources.getDimensionPixelSize(R.dimen.placeholder_size);
+        if (mOpts.placeholder != null) {
+            ConstantState constantState = mOpts.placeholder.getConstantState();
+            if (constantState != null) {
+                placeholder = constantState.newDrawable(mResources);
+            } else {
+                placeholder = mOpts.placeholder;
+            }
+            Rect bounds = mOpts.placeholder.getBounds();
+            if (bounds.width() != 0) {
+                placeholderWidth = bounds.width();
+            } else if (placeholder.getIntrinsicWidth() != -1) {
+                placeholderWidth = placeholder.getIntrinsicWidth();
+            }
+            if (bounds.height() != 0) {
+                placeholderHeight = bounds.height();
+            } else if (placeholder.getIntrinsicHeight() != -1) {
+                placeholderHeight = placeholder.getIntrinsicHeight();
+            }
+        }
+        mPlaceholder = new Placeholder(placeholder, mResources, placeholderWidth, placeholderHeight, fadeOutDurationMs, mOpts);
+        mPlaceholder.setCallback(this);
+        mPlaceholder.setBounds(getBounds());
+        if (mOpts.progressBar != null) {
+            int progressBarSize = mResources.getDimensionPixelSize(R.dimen.progress_bar_size);
+            mProgress = new Progress(mOpts.progressBar.getConstantState().newDrawable(mResources), mResources, progressBarSize, progressBarSize, fadeOutDurationMs, mOpts);
+            mProgress.setCallback(this);
+            mProgress.setBounds(getBounds());
+        } else {
+            mProgress = null;
+        }
+    }
+    setLoadState(mLoadState);
+}

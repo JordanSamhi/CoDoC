@@ -1,0 +1,13 @@
+public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras){
+    if (!TextUtils.equals(getCallingPackage(), getContext().getText(R.string.config_schedules_provider_caller_package))) {
+        return null;
+    }
+    final Bundle bundle = new Bundle();
+    if (METHOD_GENERATE_SCHEDULE_INFO_LIST.equals(method)) {
+        final ArrayList<ScheduleInfo> scheduleInfoList = filterInvalidData(getScheduleInfoList());
+        if (scheduleInfoList != null) {
+            bundle.putParcelableArrayList(BUNDLE_SCHEDULE_INFO_LIST, scheduleInfoList);
+        }
+    }
+    return bundle;
+}

@@ -1,0 +1,12 @@
+public int readEntityData(byte[] data, int offset, int size) throws IOException{
+    if (mHeaderReady) {
+        int result = readEntityData_native(mBackupReader, data, offset, size);
+        if (result >= 0) {
+            return result;
+        } else {
+            throw new IOException("result=0x" + Integer.toHexString(result));
+        }
+    } else {
+        throw new IllegalStateException("Entity header not read");
+    }
+}

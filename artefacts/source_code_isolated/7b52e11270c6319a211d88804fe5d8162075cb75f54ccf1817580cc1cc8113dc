@@ -1,0 +1,32 @@
+public void setInputType(int type){
+    final boolean wasPassword = isPasswordInputType(getInputType());
+    final boolean wasVisiblePassword = isVisiblePasswordInputType(getInputType());
+    setInputType(type, false);
+    final boolean isPassword = isPasswordInputType(type);
+    final boolean isVisiblePassword = isVisiblePasswordInputType(type);
+    boolean forceUpdate = false;
+    if (isPassword) {
+        setTransformationMethod(PasswordTransformationMethod.getInstance());
+        setTypefaceFromAttrs(null, null, MONOSPACE, Typeface.NORMAL, -1);
+    } else if (isVisiblePassword) {
+        if (mTransformation == PasswordTransformationMethod.getInstance()) {
+            forceUpdate = true;
+        }
+        setTypefaceFromAttrs(null, null, MONOSPACE, Typeface.NORMAL, -1);
+    } else if (wasPassword || wasVisiblePassword) {
+        setTypefaceFromAttrs(null, null, DEFAULT_TYPEFACE, Typeface.NORMAL, -1);
+        if (mTransformation == PasswordTransformationMethod.getInstance()) {
+            forceUpdate = true;
+        }
+    }
+    boolean singleLine = !isMultilineInputType(type);
+    if (mSingleLine != singleLine || forceUpdate) {
+        applySingleLine(singleLine, !isPassword, true);
+    }
+    if (!isSuggestionsEnabled()) {
+        setTextInternal(removeSuggestionSpans(mText));
+    }
+    InputMethodManager imm = getInputMethodManager();
+    if (imm != null)
+        imm.restartInput(this);
+}

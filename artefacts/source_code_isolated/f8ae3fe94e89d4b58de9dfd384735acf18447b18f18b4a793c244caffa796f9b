@@ -1,0 +1,26 @@
+public boolean flushAllHlp(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final String methodStr = "filsHlpFlushRequest";
+        if (isV1_3()) {
+            ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+            if (iface == null) {
+                return false;
+            }
+            android.hardware.wifi.supplicant.V1_3.ISupplicantStaIface staIfaceV13 = getStaIfaceMockableV1_3(iface);
+            if (staIfaceV13 == null) {
+                Log.e(TAG, methodStr + ": ISupplicantStaIface is null, cannot flushAllHlp");
+                return false;
+            }
+            try {
+                SupplicantStatus status = staIfaceV13.filsHlpFlushRequest();
+                return checkStatusAndLogFailure(status, methodStr);
+            } catch (RemoteException e) {
+                handleRemoteException(e, methodStr);
+                return false;
+            }
+        } else {
+            Log.e(TAG, "Method " + methodStr + " is not supported in existing HAL");
+            return false;
+        }
+    }
+}

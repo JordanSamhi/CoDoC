@@ -1,0 +1,51 @@
+public boolean onKeyDown(int keyCode, @NonNull KeyEvent event){
+    if (isShowing()) {
+        if (keyCode != KeyEvent.KEYCODE_SPACE && (mDropDownList.getSelectedItemPosition() >= 0 || !KeyEvent.isConfirmKey(keyCode))) {
+            int curIndex = mDropDownList.getSelectedItemPosition();
+            boolean consumed;
+            final boolean below = !mPopup.isAboveAnchor();
+            final ListAdapter adapter = mAdapter;
+            boolean allEnabled;
+            int firstItem = Integer.MAX_VALUE;
+            int lastItem = Integer.MIN_VALUE;
+            if (adapter != null) {
+                allEnabled = adapter.areAllItemsEnabled();
+                firstItem = allEnabled ? 0 : mDropDownList.lookForSelectablePosition(0, true);
+                lastItem = allEnabled ? adapter.getCount() - 1 : mDropDownList.lookForSelectablePosition(adapter.getCount() - 1, false);
+            }
+            if ((below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex <= firstItem) || (!below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN && curIndex >= lastItem)) {
+                clearListSelection();
+                mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+                show();
+                return true;
+            } else {
+                mDropDownList.setListSelectionHidden(false);
+            }
+            consumed = mDropDownList.onKeyDown(keyCode, event);
+            if (DEBUG)
+                Log.v(TAG, "Key down: code=" + keyCode + " list consumed=" + consumed);
+            if (consumed) {
+                mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+                mDropDownList.requestFocusFromTouch();
+                show();
+                switch(keyCode) {
+                    case KeyEvent.KEYCODE_ENTER:
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                        return true;
+                }
+            } else {
+                if (below && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    if (curIndex == lastItem) {
+                        return true;
+                    }
+                } else if (!below && keyCode == KeyEvent.KEYCODE_DPAD_UP && curIndex == firstItem) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}

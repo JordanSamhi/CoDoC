@@ -1,0 +1,16 @@
+public void finishLine() throws IOException{
+    if (mLineFinished) {
+        mLineFinished = false;
+        return;
+    }
+    int i = 0;
+    do {
+        for (; i < mTail; i++) {
+            if (mBuffer[i] == '\n') {
+                consumeBuf(i + 1);
+                return;
+            }
+        }
+    } while (fillBuf() > 0);
+    throw new ProtocolException("End of stream while looking for line boundary");
+}

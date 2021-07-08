@@ -1,0 +1,7 @@
+public DevicePolicyManager getParentProfileInstance(UserInfo uInfo){
+    mContext.checkSelfPermission(android.Manifest.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS);
+    if (!uInfo.isManagedProfile()) {
+        throw new SecurityException("The user " + uInfo.id + " does not have a parent profile.");
+    }
+    return new DevicePolicyManager(mContext, mService, true);
+}

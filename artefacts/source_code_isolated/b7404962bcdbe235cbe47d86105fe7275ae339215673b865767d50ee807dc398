@@ -1,0 +1,9 @@
+public void onAwareDownCleanupDataPaths(){
+    if (mDbg)
+        Log.v(TAG, "onAwareDownCleanupDataPaths");
+    Iterator<Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation>> it = mNetworkRequestsCache.entrySet().iterator();
+    while (it.hasNext()) {
+        tearDownInterfaceIfPossible(it.next().getValue());
+        it.remove();
+    }
+}

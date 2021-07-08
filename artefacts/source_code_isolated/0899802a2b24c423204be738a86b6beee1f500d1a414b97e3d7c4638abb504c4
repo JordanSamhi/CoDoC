@@ -1,0 +1,15 @@
+public final void refreshAutoCompleteResults(){
+    if (enoughToFilter()) {
+        if (mFilter != null) {
+            mPopupCanBeUpdated = true;
+            performFiltering(getText(), mLastKeyCode);
+        }
+    } else {
+        if (!mPopup.isDropDownAlwaysVisible()) {
+            dismissDropDown();
+        }
+        if (mFilter != null) {
+            mFilter.filter(null);
+        }
+    }
+}

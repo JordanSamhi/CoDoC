@@ -1,0 +1,7 @@
+public static boolean getLongTermRandomizedResult(double p, boolean secureEncoder, byte[] userSecret, String encoderId){
+    final double effectiveF = p < 0.5f ? p * 2 : (1 - p) * 2;
+    final boolean prrInput = p < 0.5f ? false : true;
+    final RapporConfig prrConfig = new RapporConfig(encoderId, 1, effectiveF, 0, 1, 1, 1);
+    final RapporEncoder encoder = secureEncoder ? RapporEncoder.createEncoder(prrConfig, userSecret) : RapporEncoder.createInsecureEncoderForTest(prrConfig);
+    return encoder.encodeBoolean(prrInput)[0] > 0;
+}

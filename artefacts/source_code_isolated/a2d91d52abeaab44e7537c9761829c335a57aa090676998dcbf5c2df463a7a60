@@ -1,0 +1,10 @@
+public void registerHomeVisibilityObserver(@NonNull HomeVisibilityObserver observer){
+    Preconditions.checkNotNull(observer);
+    try {
+        observer.init(mContext, this);
+        getService().registerProcessObserver(observer.mObserver);
+        observer.onHomeVisibilityChanged(observer.mIsHomeActivityVisible);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

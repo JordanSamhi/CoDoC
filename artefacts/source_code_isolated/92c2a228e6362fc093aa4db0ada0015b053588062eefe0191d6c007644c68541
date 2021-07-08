@@ -1,0 +1,13 @@
+public void mergeStats(PssTable that){
+    final int N = that.getKeyCount();
+    for (int i = 0; i < N; i++) {
+        final int thatKey = that.getKeyAt(i);
+        final int state = SparseMappingTable.getIdFromKey(thatKey);
+        final int key = getOrAddKey((byte) state, PSS_COUNT);
+        final long[] stats = getArrayForKey(key);
+        final int statsIndex = SparseMappingTable.getIndexFromKey(key);
+        final long[] thatStats = that.getArrayForKey(thatKey);
+        final int thatStatsIndex = SparseMappingTable.getIndexFromKey(thatKey);
+        mergeStats(stats, statsIndex, thatStats, thatStatsIndex);
+    }
+}

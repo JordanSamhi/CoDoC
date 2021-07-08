@@ -1,0 +1,10 @@
+public Canvas beginRecording(int width, int height){
+    verifyValid();
+    if (mRecordingCanvas != null) {
+        throw new IllegalStateException("Picture already recording, must call #endRecording()");
+    }
+    long ni = nativeBeginRecording(mNativePicture, width, height);
+    mRecordingCanvas = new PictureCanvas(this, ni);
+    mRequiresHwAcceleration = false;
+    return mRecordingCanvas;
+}

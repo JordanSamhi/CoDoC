@@ -1,0 +1,8 @@
+public WifiConnectivityManager makeWifiConnectivityManager(ClientModeImpl clientModeImpl){
+    mOpenNetworkNotifier = new OpenNetworkNotifier(mContext, mWifiHandlerThread.getLooper(), mFrameworkFacade, mClock, mWifiMetrics, mWifiConfigManager, mWifiConfigStore, clientModeImpl, new ConnectToNetworkNotificationBuilder(mContext, this, mFrameworkFacade));
+    mWifiLastResortWatchdog = new WifiLastResortWatchdog(this, mContext, mClock, mWifiMetrics, clientModeImpl, mWifiHandlerThread.getLooper(), mDeviceConfigFacade, mWifiThreadRunner);
+    mBssidBlocklistMonitor = new BssidBlocklistMonitor(mContext, mWifiConnectivityHelper, mWifiLastResortWatchdog, mClock, mConnectivityLocalLog, mWifiScoreCard);
+    mWifiMetrics.setBssidBlocklistMonitor(mBssidBlocklistMonitor);
+    mWifiChannelUtilizationScan = new WifiChannelUtilization(mClock, mContext);
+    return new WifiConnectivityManager(mContext, getScoringParams(), clientModeImpl, this, mWifiConfigManager, mWifiNetworkSuggestionsManager, clientModeImpl.getWifiInfo(), mWifiNetworkSelector, mWifiConnectivityHelper, mWifiLastResortWatchdog, mOpenNetworkNotifier, mWifiMetrics, new Handler(mWifiHandlerThread.getLooper()), mClock, mConnectivityLocalLog, mWifiScoreCard);
+}

@@ -1,0 +1,17 @@
+public void setDetectNotResponding(@DurationMillisLong long timeoutMillis){
+    synchronized (ContentProviderClient.class) {
+        mAnrTimeout = timeoutMillis;
+        if (timeoutMillis > 0) {
+            if (mAnrRunnable == null) {
+                mAnrRunnable = new NotRespondingRunnable();
+            }
+            if (sAnrHandler == null) {
+                sAnrHandler = new Handler(Looper.getMainLooper(), null, true);
+            }
+            Binder.allowBlocking(mContentProvider.asBinder());
+        } else {
+            mAnrRunnable = null;
+            Binder.defaultBlocking(mContentProvider.asBinder());
+        }
+    }
+}

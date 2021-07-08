@@ -1,0 +1,13 @@
+public AccessibilityWindowInfo getPictureInPictureWindowLocked(){
+    AccessibilityWindowInfo windowInfo = null;
+    final int count = mDisplayWindowsObservers.size();
+    for (int i = 0; i < count; i++) {
+        final DisplayWindowsObserver observer = mDisplayWindowsObservers.valueAt(i);
+        if (observer != null) {
+            if ((windowInfo = observer.getPictureInPictureWindowLocked()) != null) {
+                break;
+            }
+        }
+    }
+    return windowInfo;
+}

@@ -1,0 +1,59 @@
+public boolean requestRouteToHostAddress(int networkType, byte[] hostAddress){
+    if (disallowedBecauseSystemCaller()) {
+        return false;
+    }
+    enforceChangePermission();
+    if (mProtectedNetworks.contains(networkType)) {
+        enforceConnectivityRestrictedNetworksPermission();
+    }
+    InetAddress addr;
+    try {
+        addr = InetAddress.getByAddress(hostAddress);
+    } catch (UnknownHostException e) {
+        if (DBG)
+            log("requestRouteToHostAddress got " + e.toString());
+        return false;
+    }
+    if (!ConnectivityManager.isNetworkTypeValid(networkType)) {
+        if (DBG)
+            log("requestRouteToHostAddress on invalid network: " + networkType);
+        return false;
+    }
+    NetworkAgentInfo nai = mLegacyTypeTracker.getNetworkForType(networkType);
+    if (nai == null) {
+        if (mLegacyTypeTracker.isTypeSupported(networkType) == false) {
+            if (DBG)
+                log("requestRouteToHostAddress on unsupported network: " + networkType);
+        } else {
+            if (DBG)
+                log("requestRouteToHostAddress on down network: " + networkType);
+        }
+        return false;
+    }
+    DetailedState netState;
+    synchronized (nai) {
+        netState = nai.networkInfo.getDetailedState();
+    }
+    if (netState != DetailedState.CONNECTED && netState != DetailedState.CAPTIVE_PORTAL_CHECK) {
+        if (VDBG) {
+            log("requestRouteToHostAddress on down network " + "(" + networkType + ") - dropped" + " netState=" + netState);
+        }
+        return false;
+    }
+    final int uid = Binder.getCallingUid();
+    final long token = Binder.clearCallingIdentity();
+    try {
+        LinkProperties lp;
+        int netId;
+        synchronized (nai) {
+            lp = nai.linkProperties;
+            netId = nai.network.netId;
+        }
+        boolean ok = addLegacyRouteToHost(lp, addr, netId, uid);
+        if (DBG)
+            log("requestRouteToHostAddress ok=" + ok);
+        return ok;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

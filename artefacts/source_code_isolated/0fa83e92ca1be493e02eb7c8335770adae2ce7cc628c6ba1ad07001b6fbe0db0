@@ -1,0 +1,86 @@
+public static void makeDefaultPhone(Context context){
+    synchronized (sLockProxyPhones) {
+        if (!sMadeDefaults) {
+            sContext = context;
+            TelephonyDevController.create();
+            TelephonyMetrics metrics = TelephonyMetrics.getInstance();
+            metrics.setContext(context);
+            int retryCount = 0;
+            for (; ; ) {
+                boolean hasException = false;
+                retryCount++;
+                try {
+                    new LocalServerSocket("com.android.internal.telephony");
+                } catch (java.io.IOException ex) {
+                    hasException = true;
+                }
+                if (!hasException) {
+                    break;
+                } else if (retryCount > SOCKET_OPEN_MAX_RETRY) {
+                    throw new RuntimeException("PhoneFactory probably already running");
+                } else {
+                    try {
+                        Thread.sleep(SOCKET_OPEN_RETRY_MILLIS);
+                    } catch (InterruptedException er) {
+                    }
+                }
+            }
+            sMetricsCollector = new MetricsCollector(context);
+            sPhoneNotifier = new DefaultPhoneNotifier(context);
+            int cdmaSubscription = CdmaSubscriptionSourceManager.getDefault(context);
+            Rlog.i(LOG_TAG, "Cdma Subscription set to " + cdmaSubscription);
+            int numPhones = TelephonyManager.getDefault().getActiveModemCount();
+            int[] networkModes = new int[numPhones];
+            sPhones = new Phone[numPhones];
+            sCommandsInterfaces = new RIL[numPhones];
+            sTelephonyNetworkFactories = new TelephonyNetworkFactory[numPhones];
+            for (int i = 0; i < numPhones; i++) {
+                networkModes[i] = RILConstants.PREFERRED_NETWORK_MODE;
+                Rlog.i(LOG_TAG, "Network Mode set to " + Integer.toString(networkModes[i]));
+                sCommandsInterfaces[i] = new RIL(context, networkModes[i], cdmaSubscription, i);
+            }
+            sUiccController = UiccController.make(context);
+            Rlog.i(LOG_TAG, "Creating SubscriptionController");
+            TelephonyComponentFactory.getInstance().inject(SubscriptionController.class.getName()).initSubscriptionController(context);
+            TelephonyComponentFactory.getInstance().inject(MultiSimSettingController.class.getName()).initMultiSimSettingController(context, SubscriptionController.getInstance());
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_EUICC)) {
+                sEuiccController = EuiccController.init(context);
+                sEuiccCardController = EuiccCardController.init(context);
+            }
+            for (int i = 0; i < numPhones; i++) {
+                sPhones[i] = createPhone(context, i);
+            }
+            if (numPhones > 0)
+                sPhone = sPhones[0];
+            ComponentName componentName = SmsApplication.getDefaultSmsApplication(context, true);
+            String packageName = "NONE";
+            if (componentName != null) {
+                packageName = componentName.getPackageName();
+            }
+            Rlog.i(LOG_TAG, "defaultSmsApplication: " + packageName);
+            SmsApplication.initSmsPackageMonitor(context);
+            sMadeDefaults = true;
+            Rlog.i(LOG_TAG, "Creating SubInfoRecordUpdater ");
+            HandlerThread pfhandlerThread = new HandlerThread("PhoneFactoryHandlerThread");
+            pfhandlerThread.start();
+            sSubInfoRecordUpdater = TelephonyComponentFactory.getInstance().inject(SubscriptionInfoUpdater.class.getName()).makeSubscriptionInfoUpdater(pfhandlerThread.getLooper(), context, sCommandsInterfaces);
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_IMS)) {
+                for (int i = 0; i < numPhones; i++) {
+                    sPhones[i].createImsPhone();
+                }
+            } else {
+                Rlog.i(LOG_TAG, "IMS is not supported on this device, skipping ImsResolver.");
+            }
+            sPhoneConfigurationManager = PhoneConfigurationManager.init(sContext);
+            sCellularNetworkValidator = CellularNetworkValidator.make(sContext);
+            int maxActivePhones = sPhoneConfigurationManager.getNumberOfModemsWithSimultaneousDataConnections();
+            sPhoneSwitcher = TelephonyComponentFactory.getInstance().inject(PhoneSwitcher.class.getName()).makePhoneSwitcher(maxActivePhones, sContext, Looper.myLooper());
+            sProxyController = ProxyController.getInstance(context);
+            sIntentBroadcaster = IntentBroadcaster.getInstance(context);
+            sNotificationChannelController = new NotificationChannelController(context);
+            for (int i = 0; i < numPhones; i++) {
+                sTelephonyNetworkFactories[i] = new TelephonyNetworkFactory(Looper.myLooper(), sPhones[i]);
+            }
+        }
+    }
+}

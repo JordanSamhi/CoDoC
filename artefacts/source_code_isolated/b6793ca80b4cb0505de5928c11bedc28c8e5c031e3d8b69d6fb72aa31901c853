@@ -1,0 +1,14 @@
+public String getServiceFriendlyName(){
+    if (mServiceFriendlyNames == null || mServiceFriendlyNames.isEmpty())
+        return null;
+    String lang = Locale.getDefault().getLanguage();
+    String friendlyName = mServiceFriendlyNames.get(lang);
+    if (friendlyName != null) {
+        return friendlyName;
+    }
+    friendlyName = mServiceFriendlyNames.get("en");
+    if (friendlyName != null) {
+        return friendlyName;
+    }
+    return mServiceFriendlyNames.get(mServiceFriendlyNames.keySet().stream().findFirst().get());
+}

@@ -1,0 +1,25 @@
+public void update(){
+    if (!isShowing() || !hasContentView()) {
+        return;
+    }
+    final WindowManager.LayoutParams p = getDecorViewLayoutParams();
+    boolean update = false;
+    final int newAnim = computeAnimationResource();
+    if (newAnim != p.windowAnimations) {
+        p.windowAnimations = newAnim;
+        update = true;
+    }
+    final int newFlags = computeFlags(p.flags);
+    if (newFlags != p.flags) {
+        p.flags = newFlags;
+        update = true;
+    }
+    final int newGravity = computeGravity();
+    if (newGravity != p.gravity) {
+        p.gravity = newGravity;
+        update = true;
+    }
+    if (update) {
+        update(mAnchor != null ? mAnchor.get() : null, p);
+    }
+}

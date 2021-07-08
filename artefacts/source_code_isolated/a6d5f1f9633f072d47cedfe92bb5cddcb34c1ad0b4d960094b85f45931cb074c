@@ -1,0 +1,11 @@
+public IImsMmTelFeature getImsMmTelFeatureAndListen(int slotIndex, IImsServiceFeatureCallback callback){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getMmTelFeatureAndListen(slotIndex, callback);
+        }
+    } catch (RemoteException e) {
+        Rlog.e(TAG, "getImsMmTelFeatureAndListen, RemoteException: " + e.getMessage());
+    }
+    return null;
+}

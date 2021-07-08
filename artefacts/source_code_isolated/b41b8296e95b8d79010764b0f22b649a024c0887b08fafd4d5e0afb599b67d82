@@ -1,0 +1,14 @@
+public boolean setNetworkCandidateScanResult(int networkId, ScanResult scanResult, int score){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Set network candidate scan result " + scanResult + " for " + networkId);
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        Log.e(TAG, "Cannot find network for " + networkId);
+        return false;
+    }
+    config.getNetworkSelectionStatus().setCandidate(scanResult);
+    config.getNetworkSelectionStatus().setCandidateScore(score);
+    config.getNetworkSelectionStatus().setSeenInLastQualifiedNetworkSelection(true);
+    return true;
+}

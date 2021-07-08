@@ -1,0 +1,33 @@
+public static int maxLengthSequence(@NonNull byte[] bytes){
+    if (bytes.length == 0)
+        return 0;
+    char previousChar = (char) bytes[0];
+    @CharacterCatagory
+    int category = categoryChar(previousChar);
+    int diff = 0;
+    boolean hasDiff = false;
+    int maxLength = 0;
+    int startSequence = 0;
+    for (int current = 1; current < bytes.length; current++) {
+        char currentChar = (char) bytes[current];
+        @CharacterCatagory
+        int categoryCurrent = categoryChar(currentChar);
+        int currentDiff = (int) currentChar - (int) previousChar;
+        if (categoryCurrent != category || Math.abs(currentDiff) > maxDiffCategory(category)) {
+            maxLength = Math.max(maxLength, current - startSequence);
+            startSequence = current;
+            hasDiff = false;
+            category = categoryCurrent;
+        } else {
+            if (hasDiff && currentDiff != diff) {
+                maxLength = Math.max(maxLength, current - startSequence);
+                startSequence = current - 1;
+            }
+            diff = currentDiff;
+            hasDiff = true;
+        }
+        previousChar = currentChar;
+    }
+    maxLength = Math.max(maxLength, bytes.length - startSequence);
+    return maxLength;
+}

@@ -1,0 +1,9 @@
+public final void requestUnbind(){
+    INotificationManager noMan = getNotificationInterface();
+    try {
+        noMan.requestUnbindProvider(mProvider);
+        mIsConnected = false;
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

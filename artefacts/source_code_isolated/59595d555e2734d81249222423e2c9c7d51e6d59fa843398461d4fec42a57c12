@@ -1,0 +1,15 @@
+public long getCurrentPlayTime(){
+    if (mSeekState.isActive()) {
+        return mSeekState.getPlayTime();
+    }
+    if (mLastFrameTime == -1) {
+        return 0;
+    }
+    float durationScale = ValueAnimator.getDurationScale();
+    durationScale = durationScale == 0 ? 1 : durationScale;
+    if (mReversing) {
+        return (long) ((mLastFrameTime - mFirstFrame) / durationScale);
+    } else {
+        return (long) ((mLastFrameTime - mFirstFrame - mStartDelay) / durationScale);
+    }
+}

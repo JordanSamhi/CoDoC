@@ -1,0 +1,22 @@
+public AccountManagerFuture<Account> renameAccount(final Account account, @Size(min = 1) final String newName, AccountManagerCallback<Account> callback, Handler handler){
+    if (account == null)
+        throw new IllegalArgumentException("account is null.");
+    if (TextUtils.isEmpty(newName)) {
+        throw new IllegalArgumentException("newName is empty or null.");
+    }
+    return new Future2Task<Account>(handler, callback) {
+
+        @Override
+        public void doWork() throws RemoteException {
+            mService.renameAccount(mResponse, account, newName);
+        }
+
+        @Override
+        public Account bundleToResult(Bundle bundle) throws AuthenticatorException {
+            String name = bundle.getString(KEY_ACCOUNT_NAME);
+            String type = bundle.getString(KEY_ACCOUNT_TYPE);
+            String accessId = bundle.getString(KEY_ACCOUNT_ACCESS_ID);
+            return new Account(name, type, accessId);
+        }
+    }.start();
+}

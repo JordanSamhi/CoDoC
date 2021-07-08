@@ -1,0 +1,7 @@
+public void registerAppUsageObserver(int observerId, @NonNull String[] observedEntities, long timeLimit, @NonNull TimeUnit timeUnit, @NonNull PendingIntent callbackIntent){
+    try {
+        mService.registerAppUsageObserver(observerId, observedEntities, timeUnit.toMillis(timeLimit), callbackIntent, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

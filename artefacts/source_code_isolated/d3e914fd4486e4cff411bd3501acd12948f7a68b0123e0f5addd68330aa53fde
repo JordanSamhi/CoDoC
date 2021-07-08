@@ -1,0 +1,14 @@
+public int resolveProfileParentLocked(int userId){
+    if (userId != mAccessibilityUserManager.getCurrentUserIdLocked()) {
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            UserInfo parent = mUserManager.getProfileParent(userId);
+            if (parent != null) {
+                return parent.getUserHandle().getIdentifier();
+            }
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+    return userId;
+}

@@ -1,0 +1,17 @@
+public static String getStackTraceString(Throwable tr){
+    if (tr == null) {
+        return "";
+    }
+    Throwable t = tr;
+    while (t != null) {
+        if (t instanceof UnknownHostException) {
+            return "";
+        }
+        t = t.getCause();
+    }
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    tr.printStackTrace(pw);
+    pw.flush();
+    return sw.toString();
+}

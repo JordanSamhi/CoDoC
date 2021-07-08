@@ -1,0 +1,12 @@
+public InstallationOption getInstallationOptionAt(long when){
+    LocalDate whenDate = millisToDate(when);
+    Pair<LocalDate, LocalDate> current = getCurrentFreezePeriod(whenDate);
+    if (current != null) {
+        return new InstallationOption(TYPE_PAUSE, dateToMillis(roundUpLeapDay(current.second).plusDays(1)) - when);
+    }
+    InstallationOption option = getInstallationOptionRegardlessFreezeAt(when);
+    if (mFreezePeriods.size() > 0) {
+        option.limitEffectiveTime(timeUntilNextFreezePeriod(when));
+    }
+    return option;
+}

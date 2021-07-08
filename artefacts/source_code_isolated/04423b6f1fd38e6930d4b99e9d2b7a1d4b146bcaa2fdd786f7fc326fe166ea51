@@ -1,0 +1,13 @@
+public void setOnDismissListener(final OnDismissListener dismissListener){
+    PopupWindow.OnDismissListener wrappedListener = null;
+    if (dismissListener != null) {
+        wrappedListener = new PopupWindow.OnDismissListener() {
+
+            @Override
+            public void onDismiss() {
+                dismissListener.onDismiss();
+            }
+        };
+    }
+    mPopup.setOnDismissListener(wrappedListener);
+}

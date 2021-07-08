@@ -1,0 +1,14 @@
+public synchronized void detectRadioBug(int requestType, int error){
+    mContinuousWakelockTimoutCount = 0;
+    if (error == RadioError.SYSTEM_ERR) {
+        int errorCount = mSysErrRecord.getOrDefault(requestType, 0);
+        errorCount++;
+        mSysErrRecord.put(requestType, errorCount);
+        broadcastBug(true);
+    } else {
+        mSysErrRecord.remove(requestType);
+        if (!isFrequentSystemError()) {
+            mRadioBugStatus = RADIO_BUG_NONE;
+        }
+    }
+}

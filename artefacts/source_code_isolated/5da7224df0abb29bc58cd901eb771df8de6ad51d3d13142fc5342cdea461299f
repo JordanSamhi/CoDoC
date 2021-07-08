@@ -1,0 +1,11 @@
+public int getSmsCapacityOnIcc(){
+    int ret = 0;
+    try {
+        ISms iccISms = getISmsService();
+        if (iccISms != null) {
+            ret = iccISms.getSmsCapacityOnIccForSubscriber(getSubscriptionId());
+        }
+    } catch (RemoteException ex) {
+    }
+    return ret;
+}

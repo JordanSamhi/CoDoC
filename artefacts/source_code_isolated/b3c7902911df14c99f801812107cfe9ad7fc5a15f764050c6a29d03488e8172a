@@ -1,0 +1,17 @@
+public float[] getDefaultRefreshRates(){
+    Display.Mode[] modes = supportedModes;
+    ArraySet<Float> rates = new ArraySet<>();
+    Display.Mode defaultMode = getDefaultMode();
+    for (int i = 0; i < modes.length; i++) {
+        Display.Mode mode = modes[i];
+        if (mode.getPhysicalWidth() == defaultMode.getPhysicalWidth() && mode.getPhysicalHeight() == defaultMode.getPhysicalHeight()) {
+            rates.add(mode.getRefreshRate());
+        }
+    }
+    float[] result = new float[rates.size()];
+    int i = 0;
+    for (Float rate : rates) {
+        result[i++] = rate;
+    }
+    return result;
+}

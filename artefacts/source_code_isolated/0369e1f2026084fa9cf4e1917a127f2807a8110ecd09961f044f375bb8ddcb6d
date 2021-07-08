@@ -1,0 +1,13 @@
+public void disconnectIfNeeded(){
+    if (mNetworkId < 0) {
+        if (mVerboseLoggingEnabled) {
+            Log.v(TAG, "No connection to tear down");
+        }
+        return;
+    }
+    mConnectivityManager.unregisterNetworkCallback(mConnectivityCallbacks);
+    mWifiManager.removeNetwork(mNetworkId);
+    mNetworkId = -1;
+    mNetwork = null;
+    mConnected = false;
+}

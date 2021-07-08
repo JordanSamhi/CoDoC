@@ -1,0 +1,13 @@
+public List<SecurityEvent> retrievePreRebootSecurityLogs(@NonNull ComponentName admin){
+    throwIfParentInstance("retrievePreRebootSecurityLogs");
+    try {
+        ParceledListSlice<SecurityEvent> list = mService.retrievePreRebootSecurityLogs(admin);
+        if (list != null) {
+            return list.getList();
+        } else {
+            return null;
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,26 @@
+public void unregisterNetworkCallback(@NonNull NetworkCallback networkCallback){
+    printStackTrace();
+    checkCallbackNotNull(networkCallback);
+    final List<NetworkRequest> reqs = new ArrayList<>();
+    synchronized (sCallbacks) {
+        Preconditions.checkArgument(networkCallback.networkRequest != null, "NetworkCallback was not registered");
+        if (networkCallback.networkRequest == ALREADY_UNREGISTERED) {
+            Log.d(TAG, "NetworkCallback was already unregistered");
+            return;
+        }
+        for (Map.Entry<NetworkRequest, NetworkCallback> e : sCallbacks.entrySet()) {
+            if (e.getValue() == networkCallback) {
+                reqs.add(e.getKey());
+            }
+        }
+        for (NetworkRequest r : reqs) {
+            try {
+                mService.releaseNetworkRequest(r);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+            sCallbacks.remove(r);
+        }
+        networkCallback.networkRequest = ALREADY_UNREGISTERED;
+    }
+}

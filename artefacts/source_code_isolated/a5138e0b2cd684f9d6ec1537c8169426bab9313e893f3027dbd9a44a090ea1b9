@@ -1,0 +1,21 @@
+public void toString(StringBuilder sb){
+    sb.append(BEGIN);
+    sb.append(":");
+    sb.append(mName);
+    sb.append(NEWLINE);
+    for (String propertyName : getPropertyNames()) {
+        for (Property property : getProperties(propertyName)) {
+            property.toString(sb);
+            sb.append(NEWLINE);
+        }
+    }
+    if (mChildren != null) {
+        for (Component component : mChildren) {
+            component.toString(sb);
+            sb.append(NEWLINE);
+        }
+    }
+    sb.append(END);
+    sb.append(":");
+    sb.append(mName);
+}

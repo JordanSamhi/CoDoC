@@ -1,0 +1,11 @@
+public void disconnect(){
+    if (DBG)
+        Log.d(TAG, "cancelOpen() - device: " + mDevice.getAddress());
+    if (mService == null || mClientIf == 0)
+        return;
+    try {
+        mService.clientDisconnect(mClientIf, mDevice.getAddress());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+}

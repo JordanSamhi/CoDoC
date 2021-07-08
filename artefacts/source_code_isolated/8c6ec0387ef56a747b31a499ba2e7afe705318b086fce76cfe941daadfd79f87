@@ -1,0 +1,24 @@
+public int startOpNoThrow(int op, int uid, @NonNull String packageName, boolean startIfModeDefault, @Nullable String attributionTag, @Nullable String message){
+    try {
+        collectNoteOpCallsForValidation(op);
+        int collectionMode = getNotedOpCollectionMode(uid, packageName, op);
+        boolean shouldCollectMessage = Process.myUid() == Process.SYSTEM_UID ? true : false;
+        if (collectionMode == COLLECT_ASYNC) {
+            if (message == null) {
+                message = getFormattedStackTrace();
+                shouldCollectMessage = true;
+            }
+        }
+        int mode = mService.startOperation(getClientId(), op, uid, packageName, attributionTag, startIfModeDefault, collectionMode == COLLECT_ASYNC, message, shouldCollectMessage);
+        if (mode == MODE_ALLOWED) {
+            if (collectionMode == COLLECT_SELF) {
+                collectNotedOpForSelf(op, attributionTag);
+            } else if (collectionMode == COLLECT_SYNC) {
+                collectNotedOpSync(op, attributionTag);
+            }
+        }
+        return mode;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

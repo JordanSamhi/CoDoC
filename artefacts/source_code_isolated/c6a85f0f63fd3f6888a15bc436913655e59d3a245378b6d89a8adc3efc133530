@@ -1,0 +1,17 @@
+public Certificate[] getCertificates(ZipEntry ze){
+    if (isSigned) {
+        Certificate[][] certChains = verifier.getCertificateChains(ze.getName());
+        int count = 0;
+        for (Certificate[] chain : certChains) {
+            count += chain.length;
+        }
+        Certificate[] certs = new Certificate[count];
+        int i = 0;
+        for (Certificate[] chain : certChains) {
+            System.arraycopy(chain, 0, certs, i, chain.length);
+            i += chain.length;
+        }
+        return certs;
+    }
+    return null;
+}

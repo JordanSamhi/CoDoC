@@ -1,0 +1,13 @@
+public boolean refresh(){
+    if (mConnectionId == UNDEFINED_CONNECTION_ID || mId == UNDEFINED_WINDOW_ID) {
+        return false;
+    }
+    final AccessibilityInteractionClient client = AccessibilityInteractionClient.getInstance();
+    final AccessibilityWindowInfo refreshedInfo = client.getWindow(mConnectionId, mId, true);
+    if (refreshedInfo == null) {
+        return false;
+    }
+    init(refreshedInfo);
+    refreshedInfo.recycle();
+    return true;
+}

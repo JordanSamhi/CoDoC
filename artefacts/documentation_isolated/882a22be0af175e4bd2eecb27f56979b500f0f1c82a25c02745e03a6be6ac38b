@@ -1,0 +1,22 @@
+
+     * Called back when a {@link KeyEvent} is forwarded from the target application.
+     *
+     * <p>The default implementation intercepts {@link KeyEvent#KEYCODE_BACK} if the IME is
+     * currently shown , to possibly hide it when the key goes up (if not canceled or long pressed).
+     * In addition, in fullscreen mode only, it will consume DPAD movement events to move the cursor
+     * in the extracted text view, not allowing them to perform navigation in the underlying
+     * application.</p>
+     *
+     * <p>The default implementation does not take flags specified to
+     * {@link #setBackDisposition(int)} into account, even on API version
+     * {@link android.os.Build.VERSION_CODES#P} and later devices.  IME developers are responsible
+     * for making sure that their special handling for {@link KeyEvent#KEYCODE_BACK} are consistent
+     * with the flag they specified to {@link #setBackDisposition(int)}.</p>
+     *
+     * @param keyCode The value in {@code event.getKeyCode()}
+     * @param event Description of the key event
+     *
+     * @return {@code true} if the event is consumed by the IME and the application no longer needs
+     *         to consume it.  Return {@code false} when the event should be handled as if the IME
+     *         had not seen the event at all.
+     

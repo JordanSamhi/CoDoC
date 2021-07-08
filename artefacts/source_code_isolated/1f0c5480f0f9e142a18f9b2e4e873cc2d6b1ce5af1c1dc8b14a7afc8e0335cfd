@@ -1,0 +1,11 @@
+public static TimeKeyListener getInstance(@Nullable Locale locale){
+    TimeKeyListener instance;
+    synchronized (sLock) {
+        instance = sInstanceCache.get(locale);
+        if (instance == null) {
+            instance = new TimeKeyListener(locale);
+            sInstanceCache.put(locale, instance);
+        }
+    }
+    return instance;
+}

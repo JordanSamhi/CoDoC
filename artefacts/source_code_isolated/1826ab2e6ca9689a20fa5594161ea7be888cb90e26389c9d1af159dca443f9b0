@@ -1,0 +1,36 @@
+public void updateFullscreenMode(){
+    boolean isFullscreen = mShowInputRequested && onEvaluateFullscreenMode();
+    boolean changed = mLastShowInputRequested != mShowInputRequested;
+    if (mIsFullscreen != isFullscreen || !mFullscreenApplied) {
+        changed = true;
+        mIsFullscreen = isFullscreen;
+        reportFullscreenMode();
+        mFullscreenApplied = true;
+        initialize();
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mFullscreenArea.getLayoutParams();
+        if (isFullscreen) {
+            mFullscreenArea.setBackgroundDrawable(mThemeAttrs.getDrawable(com.android.internal.R.styleable.InputMethodService_imeFullscreenBackground));
+            lp.height = 0;
+            lp.weight = 1;
+        } else {
+            mFullscreenArea.setBackgroundDrawable(null);
+            lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            lp.weight = 0;
+        }
+        ((ViewGroup) mFullscreenArea.getParent()).updateViewLayout(mFullscreenArea, lp);
+        if (isFullscreen) {
+            if (mExtractView == null) {
+                View v = onCreateExtractTextView();
+                if (v != null) {
+                    setExtractView(v);
+                }
+            }
+            startExtractingText(false);
+        }
+        updateExtractFrameVisibility();
+    }
+    if (changed) {
+        onConfigureWindow(mWindow.getWindow(), isFullscreen, !mShowInputRequested);
+        mLastShowInputRequested = mShowInputRequested;
+    }
+}

@@ -1,0 +1,11 @@
+public void setCallAudioState(CallAudioState state){
+    Log.startSession("RC.sCAS", getActiveOwnerInfo());
+    try {
+        if (mConnected) {
+            mConnectionService.onCallAudioStateChanged(mConnectionId, state, null);
+        }
+    } catch (RemoteException ignored) {
+    } finally {
+        Log.endSession();
+    }
+}

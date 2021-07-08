@@ -1,0 +1,15 @@
+public static boolean isComponentIdExistingInSettings(Context context, @UserShortcutType int shortcutType, @NonNull String componentId){
+    final String targetKey = convertToKey(shortcutType);
+    final String targetString = Settings.Secure.getString(context.getContentResolver(), targetKey);
+    if (TextUtils.isEmpty(targetString)) {
+        return false;
+    }
+    sStringColonSplitter.setString(targetString);
+    while (sStringColonSplitter.hasNext()) {
+        final String id = sStringColonSplitter.next();
+        if (componentId.equals(id)) {
+            return true;
+        }
+    }
+    return false;
+}

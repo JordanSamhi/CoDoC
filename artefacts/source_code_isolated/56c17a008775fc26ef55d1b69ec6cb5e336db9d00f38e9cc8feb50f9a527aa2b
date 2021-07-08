@@ -1,0 +1,26 @@
+public Map<OsuProvider, List<ScanResult>> getMatchingOsuProviders(List<ScanResult> scanResults){
+    if (scanResults == null) {
+        Log.e(TAG, "Attempt to retrieve OSU providers for a null ScanResult");
+        return new HashMap();
+    }
+    Map<OsuProvider, List<ScanResult>> osuProviders = new HashMap<>();
+    for (ScanResult scanResult : scanResults) {
+        if (!scanResult.isPasspointNetwork())
+            continue;
+        Map<Constants.ANQPElementType, ANQPElement> anqpElements = getANQPElements(scanResult);
+        if (!anqpElements.containsKey(Constants.ANQPElementType.HSOSUProviders)) {
+            continue;
+        }
+        HSOsuProvidersElement element = (HSOsuProvidersElement) anqpElements.get(Constants.ANQPElementType.HSOSUProviders);
+        for (OsuProviderInfo info : element.getProviders()) {
+            OsuProvider provider = new OsuProvider((WifiSsid) null, info.getFriendlyNames(), info.getServiceDescription(), info.getServerUri(), info.getNetworkAccessIdentifier(), info.getMethodList());
+            List<ScanResult> matchingScanResults = osuProviders.get(provider);
+            if (matchingScanResults == null) {
+                matchingScanResults = new ArrayList<>();
+                osuProviders.put(provider, matchingScanResults);
+            }
+            matchingScanResults.add(scanResult);
+        }
+    }
+    return osuProviders;
+}

@@ -1,0 +1,16 @@
+public List<BluetoothDevice> getDevicesMatchingConnectionStates(int[] states){
+    if (VDBG)
+        log("getDevicesMatchingStates()");
+    final IBluetoothA2dpSink service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            return service.getDevicesMatchingConnectionStates(states);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+            return new ArrayList<BluetoothDevice>();
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return new ArrayList<BluetoothDevice>();
+}

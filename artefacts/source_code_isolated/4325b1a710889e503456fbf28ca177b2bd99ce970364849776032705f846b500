@@ -1,0 +1,9 @@
+public static String getApnTypesStringFromBitmask(int apnTypeBitmask){
+    List<String> types = new ArrayList<>();
+    for (Integer type : APN_TYPE_INT_MAP.keySet()) {
+        if ((apnTypeBitmask & type) == type) {
+            types.add(APN_TYPE_INT_MAP.get(type));
+        }
+    }
+    return TextUtils.join(",", types);
+}

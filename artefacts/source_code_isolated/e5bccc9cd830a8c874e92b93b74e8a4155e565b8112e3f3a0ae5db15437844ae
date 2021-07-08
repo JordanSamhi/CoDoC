@@ -1,0 +1,12 @@
+public static String flagsToString(@OpFlags int flags){
+    final StringBuilder flagsBuilder = new StringBuilder();
+    while (flags != 0) {
+        final int flag = 1 << Integer.numberOfTrailingZeros(flags);
+        flags &= ~flag;
+        if (flagsBuilder.length() > 0) {
+            flagsBuilder.append('|');
+        }
+        flagsBuilder.append(getFlagName(flag));
+    }
+    return flagsBuilder.toString();
+}

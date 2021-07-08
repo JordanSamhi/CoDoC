@@ -1,0 +1,26 @@
+public void notifyOnDataActivity(long newTxPkts, long newRxPkts){
+    if (newTxPkts <= 0 && newRxPkts <= 0) {
+        return;
+    }
+    long sent = newTxPkts - mTxPkts;
+    long received = newRxPkts - mRxPkts;
+    int dataActivity = WifiManager.TrafficStateCallback.DATA_ACTIVITY_NONE;
+    if (sent > 0) {
+        dataActivity |= WifiManager.TrafficStateCallback.DATA_ACTIVITY_OUT;
+    }
+    if (received > 0) {
+        dataActivity |= WifiManager.TrafficStateCallback.DATA_ACTIVITY_IN;
+    }
+    for (CallbackWrapper wrapper : mRegisteredCallbacks.getCallbacks()) {
+        if (wrapper.isFirstInvocation || dataActivity != mLastActivity) {
+            wrapper.isFirstInvocation = false;
+            try {
+                wrapper.callback.onStateChanged(dataActivity);
+            } catch (RemoteException e) {
+            }
+        }
+    }
+    mTxPkts = newTxPkts;
+    mRxPkts = newRxPkts;
+    mLastActivity = dataActivity;
+}

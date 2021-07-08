@@ -1,0 +1,10 @@
+public void invalidateVirtualView(int virtualViewId, int changeTypes){
+    if (virtualViewId != INVALID_ID && mManager.isEnabled()) {
+        final ViewParent parent = mView.getParent();
+        if (parent != null) {
+            final AccessibilityEvent event = createEvent(virtualViewId, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            event.setContentChangeTypes(changeTypes);
+            parent.requestSendAccessibilityEvent(mView, event);
+        }
+    }
+}

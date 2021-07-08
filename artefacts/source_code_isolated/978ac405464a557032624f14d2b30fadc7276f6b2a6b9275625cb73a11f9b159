@@ -1,0 +1,12 @@
+public void onServiceDiscoveryResponse(byte[] srcAddress, short updateIndicator, ArrayList<Byte> tlvs){
+    List<WifiP2pServiceResponse> response = null;
+    logd("Service discovery response received on " + mInterface);
+    try {
+        String srcAddressStr = NativeUtil.macAddressFromByteArray(srcAddress);
+        response = WifiP2pServiceResponse.newInstance(srcAddressStr, NativeUtil.byteArrayFromArrayList(tlvs));
+    } catch (Exception e) {
+        Log.e(TAG, "Could not process service discovery response.", e);
+        return;
+    }
+    mMonitor.broadcastP2pServiceDiscoveryResponse(mInterface, response);
+}

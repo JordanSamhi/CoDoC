@@ -1,0 +1,8 @@
+public static void setCachedBitmap(String value, Bitmap bmp, Object projectKey){
+    if (projectKey != null) {
+        Map<String, SoftReference<Bitmap>> map = sProjectBitmapCache.computeIfAbsent(projectKey, k -> new HashMap<>());
+        map.put(value, new SoftReference<>(bmp));
+    } else {
+        sFrameworkBitmapCache.put(value, new SoftReference<>(bmp));
+    }
+}

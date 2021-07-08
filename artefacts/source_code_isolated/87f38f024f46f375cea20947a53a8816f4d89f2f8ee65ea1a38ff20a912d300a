@@ -1,0 +1,10 @@
+public void parseDescriptors(UsbDeviceConnection connection, byte[] descriptors, StringBuilder builder){
+    builder.append("<tt>");
+    ByteStream stream = new ByteStream(descriptors);
+    while (stream.available() > 0) {
+        int length = (int) stream.getByte() & 0x000000FF;
+        byte type = stream.getByte();
+        dumpDescriptor(stream, length, type, builder);
+    }
+    builder.append("</tt>");
+}

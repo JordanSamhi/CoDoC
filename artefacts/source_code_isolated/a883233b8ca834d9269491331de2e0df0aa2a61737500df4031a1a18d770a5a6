@@ -1,0 +1,13 @@
+public static boolean persistableBundleEquals(@Nullable PersistableBundle a, @Nullable PersistableBundle b){
+    if (a == b)
+        return true;
+    if (a == null || b == null)
+        return false;
+    if (!Objects.equals(a.keySet(), b.keySet()))
+        return false;
+    for (String key : a.keySet()) {
+        if (!Objects.equals(a.get(key), b.get(key)))
+            return false;
+    }
+    return true;
+}

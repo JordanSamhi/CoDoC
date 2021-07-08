@@ -1,0 +1,18 @@
+public void screenTurningOn(final ScreenOnListener screenOnListener){
+    if (DEBUG_WAKEUP)
+        Slog.i(TAG, "Screen turning on...");
+    Trace.asyncTraceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "screenTurningOn", 0);
+    updateScreenOffSleepToken(false);
+    mDefaultDisplayPolicy.screenTurnedOn(screenOnListener);
+    synchronized (mLock) {
+        if (mKeyguardDelegate != null && mKeyguardDelegate.hasKeyguard()) {
+            mHandler.removeMessages(MSG_KEYGUARD_DRAWN_TIMEOUT);
+            mHandler.sendEmptyMessageDelayed(MSG_KEYGUARD_DRAWN_TIMEOUT, getKeyguardDrawnTimeout());
+            mKeyguardDelegate.onScreenTurningOn(mKeyguardDrawnCallback);
+        } else {
+            if (DEBUG_WAKEUP)
+                Slog.d(TAG, "null mKeyguardDelegate: setting mKeyguardDrawComplete.");
+            mHandler.sendEmptyMessage(MSG_KEYGUARD_DRAWN_COMPLETE);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public String getDefaultDialerPackage(@NonNull UserHandle userHandle){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getDefaultDialerPackageForUser(userHandle.getIdentifier());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException attempting to get the default dialer package name.", e);
+    }
+    return null;
+}

@@ -1,0 +1,17 @@
+public void play(Context context, Uri uri, boolean looping, int stream){
+    if (DEBUG) {
+        Log.d(mTag, "play uri=" + uri.toString());
+    }
+    PlayerBase.deprecateStreamTypeForPlayback(stream, "NotificationPlayer", "play");
+    Command cmd = new Command();
+    cmd.requestTime = SystemClock.uptimeMillis();
+    cmd.code = PLAY;
+    cmd.context = context;
+    cmd.uri = uri;
+    cmd.looping = looping;
+    cmd.attributes = new AudioAttributes.Builder().setInternalLegacyStreamType(stream).build();
+    synchronized (mCmdQueue) {
+        enqueueLocked(cmd);
+        mState = PLAY;
+    }
+}

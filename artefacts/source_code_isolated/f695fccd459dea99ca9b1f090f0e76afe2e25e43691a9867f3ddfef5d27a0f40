@@ -1,0 +1,9 @@
+public void setBluetoothA2dpDeviceConnectionStateSuppressNoisyIntent(@NonNull BluetoothDevice device, @AudioService.BtProfileConnectionState int state, int profile, boolean suppressNoisyIntent, int a2dpVolume){
+    if (device == null) {
+        throw new IllegalArgumentException("Illegal null device");
+    }
+    if (state != BluetoothProfile.STATE_CONNECTED && state != BluetoothProfile.STATE_DISCONNECTED) {
+        throw new IllegalArgumentException("Illegal BluetoothProfile state for device " + " (dis)connection, got " + state);
+    }
+    mDeviceBroker.postBluetoothA2dpDeviceConnectionStateSuppressNoisyIntent(device, state, profile, suppressNoisyIntent, a2dpVolume);
+}

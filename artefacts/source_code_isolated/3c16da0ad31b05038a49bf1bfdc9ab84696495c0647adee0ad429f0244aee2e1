@@ -1,0 +1,18 @@
+public String getDrmPropertyString(@NonNull @MediaDrm.StringProperty String propertyName) throws NoDrmSchemeException{
+    Log.v(TAG, "getDrmPropertyString: propertyName: " + propertyName);
+    String value;
+    synchronized (mDrmLock) {
+        if (!mActiveDrmScheme && !mDrmConfigAllowed) {
+            Log.w(TAG, "getDrmPropertyString NoDrmSchemeException");
+            throw new NoDrmSchemeException("getDrmPropertyString: Has to prepareDrm() first.");
+        }
+        try {
+            value = mDrmObj.getPropertyString(propertyName);
+        } catch (Exception e) {
+            Log.w(TAG, "getDrmPropertyString Exception " + e);
+            throw e;
+        }
+    }
+    Log.v(TAG, "getDrmPropertyString: propertyName: " + propertyName + " --> value: " + value);
+    return value;
+}

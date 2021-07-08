@@ -1,0 +1,11 @@
+public void preExecute(android.app.ClientTransactionHandler clientTransactionHandler){
+    if (mActivityCallbacks != null) {
+        final int size = mActivityCallbacks.size();
+        for (int i = 0; i < size; ++i) {
+            mActivityCallbacks.get(i).preExecute(clientTransactionHandler, mActivityToken);
+        }
+    }
+    if (mLifecycleStateRequest != null) {
+        mLifecycleStateRequest.preExecute(clientTransactionHandler, mActivityToken);
+    }
+}

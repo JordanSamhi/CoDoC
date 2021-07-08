@@ -1,0 +1,12 @@
+public static final java.net.Proxy getProxy(Context ctx, String url){
+    String host = "";
+    if ((url != null) && !isLocalHost(host)) {
+        URI uri = URI.create(url);
+        ProxySelector proxySelector = ProxySelector.getDefault();
+        List<java.net.Proxy> proxyList = proxySelector.select(uri);
+        if (proxyList.size() > 0) {
+            return proxyList.get(0);
+        }
+    }
+    return java.net.Proxy.NO_PROXY;
+}

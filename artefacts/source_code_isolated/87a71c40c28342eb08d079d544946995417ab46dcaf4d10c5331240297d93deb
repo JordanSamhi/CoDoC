@@ -1,0 +1,8 @@
+public Builder setAudioSource(@Source int source) throws IllegalArgumentException{
+    Preconditions.checkState(mAudioPlaybackCaptureConfiguration == null, ERROR_MESSAGE_SOURCE_MISMATCH);
+    if ((source < MediaRecorder.AudioSource.DEFAULT) || (source > MediaRecorder.getAudioSourceMax())) {
+        throw new IllegalArgumentException("Invalid audio source " + source);
+    }
+    mAttributes = new AudioAttributes.Builder().setInternalCapturePreset(source).build();
+    return this;
+}

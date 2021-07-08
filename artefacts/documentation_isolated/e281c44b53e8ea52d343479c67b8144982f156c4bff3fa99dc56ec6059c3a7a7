@@ -1,0 +1,23 @@
+
+     * Returns whether the calling package can interact across profiles.
+
+     * <p>Specifically, returns whether the following are all true:
+     * <ul>
+     * <li>{@link #getTargetUserProfiles()} returns a non-empty list for the calling user.</li>
+     * <li>The user has previously consented to cross-profile communication for the calling
+     * package.</li>
+     * <li>The calling package has either been whitelisted by default by the OEM or has been
+     * explicitly whitelisted by the admin via
+     * {@link android.app.admin.DevicePolicyManager#setCrossProfilePackages(ComponentName, Set)}.
+     * </li>
+     * </ul>
+     *
+     * <p>If {@code false}, the package's current ability to request user consent to interact across
+     * profiles can be checked with {@link #canRequestInteractAcrossProfiles()}. If {@code true},
+     * user consent can be obtained via {@link #createRequestInteractAcrossProfilesIntent()}. The
+     * package can then listen to {@link #ACTION_CAN_INTERACT_ACROSS_PROFILES_CHANGED} broadcasts.
+     *
+     * @return true if the calling package can interact across profiles.
+     * @throws SecurityException if {@code mContext.getPackageName()} does not belong to the
+     * calling UID.
+     

@@ -1,0 +1,23 @@
+public static CharSequence getRichText(Context context, CharSequence text){
+    if (text instanceof Spanned) {
+        final SpannableString spannable = new SpannableString(text);
+        final Annotation[] spans = spannable.getSpans(0, spannable.length(), Annotation.class);
+        for (Annotation span : spans) {
+            final String key = span.getKey();
+            if (ANNOTATION_TEXT_APPEARANCE.equals(key)) {
+                String textAppearance = span.getValue();
+                final int style = context.getResources().getIdentifier(textAppearance, "style", context.getPackageName());
+                if (style == 0) {
+                    Log.w(TAG, "Cannot find resource: " + style);
+                }
+                final TextAppearanceSpan textAppearanceSpan = new TextAppearanceSpan(context, style);
+                SpanHelper.replaceSpan(spannable, span, textAppearanceSpan);
+            } else if (ANNOTATION_LINK.equals(key)) {
+                LinkSpan link = new LinkSpan(span.getValue());
+                SpanHelper.replaceSpan(spannable, span, link);
+            }
+        }
+        return spannable;
+    }
+    return text;
+}

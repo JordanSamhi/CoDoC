@@ -1,0 +1,39 @@
+public static List<Integer> getCarrierIdsFromApnQuery(@NonNull Context context, String mccmnc, String mvnoCase, String mvnoData){
+    String selection = CarrierId.All.MCCMNC + "=" + mccmnc;
+    if ("spn".equals(mvnoCase) && mvnoData != null) {
+        selection += " AND " + CarrierId.All.SPN + "='" + mvnoData + "'";
+    } else if ("imsi".equals(mvnoCase) && mvnoData != null) {
+        selection += " AND " + CarrierId.All.IMSI_PREFIX_XPATTERN + "='" + mvnoData + "'";
+    } else if ("gid1".equals(mvnoCase) && mvnoData != null) {
+        selection += " AND " + CarrierId.All.GID1 + "='" + mvnoData + "'";
+    } else if ("gid2".equals(mvnoCase) && mvnoData != null) {
+        selection += " AND " + CarrierId.All.GID2 + "='" + mvnoData + "'";
+    } else {
+        logd("mvno case empty or other invalid values");
+    }
+    List<Integer> ids = new ArrayList<>();
+    try {
+        Cursor cursor = context.getContentResolver().query(CarrierId.All.CONTENT_URI, null, selection, null, null);
+        try {
+            if (cursor != null) {
+                if (VDBG) {
+                    logd("[getCarrierIdsFromApnQuery]- " + cursor.getCount() + " Records(s) in DB");
+                }
+                while (cursor.moveToNext()) {
+                    int cid = cursor.getInt(cursor.getColumnIndex(CarrierId.CARRIER_ID));
+                    if (!ids.contains(cid)) {
+                        ids.add(cid);
+                    }
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    } catch (Exception ex) {
+        loge("[getCarrierIdsFromApnQuery]- ex: " + ex);
+    }
+    logd(selection + " " + ids);
+    return ids;
+}

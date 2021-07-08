@@ -1,0 +1,10 @@
+public int getTimestampWithStatus(AudioTimestamp timestamp){
+    if (timestamp == null) {
+        throw new IllegalArgumentException();
+    }
+    long[] longArray = new long[2];
+    int ret = native_get_timestamp(longArray);
+    timestamp.framePosition = longArray[0];
+    timestamp.nanoTime = longArray[1];
+    return ret;
+}

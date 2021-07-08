@@ -1,0 +1,11 @@
+public int abandonAudioFocus(OnAudioFocusChangeListener l, AudioAttributes aa){
+    int status = AUDIOFOCUS_REQUEST_FAILED;
+    unregisterAudioFocusRequest(l);
+    final IAudioService service = getService();
+    try {
+        status = service.abandonAudioFocus(mAudioFocusDispatcher, getIdForAudioFocusListener(l), aa, getContext().getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return status;
+}

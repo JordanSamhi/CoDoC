@@ -1,0 +1,23 @@
+public void setClientKeyEntryWithCertificateChain(PrivateKey privateKey, X509Certificate[] clientCertificateChain){
+    X509Certificate[] newCerts = null;
+    if (clientCertificateChain != null && clientCertificateChain.length > 0) {
+        if (clientCertificateChain[0].getBasicConstraints() != -1) {
+            throw new IllegalArgumentException("First certificate in the chain must be a client end certificate");
+        }
+        for (int i = 1; i < clientCertificateChain.length; i++) {
+            if (clientCertificateChain[i].getBasicConstraints() == -1) {
+                throw new IllegalArgumentException("All certificates following the first must be CA certificates");
+            }
+        }
+        newCerts = Arrays.copyOf(clientCertificateChain, clientCertificateChain.length);
+        if (privateKey == null) {
+            throw new IllegalArgumentException("Client cert without a private key");
+        }
+        if (privateKey.getEncoded() == null) {
+            throw new IllegalArgumentException("Private key cannot be encoded");
+        }
+    }
+    mClientPrivateKey = privateKey;
+    mClientCertificateChain = newCerts;
+    mIsAppInstalledDeviceKeyAndCert = true;
+}

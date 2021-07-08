@@ -1,0 +1,15 @@
+public void unregisterCallback(Callback cb){
+    int hashCode = System.identityHashCode(cb);
+    synchronized (mListenerMap) {
+        ILowpanInterfaceListener listenerBinder = mListenerMap.get(hashCode);
+        if (listenerBinder != null) {
+            mListenerMap.remove(hashCode);
+            try {
+                mBinder.removeListener(listenerBinder);
+            } catch (DeadObjectException x) {
+            } catch (RemoteException x) {
+                throw x.rethrowAsRuntimeException();
+            }
+        }
+    }
+}

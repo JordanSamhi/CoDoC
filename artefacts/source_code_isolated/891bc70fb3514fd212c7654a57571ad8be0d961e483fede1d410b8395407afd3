@@ -1,0 +1,9 @@
+public void addUserRestriction(@NonNull ComponentName admin, @UserManager.UserRestrictionKey String key){
+    if (mService != null) {
+        try {
+            mService.setUserRestriction(admin, key, true, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

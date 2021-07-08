@@ -1,0 +1,10 @@
+public static String getHexDigest(byte[] rawBytes){
+    char[] hexChars = new char[rawBytes.length * 2];
+    for (int i = 0; i < rawBytes.length; i++) {
+        int upperNibble = (rawBytes[i] >>> 4) & 0xF;
+        int lowerNibble = rawBytes[i] & 0xF;
+        hexChars[i * 2] = decToHex(upperNibble);
+        hexChars[i * 2 + 1] = decToHex(lowerNibble);
+    }
+    return new String(hexChars);
+}

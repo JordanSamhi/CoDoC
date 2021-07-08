@@ -1,0 +1,12 @@
+public static void releaseAllContexts(){
+    ArrayList<RenderScript> oldList;
+    synchronized (mProcessContextList) {
+        oldList = mProcessContextList;
+        mProcessContextList = new ArrayList<RenderScript>();
+    }
+    for (RenderScript prs : oldList) {
+        prs.mIsProcessContext = false;
+        prs.destroy();
+    }
+    oldList.clear();
+}

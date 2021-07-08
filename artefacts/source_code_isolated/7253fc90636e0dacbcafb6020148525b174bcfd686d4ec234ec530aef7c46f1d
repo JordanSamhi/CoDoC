@@ -1,0 +1,12 @@
+public void dispose(Handler h){
+    mCdmaSubscriptionSourceChangedRegistrants.remove(h);
+    synchronized (sReferenceCountMonitor) {
+        sReferenceCount--;
+        if (sReferenceCount <= 0) {
+            mCi.unregisterForCdmaSubscriptionChanged(this);
+            mCi.unregisterForOn(this);
+            mCi.unregisterForSubscriptionStatusChanged(this);
+            sInstance = null;
+        }
+    }
+}

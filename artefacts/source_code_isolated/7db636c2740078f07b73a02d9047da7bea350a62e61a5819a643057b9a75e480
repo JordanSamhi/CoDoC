@@ -1,0 +1,12 @@
+public Waveform resolve(int defaultAmplitude){
+    if (defaultAmplitude > MAX_AMPLITUDE || defaultAmplitude < 0) {
+        throw new IllegalArgumentException("Amplitude is negative or greater than MAX_AMPLITUDE");
+    }
+    int[] resolvedAmplitudes = Arrays.copyOf(mAmplitudes, mAmplitudes.length);
+    for (int i = 0; i < resolvedAmplitudes.length; i++) {
+        if (resolvedAmplitudes[i] == DEFAULT_AMPLITUDE) {
+            resolvedAmplitudes[i] = defaultAmplitude;
+        }
+    }
+    return new Waveform(mTimings, resolvedAmplitudes, mRepeat);
+}

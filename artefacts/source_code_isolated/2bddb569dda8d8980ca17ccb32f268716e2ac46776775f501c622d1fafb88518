@@ -1,0 +1,12 @@
+public void attachSession(ImsCallSession session) throws ImsException{
+    logi("attachSession :: session=" + session);
+    synchronized (mLockObj) {
+        mSession = session;
+        try {
+            mSession.setListener(createCallSessionListener());
+        } catch (Throwable t) {
+            loge("attachSession :: ", t);
+            throwImsException(t, 0);
+        }
+    }
+}

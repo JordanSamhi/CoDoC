@@ -1,0 +1,11 @@
+public boolean check(String appName, int smsWaiting){
+    synchronized (mSmsStamp) {
+        removeExpiredTimestamps();
+        ArrayList<Long> sentList = mSmsStamp.get(appName);
+        if (sentList == null) {
+            sentList = new ArrayList<Long>();
+            mSmsStamp.put(appName, sentList);
+        }
+        return isUnderLimit(sentList, smsWaiting);
+    }
+}

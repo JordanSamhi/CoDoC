@@ -1,0 +1,21 @@
+public static List<X509Certificate> convertFromPem(byte[] bytes) throws IOException, CertificateException{
+    ByteArrayInputStream bai = new ByteArrayInputStream(bytes);
+    Reader reader = new InputStreamReader(bai, StandardCharsets.US_ASCII);
+    PemReader pr = new PemReader(reader);
+    try {
+        CertificateFactory cf = CertificateFactory.getInstance("X509");
+        List<X509Certificate> result = new ArrayList<X509Certificate>();
+        PemObject o;
+        while ((o = pr.readPemObject()) != null) {
+            if (o.getType().equals("CERTIFICATE")) {
+                Certificate c = cf.generateCertificate(new ByteArrayInputStream(o.getContent()));
+                result.add((X509Certificate) c);
+            } else {
+                throw new IllegalArgumentException("Unknown type " + o.getType());
+            }
+        }
+        return result;
+    } finally {
+        pr.close();
+    }
+}

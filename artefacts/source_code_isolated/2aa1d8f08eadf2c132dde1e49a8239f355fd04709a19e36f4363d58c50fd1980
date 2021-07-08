@@ -1,0 +1,22 @@
+public ColorSpace[] getSupportedWideColorGamut(){
+    synchronized (this) {
+        final ColorSpace[] defaultColorSpaces = new ColorSpace[0];
+        updateDisplayInfoLocked();
+        if (!isWideColorGamut()) {
+            return defaultColorSpaces;
+        }
+        final int[] colorModes = getSupportedColorModes();
+        final List<ColorSpace> colorSpaces = new ArrayList<>();
+        for (int colorMode : colorModes) {
+            switch(colorMode) {
+                case COLOR_MODE_DCI_P3:
+                    colorSpaces.add(ColorSpace.get(ColorSpace.Named.DCI_P3));
+                    break;
+                case COLOR_MODE_DISPLAY_P3:
+                    colorSpaces.add(ColorSpace.get(ColorSpace.Named.DISPLAY_P3));
+                    break;
+            }
+        }
+        return colorSpaces.toArray(defaultColorSpaces);
+    }
+}

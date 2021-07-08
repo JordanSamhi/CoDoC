@@ -1,0 +1,14 @@
+public void setCustomAggregateFunction(@NonNull String functionName, @NonNull BinaryOperator<String> aggregateFunction) throws SQLiteException{
+    Objects.requireNonNull(functionName);
+    Objects.requireNonNull(aggregateFunction);
+    synchronized (mLock) {
+        throwIfNotOpenLocked();
+        mConfigurationLocked.customAggregateFunctions.put(functionName, aggregateFunction);
+        try {
+            mConnectionPoolLocked.reconfigure(mConfigurationLocked);
+        } catch (RuntimeException ex) {
+            mConfigurationLocked.customAggregateFunctions.remove(functionName);
+            throw ex;
+        }
+    }
+}

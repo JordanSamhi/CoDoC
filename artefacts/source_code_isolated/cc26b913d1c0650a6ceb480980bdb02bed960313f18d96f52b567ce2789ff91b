@@ -1,0 +1,36 @@
+public void parseDescriptors(byte[] descriptors){
+    ByteStream stream = new ByteStream(descriptors);
+    while (stream.available() > 0) {
+        UsbDescriptor descriptor = null;
+        try {
+            descriptor = allocDescriptor(stream);
+        } catch (Exception ex) {
+            Log.e(TAG, "Exception allocating USB descriptor.", ex);
+        }
+        if (descriptor != null) {
+            try {
+                descriptor.parseRawDescriptors(stream);
+                descriptor.postParse(stream);
+            } catch (Exception ex) {
+                descriptor.postParse(stream);
+                Log.w(TAG, "Exception parsing USB descriptors. type:0x" + descriptor.getType() + " status:" + descriptor.getStatus());
+                if (DEBUG) {
+                    Log.e(TAG, "Exception parsing USB descriptors.", ex);
+                }
+                StackTraceElement[] stackElems = ex.getStackTrace();
+                if (stackElems.length > 0) {
+                    Log.i(TAG, "  class:" + stackElems[0].getClassName() + " @ " + stackElems[0].getLineNumber());
+                }
+                if (stackElems.length > 1) {
+                    Log.i(TAG, "  class:" + stackElems[1].getClassName() + " @ " + stackElems[1].getLineNumber());
+                }
+                descriptor.setStatus(UsbDescriptor.STATUS_PARSE_EXCEPTION);
+            } finally {
+                mDescriptors.add(descriptor);
+            }
+        }
+    }
+    if (DEBUG) {
+        Log.d(TAG, "parseDescriptors() - end " + mDescriptors.size() + " descriptors.");
+    }
+}

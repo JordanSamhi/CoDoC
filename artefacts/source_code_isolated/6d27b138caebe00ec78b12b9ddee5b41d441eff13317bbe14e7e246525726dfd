@@ -1,0 +1,12 @@
+public boolean stopViewServer(){
+    if (isSystemSecure()) {
+        return false;
+    }
+    if (!checkCallingPermission(Manifest.permission.DUMP, "stopViewServer")) {
+        return false;
+    }
+    if (mViewServer != null) {
+        return mViewServer.stop();
+    }
+    return false;
+}

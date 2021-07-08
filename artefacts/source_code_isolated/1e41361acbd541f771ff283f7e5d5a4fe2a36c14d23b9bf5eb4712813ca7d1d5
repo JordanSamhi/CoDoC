@@ -1,0 +1,10 @@
+public boolean cancel(){
+    synchronized (mLock) {
+        if (mCancelled || mCompleted) {
+            return false;
+        }
+        mCancelled = true;
+    }
+    onCancel();
+    return true;
+}

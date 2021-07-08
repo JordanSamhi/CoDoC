@@ -1,0 +1,16 @@
+public void recordResetEvent(int numScans){
+    synchronized (mLock) {
+        if (!mIsInSession) {
+            return;
+        }
+        mCurrentSession.recordResetEvent(numScans, SystemClock.elapsedRealtime());
+        if (mCurrentSession.hasWakeupTriggered()) {
+            mTotalWakeups++;
+        }
+        mTotalSessions++;
+        if (mSessions.size() < MAX_RECORDED_SESSIONS) {
+            mSessions.add(mCurrentSession);
+        }
+        mIsInSession = false;
+    }
+}

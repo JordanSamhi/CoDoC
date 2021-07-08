@@ -1,0 +1,7 @@
+public void waitForIdleSync(){
+    validateNotAppThread();
+    Idler idler = new Idler(null);
+    mMessageQueue.addIdleHandler(idler);
+    mThread.getHandler().post(new EmptyRunnable());
+    idler.waitForIdle();
+}

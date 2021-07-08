@@ -1,0 +1,10 @@
+public void broadcastAction(Consumer<E> action){
+    int itemCount = beginBroadcast();
+    try {
+        for (int i = 0; i < itemCount; i++) {
+            action.accept(getBroadcastItem(i));
+        }
+    } finally {
+        finishBroadcast();
+    }
+}

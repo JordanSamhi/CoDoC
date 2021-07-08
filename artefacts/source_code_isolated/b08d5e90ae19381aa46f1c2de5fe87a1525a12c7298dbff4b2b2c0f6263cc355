@@ -1,0 +1,15 @@
+public void removeOnDrawListener(OnDrawListener victim){
+    checkIsAlive();
+    if (mOnDrawListeners == null) {
+        return;
+    }
+    if (mInDispatchOnDraw) {
+        IllegalStateException ex = new IllegalStateException("Cannot call removeOnDrawListener inside of onDraw");
+        if (sIllegalOnDrawModificationIsFatal) {
+            throw ex;
+        } else {
+            Log.e("ViewTreeObserver", ex.getMessage(), ex);
+        }
+    }
+    mOnDrawListeners.remove(victim);
+}

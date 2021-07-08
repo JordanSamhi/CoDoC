@@ -1,0 +1,15 @@
+public void selectNetworkManually(OperatorInfo network, boolean persistSelection, Message response){
+    NetworkSelectMessage nsm = new NetworkSelectMessage();
+    nsm.message = response;
+    nsm.operatorNumeric = network.getOperatorNumeric();
+    nsm.operatorAlphaLong = network.getOperatorAlphaLong();
+    nsm.operatorAlphaShort = network.getOperatorAlphaShort();
+    Message msg = obtainMessage(EVENT_SET_NETWORK_MANUAL_COMPLETE, nsm);
+    mCi.setNetworkSelectionModeManual(network.getOperatorNumeric(), network.getRan(), msg);
+    if (persistSelection) {
+        updateSavedNetworkOperator(nsm);
+    } else {
+        clearSavedNetworkSelection();
+        updateManualNetworkSelection(nsm);
+    }
+}

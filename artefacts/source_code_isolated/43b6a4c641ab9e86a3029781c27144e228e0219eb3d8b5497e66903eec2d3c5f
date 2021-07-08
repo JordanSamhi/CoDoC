@@ -1,0 +1,13 @@
+public void exitKeyguardSecurely(final OnKeyguardExitResult callback){
+    try {
+        mWM.exitKeyguardSecurely(new IOnKeyguardExitResult.Stub() {
+
+            public void onKeyguardExitResult(boolean success) throws RemoteException {
+                if (callback != null) {
+                    callback.onKeyguardExitResult(success);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+    }
+}

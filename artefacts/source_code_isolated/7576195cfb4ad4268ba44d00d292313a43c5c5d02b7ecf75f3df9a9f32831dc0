@@ -1,0 +1,19 @@
+public ServerTransaction sendInviteOk(RequestEvent event, SipProfile localProfile, String sessionDescription, ServerTransaction inviteTransaction, String externalIp, int externalPort) throws SipException{
+    try {
+        Request request = event.getRequest();
+        Response response = mMessageFactory.createResponse(Response.OK, request);
+        response.addHeader(createContactHeader(localProfile, externalIp, externalPort));
+        response.setContent(sessionDescription, mHeaderFactory.createContentTypeHeader("application", "sdp"));
+        if (inviteTransaction == null) {
+            inviteTransaction = getServerTransaction(event);
+        }
+        if (inviteTransaction.getState() != TransactionState.COMPLETED) {
+            if (DBG)
+                log("send OK: " + response);
+            inviteTransaction.sendResponse(response);
+        }
+        return inviteTransaction;
+    } catch (ParseException e) {
+        throw new SipException("sendInviteOk()", e);
+    }
+}

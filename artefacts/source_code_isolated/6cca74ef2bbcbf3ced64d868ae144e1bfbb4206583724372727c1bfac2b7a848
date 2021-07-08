@@ -1,0 +1,16 @@
+public static void addOnPropertiesChangedListener(@NonNull String namespace, @NonNull @CallbackExecutor Executor executor, @NonNull OnPropertiesChangedListener onPropertiesChangedListener){
+    enforceReadPermission(ActivityThread.currentApplication().getApplicationContext(), namespace);
+    synchronized (sLock) {
+        Pair<String, Executor> oldNamespace = sListeners.get(onPropertiesChangedListener);
+        if (oldNamespace == null) {
+            sListeners.put(onPropertiesChangedListener, new Pair<>(namespace, executor));
+            incrementNamespace(namespace);
+        } else if (namespace.equals(oldNamespace.first)) {
+            sListeners.put(onPropertiesChangedListener, new Pair<>(namespace, executor));
+        } else {
+            decrementNamespace(sListeners.get(onPropertiesChangedListener).first);
+            sListeners.put(onPropertiesChangedListener, new Pair<>(namespace, executor));
+            incrementNamespace(namespace);
+        }
+    }
+}

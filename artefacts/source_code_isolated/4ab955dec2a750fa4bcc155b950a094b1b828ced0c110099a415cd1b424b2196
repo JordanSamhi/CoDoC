@@ -1,0 +1,20 @@
+public byte[] getBackupPayload(int user){
+    if (Binder.getCallingUid() != SYSTEM_UID) {
+        throw new SecurityException("Caller must be system");
+    }
+    if (user != UserHandle.USER_SYSTEM) {
+        Slog.w(TAG, "getBackupPayload: cannot backup policy for user " + user);
+        return null;
+    }
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    try {
+        XmlSerializer out = XmlPullParserFactory.newInstance().newSerializer();
+        out.setOutput(baos, Encoding.UTF_8.name());
+        mPermissions.writeBackup(out);
+        out.flush();
+        return baos.toByteArray();
+    } catch (IOException | XmlPullParserException e) {
+        Slog.w(TAG, "getBackupPayload: error writing payload for user " + user, e);
+    }
+    return null;
+}

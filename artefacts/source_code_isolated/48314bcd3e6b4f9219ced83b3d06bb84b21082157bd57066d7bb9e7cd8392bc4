@@ -1,0 +1,9 @@
+public static Bitmap decodeBitmap(@NonNull Source src, @Nullable OnHeaderDecodedListener listener) throws IOException{
+    TypedValue value = new TypedValue();
+    value.density = src.getDensity();
+    ImageDecoder decoder = src.createImageDecoder();
+    if (listener != null) {
+        listener.onHeaderDecoded(decoder, new ImageInfo(decoder), src);
+    }
+    return BitmapFactory.decodeResourceStream(src.getResources(), value, ((InputStreamSource) src).mInputStream, decoder.mOutPaddingRect, null);
+}

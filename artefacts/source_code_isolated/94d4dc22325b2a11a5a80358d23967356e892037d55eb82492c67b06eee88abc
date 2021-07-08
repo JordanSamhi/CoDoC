@@ -1,0 +1,27 @@
+public boolean setLowLatencyMode(boolean enabled){
+    synchronized (sLock) {
+        android.hardware.wifi.V1_3.IWifiChip iWifiChipV13 = getWifiChipForV1_3Mockable();
+        if (iWifiChipV13 != null) {
+            try {
+                int mode;
+                if (enabled) {
+                    mode = android.hardware.wifi.V1_3.IWifiChip.LatencyMode.LOW;
+                } else {
+                    mode = android.hardware.wifi.V1_3.IWifiChip.LatencyMode.NORMAL;
+                }
+                WifiStatus status = iWifiChipV13.setLatencyMode(mode);
+                if (ok(status)) {
+                    mVerboseLog.d("Setting low-latency mode to " + enabled);
+                    return true;
+                } else {
+                    mLog.e("Failed to set low-latency mode to " + enabled);
+                    return false;
+                }
+            } catch (RemoteException e) {
+                handleRemoteException(e);
+                return false;
+            }
+        }
+        return false;
+    }
+}

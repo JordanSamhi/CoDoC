@@ -1,0 +1,8 @@
+public static float getFloatForUser(ContentResolver cr, String name, float def, int userHandle){
+    String v = getStringForUser(cr, name, userHandle);
+    try {
+        return v != null ? Float.parseFloat(v) : def;
+    } catch (NumberFormatException e) {
+        return def;
+    }
+}

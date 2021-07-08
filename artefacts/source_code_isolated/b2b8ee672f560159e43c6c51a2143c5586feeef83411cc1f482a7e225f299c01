@@ -1,0 +1,18 @@
+public void requestPermission(String requestType, String requestId, PersistableBundle request){
+    if (requestType == null) {
+        throw new NullPointerException("requestType cannot be null");
+    }
+    if (requestId == null) {
+        throw new NullPointerException("requestId cannot be null");
+    }
+    if (request == null) {
+        throw new NullPointerException("request cannot be null");
+    }
+    try {
+        if (mService != null) {
+            mService.requestPermission(mContext.getPackageName(), requestType, requestId, request);
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

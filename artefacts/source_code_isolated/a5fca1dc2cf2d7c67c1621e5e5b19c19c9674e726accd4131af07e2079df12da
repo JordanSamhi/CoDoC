@@ -1,0 +1,10 @@
+public Builder setChannelIndexMask(int channelIndexMask){
+    if (channelIndexMask == 0) {
+        throw new IllegalArgumentException("Invalid zero channel index mask");
+    } else if (mChannelMask != 0 && Integer.bitCount(channelIndexMask) != Integer.bitCount(mChannelMask)) {
+        throw new IllegalArgumentException("Mismatched channel count for index mask " + Integer.toHexString(channelIndexMask).toUpperCase());
+    }
+    mChannelIndexMask = channelIndexMask;
+    mPropertySetMask |= AUDIO_FORMAT_HAS_PROPERTY_CHANNEL_INDEX_MASK;
+    return this;
+}

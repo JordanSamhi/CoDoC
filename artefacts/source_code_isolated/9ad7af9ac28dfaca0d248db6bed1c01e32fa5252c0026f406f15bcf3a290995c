@@ -1,0 +1,18 @@
+public void handleScreenStateChanged(boolean screenOn){
+    if (!mSupportSarVoiceCall) {
+        return;
+    }
+    if (mScreenOn == screenOn) {
+        return;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "handleScreenStateChanged: screenOn = " + screenOn);
+    }
+    mScreenOn = screenOn;
+    if (mScreenOn && !mIsVoiceStreamCheckEnabled) {
+        mHandler.post(() -> {
+            checkAudioDevice();
+        });
+        mIsVoiceStreamCheckEnabled = true;
+    }
+}

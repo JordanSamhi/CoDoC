@@ -1,0 +1,45 @@
+public void setTxtRecords(@NonNull String rawRecords){
+    byte[] txtRecordsRawBytes = Base64.decode(rawRecords, Base64.DEFAULT);
+    int pos = 0;
+    while (pos < txtRecordsRawBytes.length) {
+        int recordLen = txtRecordsRawBytes[pos] & 0xff;
+        pos += 1;
+        try {
+            if (recordLen == 0) {
+                throw new IllegalArgumentException("Zero sized txt record");
+            } else if (pos + recordLen > txtRecordsRawBytes.length) {
+                Log.w(TAG, "Corrupt record length (pos = " + pos + "): " + recordLen);
+                recordLen = txtRecordsRawBytes.length - pos;
+            }
+            String key = null;
+            byte[] value = null;
+            int valueLen = 0;
+            for (int i = pos; i < pos + recordLen; i++) {
+                if (key == null) {
+                    if (txtRecordsRawBytes[i] == '=') {
+                        key = new String(txtRecordsRawBytes, pos, i - pos, StandardCharsets.US_ASCII);
+                    }
+                } else {
+                    if (value == null) {
+                        value = new byte[recordLen - key.length() - 1];
+                    }
+                    value[valueLen] = txtRecordsRawBytes[i];
+                    valueLen++;
+                }
+            }
+            if (key == null) {
+                key = new String(txtRecordsRawBytes, pos, recordLen, StandardCharsets.US_ASCII);
+            }
+            if (TextUtils.isEmpty(key)) {
+                throw new IllegalArgumentException("Invalid txt record (key is empty)");
+            }
+            if (getAttributes().containsKey(key)) {
+                throw new IllegalArgumentException("Invalid txt record (duplicate key \"" + key + "\")");
+            }
+            setAttribute(key, value);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "While parsing txt records (pos = " + pos + "): " + e.getMessage());
+        }
+        pos += recordLen;
+    }
+}

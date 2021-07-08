@@ -1,0 +1,13 @@
+public boolean setCallWaitingStatus(boolean isEnable){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.setCallWaitingStatus(getSubId(), isEnable);
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "setCallWaitingStatus RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "setCallWaitingStatus NPE", ex);
+    }
+    return false;
+}

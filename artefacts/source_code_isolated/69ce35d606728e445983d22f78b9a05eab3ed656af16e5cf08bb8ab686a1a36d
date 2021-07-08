@@ -1,0 +1,14 @@
+public int getAttributeInt(@NonNull String tag, int defaultValue){
+    if (tag == null) {
+        throw new NullPointerException("tag shouldn't be null");
+    }
+    ExifAttribute exifAttribute = getExifAttribute(tag);
+    if (exifAttribute == null) {
+        return defaultValue;
+    }
+    try {
+        return exifAttribute.getIntValue(mExifByteOrder);
+    } catch (NumberFormatException e) {
+        return defaultValue;
+    }
+}

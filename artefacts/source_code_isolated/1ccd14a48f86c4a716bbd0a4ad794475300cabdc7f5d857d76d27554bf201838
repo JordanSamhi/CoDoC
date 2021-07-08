@@ -1,0 +1,34 @@
+public void performAccessibilityShortcut(){
+    Slog.d(TAG, "Accessibility shortcut activated");
+    final ContentResolver cr = mContext.getContentResolver();
+    final int userId = ActivityManager.getCurrentUser();
+    final int dialogAlreadyShown = Settings.Secure.getIntForUser(cr, Settings.Secure.ACCESSIBILITY_SHORTCUT_DIALOG_SHOWN, DialogStaus.NOT_SHOWN, userId);
+    Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+    if ((vibrator != null) && vibrator.hasVibrator()) {
+        long[] vibePattern = convertToLongArray(mContext.getResources().getIntArray(R.array.config_longPressVibePattern));
+        vibrator.vibrate(vibePattern, -1, VIBRATION_ATTRIBUTES);
+    }
+    if (dialogAlreadyShown == 0) {
+        mAlertDialog = createShortcutWarningDialog(userId);
+        if (mAlertDialog == null) {
+            return;
+        }
+        if (!performTtsPrompt(mAlertDialog)) {
+            playNotificationTone();
+        }
+        Window w = mAlertDialog.getWindow();
+        WindowManager.LayoutParams attr = w.getAttributes();
+        attr.type = TYPE_KEYGUARD_DIALOG;
+        w.setAttributes(attr);
+        mAlertDialog.show();
+        Settings.Secure.putIntForUser(cr, Settings.Secure.ACCESSIBILITY_SHORTCUT_DIALOG_SHOWN, DialogStaus.SHOWN, userId);
+    } else {
+        playNotificationTone();
+        if (mAlertDialog != null) {
+            mAlertDialog.dismiss();
+            mAlertDialog = null;
+        }
+        showToast();
+        mFrameworkObjectProvider.getAccessibilityManagerInstance(mContext).performAccessibilityShortcut();
+    }
+}

@@ -1,0 +1,19 @@
+public boolean rangeRequest(int cmdId, RangingRequest request, boolean isCalledFromPrivilegedContext){
+    if (mDbg) {
+        Log.v(TAG, "rangeRequest: cmdId=" + cmdId + ", # of requests=" + request.mRttPeers.size());
+    }
+    if (VDBG)
+        Log.v(TAG, "rangeRequest: request=" + request);
+    synchronized (mLock) {
+        if (!isReady()) {
+            Log.e(TAG, "rangeRequest: RttController is null");
+            return false;
+        }
+        updateRttCapabilities();
+        if (mIWifiRttController14 != null) {
+            return sendRangeRequest14(cmdId, request, isCalledFromPrivilegedContext);
+        } else {
+            return sendRangeRequest(cmdId, request, isCalledFromPrivilegedContext);
+        }
+    }
+}

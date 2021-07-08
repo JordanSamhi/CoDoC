@@ -1,0 +1,12 @@
+public HistoricalNotification getNextNotification(){
+    if (!hasNextNotification()) {
+        return null;
+    }
+    HistoricalNotification n = readNotificationFromParcel(mParcel);
+    mIndex++;
+    if (!hasNextNotification()) {
+        mParcel.recycle();
+        mParcel = null;
+    }
+    return n;
+}

@@ -1,0 +1,14 @@
+public static String valueToString(Class<?> clazz, String prefix, int value){
+    for (Field field : clazz.getDeclaredFields()) {
+        final int modifiers = field.getModifiers();
+        if (Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers) && field.getType().equals(int.class) && field.getName().startsWith(prefix)) {
+            try {
+                if (value == field.getInt(null)) {
+                    return constNameWithoutPrefix(prefix, field);
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+    }
+    return Integer.toString(value);
+}

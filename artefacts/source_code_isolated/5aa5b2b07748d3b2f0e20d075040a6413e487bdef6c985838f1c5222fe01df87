@@ -1,0 +1,24 @@
+public final int delete(@RequiresPermission.Write @NonNull Uri url, @Nullable Bundle extras){
+    Objects.requireNonNull(url, "url");
+    try {
+        if (mWrapped != null)
+            return mWrapped.delete(url, extras);
+    } catch (RemoteException e) {
+        return 0;
+    }
+    IContentProvider provider = acquireProvider(url);
+    if (provider == null) {
+        throw new IllegalArgumentException("Unknown URL " + url);
+    }
+    try {
+        long startTime = SystemClock.uptimeMillis();
+        int rowsDeleted = provider.delete(mPackageName, mAttributionTag, url, extras);
+        long durationMillis = SystemClock.uptimeMillis() - startTime;
+        maybeLogUpdateToEventLog(durationMillis, url, "delete", null);
+        return rowsDeleted;
+    } catch (RemoteException e) {
+        return -1;
+    } finally {
+        releaseProvider(provider);
+    }
+}

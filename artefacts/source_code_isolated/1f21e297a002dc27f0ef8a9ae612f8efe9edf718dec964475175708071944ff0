@@ -1,0 +1,13 @@
+public void clearAllFailureCounts(){
+    if (mVerboseLoggingEnabled)
+        Log.v(TAG, "clearAllFailureCounts.");
+    for (Map.Entry<String, AvailableNetworkFailureCount> entry : mRecentAvailableNetworks.entrySet()) {
+        final AvailableNetworkFailureCount failureCount = entry.getValue();
+        failureCount.resetCounts();
+    }
+    for (Map.Entry<String, Pair<AvailableNetworkFailureCount, Integer>> entry : mSsidFailureCount.entrySet()) {
+        final AvailableNetworkFailureCount failureCount = entry.getValue().first;
+        failureCount.resetCounts();
+    }
+    mBssidFailureList.clear();
+}

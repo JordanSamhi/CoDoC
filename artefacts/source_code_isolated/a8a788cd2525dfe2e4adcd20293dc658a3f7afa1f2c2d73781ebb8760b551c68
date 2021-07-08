@@ -1,0 +1,13 @@
+public String toString(){
+    int blockWidth = 16 * mBlockSize.getWidth();
+    int blockHeight = 16 * mBlockSize.getHeight();
+    int origRate = (int) Utils.divUp(mMaxMacroBlockRate, getMaxMacroBlocks());
+    String info = (mWidth * 16) + "x" + (mHeight * 16) + "@" + origRate;
+    if (origRate < mMaxFrameRate) {
+        info += ", max " + mMaxFrameRate + "fps";
+    }
+    if (blockWidth > 16 || blockHeight > 16) {
+        info += ", " + blockWidth + "x" + blockHeight + " blocks";
+    }
+    return "PerformancePoint(" + info + ")";
+}

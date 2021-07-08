@@ -1,0 +1,21 @@
+public void requestLayout(){
+    if (mMeasureCache != null)
+        mMeasureCache.clear();
+    if (mAttachInfo != null && mAttachInfo.mViewRequestingLayout == null) {
+        ViewRootImpl viewRoot = getViewRootImpl();
+        if (viewRoot != null && viewRoot.isInLayout()) {
+            if (!viewRoot.requestLayoutDuringLayout(this)) {
+                return;
+            }
+        }
+        mAttachInfo.mViewRequestingLayout = this;
+    }
+    mPrivateFlags |= PFLAG_FORCE_LAYOUT;
+    mPrivateFlags |= PFLAG_INVALIDATED;
+    if (mParent != null && !mParent.isLayoutRequested()) {
+        mParent.requestLayout();
+    }
+    if (mAttachInfo != null && mAttachInfo.mViewRequestingLayout == this) {
+        mAttachInfo.mViewRequestingLayout = null;
+    }
+}

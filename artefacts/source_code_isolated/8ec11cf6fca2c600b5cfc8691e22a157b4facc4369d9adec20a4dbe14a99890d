@@ -1,0 +1,11 @@
+public void transmit(int carrierFrequency, int[] pattern){
+    if (mService == null) {
+        Log.w(TAG, "failed to transmit; no consumer ir service.");
+        return;
+    }
+    try {
+        mService.transmit(mPackageName, carrierFrequency, pattern);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

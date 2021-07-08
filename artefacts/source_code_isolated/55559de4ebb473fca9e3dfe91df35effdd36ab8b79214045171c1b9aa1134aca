@@ -1,0 +1,13 @@
+public void writeAudioCodecIms(int phoneId, ImsCallSession session){
+    InProgressCallSession callSession = mInProgressCallSessions.get(phoneId);
+    if (callSession == null) {
+        Rlog.e(TAG, "Call session is missing");
+        return;
+    }
+    ImsCallProfile localCallProfile = session.getLocalCallProfile();
+    if (localCallProfile != null) {
+        int codec = convertImsCodec(localCallProfile.mMediaProfile.mAudioQuality);
+        callSession.addEvent(new CallSessionEventBuilder(TelephonyCallSession.Event.Type.AUDIO_CODEC).setCallIndex(getCallId(session)).setAudioCodec(codec));
+        logv("Logged Audio Codec event. Value: " + codec);
+    }
+}

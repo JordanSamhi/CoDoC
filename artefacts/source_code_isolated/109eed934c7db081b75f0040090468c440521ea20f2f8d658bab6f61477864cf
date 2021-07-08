@@ -1,0 +1,9 @@
+public void cancel(){
+    final BenchmarkState state = mPerfStatusReporter.getBenchmarkState();
+    while (state.keepRunning()) {
+        state.pauseTiming();
+        final PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, mIntent, 0);
+        state.resumeTiming();
+        pendingIntent.cancel();
+    }
+}

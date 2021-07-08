@@ -1,0 +1,12 @@
+public void dispose(boolean finalized){
+    if (mCloseGuard != null) {
+        if (finalized) {
+            mCloseGuard.warnIfOpen();
+        }
+        mCloseGuard.close();
+    }
+    if (mPtr != 0) {
+        nativeDispose(mPtr);
+        mPtr = 0;
+    }
+}

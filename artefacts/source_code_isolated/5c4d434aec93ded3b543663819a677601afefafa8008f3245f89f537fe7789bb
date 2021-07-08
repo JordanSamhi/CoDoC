@@ -1,0 +1,11 @@
+public void callSessionMergeComplete(ImsCallSession newSession){
+    logi("callSessionMergeComplete :: newSession =" + newSession);
+    if (!isMergeHost()) {
+        mMergeHost.processMergeComplete();
+    } else {
+        if (newSession != null) {
+            mTransientConferenceSession = newSession;
+        }
+        processMergeComplete();
+    }
+}

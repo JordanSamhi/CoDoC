@@ -1,0 +1,16 @@
+public void setAnchor(Anchor anchor){
+    if (mAnchor == anchor) {
+        return;
+    }
+    if (mAnchor != null) {
+        checkAnchorLooper();
+        mAnchor.setSubtitleWidget(null);
+    }
+    mAnchor = anchor;
+    mHandler = null;
+    if (mAnchor != null) {
+        mHandler = new Handler(mAnchor.getSubtitleLooper(), mCallback);
+        checkAnchorLooper();
+        mAnchor.setSubtitleWidget(getRenderingWidget());
+    }
+}

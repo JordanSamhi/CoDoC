@@ -1,0 +1,11 @@
+public void startMainActivity(ComponentName component, UserHandle user, Rect sourceBounds, Bundle opts){
+    logErrorForInvalidProfileAccess(user);
+    if (DEBUG) {
+        Log.i(TAG, "StartMainActivity " + component + " " + user.getIdentifier());
+    }
+    try {
+        mService.startActivityAsUser(mContext.getIApplicationThread(), mContext.getPackageName(), mContext.getAttributionTag(), component, sourceBounds, opts, user);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

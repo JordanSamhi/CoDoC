@@ -1,0 +1,14 @@
+public boolean isEmergencyNumber(@NonNull String number){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.isEmergencyNumber(number, true);
+        } else {
+            throw new IllegalStateException("telephony service is null.");
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "isEmergencyNumber RemoteException", ex);
+        ex.rethrowAsRuntimeException();
+    }
+    return false;
+}

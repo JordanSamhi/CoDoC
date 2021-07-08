@@ -1,0 +1,12 @@
+public void respondToDataPathRequest(boolean accept, int ndpId, String interfaceName, byte[] pmk, String passphrase, byte[] appInfo, boolean isOutOfBand){
+    Message msg = mSm.obtainMessage(MESSAGE_TYPE_COMMAND);
+    msg.arg1 = COMMAND_TYPE_RESPOND_TO_DATA_PATH_SETUP_REQUEST;
+    msg.arg2 = ndpId;
+    msg.obj = accept;
+    msg.getData().putString(MESSAGE_BUNDLE_KEY_INTERFACE_NAME, interfaceName);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_PMK, pmk);
+    msg.getData().putString(MESSAGE_BUNDLE_KEY_PASSPHRASE, passphrase);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_APP_INFO, appInfo);
+    msg.getData().putBoolean(MESSAGE_BUNDLE_KEY_OOB, isOutOfBand);
+    mSm.sendMessage(msg);
+}

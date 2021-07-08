@@ -1,0 +1,11 @@
+public void setFormat(int format){
+    final WindowManager.LayoutParams attrs = getAttributes();
+    if (format != PixelFormat.UNKNOWN) {
+        attrs.format = format;
+        mHaveWindowFormat = true;
+    } else {
+        attrs.format = mDefaultWindowFormat;
+        mHaveWindowFormat = false;
+    }
+    dispatchWindowAttributesChanged(attrs);
+}

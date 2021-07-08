@@ -1,0 +1,14 @@
+public static synchronized int getNextMessageId(){
+    int msgId = TelephonyProperties.cdma_msg_id().orElse(1);
+    int nextMsgId = msgId % 0xFFFF + 1;
+    try {
+        TelephonyProperties.cdma_msg_id(nextMsgId);
+        if (Rlog.isLoggable(LOGGABLE_TAG, Log.VERBOSE)) {
+            Rlog.d(LOG_TAG, "next persist.radio.cdma.msgid = " + nextMsgId);
+            Rlog.d(LOG_TAG, "readback gets " + TelephonyProperties.cdma_msg_id().orElse(1));
+        }
+    } catch (RuntimeException ex) {
+        Rlog.e(LOG_TAG, "set nextMessage ID failed: " + ex);
+    }
+    return msgId;
+}

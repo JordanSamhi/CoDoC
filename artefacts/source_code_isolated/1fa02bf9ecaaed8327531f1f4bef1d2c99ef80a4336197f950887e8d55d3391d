@@ -1,0 +1,14 @@
+public boolean isIncomingCallPermitted(PhoneAccountHandle phoneAccountHandle){
+    if (phoneAccountHandle == null) {
+        return false;
+    }
+    ITelecomService service = getTelecomService();
+    if (service != null) {
+        try {
+            return service.isIncomingCallPermitted(phoneAccountHandle);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error isIncomingCallPermitted", e);
+        }
+    }
+    return false;
+}

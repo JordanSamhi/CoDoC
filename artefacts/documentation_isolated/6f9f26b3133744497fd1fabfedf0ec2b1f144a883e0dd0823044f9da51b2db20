@@ -1,0 +1,32 @@
+
+     * Get the SmsManager associated with the default subscription id. The instance will always be
+     * associated with the default subscription id, even if the default subscription id changes.
+     *
+     * <p class="note"><strong>Note:</strong> For devices that support multiple active subscriptions
+     * at a time, SmsManager will track the subscription set by the user as the default SMS
+     * subscription. If the user has not set a default, {@link SmsManager} may
+     * start an activity to kick off a subscription disambiguation dialog. Most operations will not
+     * complete until the user has chosen the subscription that will be associated with the
+     * operation. If the user cancels the dialog without choosing a subscription, one of the
+     * following will happen, depending on the target SDK version of the application. For
+     * compatibility purposes, if the target SDK level is <= 28, telephony will still send the SMS
+     * over the first available subscription. If the target SDK level is > 28, the operation will
+     * fail to complete.
+     * </p>
+     *
+     * <p class="note"><strong>Note:</strong> If this method is used to perform an operation on a
+     * device that has multiple active subscriptions, the user has not set a default SMS
+     * subscription, and the operation is being performed while the application is not in the
+     * foreground, the SMS disambiguation dialog will not be shown. The result of the operation will
+     * conclude as if the user cancelled the disambiguation dialog and the operation will finish as
+     * outlined above, depending on the target SDK version of the calling application. It is safer
+     * to use {@link #getSmsManagerForSubscriptionId(int)} if the application will perform the
+     * operation while in the background because this can cause unpredictable results, such as the
+     * operation being sent over the wrong subscription or failing completely, depending on the
+     * user's default SMS subscription setting.
+     * </p>
+     *
+     * @return the {@link SmsManager} associated with the default subscription id.
+     *
+     * @see SubscriptionManager#getDefaultSmsSubscriptionId()
+     

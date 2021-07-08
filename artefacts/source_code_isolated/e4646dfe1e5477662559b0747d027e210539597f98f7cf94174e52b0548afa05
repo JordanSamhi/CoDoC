@@ -1,0 +1,14 @@
+public static SppResponseMessage getResponse(@NonNull SoapObject response){
+    SppResponseMessage responseMessage;
+    switch(response.getName()) {
+        case "sppPostDevDataResponse":
+            responseMessage = PostDevDataResponse.createInstance(response);
+            break;
+        case "sppExchangeComplete":
+            responseMessage = ExchangeCompleteMessage.createInstance(response);
+            break;
+        default:
+            responseMessage = null;
+    }
+    return responseMessage;
+}

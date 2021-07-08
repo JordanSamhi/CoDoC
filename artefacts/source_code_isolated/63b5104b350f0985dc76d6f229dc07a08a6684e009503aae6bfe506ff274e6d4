@@ -1,0 +1,11 @@
+public boolean simAuthResponse(@NonNull String ifaceName, String type, String response){
+    if (SIM_AUTH_RESP_TYPE_GSM_AUTH.equals(type)) {
+        return mSupplicantStaIfaceHal.sendCurrentNetworkEapSimGsmAuthResponse(ifaceName, response);
+    } else if (SIM_AUTH_RESP_TYPE_UMTS_AUTH.equals(type)) {
+        return mSupplicantStaIfaceHal.sendCurrentNetworkEapSimUmtsAuthResponse(ifaceName, response);
+    } else if (SIM_AUTH_RESP_TYPE_UMTS_AUTS.equals(type)) {
+        return mSupplicantStaIfaceHal.sendCurrentNetworkEapSimUmtsAutsResponse(ifaceName, response);
+    } else {
+        return false;
+    }
+}

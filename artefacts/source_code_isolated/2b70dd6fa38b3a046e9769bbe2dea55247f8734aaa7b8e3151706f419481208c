@@ -1,0 +1,17 @@
+public float getDimension(int index, float defValue){
+    String s = getString(index);
+    if (s == null) {
+        return defValue;
+    }
+    try {
+        int i = Integer.parseInt(s);
+        if (i == LayoutParams.MATCH_PARENT || i == LayoutParams.WRAP_CONTENT) {
+            return i;
+        }
+    } catch (NumberFormatException ignored) {
+    }
+    if (ResourceHelper.parseFloatAttribute(mNames[index], s, mValue, true)) {
+        return mValue.getDimension(mBridgeResources.getDisplayMetrics());
+    }
+    return defValue;
+}

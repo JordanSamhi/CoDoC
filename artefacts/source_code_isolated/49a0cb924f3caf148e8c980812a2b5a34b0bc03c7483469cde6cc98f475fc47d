@@ -1,0 +1,9 @@
+public static void schedule(Context context){
+    ComponentName serviceName = new ComponentName("android", DynamicCodeLoggingService.class.getName());
+    JobScheduler js = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    js.schedule(new JobInfo.Builder(IDLE_LOGGING_JOB_ID, serviceName).setRequiresDeviceIdle(true).setRequiresCharging(true).setPeriodic(IDLE_LOGGING_PERIOD_MILLIS).build());
+    js.schedule(new JobInfo.Builder(AUDIT_WATCHING_JOB_ID, serviceName).setRequiresDeviceIdle(true).setRequiresBatteryNotLow(true).setPeriodic(AUDIT_WATCHING_PERIOD_MILLIS).build());
+    if (DEBUG) {
+        Log.d(TAG, "Jobs scheduled");
+    }
+}

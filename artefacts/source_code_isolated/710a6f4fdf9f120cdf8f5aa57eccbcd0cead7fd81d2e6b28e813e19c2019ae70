@@ -1,0 +1,42 @@
+public void add(@NonNull Object key, @NonNull Executor executor, @NonNull Listener<V> listener){
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(executor);
+    Objects.requireNonNull(listener);
+    ListenerWithCancellation<V> listenerWithCancellation = new ListenerWithCancellation<V>() {
+
+        private final Object mLock = new Object();
+
+        private volatile boolean mCancelled = false;
+
+        @Override
+        public void onEvent(int eventCode, V info) {
+            executor.execute(() -> {
+                if (mRestrictSingleCallerOnEvent || mForceRemoveConsistency) {
+                    synchronized (mLock) {
+                        if (mCancelled)
+                            return;
+                        listener.onEvent(eventCode, info);
+                    }
+                } else {
+                    if (mCancelled)
+                        return;
+                    listener.onEvent(eventCode, info);
+                }
+            });
+        }
+
+        @Override
+        public void cancel() {
+            if (mForceRemoveConsistency) {
+                synchronized (mLock) {
+                    mCancelled = true;
+                }
+            } else {
+                mCancelled = true;
+            }
+        }
+    };
+    synchronized (mListeners) {
+        mListeners.put(key, listenerWithCancellation);
+    }
+}

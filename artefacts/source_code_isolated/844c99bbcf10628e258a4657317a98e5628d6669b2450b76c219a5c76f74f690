@@ -1,0 +1,7 @@
+public void notifySessionStartedLocked(@NonNull IResultReceiver clientReceiver){
+    if (mService.mRemoteService == null) {
+        Slog.w(TAG, "notifySessionStartedLocked(): no remote service");
+        return;
+    }
+    mService.mRemoteService.onSessionStarted(mContentCaptureContext, mId, mUid, clientReceiver, STATE_ACTIVE);
+}

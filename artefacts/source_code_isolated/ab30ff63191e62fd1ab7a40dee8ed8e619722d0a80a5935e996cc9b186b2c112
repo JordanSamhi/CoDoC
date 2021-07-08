@@ -1,0 +1,86 @@
+public StartingSurface addSplashScreen(IBinder appToken, String packageName, int theme, CompatibilityInfo compatInfo, CharSequence nonLocalizedLabel, int labelRes, int icon, int logo, int windowFlags, Configuration overrideConfig, int displayId){
+    if (!SHOW_SPLASH_SCREENS) {
+        return null;
+    }
+    if (packageName == null) {
+        return null;
+    }
+    WindowManager wm = null;
+    View view = null;
+    try {
+        Context context = mContext;
+        if (DEBUG_SPLASH_SCREEN)
+            Slog.d(TAG, "addSplashScreen " + packageName + ": nonLocalizedLabel=" + nonLocalizedLabel + " theme=" + Integer.toHexString(theme));
+        final Context displayContext = getDisplayContext(context, displayId);
+        if (displayContext == null) {
+            return null;
+        }
+        context = displayContext;
+        if (theme != context.getThemeResId() || labelRes != 0) {
+            try {
+                context = context.createPackageContext(packageName, CONTEXT_RESTRICTED);
+                context.setTheme(theme);
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+        }
+        if (overrideConfig != null && !overrideConfig.equals(EMPTY)) {
+            if (DEBUG_SPLASH_SCREEN)
+                Slog.d(TAG, "addSplashScreen: creating context based" + " on overrideConfig" + overrideConfig + " for splash screen");
+            final Context overrideContext = context.createConfigurationContext(overrideConfig);
+            overrideContext.setTheme(theme);
+            final TypedArray typedArray = overrideContext.obtainStyledAttributes(com.android.internal.R.styleable.Window);
+            final int resId = typedArray.getResourceId(R.styleable.Window_windowBackground, 0);
+            if (resId != 0 && overrideContext.getDrawable(resId) != null) {
+                if (DEBUG_SPLASH_SCREEN)
+                    Slog.d(TAG, "addSplashScreen: apply overrideConfig" + overrideConfig + " to starting window resId=" + resId);
+                context = overrideContext;
+            }
+            typedArray.recycle();
+        }
+        final PhoneWindow win = new PhoneWindow(context);
+        win.setIsStartingWindow(true);
+        CharSequence label = context.getResources().getText(labelRes, null);
+        if (label != null) {
+            win.setTitle(label, true);
+        } else {
+            win.setTitle(nonLocalizedLabel, false);
+        }
+        win.setType(WindowManager.LayoutParams.TYPE_APPLICATION_STARTING);
+        synchronized (mWindowManagerFuncs.getWindowManagerLock()) {
+            if (displayId == DEFAULT_DISPLAY && mKeyguardOccluded) {
+                windowFlags |= FLAG_SHOW_WHEN_LOCKED;
+            }
+        }
+        win.setFlags(windowFlags | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM, windowFlags | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        win.setDefaultIcon(icon);
+        win.setDefaultLogo(logo);
+        win.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        final WindowManager.LayoutParams params = win.getAttributes();
+        params.token = appToken;
+        params.packageName = packageName;
+        params.windowAnimations = win.getWindowStyle().getResourceId(com.android.internal.R.styleable.Window_windowAnimationStyle, 0);
+        params.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_FAKE_HARDWARE_ACCELERATED;
+        params.privateFlags |= WindowManager.LayoutParams.SYSTEM_FLAG_SHOW_FOR_ALL_USERS;
+        if (!compatInfo.supportsScreen()) {
+            params.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_COMPATIBLE_WINDOW;
+        }
+        params.setTitle("Splash Screen " + packageName);
+        addSplashscreenContent(win, context);
+        wm = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+        view = win.getDecorView();
+        if (DEBUG_SPLASH_SCREEN)
+            Slog.d(TAG, "Adding splash screen window for " + packageName + " / " + appToken + ": " + (view.getParent() != null ? view : null));
+        wm.addView(view, params);
+        return view.getParent() != null ? new SplashScreenSurface(view, appToken) : null;
+    } catch (WindowManager.BadTokenException e) {
+        Log.w(TAG, appToken + " already running, starting window not displayed. " + e.getMessage());
+    } catch (RuntimeException e) {
+        Log.w(TAG, appToken + " failed creating starting window", e);
+    } finally {
+        if (view != null && view.getParent() == null) {
+            Log.w(TAG, "view not successfully added to wm, removing view");
+            wm.removeViewImmediate(view);
+        }
+    }
+    return null;
+}

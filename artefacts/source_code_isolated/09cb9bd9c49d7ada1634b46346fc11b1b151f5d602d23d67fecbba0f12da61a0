@@ -1,0 +1,6 @@
+public void onReceivedTrustRootCertificates(int sessionId, @NonNull Map<Integer, List<X509Certificate>> trustRootCertificates){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "onReceivedTrustRootCertificates with sessionId=" + sessionId);
+    }
+    mProvisioningStateMachine.getHandler().post(() -> mProvisioningStateMachine.installTrustRootCertificates(sessionId, trustRootCertificates));
+}

@@ -1,0 +1,25 @@
+public AudioDeviceInfo getAudioDevice(){
+    ArrayList<AudioPatch> patches = new ArrayList<AudioPatch>();
+    if (AudioManager.listAudioPatches(patches) != AudioManager.SUCCESS) {
+        Log.e(TAG, "Error retrieving list of audio patches");
+        return null;
+    }
+    for (int i = 0; i < patches.size(); i++) {
+        final AudioPatch patch = patches.get(i);
+        if (patch.id() == mPatchHandle) {
+            final AudioPortConfig[] sources = patch.sources();
+            if ((sources != null) && (sources.length > 0)) {
+                final int devId = sources[0].port().id();
+                final AudioDeviceInfo[] devices = AudioManager.getDevicesStatic(AudioManager.GET_DEVICES_INPUTS);
+                for (int j = 0; j < devices.length; j++) {
+                    if (devices[j].getId() == devId) {
+                        return devices[j];
+                    }
+                }
+            }
+            break;
+        }
+    }
+    Log.e(TAG, "Couldn't find device for recording, did recording end already?");
+    return null;
+}

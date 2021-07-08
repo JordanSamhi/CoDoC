@@ -1,0 +1,12 @@
+public void removeGesture(String entryName, Gesture gesture){
+    ArrayList<Gesture> gestures = mNamedGestures.get(entryName);
+    if (gestures == null) {
+        return;
+    }
+    gestures.remove(gesture);
+    if (gestures.isEmpty()) {
+        mNamedGestures.remove(entryName);
+    }
+    mClassifier.removeInstance(gesture.getID());
+    mChanged = true;
+}

@@ -1,0 +1,11 @@
+public int getPreferredNetworkType(int subId){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getPreferredNetworkType(subId);
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getPreferredNetworkType RemoteException", ex);
+    }
+    return -1;
+}

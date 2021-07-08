@@ -1,0 +1,12 @@
+public ScoredNetwork getScoredNetwork(NetworkKey networkKey){
+    String key = buildNetworkKey(networkKey);
+    if (key == null) {
+        if (DBG) {
+            Log.d(TAG, "Could not build key string for Network Key: " + networkKey);
+        }
+        return null;
+    }
+    synchronized (mLock) {
+        return mCache.get(key);
+    }
+}

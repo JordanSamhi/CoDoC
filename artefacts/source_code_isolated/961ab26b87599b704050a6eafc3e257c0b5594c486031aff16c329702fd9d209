@@ -1,0 +1,9 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeParcelable(ipAddress, flags);
+    InetAddressUtils.parcelInetAddress(dest, gateway, flags);
+    dest.writeInt(dnsServers.size());
+    for (InetAddress dnsServer : dnsServers) {
+        InetAddressUtils.parcelInetAddress(dest, dnsServer, flags);
+    }
+    dest.writeString(domains);
+}

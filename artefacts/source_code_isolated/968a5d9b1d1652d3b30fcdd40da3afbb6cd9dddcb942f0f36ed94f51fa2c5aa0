@@ -1,0 +1,13 @@
+public double[] getDoubleArray(@Nullable String key){
+    unparcel();
+    Object o = mMap.get(key);
+    if (o == null) {
+        return null;
+    }
+    try {
+        return (double[]) o;
+    } catch (ClassCastException e) {
+        typeWarning(key, o, "double[]", e);
+        return null;
+    }
+}

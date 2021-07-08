@@ -1,0 +1,11 @@
+public final boolean setConference(Conference conference){
+    checkImmutable();
+    if (mConference == null) {
+        mConference = conference;
+        if (mConnectionService != null && mConnectionService.containsConference(conference)) {
+            fireConferenceChanged();
+        }
+        return true;
+    }
+    return false;
+}

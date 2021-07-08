@@ -1,0 +1,11 @@
+public boolean enableSecureNfc(boolean enable){
+    if (!sHasNfcFeature) {
+        throw new UnsupportedOperationException();
+    }
+    try {
+        return sService.setNfcSecure(enable);
+    } catch (RemoteException e) {
+        attemptDeadServiceRecovery(e);
+        return false;
+    }
+}

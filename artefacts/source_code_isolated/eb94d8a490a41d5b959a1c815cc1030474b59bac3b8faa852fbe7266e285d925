@@ -1,0 +1,20 @@
+public static byte[] buildTlv(int port, int transportProtocol){
+    if (port == 0 && transportProtocol == -1) {
+        return null;
+    }
+    TlvBufferUtils.TlvConstructor tlvc = new TlvBufferUtils.TlvConstructor(1, 2);
+    tlvc.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+    tlvc.allocate(20);
+    tlvc.putRawByteArray(WFA_OUI);
+    tlvc.putRawByte((byte) GENERIC_SERVICE_PROTOCOL_TYPE);
+    if (port != 0) {
+        tlvc.putShort(SUB_TYPE_PORT, (short) port);
+    }
+    if (transportProtocol != -1) {
+        tlvc.putByte(SUB_TYPE_TRANSPORT_PROTOCOL, (byte) transportProtocol);
+    }
+    byte[] subTypes = tlvc.getArray();
+    tlvc.allocate(20);
+    tlvc.putByteArray(SERVICE_INFO_TYPE, subTypes);
+    return tlvc.getArray();
+}

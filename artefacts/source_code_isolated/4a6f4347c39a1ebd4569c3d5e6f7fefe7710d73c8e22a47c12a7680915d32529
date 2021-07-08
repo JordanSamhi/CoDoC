@@ -1,0 +1,10 @@
+public void onActivityDestroyed(Activity activity){
+    synchronized (NfcActivityManager.this) {
+        NfcActivityState state = findActivityState(activity);
+        if (DBG)
+            Log.d(TAG, "onDestroy() for " + activity + " " + state);
+        if (state != null) {
+            destroyActivityState(activity);
+        }
+    }
+}

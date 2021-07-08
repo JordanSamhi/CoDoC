@@ -1,0 +1,10 @@
+public ComponentName resolveActivity(@NonNull PackageManager pm){
+    if (mComponent != null) {
+        return mComponent;
+    }
+    ResolveInfo info = pm.resolveActivity(this, PackageManager.MATCH_DEFAULT_ONLY);
+    if (info != null) {
+        return new ComponentName(info.activityInfo.applicationInfo.packageName, info.activityInfo.name);
+    }
+    return null;
+}

@@ -1,0 +1,8 @@
+public void setIccFdnEnabled(boolean enabled, String password, Message onComplete){
+    synchronized (mLock) {
+        int serviceClassX;
+        serviceClassX = CommandsInterface.SERVICE_CLASS_VOICE + CommandsInterface.SERVICE_CLASS_DATA + CommandsInterface.SERVICE_CLASS_FAX + CommandsInterface.SERVICE_CLASS_SMS;
+        mDesiredFdnEnabled = enabled;
+        mCi.setFacilityLockForApp(CommandsInterface.CB_FACILITY_BA_FD, enabled, password, serviceClassX, mAid, mHandler.obtainMessage(EVENT_CHANGE_FACILITY_FDN_DONE, onComplete));
+    }
+}

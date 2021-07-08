@@ -1,0 +1,10 @@
+public PhoneAccountHandle getSimCallManagerForSubscription(int subscriptionId){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getSimCallManager(subscriptionId);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getSimCallManager");
+    }
+    return null;
+}

@@ -1,0 +1,17 @@
+public void onDataPathEnd(int ndpId){
+    if (mDbg)
+        Log.v(TAG, "onDataPathEnd: ndpId=" + ndpId);
+    Map.Entry<WifiAwareNetworkSpecifier, AwareNetworkRequestInformation> nnriE = getNetworkRequestByNdpId(ndpId);
+    if (nnriE == null) {
+        if (VDBG) {
+            Log.v(TAG, "onDataPathEnd: network request not found for ndpId=" + ndpId);
+        }
+        return;
+    }
+    tearDownInterfaceIfPossible(nnriE.getValue());
+    if (nnriE.getValue().state == AwareNetworkRequestInformation.STATE_CONFIRMED || nnriE.getValue().state == AwareNetworkRequestInformation.STATE_TERMINATING) {
+        mAwareMetrics.recordNdpSessionDuration(nnriE.getValue().startTimestamp);
+    }
+    mNetworkRequestsCache.remove(nnriE.getKey());
+    mNetworkFactory.tickleConnectivityIfWaiting();
+}

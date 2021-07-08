@@ -1,0 +1,26 @@
+public Bitmap createAppBadgedIconBitmap(@Nullable Drawable icon, Bitmap renderedAppIcon){
+    if (icon == null) {
+        icon = getFullResDefaultActivityIcon(mFillResIconDpi);
+    }
+    int w = icon.getIntrinsicWidth();
+    int h = icon.getIntrinsicHeight();
+    float scale = 1;
+    if (h > w && w > 0) {
+        scale = (float) h / w;
+    } else if (w > h && h > 0) {
+        scale = (float) w / h;
+    }
+    Bitmap bitmap = createIconBitmapNoInsetOrMask(icon, scale);
+    bitmap = maskBitmapToCircle(bitmap);
+    icon = new BitmapDrawable(mContext.getResources(), bitmap);
+    scale = getScale(icon, null);
+    bitmap = createIconBitmap(icon, scale);
+    mCanvas.setBitmap(bitmap);
+    recreateIcon(Bitmap.createBitmap(bitmap), mCanvas);
+    if (renderedAppIcon != null) {
+        renderedAppIcon = Bitmap.createScaledBitmap(renderedAppIcon, mBadgeBitmapSize, mBadgeBitmapSize, false);
+        mCanvas.drawBitmap(renderedAppIcon, mIconBitmapSize - mBadgeBitmapSize, mIconBitmapSize - mBadgeBitmapSize, null);
+    }
+    mCanvas.setBitmap(null);
+    return bitmap;
+}

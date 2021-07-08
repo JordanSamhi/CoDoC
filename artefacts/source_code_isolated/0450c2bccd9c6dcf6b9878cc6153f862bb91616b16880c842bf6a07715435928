@@ -1,0 +1,10 @@
+public void close(){
+    synchronized (mLock) {
+        if (mConnection != null) {
+            mCloseGuard.close();
+            native_close();
+            mConnection.close();
+            mConnection = null;
+        }
+    }
+}

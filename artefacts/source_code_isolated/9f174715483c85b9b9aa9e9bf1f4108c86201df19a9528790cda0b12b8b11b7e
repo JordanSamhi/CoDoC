@@ -1,0 +1,20 @@
+public void dumpDebug(ProtoOutputStream proto, long fieldId){
+    long token = proto.start(fieldId);
+    proto.write(NotificationProto.CHANNEL_ID, getChannelId());
+    proto.write(NotificationProto.HAS_TICKER_TEXT, this.tickerText != null);
+    proto.write(NotificationProto.FLAGS, this.flags);
+    proto.write(NotificationProto.COLOR, this.color);
+    proto.write(NotificationProto.CATEGORY, this.category);
+    proto.write(NotificationProto.GROUP_KEY, this.mGroupKey);
+    proto.write(NotificationProto.SORT_KEY, this.mSortKey);
+    if (this.actions != null) {
+        proto.write(NotificationProto.ACTION_LENGTH, this.actions.length);
+    }
+    if (this.visibility >= VISIBILITY_SECRET && this.visibility <= VISIBILITY_PUBLIC) {
+        proto.write(NotificationProto.VISIBILITY, this.visibility);
+    }
+    if (publicVersion != null) {
+        publicVersion.dumpDebug(proto, NotificationProto.PUBLIC_VERSION);
+    }
+    proto.end(token);
+}

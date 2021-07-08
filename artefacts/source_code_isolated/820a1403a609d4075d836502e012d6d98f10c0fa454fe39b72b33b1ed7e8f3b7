@@ -1,0 +1,11 @@
+public void downloadSubscription(DownloadableSubscription subscription, boolean switchAfterDownload, PendingIntent callbackIntent){
+    if (!isEnabled()) {
+        sendUnavailableError(callbackIntent);
+        return;
+    }
+    try {
+        getIEuiccController().downloadSubscription(mCardId, subscription, switchAfterDownload, mContext.getOpPackageName(), null, callbackIntent);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

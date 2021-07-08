@@ -1,0 +1,18 @@
+public void removeBubblesWithInvalidShortcuts(String packageName, List<ShortcutInfo> validShortcuts, int reason){
+    final Set<String> validShortcutIds = new HashSet<String>();
+    for (ShortcutInfo info : validShortcuts) {
+        validShortcutIds.add(info.getId());
+    }
+    final Predicate<Bubble> invalidBubblesFromPackage = bubble -> {
+        final boolean bubbleIsFromPackage = packageName.equals(bubble.getPackageName());
+        final boolean isShortcutBubble = bubble.hasMetadataShortcutId();
+        if (!bubbleIsFromPackage || !isShortcutBubble) {
+            return false;
+        }
+        final boolean hasShortcutIdAndValidShortcut = bubble.hasMetadataShortcutId() && bubble.getShortcutInfo() != null && bubble.getShortcutInfo().isEnabled() && validShortcutIds.contains(bubble.getShortcutInfo().getId());
+        return bubbleIsFromPackage && !hasShortcutIdAndValidShortcut;
+    };
+    final Consumer<Bubble> removeBubble = bubble -> dismissBubbleWithKey(bubble.getKey(), reason);
+    performActionOnBubblesMatching(getBubbles(), invalidBubblesFromPackage, removeBubble);
+    performActionOnBubblesMatching(getOverflowBubbles(), invalidBubblesFromPackage, removeBubble);
+}

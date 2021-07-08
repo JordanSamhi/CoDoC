@@ -1,0 +1,9 @@
+public void setUsesWakeLock(Context context){
+    synchronized (mCmdQueue) {
+        if (mWakeLock != null || mThread != null) {
+            throw new RuntimeException("assertion failed mWakeLock=" + mWakeLock + " mThread=" + mThread);
+        }
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, mTag);
+    }
+}

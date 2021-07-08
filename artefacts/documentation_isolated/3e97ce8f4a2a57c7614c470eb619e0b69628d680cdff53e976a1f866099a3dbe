@@ -1,0 +1,25 @@
+
+         * When an item is changed, ItemAnimator can decide whether it wants to re-use
+         * the same ViewHolder for animations or RecyclerView should create a copy of the
+         * item and ItemAnimator will use both to run the animation (e.g. cross-fade).
+         * <p>
+         * Note that this method will only be called if the {@link ViewHolder} still has the same
+         * type ({@link Adapter#getItemViewType(int)}). Otherwise, ItemAnimator will always receive
+         * both {@link ViewHolder}s in the
+         * {@link #animateChange(ViewHolder, ViewHolder, ItemHolderInfo, ItemHolderInfo)} method.
+         *
+         * @param viewHolder The ViewHolder which represents the changed item's old content.
+         * @param payloads A non-null list of merged payloads that were sent with change
+         *                 notifications. Can be empty if the adapter is invalidated via
+         *                 {@link RecyclerView.Adapter#notifyDataSetChanged()}. The same list of
+         *                 payloads will be passed into
+         *                 {@link RecyclerView.Adapter#onBindViewHolder(ViewHolder, int, List)}
+         *                 method <b>if</b> this method returns <code>true</code>.
+         *
+         * @return True if RecyclerView should just rebind to the same ViewHolder or false if
+         *         RecyclerView should create a new ViewHolder and pass this ViewHolder to the
+         *         ItemAnimator to animate. Default implementation calls
+         *         {@link #canReuseUpdatedViewHolder(ViewHolder)}.
+         *
+         * @see #canReuseUpdatedViewHolder(ViewHolder)
+         

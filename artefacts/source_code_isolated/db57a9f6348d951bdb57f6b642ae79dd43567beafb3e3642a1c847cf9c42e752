@@ -1,0 +1,10 @@
+public void releaseLease(@NonNull BlobHandle blobHandle) throws IOException{
+    try {
+        mService.releaseLease(blobHandle, mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

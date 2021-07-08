@@ -1,0 +1,80 @@
+public RILRequest processResponse(RadioResponseInfo responseInfo){
+    int serial = responseInfo.serial;
+    int error = responseInfo.error;
+    int type = responseInfo.type;
+    RILRequest rr = null;
+    if (type == RadioResponseType.SOLICITED_ACK) {
+        synchronized (mRequestList) {
+            rr = mRequestList.get(serial);
+        }
+        if (rr == null) {
+            Rlog.w(RILJ_LOG_TAG, "Unexpected solicited ack response! sn: " + serial);
+        } else {
+            decrementWakeLock(rr);
+            if (mRadioBugDetector != null) {
+                mRadioBugDetector.detectRadioBug(rr.mRequest, error);
+            }
+            if (RILJ_LOGD) {
+                riljLog(rr.serialString() + " Ack < " + requestToString(rr.mRequest));
+            }
+        }
+        return rr;
+    }
+    rr = findAndRemoveRequestFromList(serial);
+    if (rr == null) {
+        Rlog.e(RIL.RILJ_LOG_TAG, "processResponse: Unexpected response! serial: " + serial + " error: " + error);
+        return null;
+    }
+    addToRilHistogram(rr);
+    if (mRadioBugDetector != null) {
+        mRadioBugDetector.detectRadioBug(rr.mRequest, error);
+    }
+    if (type == RadioResponseType.SOLICITED_ACK_EXP) {
+        sendAck();
+        if (RIL.RILJ_LOGD) {
+            riljLog("Response received for " + rr.serialString() + " " + RIL.requestToString(rr.mRequest) + " Sending ack to ril.cpp");
+        }
+    } else {
+    }
+    switch(rr.mRequest) {
+        case RIL_REQUEST_ENTER_SIM_PUK:
+        case RIL_REQUEST_ENTER_SIM_PUK2:
+            if (mIccStatusChangedRegistrants != null) {
+                if (RILJ_LOGD) {
+                    riljLog("ON enter sim puk fakeSimStatusChanged: reg count=" + mIccStatusChangedRegistrants.size());
+                }
+                mIccStatusChangedRegistrants.notifyRegistrants();
+            }
+            break;
+        case RIL_REQUEST_SHUTDOWN:
+            setRadioState(TelephonyManager.RADIO_POWER_UNAVAILABLE, false);
+            break;
+    }
+    if (error != RadioError.NONE) {
+        switch(rr.mRequest) {
+            case RIL_REQUEST_ENTER_SIM_PIN:
+            case RIL_REQUEST_ENTER_SIM_PIN2:
+            case RIL_REQUEST_CHANGE_SIM_PIN:
+            case RIL_REQUEST_CHANGE_SIM_PIN2:
+            case RIL_REQUEST_SET_FACILITY_LOCK:
+                if (mIccStatusChangedRegistrants != null) {
+                    if (RILJ_LOGD) {
+                        riljLog("ON some errors fakeSimStatusChanged: reg count=" + mIccStatusChangedRegistrants.size());
+                    }
+                    mIccStatusChangedRegistrants.notifyRegistrants();
+                }
+                break;
+        }
+    } else {
+        switch(rr.mRequest) {
+            case RIL_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND:
+                if (mTestingEmergencyCall.getAndSet(false)) {
+                    if (mEmergencyCallbackModeRegistrant != null) {
+                        riljLog("testing emergency call, notify ECM Registrants");
+                        mEmergencyCallbackModeRegistrant.notifyRegistrant();
+                    }
+                }
+        }
+    }
+    return rr;
+}

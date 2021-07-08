@@ -1,0 +1,23 @@
+public void updateScanDetailCacheFromWifiInfo(WifiInfo info){
+    WifiConfiguration config = getInternalConfiguredNetwork(info.getNetworkId());
+    ScanDetailCache scanDetailCache = getScanDetailCacheForNetwork(info.getNetworkId());
+    if (config != null && scanDetailCache != null) {
+        ScanDetail scanDetail = scanDetailCache.getScanDetail(info.getBSSID());
+        if (scanDetail != null) {
+            ScanResult result = scanDetail.getScanResult();
+            long previousSeen = result.seen;
+            int previousRssi = result.level;
+            scanDetail.setSeen();
+            result.level = info.getRssi();
+            long maxAge = SCAN_RESULT_MAXIMUM_AGE_MS;
+            long age = result.seen - previousSeen;
+            if (previousSeen > 0 && age > 0 && age < maxAge / 2) {
+                double alpha = 0.5 - (double) age / (double) maxAge;
+                result.level = (int) ((double) result.level * (1 - alpha) + (double) previousRssi * alpha);
+            }
+            if (mVerboseLoggingEnabled) {
+                Log.v(TAG, "Updating scan detail cache freq=" + result.frequency + " BSSID=" + result.BSSID + " RSSI=" + result.level + " for " + config.getKey());
+            }
+        }
+    }
+}

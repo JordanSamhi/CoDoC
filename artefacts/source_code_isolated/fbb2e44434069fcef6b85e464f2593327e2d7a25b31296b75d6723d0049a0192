@@ -1,0 +1,13 @@
+public static int getJpegEncodingQualityParameter(int cameraId, int quality){
+    if (quality < QUALITY_LOW || quality > QUALITY_HIGH) {
+        throw new IllegalArgumentException("Unsupported quality level: " + quality);
+    }
+    synchronized (sCache) {
+        int[] levels = sCache.get(cameraId);
+        if (levels == null) {
+            levels = getImageEncodingQualityLevels(cameraId);
+            sCache.put(cameraId, levels);
+        }
+        return levels[quality];
+    }
+}

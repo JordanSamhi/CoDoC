@@ -1,0 +1,13 @@
+public void setRemoved(View root){
+    if (!FeatureFlagUtils.isEnabled(mContext, FeatureFlagUtils.SEAMLESS_TRANSFER) || mLocalMediaManager == null || root == null) {
+        return;
+    }
+    View view = root.findViewById(com.android.internal.R.id.media_seamless);
+    if (mViews.remove(view)) {
+        if (mViews.size() == 0) {
+            mLocalMediaManager.unregisterCallback(mMediaDeviceCallback);
+        }
+    } else {
+        Log.e(TAG, "Tried to remove unknown view " + view);
+    }
+}

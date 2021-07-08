@@ -1,0 +1,6 @@
+public static void sortPackagesByUsageDate(List<PackageSetting> pkgSettings, PackageManagerService packageManagerService){
+    if (!packageManagerService.isHistoricalPackageUsageAvailable()) {
+        return;
+    }
+    Collections.sort(pkgSettings, (pkgSetting1, pkgSetting2) -> Long.compare(pkgSetting2.getPkgState().getLatestForegroundPackageUseTimeInMills(), pkgSetting1.getPkgState().getLatestForegroundPackageUseTimeInMills()));
+}

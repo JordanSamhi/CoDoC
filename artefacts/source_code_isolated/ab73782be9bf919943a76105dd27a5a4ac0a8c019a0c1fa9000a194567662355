@@ -1,0 +1,27 @@
+public void startRotationIfScheduled(){
+    if (isForceRotationTestSentinelPresent()) {
+        Slog.i(TAG, "Found force flag for secondary rotation. Starting now.");
+        startRotation();
+        return;
+    }
+    Optional<Long> maybeLastRotated = mCryptoSettings.getSecondaryLastRotated();
+    if (!maybeLastRotated.isPresent()) {
+        Slog.v(TAG, "No previous rotation, scheduling from now.");
+        scheduleRotationFromNow();
+        return;
+    }
+    long lastRotated = maybeLastRotated.get();
+    long now = mClock.millis();
+    if (lastRotated > now) {
+        Slog.i(TAG, "Last rotation was in the future. Clock must have changed. Rotate now.");
+        startRotation();
+        return;
+    }
+    long millisSinceLastRotation = now - lastRotated;
+    long rotationInterval = mCryptoSettings.backupSecondaryKeyRotationIntervalMs();
+    if (millisSinceLastRotation >= rotationInterval) {
+        Slog.i(TAG, "Last rotation was more than " + rotationInterval + "ms (" + millisSinceLastRotation + "ms) in the past. Rotate now.");
+        startRotation();
+    }
+    Slog.v(TAG, "No rotation required, last " + lastRotated + ".");
+}

@@ -1,0 +1,13 @@
+public boolean isCompatible(int windowingMode, int activityType){
+    final int thisActivityType = getActivityType();
+    final int thisWindowingMode = getWindowingMode();
+    final boolean sameActivityType = thisActivityType == activityType;
+    final boolean sameWindowingMode = thisWindowingMode == windowingMode;
+    if (sameActivityType && sameWindowingMode) {
+        return true;
+    }
+    if ((activityType != ACTIVITY_TYPE_UNDEFINED && activityType != ACTIVITY_TYPE_STANDARD) || !isActivityTypeStandardOrUndefined()) {
+        return sameActivityType;
+    }
+    return sameWindowingMode;
+}

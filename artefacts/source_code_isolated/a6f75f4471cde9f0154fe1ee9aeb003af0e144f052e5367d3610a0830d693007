@@ -1,0 +1,15 @@
+public void forget(int netId, @Nullable IBinder binder, @Nullable IActionListener callback, int callbackIdentifier, int callingUid){
+    mWifiInjector.getWifiThreadRunner().post(() -> {
+        if (callback != null && binder != null) {
+            mProcessingActionListeners.add(binder, callback, callbackIdentifier);
+        }
+        WifiConfiguration config = mWifiConfigManager.getConfiguredNetwork(netId);
+        boolean success = mWifiConfigManager.removeNetwork(netId, callingUid, null);
+        if (!success) {
+            loge("Failed to remove network");
+            sendActionListenerFailure(callbackIdentifier, WifiManager.ERROR);
+        }
+        sendActionListenerSuccess(callbackIdentifier);
+        broadcastWifiCredentialChanged(WifiManager.WIFI_CREDENTIAL_FORGOT, config);
+    });
+}

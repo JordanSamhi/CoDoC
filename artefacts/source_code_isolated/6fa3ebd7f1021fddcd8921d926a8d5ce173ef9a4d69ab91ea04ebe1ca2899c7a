@@ -1,0 +1,27 @@
+public ViewPropertyAnimator withLayer(){
+    mPendingSetupAction = new Runnable() {
+
+        @Override
+        public void run() {
+            mView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            if (mView.isAttachedToWindow()) {
+                mView.buildLayer();
+            }
+        }
+    };
+    final int currentLayerType = mView.getLayerType();
+    mPendingCleanupAction = new Runnable() {
+
+        @Override
+        public void run() {
+            mView.setLayerType(currentLayerType, null);
+        }
+    };
+    if (mAnimatorSetupMap == null) {
+        mAnimatorSetupMap = new HashMap<Animator, Runnable>();
+    }
+    if (mAnimatorCleanupMap == null) {
+        mAnimatorCleanupMap = new HashMap<Animator, Runnable>();
+    }
+    return this;
+}

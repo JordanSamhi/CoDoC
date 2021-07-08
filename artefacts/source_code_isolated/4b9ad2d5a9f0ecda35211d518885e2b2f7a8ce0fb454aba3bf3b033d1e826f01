@@ -1,0 +1,10 @@
+public void allowSameSignatureAccess() throws IOException{
+    try {
+        mSession.allowSameSignatureAccess();
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

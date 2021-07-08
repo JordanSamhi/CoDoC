@@ -1,0 +1,19 @@
+public static int copyPackage(String packagePath, File targetDir){
+    if (packagePath == null) {
+        return PackageManager.INSTALL_FAILED_INVALID_URI;
+    }
+    try {
+        final File packageFile = new File(packagePath);
+        final PackageParser.PackageLite pkg = PackageParser.parsePackageLite(packageFile, 0);
+        copyFile(pkg.baseCodePath, targetDir, "base.apk");
+        if (!ArrayUtils.isEmpty(pkg.splitNames)) {
+            for (int i = 0; i < pkg.splitNames.length; i++) {
+                copyFile(pkg.splitCodePaths[i], targetDir, "split_" + pkg.splitNames[i] + ".apk");
+            }
+        }
+        return PackageManager.INSTALL_SUCCEEDED;
+    } catch (PackageParserException | IOException | ErrnoException e) {
+        Slog.w(TAG, "Failed to copy package at " + packagePath + ": " + e);
+        return PackageManager.INSTALL_FAILED_INSUFFICIENT_STORAGE;
+    }
+}

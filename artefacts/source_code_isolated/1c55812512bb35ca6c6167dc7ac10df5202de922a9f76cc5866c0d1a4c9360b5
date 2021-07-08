@@ -1,0 +1,8 @@
+public void disableNanoApp(int contextHubId, IContextHubTransactionCallback transactionCallback, long nanoAppId) throws RemoteException{
+    checkPermissions();
+    if (!checkHalProxyAndContextHubId(contextHubId, transactionCallback, ContextHubTransaction.TYPE_DISABLE_NANOAPP)) {
+        return;
+    }
+    ContextHubServiceTransaction transaction = mTransactionManager.createDisableTransaction(contextHubId, nanoAppId, transactionCallback);
+    mTransactionManager.addTransaction(transaction);
+}

@@ -1,0 +1,12 @@
+public PinResult supplyPinReportPinResult(@NonNull String pin){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            int[] result = telephony.supplyPinReportResultForSubscriber(getSubId(), pin);
+            return new PinResult(result[0], result[1]);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#supplyPinReportResultForSubscriber", e);
+    }
+    return null;
+}

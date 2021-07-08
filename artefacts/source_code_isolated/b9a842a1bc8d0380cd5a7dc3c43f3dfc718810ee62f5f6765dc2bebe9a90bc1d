@@ -1,0 +1,46 @@
+public void registerCallback(@NonNull Callback cb, @Nullable Handler handler) throws LowpanException{
+    ILowpanManagerListener.Stub listenerBinder = new ILowpanManagerListener.Stub() {
+
+        private Handler mHandler;
+
+        {
+            if (handler != null) {
+                mHandler = handler;
+            } else if (mLooper != null) {
+                mHandler = new Handler(mLooper);
+            } else {
+                mHandler = new Handler();
+            }
+        }
+
+        @Override
+        public void onInterfaceAdded(ILowpanInterface ifaceService) {
+            Runnable runnable = () -> {
+                LowpanInterface iface = getInterface(ifaceService);
+                if (iface != null) {
+                    cb.onInterfaceAdded(iface);
+                }
+            };
+            mHandler.post(runnable);
+        }
+
+        @Override
+        public void onInterfaceRemoved(ILowpanInterface ifaceService) {
+            Runnable runnable = () -> {
+                LowpanInterface iface = getInterfaceNoCreate(ifaceService);
+                if (iface != null) {
+                    cb.onInterfaceRemoved(iface);
+                }
+            };
+            mHandler.post(runnable);
+        }
+    };
+    try {
+        mService.addListener(listenerBinder);
+    } catch (RemoteException x) {
+        throw x.rethrowFromSystemServer();
+    }
+    synchronized (mListenerMap) {
+        mListenerMap.put(Integer.valueOf(System.identityHashCode(cb)), listenerBinder);
+    }
+}

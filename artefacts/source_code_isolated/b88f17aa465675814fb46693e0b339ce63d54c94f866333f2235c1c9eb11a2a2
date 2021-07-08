@@ -1,0 +1,13 @@
+public static Locale getLocaleFromMcc(Context context, int mcc, String simLanguage){
+    boolean hasSimLanguage = !TextUtils.isEmpty(simLanguage);
+    String language = hasSimLanguage ? simLanguage : defaultLanguageForMcc(mcc);
+    String country = MccTable.countryCodeForMcc(mcc);
+    Rlog.d(LOG_TAG, "getLocaleFromMcc(" + language + ", " + country + ", " + mcc);
+    final Locale locale = getLocaleForLanguageCountry(context, language, country);
+    if (locale == null && hasSimLanguage) {
+        language = defaultLanguageForMcc(mcc);
+        Rlog.d(LOG_TAG, "[retry ] getLocaleFromMcc(" + language + ", " + country + ", " + mcc);
+        return getLocaleForLanguageCountry(context, language, country);
+    }
+    return locale;
+}

@@ -1,0 +1,15 @@
+public void factoryReset(){
+    int subId = getSubId();
+    if (isSubIdValid(subId)) {
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.ENHANCED_4G_MODE_ENABLED, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_ENABLED, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_MODE, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_ROAMING_ENABLED, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.WFC_IMS_ROAMING_MODE, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.VT_IMS_ENABLED, Integer.toString(SUB_PROPERTY_NOT_INITIALIZED));
+        SubscriptionManager.setSubscriptionProperty(subId, SubscriptionManager.IMS_RCS_UCE_ENABLED, Integer.toString(SUBINFO_PROPERTY_FALSE));
+    } else {
+        loge("factoryReset: invalid sub id, can not reset siminfo db settings; subId=" + subId);
+    }
+    updateImsServiceConfig(true);
+}

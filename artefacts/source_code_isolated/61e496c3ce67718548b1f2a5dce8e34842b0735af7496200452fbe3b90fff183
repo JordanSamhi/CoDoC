@@ -1,0 +1,22 @@
+public void updateSoftApCapability(SoftApCapability capability, int mode){
+    synchronized (mLock) {
+        List<SoftApConnectedClientsEvent> softApEventList;
+        switch(mode) {
+            case WifiManager.IFACE_IP_MODE_TETHERED:
+                softApEventList = mSoftApEventListTethered;
+                break;
+            case WifiManager.IFACE_IP_MODE_LOCAL_ONLY:
+                softApEventList = mSoftApEventListLocalOnly;
+                break;
+            default:
+                return;
+        }
+        for (int index = softApEventList.size() - 1; index >= 0; index--) {
+            SoftApConnectedClientsEvent event = softApEventList.get(index);
+            if (event != null && event.eventType == SoftApConnectedClientsEvent.SOFT_AP_UP) {
+                event.maxNumClientsSettingInSoftapCapability = capability.getMaxSupportedClients();
+                break;
+            }
+        }
+    }
+}

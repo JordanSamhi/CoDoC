@@ -1,0 +1,15 @@
+public void writeExif(Bitmap bmap, String exifOutFileName) throws FileNotFoundException, IOException{
+    if (bmap == null || exifOutFileName == null) {
+        throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
+    }
+    OutputStream s = null;
+    try {
+        s = getExifWriterStream(exifOutFileName);
+        bmap.compress(Bitmap.CompressFormat.JPEG, 90, s);
+        s.flush();
+    } catch (IOException e) {
+        closeSilently(s);
+        throw e;
+    }
+    s.close();
+}

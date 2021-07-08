@@ -1,0 +1,18 @@
+public void logAppProcessStartIfNeeded(String processName, int uid, String seinfo, String apkFile, int pid){
+    if (getInstantAppPackageName(Binder.getCallingUid()) != null) {
+        return;
+    }
+    if (!SecurityLog.isLoggingEnabled()) {
+        return;
+    }
+    Bundle data = new Bundle();
+    data.putLong("startTimestamp", System.currentTimeMillis());
+    data.putString("processName", processName);
+    data.putInt("uid", uid);
+    data.putString("seinfo", seinfo);
+    data.putString("apkFile", apkFile);
+    data.putInt("pid", pid);
+    Message msg = mProcessLoggingHandler.obtainMessage(ProcessLoggingHandler.LOG_APP_PROCESS_START_MSG);
+    msg.setData(data);
+    mProcessLoggingHandler.sendMessage(msg);
+}

@@ -1,0 +1,12 @@
+public void setDefaultSmsSubId(int subscriptionId){
+    if (VDBG)
+        logd("setDefaultSmsSubId sub id = " + subscriptionId);
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            iSub.setDefaultSmsSubId(subscriptionId);
+        }
+    } catch (RemoteException ex) {
+        ex.rethrowFromSystemServer();
+    }
+}

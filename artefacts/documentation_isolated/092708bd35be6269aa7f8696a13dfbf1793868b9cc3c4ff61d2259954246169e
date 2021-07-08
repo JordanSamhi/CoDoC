@@ -1,0 +1,29 @@
+
+     * This method retrieves a consecutive set of video frames starting at the
+     * specified index. It should only be called after {@link #setDataSource}.
+     *
+     * If the caller intends to retrieve more than one consecutive video frames,
+     * this method is preferred over {@link #getFrameAtIndex(int, BitmapParams)} for efficiency.
+     *
+     * After the bitmaps are returned, you can query the actual parameters that were
+     * used to create the bitmaps from the {@code BitmapParams} argument, for instance
+     * to query the bitmap config used for the bitmaps with {@link BitmapParams#getActualConfig}.
+     *
+     * @param frameIndex 0-based index of the first video frame to retrieve. The frame index
+     *        must be that of a valid frame. The total number of frames available for retrieval
+     *        can be queried via the {@link #METADATA_KEY_VIDEO_FRAME_COUNT} key.
+     * @param numFrames number of consecutive video frames to retrieve. Must be a positive
+     *        value. The stream must contain at least numFrames frames starting at frameIndex.
+     * @param params BitmapParams that controls the returned bitmap config (such as pixel formats).
+     *
+     * @throws IllegalStateException if the container doesn't contain video or image sequences.
+     * @throws IllegalArgumentException if the frameIndex or numFrames is invalid, or the
+     *         stream doesn't contain at least numFrames starting at frameIndex.
+
+     * @return An list of Bitmaps containing the requested video frames. The returned
+     *         array could contain less frames than requested if the retrieval fails.
+     *
+     * @see #getFrameAtIndex(int, BitmapParams)
+     * @see #getFrameAtIndex(int)
+     * @see #getFramesAtIndex(int, int)
+     

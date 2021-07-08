@@ -1,0 +1,9 @@
+public Region getSafeZone(){
+    mMaskMatrix.reset();
+    mMaskMatrix.setScale(SAFEZONE_SCALE, SAFEZONE_SCALE, getBounds().centerX(), getBounds().centerY());
+    Path p = new Path();
+    mMask.transform(mMaskMatrix, p);
+    Region safezoneRegion = new Region(getBounds());
+    safezoneRegion.setPath(p, safezoneRegion);
+    return safezoneRegion;
+}

@@ -1,0 +1,15 @@
+public void setForegroundGravity(int gravity){
+    if (mForegroundInfo == null) {
+        mForegroundInfo = new ForegroundInfo();
+    }
+    if (mForegroundInfo.mGravity != gravity) {
+        if ((gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) == 0) {
+            gravity |= Gravity.START;
+        }
+        if ((gravity & Gravity.VERTICAL_GRAVITY_MASK) == 0) {
+            gravity |= Gravity.TOP;
+        }
+        mForegroundInfo.mGravity = gravity;
+        requestLayout();
+    }
+}

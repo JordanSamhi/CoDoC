@@ -1,0 +1,7 @@
+public int noteProxyOp(int op, @Nullable String proxiedPackageName, int proxiedUid, @Nullable String proxiedAttributionTag, @Nullable String message){
+    int mode = noteProxyOpNoThrow(op, proxiedPackageName, proxiedUid, proxiedAttributionTag, message);
+    if (mode == MODE_ERRORED) {
+        throw new SecurityException("Proxy package " + mContext.getOpPackageName() + " from uid " + Process.myUid() + " or calling package " + proxiedPackageName + " from uid " + proxiedUid + " not allowed to perform " + sOpNames[op]);
+    }
+    return mode;
+}

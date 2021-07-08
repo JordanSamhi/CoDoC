@@ -1,0 +1,7 @@
+public void registerUsageSessionObserver(int sessionObserverId, @NonNull String[] observedEntities, @NonNull Duration timeLimit, @NonNull Duration sessionThresholdTime, @NonNull PendingIntent limitReachedCallbackIntent, @Nullable PendingIntent sessionEndCallbackIntent){
+    try {
+        mService.registerUsageSessionObserver(sessionObserverId, observedEntities, timeLimit.toMillis(), sessionThresholdTime.toMillis(), limitReachedCallbackIntent, sessionEndCallbackIntent, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

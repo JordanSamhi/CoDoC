@@ -1,0 +1,11 @@
+public void changeCameraCapabilities(VideoProfile.CameraCapabilities cameraCapabilities){
+    if (mVideoCallbacks != null) {
+        for (IVideoCallback callback : mVideoCallbacks.values()) {
+            try {
+                callback.changeCameraCapabilities(cameraCapabilities);
+            } catch (RemoteException ignored) {
+                Log.w(this, "changeCameraCapabilities callback failed", ignored);
+            }
+        }
+    }
+}

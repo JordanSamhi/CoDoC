@@ -1,0 +1,14 @@
+public static boolean isPseudoLocalesOnly(@Nullable String[] supportedLocales){
+    if (supportedLocales == null) {
+        return true;
+    }
+    if (supportedLocales.length > NUM_PSEUDO_LOCALES + 1) {
+        return false;
+    }
+    for (String locale : supportedLocales) {
+        if (!locale.isEmpty() && !isPseudoLocale(locale)) {
+            return false;
+        }
+    }
+    return true;
+}

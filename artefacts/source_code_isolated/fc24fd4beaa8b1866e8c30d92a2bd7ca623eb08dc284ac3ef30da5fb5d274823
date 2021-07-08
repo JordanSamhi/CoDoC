@@ -1,0 +1,8 @@
+public void sendMessage(Message msg){
+    msg.replyTo = mSrcMessenger;
+    try {
+        mDstMessenger.send(msg);
+    } catch (RemoteException e) {
+        replyDisconnected(STATUS_SEND_UNSUCCESSFUL);
+    }
+}

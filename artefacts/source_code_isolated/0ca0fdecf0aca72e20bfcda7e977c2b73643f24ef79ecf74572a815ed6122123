@@ -1,0 +1,13 @@
+public boolean isOpportunisticNetworkEnabled(){
+    String pkgForDebug = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    boolean isEnabled = false;
+    try {
+        IOns iOpportunisticNetworkService = getIOns();
+        if (iOpportunisticNetworkService != null) {
+            isEnabled = iOpportunisticNetworkService.isEnabled(pkgForDebug);
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "enableOpportunisticNetwork RemoteException", ex);
+    }
+    return isEnabled;
+}

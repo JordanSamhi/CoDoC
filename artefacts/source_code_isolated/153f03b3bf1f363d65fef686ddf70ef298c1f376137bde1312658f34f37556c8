@@ -1,0 +1,10 @@
+public int setBounds(Rect bounds){
+    int boundsChange = diffRequestedOverrideBounds(bounds);
+    if (boundsChange == BOUNDS_CHANGE_NONE) {
+        return boundsChange;
+    }
+    mRequestsTmpConfig.setTo(getRequestedOverrideConfiguration());
+    mRequestsTmpConfig.windowConfiguration.setBounds(bounds);
+    onRequestedOverrideConfigurationChanged(mRequestsTmpConfig);
+    return boundsChange;
+}

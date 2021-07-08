@@ -1,0 +1,17 @@
+public boolean isEnabled(int position){
+    ensureCacheValid();
+    int start = 0;
+    for (int i = 0, n = mPartitions.size(); i < n; i++) {
+        int end = start + mPartitions.get(i).count;
+        if (position >= start && position < end) {
+            int offset = position - start;
+            if (mPartitions.get(i).hasHeader && offset == 0) {
+                return false;
+            } else {
+                return isEnabled(i, offset);
+            }
+        }
+        start = end;
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public String markBefore(CharSequence str, TextDirectionHeuristic heuristic){
+    final boolean isRtl = heuristic.isRtl(str, 0, str.length());
+    if (!mIsRtlContext && (isRtl || getEntryDir(str) == DIR_RTL)) {
+        return LRM_STRING;
+    }
+    if (mIsRtlContext && (!isRtl || getEntryDir(str) == DIR_LTR)) {
+        return RLM_STRING;
+    }
+    return EMPTY_STRING;
+}

@@ -1,0 +1,9 @@
+public List<String> getAllInterfaceNames(){
+    List<String> interfaceNames = new ArrayList<>(mStackedLinks.size() + 1);
+    if (mIfaceName != null)
+        interfaceNames.add(mIfaceName);
+    for (LinkProperties stacked : mStackedLinks.values()) {
+        interfaceNames.addAll(stacked.getAllInterfaceNames());
+    }
+    return interfaceNames;
+}

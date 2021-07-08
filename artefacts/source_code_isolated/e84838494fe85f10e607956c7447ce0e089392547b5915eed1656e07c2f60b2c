@@ -1,0 +1,8 @@
+public SoftApConfiguration build(){
+    for (MacAddress client : mAllowedClientList) {
+        if (mBlockedClientList.contains(client)) {
+            throw new IllegalArgumentException("A MacAddress exist in both client list");
+        }
+    }
+    return new SoftApConfiguration(mSsid, mBssid, mPassphrase, mHiddenSsid, mBand, mChannel, mSecurityType, mMaxNumberOfClients, mAutoShutdownEnabled, mShutdownTimeoutMillis, mClientControlByUser, mBlockedClientList, mAllowedClientList);
+}

@@ -1,0 +1,13 @@
+public void reconfigure(int width, int height, Config config){
+    checkRecycled("Can't call reconfigure() on a recycled bitmap");
+    if (width <= 0 || height <= 0) {
+        throw new IllegalArgumentException("width and height must be > 0");
+    }
+    if (!isMutable()) {
+        throw new IllegalStateException("only mutable bitmaps may be reconfigured");
+    }
+    nativeReconfigure(mNativePtr, width, height, config.nativeInt, mRequestPremultiplied);
+    mWidth = width;
+    mHeight = height;
+    mColorSpace = null;
+}

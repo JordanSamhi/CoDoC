@@ -1,0 +1,11 @@
+public static void setForcedDisplayDensity(final int displayId, final int density){
+    final int userId = UserHandle.myUserId();
+    AsyncTask.execute(() -> {
+        try {
+            final IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+            wm.setForcedDisplayDensityForUser(displayId, density, userId);
+        } catch (RemoteException exc) {
+            Log.w(LOG_TAG, "Unable to save forced display density setting");
+        }
+    });
+}

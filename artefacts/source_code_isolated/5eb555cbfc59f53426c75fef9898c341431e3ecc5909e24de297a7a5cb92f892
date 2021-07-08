@@ -1,0 +1,13 @@
+public static int translateModeAccessToPosix(int mode){
+    if (mode == F_OK) {
+        return O_RDONLY;
+    } else if ((mode & (R_OK | W_OK)) == (R_OK | W_OK)) {
+        return O_RDWR;
+    } else if ((mode & R_OK) == R_OK) {
+        return O_RDONLY;
+    } else if ((mode & W_OK) == W_OK) {
+        return O_WRONLY;
+    } else {
+        throw new IllegalArgumentException("Bad mode: " + mode);
+    }
+}

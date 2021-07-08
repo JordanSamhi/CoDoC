@@ -1,0 +1,43 @@
+
+     * Flatten a generic object in to a parcel.  The given Object value may
+     * currently be one of the following types:
+     *
+     * <ul>
+     * <li> null
+     * <li> String
+     * <li> Byte
+     * <li> Short
+     * <li> Integer
+     * <li> Long
+     * <li> Float
+     * <li> Double
+     * <li> Boolean
+     * <li> String[]
+     * <li> boolean[]
+     * <li> byte[]
+     * <li> int[]
+     * <li> long[]
+     * <li> Object[] (supporting objects of the same type defined here).
+     * <li> {@link Bundle}
+     * <li> Map (as supported by {@link #writeMap}).
+     * <li> Any object that implements the {@link Parcelable} protocol.
+     * <li> Parcelable[]
+     * <li> CharSequence (as supported by {@link TextUtils#writeToParcel}).
+     * <li> List (as supported by {@link #writeList}).
+     * <li> {@link SparseArray} (as supported by {@link #writeSparseArray(SparseArray)}).
+     * <li> {@link IBinder}
+     * <li> Any object that implements Serializable (but see
+     *      {@link #writeSerializable} for caveats).  Note that all of the
+     *      previous types have relatively efficient implementations for
+     *      writing to a Parcel; having to rely on the generic serialization
+     *      approach is much less efficient and should be avoided whenever
+     *      possible.
+     * </ul>
+     *
+     * <p class="caution">{@link Parcelable} objects are written with
+     * {@link Parcelable#writeToParcel} using contextual flags of 0.  When
+     * serializing objects containing {@link ParcelFileDescriptor}s,
+     * this may result in file descriptor leaks when they are returned from
+     * Binder calls (where {@link Parcelable#PARCELABLE_WRITE_RETURN_VALUE}
+     * should be used).</p>
+     

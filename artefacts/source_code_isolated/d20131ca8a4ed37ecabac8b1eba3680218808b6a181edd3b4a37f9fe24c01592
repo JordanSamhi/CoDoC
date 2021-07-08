@@ -1,0 +1,17 @@
+public String getType(Uri uri){
+    if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        return SearchManager.SUGGEST_MIME_TYPE;
+    }
+    int length = uri.getPathSegments().size();
+    if (length >= 1) {
+        String base = uri.getPathSegments().get(0);
+        if (base.equals(sSuggestions)) {
+            if (length == 1) {
+                return "vnd.android.cursor.dir/suggestion";
+            } else if (length == 2) {
+                return "vnd.android.cursor.item/suggestion";
+            }
+        }
+    }
+    throw new IllegalArgumentException("Unknown Uri");
+}

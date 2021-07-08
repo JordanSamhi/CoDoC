@@ -1,0 +1,67 @@
+public Policy toNotificationPolicy(ZenPolicy zenPolicy){
+    NotificationManager.Policy defaultPolicy = toNotificationPolicy();
+    int priorityCategories = 0;
+    int suppressedVisualEffects = 0;
+    int callSenders = defaultPolicy.priorityCallSenders;
+    int messageSenders = defaultPolicy.priorityMessageSenders;
+    int conversationSenders = defaultPolicy.priorityConversationSenders;
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_REMINDERS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_REMINDERS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_REMINDERS;
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_EVENTS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_EVENTS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_EVENTS;
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_MESSAGES, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_MESSAGES, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_MESSAGES;
+        messageSenders = getNotificationPolicySenders(zenPolicy.getPriorityMessageSenders(), messageSenders);
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_CONVERSATIONS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_CONVERSATIONS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_CONVERSATIONS;
+        conversationSenders = getNotificationPolicySenders(zenPolicy.getPriorityConversationSenders(), conversationSenders);
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_CALLS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_CALLS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_CALLS;
+        callSenders = getNotificationPolicySenders(zenPolicy.getPriorityCallSenders(), callSenders);
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_REPEAT_CALLERS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_REPEAT_CALLERS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_REPEAT_CALLERS;
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_ALARMS, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_ALARMS, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_ALARMS;
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_MEDIA, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_MEDIA, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_MEDIA;
+    }
+    if (zenPolicy.isCategoryAllowed(ZenPolicy.PRIORITY_CATEGORY_SYSTEM, isPriorityCategoryEnabled(Policy.PRIORITY_CATEGORY_SYSTEM, defaultPolicy))) {
+        priorityCategories |= Policy.PRIORITY_CATEGORY_SYSTEM;
+    }
+    boolean suppressFullScreenIntent = !zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_FULL_SCREEN_INTENT, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_FULL_SCREEN_INTENT, defaultPolicy));
+    boolean suppressLights = !zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_LIGHTS, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_LIGHTS, defaultPolicy));
+    boolean suppressAmbient = !zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_AMBIENT, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_AMBIENT, defaultPolicy));
+    if (suppressFullScreenIntent && suppressLights && suppressAmbient) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_SCREEN_OFF;
+    }
+    if (suppressFullScreenIntent) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_FULL_SCREEN_INTENT;
+    }
+    if (suppressLights) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_LIGHTS;
+    }
+    if (!zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_PEEK, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_PEEK, defaultPolicy))) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_PEEK;
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_SCREEN_ON;
+    }
+    if (!zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_STATUS_BAR, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_STATUS_BAR, defaultPolicy))) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_STATUS_BAR;
+    }
+    if (!zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_BADGE, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_BADGE, defaultPolicy))) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_BADGE;
+    }
+    if (suppressAmbient) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_AMBIENT;
+    }
+    if (!zenPolicy.isVisualEffectAllowed(ZenPolicy.VISUAL_EFFECT_NOTIFICATION_LIST, isVisualEffectAllowed(Policy.SUPPRESSED_EFFECT_NOTIFICATION_LIST, defaultPolicy))) {
+        suppressedVisualEffects |= Policy.SUPPRESSED_EFFECT_NOTIFICATION_LIST;
+    }
+    return new NotificationManager.Policy(priorityCategories, callSenders, messageSenders, suppressedVisualEffects, defaultPolicy.state, conversationSenders);
+}

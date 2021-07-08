@@ -1,0 +1,16 @@
+public void enforceCanAccessScanResultsForWifiScanner(String pkgName, @Nullable String featureId, int uid, boolean ignoreLocationSettings, boolean hideFromAppOps) throws SecurityException{
+    checkPackage(uid, pkgName);
+    if (!isLocationModeEnabled()) {
+        if (ignoreLocationSettings) {
+            mLog.w("Request from " + pkgName + " violated location settings");
+        } else {
+            throw new SecurityException("Location mode is disabled for the device");
+        }
+    }
+    if (!checkCallersFineLocationPermission(pkgName, featureId, uid, hideFromAppOps) || !checkCallersHardwareLocationPermission(uid)) {
+        throw new SecurityException("UID " + uid + " has no location permission");
+    }
+    if (!isScanAllowedbyApps(pkgName, featureId, uid)) {
+        throw new SecurityException("UID " + uid + " has no wifi scan permission");
+    }
+}

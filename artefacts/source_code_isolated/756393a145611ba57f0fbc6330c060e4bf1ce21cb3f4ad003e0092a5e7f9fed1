@@ -1,0 +1,8 @@
+public void onTaskRemovalStarted(int taskId){
+    if (DEBUG_BUBBLE_EXPANDED_VIEW) {
+        Log.d(TAG, "onTaskRemovalStarted: taskId=" + taskId + " mActivityViewStatus=" + mActivityViewStatus + " bubble=" + getBubbleKey());
+    }
+    if (mBubble != null) {
+        post(() -> mBubbleController.removeBubble(mBubble.getKey(), BubbleController.DISMISS_TASK_FINISHED));
+    }
+}

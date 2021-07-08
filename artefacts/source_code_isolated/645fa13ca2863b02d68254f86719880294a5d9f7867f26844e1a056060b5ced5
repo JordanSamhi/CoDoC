@@ -1,0 +1,31 @@
+public static SuspendParams restoreFromXml(XmlPullParser in) throws IOException{
+    SuspendDialogInfo readDialogInfo = null;
+    PersistableBundle readAppExtras = null;
+    PersistableBundle readLauncherExtras = null;
+    final int currentDepth = in.getDepth();
+    int type;
+    try {
+        while ((type = in.next()) != XmlPullParser.END_DOCUMENT && (type != XmlPullParser.END_TAG || in.getDepth() > currentDepth)) {
+            if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
+                continue;
+            }
+            switch(in.getName()) {
+                case TAG_DIALOG_INFO:
+                    readDialogInfo = SuspendDialogInfo.restoreFromXml(in);
+                    break;
+                case TAG_APP_EXTRAS:
+                    readAppExtras = PersistableBundle.restoreFromXml(in);
+                    break;
+                case TAG_LAUNCHER_EXTRAS:
+                    readLauncherExtras = PersistableBundle.restoreFromXml(in);
+                    break;
+                default:
+                    Slog.w(LOG_TAG, "Unknown tag " + in.getName() + " in SuspendParams. Ignoring");
+                    break;
+            }
+        }
+    } catch (XmlPullParserException e) {
+        Slog.e(LOG_TAG, "Exception while trying to parse SuspendParams," + " some fields may default", e);
+    }
+    return getInstanceOrNull(readDialogInfo, readAppExtras, readLauncherExtras);
+}

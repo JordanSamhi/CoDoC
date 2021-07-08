@@ -1,0 +1,31 @@
+
+     * Called by a device admin to set the password expiration timeout. Calling this method will
+     * restart the countdown for password expiration for the given admin, as will changing the
+     * device password (for all admins).
+     * <p>
+     * The provided timeout is the time delta in ms and will be added to the current time. For
+     * example, to have the password expire 5 days from now, timeout would be 5 * 86400 * 1000 =
+     * 432000000 ms for timeout.
+     * <p>
+     * To disable password expiration, a value of 0 may be used for timeout.
+     * <p>
+     * On devices not supporting {@link PackageManager#FEATURE_SECURE_LOCK_SCREEN} feature, the
+     * password expiration is always disabled.
+     * <p>
+     * The calling device admin must have requested
+     * {@link DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD} to be able to call this method; if it has
+     * not, a security exception will be thrown.
+     * <p>
+     * Note that setting the password will automatically reset the expiration time for all active
+     * admins. Active admins do not need to explicitly call this method in that case.
+     * <p>
+     * This method can be called on the {@link DevicePolicyManager} instance returned by
+     * {@link #getParentProfileInstance(ComponentName)} in order to set restrictions on the parent
+     * profile.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param timeout The limit (in ms) that a password can remain in effect. A value of 0 means
+     *            there is no restriction (unlimited).
+     * @throws SecurityException if {@code admin} is not an active administrator or {@code admin}
+     *             does not use {@link DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD}
+     

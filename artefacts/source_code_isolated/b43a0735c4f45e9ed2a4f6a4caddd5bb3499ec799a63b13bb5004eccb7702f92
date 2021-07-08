@@ -1,0 +1,10 @@
+public void linkNativeLibraryDirectory(String uuid, String packageName, String nativeLibPath32, int userId) throws InstallerException{
+    if (!checkBeforeRemote())
+        return;
+    BlockGuard.getVmPolicy().onPathAccess(nativeLibPath32);
+    try {
+        mInstalld.linkNativeLibraryDirectory(uuid, packageName, nativeLibPath32, userId);
+    } catch (Exception e) {
+        throw InstallerException.from(e);
+    }
+}

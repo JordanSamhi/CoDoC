@@ -1,0 +1,18 @@
+public void bindPhoto(Bitmap photoBitmap){
+    boolean currentDrawableIsBitmapDrawable = mDrawable instanceof BitmapDrawable;
+    boolean changed = !(currentDrawableIsBitmapDrawable);
+    if (mDrawable != null && currentDrawableIsBitmapDrawable) {
+        final Bitmap drawableBitmap = ((BitmapDrawable) mDrawable).getBitmap();
+        if (photoBitmap == drawableBitmap) {
+            return;
+        }
+        changed = photoBitmap != null && (mDrawable.getIntrinsicWidth() != photoBitmap.getWidth() || mDrawable.getIntrinsicHeight() != photoBitmap.getHeight());
+        mMinScale = 0f;
+        mDrawable = null;
+    }
+    if (mDrawable == null && photoBitmap != null) {
+        mDrawable = new BitmapDrawable(getResources(), photoBitmap);
+    }
+    configureBounds(changed);
+    invalidate();
+}

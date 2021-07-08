@@ -1,0 +1,26 @@
+public void setAutoSizeTextTypeUniformWithPresetSizes(@NonNull int[] presetSizes, int unit){
+    if (supportsAutoSizeText()) {
+        final int presetSizesLength = presetSizes.length;
+        if (presetSizesLength > 0) {
+            int[] presetSizesInPx = new int[presetSizesLength];
+            if (unit == TypedValue.COMPLEX_UNIT_PX) {
+                presetSizesInPx = Arrays.copyOf(presetSizes, presetSizesLength);
+            } else {
+                final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                for (int i = 0; i < presetSizesLength; i++) {
+                    presetSizesInPx[i] = Math.round(TypedValue.applyDimension(unit, presetSizes[i], displayMetrics));
+                }
+            }
+            mAutoSizeTextSizesInPx = cleanupAutoSizePresetSizes(presetSizesInPx);
+            if (!setupAutoSizeUniformPresetSizesConfiguration()) {
+                throw new IllegalArgumentException("None of the preset sizes is valid: " + Arrays.toString(presetSizes));
+            }
+        } else {
+            mHasPresetAutoSizeValues = false;
+        }
+        if (setupAutoSizeText()) {
+            autoSizeText();
+            invalidate();
+        }
+    }
+}

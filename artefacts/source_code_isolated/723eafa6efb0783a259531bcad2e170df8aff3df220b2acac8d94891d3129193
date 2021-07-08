@@ -1,0 +1,12 @@
+public CharBuffer nextLine(){
+    if (mPos >= mSize) {
+        return null;
+    }
+    int i = mPos;
+    while (i < mSize && mBuf[i] != '\n') {
+        i++;
+    }
+    int start = mPos;
+    mPos = i + 1;
+    return CharBuffer.wrap(mBuf, start, i - start);
+}

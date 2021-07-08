@@ -1,0 +1,21 @@
+public void setAssociatedPlmns(String[] ehplmns, String[] hplmns, int subId){
+    if (DBG)
+        logd("[setAssociatedPlmns]+ subId:" + subId);
+    validateSubId(subId);
+    int phoneId = getPhoneId(subId);
+    if (phoneId < 0 || phoneId >= mTelephonyManager.getPhoneCount()) {
+        if (DBG)
+            logd("[setAssociatedPlmns]- fail");
+        return;
+    }
+    String formattedEhplmns = ehplmns == null ? "" : String.join(",", ehplmns);
+    String formattedHplmns = hplmns == null ? "" : String.join(",", hplmns);
+    ContentValues value = new ContentValues(2);
+    value.put(SubscriptionManager.EHPLMNS, formattedEhplmns);
+    value.put(SubscriptionManager.HPLMNS, formattedHplmns);
+    int count = mContext.getContentResolver().update(SubscriptionManager.getUriForSubscriptionId(subId), value, null, null);
+    refreshCachedActiveSubscriptionInfoList();
+    if (DBG)
+        logd("[setAssociatedPlmns]- update result :" + count);
+    notifySubscriptionInfoChanged();
+}

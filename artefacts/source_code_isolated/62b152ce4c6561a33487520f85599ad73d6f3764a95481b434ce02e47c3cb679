@@ -1,0 +1,11 @@
+public int setBounds(Rect bounds){
+    int rotation = Surface.ROTATION_0;
+    final DisplayContent displayContent = getStack() != null ? getStack().getDisplayContent() : null;
+    if (displayContent != null) {
+        rotation = displayContent.getDisplayInfo().rotation;
+    }
+    final int boundsChange = super.setBounds(bounds);
+    mRotation = rotation;
+    updateSurfacePosition();
+    return boundsChange;
+}

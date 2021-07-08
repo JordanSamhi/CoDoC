@@ -1,0 +1,15 @@
+public void finish(boolean strongAuth, int targetUserId){
+    boolean deferKeyguardDone = false;
+    if (mDismissAction != null) {
+        deferKeyguardDone = mDismissAction.onDismiss();
+        mDismissAction = null;
+        mCancelAction = null;
+    }
+    if (mViewMediatorCallback != null) {
+        if (deferKeyguardDone) {
+            mViewMediatorCallback.keyguardDonePending(strongAuth, targetUserId);
+        } else {
+            mViewMediatorCallback.keyguardDone(strongAuth, targetUserId);
+        }
+    }
+}

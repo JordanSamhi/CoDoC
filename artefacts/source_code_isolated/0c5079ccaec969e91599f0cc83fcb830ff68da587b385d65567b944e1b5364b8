@@ -1,0 +1,30 @@
+public static ArrayList<WorkChain>[] diffChains(WorkSource oldWs, WorkSource newWs){
+    ArrayList<WorkChain> newChains = null;
+    ArrayList<WorkChain> goneChains = null;
+    if (oldWs.mChains != null) {
+        for (int i = 0; i < oldWs.mChains.size(); ++i) {
+            final WorkChain wc = oldWs.mChains.get(i);
+            if (newWs.mChains == null || !newWs.mChains.contains(wc)) {
+                if (goneChains == null) {
+                    goneChains = new ArrayList<>(oldWs.mChains.size());
+                }
+                goneChains.add(wc);
+            }
+        }
+    }
+    if (newWs.mChains != null) {
+        for (int i = 0; i < newWs.mChains.size(); ++i) {
+            final WorkChain wc = newWs.mChains.get(i);
+            if (oldWs.mChains == null || !oldWs.mChains.contains(wc)) {
+                if (newChains == null) {
+                    newChains = new ArrayList<>(newWs.mChains.size());
+                }
+                newChains.add(wc);
+            }
+        }
+    }
+    if (newChains != null || goneChains != null) {
+        return new ArrayList[] { newChains, goneChains };
+    }
+    return null;
+}

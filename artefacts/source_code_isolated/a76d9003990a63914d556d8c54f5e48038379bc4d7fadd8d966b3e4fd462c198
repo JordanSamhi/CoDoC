@@ -1,0 +1,45 @@
+public void dispatchMediaKeyEvent(String packageName, boolean asSystemService, KeyEvent keyEvent, boolean needWakeLock){
+    if (keyEvent == null || !KeyEvent.isMediaSessionKey(keyEvent.getKeyCode())) {
+        Log.w(TAG, "Attempted to dispatch null or non-media key event.");
+        return;
+    }
+    final int pid = Binder.getCallingPid();
+    final int uid = Binder.getCallingUid();
+    final long token = Binder.clearCallingIdentity();
+    try {
+        if (DEBUG) {
+            Log.d(TAG, "dispatchMediaKeyEvent, pkg=" + packageName + " pid=" + pid + ", uid=" + uid + ", asSystem=" + asSystemService + ", event=" + keyEvent);
+        }
+        if (!isUserSetupComplete()) {
+            Slog.i(TAG, "Not dispatching media key event because user " + "setup is in progress.");
+            return;
+        }
+        synchronized (mLock) {
+            boolean isGlobalPriorityActive = isGlobalPriorityActiveLocked();
+            if (isGlobalPriorityActive && uid != Process.SYSTEM_UID) {
+                Slog.i(TAG, "Only the system can dispatch media key event " + "to the global priority session.");
+                return;
+            }
+            if (!isGlobalPriorityActive) {
+                if (mCurrentFullUserRecord.mOnMediaKeyListener != null) {
+                    if (DEBUG_KEY_EVENT) {
+                        Log.d(TAG, "Send " + keyEvent + " to the media key listener");
+                    }
+                    try {
+                        mCurrentFullUserRecord.mOnMediaKeyListener.onMediaKey(keyEvent, new MediaKeyListenerResultReceiver(packageName, pid, uid, asSystemService, keyEvent, needWakeLock));
+                        return;
+                    } catch (RemoteException e) {
+                        Log.w(TAG, "Failed to send " + keyEvent + " to the media key listener");
+                    }
+                }
+            }
+            if (isGlobalPriorityActive) {
+                dispatchMediaKeyEventLocked(packageName, pid, uid, asSystemService, keyEvent, needWakeLock);
+            } else {
+                mMediaKeyEventHandler.handleMediaKeyEventLocked(packageName, pid, uid, asSystemService, keyEvent, needWakeLock);
+            }
+        }
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

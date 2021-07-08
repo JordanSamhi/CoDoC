@@ -1,0 +1,32 @@
+public boolean matches(AccessPoint other){
+    if (isPasspoint() || isPasspointConfig() || isOsuProvider()) {
+        return getKey().equals(other.getKey());
+    }
+    if (!isSameSsidOrBssid(other)) {
+        return false;
+    }
+    final int otherApSecurity = other.getSecurity();
+    if (mIsPskSaeTransitionMode) {
+        if (otherApSecurity == SECURITY_SAE && getWifiManager().isWpa3SaeSupported()) {
+            return true;
+        } else if (otherApSecurity == SECURITY_PSK) {
+            return true;
+        }
+    } else {
+        if ((security == SECURITY_SAE || security == SECURITY_PSK) && other.isPskSaeTransitionMode()) {
+            return true;
+        }
+    }
+    if (mIsOweTransitionMode) {
+        if (otherApSecurity == SECURITY_OWE && getWifiManager().isEnhancedOpenSupported()) {
+            return true;
+        } else if (otherApSecurity == SECURITY_NONE) {
+            return true;
+        }
+    } else {
+        if ((security == SECURITY_OWE || security == SECURITY_NONE) && other.isOweTransitionMode()) {
+            return true;
+        }
+    }
+    return security == other.getSecurity();
+}

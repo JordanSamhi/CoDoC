@@ -1,0 +1,11 @@
+public void stopServer(@NonNull Handler stopHandler){
+    if (mHandler.hasCallbacks(mTimeOutTask)) {
+        mHandler.removeCallbacks(mTimeOutTask);
+    }
+    if (stopHandler == null) {
+        return;
+    }
+    if (isServerAlive()) {
+        stopHandler.post(() -> stop());
+    }
+}

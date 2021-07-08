@@ -1,0 +1,11 @@
+public String[] getFactoryMacAddresses(){
+    final int uid = Binder.getCallingUid();
+    if (!mWifiPermissionsUtil.checkNetworkSettingsPermission(uid)) {
+        throw new SecurityException("App not allowed to get Wi-Fi factory MAC address " + "(uid = " + uid + ")");
+    }
+    String result = mWifiThreadRunner.call(mClientModeImpl::getFactoryMacAddress, null);
+    if (result == null) {
+        return new String[0];
+    }
+    return new String[] { result };
+}

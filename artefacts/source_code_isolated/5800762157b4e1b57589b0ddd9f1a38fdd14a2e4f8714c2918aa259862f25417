@@ -1,0 +1,13 @@
+public int getVirtualizationMode() throws IllegalStateException, UnsupportedOperationException{
+    int[] value = new int[1];
+    int status = getParameter(PARAM_VIRTUALIZATION_MODE, value);
+    if (status >= 0) {
+        return deviceToMode(AudioDeviceInfo.convertInternalDeviceToDeviceType(value[0]));
+    } else if (status == AudioEffect.ERROR_BAD_VALUE) {
+        return VIRTUALIZATION_MODE_OFF;
+    } else {
+        checkStatus(status);
+    }
+    Log.e(TAG, "unexpected status code " + status + " after getParameter(PARAM_VIRTUALIZATION_MODE)");
+    return VIRTUALIZATION_MODE_OFF;
+}

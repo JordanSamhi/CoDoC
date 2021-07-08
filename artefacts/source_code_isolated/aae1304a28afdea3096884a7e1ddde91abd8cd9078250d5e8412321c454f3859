@@ -1,0 +1,23 @@
+public static UiccAccessRule[] decodeRules(@Nullable byte[] encodedRules){
+    if (encodedRules == null) {
+        return null;
+    }
+    ByteArrayInputStream bais = new ByteArrayInputStream(encodedRules);
+    try (DataInputStream input = new DataInputStream(bais)) {
+        input.readInt();
+        int count = input.readInt();
+        UiccAccessRule[] accessRules = new UiccAccessRule[count];
+        for (int i = 0; i < count; i++) {
+            int certificateHashLength = input.readInt();
+            byte[] certificateHash = new byte[certificateHashLength];
+            input.readFully(certificateHash);
+            String packageName = input.readBoolean() ? input.readUTF() : null;
+            long accessType = input.readLong();
+            accessRules[i] = new UiccAccessRule(certificateHash, packageName, accessType);
+        }
+        input.close();
+        return accessRules;
+    } catch (IOException e) {
+        throw new IllegalStateException("ByteArrayInputStream should never lead to an IOException", e);
+    }
+}

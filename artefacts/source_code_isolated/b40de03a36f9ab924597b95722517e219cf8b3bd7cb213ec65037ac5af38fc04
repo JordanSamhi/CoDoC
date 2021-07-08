@@ -1,0 +1,28 @@
+public static PpsMoData createInstance(@NonNull PropertyInfo command){
+    if (command == null || command.getValue() == null) {
+        Log.e(TAG, "command message is null");
+        return null;
+    }
+    if (!TextUtils.equals(command.getName(), ADD_MO_COMMAND)) {
+        Log.e(TAG, "the response is not for addMO command");
+        return null;
+    }
+    if (!(command.getValue() instanceof SoapPrimitive)) {
+        Log.e(TAG, "the addMO element is not valid format");
+        return null;
+    }
+    SoapPrimitive soapObject = (SoapPrimitive) command.getValue();
+    if (!soapObject.hasAttribute(ATTRIBUTE_MANAGEMENT_TREE_URI)) {
+        Log.e(TAG, "managementTreeURI Attribute is missing");
+        return null;
+    }
+    if (!soapObject.hasAttribute(ATTRIBUTE_MO_URN)) {
+        Log.e(TAG, "moURN Attribute is missing");
+        return null;
+    }
+    if (soapObject.getValue() == null) {
+        Log.e(TAG, "PPSMO Tree is missing");
+        return null;
+    }
+    return new PpsMoData((String) soapObject.getAttributeSafelyAsString(ATTRIBUTE_MANAGEMENT_TREE_URI), (String) soapObject.getAttributeSafelyAsString(ATTRIBUTE_MO_URN), soapObject.getValue().toString());
+}

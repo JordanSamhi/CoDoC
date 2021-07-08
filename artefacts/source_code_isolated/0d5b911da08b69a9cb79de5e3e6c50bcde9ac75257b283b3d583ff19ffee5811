@@ -1,0 +1,11 @@
+public void hold(){
+    Log.startSession("RC.h", getActiveOwnerInfo());
+    try {
+        if (mConnected) {
+            mConnectionService.hold(mConnectionId, Log.getExternalSession(mCallingPackageAbbreviation));
+        }
+    } catch (RemoteException ignored) {
+    } finally {
+        Log.endSession();
+    }
+}

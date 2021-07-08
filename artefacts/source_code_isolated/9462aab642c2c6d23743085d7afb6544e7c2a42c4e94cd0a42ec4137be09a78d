@@ -1,0 +1,12 @@
+public int removeUidDeviceAffinity(IAudioPolicyCallback pcb, int uid){
+    if (DEBUG_AP) {
+        Log.d(TAG, "removeUidDeviceAffinity for " + pcb.asBinder() + " uid:" + uid);
+    }
+    synchronized (mAudioPolicies) {
+        final AudioPolicyProxy app = checkUpdateForPolicy(pcb, "Cannot remove device affinity in audio policy");
+        if (app == null) {
+            return AudioManager.ERROR;
+        }
+        return app.removeUidDeviceAffinities(uid);
+    }
+}

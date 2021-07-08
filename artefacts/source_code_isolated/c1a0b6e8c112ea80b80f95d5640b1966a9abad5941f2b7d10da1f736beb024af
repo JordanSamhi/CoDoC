@@ -1,0 +1,27 @@
+public void onUnhandledEvent(InputEvent event, int nestingLevel){
+    if (nestingLevel != mLastNestingLevel) {
+        return;
+    }
+    if (mRecentEventsUnhandled != null) {
+        mRecentEventsUnhandled[mMostRecentEventIndex] = true;
+    }
+    if (event instanceof KeyEvent) {
+        final KeyEvent keyEvent = (KeyEvent) event;
+        final int deviceId = keyEvent.getDeviceId();
+        final int source = keyEvent.getSource();
+        final int keyCode = keyEvent.getKeyCode();
+        final KeyState state = findKeyState(deviceId, source, keyCode, false);
+        if (state != null) {
+            state.unhandled = true;
+        }
+    } else {
+        final MotionEvent motionEvent = (MotionEvent) event;
+        if (motionEvent.isTouchEvent()) {
+            mTouchEventStreamUnhandled = true;
+        } else if ((motionEvent.getSource() & InputDevice.SOURCE_CLASS_TRACKBALL) != 0) {
+            if (mTrackballDown) {
+                mTrackballUnhandled = true;
+            }
+        }
+    }
+}

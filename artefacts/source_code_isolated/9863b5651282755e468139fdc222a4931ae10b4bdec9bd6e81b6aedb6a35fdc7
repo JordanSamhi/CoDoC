@@ -1,0 +1,14 @@
+public boolean isOutputSupportedFor(int format){
+    checkArgumentFormat(format);
+    int internalFormat = imageFormatToInternal(format);
+    int dataspace = imageFormatToDataspace(format);
+    if (dataspace == HAL_DATASPACE_DEPTH) {
+        return mDepthOutputFormats.indexOfKey(internalFormat) >= 0;
+    } else if (dataspace == HAL_DATASPACE_DYNAMIC_DEPTH) {
+        return mDynamicDepthOutputFormats.indexOfKey(internalFormat) >= 0;
+    } else if (dataspace == HAL_DATASPACE_HEIF) {
+        return mHeicOutputFormats.indexOfKey(internalFormat) >= 0;
+    } else {
+        return getFormatsMap(true).indexOfKey(internalFormat) >= 0;
+    }
+}

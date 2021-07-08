@@ -1,0 +1,12 @@
+public static ColorSpace detectColorSpace(@NonNull @ColorLong long[] colors){
+    if (colors.length < 2) {
+        throw new IllegalArgumentException("needs >= 2 number of colors");
+    }
+    final ColorSpace colorSpace = Color.colorSpace(colors[0]);
+    for (int i = 1; i < colors.length; ++i) {
+        if (Color.colorSpace(colors[i]) != colorSpace) {
+            throw new IllegalArgumentException("All colors must be in the same ColorSpace!");
+        }
+    }
+    return colorSpace;
+}

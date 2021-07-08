@@ -1,0 +1,11 @@
+public void incrementWifiSystemScanStateCount(int state, boolean screenOn){
+    synchronized (mLock) {
+        if (DBG) {
+            Log.v(TAG, "incrementWifiSystemScanStateCount " + wifiSystemStateToString(state) + " " + screenOn);
+        }
+        int index = (state * 2) + (screenOn ? SCREEN_ON : SCREEN_OFF);
+        int entry = mWifiSystemStateEntries.get(index);
+        entry++;
+        mWifiSystemStateEntries.put(index, entry);
+    }
+}

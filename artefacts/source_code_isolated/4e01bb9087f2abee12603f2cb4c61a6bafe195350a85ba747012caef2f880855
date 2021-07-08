@@ -1,0 +1,14 @@
+public static boolean dumpService(String name, FileDescriptor fd, String[] args){
+    IBinder service = ServiceManager.getService(name);
+    if (service == null) {
+        Log.e(TAG, "Can't find service to dump: " + name);
+        return false;
+    }
+    try {
+        service.dump(fd, args);
+        return true;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Can't dump service: " + name, e);
+        return false;
+    }
+}

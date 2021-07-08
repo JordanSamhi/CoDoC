@@ -1,0 +1,10 @@
+public boolean setApplicationHidden(@NonNull ComponentName admin, String packageName, boolean hidden){
+    if (mService != null) {
+        try {
+            return mService.setApplicationHidden(admin, mContext.getPackageName(), packageName, hidden, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

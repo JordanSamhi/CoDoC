@@ -1,0 +1,12 @@
+public void unregisterCallback(@NonNull final TvInputCallback callback){
+    Preconditions.checkNotNull(callback);
+    synchronized (mLock) {
+        for (Iterator<TvInputCallbackRecord> it = mCallbackRecords.iterator(); it.hasNext(); ) {
+            TvInputCallbackRecord record = it.next();
+            if (record.getCallback() == callback) {
+                it.remove();
+                break;
+            }
+        }
+    }
+}

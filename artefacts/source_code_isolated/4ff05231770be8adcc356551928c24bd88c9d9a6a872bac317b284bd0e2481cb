@@ -1,0 +1,9 @@
+public int setBufferSizeInFrames(@IntRange(from = 0) int bufferSizeInFrames){
+    if (mDataLoadMode == MODE_STATIC || mState == STATE_UNINITIALIZED) {
+        return ERROR_INVALID_OPERATION;
+    }
+    if (bufferSizeInFrames < 0) {
+        return ERROR_BAD_VALUE;
+    }
+    return native_set_buffer_size_frames(bufferSizeInFrames);
+}

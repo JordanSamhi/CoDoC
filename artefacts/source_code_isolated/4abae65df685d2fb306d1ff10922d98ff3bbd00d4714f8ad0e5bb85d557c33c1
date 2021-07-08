@@ -1,0 +1,10 @@
+public static CellLocation newFromBundle(Bundle bundle){
+    switch(TelephonyManager.getDefault().getCurrentPhoneType()) {
+        case PhoneConstants.PHONE_TYPE_CDMA:
+            return new CdmaCellLocation(bundle);
+        case PhoneConstants.PHONE_TYPE_GSM:
+            return new GsmCellLocation(bundle);
+        default:
+            return null;
+    }
+}

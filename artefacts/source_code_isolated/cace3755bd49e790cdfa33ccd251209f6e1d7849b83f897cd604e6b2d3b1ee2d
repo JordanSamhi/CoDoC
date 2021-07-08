@@ -1,0 +1,13 @@
+public final void isEscrowTokenActive(long handle, UserHandle user){
+    synchronized (mLock) {
+        if (mCallback == null) {
+            Slog.w(TAG, "Cannot add escrow token if the agent is not connecting to framework");
+            throw new IllegalStateException("Trust agent is not connected");
+        }
+        try {
+            mCallback.isEscrowTokenActive(handle, user.getIdentifier());
+        } catch (RemoteException e) {
+            onError("calling isEscrowTokenActive");
+        }
+    }
+}

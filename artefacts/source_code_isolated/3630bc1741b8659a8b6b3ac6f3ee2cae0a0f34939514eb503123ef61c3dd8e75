@@ -1,0 +1,8 @@
+public int getPermissionGrantState(@Nullable ComponentName admin, @NonNull String packageName, @NonNull String permission){
+    throwIfParentInstance("getPermissionGrantState");
+    try {
+        return mService.getPermissionGrantState(admin, mContext.getPackageName(), packageName, permission);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

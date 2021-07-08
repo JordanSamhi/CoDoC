@@ -1,0 +1,13 @@
+public final Activity waitForActivity(){
+    synchronized (this) {
+        while (mLastActivity == null) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+        Activity res = mLastActivity;
+        mLastActivity = null;
+        return res;
+    }
+}

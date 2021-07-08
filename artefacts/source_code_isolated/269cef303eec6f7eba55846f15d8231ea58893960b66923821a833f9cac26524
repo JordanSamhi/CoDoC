@@ -1,0 +1,10 @@
+public void close() throws IOException{
+    try {
+        mSession.close();
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

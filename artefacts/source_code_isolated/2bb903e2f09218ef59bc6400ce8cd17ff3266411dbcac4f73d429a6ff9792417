@@ -1,0 +1,20 @@
+public void addFrameMetricsListener(Window window, Window.OnFrameMetricsAvailableListener listener, Handler handler){
+    if (mAttachInfo != null) {
+        if (mAttachInfo.mThreadedRenderer != null) {
+            if (mFrameMetricsObservers == null) {
+                mFrameMetricsObservers = new ArrayList<>();
+            }
+            FrameMetricsObserver fmo = new FrameMetricsObserver(window, handler, listener);
+            mFrameMetricsObservers.add(fmo);
+            mAttachInfo.mThreadedRenderer.addObserver(fmo.getRendererObserver());
+        } else {
+            Log.w(VIEW_LOG_TAG, "View not hardware-accelerated. Unable to observe frame stats");
+        }
+    } else {
+        if (mFrameMetricsObservers == null) {
+            mFrameMetricsObservers = new ArrayList<>();
+        }
+        FrameMetricsObserver fmo = new FrameMetricsObserver(window, handler, listener);
+        mFrameMetricsObservers.add(fmo);
+    }
+}

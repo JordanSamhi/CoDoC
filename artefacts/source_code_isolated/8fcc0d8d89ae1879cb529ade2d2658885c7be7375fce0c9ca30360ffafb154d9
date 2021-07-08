@@ -1,0 +1,10 @@
+public void setCertInstallerPackage(@NonNull ComponentName admin, @Nullable String installerPackage) throws SecurityException{
+    throwIfParentInstance("setCertInstallerPackage");
+    if (mService != null) {
+        try {
+            mService.setCertInstallerPackage(admin, installerPackage);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

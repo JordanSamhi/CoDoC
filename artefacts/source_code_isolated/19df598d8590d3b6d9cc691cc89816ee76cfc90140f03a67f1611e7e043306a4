@@ -1,0 +1,24 @@
+public static void stringToGsm8BitUnpackedField(String s, byte[] dest, int offset, int length){
+    int outByteIndex = offset;
+    SparseIntArray charToLanguageTable = sCharsToGsmTables[0];
+    SparseIntArray charToShiftTable = sCharsToShiftTables[0];
+    for (int i = 0, sz = s.length(); i < sz && (outByteIndex - offset) < length; i++) {
+        char c = s.charAt(i);
+        int v = charToLanguageTable.get(c, -1);
+        if (v == -1) {
+            v = charToShiftTable.get(c, -1);
+            if (v == -1) {
+                v = charToLanguageTable.get(' ', ' ');
+            } else {
+                if (!(outByteIndex + 1 - offset < length)) {
+                    break;
+                }
+                dest[outByteIndex++] = GSM_EXTENDED_ESCAPE;
+            }
+        }
+        dest[outByteIndex++] = (byte) v;
+    }
+    while ((outByteIndex - offset) < length) {
+        dest[outByteIndex++] = (byte) 0xff;
+    }
+}

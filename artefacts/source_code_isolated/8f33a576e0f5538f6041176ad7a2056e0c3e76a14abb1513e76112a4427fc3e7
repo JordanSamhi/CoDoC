@@ -1,0 +1,11 @@
+public boolean isIccLockEnabled(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.isIccLockEnabled(getSubId());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "isIccLockEnabled RemoteException", e);
+    }
+    return false;
+}

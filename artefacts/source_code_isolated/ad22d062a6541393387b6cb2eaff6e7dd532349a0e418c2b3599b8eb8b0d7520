@@ -1,0 +1,12 @@
+public List<SubscriptionInfo> getSubscriptionInfo(boolean forceReload){
+    List<SubscriptionInfo> sil = mSubscriptionInfo;
+    if (sil == null || forceReload) {
+        sil = mSubscriptionManager.getCompleteActiveSubscriptionInfoList();
+    }
+    if (sil == null) {
+        mSubscriptionInfo = new ArrayList<SubscriptionInfo>();
+    } else {
+        mSubscriptionInfo = sil;
+    }
+    return new ArrayList<>(mSubscriptionInfo);
+}

@@ -1,0 +1,14 @@
+public boolean saveConfig(){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("saveConfig"))
+            return false;
+        SupplicantResult<Void> result = new SupplicantResult("saveConfig()");
+        try {
+            result.setResult(mISupplicantP2pIface.saveConfig());
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

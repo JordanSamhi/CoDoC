@@ -1,0 +1,12 @@
+public void addListener(@NonNull OnMagnificationChangedListener listener, @Nullable Handler handler){
+    synchronized (mLock) {
+        if (mListeners == null) {
+            mListeners = new ArrayMap<>();
+        }
+        final boolean shouldEnableCallback = mListeners.isEmpty();
+        mListeners.put(listener, handler);
+        if (shouldEnableCallback) {
+            setMagnificationCallbackEnabled(true);
+        }
+    }
+}

@@ -1,0 +1,8 @@
+public void setVrModeEnabled(boolean enabled, @NonNull ComponentName requestedComponent) throws PackageManager.NameNotFoundException{
+    try {
+        if (ActivityTaskManager.getService().setVrMode(mToken, enabled, requestedComponent) != 0) {
+            throw new PackageManager.NameNotFoundException(requestedComponent.flattenToString());
+        }
+    } catch (RemoteException e) {
+    }
+}

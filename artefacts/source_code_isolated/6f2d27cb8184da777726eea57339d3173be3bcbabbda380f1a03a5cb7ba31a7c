@@ -1,0 +1,18 @@
+public boolean waitForWriteToCompleteForTesting(long maxWaitMillis){
+    final long start = SystemClock.uptimeMillis();
+    final long end = start + maxWaitMillis;
+    synchronized (mWriteScheduleLock) {
+        while (mWriteInProgress) {
+            final long now = SystemClock.uptimeMillis();
+            if (now >= end) {
+                return false;
+            }
+            try {
+                mWriteScheduleLock.wait(now - start + maxWaitMillis);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
+    return true;
+}

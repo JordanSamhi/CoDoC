@@ -1,0 +1,12 @@
+public boolean updateLayer2Information(Layer2Information info){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.updateLayer2Information(info.toStableParcelable());
+        return true;
+    } catch (RemoteException e) {
+        log("Error updating layer2 information", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

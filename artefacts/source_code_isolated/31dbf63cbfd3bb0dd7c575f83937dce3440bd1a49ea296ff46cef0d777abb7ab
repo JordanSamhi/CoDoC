@@ -1,0 +1,11 @@
+public static boolean isUnusedSinceTimeInMillis(long firstInstallTime, long currentTimeInMillis, long thresholdTimeinMillis, PackageDexUsage.PackageUseInfo packageUseInfo, long latestPackageUseTimeInMillis, long latestForegroundPackageUseTimeInMillis){
+    if (currentTimeInMillis - firstInstallTime < thresholdTimeinMillis) {
+        return false;
+    }
+    boolean isActiveInForeground = (currentTimeInMillis - latestForegroundPackageUseTimeInMillis) < thresholdTimeinMillis;
+    if (isActiveInForeground) {
+        return false;
+    }
+    boolean isActiveInBackgroundAndUsedByOtherPackages = ((currentTimeInMillis - latestPackageUseTimeInMillis) < thresholdTimeinMillis) && packageUseInfo.isAnyCodePathUsedByOtherApps();
+    return !isActiveInBackgroundAndUsedByOtherPackages;
+}

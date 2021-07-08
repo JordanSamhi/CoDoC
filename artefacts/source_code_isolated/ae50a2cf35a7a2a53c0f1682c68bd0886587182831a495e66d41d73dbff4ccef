@@ -1,0 +1,11 @@
+public boolean isDisclosureNeeded(){
+    if (mRunning != null && System.currentTimeMillis() - mServiceStartTime >= FG_SERVICE_GRACE_MILLIS) {
+        for (String pkg : mRunning) {
+            final ArraySet<String> set = mImportantNotifications.get(pkg);
+            if (set == null || set.size() == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

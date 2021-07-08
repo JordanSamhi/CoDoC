@@ -1,0 +1,8 @@
+public void setPermissionPolicy(@NonNull ComponentName admin, int policy){
+    throwIfParentInstance("setPermissionPolicy");
+    try {
+        mService.setPermissionPolicy(admin, mContext.getPackageName(), policy);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

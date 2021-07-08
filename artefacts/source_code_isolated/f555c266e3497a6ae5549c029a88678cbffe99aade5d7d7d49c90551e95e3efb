@@ -1,0 +1,11 @@
+public long getAvailableRestoreToken(String packageName){
+    checkServiceBinder();
+    if (sService != null) {
+        try {
+            return sService.getAvailableRestoreTokenForUser(mContext.getUserId(), packageName);
+        } catch (RemoteException e) {
+            Log.e(TAG, "getAvailableRestoreToken() couldn't connect");
+        }
+    }
+    return 0;
+}

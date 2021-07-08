@@ -1,0 +1,107 @@
+public NetworkCapabilities getNetworkCapabilities(){
+    NetworkCapabilities result = new NetworkCapabilities();
+    result.addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR);
+    if (mApnSetting != null) {
+        final String[] types = ApnSetting.getApnTypesStringFromBitmask(mApnSetting.getApnTypeBitmask() & ~mDisabledApnTypeBitMask).split(",");
+        for (String type : types) {
+            if (!mRestrictedNetworkOverride && mUnmeteredUseOnly && ApnSettingUtils.isMeteredApnType(ApnSetting.getApnTypesBitmaskFromString(type), mPhone)) {
+                log("Dropped the metered " + type + " for the unmetered data call.");
+                continue;
+            }
+            switch(type) {
+                case PhoneConstants.APN_TYPE_ALL:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_MMS);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_SUPL);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_FOTA);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_IMS);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_CBS);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_IA);
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_DUN);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_DEFAULT:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_MMS:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_MMS);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_SUPL:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_SUPL);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_DUN:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_DUN);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_FOTA:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_FOTA);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_IMS:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_IMS);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_CBS:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_CBS);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_IA:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_IA);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_EMERGENCY:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_EIMS);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_MCX:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_MCX);
+                        break;
+                    }
+                case PhoneConstants.APN_TYPE_XCAP:
+                    {
+                        result.addCapability(NetworkCapabilities.NET_CAPABILITY_XCAP);
+                        break;
+                    }
+                default:
+            }
+        }
+        result.setCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED, !ApnSettingUtils.isMetered(mApnSetting, mPhone));
+        if (result.deduceRestrictedCapability()) {
+            result.removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
+        }
+    }
+    if (mRestrictedNetworkOverride) {
+        result.removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
+        result.removeCapability(NetworkCapabilities.NET_CAPABILITY_DUN);
+    }
+    result.setLinkDownstreamBandwidthKbps(mDownlinkBandwidth);
+    result.setLinkUpstreamBandwidthKbps(mUplinkBandwidth);
+    result.setNetworkSpecifier(new TelephonyNetworkSpecifier.Builder().setSubscriptionId(mSubId).build());
+    result.setCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING, !mPhone.getServiceState().getDataRoaming());
+    if ((mSubscriptionOverride & SUBSCRIPTION_OVERRIDE_CONGESTED) == 0) {
+        result.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_CONGESTED);
+    }
+    if ((mUnmeteredUseOnly && !mRestrictedNetworkOverride) || mUnmeteredOverride || (mSubscriptionOverride & SUBSCRIPTION_OVERRIDE_UNMETERED) != 0) {
+        result.addCapability(NetworkCapabilities.NET_CAPABILITY_TEMPORARILY_NOT_METERED);
+    } else {
+        result.removeCapability(NetworkCapabilities.NET_CAPABILITY_TEMPORARILY_NOT_METERED);
+    }
+    final boolean suspended = mNetworkInfo.getDetailedState() == NetworkInfo.DetailedState.SUSPENDED;
+    result.setCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED, !suspended);
+    result.setAdministratorUids(mAdministratorUids);
+    return result;
+}

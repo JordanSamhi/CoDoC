@@ -1,0 +1,6 @@
+public void testGetServiceForUserIfCallerHasPermission_withoutPermission_worksForCallingUser(){
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    assertEquals(mUserOneService, backupManagerService.getServiceForUserIfCallerHasPermission(mUserOneId, "test"));
+}

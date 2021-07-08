@@ -1,0 +1,12 @@
+public boolean shutdown(){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.shutdown();
+        return true;
+    } catch (RemoteException e) {
+        log("Error shutting down IpClient", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

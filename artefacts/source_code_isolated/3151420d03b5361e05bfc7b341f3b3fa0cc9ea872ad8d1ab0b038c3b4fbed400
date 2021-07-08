@@ -1,0 +1,19 @@
+public boolean teardownIface(@NonNull String ifaceName){
+    synchronized (mLock) {
+        final String methodStr = "teardownIface";
+        if (checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr) == null)
+            return false;
+        if (isV1_1()) {
+            if (!removeIfaceV1_1(ifaceName)) {
+                Log.e(TAG, "Failed to remove iface = " + ifaceName);
+                return false;
+            }
+        }
+        if (mISupplicantStaIfaces.remove(ifaceName) == null) {
+            Log.e(TAG, "Trying to teardown unknown inteface");
+            return false;
+        }
+        mISupplicantStaIfaceCallbacks.remove(ifaceName);
+        return true;
+    }
+}

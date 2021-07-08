@@ -1,0 +1,27 @@
+public Intent getCropAndSetWallpaperIntent(Uri imageUri){
+    if (imageUri == null) {
+        throw new IllegalArgumentException("Image URI must not be null");
+    }
+    if (!ContentResolver.SCHEME_CONTENT.equals(imageUri.getScheme())) {
+        throw new IllegalArgumentException("Image URI must be of the " + ContentResolver.SCHEME_CONTENT + " scheme type");
+    }
+    final PackageManager packageManager = mContext.getPackageManager();
+    Intent cropAndSetWallpaperIntent = new Intent(ACTION_CROP_AND_SET_WALLPAPER, imageUri);
+    cropAndSetWallpaperIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    Intent homeIntent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME);
+    ResolveInfo resolvedHome = packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY);
+    if (resolvedHome != null) {
+        cropAndSetWallpaperIntent.setPackage(resolvedHome.activityInfo.packageName);
+        List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(cropAndSetWallpaperIntent, 0);
+        if (cropAppList.size() > 0) {
+            return cropAndSetWallpaperIntent;
+        }
+    }
+    final String cropperPackage = mContext.getString(com.android.internal.R.string.config_wallpaperCropperPackage);
+    cropAndSetWallpaperIntent.setPackage(cropperPackage);
+    List<ResolveInfo> cropAppList = packageManager.queryIntentActivities(cropAndSetWallpaperIntent, 0);
+    if (cropAppList.size() > 0) {
+        return cropAndSetWallpaperIntent;
+    }
+    throw new IllegalArgumentException("Cannot use passed URI to set wallpaper; " + "check that the type returned by ContentProvider matches image/*");
+}

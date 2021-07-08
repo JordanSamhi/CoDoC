@@ -1,0 +1,20 @@
+public synchronized List<MtpObject> getObjects(int parent, int format, int storageId){
+    boolean recursive = parent == 0;
+    ArrayList<MtpObject> objs = new ArrayList<>();
+    boolean ret = true;
+    if (parent == 0xFFFFFFFF)
+        parent = 0;
+    if (storageId == 0xFFFFFFFF) {
+        if (parent == 0) {
+            for (MtpObject root : mRoots.values()) {
+                ret &= getObjects(objs, root, format, recursive);
+            }
+            return ret ? objs : null;
+        }
+    }
+    MtpObject obj = parent == 0 ? getStorageRoot(storageId) : getObject(parent);
+    if (obj == null)
+        return null;
+    ret = getObjects(objs, obj, format, recursive);
+    return ret ? objs : null;
+}

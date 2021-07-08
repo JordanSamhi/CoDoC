@@ -1,0 +1,17 @@
+public Map<InputMethodInfo, List<InputMethodSubtype>> getShortcutInputMethodsAndSubtypes(){
+    final List<InputMethodInfo> enabledImes = getEnabledInputMethodList();
+    enabledImes.sort(Comparator.comparingInt(imi -> imi.isSystem() ? 0 : 1));
+    final int numEnabledImes = enabledImes.size();
+    for (int imiIndex = 0; imiIndex < numEnabledImes; ++imiIndex) {
+        final InputMethodInfo imi = enabledImes.get(imiIndex);
+        final List<InputMethodSubtype> subtypes = getEnabledInputMethodSubtypeList(imi, true);
+        final int subtypeCount = subtypes.size();
+        for (int subtypeIndex = 0; subtypeIndex < subtypeCount; ++subtypeIndex) {
+            final InputMethodSubtype subtype = imi.getSubtypeAt(subtypeIndex);
+            if (SUBTYPE_MODE_VOICE.equals(subtype.getMode())) {
+                return Collections.singletonMap(imi, Collections.singletonList(subtype));
+            }
+        }
+    }
+    return Collections.emptyMap();
+}

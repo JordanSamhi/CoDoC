@@ -1,0 +1,7 @@
+public WindowContainerTransaction setBounds(@NonNull WindowContainerToken container, @NonNull Rect bounds){
+    Change chg = getOrCreateChange(container.asBinder());
+    chg.mConfiguration.windowConfiguration.setBounds(bounds);
+    chg.mConfigSetMask |= ActivityInfo.CONFIG_WINDOW_CONFIGURATION;
+    chg.mWindowSetMask |= WindowConfiguration.WINDOW_CONFIG_BOUNDS;
+    return this;
+}

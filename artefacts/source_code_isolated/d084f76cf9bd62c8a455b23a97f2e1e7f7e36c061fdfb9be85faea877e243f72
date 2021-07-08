@@ -1,0 +1,15 @@
+public static long currentNetworkTimeMillis(){
+    final IAlarmManager mgr = IAlarmManager.Stub.asInterface(ServiceManager.getService(Context.ALARM_SERVICE));
+    if (mgr != null) {
+        try {
+            return mgr.currentNetworkTimeMillis();
+        } catch (ParcelableException e) {
+            e.maybeRethrow(DateTimeException.class);
+            throw new RuntimeException(e);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        throw new RuntimeException(new DeadSystemException());
+    }
+}

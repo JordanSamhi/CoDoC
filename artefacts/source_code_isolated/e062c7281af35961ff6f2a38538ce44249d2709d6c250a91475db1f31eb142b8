@@ -1,0 +1,8 @@
+public boolean contains(@NonNull InetAddress address){
+    byte[] addrBytes = address.getAddress();
+    if (addrBytes == null || addrBytes.length != this.address.length) {
+        return false;
+    }
+    NetworkUtils.maskRawAddress(addrBytes, prefixLength);
+    return Arrays.equals(this.address, addrBytes);
+}

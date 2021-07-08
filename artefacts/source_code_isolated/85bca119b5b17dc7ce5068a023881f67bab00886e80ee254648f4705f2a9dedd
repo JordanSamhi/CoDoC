@@ -1,0 +1,19 @@
+public void setButtonDrawable(@Nullable Drawable drawable){
+    if (mButtonDrawable != drawable) {
+        if (mButtonDrawable != null) {
+            mButtonDrawable.setCallback(null);
+            unscheduleDrawable(mButtonDrawable);
+        }
+        mButtonDrawable = drawable;
+        if (drawable != null) {
+            drawable.setCallback(this);
+            drawable.setLayoutDirection(getLayoutDirection());
+            if (drawable.isStateful()) {
+                drawable.setState(getDrawableState());
+            }
+            drawable.setVisible(getVisibility() == VISIBLE, false);
+            setMinHeight(drawable.getIntrinsicHeight());
+            applyButtonTint();
+        }
+    }
+}

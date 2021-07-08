@@ -1,0 +1,8 @@
+public static void rebootWipeCache(Context context, String reason) throws IOException{
+    String reasonArg = null;
+    if (!TextUtils.isEmpty(reason)) {
+        reasonArg = "--reason=" + sanitizeArg(reason);
+    }
+    final String localeArg = "--locale=" + Locale.getDefault().toLanguageTag();
+    bootCommand(context, "--wipe_cache", reasonArg, localeArg);
+}

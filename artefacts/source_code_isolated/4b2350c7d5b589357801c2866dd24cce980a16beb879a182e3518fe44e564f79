@@ -1,0 +1,7 @@
+public Drawable loadItemIcon(PackageItemInfo itemInfo, ApplicationInfo appInfo){
+    Drawable dr = loadUnbadgedItemIcon(itemInfo, appInfo);
+    if (itemInfo.showUserIcon != UserHandle.USER_NULL) {
+        return dr;
+    }
+    return getUserBadgedIcon(dr, new UserHandle(getUserId()));
+}

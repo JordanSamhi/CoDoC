@@ -1,0 +1,24 @@
+public static byte[] dumpAsync(@NonNull IBinder binder, @Nullable String... args) throws IOException, RemoteException{
+    ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
+    try {
+        TransferPipe.dumpAsync(binder, pipe[1].getFileDescriptor(), args);
+        pipe[1].close();
+        pipe[1] = null;
+        byte[] buffer = new byte[4096];
+        try (ByteArrayOutputStream combinedBuffer = new ByteArrayOutputStream()) {
+            try (FileInputStream is = new FileInputStream(pipe[0].getFileDescriptor())) {
+                while (true) {
+                    int numRead = is.read(buffer);
+                    if (numRead == -1) {
+                        break;
+                    }
+                    combinedBuffer.write(buffer, 0, numRead);
+                }
+            }
+            return combinedBuffer.toByteArray();
+        }
+    } finally {
+        pipe[0].close();
+        IoUtils.closeQuietly(pipe[1]);
+    }
+}

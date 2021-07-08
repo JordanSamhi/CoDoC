@@ -1,0 +1,97 @@
+public void updateBlocks(int startLine, int endLine, int newLineCount){
+    if (mBlockEndLines == null) {
+        createBlocks();
+        return;
+    }
+    int firstBlock = -1;
+    int lastBlock = -1;
+    for (int i = 0; i < mNumberOfBlocks; i++) {
+        if (mBlockEndLines[i] >= startLine) {
+            firstBlock = i;
+            break;
+        }
+    }
+    for (int i = firstBlock; i < mNumberOfBlocks; i++) {
+        if (mBlockEndLines[i] >= endLine) {
+            lastBlock = i;
+            break;
+        }
+    }
+    final int lastBlockEndLine = mBlockEndLines[lastBlock];
+    final boolean createBlockBefore = startLine > (firstBlock == 0 ? 0 : mBlockEndLines[firstBlock - 1] + 1);
+    final boolean createBlock = newLineCount > 0;
+    final boolean createBlockAfter = endLine < mBlockEndLines[lastBlock];
+    int numAddedBlocks = 0;
+    if (createBlockBefore)
+        numAddedBlocks++;
+    if (createBlock)
+        numAddedBlocks++;
+    if (createBlockAfter)
+        numAddedBlocks++;
+    final int numRemovedBlocks = lastBlock - firstBlock + 1;
+    final int newNumberOfBlocks = mNumberOfBlocks + numAddedBlocks - numRemovedBlocks;
+    if (newNumberOfBlocks == 0) {
+        mBlockEndLines[0] = 0;
+        mBlockIndices[0] = INVALID_BLOCK_INDEX;
+        mNumberOfBlocks = 1;
+        return;
+    }
+    if (newNumberOfBlocks > mBlockEndLines.length) {
+        int[] blockEndLines = ArrayUtils.newUnpaddedIntArray(Math.max(mBlockEndLines.length * 2, newNumberOfBlocks));
+        int[] blockIndices = new int[blockEndLines.length];
+        System.arraycopy(mBlockEndLines, 0, blockEndLines, 0, firstBlock);
+        System.arraycopy(mBlockIndices, 0, blockIndices, 0, firstBlock);
+        System.arraycopy(mBlockEndLines, lastBlock + 1, blockEndLines, firstBlock + numAddedBlocks, mNumberOfBlocks - lastBlock - 1);
+        System.arraycopy(mBlockIndices, lastBlock + 1, blockIndices, firstBlock + numAddedBlocks, mNumberOfBlocks - lastBlock - 1);
+        mBlockEndLines = blockEndLines;
+        mBlockIndices = blockIndices;
+    } else if (numAddedBlocks + numRemovedBlocks != 0) {
+        System.arraycopy(mBlockEndLines, lastBlock + 1, mBlockEndLines, firstBlock + numAddedBlocks, mNumberOfBlocks - lastBlock - 1);
+        System.arraycopy(mBlockIndices, lastBlock + 1, mBlockIndices, firstBlock + numAddedBlocks, mNumberOfBlocks - lastBlock - 1);
+    }
+    if (numAddedBlocks + numRemovedBlocks != 0 && mBlocksAlwaysNeedToBeRedrawn != null) {
+        final ArraySet<Integer> set = new ArraySet<>();
+        final int changedBlockCount = numAddedBlocks - numRemovedBlocks;
+        for (int i = 0; i < mBlocksAlwaysNeedToBeRedrawn.size(); i++) {
+            Integer block = mBlocksAlwaysNeedToBeRedrawn.valueAt(i);
+            if (block < firstBlock) {
+                set.add(block);
+            }
+            if (block > lastBlock) {
+                block += changedBlockCount;
+                set.add(block);
+            }
+        }
+        mBlocksAlwaysNeedToBeRedrawn = set;
+    }
+    mNumberOfBlocks = newNumberOfBlocks;
+    int newFirstChangedBlock;
+    final int deltaLines = newLineCount - (endLine - startLine + 1);
+    if (deltaLines != 0) {
+        newFirstChangedBlock = firstBlock + numAddedBlocks;
+        for (int i = newFirstChangedBlock; i < mNumberOfBlocks; i++) {
+            mBlockEndLines[i] += deltaLines;
+        }
+    } else {
+        newFirstChangedBlock = mNumberOfBlocks;
+    }
+    mIndexFirstChangedBlock = Math.min(mIndexFirstChangedBlock, newFirstChangedBlock);
+    int blockIndex = firstBlock;
+    if (createBlockBefore) {
+        mBlockEndLines[blockIndex] = startLine - 1;
+        updateAlwaysNeedsToBeRedrawn(blockIndex);
+        mBlockIndices[blockIndex] = INVALID_BLOCK_INDEX;
+        blockIndex++;
+    }
+    if (createBlock) {
+        mBlockEndLines[blockIndex] = startLine + newLineCount - 1;
+        updateAlwaysNeedsToBeRedrawn(blockIndex);
+        mBlockIndices[blockIndex] = INVALID_BLOCK_INDEX;
+        blockIndex++;
+    }
+    if (createBlockAfter) {
+        mBlockEndLines[blockIndex] = lastBlockEndLine + deltaLines;
+        updateAlwaysNeedsToBeRedrawn(blockIndex);
+        mBlockIndices[blockIndex] = INVALID_BLOCK_INDEX;
+    }
+}

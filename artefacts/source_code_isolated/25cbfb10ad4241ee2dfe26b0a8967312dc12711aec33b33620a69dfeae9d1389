@@ -1,0 +1,11 @@
+public void disable(int what){
+    try {
+        final int userId = Binder.getCallingUserHandle().getIdentifier();
+        final IStatusBarService svc = getService();
+        if (svc != null) {
+            svc.disableForUser(what, mToken, mContext.getPackageName(), userId);
+        }
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

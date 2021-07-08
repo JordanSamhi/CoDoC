@@ -1,0 +1,8 @@
+public void setPageCropBox(int pageIndex, @NonNull Rect cropBox){
+    throwIfClosed();
+    throwIfCropBoxNull(cropBox);
+    throwIfPageNotInDocument(pageIndex);
+    synchronized (PdfRenderer.sPdfiumLock) {
+        nativeSetPageCropBox(mNativeDocument, pageIndex, cropBox);
+    }
+}

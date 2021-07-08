@@ -1,0 +1,18 @@
+public static Bundle saveState(SslCertificate certificate){
+    if (certificate == null) {
+        return null;
+    }
+    Bundle bundle = new Bundle();
+    bundle.putString(ISSUED_TO, certificate.getIssuedTo().getDName());
+    bundle.putString(ISSUED_BY, certificate.getIssuedBy().getDName());
+    bundle.putString(VALID_NOT_BEFORE, certificate.getValidNotBefore());
+    bundle.putString(VALID_NOT_AFTER, certificate.getValidNotAfter());
+    X509Certificate x509Certificate = certificate.mX509Certificate;
+    if (x509Certificate != null) {
+        try {
+            bundle.putByteArray(X509_CERTIFICATE, x509Certificate.getEncoded());
+        } catch (CertificateEncodingException ignored) {
+        }
+    }
+    return bundle;
+}

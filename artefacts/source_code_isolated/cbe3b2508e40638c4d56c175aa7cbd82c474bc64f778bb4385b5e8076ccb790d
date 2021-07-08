@@ -1,0 +1,8 @@
+public void writeIpAndProxyConfigurationsToFile(String filePath, final SparseArray<IpConfiguration> networks){
+    mWriter.write(filePath, out -> {
+        out.writeInt(IPCONFIG_FILE_VERSION);
+        for (int i = 0; i < networks.size(); i++) {
+            writeConfig(out, String.valueOf(networks.keyAt(i)), networks.valueAt(i));
+        }
+    });
+}

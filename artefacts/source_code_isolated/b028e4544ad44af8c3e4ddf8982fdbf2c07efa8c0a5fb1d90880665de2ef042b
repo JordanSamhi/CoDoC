@@ -1,0 +1,9 @@
+public void updateUpstreamPrefix(final Network network, final LinkProperties lp){
+    final ArrayList<IpPrefix> ipv4Prefixes = getIpv4Prefixes(lp.getAllLinkAddresses());
+    if (ipv4Prefixes.isEmpty()) {
+        removeUpstreamPrefix(network);
+        return;
+    }
+    mUpstreamPrefixMap.put(network, ipv4Prefixes);
+    handleMaybePrefixConflict(ipv4Prefixes);
+}

@@ -1,0 +1,19 @@
+public static void recycle(T item){
+    synchronized (sPoolSync) {
+        @SuppressWarnings("unchecked")
+        ArrayList<T> itemPool = (ArrayList<T>) sPoolMap.get(item.getClass());
+        if (itemPool == null) {
+            itemPool = new ArrayList<>();
+            sPoolMap.put(item.getClass(), itemPool);
+        }
+        final int size = itemPool.size();
+        for (int i = 0; i < size; i++) {
+            if (itemPool.get(i) == item) {
+                throw new IllegalStateException("Trying to recycle already recycled item");
+            }
+        }
+        if (size < MAX_POOL_SIZE) {
+            itemPool.add(item);
+        }
+    }
+}

@@ -1,0 +1,7 @@
+public boolean isCarrierNetworkFromNonDefaultDataSim(WifiConfiguration config){
+    if (config.carrierId == TelephonyManager.UNKNOWN_CARRIER_ID) {
+        return false;
+    }
+    int subId = getMatchingSubId(config.carrierId);
+    return subId != SubscriptionManager.getDefaultDataSubscriptionId();
+}

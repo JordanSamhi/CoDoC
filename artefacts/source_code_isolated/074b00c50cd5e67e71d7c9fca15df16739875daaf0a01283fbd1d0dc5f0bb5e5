@@ -1,0 +1,11 @@
+public static BigInteger routedIPv6AddressCount(final TreeSet<IpPrefix> prefixes){
+    BigInteger routedIPCount = BigInteger.ZERO;
+    for (final IpPrefix prefix : deduplicatePrefixSet(prefixes)) {
+        if (!prefix.isIPv6()) {
+            Log.wtf(TAG, "Non-IPv6 prefix in routedIPv6AddressCount");
+        }
+        int rank = 128 - prefix.getPrefixLength();
+        routedIPCount = routedIPCount.add(BigInteger.ONE.shiftLeft(rank));
+    }
+    return routedIPCount;
+}

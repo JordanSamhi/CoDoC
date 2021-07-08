@@ -1,0 +1,16 @@
+public void reevaluateSimCardProvisioning(final TetheringConfiguration config){
+    if (DBG)
+        mLog.i("reevaluateSimCardProvisioning");
+    if (!mHandler.getLooper().isCurrentThread()) {
+        mLog.log("reevaluateSimCardProvisioning() don't run in TetherMaster thread");
+    }
+    mEntitlementCacheValue.clear();
+    mCurrentEntitlementResults.clear();
+    if (!config.hasMobileHotspotProvisionApp() || carrierConfigAffirmsEntitlementCheckNotRequired(config)) {
+        evaluateCellularPermission(config);
+        return;
+    }
+    if (mUsingCellularAsUpstream) {
+        maybeRunProvisioning(config);
+    }
+}

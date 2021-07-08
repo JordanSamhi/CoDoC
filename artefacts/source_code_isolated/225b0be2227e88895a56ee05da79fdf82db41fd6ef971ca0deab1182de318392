@@ -1,0 +1,15 @@
+public ProxyInfo getProxyForNetwork(Network network){
+    final ProxyInfo globalProxy = mProxyTracker.getGlobalProxy();
+    if (globalProxy != null)
+        return globalProxy;
+    if (network == null) {
+        final Network activeNetwork = getActiveNetworkForUidInternal(Binder.getCallingUid(), true);
+        if (activeNetwork == null) {
+            return null;
+        }
+        return getLinkPropertiesProxyInfo(activeNetwork);
+    } else if (mDeps.queryUserAccess(Binder.getCallingUid(), network.netId)) {
+        return getLinkPropertiesProxyInfo(network);
+    }
+    return null;
+}

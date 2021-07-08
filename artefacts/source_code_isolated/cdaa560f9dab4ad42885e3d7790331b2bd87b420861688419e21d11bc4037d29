@@ -1,0 +1,8 @@
+public boolean start(){
+    PrintService.throwIfNotCalledOnMainThread();
+    final int state = getInfo().getState();
+    if (state == PrintJobInfo.STATE_QUEUED || state == PrintJobInfo.STATE_BLOCKED) {
+        return setState(PrintJobInfo.STATE_STARTED, null);
+    }
+    return false;
+}

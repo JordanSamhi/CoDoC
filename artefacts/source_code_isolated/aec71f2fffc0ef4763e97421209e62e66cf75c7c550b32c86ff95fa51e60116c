@@ -1,0 +1,56 @@
+public boolean getProfileProxy(Context context, BluetoothProfile.ServiceListener listener, int profile){
+    if (context == null || listener == null) {
+        return false;
+    }
+    if (profile == BluetoothProfile.HEADSET) {
+        BluetoothHeadset headset = new BluetoothHeadset(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.A2DP) {
+        BluetoothA2dp a2dp = new BluetoothA2dp(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.A2DP_SINK) {
+        BluetoothA2dpSink a2dpSink = new BluetoothA2dpSink(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.AVRCP_CONTROLLER) {
+        BluetoothAvrcpController avrcp = new BluetoothAvrcpController(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.HID_HOST) {
+        BluetoothHidHost iDev = new BluetoothHidHost(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.PAN) {
+        BluetoothPan pan = new BluetoothPan(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.PBAP) {
+        BluetoothPbap pbap = new BluetoothPbap(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.HEALTH) {
+        Log.e(TAG, "getProfileProxy(): BluetoothHealth is deprecated");
+        return false;
+    } else if (profile == BluetoothProfile.MAP) {
+        BluetoothMap map = new BluetoothMap(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.HEADSET_CLIENT) {
+        BluetoothHeadsetClient headsetClient = new BluetoothHeadsetClient(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.SAP) {
+        BluetoothSap sap = new BluetoothSap(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.PBAP_CLIENT) {
+        BluetoothPbapClient pbapClient = new BluetoothPbapClient(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.MAP_CLIENT) {
+        BluetoothMapClient mapClient = new BluetoothMapClient(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.HID_DEVICE) {
+        BluetoothHidDevice hidDevice = new BluetoothHidDevice(context, listener);
+        return true;
+    } else if (profile == BluetoothProfile.HEARING_AID) {
+        if (isHearingAidProfileSupported()) {
+            BluetoothHearingAid hearingAid = new BluetoothHearingAid(context, listener);
+            return true;
+        }
+        return false;
+    } else {
+        return false;
+    }
+}

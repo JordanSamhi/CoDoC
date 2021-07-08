@@ -1,0 +1,15 @@
+public void dispatchScrollCaptureSearch(@NonNull Rect localVisibleRect, @NonNull Point windowOffset, @NonNull Queue<ScrollCaptureTarget> targets){
+    int hint = getScrollCaptureHint();
+    if ((hint & SCROLL_CAPTURE_HINT_EXCLUDE) != 0) {
+        return;
+    }
+    ScrollCaptureCallback callback = (mListenerInfo == null) ? null : mListenerInfo.mScrollCaptureCallback;
+    if (callback == null) {
+        callback = createScrollCaptureCallbackInternal(localVisibleRect, windowOffset);
+    }
+    if (callback != null) {
+        Point offset = new Point(windowOffset.x, windowOffset.y);
+        Rect rect = new Rect(localVisibleRect);
+        targets.add(new ScrollCaptureTarget(this, rect, offset, callback));
+    }
+}

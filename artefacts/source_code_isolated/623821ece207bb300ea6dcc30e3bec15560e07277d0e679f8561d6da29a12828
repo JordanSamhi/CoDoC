@@ -1,0 +1,32 @@
+public void setUri(Uri uri, @Nullable VolumeShaper.Configuration volumeShaperConfig){
+    mVolumeShaperConfig = volumeShaperConfig;
+    destroyLocalPlayer();
+    mUri = uri;
+    if (mUri == null) {
+        return;
+    }
+    mLocalPlayer = new MediaPlayer();
+    try {
+        mLocalPlayer.setDataSource(mContext, mUri);
+        mLocalPlayer.setAudioAttributes(mAudioAttributes);
+        synchronized (mPlaybackSettingsLock) {
+            applyPlaybackProperties_sync();
+        }
+        if (mVolumeShaperConfig != null) {
+            mVolumeShaper = mLocalPlayer.createVolumeShaper(mVolumeShaperConfig);
+        }
+        mLocalPlayer.prepare();
+    } catch (SecurityException | IOException e) {
+        destroyLocalPlayer();
+        if (!mAllowRemote) {
+            Log.w(TAG, "Remote playback not allowed: " + e);
+        }
+    }
+    if (LOGD) {
+        if (mLocalPlayer != null) {
+            Log.d(TAG, "Successfully created local player");
+        } else {
+            Log.d(TAG, "Problem opening; delegating to remote player");
+        }
+    }
+}

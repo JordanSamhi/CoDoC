@@ -1,0 +1,40 @@
+public void setListener(ImsCall.Listener listener, boolean callbackImmediately){
+    boolean inCall;
+    boolean onHold;
+    int state;
+    ImsReasonInfo lastReasonInfo;
+    synchronized (mLockObj) {
+        mListener = listener;
+        if ((listener == null) || !callbackImmediately) {
+            return;
+        }
+        inCall = mInCall;
+        onHold = mHold;
+        state = getState();
+        lastReasonInfo = mLastReasonInfo;
+    }
+    try {
+        if (lastReasonInfo != null) {
+            listener.onCallError(this, lastReasonInfo);
+        } else if (inCall) {
+            if (onHold) {
+                listener.onCallHeld(this);
+            } else {
+                listener.onCallStarted(this);
+            }
+        } else {
+            switch(state) {
+                case ImsCallSession.State.ESTABLISHING:
+                    listener.onCallProgressing(this);
+                    break;
+                case ImsCallSession.State.TERMINATED:
+                    listener.onCallTerminated(this, lastReasonInfo);
+                    break;
+                default:
+                    break;
+            }
+        }
+    } catch (Throwable t) {
+        loge("setListener() :: ", t);
+    }
+}

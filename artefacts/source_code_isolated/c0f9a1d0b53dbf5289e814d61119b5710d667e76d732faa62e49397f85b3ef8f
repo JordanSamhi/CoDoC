@@ -1,0 +1,11 @@
+public static byte[] getVerityRootHash(String apkPath) throws IOException, SecurityException{
+    try {
+        return ApkSignatureSchemeV3Verifier.getVerityRootHash(apkPath);
+    } catch (SignatureNotFoundException e) {
+    }
+    try {
+        return ApkSignatureSchemeV2Verifier.getVerityRootHash(apkPath);
+    } catch (SignatureNotFoundException e) {
+        return null;
+    }
+}

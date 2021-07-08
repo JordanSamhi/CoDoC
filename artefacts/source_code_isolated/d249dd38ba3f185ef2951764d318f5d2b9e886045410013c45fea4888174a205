@@ -1,0 +1,8 @@
+public TypedArray obtainAttributes(AttributeSet set, @StyleableRes int[] attrs){
+    int len = attrs.length;
+    TypedArray array = TypedArray.obtain(this, len);
+    XmlBlock.Parser parser = (XmlBlock.Parser) set;
+    mResourcesImpl.getAssets().retrieveAttributes(parser, attrs, array.mData, array.mIndices);
+    array.mXml = parser;
+    return array;
+}

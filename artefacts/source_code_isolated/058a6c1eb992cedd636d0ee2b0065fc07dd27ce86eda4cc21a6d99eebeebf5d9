@@ -1,0 +1,15 @@
+public DecimalBuilder setArgumentsFromDouble(double number, int minimumFractionDigits, int maximumFractionDigits){
+    NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+    formatter.setMinimumFractionDigits(maximumFractionDigits);
+    formatter.setMaximumFractionDigits(maximumFractionDigits);
+    formatter.setGroupingUsed(false);
+    String str = formatter.format(number);
+    int i = str.indexOf('.');
+    if (i >= 0) {
+        setIntegerPart(str.substring(0, i));
+        setFractionalPart(str.substring(i + 1));
+    } else {
+        setIntegerPart(str);
+    }
+    return this;
+}

@@ -1,0 +1,12 @@
+public synchronized void setCallback(@Nullable Callback cb, @Nullable Handler handler){
+    if (!mIsClosed) {
+        if (handler != null) {
+            mHandler = handler;
+        } else if (mLooper != null) {
+            mHandler = new Handler(mLooper);
+        } else {
+            mHandler = new Handler();
+        }
+        mCallback = cb;
+    }
+}

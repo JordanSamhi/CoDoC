@@ -1,0 +1,15 @@
+public CharSequence build(){
+    final RandomCharSequenceGenerator sequenceGenerator = new RandomCharSequenceGenerator(mRandom);
+    if (mSequenceLength > 0) {
+        sequenceGenerator.setSequenceLength(mSequenceLength);
+    }
+    final CharSequence charSequence = sequenceGenerator.buildLatinSequence();
+    switch(mTextType) {
+        case SPANNED:
+        case SPANNABLE_BUILDER:
+            return createSpannable(charSequence);
+        case STRING:
+        default:
+            return createString(charSequence);
+    }
+}

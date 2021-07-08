@@ -1,0 +1,11 @@
+public void ensureUpdatableWith(ShortcutInfo source, boolean isUpdating){
+    if (isUpdating) {
+        Preconditions.checkState(isVisibleToPublisher(), "[Framework BUG] Invisible shortcuts can't be updated");
+    }
+    Preconditions.checkState(mUserId == source.mUserId, "Owner User ID must match");
+    Preconditions.checkState(mId.equals(source.mId), "ID must match");
+    Preconditions.checkState(mPackageName.equals(source.mPackageName), "Package name must match");
+    if (isVisibleToPublisher()) {
+        Preconditions.checkState(!isImmutable(), "Target ShortcutInfo is immutable");
+    }
+}

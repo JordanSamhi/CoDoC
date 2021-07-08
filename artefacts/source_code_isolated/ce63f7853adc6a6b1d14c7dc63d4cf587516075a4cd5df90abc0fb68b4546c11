@@ -1,0 +1,11 @@
+public void record_compactsFileToLast24Hours(){
+    setTimeMillis(0);
+    mWindowedcount.record();
+    assertThat(mFile.length()).isEqualTo(TIMESTAMP_SIZE_IN_BYTES);
+    setTimeMillis(1);
+    mWindowedcount.record();
+    assertThat(mFile.length()).isEqualTo(2 * TIMESTAMP_SIZE_IN_BYTES);
+    setTimeMillis(TimeUnit.HOURS.toMillis(24));
+    mWindowedcount.record();
+    assertThat(mFile.length()).isEqualTo(2 * TIMESTAMP_SIZE_IN_BYTES);
+}

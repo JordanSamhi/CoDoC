@@ -1,0 +1,15 @@
+public int restoreAll(long token, RestoreObserver observer, BackupManagerMonitor monitor){
+    int err = -1;
+    if (mObserver != null) {
+        Log.d(TAG, "restoreAll() called during active restore");
+        return -1;
+    }
+    mObserver = new RestoreObserverWrapper(mContext, observer);
+    BackupManagerMonitorWrapper monitorWrapper = monitor == null ? null : new BackupManagerMonitorWrapper(monitor);
+    try {
+        err = mBinder.restoreAll(token, mObserver, monitorWrapper);
+    } catch (RemoteException e) {
+        Log.d(TAG, "Can't contact server to restore");
+    }
+    return err;
+}

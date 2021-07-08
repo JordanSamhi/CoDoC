@@ -1,0 +1,12 @@
+public Signature[] getChainSignatures() throws CertificateEncodingException{
+    if (mCertificateChain == null) {
+        return new Signature[] { this };
+    }
+    Signature[] chain = new Signature[1 + mCertificateChain.length];
+    chain[0] = this;
+    int i = 1;
+    for (Certificate c : mCertificateChain) {
+        chain[i++] = new Signature(c.getEncoded());
+    }
+    return chain;
+}

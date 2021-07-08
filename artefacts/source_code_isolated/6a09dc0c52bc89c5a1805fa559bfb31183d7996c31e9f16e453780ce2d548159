@@ -1,0 +1,26 @@
+public static void wtf(String tag, Throwable t, boolean system){
+    try {
+        boolean exit = false;
+        final IActivityManager am = ActivityManager.getService();
+        if (am != null) {
+            exit = am.handleApplicationWtf(mApplicationObject, tag, system, new ApplicationErrorReport.ParcelableCrashInfo(t), Process.myPid());
+        } else {
+            final ApplicationWtfHandler handler = sDefaultApplicationWtfHandler;
+            if (handler != null) {
+                exit = handler.handleApplicationWtf(mApplicationObject, tag, system, new ApplicationErrorReport.ParcelableCrashInfo(t), Process.myPid());
+            } else {
+                Slog.e(TAG, "Original WTF:", t);
+            }
+        }
+        if (exit) {
+            Process.killProcess(Process.myPid());
+            System.exit(10);
+        }
+    } catch (Throwable t2) {
+        if (t2 instanceof DeadObjectException) {
+        } else {
+            Slog.e(TAG, "Error reporting WTF", t2);
+            Slog.e(TAG, "Original WTF:", t);
+        }
+    }
+}

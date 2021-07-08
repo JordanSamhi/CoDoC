@@ -1,0 +1,19 @@
+public boolean responderReportNfcHandover(String requestMessage){
+    if (requestMessage == null)
+        return false;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("responderReportNfcHandover"))
+            return false;
+        SupplicantResult<Void> result = new SupplicantResult("responderReportNfcHandover(" + requestMessage + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.reportNfcHandoverResponse(NativeUtil.byteArrayToArrayList(NativeUtil.hexStringToByteArray(requestMessage))));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + requestMessage, e);
+            return false;
+        }
+        return result.isSuccess();
+    }
+}

@@ -1,0 +1,13 @@
+public NetworkStats combineValues(@NonNull Entry entry){
+    final int i = findIndex(entry.iface, entry.uid, entry.set, entry.tag, entry.metered, entry.roaming, entry.defaultNetwork);
+    if (i == -1) {
+        insertEntry(entry);
+    } else {
+        rxBytes[i] += entry.rxBytes;
+        rxPackets[i] += entry.rxPackets;
+        txBytes[i] += entry.txBytes;
+        txPackets[i] += entry.txPackets;
+        operations[i] += entry.operations;
+    }
+    return this;
+}

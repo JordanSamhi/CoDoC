@@ -1,0 +1,14 @@
+public void setOnFrameAvailableListener(@Nullable final OnFrameAvailableListener listener, @Nullable Handler handler){
+    if (listener != null) {
+        Looper looper = handler != null ? handler.getLooper() : mCreatorLooper != null ? mCreatorLooper : Looper.getMainLooper();
+        mOnFrameAvailableHandler = new Handler(looper, null, true) {
+
+            @Override
+            public void handleMessage(Message msg) {
+                listener.onFrameAvailable(SurfaceTexture.this);
+            }
+        };
+    } else {
+        mOnFrameAvailableHandler = null;
+    }
+}

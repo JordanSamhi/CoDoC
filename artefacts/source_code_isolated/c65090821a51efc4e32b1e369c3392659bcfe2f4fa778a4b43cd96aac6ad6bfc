@@ -1,0 +1,10 @@
+public String startWpsPinDisplay(@NonNull String ifaceName, String bssidStr){
+    synchronized (mLock) {
+        try {
+            return startWpsPinDisplay(ifaceName, NativeUtil.macAddressToByteArray(bssidStr));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + bssidStr, e);
+            return null;
+        }
+    }
+}

@@ -1,0 +1,26 @@
+public void serialize(List<Rule> rules, Optional<Integer> formatVersion, OutputStream rulesFileOutputStream, OutputStream indexingFileOutputStream) throws RuleSerializeException{
+    try {
+        if (rules == null) {
+            throw new IllegalArgumentException("Null rules cannot be serialized.");
+        }
+        if (rules.size() > TOTAL_RULE_SIZE_LIMIT) {
+            throw new IllegalArgumentException("Too many rules provided: " + rules.size());
+        }
+        Map<Integer, Map<String, List<Rule>>> indexedRules = RuleIndexingDetailsIdentifier.splitRulesIntoIndexBuckets(rules);
+        verifySize(indexedRules.get(PACKAGE_NAME_INDEXED), INDEXED_RULE_SIZE_LIMIT);
+        verifySize(indexedRules.get(APP_CERTIFICATE_INDEXED), INDEXED_RULE_SIZE_LIMIT);
+        verifySize(indexedRules.get(NOT_INDEXED), NONINDEXED_RULE_SIZE_LIMIT);
+        ByteTrackedOutputStream ruleFileByteTrackedOutputStream = new ByteTrackedOutputStream(rulesFileOutputStream);
+        serializeRuleFileMetadata(formatVersion, ruleFileByteTrackedOutputStream);
+        LinkedHashMap<String, Integer> packageNameIndexes = serializeRuleList(indexedRules.get(PACKAGE_NAME_INDEXED), ruleFileByteTrackedOutputStream);
+        LinkedHashMap<String, Integer> appCertificateIndexes = serializeRuleList(indexedRules.get(APP_CERTIFICATE_INDEXED), ruleFileByteTrackedOutputStream);
+        LinkedHashMap<String, Integer> unindexedRulesIndexes = serializeRuleList(indexedRules.get(NOT_INDEXED), ruleFileByteTrackedOutputStream);
+        BitOutputStream indexingBitOutputStream = new BitOutputStream(indexingFileOutputStream);
+        serializeIndexGroup(packageNameIndexes, indexingBitOutputStream, true);
+        serializeIndexGroup(appCertificateIndexes, indexingBitOutputStream, true);
+        serializeIndexGroup(unindexedRulesIndexes, indexingBitOutputStream, false);
+        indexingBitOutputStream.flush();
+    } catch (Exception e) {
+        throw new RuleSerializeException(e.getMessage(), e);
+    }
+}

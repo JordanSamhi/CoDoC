@@ -1,0 +1,11 @@
+public Bitmap getAppIcon(){
+    if (appIcon == null) {
+        try {
+            final SessionInfo info = AppGlobals.getPackageManager().getPackageInstaller().getSessionInfo(sessionId);
+            appIcon = (info != null) ? info.appIcon : null;
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return appIcon;
+}

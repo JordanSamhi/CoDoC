@@ -1,0 +1,16 @@
+public synchronized void stopMonitor(){
+    if (isVerboseLoggable()) {
+        Log.v(TAG, "stopMonitor");
+    }
+    mHandler.removeCallbacks(mDisconnectRunnable);
+    mMonitorStartedCount--;
+    if (mMonitorStartedCount == 0) {
+        if (isVerboseLoggable()) {
+            Log.v(TAG, "Scheduling driving monitor timeout");
+        }
+        mHandler.postDelayed(mDisconnectRunnable, DISCONNECT_DELAY_MS);
+    }
+    if (mMonitorStartedCount < 0) {
+        mMonitorStartedCount = 0;
+    }
+}

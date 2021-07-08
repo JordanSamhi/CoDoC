@@ -1,0 +1,27 @@
+public Cursor swapCursor(Cursor newCursor){
+    if (newCursor == mCursor) {
+        return null;
+    }
+    Cursor oldCursor = mCursor;
+    if (oldCursor != null) {
+        if (mChangeObserver != null)
+            oldCursor.unregisterContentObserver(mChangeObserver);
+        if (mDataSetObserver != null)
+            oldCursor.unregisterDataSetObserver(mDataSetObserver);
+    }
+    mCursor = newCursor;
+    if (newCursor != null) {
+        if (mChangeObserver != null)
+            newCursor.registerContentObserver(mChangeObserver);
+        if (mDataSetObserver != null)
+            newCursor.registerDataSetObserver(mDataSetObserver);
+        mRowIDColumn = newCursor.getColumnIndexOrThrow("_id");
+        mDataValid = true;
+        notifyDataSetChanged();
+    } else {
+        mRowIDColumn = -1;
+        mDataValid = false;
+        notifyDataSetInvalidated();
+    }
+    return oldCursor;
+}

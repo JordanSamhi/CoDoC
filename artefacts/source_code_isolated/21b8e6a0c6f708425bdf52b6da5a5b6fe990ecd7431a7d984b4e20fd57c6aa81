@@ -1,0 +1,15 @@
+public boolean setConfigSettingsLocked(int key, String prefix, Map<String, String> keyValues, String packageName){
+    SettingsState settingsState = peekSettingsStateLocked(key);
+    if (settingsState != null) {
+        if (settingsState.isNewConfigBannedLocked(prefix, keyValues)) {
+            return false;
+        }
+        settingsState.unbanAllConfigIfBannedConfigUpdatedLocked(prefix);
+        List<String> changedSettings = settingsState.setSettingsLocked(prefix, keyValues, packageName);
+        if (!changedSettings.isEmpty()) {
+            reportDeviceConfigUpdate(prefix);
+            notifyForConfigSettingsChangeLocked(key, prefix, changedSettings);
+        }
+    }
+    return true;
+}

@@ -1,0 +1,11 @@
+public void requestAuthorization(int callingUid, @NonNull String callingPackage, int flags, @NonNull @CallbackExecutor Executor executor, @NonNull AuthListener listener){
+    try {
+        if (listener.mExecutor != null) {
+            throw new RuntimeException("Do not reuse AuthListener objects when calling" + " requestAuthorization");
+        }
+        listener.mExecutor = executor;
+        getCompanionServiceLocked().authorizeReport(callingUid, callingPackage, null, null, flags, listener.mBinder);
+    } catch (RemoteException ex) {
+        throw new RuntimeException(ex);
+    }
+}

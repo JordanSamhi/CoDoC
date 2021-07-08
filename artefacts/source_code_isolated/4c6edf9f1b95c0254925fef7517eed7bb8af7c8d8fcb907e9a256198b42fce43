@@ -1,0 +1,17 @@
+public boolean onKeyUp(int keyCode, KeyEvent event){
+    if (KeyEvent.isConfirmKey(keyCode)) {
+        if ((mViewFlags & ENABLED_MASK) == DISABLED) {
+            return true;
+        }
+        if ((mViewFlags & CLICKABLE) == CLICKABLE && isPressed()) {
+            setPressed(false);
+            if (!mHasPerformedLongPress) {
+                removeLongPressCallback();
+                if (!event.isCanceled()) {
+                    return performClickInternal();
+                }
+            }
+        }
+    }
+    return false;
+}

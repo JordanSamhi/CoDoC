@@ -1,0 +1,9 @@
+public RuleSet getCurrentRuleSet(){
+    try {
+        ParceledListSlice<Rule> rules = mManager.getCurrentRules();
+        String version = mManager.getCurrentRuleSetVersion();
+        return new RuleSet.Builder().setVersion(version).addRules(rules.getList()).build();
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

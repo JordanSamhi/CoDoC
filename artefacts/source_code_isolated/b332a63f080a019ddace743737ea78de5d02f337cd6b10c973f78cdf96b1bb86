@@ -1,0 +1,19 @@
+public static CellularNetwork parse(ByteBuffer payload) throws ProtocolException{
+    int ieiType = payload.get() & 0xFF;
+    int ieiSize = payload.get() & IEI_CONTENT_LENGTH_MASK;
+    if (ieiType != IEI_TYPE_PLMN_LIST) {
+        Log.e(TAG, "Ignore unsupported IEI Type: " + ieiType);
+        payload.position(payload.position() + ieiSize);
+        return null;
+    }
+    int plmnCount = payload.get() & 0xFF;
+    if (ieiSize != (plmnCount * PLMN_DATA_BYTES + 1)) {
+        throw new ProtocolException("IEI size and PLMN count mismatched: IEI Size=" + ieiSize + " PLMN Count=" + plmnCount);
+    }
+    List<String> plmnList = new ArrayList<>();
+    while (plmnCount > 0) {
+        plmnList.add(parsePlmn(payload));
+        plmnCount--;
+    }
+    return new CellularNetwork(plmnList);
+}

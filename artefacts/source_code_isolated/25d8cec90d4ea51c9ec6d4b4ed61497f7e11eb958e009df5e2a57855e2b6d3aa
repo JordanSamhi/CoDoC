@@ -1,0 +1,48 @@
+public void getCursorPath(final int point, final Path dest, final CharSequence editingBuffer){
+    dest.reset();
+    int line = getLineForOffset(point);
+    int top = getLineTop(line);
+    int bottom = getLineBottomWithoutSpacing(line);
+    boolean clamped = shouldClampCursor(line);
+    float h1 = getPrimaryHorizontal(point, clamped) - 0.5f;
+    int caps = TextKeyListener.getMetaState(editingBuffer, TextKeyListener.META_SHIFT_ON) | TextKeyListener.getMetaState(editingBuffer, TextKeyListener.META_SELECTING);
+    int fn = TextKeyListener.getMetaState(editingBuffer, TextKeyListener.META_ALT_ON);
+    int dist = 0;
+    if (caps != 0 || fn != 0) {
+        dist = (bottom - top) >> 2;
+        if (fn != 0)
+            top += dist;
+        if (caps != 0)
+            bottom -= dist;
+    }
+    if (h1 < 0.5f)
+        h1 = 0.5f;
+    dest.moveTo(h1, top);
+    dest.lineTo(h1, bottom);
+    if (caps == 2) {
+        dest.moveTo(h1, bottom);
+        dest.lineTo(h1 - dist, bottom + dist);
+        dest.lineTo(h1, bottom);
+        dest.lineTo(h1 + dist, bottom + dist);
+    } else if (caps == 1) {
+        dest.moveTo(h1, bottom);
+        dest.lineTo(h1 - dist, bottom + dist);
+        dest.moveTo(h1 - dist, bottom + dist - 0.5f);
+        dest.lineTo(h1 + dist, bottom + dist - 0.5f);
+        dest.moveTo(h1 + dist, bottom + dist);
+        dest.lineTo(h1, bottom);
+    }
+    if (fn == 2) {
+        dest.moveTo(h1, top);
+        dest.lineTo(h1 - dist, top - dist);
+        dest.lineTo(h1, top);
+        dest.lineTo(h1 + dist, top - dist);
+    } else if (fn == 1) {
+        dest.moveTo(h1, top);
+        dest.lineTo(h1 - dist, top - dist);
+        dest.moveTo(h1 - dist, top - dist + 0.5f);
+        dest.lineTo(h1 + dist, top - dist + 0.5f);
+        dest.moveTo(h1 + dist, top - dist);
+        dest.lineTo(h1, top);
+    }
+}

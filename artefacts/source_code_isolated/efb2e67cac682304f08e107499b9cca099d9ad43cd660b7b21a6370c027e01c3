@@ -1,0 +1,7 @@
+public Activity waitForMonitorWithTimeout(ActivityMonitor monitor, long timeOut){
+    Activity activity = monitor.waitForActivityWithTimeout(timeOut);
+    synchronized (mSync) {
+        mActivityMonitors.remove(monitor);
+    }
+    return activity;
+}

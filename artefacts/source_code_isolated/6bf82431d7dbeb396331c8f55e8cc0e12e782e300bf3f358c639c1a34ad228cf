@@ -1,0 +1,13 @@
+public final void startUpdate(int token, Object cookie, Uri uri, ContentValues values, String selection, String[] selectionArgs){
+    Message msg = mWorkerThreadHandler.obtainMessage(token);
+    msg.arg1 = EVENT_ARG_UPDATE;
+    WorkerArgs args = new WorkerArgs();
+    args.handler = this;
+    args.uri = uri;
+    args.cookie = cookie;
+    args.values = values;
+    args.selection = selection;
+    args.selectionArgs = selectionArgs;
+    msg.obj = args;
+    mWorkerThreadHandler.sendMessage(msg);
+}

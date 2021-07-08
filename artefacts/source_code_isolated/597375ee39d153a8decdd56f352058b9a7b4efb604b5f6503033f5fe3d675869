@@ -1,0 +1,14 @@
+public String getWorkSourceClientId(){
+    if (mWorkSource == null || mWorkSource.isEmpty()) {
+        return null;
+    }
+    if (mWorkSource.size() > 0) {
+        return mWorkSource.getUid(0) + ":" + mWorkSource.getPackageName(0);
+    }
+    final List<WorkChain> workChains = mWorkSource.getWorkChains();
+    if (workChains != null && !workChains.isEmpty()) {
+        final WorkChain workChain = workChains.get(0);
+        return workChain.toString();
+    }
+    return null;
+}

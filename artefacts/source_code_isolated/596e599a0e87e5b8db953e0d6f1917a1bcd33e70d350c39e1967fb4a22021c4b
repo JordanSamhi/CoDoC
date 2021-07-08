@@ -1,0 +1,11 @@
+public Drawable getInstantAppIcon(String packageName){
+    try {
+        Bitmap bitmap = mPM.getInstantAppIcon(packageName, getUserId());
+        if (bitmap != null) {
+            return new BitmapDrawable(null, bitmap);
+        }
+        return null;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

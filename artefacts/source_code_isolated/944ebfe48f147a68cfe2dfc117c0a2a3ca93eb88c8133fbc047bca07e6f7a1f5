@@ -1,0 +1,8 @@
+public final ContentProviderClient acquireContentProviderClient(@NonNull String name){
+    Objects.requireNonNull(name, "name");
+    IContentProvider provider = acquireProvider(name);
+    if (provider != null) {
+        return new ContentProviderClient(this, provider, name, true);
+    }
+    return null;
+}

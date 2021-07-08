@@ -1,0 +1,11 @@
+public void attach(LockIcon lockIcon){
+    mLockIcon = lockIcon;
+    mLockIcon.setOnClickListener(this::handleClick);
+    mLockIcon.setOnLongClickListener(this::handleLongClick);
+    mLockIcon.setAccessibilityDelegate(mAccessibilityDelegate);
+    if (mLockIcon.isAttachedToWindow()) {
+        mOnAttachStateChangeListener.onViewAttachedToWindow(mLockIcon);
+    }
+    mLockIcon.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
+    setStatusBarState(mStatusBarStateController.getState());
+}

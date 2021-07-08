@@ -1,0 +1,16 @@
+public void reboot(boolean safeMode){
+    enforceStatusBarService();
+    long identity = Binder.clearCallingIdentity();
+    try {
+        mNotificationDelegate.prepareForPossibleShutdown();
+        mHandler.post(() -> {
+            if (safeMode) {
+                ShutdownThread.rebootSafeMode(getUiContext(), true);
+            } else {
+                ShutdownThread.reboot(getUiContext(), PowerManager.SHUTDOWN_USER_REQUESTED, false);
+            }
+        });
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

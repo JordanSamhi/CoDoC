@@ -1,0 +1,14 @@
+public boolean hasDeviceIdentifierAccess(@NonNull String packageName, int pid, int uid){
+    throwIfParentInstance("hasDeviceIdentifierAccess");
+    if (packageName == null) {
+        return false;
+    }
+    if (mService != null) {
+        try {
+            return mService.checkDeviceIdentifierAccess(packageName, pid, uid);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

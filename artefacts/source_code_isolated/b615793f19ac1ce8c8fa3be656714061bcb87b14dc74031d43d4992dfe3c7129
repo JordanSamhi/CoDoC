@@ -1,0 +1,8 @@
+public void requestAudioFocusForCall(int streamType, int durationHint){
+    final IAudioService service = getService();
+    try {
+        service.requestAudioFocus(new AudioAttributes.Builder().setInternalLegacyStreamType(streamType).build(), durationHint, mICallBack, null, AudioSystem.IN_VOICE_COMM_FOCUS_ID, getContext().getOpPackageName(), AUDIOFOCUS_FLAG_LOCK, null, 0);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

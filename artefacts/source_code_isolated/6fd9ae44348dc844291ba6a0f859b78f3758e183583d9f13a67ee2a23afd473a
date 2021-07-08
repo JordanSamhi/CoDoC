@@ -1,0 +1,10 @@
+public static String getSystemServiceName(Class<?> serviceClass){
+    if (serviceClass == null) {
+        return null;
+    }
+    final String serviceName = SYSTEM_SERVICE_NAMES.get(serviceClass);
+    if (sEnableServiceNotFoundWtf && serviceName == null) {
+        Slog.wtf(TAG, "Unknown manager requested: " + serviceClass.getCanonicalName());
+    }
+    return serviceName;
+}

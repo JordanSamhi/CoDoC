@@ -1,0 +1,19 @@
+public void setOptionalCodecsEnabled(@NonNull BluetoothDevice device, @OptionalCodecsPreferenceStatus int value){
+    verifyDeviceNotNull(device, "setOptionalCodecsEnabled");
+    try {
+        if (value != BluetoothA2dp.OPTIONAL_CODECS_PREF_UNKNOWN && value != BluetoothA2dp.OPTIONAL_CODECS_PREF_DISABLED && value != BluetoothA2dp.OPTIONAL_CODECS_PREF_ENABLED) {
+            Log.e(TAG, "Invalid value passed to setOptionalCodecsEnabled: " + value);
+            return;
+        }
+        final IBluetoothA2dp service = getService();
+        if (service != null && isEnabled() && isValidDevice(device)) {
+            service.setOptionalCodecsEnabled(device, value);
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return;
+    }
+}

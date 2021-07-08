@@ -1,0 +1,8 @@
+public void setUiTTYMode(Context context, int uiTtyMode, Message onComplete) throws ImsException{
+    checkAndThrowExceptionIfServiceUnavailable();
+    try {
+        mMmTelFeatureConnection.setUiTTYMode(uiTtyMode, onComplete);
+    } catch (RemoteException e) {
+        throw new ImsException("setTTYMode()", e, ImsReasonInfo.CODE_LOCAL_IMS_SERVICE_DOWN);
+    }
+}

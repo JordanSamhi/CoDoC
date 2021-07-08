@@ -1,0 +1,36 @@
+public boolean waitUntilOperationComplete(int token){
+    if (MORE_DEBUG) {
+        Slog.i(TAG, addUserIdToLogMessage(mUserId, "Blocking until operation complete for " + Integer.toHexString(token)));
+    }
+    int finalState = OP_PENDING;
+    Operation op = null;
+    synchronized (mCurrentOpLock) {
+        while (true) {
+            op = mCurrentOperations.get(token);
+            if (op == null) {
+                break;
+            } else {
+                if (op.state == OP_PENDING) {
+                    try {
+                        mCurrentOpLock.wait();
+                    } catch (InterruptedException e) {
+                    }
+                } else {
+                    if (MORE_DEBUG) {
+                        Slog.d(TAG, addUserIdToLogMessage(mUserId, "Unblocked waiting for operation token=" + Integer.toHexString(token)));
+                    }
+                    finalState = op.state;
+                    break;
+                }
+            }
+        }
+    }
+    removeOperation(token);
+    if (op != null) {
+        mBackupHandler.removeMessages(getMessageIdForOperationType(op.type));
+    }
+    if (MORE_DEBUG) {
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "operation " + Integer.toHexString(token) + " complete: finalState=" + finalState));
+    }
+    return finalState == OP_ACKNOWLEDGED;
+}

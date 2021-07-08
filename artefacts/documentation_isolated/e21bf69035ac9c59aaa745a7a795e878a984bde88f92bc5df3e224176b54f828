@@ -1,0 +1,42 @@
+
+     * Gets the restricted permissions that have been whitelisted and the app
+     * is allowed to have them granted in their full form.
+     *
+     * <p> Permissions can be hard restricted which means that the app cannot hold
+     * them or soft restricted where the app can hold the permission but in a weaker
+     * form. Whether a permission is {@link PermissionInfo#FLAG_HARD_RESTRICTED hard
+     * restricted} or {@link PermissionInfo#FLAG_SOFT_RESTRICTED soft restricted}
+     * depends on the permission declaration. Whitelisting a hard restricted permission
+     * allows for the to hold that permission and whitelisting a soft restricted
+     * permission allows the app to hold the permission in its full, unrestricted form.
+     *
+     * <p><ol>There are three whitelists:
+     *
+     * <li>one for cases where the system permission policy whitelists a permission
+     * This list corresponds to the{@link #FLAG_PERMISSION_WHITELIST_SYSTEM} flag.
+     * Can only be accessed by pre-installed holders of a dedicated permission.
+     *
+     * <li>one for cases where the system whitelists the permission when upgrading
+     * from an OS version in which the permission was not restricted to an OS version
+     * in which the permission is restricted. This list corresponds to the {@link
+     * #FLAG_PERMISSION_WHITELIST_UPGRADE} flag. Can be accessed by pre-installed
+     * holders of a dedicated permission or the installer on record.
+     *
+     * <li>one for cases where the installer of the package whitelists a permission.
+     * This list corresponds to the {@link #FLAG_PERMISSION_WHITELIST_INSTALLER} flag.
+     * Can be accessed by pre-installed holders of a dedicated permission or the
+     * installer on record.
+     *
+     * @param packageName The app for which to get whitelisted permissions.
+     * @param whitelistFlag The flag to determine which whitelist to query. Only one flag
+     * can be passed.s
+     * @return The whitelisted permissions that are on any of the whitelists you query for.
+     *
+     * @see #addWhitelistedRestrictedPermission(String, String, int)
+     * @see #removeWhitelistedRestrictedPermission(String, String, int)
+     * @see #FLAG_PERMISSION_WHITELIST_SYSTEM
+     * @see #FLAG_PERMISSION_WHITELIST_UPGRADE
+     * @see #FLAG_PERMISSION_WHITELIST_INSTALLER
+     *
+     * @throws SecurityException if you try to access a whitelist that you have no access to.
+     

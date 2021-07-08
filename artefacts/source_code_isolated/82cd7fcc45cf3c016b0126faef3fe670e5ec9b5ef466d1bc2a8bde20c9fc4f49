@@ -1,0 +1,14 @@
+public void incrementRssiPollRssiCount(int frequency, int rssi){
+    if (!(rssi >= MIN_RSSI_POLL && rssi <= MAX_RSSI_POLL)) {
+        return;
+    }
+    synchronized (mLock) {
+        if (!mRssiPollCountsMap.containsKey(frequency)) {
+            mRssiPollCountsMap.put(frequency, new SparseIntArray());
+        }
+        SparseIntArray sparseIntArray = mRssiPollCountsMap.get(frequency);
+        int count = sparseIntArray.get(rssi);
+        sparseIntArray.put(rssi, count + 1);
+        maybeIncrementRssiDeltaCount(rssi - mScanResultRssi);
+    }
+}

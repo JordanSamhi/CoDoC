@@ -1,0 +1,7 @@
+public void startActivity(@NonNull ComponentName component, @NonNull UserHandle targetUser){
+    try {
+        mService.startActivityAsUser(mContext.getIApplicationThread(), mContext.getPackageName(), mContext.getAttributionTag(), component, targetUser.getIdentifier(), false);
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

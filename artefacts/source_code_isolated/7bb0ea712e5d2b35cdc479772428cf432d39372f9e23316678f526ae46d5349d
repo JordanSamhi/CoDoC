@@ -1,0 +1,9 @@
+public synchronized ComponentName getGlobalSearchActivity(){
+    final PackageManagerInternal pm = LocalServices.getService(PackageManagerInternal.class);
+    final int callingUid = Binder.getCallingUid();
+    final int callingUserId = UserHandle.getCallingUserId();
+    if (mCurrentGlobalSearchActivity != null && pm.canAccessComponent(callingUid, mCurrentGlobalSearchActivity, callingUserId)) {
+        return mCurrentGlobalSearchActivity;
+    }
+    return null;
+}

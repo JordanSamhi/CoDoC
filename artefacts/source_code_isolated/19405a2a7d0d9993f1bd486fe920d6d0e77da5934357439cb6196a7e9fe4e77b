@@ -1,0 +1,11 @@
+public boolean setTimeZone(@NonNull ComponentName admin, String timeZone){
+    throwIfParentInstance("setTimeZone");
+    if (mService != null) {
+        try {
+            return mService.setTimeZone(admin, timeZone);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

@@ -1,0 +1,9 @@
+public synchronized void recoverySnapshotAvailable(int recoveryAgentUid){
+    PendingIntent intent = mAgentIntents.get(recoveryAgentUid);
+    if (intent == null) {
+        Log.i(TAG, "Snapshot available for agent " + recoveryAgentUid + " but agent has not yet initialized. Will notify agent when it does.");
+        mAgentsWithPendingSnapshots.add(recoveryAgentUid);
+        return;
+    }
+    tryToSendIntent(recoveryAgentUid, intent);
+}

@@ -1,0 +1,22 @@
+
+     * Add a new {@link AppTask} for the calling application.  This will create a new
+     * recents entry that is added to the <b>end</b> of all existing recents.
+     *
+     * @param activity The activity that is adding the entry.   This is used to help determine
+     * the context that the new recents entry will be in.
+     * @param intent The Intent that describes the recents entry.  This is the same Intent that
+     * you would have used to launch the activity for it.  In generally you will want to set
+     * both {@link Intent#FLAG_ACTIVITY_NEW_DOCUMENT} and
+     * {@link Intent#FLAG_ACTIVITY_RETAIN_IN_RECENTS}; the latter is required since this recents
+     * entry will exist without an activity, so it doesn't make sense to not retain it when
+     * its activity disappears.  The given Intent here also must have an explicit ComponentName
+     * set on it.
+     * @param description Optional additional description information.
+     * @param thumbnail Thumbnail to use for the recents entry.  Should be the size given by
+     * {@link #getAppTaskThumbnailSize()}.  If the bitmap is not that exact size, it will be
+     * recreated in your process, probably in a way you don't like, before the recents entry
+     * is added.
+     *
+     * @return Returns the task id of the newly added app task, or -1 if the add failed.  The
+     * most likely cause of failure is that there is no more room for more tasks for your app.
+     

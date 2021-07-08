@@ -1,0 +1,15 @@
+
+     * Same as {@code #isChangeEnabled(long)}, except this version should be called on behalf of an
+     * app from a different process that's performing work for the app.
+     *
+     * <p> Note that this involves a binder call to the system server (unless running in the system
+     * server). If the binder call fails, {@code RuntimeException}  will be thrown.
+     *
+     * <p> Returns {@code true} if there are no installed packages for the required UID, or if the
+     * change is enabled for ALL of the installed packages associated with the provided UID. Please
+     * use a more specific API if you want a different behaviour for multi-package UIDs.
+     *
+     * @param changeId The ID of the compatibility change in question.
+     * @param uid      The UID of the app in question.
+     * @return {@code true} if the change is enabled for the current app.
+     

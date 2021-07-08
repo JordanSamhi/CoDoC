@@ -1,0 +1,10 @@
+public static void registerReceiver(Context context, Uri sliceUri, Class<? extends BroadcastReceiver> receiver, IntentFilter filter){
+    Log.d(TAG, "Registering Uri for broadcast relay: " + sliceUri);
+    sRegisteredUris.add(sliceUri);
+    Intent registerBroadcast = new Intent(ACTION_REGISTER);
+    registerBroadcast.setPackage(SYSTEMUI_PACKAGE);
+    registerBroadcast.putExtra(EXTRA_URI, ContentProvider.maybeAddUserId(sliceUri, Process.myUserHandle().getIdentifier()));
+    registerBroadcast.putExtra(EXTRA_RECEIVER, new ComponentName(context.getPackageName(), receiver.getName()));
+    registerBroadcast.putExtra(EXTRA_FILTER, filter);
+    context.sendBroadcastAsUser(registerBroadcast, UserHandle.SYSTEM);
+}

@@ -1,0 +1,9 @@
+public synchronized void updateCaptureRequest(CaptureRequest.Builder repeatingBuilder){
+    if (repeatingBuilder == null) {
+        throw new IllegalArgumentException("repeatingBuilder shouldn't be null");
+    }
+    if (mCurrentAfMode == AF_UNINITIALIZED) {
+        throw new IllegalStateException("AF mode was not enabled");
+    }
+    repeatingBuilder.set(CaptureRequest.CONTROL_AF_MODE, mCurrentAfMode);
+}

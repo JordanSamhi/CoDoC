@@ -1,0 +1,19 @@
+public boolean isSyncPending(EndPoint info){
+    synchronized (mAuthorities) {
+        final int N = mSyncStatus.size();
+        for (int i = 0; i < N; i++) {
+            SyncStatusInfo cur = mSyncStatus.valueAt(i);
+            AuthorityInfo ainfo = mAuthorities.get(cur.authorityId);
+            if (ainfo == null) {
+                continue;
+            }
+            if (!ainfo.target.matchesSpec(info)) {
+                continue;
+            }
+            if (cur.pending) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

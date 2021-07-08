@@ -1,0 +1,10 @@
+public Hardware acquireTvInputHardware(int deviceId, @NonNull TvInputInfo info, @NonNull final HardwareCallback callback){
+    Preconditions.checkNotNull(info);
+    Preconditions.checkNotNull(callback);
+    return acquireTvInputHardwareInternal(deviceId, info, null, TvInputService.PRIORITY_HINT_USE_CASE_TYPE_LIVE, new Executor() {
+
+        public void execute(Runnable r) {
+            r.run();
+        }
+    }, callback);
+}

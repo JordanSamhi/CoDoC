@@ -1,0 +1,12 @@
+public void startAssistantActivity(Intent intent){
+    if (mToken == null) {
+        throw new IllegalStateException("Can't call before onCreate()");
+    }
+    try {
+        intent.migrateExtraStreamToClipData(mContext);
+        intent.prepareToLeaveProcess(mContext);
+        int res = mSystemService.startAssistantActivity(mToken, intent, intent.resolveType(mContext.getContentResolver()), mContext.getAttributionTag());
+        Instrumentation.checkStartActivityResult(res, intent);
+    } catch (RemoteException e) {
+    }
+}

@@ -1,0 +1,16 @@
+public final void setTemporaryService(@UserIdInt int userId, @NonNull String componentName, int durationMs){
+    Slog.i(mTag, "setTemporaryService(" + userId + ") to " + componentName + " for " + durationMs + "ms");
+    enforceCallingPermissionForManagement();
+    Objects.requireNonNull(componentName);
+    final int maxDurationMs = getMaximumTemporaryServiceDurationMs();
+    if (durationMs > maxDurationMs) {
+        throw new IllegalArgumentException("Max duration is " + maxDurationMs + " (called with " + durationMs + ")");
+    }
+    synchronized (mLock) {
+        final S oldService = peekServiceForUserLocked(userId);
+        if (oldService != null) {
+            oldService.removeSelfFromCacheLocked();
+        }
+        mServiceNameResolver.setTemporaryService(userId, componentName, durationMs);
+    }
+}

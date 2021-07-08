@@ -1,0 +1,28 @@
+public boolean setupIface(@NonNull String ifaceName){
+    synchronized (mLock) {
+        if (mISupplicantP2pIface != null)
+            return false;
+        ISupplicantIface ifaceHwBinder;
+        if (isV1_1()) {
+            ifaceHwBinder = addIfaceV1_1(ifaceName);
+        } else {
+            ifaceHwBinder = getIfaceV1_0(ifaceName);
+        }
+        if (ifaceHwBinder == null) {
+            Log.e(TAG, "initSupplicantP2pIface got null iface");
+            return false;
+        }
+        mISupplicantP2pIface = getP2pIfaceMockable(ifaceHwBinder);
+        if (!linkToSupplicantP2pIfaceDeath()) {
+            return false;
+        }
+        if (mISupplicantP2pIface != null && mMonitor != null) {
+            mCallback = new SupplicantP2pIfaceCallback(ifaceName, mMonitor);
+            if (!registerCallback(mCallback)) {
+                Log.e(TAG, "Callback registration failed. Initialization incomplete.");
+                return false;
+            }
+        }
+        return true;
+    }
+}

@@ -1,0 +1,9 @@
+public static void copyPermissions(@NonNull File from, @NonNull File to) throws IOException{
+    try {
+        final StructStat stat = Os.stat(from.getAbsolutePath());
+        Os.chmod(to.getAbsolutePath(), stat.st_mode);
+        Os.chown(to.getAbsolutePath(), stat.st_uid, stat.st_gid);
+    } catch (ErrnoException e) {
+        throw e.rethrowAsIOException();
+    }
+}

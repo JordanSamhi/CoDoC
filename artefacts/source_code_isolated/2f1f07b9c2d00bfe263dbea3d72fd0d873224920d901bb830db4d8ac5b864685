@@ -1,0 +1,7 @@
+public TelephonyManager createForPhoneAccountHandle(PhoneAccountHandle phoneAccountHandle){
+    int subId = getSubscriptionId(phoneAccountHandle);
+    if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+        return null;
+    }
+    return new TelephonyManager(mContext, subId);
+}

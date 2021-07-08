@@ -1,0 +1,13 @@
+public void injectTheComponentFactory(XmlResourceParser parser){
+    if (mInjectedComponents != null) {
+        Rlog.d(TAG, "Already injected.");
+        return;
+    }
+    if (parser != null) {
+        mInjectedComponents = new InjectedComponents();
+        mInjectedComponents.parseXml(parser);
+        mInjectedComponents.makeInjectedInstance();
+        boolean injectSuccessful = !TextUtils.isEmpty(mInjectedComponents.getValidatedPaths());
+        Rlog.d(TAG, "Total components injected: " + (injectSuccessful ? mInjectedComponents.mComponentNames.size() : 0));
+    }
+}

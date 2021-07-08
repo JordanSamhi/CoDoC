@@ -1,0 +1,15 @@
+public HardwareConfig getModem(int index){
+    synchronized (mLock) {
+        if (mModems.isEmpty()) {
+            loge("getModem: no registered modem device?!?");
+            return null;
+        }
+        if (index > getModemCount()) {
+            loge("getModem: out-of-bounds access for modem device " + index + " max: " + getModemCount());
+            return null;
+        }
+        if (DBG)
+            logd("getModem: " + index);
+        return mModems.get(index);
+    }
+}

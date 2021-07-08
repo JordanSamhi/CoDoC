@@ -1,0 +1,7 @@
+public LinkProperties getLinkProperties(Network network){
+    enforceAccessPermission();
+    final LinkProperties lp = getLinkProperties(getNetworkAgentInfoForNetwork(network));
+    if (lp == null)
+        return null;
+    return linkPropertiesRestrictedForCallerPermissions(lp, Binder.getCallingPid(), Binder.getCallingUid());
+}

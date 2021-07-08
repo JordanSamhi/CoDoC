@@ -1,0 +1,21 @@
+public String[] getStreamTypes(@NonNull Uri url, @NonNull String mimeTypeFilter){
+    Objects.requireNonNull(url, "url");
+    Objects.requireNonNull(mimeTypeFilter, "mimeTypeFilter");
+    try {
+        if (mWrapped != null)
+            return mWrapped.getStreamTypes(url, mimeTypeFilter);
+    } catch (RemoteException e) {
+        return null;
+    }
+    IContentProvider provider = acquireProvider(url);
+    if (provider == null) {
+        return null;
+    }
+    try {
+        return provider.getStreamTypes(url, mimeTypeFilter);
+    } catch (RemoteException e) {
+        return null;
+    } finally {
+        releaseProvider(provider);
+    }
+}

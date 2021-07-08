@@ -1,0 +1,25 @@
+public void writeOnRilSolicitedResponse(int phoneId, int rilSerial, int rilError, int rilRequest, Object ret){
+    switch(rilRequest) {
+        case RIL_REQUEST_SETUP_DATA_CALL:
+            DataCallResponse response = (DataCallResponse) ret;
+            writeOnSetupDataCallResponse(phoneId, rilSerial, rilError, rilRequest, response);
+            break;
+        case RIL_REQUEST_DEACTIVATE_DATA_CALL:
+            writeOnDeactivateDataCallResponse(phoneId, rilError);
+            break;
+        case RIL_REQUEST_HANGUP:
+        case RIL_REQUEST_HANGUP_WAITING_OR_BACKGROUND:
+        case RIL_REQUEST_HANGUP_FOREGROUND_RESUME_BACKGROUND:
+        case RIL_REQUEST_DIAL:
+        case RIL_REQUEST_ANSWER:
+            writeOnCallSolicitedResponse(phoneId, rilSerial, rilError, rilRequest);
+            break;
+        case RIL_REQUEST_SEND_SMS:
+        case RIL_REQUEST_SEND_SMS_EXPECT_MORE:
+        case RIL_REQUEST_CDMA_SEND_SMS:
+        case RIL_REQUEST_IMS_SEND_SMS:
+            SmsResponse smsResponse = (SmsResponse) ret;
+            writeOnSmsSolicitedResponse(phoneId, rilSerial, rilError, smsResponse);
+            break;
+    }
+}

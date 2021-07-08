@@ -1,0 +1,20 @@
+public T[] getSpans(int queryStart, int queryEnd, @Nullable Class<T> kind, boolean sortByInsertionOrder){
+    if (kind == null)
+        return (T[]) ArrayUtils.emptyArray(Object.class);
+    if (mSpanCount == 0)
+        return ArrayUtils.emptyArray(kind);
+    int count = countSpans(queryStart, queryEnd, kind, treeRoot());
+    if (count == 0) {
+        return ArrayUtils.emptyArray(kind);
+    }
+    T[] ret = (T[]) Array.newInstance(kind, count);
+    final int[] prioSortBuffer = sortByInsertionOrder ? obtain(count) : EmptyArray.INT;
+    final int[] orderSortBuffer = sortByInsertionOrder ? obtain(count) : EmptyArray.INT;
+    getSpansRec(queryStart, queryEnd, kind, treeRoot(), ret, prioSortBuffer, orderSortBuffer, 0, sortByInsertionOrder);
+    if (sortByInsertionOrder) {
+        sort(ret, prioSortBuffer, orderSortBuffer);
+        recycle(prioSortBuffer);
+        recycle(orderSortBuffer);
+    }
+    return ret;
+}

@@ -1,0 +1,14 @@
+public void toggleSoftInputFromWindow(IBinder windowToken, int showFlags, int hideFlags){
+    synchronized (mH) {
+        final View servedView = getServedViewLocked();
+        if (servedView == null || servedView.getWindowToken() != windowToken) {
+            return;
+        }
+        if (mCurMethod != null) {
+            try {
+                mCurMethod.toggleSoftInput(showFlags, hideFlags);
+            } catch (RemoteException e) {
+            }
+        }
+    }
+}

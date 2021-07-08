@@ -1,0 +1,11 @@
+public InsertionPointCursorController getInsertionController(){
+    if (!mInsertionControllerEnabled) {
+        return null;
+    }
+    if (mInsertionPointCursorController == null) {
+        mInsertionPointCursorController = new InsertionPointCursorController();
+        final ViewTreeObserver observer = mTextView.getViewTreeObserver();
+        observer.addOnTouchModeChangeListener(mInsertionPointCursorController);
+    }
+    return mInsertionPointCursorController;
+}

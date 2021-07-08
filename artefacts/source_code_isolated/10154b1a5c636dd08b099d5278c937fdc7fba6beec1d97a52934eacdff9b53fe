@@ -1,0 +1,11 @@
+public List<AccessibilityAction> getSystemActions(){
+    List<AccessibilityAction> systemActions = new ArrayList<>();
+    synchronized (mSystemActionLock) {
+        for (Map.Entry<Integer, RemoteAction> entry : mRegisteredSystemActions.entrySet()) {
+            AccessibilityAction systemAction = new AccessibilityAction(entry.getKey(), entry.getValue().getTitle());
+            systemActions.add(systemAction);
+        }
+        addLegacySystemActions(systemActions);
+    }
+    return systemActions;
+}

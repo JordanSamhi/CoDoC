@@ -1,0 +1,13 @@
+public boolean readNextHeader() throws IOException{
+    int result = readNextHeader_native(mBackupReader, mHeader);
+    if (result == 0) {
+        mHeaderReady = true;
+        return true;
+    } else if (result > 0) {
+        mHeaderReady = false;
+        return false;
+    } else {
+        mHeaderReady = false;
+        throw new IOException("failed: 0x" + Integer.toHexString(result));
+    }
+}

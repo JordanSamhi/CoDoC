@@ -1,0 +1,35 @@
+public boolean dump(PrintWriter pw){
+    boolean printedHeader = false;
+    boolean needSep = hasActiveRestrictions();
+    synchronized (this) {
+        for (int o = 0; o < mZenModeAudioRestrictions.size(); o++) {
+            final String op = AppOpsManager.opToName(mZenModeAudioRestrictions.keyAt(o));
+            final SparseArray<Restriction> restrictions = mZenModeAudioRestrictions.valueAt(o);
+            for (int i = 0; i < restrictions.size(); i++) {
+                if (!printedHeader) {
+                    pw.println("  Zen Mode Audio Restrictions:");
+                    printedHeader = true;
+                }
+                final int usage = restrictions.keyAt(i);
+                pw.print("    ");
+                pw.print(op);
+                pw.print(" usage=");
+                pw.print(AudioAttributes.usageToString(usage));
+                Restriction r = restrictions.valueAt(i);
+                pw.print(": mode=");
+                pw.println(AppOpsManager.modeToName(r.mode));
+                if (!r.exceptionPackages.isEmpty()) {
+                    pw.println("      Exceptions:");
+                    for (int j = 0; j < r.exceptionPackages.size(); j++) {
+                        pw.print("        ");
+                        pw.println(r.exceptionPackages.valueAt(j));
+                    }
+                }
+            }
+        }
+        if (mCameraAudioRestriction != CameraDevice.AUDIO_RESTRICTION_NONE) {
+            pw.println("  Camera Audio Restriction Mode: " + cameraRestrictionModeToName(mCameraAudioRestriction));
+        }
+    }
+    return needSep;
+}

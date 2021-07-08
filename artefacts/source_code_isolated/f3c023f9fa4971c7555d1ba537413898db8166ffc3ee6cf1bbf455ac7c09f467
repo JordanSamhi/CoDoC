@@ -1,0 +1,39 @@
+public void updateRpmStatsLocked(){
+    if (mPlatformIdleStateCallback == null)
+        return;
+    long now = SystemClock.elapsedRealtime();
+    if (now - mLastRpmStatsUpdateTimeMs >= RPM_STATS_UPDATE_FREQ_MS) {
+        mPlatformIdleStateCallback.fillLowPowerStats(mTmpRpmStats);
+        mLastRpmStatsUpdateTimeMs = now;
+    }
+    for (Map.Entry<String, RpmStats.PowerStatePlatformSleepState> pstate : mTmpRpmStats.mPlatformLowPowerStats.entrySet()) {
+        final String pName = pstate.getKey();
+        final long pTimeUs = pstate.getValue().mTimeMs * 1000;
+        final int pCount = pstate.getValue().mCount;
+        getRpmTimerLocked(pName).update(pTimeUs, pCount);
+        if (SCREEN_OFF_RPM_STATS_ENABLED) {
+            getScreenOffRpmTimerLocked(pName).update(pTimeUs, pCount);
+        }
+        for (Map.Entry<String, RpmStats.PowerStateElement> voter : pstate.getValue().mVoters.entrySet()) {
+            final String vName = pName + "." + voter.getKey();
+            final long vTimeUs = voter.getValue().mTimeMs * 1000;
+            final int vCount = voter.getValue().mCount;
+            getRpmTimerLocked(vName).update(vTimeUs, vCount);
+            if (SCREEN_OFF_RPM_STATS_ENABLED) {
+                getScreenOffRpmTimerLocked(vName).update(vTimeUs, vCount);
+            }
+        }
+    }
+    for (Map.Entry<String, RpmStats.PowerStateSubsystem> subsys : mTmpRpmStats.mSubsystemLowPowerStats.entrySet()) {
+        final String subsysName = subsys.getKey();
+        for (Map.Entry<String, RpmStats.PowerStateElement> sstate : subsys.getValue().mStates.entrySet()) {
+            final String name = subsysName + "." + sstate.getKey();
+            final long timeUs = sstate.getValue().mTimeMs * 1000;
+            final int count = sstate.getValue().mCount;
+            getRpmTimerLocked(name).update(timeUs, count);
+            if (SCREEN_OFF_RPM_STATS_ENABLED) {
+                getScreenOffRpmTimerLocked(name).update(timeUs, count);
+            }
+        }
+    }
+}

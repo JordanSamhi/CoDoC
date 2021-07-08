@@ -1,0 +1,17 @@
+public static MotionEvent obtain(long downTime, long eventTime, int action, float x, float y, float pressure, float size, int metaState, float xPrecision, float yPrecision, int deviceId, int edgeFlags, int source, int displayId){
+    MotionEvent ev = obtain();
+    synchronized (gSharedTempLock) {
+        ensureSharedTempPointerCapacity(1);
+        final PointerProperties[] pp = gSharedTempPointerProperties;
+        pp[0].clear();
+        pp[0].id = 0;
+        final PointerCoords[] pc = gSharedTempPointerCoords;
+        pc[0].clear();
+        pc[0].x = x;
+        pc[0].y = y;
+        pc[0].pressure = pressure;
+        pc[0].size = size;
+        ev.initialize(deviceId, source, displayId, action, 0, edgeFlags, metaState, 0, CLASSIFICATION_NONE, 0, 0, xPrecision, yPrecision, downTime * NS_PER_MS, eventTime * NS_PER_MS, 1, pp, pc);
+        return ev;
+    }
+}

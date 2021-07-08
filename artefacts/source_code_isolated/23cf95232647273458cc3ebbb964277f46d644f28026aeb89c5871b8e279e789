@@ -1,0 +1,23 @@
+public void writeToStream(OutputStream stream) throws IOException{
+    DataOutputStream dataStream = new DataOutputStream(stream);
+    dataStream.writeInt(VERSION_STREAM_SERIALIZER);
+    dataStream.writeByte(mType);
+    switch(mType) {
+        case TYPE_BITMAP:
+        case TYPE_ADAPTIVE_BITMAP:
+            getBitmap().compress(Bitmap.CompressFormat.PNG, 100, dataStream);
+            break;
+        case TYPE_DATA:
+            dataStream.writeInt(getDataLength());
+            dataStream.write(getDataBytes(), getDataOffset(), getDataLength());
+            break;
+        case TYPE_RESOURCE:
+            dataStream.writeUTF(getResPackage());
+            dataStream.writeInt(getResId());
+            break;
+        case TYPE_URI:
+        case TYPE_URI_ADAPTIVE_BITMAP:
+            dataStream.writeUTF(getUriString());
+            break;
+    }
+}

@@ -1,0 +1,16 @@
+public boolean getNextEvent(Event eventOut){
+    if (mIndex >= mEventCount) {
+        return false;
+    }
+    if (mParcel != null) {
+        readEventFromParcel(mParcel, eventOut);
+    } else {
+        eventOut.copyFrom(mEventsToWrite.get(mIndex));
+    }
+    mIndex++;
+    if (mIndex >= mEventCount && mParcel != null) {
+        mParcel.recycle();
+        mParcel = null;
+    }
+    return true;
+}

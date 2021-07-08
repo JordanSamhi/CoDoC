@@ -1,0 +1,80 @@
+public void dump(Printer pw, String prefix, int dumpFlags){
+    super.dumpFront(pw, prefix);
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0 && className != null) {
+        pw.println(prefix + "className=" + className);
+    }
+    if (permission != null) {
+        pw.println(prefix + "permission=" + permission);
+    }
+    pw.println(prefix + "processName=" + processName);
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0) {
+        pw.println(prefix + "taskAffinity=" + taskAffinity);
+    }
+    pw.println(prefix + "uid=" + uid + " flags=0x" + Integer.toHexString(flags) + " privateFlags=0x" + Integer.toHexString(privateFlags) + " theme=0x" + Integer.toHexString(theme));
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0) {
+        pw.println(prefix + "requiresSmallestWidthDp=" + requiresSmallestWidthDp + " compatibleWidthLimitDp=" + compatibleWidthLimitDp + " largestWidthLimitDp=" + largestWidthLimitDp);
+    }
+    pw.println(prefix + "sourceDir=" + sourceDir);
+    if (!Objects.equals(sourceDir, publicSourceDir)) {
+        pw.println(prefix + "publicSourceDir=" + publicSourceDir);
+    }
+    if (!ArrayUtils.isEmpty(splitSourceDirs)) {
+        pw.println(prefix + "splitSourceDirs=" + Arrays.toString(splitSourceDirs));
+    }
+    if (!ArrayUtils.isEmpty(splitPublicSourceDirs) && !Arrays.equals(splitSourceDirs, splitPublicSourceDirs)) {
+        pw.println(prefix + "splitPublicSourceDirs=" + Arrays.toString(splitPublicSourceDirs));
+    }
+    if (resourceDirs != null) {
+        pw.println(prefix + "resourceDirs=" + Arrays.toString(resourceDirs));
+    }
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0 && seInfo != null) {
+        pw.println(prefix + "seinfo=" + seInfo);
+        pw.println(prefix + "seinfoUser=" + seInfoUser);
+    }
+    pw.println(prefix + "dataDir=" + dataDir);
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0) {
+        pw.println(prefix + "deviceProtectedDataDir=" + deviceProtectedDataDir);
+        pw.println(prefix + "credentialProtectedDataDir=" + credentialProtectedDataDir);
+        if (sharedLibraryFiles != null) {
+            pw.println(prefix + "sharedLibraryFiles=" + Arrays.toString(sharedLibraryFiles));
+        }
+    }
+    if (classLoaderName != null) {
+        pw.println(prefix + "classLoaderName=" + classLoaderName);
+    }
+    if (!ArrayUtils.isEmpty(splitClassLoaderNames)) {
+        pw.println(prefix + "splitClassLoaderNames=" + Arrays.toString(splitClassLoaderNames));
+    }
+    pw.println(prefix + "enabled=" + enabled + " minSdkVersion=" + minSdkVersion + " targetSdkVersion=" + targetSdkVersion + " versionCode=" + longVersionCode + " targetSandboxVersion=" + targetSandboxVersion);
+    if ((dumpFlags & DUMP_FLAG_DETAILS) != 0) {
+        if (manageSpaceActivityName != null) {
+            pw.println(prefix + "manageSpaceActivityName=" + manageSpaceActivityName);
+        }
+        if (descriptionRes != 0) {
+            pw.println(prefix + "description=0x" + Integer.toHexString(descriptionRes));
+        }
+        if (uiOptions != 0) {
+            pw.println(prefix + "uiOptions=0x" + Integer.toHexString(uiOptions));
+        }
+        pw.println(prefix + "supportsRtl=" + (hasRtlSupport() ? "true" : "false"));
+        if (fullBackupContent > 0) {
+            pw.println(prefix + "fullBackupContent=@xml/" + fullBackupContent);
+        } else {
+            pw.println(prefix + "fullBackupContent=" + (fullBackupContent < 0 ? "false" : "true"));
+        }
+        pw.println(prefix + "crossProfile=" + (crossProfile ? "true" : "false"));
+        if (networkSecurityConfigRes != 0) {
+            pw.println(prefix + "networkSecurityConfigRes=0x" + Integer.toHexString(networkSecurityConfigRes));
+        }
+        if (category != CATEGORY_UNDEFINED) {
+            pw.println(prefix + "category=" + category);
+        }
+        pw.println(prefix + "HiddenApiEnforcementPolicy=" + getHiddenApiEnforcementPolicy());
+        pw.println(prefix + "usesNonSdkApi=" + usesNonSdkApi());
+        pw.println(prefix + "allowsPlaybackCapture=" + (isAudioPlaybackCaptureAllowed() ? "true" : "false"));
+        if (gwpAsanMode != GWP_ASAN_DEFAULT) {
+            pw.println(prefix + "gwpAsanMode=" + gwpAsanMode);
+        }
+    }
+    super.dumpBack(pw, prefix);
+}

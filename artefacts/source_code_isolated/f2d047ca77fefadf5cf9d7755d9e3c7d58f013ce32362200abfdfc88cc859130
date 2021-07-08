@@ -1,0 +1,17 @@
+public Set<BluetoothDevice> getBondedDevices(){
+    if (getState() != STATE_ON) {
+        return toDeviceSet(new BluetoothDevice[0]);
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return toDeviceSet(mService.getBondedDevices());
+        }
+        return toDeviceSet(new BluetoothDevice[0]);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return null;
+}

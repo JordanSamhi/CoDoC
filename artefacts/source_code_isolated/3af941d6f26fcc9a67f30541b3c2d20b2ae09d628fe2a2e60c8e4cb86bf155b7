@@ -1,0 +1,10 @@
+public void clearBssidBlocklist(){
+    if (mBssidStatusMap.size() > 0) {
+        int prevSize = mBssidStatusMap.size();
+        for (BssidStatus status : mBssidStatusMap.values()) {
+            mBssidStatusHistoryLogger.add(status, "clearBssidBlocklist");
+        }
+        mBssidStatusMap.clear();
+        localLog(TAG + " clearBssidBlocklist: num BSSIDs cleared=" + (prevSize - mBssidStatusMap.size()));
+    }
+}

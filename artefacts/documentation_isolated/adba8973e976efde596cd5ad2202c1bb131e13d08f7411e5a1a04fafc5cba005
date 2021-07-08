@@ -1,0 +1,52 @@
+
+     * Open a raw file descriptor to access data under a URI.  This
+     * interacts with the underlying {@link ContentProvider#openAssetFile}
+     * method of the provider associated with the given URI, to retrieve any file stored there.
+     *
+     * <h5>Accepts the following URI schemes:</h5>
+     * <ul>
+     * <li>content ({@link #SCHEME_CONTENT})</li>
+     * <li>android.resource ({@link #SCHEME_ANDROID_RESOURCE})</li>
+     * <li>file ({@link #SCHEME_FILE})</li>
+     * </ul>
+     * <h5>The android.resource ({@link #SCHEME_ANDROID_RESOURCE}) Scheme</h5>
+     * <p>
+     * A Uri object can be used to reference a resource in an APK file.  The
+     * Uri should be one of the following formats:
+     * <ul>
+     * <li><code>android.resource://package_name/id_number</code><br/>
+     * <code>package_name</code> is your package name as listed in your AndroidManifest.xml.
+     * For example <code>com.example.myapp</code><br/>
+     * <code>id_number</code> is the int form of the ID.<br/>
+     * The easiest way to construct this form is
+     * <pre>Uri uri = Uri.parse("android.resource://com.example.myapp/" + R.raw.my_resource");</pre>
+     * </li>
+     * <li><code>android.resource://package_name/type/name</code><br/>
+     * <code>package_name</code> is your package name as listed in your AndroidManifest.xml.
+     * For example <code>com.example.myapp</code><br/>
+     * <code>type</code> is the string form of the resource type.  For example, <code>raw</code>
+     * or <code>drawable</code>.
+     * <code>name</code> is the string form of the resource name.  That is, whatever the file
+     * name was in your res directory, without the type extension.
+     * The easiest way to construct this form is
+     * <pre>Uri uri = Uri.parse("android.resource://com.example.myapp/raw/my_resource");</pre>
+     * </li>
+     * </ul>
+     *
+     * <p>Note that if this function is called for read-only input (mode is "r")
+     * on a content: URI, it will instead call {@link #openTypedAssetFileDescriptor}
+     * for you with a MIME type of "*&#47;*".  This allows such callers to benefit
+     * from any built-in data conversion that a provider implements.
+     *
+     * @param uri The desired URI to open.
+     * @param mode The file mode to use, as per {@link ContentProvider#openAssetFile
+     * ContentProvider.openAssetFile}.
+     * @param cancellationSignal A signal to cancel the operation in progress, or null if
+     *            none. If the operation is canceled, then
+     *            {@link OperationCanceledException} will be thrown.
+     * @return Returns a new ParcelFileDescriptor pointing to the file or {@code null} if the
+     * provider recently crashed. You own this descriptor and are responsible for closing it
+     * when done.
+     * @throws FileNotFoundException Throws FileNotFoundException of no
+     * file exists under the URI or the mode is invalid.
+     

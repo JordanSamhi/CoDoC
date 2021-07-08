@@ -1,0 +1,8 @@
+public void addUserKeyAuth(int userId, int serialNumber, byte[] token, byte[] secret){
+    enforcePermission(android.Manifest.permission.STORAGE_INTERNAL);
+    try {
+        mVold.addUserKeyAuth(userId, serialNumber, encodeBytes(token), encodeBytes(secret));
+    } catch (Exception e) {
+        Slog.wtf(TAG, e);
+    }
+}

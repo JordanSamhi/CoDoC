@@ -1,0 +1,17 @@
+public void setOnImageReleasedListener(OnImageReleasedListener listener, Handler handler){
+    synchronized (mListenerLock) {
+        if (listener != null) {
+            Looper looper = handler != null ? handler.getLooper() : Looper.myLooper();
+            if (looper == null) {
+                throw new IllegalArgumentException("handler is null but the current thread is not a looper");
+            }
+            if (mListenerHandler == null || mListenerHandler.getLooper() != looper) {
+                mListenerHandler = new ListenerHandler(looper);
+            }
+            mListener = listener;
+        } else {
+            mListener = null;
+            mListenerHandler = null;
+        }
+    }
+}

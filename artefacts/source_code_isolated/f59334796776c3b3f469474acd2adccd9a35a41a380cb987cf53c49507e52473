@@ -1,0 +1,13 @@
+public static boolean startPendingIntent(View view, PendingIntent pendingIntent, Pair<Intent, ActivityOptions> options){
+    try {
+        Context context = view.getContext();
+        context.startIntentSender(pendingIntent.getIntentSender(), options.first, 0, 0, 0, options.second.toBundle());
+    } catch (IntentSender.SendIntentException e) {
+        Log.e(LOG_TAG, "Cannot send pending intent: ", e);
+        return false;
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "Cannot send pending intent due to unknown exception: ", e);
+        return false;
+    }
+    return true;
+}

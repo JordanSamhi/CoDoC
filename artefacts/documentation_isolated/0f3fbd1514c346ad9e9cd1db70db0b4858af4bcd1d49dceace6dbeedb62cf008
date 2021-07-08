@@ -1,0 +1,21 @@
+
+     * Cancel any deferred high-level input events that were previously posted to the event queue.
+     *
+     * <p>Many views post high-level events such as click handlers to the event queue
+     * to run deferred in order to preserve a desired user experience - clearing visible
+     * pressed states before executing, etc. This method will abort any events of this nature
+     * that are currently in flight.</p>
+     *
+     * <p>Custom views that generate their own high-level deferred input events should override
+     * {@link #onCancelPendingInputEvents()} and remove those pending events from the queue.</p>
+     *
+     * <p>This will also cancel pending input events for any child views.</p>
+     *
+     * <p>Note that this may not be sufficient as a debouncing strategy for clicks in all cases.
+     * This will not impact newer events posted after this call that may occur as a result of
+     * lower-level input events still waiting in the queue. If you are trying to prevent
+     * double-submitted  events for the duration of some sort of asynchronous transaction
+     * you should also take other steps to protect against unexpected double inputs e.g. calling
+     * {@link #setEnabled(boolean) setEnabled(false)} and re-enabling the view when
+     * the transaction completes, tracking already submitted transaction IDs, etc.</p>
+     

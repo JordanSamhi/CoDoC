@@ -1,0 +1,40 @@
+
+     * Allow a previously configured network to be associated with. If
+     * <code>attemptConnect</code> is true, an attempt to connect to the selected
+     * network is initiated. This may result in the asynchronous delivery
+     * of state change events.
+     * <p>
+     * <b>Note:</b> Network communication may not use Wi-Fi even if Wi-Fi is connected;
+     * traffic may instead be sent through another network, such as cellular data,
+     * Bluetooth tethering, or Ethernet. For example, traffic will never use a
+     * Wi-Fi network that does not provide Internet access (e.g. a wireless
+     * printer), if another network that does offer Internet access (e.g.
+     * cellular data) is available. Applications that need to ensure that their
+     * network traffic uses Wi-Fi should use APIs such as
+     * {@link Network#bindSocket(java.net.Socket)},
+     * {@link Network#openConnection(java.net.URL)}, or
+     * {@link ConnectivityManager#bindProcessToNetwork} to do so.
+     *
+     * Applications are not allowed to enable networks created by other
+     * applications.
+     *
+     * @param netId the ID of the network as returned by {@link #addNetwork} or {@link
+     *        #getConfiguredNetworks}.
+     * @param attemptConnect The way to select a particular network to connect to is specify
+     *        {@code true} for this parameter.
+     * @return {@code true} if the operation succeeded
+     *
+     * @deprecated
+     * a) See {@link WifiNetworkSpecifier.Builder#build()} for new
+     * mechanism to trigger connection to a Wi-Fi network.
+     * b) See {@link #addNetworkSuggestions(List)},
+     * {@link #removeNetworkSuggestions(List)} for new API to add Wi-Fi networks for consideration
+     * when auto-connecting to wifi.
+     * <b>Compatibility Note:</b> For applications targeting
+     * {@link android.os.Build.VERSION_CODES#Q} or above, this API will always fail and return
+     * {@code false}.
+     * Deprecation Exemptions:
+     * <ul>
+     * <li>Device Owner (DO), Profile Owner (PO) and system apps.
+     * </ul>
+     

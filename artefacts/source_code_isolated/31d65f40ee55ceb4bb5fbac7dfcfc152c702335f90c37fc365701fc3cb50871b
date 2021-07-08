@@ -1,0 +1,14 @@
+public void setStayOnSetting(int val){
+    int uid = Binder.getCallingUid();
+    if (uid != Process.ROOT_UID) {
+        if (!Settings.checkAndNoteWriteSettingsOperation(mContext, uid, Settings.getPackageNameForUid(mContext, uid), true)) {
+            return;
+        }
+    }
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        setStayOnSettingInternal(val);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

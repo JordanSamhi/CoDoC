@@ -1,0 +1,26 @@
+public HealthStatsParceler[] takeUidSnapshots(int[] requestUids){
+    if (!onlyCaller(requestUids)) {
+        mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BATTERY_STATS, null);
+    }
+    long ident = Binder.clearCallingIdentity();
+    int i = -1;
+    try {
+        if (shouldCollectExternalStats()) {
+            syncStats("get-health-stats-for-uids", BatteryExternalStatsWorker.UPDATE_ALL);
+        }
+        synchronized (mStats) {
+            final int N = requestUids.length;
+            final HealthStatsParceler[] results = new HealthStatsParceler[N];
+            for (i = 0; i < N; i++) {
+                results[i] = getHealthStatsForUidLocked(requestUids[i]);
+            }
+            return results;
+        }
+    } catch (Exception ex) {
+        if (DBG)
+            Slog.d(TAG, "Crashed while writing for takeUidSnapshots(" + Arrays.toString(requestUids) + ") i=" + i, ex);
+        throw ex;
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

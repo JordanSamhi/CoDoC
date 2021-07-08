@@ -1,0 +1,18 @@
+public List<BluetoothDevice> getDevicesMatchingConnectionStates(int profile, int[] states){
+    if (DBG)
+        Log.d(TAG, "getDevicesMatchingConnectionStates");
+    if (profile != BluetoothProfile.GATT && profile != BluetoothProfile.GATT_SERVER) {
+        throw new IllegalArgumentException("Profile not supported: " + profile);
+    }
+    List<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
+    try {
+        IBluetoothManager managerService = mAdapter.getBluetoothManager();
+        IBluetoothGatt iGatt = managerService.getBluetoothGatt();
+        if (iGatt == null)
+            return devices;
+        devices = iGatt.getDevicesMatchingConnectionStates(states);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return devices;
+}

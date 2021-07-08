@@ -1,0 +1,8 @@
+public Builder addChildAsString(int tag, String value){
+    if (isConstructedTag(tag)) {
+        throw new IllegalStateException("Cannot set value of a constructed tag: " + tag);
+    }
+    byte[] dataBytes = value.getBytes(StandardCharsets.UTF_8);
+    addChild(new Asn1Node(tag, dataBytes, 0, dataBytes.length));
+    return this;
+}

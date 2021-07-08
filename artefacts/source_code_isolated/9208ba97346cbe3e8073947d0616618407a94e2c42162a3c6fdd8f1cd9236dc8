@@ -1,0 +1,11 @@
+public void dump(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("Current phase: ").append(mCurrentPhase).append("\n");
+    builder.append("Services:\n");
+    final int startedLen = mServices.size();
+    for (int i = 0; i < startedLen; i++) {
+        final SystemService service = mServices.get(i);
+        builder.append("\t").append(service.getClass().getSimpleName()).append("\n");
+    }
+    Slog.e(TAG, builder.toString());
+}

@@ -1,0 +1,10 @@
+public List<PersistableBundle> getTrustAgentConfiguration(@Nullable ComponentName admin, @NonNull ComponentName agent, int userHandle){
+    if (mService != null) {
+        try {
+            return mService.getTrustAgentConfiguration(admin, agent, userHandle, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return new ArrayList<PersistableBundle>();
+}

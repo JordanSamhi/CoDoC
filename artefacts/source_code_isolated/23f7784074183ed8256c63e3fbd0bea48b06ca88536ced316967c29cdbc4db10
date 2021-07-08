@@ -1,0 +1,8 @@
+public void installExistingPackage(@NonNull String packageName, @InstallReason int installReason, @Nullable IntentSender statusReceiver){
+    Objects.requireNonNull(packageName, "packageName cannot be null");
+    try {
+        mInstaller.installExistingPackage(packageName, PackageManager.INSTALL_ALL_WHITELIST_RESTRICTED_PERMISSIONS, installReason, statusReceiver, mUserId, null);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

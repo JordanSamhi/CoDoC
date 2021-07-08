@@ -1,0 +1,24 @@
+public long getRequiredStrongAuthTimeout(ComponentName who, int userId, boolean parent){
+    if (!mHasFeature) {
+        return DevicePolicyManager.DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+    }
+    if (!mLockPatternUtils.hasSecureLockScreen()) {
+        return 0;
+    }
+    enforceFullCrossUsersPermission(userId);
+    synchronized (getLockObject()) {
+        if (who != null) {
+            ActiveAdmin admin = getActiveAdminUncheckedLocked(who, userId, parent);
+            return admin != null ? admin.strongAuthUnlockTimeout : 0;
+        }
+        List<ActiveAdmin> admins = getActiveAdminsForLockscreenPoliciesLocked(userId, parent);
+        long strongAuthUnlockTimeout = DevicePolicyManager.DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+        for (int i = 0; i < admins.size(); i++) {
+            final long timeout = admins.get(i).strongAuthUnlockTimeout;
+            if (timeout != 0) {
+                strongAuthUnlockTimeout = Math.min(timeout, strongAuthUnlockTimeout);
+            }
+        }
+        return Math.max(strongAuthUnlockTimeout, getMinimumStrongAuthTimeoutMs());
+    }
+}

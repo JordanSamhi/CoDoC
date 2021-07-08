@@ -1,0 +1,10 @@
+public static FontConfig parse(InputStream in, String fontDir) throws XmlPullParserException, IOException{
+    try {
+        XmlPullParser parser = Xml.newPullParser();
+        parser.setInput(in, null);
+        parser.nextTag();
+        return readFamilies(parser, fontDir);
+    } finally {
+        in.close();
+    }
+}

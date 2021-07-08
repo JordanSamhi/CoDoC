@@ -1,0 +1,46 @@
+public void initialize(int targetActivityType, SparseBooleanArray recentTaskIds, ActivityRecord targetActivity){
+    mTargetActivityType = targetActivityType;
+    mDisplayContent.mAppTransition.registerListenerLocked(mAppTransitionListener);
+    final ArrayList<Task> visibleTasks = mDisplayContent.getDefaultTaskDisplayArea().getVisibleTasks();
+    final ActivityStack targetStack = mDisplayContent.getDefaultTaskDisplayArea().getStack(WINDOWING_MODE_UNDEFINED, targetActivityType);
+    if (targetStack != null) {
+        final PooledConsumer c = PooledLambda.obtainConsumer((t, outList) -> {
+            if (!outList.contains(t))
+                outList.add(t);
+        }, PooledLambda.__(Task.class), visibleTasks);
+        targetStack.forAllLeafTasks(c, true);
+        c.recycle();
+    }
+    final int taskCount = visibleTasks.size();
+    for (int i = 0; i < taskCount; i++) {
+        final Task task = visibleTasks.get(i);
+        final WindowConfiguration config = task.getWindowConfiguration();
+        if (config.tasksAreFloating() || config.getWindowingMode() == WINDOWING_MODE_SPLIT_SCREEN_PRIMARY) {
+            continue;
+        }
+        addAnimation(task, !recentTaskIds.get(task.mTaskId));
+    }
+    if (mPendingAnimations.isEmpty()) {
+        cancelAnimation(REORDER_MOVE_TO_ORIGINAL_POSITION, "initialize-noVisibleTasks");
+        return;
+    }
+    try {
+        linkToDeathOfRunner();
+    } catch (RemoteException e) {
+        cancelAnimation(REORDER_MOVE_TO_ORIGINAL_POSITION, "initialize-failedToLinkToDeath");
+        return;
+    }
+    ProtoLog.d(WM_DEBUG_RECENTS_ANIMATIONS, "setHomeApp(%s)", targetActivity.getName());
+    mTargetActivityRecord = targetActivity;
+    if (targetActivity.windowsCanBeWallpaperTarget()) {
+        mDisplayContent.pendingLayoutChanges |= FINISH_LAYOUT_REDO_WALLPAPER;
+        mDisplayContent.setLayoutNeeded();
+    }
+    final ActivityStack rootHomeTask = mDisplayContent.getDefaultTaskDisplayArea().getRootHomeTask();
+    mMinimizedHomeBounds = rootHomeTask != null ? rootHomeTask.getBounds() : null;
+    mService.mWindowPlacerLocked.performSurfacePlacement();
+    mDisplayContent.mFixedRotationTransitionListener.onStartRecentsAnimation(targetActivity);
+    if (mStatusBar != null) {
+        mStatusBar.onRecentsAnimationStateChanged(true);
+    }
+}

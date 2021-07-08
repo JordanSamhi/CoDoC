@@ -1,0 +1,38 @@
+
+     * Return the maximum number of new bytes that your app can allocate for
+     * itself on the given storage volume. This value is typically larger than
+     * {@link File#getUsableSpace()}, since the system may be willing to delete
+     * cached files to satisfy an allocation request. You can then allocate
+     * space for yourself using {@link #allocateBytes(UUID, long)} or
+     * {@link #allocateBytes(FileDescriptor, long)}.
+     * <p>
+     * This method is best used as a pre-flight check, such as deciding if there
+     * is enough space to store an entire music album before you allocate space
+     * for each audio file in the album. Attempts to allocate disk space beyond
+     * the returned value will fail.
+     * <p>
+     * If the returned value is not large enough for the data you'd like to
+     * persist, you can launch {@link #ACTION_MANAGE_STORAGE} with the
+     * {@link #EXTRA_UUID} and {@link #EXTRA_REQUESTED_BYTES} options to help
+     * involve the user in freeing up disk space.
+     * <p>
+     * If you're progressively allocating an unbounded amount of storage space
+     * (such as when recording a video) you should avoid calling this method
+     * more than once every 30 seconds.
+     * <p class="note">
+     * Note: if your app uses the {@code android:sharedUserId} manifest feature,
+     * then allocatable space for all packages in your shared UID is tracked
+     * together as a single unit.
+     * </p>
+     *
+     * @param storageUuid the UUID of the storage volume where you're
+     *            considering allocating disk space, since allocatable space can
+     *            vary widely depending on the underlying storage device. The
+     *            UUID for a specific path can be obtained using
+     *            {@link #getUuidForPath(File)}.
+     * @return the maximum number of new bytes that the calling app can allocate
+     *         using {@link #allocateBytes(UUID, long)} or
+     *         {@link #allocateBytes(FileDescriptor, long)}.
+     * @throws IOException when the storage device isn't present, or when it
+     *             doesn't support allocating space.
+     

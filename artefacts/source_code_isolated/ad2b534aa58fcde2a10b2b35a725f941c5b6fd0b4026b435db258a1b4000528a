@@ -1,0 +1,11 @@
+public Builder disableAutofill(long duration){
+    throwIfDestroyed();
+    if (duration <= 0) {
+        throw new IllegalArgumentException("duration must be greater than 0");
+    }
+    if (mAuthentication != null || mDatasets != null || mSaveInfo != null || mFieldClassificationIds != null || mClientState != null) {
+        throw new IllegalStateException("disableAutofill() must be the only method called");
+    }
+    mDisableDuration = duration;
+    return this;
+}

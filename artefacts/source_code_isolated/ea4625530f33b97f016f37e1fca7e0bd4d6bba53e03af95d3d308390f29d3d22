@@ -1,0 +1,9 @@
+public static byte[] idToBytes(@Nullable UUID id){
+    if (id == null) {
+        return new byte[0];
+    }
+    final ByteBuffer buf = ByteBuffer.wrap(new byte[UUID_BYTE_SIZE]);
+    buf.putLong(id.getMostSignificantBits());
+    buf.putLong(id.getLeastSignificantBits());
+    return buf.array();
+}

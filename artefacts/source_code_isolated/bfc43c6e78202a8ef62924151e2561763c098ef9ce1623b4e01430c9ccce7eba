@@ -1,0 +1,11 @@
+public void handleCallSessionEvent(int event){
+    if (mVideoCallbacks != null) {
+        for (IVideoCallback callback : mVideoCallbacks.values()) {
+            try {
+                callback.handleCallSessionEvent(event);
+            } catch (RemoteException ignored) {
+                Log.w(this, "handleCallSessionEvent callback failed", ignored);
+            }
+        }
+    }
+}

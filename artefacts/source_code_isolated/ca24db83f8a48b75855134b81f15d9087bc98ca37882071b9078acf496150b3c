@@ -1,0 +1,12 @@
+public void inflatePendingAnimators(@NonNull Resources res, @Nullable Theme t){
+    final ArrayList<PendingAnimator> pendingAnims = mPendingAnims;
+    if (pendingAnims != null) {
+        mPendingAnims = null;
+        for (int i = 0, count = pendingAnims.size(); i < count; i++) {
+            final PendingAnimator pendingAnimator = pendingAnims.get(i);
+            final Animator animator = pendingAnimator.newInstance(res, t);
+            updateAnimatorProperty(animator, pendingAnimator.target, mVectorDrawable, mShouldIgnoreInvalidAnim);
+            addTargetAnimator(pendingAnimator.target, animator);
+        }
+    }
+}

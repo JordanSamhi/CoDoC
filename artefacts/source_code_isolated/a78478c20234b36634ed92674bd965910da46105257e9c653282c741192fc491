@@ -1,0 +1,27 @@
+public static String formatElapsedTime(StringBuilder recycle, long elapsedSeconds){
+    long hours = 0;
+    long minutes = 0;
+    long seconds = 0;
+    if (elapsedSeconds >= 3600) {
+        hours = elapsedSeconds / 3600;
+        elapsedSeconds -= hours * 3600;
+    }
+    if (elapsedSeconds >= 60) {
+        minutes = elapsedSeconds / 60;
+        elapsedSeconds -= minutes * 60;
+    }
+    seconds = elapsedSeconds;
+    StringBuilder sb = recycle;
+    if (sb == null) {
+        sb = new StringBuilder(8);
+    } else {
+        sb.setLength(0);
+    }
+    Formatter f = new Formatter(sb, Locale.getDefault());
+    initFormatStrings();
+    if (hours > 0) {
+        return f.format(sElapsedFormatHMMSS, hours, minutes, seconds).toString();
+    } else {
+        return f.format(sElapsedFormatMMSS, minutes, seconds).toString();
+    }
+}

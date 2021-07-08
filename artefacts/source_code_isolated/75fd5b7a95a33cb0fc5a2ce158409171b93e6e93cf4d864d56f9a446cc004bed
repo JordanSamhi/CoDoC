@@ -1,0 +1,9 @@
+public void wakeUpIfDozing(long time, View where, String why){
+    if (mDozing) {
+        mPowerManager.wakeUp(time, PowerManager.WAKE_REASON_GESTURE, "com.android.systemui:" + why);
+        mWakeUpComingFromTouch = true;
+        where.getLocationInWindow(mTmpInt2);
+        mWakeUpTouchLocation = new PointF(mTmpInt2[0] + where.getWidth() / 2, mTmpInt2[1] + where.getHeight() / 2);
+        mFalsingManager.onScreenOnFromTouch();
+    }
+}

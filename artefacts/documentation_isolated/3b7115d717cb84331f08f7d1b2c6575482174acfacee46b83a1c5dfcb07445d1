@@ -1,0 +1,23 @@
+
+     * Registers application to be used for HID device. Connections to HID Device are only possible
+     * when application is registered. Only one application can be registered at one time. When an
+     * application is registered, the HID Host service will be disabled until it is unregistered.
+     * When no longer used, application should be unregistered using {@link #unregisterApp()}. The
+     * app will be automatically unregistered if it is not foreground. The registration status
+     * should be tracked by the application by handling callback from Callback#onAppStatusChanged.
+     * The app registration status is not related to the return value of this method.
+     *
+     * @param sdp {@link BluetoothHidDeviceAppSdpSettings} object of HID Device SDP record. The HID
+     *     Device SDP record is required.
+     * @param inQos {@link BluetoothHidDeviceAppQosSettings} object of Incoming QoS Settings. The
+     *     Incoming QoS Settings is not required. Use null or default
+     *     BluetoothHidDeviceAppQosSettings.Builder for default values.
+     * @param outQos {@link BluetoothHidDeviceAppQosSettings} object of Outgoing QoS Settings. The
+     *     Outgoing QoS Settings is not required. Use null or default
+     *     BluetoothHidDeviceAppQosSettings.Builder for default values.
+     * @param executor {@link Executor} object on which callback will be executed. The Executor
+     *     object is required.
+     * @param callback {@link Callback} object to which callback messages will be sent. The Callback
+     *     object is required.
+     * @return true if the command is successfully sent; otherwise false.
+     

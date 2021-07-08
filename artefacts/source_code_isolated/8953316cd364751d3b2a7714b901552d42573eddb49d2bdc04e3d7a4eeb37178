@@ -1,0 +1,16 @@
+public static void whitelistIpcs(Runnable runnable){
+    if (STRICT_MODE_ENABLED && !sTemporarilyIgnoreStrictMode) {
+        synchronized (sLock) {
+            sTemporarilyIgnoreStrictMode = true;
+        }
+        try {
+            runnable.run();
+        } finally {
+            synchronized (sLock) {
+                sTemporarilyIgnoreStrictMode = false;
+            }
+        }
+    } else {
+        runnable.run();
+    }
+}

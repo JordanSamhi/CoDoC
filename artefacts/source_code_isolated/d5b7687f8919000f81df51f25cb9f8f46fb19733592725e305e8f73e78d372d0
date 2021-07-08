@@ -1,0 +1,8 @@
+public void powerOnRemoteDevice(HdmiDeviceInfo deviceInfo){
+    Objects.requireNonNull(deviceInfo);
+    try {
+        mService.powerOnRemoteDevice(deviceInfo.getLogicalAddress(), deviceInfo.getDevicePowerStatus());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

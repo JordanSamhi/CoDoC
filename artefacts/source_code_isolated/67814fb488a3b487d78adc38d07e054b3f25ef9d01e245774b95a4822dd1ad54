@@ -1,0 +1,17 @@
+public int getDeviceMode(BluetoothDevice device){
+    if (VDBG) {
+        log("getDeviceMode(" + device + ")");
+    }
+    final IBluetoothHearingAid service = getService();
+    try {
+        if (service != null && isEnabled() && isValidDevice(device)) {
+            return service.getDeviceMode(device);
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return MODE_MONAURAL;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return MODE_MONAURAL;
+    }
+}

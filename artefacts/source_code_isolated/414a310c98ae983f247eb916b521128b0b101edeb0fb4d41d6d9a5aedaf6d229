@@ -1,0 +1,11 @@
+public Bundle getVisualVoicemailSettings(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getVisualVoicemailSettings(mContext.getOpPackageName(), mSubId);
+        }
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    return null;
+}

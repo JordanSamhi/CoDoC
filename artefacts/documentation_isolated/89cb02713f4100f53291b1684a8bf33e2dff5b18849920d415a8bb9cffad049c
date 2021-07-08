@@ -1,0 +1,19 @@
+
+     * Cancels this task.
+     *
+     * <p>After this method returns this task won't be registered in {@link BackupManagerService}
+     * anymore, which means there will be no backups running unless there is a racy request
+     * coming from another thread in between. As a consequence there will be no more calls to the
+     * transport originated from this task.
+     *
+     * <p>If this method is executed while an agent is performing a backup, we will stop waiting for
+     * it, disregard its backup data and finalize the task. However, if this method is executed in
+     * between agent calls, the backup data of the last called agent will be sent to
+     * the transport and we will not consider the next agent (nor the rest of the queue), proceeding
+     * to finalize the backup.
+     *
+     * <p>Note: This method is inherently racy since there are no guarantees about how much of the
+     * task will be executed after you made the call.
+     *
+     * @param cancelAll MUST be {@code true}. Will be removed.
+     

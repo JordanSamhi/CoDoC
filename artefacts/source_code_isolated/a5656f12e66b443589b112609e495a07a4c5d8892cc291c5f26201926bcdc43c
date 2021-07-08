@@ -1,0 +1,14 @@
+public boolean userAllowsNotificationsInPublic(int userHandle){
+    if (isCurrentProfile(userHandle) && userHandle != mCurrentUserId) {
+        return true;
+    }
+    if (mUsersAllowingNotifications.indexOfKey(userHandle) < 0) {
+        final boolean allowedByUser = 0 != Settings.Secure.getIntForUser(mContext.getContentResolver(), Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, 0, userHandle);
+        final boolean allowedByDpm = adminAllowsKeyguardFeature(userHandle, DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
+        final boolean allowedBySystem = mKeyguardManager.getPrivateNotificationsAllowed();
+        final boolean allowed = allowedByUser && allowedByDpm && allowedBySystem;
+        mUsersAllowingNotifications.append(userHandle, allowed);
+        return allowed;
+    }
+    return mUsersAllowingNotifications.get(userHandle);
+}

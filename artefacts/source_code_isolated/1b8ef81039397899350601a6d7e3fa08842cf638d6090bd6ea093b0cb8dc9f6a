@@ -1,0 +1,16 @@
+public int[] getNotInstalledUserIds(){
+    int[] excludedUserIds = null;
+    for (PackageSetting ps : packages) {
+        final int[] userIds = ps.getNotInstalledUserIds();
+        if (excludedUserIds == null) {
+            excludedUserIds = userIds;
+        } else {
+            for (int userId : excludedUserIds) {
+                if (!ArrayUtils.contains(userIds, userId)) {
+                    excludedUserIds = ArrayUtils.removeInt(excludedUserIds, userId);
+                }
+            }
+        }
+    }
+    return excludedUserIds == null ? EmptyArray.INT : excludedUserIds;
+}

@@ -1,0 +1,12 @@
+public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoInternal(info);
+    if (isEnabled()) {
+        final int progress = getProgress();
+        if (progress > getMin()) {
+            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD);
+        }
+        if (progress < getMax()) {
+            info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD);
+        }
+    }
+}

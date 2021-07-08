@@ -1,0 +1,7 @@
+public FileDescriptor getFileDescriptor(){
+    checkOpen();
+    if (!hasSingleFileDescriptor()) {
+        throw new IllegalStateException("NativeHandle is not single file descriptor. Contents must" + " be retreived through getFileDescriptors and getInts.");
+    }
+    return mFds[0];
+}

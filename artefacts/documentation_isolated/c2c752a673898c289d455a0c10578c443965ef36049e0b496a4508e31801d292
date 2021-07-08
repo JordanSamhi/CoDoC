@@ -1,0 +1,23 @@
+
+     * Checks if the combination of a channel mask and virtualization mode is supported by this
+     * virtualizer.
+     * Some virtualizer implementations may only support binaural processing (i.e. only support
+     * headphone output, see {@link #VIRTUALIZATION_MODE_BINAURAL}), some may support transaural
+     * processing (i.e. for speaker output, see {@link #VIRTUALIZATION_MODE_TRANSAURAL}) for the
+     * built-in speakers. Use this method to query the virtualizer implementation capabilities.
+     * @param inputChannelMask the channel mask of the content to virtualize.
+     * @param virtualizationMode the mode for which virtualization processing is to be performed,
+     *    one of {@link #VIRTUALIZATION_MODE_BINAURAL}, {@link #VIRTUALIZATION_MODE_TRANSAURAL}.
+     * @return true if the combination of channel mask and virtualization mode is supported, false
+     *    otherwise.
+     *    <br>An indication that a certain channel mask is not supported doesn't necessarily mean
+     *    you cannot play content with that channel mask, it more likely implies the content will
+     *    be downmixed before being virtualized. For instance a virtualizer that only supports a
+     *    mask such as {@link AudioFormat#CHANNEL_OUT_STEREO}
+     *    will still be able to process content with a mask of
+     *    {@link AudioFormat#CHANNEL_OUT_5POINT1}, but will downmix the content to stereo first, and
+     *    then will virtualize, as opposed to virtualizing each channel individually.
+     * @throws IllegalStateException
+     * @throws IllegalArgumentException
+     * @throws UnsupportedOperationException
+     

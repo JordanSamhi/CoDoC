@@ -1,0 +1,5 @@
+public void registerPackageInstallerCallback(String callingPackage, IPackageInstallerCallback callback){
+    verifyCallingPackage(callingPackage);
+    UserHandle callingIdUserHandle = new UserHandle(getCallingUserId());
+    getPackageInstallerService().registerCallback(callback, eventUserId -> isEnabledProfileOf(callingIdUserHandle, new UserHandle(eventUserId), "shouldReceiveEvent"));
+}

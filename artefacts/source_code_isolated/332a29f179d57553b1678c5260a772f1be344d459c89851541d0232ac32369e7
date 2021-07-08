@@ -1,0 +1,7 @@
+public static String readCmdlineFromProcfs(int pid){
+    String[] cmdline = new String[1];
+    if (!Process.readProcFile("/proc/" + pid + "/cmdline", CMDLINE_OUT, cmdline, null, null)) {
+        return "";
+    }
+    return cmdline[0];
+}

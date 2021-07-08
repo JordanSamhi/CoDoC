@@ -1,0 +1,23 @@
+public String getLine1Number(int subId){
+    String number = null;
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            number = telephony.getLine1NumberForDisplay(subId, mContext.getOpPackageName(), mContext.getAttributionTag());
+    } catch (RemoteException ex) {
+    } catch (NullPointerException ex) {
+    }
+    if (number != null) {
+        return number;
+    }
+    try {
+        IPhoneSubInfo info = getSubscriberInfoService();
+        if (info == null)
+            return null;
+        return info.getLine1NumberForSubscriber(subId, mContext.getOpPackageName(), mContext.getAttributionTag());
+    } catch (RemoteException ex) {
+        return null;
+    } catch (NullPointerException ex) {
+        return null;
+    }
+}

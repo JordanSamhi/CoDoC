@@ -1,0 +1,15 @@
+public void setForeignKeyConstraintsEnabled(boolean enable){
+    synchronized (mLock) {
+        throwIfNotOpenLocked();
+        if (mConfigurationLocked.foreignKeyConstraintsEnabled == enable) {
+            return;
+        }
+        mConfigurationLocked.foreignKeyConstraintsEnabled = enable;
+        try {
+            mConnectionPoolLocked.reconfigure(mConfigurationLocked);
+        } catch (RuntimeException ex) {
+            mConfigurationLocked.foreignKeyConstraintsEnabled = !enable;
+            throw ex;
+        }
+    }
+}

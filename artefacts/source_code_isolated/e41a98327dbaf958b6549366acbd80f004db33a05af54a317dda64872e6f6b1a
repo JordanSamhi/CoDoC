@@ -1,0 +1,11 @@
+public List<String> getMeteredDataDisabledPackages(@NonNull ComponentName admin){
+    throwIfParentInstance("getMeteredDataDisabled");
+    if (mService != null) {
+        try {
+            return mService.getMeteredDataDisabledPackages(admin);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return new ArrayList<>();
+}

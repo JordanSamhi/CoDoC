@@ -1,0 +1,10 @@
+public static MatchResult assertMatchesRegex(String message, String expectedRegex, String actual){
+    if (actual == null) {
+        failNotMatches(message, expectedRegex, actual);
+    }
+    Matcher matcher = getMatcher(expectedRegex, actual);
+    if (!matcher.matches()) {
+        failNotMatches(message, expectedRegex, actual);
+    }
+    return matcher;
+}

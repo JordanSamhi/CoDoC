@@ -1,0 +1,8 @@
+public void revokeDefaultPermissionsFromLuiApps(@NonNull String[] packageNames, @NonNull UserHandle user, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
+    try {
+        mPermissionManager.revokeDefaultPermissionsFromLuiApps(packageNames, user.getIdentifier());
+        executor.execute(() -> callback.accept(true));
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

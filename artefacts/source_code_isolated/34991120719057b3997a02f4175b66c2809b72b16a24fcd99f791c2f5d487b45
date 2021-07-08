@@ -1,0 +1,10 @@
+public String getLine1Number(PhoneAccountHandle accountHandle){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getLine1Number(accountHandle, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException calling ITelecomService#getLine1Number.", e);
+    }
+    return null;
+}

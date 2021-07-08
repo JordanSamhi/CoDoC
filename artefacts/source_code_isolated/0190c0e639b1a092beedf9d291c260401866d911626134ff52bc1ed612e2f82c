@@ -1,0 +1,17 @@
+public boolean configureNeighborDiscoveryOffload(@NonNull String ifaceName, boolean enabled){
+    enter("enabled=%").c(enabled).flush();
+    synchronized (sLock) {
+        IWifiStaIface iface = getStaIface(ifaceName);
+        if (iface == null)
+            return boolResult(false);
+        try {
+            WifiStatus status = iface.enableNdOffload(enabled);
+            if (!ok(status))
+                return false;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+    return true;
+}

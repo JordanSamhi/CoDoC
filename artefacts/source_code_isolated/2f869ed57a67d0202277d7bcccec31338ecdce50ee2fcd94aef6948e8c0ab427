@@ -1,0 +1,15 @@
+public void setContentView(View contentView){
+    if (isShowing()) {
+        return;
+    }
+    mContentView = contentView;
+    if (mContext == null && mContentView != null) {
+        mContext = mContentView.getContext();
+    }
+    if (mWindowManager == null && mContentView != null) {
+        mWindowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+    }
+    if (mContext != null && !mAttachedInDecorSet) {
+        setAttachedInDecor(mContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+}

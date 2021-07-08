@@ -1,0 +1,10 @@
+public static Spline createSpline(float[] x, float[] y){
+    if (!isStrictlyIncreasing(x)) {
+        throw new IllegalArgumentException("The control points must all have strictly " + "increasing X values.");
+    }
+    if (isMonotonic(y)) {
+        return createMonotoneCubicSpline(x, y);
+    } else {
+        return createLinearSpline(x, y);
+    }
+}

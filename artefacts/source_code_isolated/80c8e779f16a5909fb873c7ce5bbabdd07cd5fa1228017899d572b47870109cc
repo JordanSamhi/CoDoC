@@ -1,0 +1,27 @@
+public static final void rescheduleMissedAlarms(ContentResolver cr, Context context, AlarmManager manager){
+    long now = System.currentTimeMillis();
+    long ancient = now - DateUtils.DAY_IN_MILLIS;
+    String[] projection = new String[] { ALARM_TIME };
+    Cursor cursor = cr.query(CalendarAlerts.CONTENT_URI, projection, WHERE_RESCHEDULE_MISSED_ALARMS, (new String[] { Long.toString(now), Long.toString(ancient), Long.toString(now) }), SORT_ORDER_ALARMTIME_ASC);
+    if (cursor == null) {
+        return;
+    }
+    if (DEBUG) {
+        Log.d(TAG, "missed alarms found: " + cursor.getCount());
+    }
+    try {
+        long alarmTime = -1;
+        while (cursor.moveToNext()) {
+            long newAlarmTime = cursor.getLong(0);
+            if (alarmTime != newAlarmTime) {
+                if (DEBUG) {
+                    Log.w(TAG, "rescheduling missed alarm. alarmTime: " + newAlarmTime);
+                }
+                scheduleAlarm(context, manager, newAlarmTime);
+                alarmTime = newAlarmTime;
+            }
+        }
+    } finally {
+        cursor.close();
+    }
+}

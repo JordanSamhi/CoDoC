@@ -1,0 +1,10 @@
+public LowpanCommissioningSession startCommissioningSession(@NonNull LowpanBeaconInfo beaconInfo) throws LowpanException{
+    try {
+        mBinder.startCommissioningSession(beaconInfo);
+        return new LowpanCommissioningSession(mBinder, beaconInfo, mLooper);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

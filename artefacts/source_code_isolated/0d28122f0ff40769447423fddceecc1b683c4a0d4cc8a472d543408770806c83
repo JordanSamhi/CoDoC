@@ -1,0 +1,14 @@
+public long forceLogs(){
+    final long nowNanos = System.nanoTime();
+    synchronized (mForceSemaphore) {
+        final long toWaitNanos = mLastForceNanos + FORCE_FETCH_THROTTLE_NS - nowNanos;
+        if (toWaitNanos > 0) {
+            return NANOSECONDS.toMillis(toWaitNanos) + 1;
+        }
+        mLastForceNanos = nowNanos;
+        if (mForceSemaphore.availablePermits() == 0) {
+            mForceSemaphore.release();
+        }
+        return 0;
+    }
+}

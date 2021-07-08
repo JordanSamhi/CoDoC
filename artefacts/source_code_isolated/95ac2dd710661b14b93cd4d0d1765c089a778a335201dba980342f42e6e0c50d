@@ -1,0 +1,15 @@
+public List<Pair<ScanDetail, WifiConfiguration>> getPasspointNetworkCandidates(List<ScanDetail> scanDetails, boolean isFromSuggestion){
+    mPasspointManager.sweepCache();
+    List<ScanDetail> filteredScanDetails = new ArrayList<>();
+    for (ScanDetail scanDetail : scanDetails) {
+        if (scanDetail.getNetworkDetail() == null || !scanDetail.getNetworkDetail().isInterworking() || scanDetail.getNetworkDetail().getHSRelease() == null) {
+            continue;
+        }
+        if (!scanDetail.getNetworkDetail().isInternet() || isApWanLinkStatusDown(scanDetail)) {
+            mLocalLog.log("Ignoring no internet connection Passpoint AP: " + WifiNetworkSelector.toScanId(scanDetail.getScanResult()));
+            continue;
+        }
+        filteredScanDetails.add(scanDetail);
+    }
+    return findBestMatchScanDetailForProviders(filteredScanDetails, isFromSuggestion);
+}

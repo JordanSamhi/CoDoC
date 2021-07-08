@@ -1,0 +1,13 @@
+public boolean canDisablePhysicalSubscription(){
+    if (VDBG) {
+        logd("canDisablePhysicalSubscription");
+    }
+    try {
+        ISub iSub = ISub.Stub.asInterface(TelephonyFrameworkInitializer.getTelephonyServiceManager().getSubscriptionServiceRegisterer().get());
+        if (iSub != null) {
+            return iSub.canDisablePhysicalSubscription();
+        }
+    } catch (RemoteException ex) {
+    }
+    return false;
+}

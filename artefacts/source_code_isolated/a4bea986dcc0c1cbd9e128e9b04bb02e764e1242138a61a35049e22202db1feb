@@ -1,0 +1,27 @@
+public void mapRectFromViewToScreenCoords(RectF rect, boolean clipToParent){
+    if (!hasIdentityMatrix()) {
+        getMatrix().mapRect(rect);
+    }
+    rect.offset(mLeft, mTop);
+    ViewParent parent = mParent;
+    while (parent instanceof View) {
+        View parentView = (View) parent;
+        rect.offset(-parentView.mScrollX, -parentView.mScrollY);
+        if (clipToParent) {
+            rect.left = Math.max(rect.left, 0);
+            rect.top = Math.max(rect.top, 0);
+            rect.right = Math.min(rect.right, parentView.getWidth());
+            rect.bottom = Math.min(rect.bottom, parentView.getHeight());
+        }
+        if (!parentView.hasIdentityMatrix()) {
+            parentView.getMatrix().mapRect(rect);
+        }
+        rect.offset(parentView.mLeft, parentView.mTop);
+        parent = parentView.mParent;
+    }
+    if (parent instanceof ViewRootImpl) {
+        ViewRootImpl viewRootImpl = (ViewRootImpl) parent;
+        rect.offset(0, -viewRootImpl.mCurScrollY);
+    }
+    rect.offset(mAttachInfo.mWindowLeft, mAttachInfo.mWindowTop);
+}

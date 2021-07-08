@@ -1,0 +1,9 @@
+public void sendStatus(int resultCode, Bundle results){
+    if (mWatcher != null) {
+        try {
+            mWatcher.instrumentationStatus(mComponent, resultCode, results);
+        } catch (RemoteException e) {
+            mWatcher = null;
+        }
+    }
+}

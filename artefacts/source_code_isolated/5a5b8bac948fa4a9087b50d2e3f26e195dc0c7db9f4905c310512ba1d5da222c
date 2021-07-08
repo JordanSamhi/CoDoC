@@ -1,0 +1,24 @@
+public boolean schedule(long timeout, int mode){
+    switch(mode) {
+        case MODE_CRASH_IF_SCHEDULED:
+            if (mScheduled) {
+                throw new IllegalStateException(mTag + " timeout is already scheduled");
+            }
+            break;
+        case MODE_IGNORE_IF_SCHEDULED:
+            if (mScheduled) {
+                return false;
+            }
+            break;
+        case MODE_RESCHEDULE_IF_SCHEDULED:
+            if (mScheduled) {
+                cancel();
+            }
+            break;
+        default:
+            throw new IllegalArgumentException("Illegal mode: " + mode);
+    }
+    mAlarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + timeout, mTag, this, mHandler);
+    mScheduled = true;
+    return true;
+}

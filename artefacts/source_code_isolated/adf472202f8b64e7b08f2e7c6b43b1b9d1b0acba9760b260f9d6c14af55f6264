@@ -1,0 +1,10 @@
+public void removePortAssociation(@NonNull String inputPort){
+    if (!checkCallingPermission(android.Manifest.permission.ASSOCIATE_INPUT_DEVICE_TO_DISPLAY_BY_PORT, "clearPortAssociations()")) {
+        throw new SecurityException("Requires ASSOCIATE_INPUT_DEVICE_TO_DISPLAY_BY_PORT permission");
+    }
+    Objects.requireNonNull(inputPort);
+    synchronized (mAssociationsLock) {
+        mRuntimeAssociations.remove(inputPort);
+    }
+    nativeNotifyPortAssociationsChanged(mPtr);
+}

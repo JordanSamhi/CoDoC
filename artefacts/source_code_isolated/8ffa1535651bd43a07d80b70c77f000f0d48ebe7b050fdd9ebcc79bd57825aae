@@ -1,0 +1,14 @@
+public void deleteAllInterfaces(){
+    if (mDbg)
+        Log.v(TAG, "deleteAllInterfaces");
+    onAwareDownCleanupDataPaths();
+    if (mMgr.getCapabilities() == null) {
+        Log.e(TAG, "deleteAllInterfaces: capabilities aren't initialized yet!");
+        return;
+    }
+    for (int i = 0; i < mMgr.getCapabilities().maxNdiInterfaces; ++i) {
+        String name = AWARE_INTERFACE_PREFIX + i;
+        mMgr.deleteDataPathInterface(name);
+    }
+    mMgr.releaseAwareInterface();
+}

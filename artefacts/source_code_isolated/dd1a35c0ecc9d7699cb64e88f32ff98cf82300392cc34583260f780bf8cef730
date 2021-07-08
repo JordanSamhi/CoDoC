@@ -1,0 +1,7 @@
+public void testGetCurrentTransportComponent_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.getCurrentTransportComponent(mUserTwoId);
+    verify(mUserOneService, never()).getCurrentTransportComponent();
+}

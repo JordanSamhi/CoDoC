@@ -1,0 +1,8 @@
+public void adjustStreamVolume(int streamType, int direction, int flags){
+    final IAudioService service = getService();
+    try {
+        service.adjustStreamVolume(streamType, direction, flags, getContext().getOpPackageName());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

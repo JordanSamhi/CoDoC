@@ -1,0 +1,9 @@
+public SubmitInfo submitCaptureRequests(CaptureRequest[] requests, boolean repeating){
+    Handler handler = mRequestThread.waitAndGetHandler();
+    SubmitInfo info;
+    synchronized (mIdleLock) {
+        info = mRequestQueue.submit(requests, repeating);
+        handler.sendEmptyMessage(MSG_SUBMIT_CAPTURE_REQUEST);
+    }
+    return info;
+}

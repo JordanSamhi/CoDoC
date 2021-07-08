@@ -1,0 +1,9 @@
+public void maybePersistLocked(long currentTimeMillis){
+    Objects.requireNonNull(mRotator, "missing FileRotator");
+    final long pendingBytes = mPending.getTotalBytes();
+    if (pendingBytes >= mPersistThresholdBytes) {
+        forcePersistLocked(currentTimeMillis);
+    } else {
+        mRotator.maybeRotate(currentTimeMillis);
+    }
+}

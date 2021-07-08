@@ -1,0 +1,15 @@
+public void setTickMark(Drawable tickMark){
+    if (mTickMark != null) {
+        mTickMark.setCallback(null);
+    }
+    mTickMark = tickMark;
+    if (tickMark != null) {
+        tickMark.setCallback(this);
+        tickMark.setLayoutDirection(getLayoutDirection());
+        if (tickMark.isStateful()) {
+            tickMark.setState(getDrawableState());
+        }
+        applyTickMarkTint();
+    }
+    invalidate();
+}

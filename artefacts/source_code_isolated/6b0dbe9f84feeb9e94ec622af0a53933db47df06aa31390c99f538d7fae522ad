@@ -1,0 +1,17 @@
+public void dumpDebug(ProtoOutputStream proto, long fieldId){
+    final long token = proto.start(fieldId);
+    final int size = mMimeTypes.size();
+    for (int i = 0; i < size; i++) {
+        proto.write(ClipDescriptionProto.MIME_TYPES, mMimeTypes.get(i));
+    }
+    if (mLabel != null) {
+        proto.write(ClipDescriptionProto.LABEL, mLabel.toString());
+    }
+    if (mExtras != null) {
+        mExtras.dumpDebug(proto, ClipDescriptionProto.EXTRAS);
+    }
+    if (mTimeStamp > 0) {
+        proto.write(ClipDescriptionProto.TIMESTAMP_MS, mTimeStamp);
+    }
+    proto.end(token);
+}

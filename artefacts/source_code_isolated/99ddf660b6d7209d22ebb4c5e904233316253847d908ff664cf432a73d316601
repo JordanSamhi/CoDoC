@@ -1,0 +1,8 @@
+public static float luminance(@ColorInt int color){
+    ColorSpace.Rgb cs = (ColorSpace.Rgb) ColorSpace.get(ColorSpace.Named.SRGB);
+    DoubleUnaryOperator eotf = cs.getEotf();
+    double r = eotf.applyAsDouble(red(color) / 255.0);
+    double g = eotf.applyAsDouble(green(color) / 255.0);
+    double b = eotf.applyAsDouble(blue(color) / 255.0);
+    return (float) ((0.2126 * r) + (0.7152 * g) + (0.0722 * b));
+}

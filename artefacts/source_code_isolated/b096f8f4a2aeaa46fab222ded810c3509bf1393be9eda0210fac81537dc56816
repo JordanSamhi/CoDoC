@@ -1,0 +1,6 @@
+public boolean checkPermissionWriteImages(boolean enforce, int pid, int uid, String packageName, @Nullable String featureId){
+    if (!checkExternalStoragePermissionAndAppOp(enforce, pid, uid, packageName, featureId, WRITE_EXTERNAL_STORAGE, OP_WRITE_EXTERNAL_STORAGE)) {
+        return false;
+    }
+    return noteAppOpAllowingLegacy(enforce, pid, uid, packageName, featureId, OP_WRITE_MEDIA_IMAGES);
+}

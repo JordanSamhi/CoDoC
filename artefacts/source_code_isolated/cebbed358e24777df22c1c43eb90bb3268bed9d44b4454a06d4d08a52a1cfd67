@@ -1,0 +1,15 @@
+public void readDelta(@Nullable Callback<T> cb){
+    if (!mThrottle) {
+        readDeltaImpl(cb);
+        return;
+    }
+    final long currTimeMs = SystemClock.elapsedRealtime();
+    if (currTimeMs < mLastReadTimeMs + mMinTimeBetweenRead) {
+        if (DEBUG) {
+            Slog.d(mTag, "Throttle readDelta");
+        }
+        return;
+    }
+    readDeltaImpl(cb);
+    mLastReadTimeMs = currTimeMs;
+}

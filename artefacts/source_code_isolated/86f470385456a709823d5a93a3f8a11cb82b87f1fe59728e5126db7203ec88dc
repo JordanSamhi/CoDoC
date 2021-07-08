@@ -1,0 +1,13 @@
+public Image getOutputImage(int index){
+    synchronized (mBufferLock) {
+        if (mBufferMode == BUFFER_MODE_BLOCK) {
+            throw new IncompatibleWithBlockModelException("getOutputImage() " + "is not compatible with CONFIGURE_FLAG_USE_BLOCK_MODEL. " + "Please use getOutputFrame() to get output frames.");
+        }
+    }
+    Image newImage = getImage(false, index);
+    synchronized (mBufferLock) {
+        invalidateByteBuffer(mCachedOutputBuffers, index);
+        mDequeuedOutputBuffers.put(index, newImage);
+    }
+    return newImage;
+}

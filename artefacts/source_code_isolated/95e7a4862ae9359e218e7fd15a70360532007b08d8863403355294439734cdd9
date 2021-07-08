@@ -1,0 +1,9 @@
+public boolean addAccountExplicitly(Account account, String password, Bundle extras, Map<String, Integer> visibility){
+    if (account == null)
+        throw new IllegalArgumentException("account is null");
+    try {
+        return mService.addAccountExplicitlyWithVisibility(account, password, extras, visibility);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

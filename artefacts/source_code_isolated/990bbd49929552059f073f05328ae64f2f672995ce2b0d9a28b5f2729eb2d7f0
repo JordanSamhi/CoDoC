@@ -1,0 +1,8 @@
+public NotificationChannel getNotificationChannel(@NonNull String channelId, @NonNull String conversationId){
+    INotificationManager service = getService();
+    try {
+        return service.getConversationNotificationChannel(mContext.getOpPackageName(), mContext.getUserId(), mContext.getPackageName(), channelId, true, conversationId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,6 @@
+public void registerForRilConnected(Handler h, int what, Object obj){
+    mRilConnectedRegistrants.addUnique(h, what, obj);
+    if (mRilVersion != -1) {
+        Message.obtain(h, what, new AsyncResult(obj, new Integer(mRilVersion), null)).sendToTarget();
+    }
+}

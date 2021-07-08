@@ -1,0 +1,11 @@
+public IImsConfig getImsConfig(int slotIndex, int feature){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getImsConfig(slotIndex, feature);
+        }
+    } catch (RemoteException e) {
+        Rlog.e(TAG, "getImsRegistration, RemoteException: " + e.getMessage());
+    }
+    return null;
+}

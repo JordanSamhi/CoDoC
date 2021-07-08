@@ -1,0 +1,9 @@
+public ParceledListSlice<GrantedUriPermission> getGrantedUriPermissions(@Nullable String packageName){
+    try {
+        @SuppressWarnings("unchecked")
+        final ParceledListSlice<GrantedUriPermission> castedList = getService().getGrantedUriPermissions(packageName, mContext.getUserId());
+        return castedList;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,25 @@
+public static long computeHashLong(String ssid, MacAddress mac, String l2KeySeed){
+    byte[][] parts = { l2KeySeed.getBytes(), NativeUtil.byteArrayFromArrayList(NativeUtil.decodeSsid(ssid)), mac.toByteArray() };
+    int n = 0;
+    for (int i = 0; i < parts.length; i++) {
+        n += 1 + parts[i].length;
+    }
+    byte[] mashed = new byte[n];
+    int p = 0;
+    for (int i = 0; i < parts.length; i++) {
+        byte[] part = parts[i];
+        mashed[p++] = (byte) part.length;
+        for (int j = 0; j < part.length; j++) {
+            mashed[p++] = part[j];
+        }
+    }
+    MessageDigest md;
+    try {
+        md = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+        Log.e(TAG, "SHA-256 not supported.");
+        return 0;
+    }
+    ByteBuffer buffer = ByteBuffer.wrap(md.digest(mashed));
+    return buffer.getLong();
+}

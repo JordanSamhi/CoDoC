@@ -1,0 +1,19 @@
+public static LocationRequest createFromDeprecatedProvider(@NonNull String provider, long minTime, float minDistance, boolean singleShot){
+    Preconditions.checkArgument(provider != null, "invalid null provider");
+    if (minTime < 0)
+        minTime = 0;
+    if (minDistance < 0)
+        minDistance = 0;
+    int quality;
+    if (LocationManager.PASSIVE_PROVIDER.equals(provider)) {
+        quality = POWER_NONE;
+    } else if (LocationManager.GPS_PROVIDER.equals(provider)) {
+        quality = ACCURACY_FINE;
+    } else {
+        quality = POWER_LOW;
+    }
+    LocationRequest request = new LocationRequest().setProvider(provider).setQuality(quality).setInterval(minTime).setFastestInterval(minTime).setSmallestDisplacement(minDistance);
+    if (singleShot)
+        request.setNumUpdates(1);
+    return request;
+}

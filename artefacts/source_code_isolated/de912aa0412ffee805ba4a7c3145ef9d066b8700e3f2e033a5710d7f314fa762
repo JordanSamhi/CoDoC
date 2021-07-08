@@ -1,0 +1,69 @@
+public int onCalculate(Task task, ActivityInfo.WindowLayout layout, ActivityRecord activity, ActivityRecord source, ActivityOptions options, int phase, LaunchParamsController.LaunchParams currentParams, LaunchParamsController.LaunchParams outParams){
+    int userId;
+    if (task != null) {
+        userId = task.mUserId;
+    } else if (activity != null) {
+        userId = activity.mUserId;
+    } else {
+        Slog.w(TAG, "onCalculate, cannot decide user");
+        return RESULT_SKIP;
+    }
+    TaskDisplayArea originalDisplayArea = currentParams.mPreferredTaskDisplayArea;
+    TaskDisplayArea targetDisplayArea = null;
+    if (DBG) {
+        Slog.d(TAG, "onCalculate, userId:" + userId + " original displayArea:" + originalDisplayArea + " ActivityOptions:" + options);
+    }
+    if (originalDisplayArea == null) {
+        if (options != null) {
+            WindowContainerToken daToken = options.getLaunchTaskDisplayArea();
+            if (daToken != null) {
+                originalDisplayArea = (TaskDisplayArea) WindowContainer.fromBinder(daToken.asBinder());
+            } else {
+                int originalDisplayId = options.getLaunchDisplayId();
+                if (originalDisplayId != Display.INVALID_DISPLAY) {
+                    originalDisplayArea = getDefaultTaskDisplayAreaOnDisplay(originalDisplayId);
+                }
+            }
+        }
+    }
+    decision: synchronized (mLock) {
+        if (originalDisplayArea == null && mIsSourcePreferred && source != null && (mSourcePreferredComponents == null || Collections.binarySearch(mSourcePreferredComponents, activity.info.getComponentName()) >= 0)) {
+            targetDisplayArea = source.noDisplay ? source.mHandoverTaskDisplayArea : source.getDisplayArea();
+        }
+        if (userId == mCurrentDriverUser) {
+            break decision;
+        }
+        if (userId == UserHandle.USER_SYSTEM) {
+            break decision;
+        }
+        if (mPassengerDisplays.isEmpty()) {
+            break decision;
+        }
+        if (targetDisplayArea == null) {
+            if (originalDisplayArea != null) {
+                targetDisplayArea = originalDisplayArea;
+            } else {
+                targetDisplayArea = getDefaultTaskDisplayAreaOnDisplay(Display.DEFAULT_DISPLAY);
+            }
+        }
+        Display display = targetDisplayArea.mDisplayContent.getDisplay();
+        if ((display.getFlags() & Display.FLAG_PRIVATE) != 0) {
+            break decision;
+        }
+        if (display.getType() == Display.TYPE_VIRTUAL) {
+            break decision;
+        }
+        int userForDisplay = mDisplayToProfileUserMapping.get(display.getDisplayId(), UserHandle.USER_NULL);
+        if (userForDisplay == userId) {
+            break decision;
+        }
+        targetDisplayArea = getAlternativeDisplayAreaForPassengerLocked(userId, targetDisplayArea);
+    }
+    if (targetDisplayArea != null && originalDisplayArea != targetDisplayArea) {
+        Slog.i(TAG, "Changed launching display, user:" + userId + " requested display area:" + originalDisplayArea + " target display area:" + targetDisplayArea);
+        outParams.mPreferredTaskDisplayArea = targetDisplayArea;
+        return RESULT_DONE;
+    } else {
+        return RESULT_SKIP;
+    }
+}

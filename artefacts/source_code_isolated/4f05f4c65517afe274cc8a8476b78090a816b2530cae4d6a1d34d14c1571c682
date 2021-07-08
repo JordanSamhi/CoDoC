@@ -1,0 +1,19 @@
+public boolean restoreAppData(int rollbackId, PackageRollbackInfo packageRollbackInfo, int userId, int appId, String seInfo){
+    int storageFlags = Installer.FLAG_STORAGE_DE;
+    final IntArray pendingBackups = packageRollbackInfo.getPendingBackups();
+    final List<RestoreInfo> pendingRestores = packageRollbackInfo.getPendingRestores();
+    boolean changedRollback = false;
+    if (pendingBackups != null && pendingBackups.indexOf(userId) != -1) {
+        pendingBackups.remove(pendingBackups.indexOf(userId));
+        changedRollback = true;
+    } else {
+        if (isUserCredentialLocked(userId)) {
+            pendingRestores.add(new RestoreInfo(userId, appId, seInfo));
+            changedRollback = true;
+        } else {
+            storageFlags = storageFlags | Installer.FLAG_STORAGE_CE;
+        }
+    }
+    doRestoreOrWipe(packageRollbackInfo, userId, rollbackId, appId, seInfo, storageFlags);
+    return changedRollback;
+}

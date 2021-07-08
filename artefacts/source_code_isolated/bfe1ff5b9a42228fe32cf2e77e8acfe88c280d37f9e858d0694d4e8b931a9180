@@ -1,0 +1,72 @@
+public static void formatNanpNumber(Editable text){
+    int length = text.length();
+    if (length > "+1-nnn-nnn-nnnn".length()) {
+        return;
+    } else if (length <= 5) {
+        return;
+    }
+    CharSequence saved = text.subSequence(0, length);
+    removeDashes(text);
+    length = text.length();
+    int[] dashPositions = new int[3];
+    int numDashes = 0;
+    int state = NANP_STATE_DIGIT;
+    int numDigits = 0;
+    for (int i = 0; i < length; i++) {
+        char c = text.charAt(i);
+        switch(c) {
+            case '1':
+                if (numDigits == 0 || state == NANP_STATE_PLUS) {
+                    state = NANP_STATE_ONE;
+                    break;
+                }
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '0':
+                if (state == NANP_STATE_PLUS) {
+                    text.replace(0, length, saved);
+                    return;
+                } else if (state == NANP_STATE_ONE) {
+                    dashPositions[numDashes++] = i;
+                } else if (state != NANP_STATE_DASH && (numDigits == 3 || numDigits == 6)) {
+                    dashPositions[numDashes++] = i;
+                }
+                state = NANP_STATE_DIGIT;
+                numDigits++;
+                break;
+            case '-':
+                state = NANP_STATE_DASH;
+                break;
+            case '+':
+                if (i == 0) {
+                    state = NANP_STATE_PLUS;
+                    break;
+                }
+            default:
+                text.replace(0, length, saved);
+                return;
+        }
+    }
+    if (numDigits == 7) {
+        numDashes--;
+    }
+    for (int i = 0; i < numDashes; i++) {
+        int pos = dashPositions[i];
+        text.replace(pos + i, pos + i, "-");
+    }
+    int len = text.length();
+    while (len > 0) {
+        if (text.charAt(len - 1) == '-') {
+            text.delete(len - 1, len);
+            len--;
+        } else {
+            break;
+        }
+    }
+}

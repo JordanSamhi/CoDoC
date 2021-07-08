@@ -1,0 +1,10 @@
+public List<WifiScanner.ScanSettings.HiddenNetwork> retrieveHiddenNetworkList(){
+    List<WifiScanner.ScanSettings.HiddenNetwork> hiddenList = new ArrayList<>();
+    List<WifiConfiguration> networks = getConfiguredNetworks();
+    networks.removeIf(config -> !config.hiddenSSID);
+    networks.sort(mScanListComparator);
+    for (WifiConfiguration config : networks) {
+        hiddenList.add(new WifiScanner.ScanSettings.HiddenNetwork(config.SSID));
+    }
+    return hiddenList;
+}

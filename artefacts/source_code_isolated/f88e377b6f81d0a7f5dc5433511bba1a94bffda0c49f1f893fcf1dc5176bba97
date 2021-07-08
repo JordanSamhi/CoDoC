@@ -1,0 +1,13 @@
+public static boolean isSyncActive(Account account, String authority){
+    if (account == null) {
+        throw new IllegalArgumentException("account must not be null");
+    }
+    if (authority == null) {
+        throw new IllegalArgumentException("authority must not be null");
+    }
+    try {
+        return getContentService().isSyncActive(account, authority, null);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

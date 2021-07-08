@@ -1,0 +1,23 @@
+public void startBugreport(@NonNull ParcelFileDescriptor bugreportFd, @Nullable ParcelFileDescriptor screenshotFd, @NonNull BugreportParams params, @NonNull @CallbackExecutor Executor executor, @NonNull BugreportCallback callback){
+    try {
+        Preconditions.checkNotNull(bugreportFd);
+        Preconditions.checkNotNull(params);
+        Preconditions.checkNotNull(executor);
+        Preconditions.checkNotNull(callback);
+        boolean isScreenshotRequested = screenshotFd != null;
+        if (screenshotFd == null) {
+            screenshotFd = ParcelFileDescriptor.open(new File("/dev/null"), ParcelFileDescriptor.MODE_READ_ONLY);
+        }
+        DumpstateListener dsListener = new DumpstateListener(executor, callback, isScreenshotRequested);
+        mBinder.startBugreport(-1, mContext.getOpPackageName(), bugreportFd.getFileDescriptor(), screenshotFd.getFileDescriptor(), params.getMode(), dsListener, isScreenshotRequested);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (FileNotFoundException e) {
+        Log.wtf(TAG, "Not able to find /dev/null file: ", e);
+    } finally {
+        IoUtils.closeQuietly(bugreportFd);
+        if (screenshotFd != null) {
+            IoUtils.closeQuietly(screenshotFd);
+        }
+    }
+}

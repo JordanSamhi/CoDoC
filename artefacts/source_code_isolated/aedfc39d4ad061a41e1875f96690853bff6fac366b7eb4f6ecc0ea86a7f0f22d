@@ -1,0 +1,15 @@
+public Result init(long timeout){
+    Result result = super.init(timeout);
+    if (!result.isSuccess()) {
+        return result;
+    }
+    SessionParams params = getParams();
+    BridgeContext context = getContext();
+    mIsAlphaChannelImage = ResourceHelper.getBooleanThemeFrameworkAttrValue(params.getResources(), "windowIsFloating", true);
+    mLayoutBuilder = new Layout.Builder(params, context);
+    mInflater = new BridgeInflater(context, params.getLayoutlibCallback());
+    context.setBridgeInflater(mInflater);
+    ILayoutPullParser layoutParser = params.getLayoutDescription();
+    mBlockParser = new BridgeXmlBlockParser(layoutParser, context, layoutParser.getLayoutNamespace());
+    return SUCCESS.createResult();
+}

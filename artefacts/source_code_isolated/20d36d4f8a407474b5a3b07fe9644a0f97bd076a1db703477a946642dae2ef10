@@ -1,0 +1,23 @@
+public final List<PrintJob> getActivePrintJobs(){
+    throwIfNotCalledOnMainThread();
+    if (mClient == null) {
+        return Collections.emptyList();
+    }
+    try {
+        List<PrintJob> printJobs = null;
+        List<PrintJobInfo> printJobInfos = mClient.getPrintJobInfos();
+        if (printJobInfos != null) {
+            final int printJobInfoCount = printJobInfos.size();
+            printJobs = new ArrayList<PrintJob>(printJobInfoCount);
+            for (int i = 0; i < printJobInfoCount; i++) {
+                printJobs.add(new PrintJob(this, printJobInfos.get(i), mClient));
+            }
+        }
+        if (printJobs != null) {
+            return printJobs;
+        }
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error calling getPrintJobs()", re);
+    }
+    return Collections.emptyList();
+}

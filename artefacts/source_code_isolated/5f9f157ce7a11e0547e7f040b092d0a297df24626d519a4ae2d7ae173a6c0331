@@ -1,0 +1,9 @@
+public void dumpChildrenNames(PrintWriter pw, String prefix){
+    final String childPrefix = prefix + " ";
+    pw.println(getName() + " type=" + activityTypeToString(getActivityType()) + " mode=" + windowingModeToString(getWindowingMode()) + " override-mode=" + windowingModeToString(getRequestedOverrideWindowingMode()));
+    for (int i = getChildCount() - 1; i >= 0; --i) {
+        final E cc = getChildAt(i);
+        pw.print(childPrefix + "#" + i + " ");
+        cc.dumpChildrenNames(pw, childPrefix);
+    }
+}

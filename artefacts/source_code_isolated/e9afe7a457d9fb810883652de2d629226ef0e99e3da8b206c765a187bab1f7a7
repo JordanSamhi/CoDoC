@@ -1,0 +1,69 @@
+public TetheringDependencies makeTetheringDependencies(){
+    return new TetheringDependencies() {
+
+        @Override
+        public NetworkRequest getDefaultNetworkRequest() {
+            final NetworkRequest trackDefaultRequest = new NetworkRequest.Builder().clearCapabilities().addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED).addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED).addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN).addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
+            return trackDefaultRequest;
+        }
+
+        @Override
+        public Looper getTetheringLooper() {
+            final HandlerThread tetherThread = new HandlerThread("android.tethering");
+            tetherThread.start();
+            return tetherThread.getLooper();
+        }
+
+        @Override
+        public Context getContext() {
+            return TetheringService.this;
+        }
+
+        @Override
+        public IpServer.Dependencies getIpServerDependencies() {
+            return new IpServer.Dependencies() {
+
+                @Override
+                public void makeDhcpServer(String ifName, DhcpServingParamsParcel params, DhcpServerCallbacks cb) {
+                    try {
+                        final INetworkStackConnector service = getNetworkStackConnector();
+                        if (service == null)
+                            return;
+                        service.makeDhcpServer(ifName, params, cb);
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "Fail to make dhcp server");
+                        try {
+                            cb.onDhcpServerCreated(STATUS_UNKNOWN_ERROR, null);
+                        } catch (RemoteException re) {
+                        }
+                    }
+                }
+            };
+        }
+
+        static final int NETWORKSTACK_TIMEOUT_MS = 60_000;
+
+        private INetworkStackConnector getNetworkStackConnector() {
+            IBinder connector;
+            try {
+                final long before = System.currentTimeMillis();
+                while ((connector = NetworkStack.getService()) == null) {
+                    if (System.currentTimeMillis() - before > NETWORKSTACK_TIMEOUT_MS) {
+                        Log.wtf(TAG, "Timeout, fail to get INetworkStackConnector");
+                        return null;
+                    }
+                    Thread.sleep(200);
+                }
+            } catch (InterruptedException e) {
+                Log.wtf(TAG, "Interrupted, fail to get INetworkStackConnector");
+                return null;
+            }
+            return INetworkStackConnector.Stub.asInterface(connector);
+        }
+
+        @Override
+        public BluetoothAdapter getBluetoothAdapter() {
+            return BluetoothAdapter.getDefaultAdapter();
+        }
+    };
+}

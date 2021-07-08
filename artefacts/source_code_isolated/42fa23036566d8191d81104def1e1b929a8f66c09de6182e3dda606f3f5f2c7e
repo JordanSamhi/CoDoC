@@ -1,0 +1,17 @@
+public static void setPortIdForMicrophones(ArrayList<MicrophoneInfo> microphones){
+    AudioDeviceInfo[] devices = getDevicesStatic(AudioManager.GET_DEVICES_INPUTS);
+    for (int i = microphones.size() - 1; i >= 0; i--) {
+        boolean foundPortId = false;
+        for (AudioDeviceInfo device : devices) {
+            if (device.getPort().type() == microphones.get(i).getInternalDeviceType() && TextUtils.equals(device.getAddress(), microphones.get(i).getAddress())) {
+                microphones.get(i).setId(device.getId());
+                foundPortId = true;
+                break;
+            }
+        }
+        if (!foundPortId) {
+            Log.i(TAG, "Failed to find port id for device with type:" + microphones.get(i).getType() + " address:" + microphones.get(i).getAddress());
+            microphones.remove(i);
+        }
+    }
+}

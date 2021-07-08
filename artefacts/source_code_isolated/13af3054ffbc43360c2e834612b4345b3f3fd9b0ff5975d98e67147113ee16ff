@@ -1,0 +1,20 @@
+public void restartDownload(long... ids){
+    Cursor cursor = query(new Query().setFilterById(ids));
+    try {
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            int status = cursor.getInt(cursor.getColumnIndex(COLUMN_STATUS));
+            if (status != STATUS_SUCCESSFUL && status != STATUS_FAILED) {
+                throw new IllegalArgumentException("Cannot restart incomplete download: " + cursor.getLong(cursor.getColumnIndex(COLUMN_ID)));
+            }
+        }
+    } finally {
+        cursor.close();
+    }
+    ContentValues values = new ContentValues();
+    values.put(Downloads.Impl.COLUMN_CURRENT_BYTES, 0);
+    values.put(Downloads.Impl.COLUMN_TOTAL_BYTES, -1);
+    values.putNull(Downloads.Impl._DATA);
+    values.put(Downloads.Impl.COLUMN_STATUS, Downloads.Impl.STATUS_PENDING);
+    values.put(Downloads.Impl.COLUMN_FAILED_CONNECTIONS, 0);
+    mResolver.update(mBaseUri, values, getWhereClauseForIds(ids), getWhereArgsForIds(ids));
+}

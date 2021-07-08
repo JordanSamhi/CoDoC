@@ -1,0 +1,34 @@
+public Activity startActivitySync(@NonNull Intent intent, @Nullable Bundle options){
+    validateNotAppThread();
+    final Activity activity;
+    synchronized (mSync) {
+        intent = new Intent(intent);
+        ActivityInfo ai = intent.resolveActivityInfo(getTargetContext().getPackageManager(), 0);
+        if (ai == null) {
+            throw new RuntimeException("Unable to resolve activity for: " + intent);
+        }
+        String myProc = mThread.getProcessName();
+        if (!ai.processName.equals(myProc)) {
+            throw new RuntimeException("Intent in process " + myProc + " resolved to different process " + ai.processName + ": " + intent);
+        }
+        intent.setComponent(new ComponentName(ai.applicationInfo.packageName, ai.name));
+        final ActivityWaiter aw = new ActivityWaiter(intent);
+        if (mWaitingActivities == null) {
+            mWaitingActivities = new ArrayList();
+        }
+        mWaitingActivities.add(aw);
+        getTargetContext().startActivity(intent, options);
+        do {
+            try {
+                mSync.wait();
+            } catch (InterruptedException e) {
+            }
+        } while (mWaitingActivities.contains(aw));
+        activity = aw.activity;
+    }
+    waitForEnterAnimationComplete(activity);
+    try (SurfaceControl.Transaction t = new SurfaceControl.Transaction()) {
+        t.apply(true);
+    }
+    return activity;
+}

@@ -1,0 +1,10 @@
+public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when){
+    if (verifyDrawable(who) && what != null) {
+        final long delay = when - SystemClock.uptimeMillis();
+        if (mAttachInfo != null) {
+            mAttachInfo.mViewRootImpl.mChoreographer.postCallbackDelayed(Choreographer.CALLBACK_ANIMATION, what, who, Choreographer.subtractFrameDelay(delay));
+        } else {
+            getRunQueue().postDelayed(what, delay);
+        }
+    }
+}

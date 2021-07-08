@@ -1,0 +1,10 @@
+public void unlink(@NonNull String path) throws IOException{
+    try {
+        int res = mService.unlink(mId, path);
+        if (res < 0) {
+            throw new IOException("unlink() failed with errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,12 @@
+public static StaticIpConfiguration readFromParcel(Parcel in){
+    final StaticIpConfiguration s = new StaticIpConfiguration();
+    s.ipAddress = in.readParcelable(null);
+    s.gateway = InetAddressUtils.unparcelInetAddress(in);
+    s.dnsServers.clear();
+    int size = in.readInt();
+    for (int i = 0; i < size; i++) {
+        s.dnsServers.add(InetAddressUtils.unparcelInetAddress(in));
+    }
+    s.domains = in.readString();
+    return s;
+}

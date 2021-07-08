@@ -1,0 +1,12 @@
+public void startOneTouchRecord(int recorderAddress, @NonNull RecordSource source){
+    if (source == null) {
+        throw new IllegalArgumentException("source must not be null.");
+    }
+    try {
+        byte[] data = new byte[source.getDataSize(true)];
+        source.toByteArray(true, data, 0);
+        mService.startOneTouchRecord(recorderAddress, data);
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to start record: ", e);
+    }
+}

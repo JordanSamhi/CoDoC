@@ -1,0 +1,12 @@
+public List<PrintServiceInfo> getPrintServices(int selectionFlags){
+    Preconditions.checkFlagsArgument(selectionFlags, ALL_SERVICES);
+    try {
+        List<PrintServiceInfo> services = mService.getPrintServices(selectionFlags, mUserId);
+        if (services != null) {
+            return services;
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+    return Collections.emptyList();
+}

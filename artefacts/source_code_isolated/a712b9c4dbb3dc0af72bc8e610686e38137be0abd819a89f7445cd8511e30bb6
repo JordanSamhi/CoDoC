@@ -1,0 +1,16 @@
+public boolean isSameTrustConfiguration(String hostname1, String hostname2){
+    if (mIsSameTrustConfiguration == null) {
+        return true;
+    }
+    try {
+        return (Boolean) mIsSameTrustConfiguration.invoke(mTrustManager, hostname1, hostname2);
+    } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to call isSameTrustConfiguration", e);
+    } catch (InvocationTargetException e) {
+        if (e.getCause() instanceof RuntimeException) {
+            throw (RuntimeException) e.getCause();
+        } else {
+            throw new RuntimeException("isSameTrustConfiguration failed", e.getCause());
+        }
+    }
+}

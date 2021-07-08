@@ -1,0 +1,12 @@
+public void setMinimized(final boolean minimized){
+    if (DEBUG)
+        Slog.d(TAG, "posting ext setMinimized " + minimized + " vis:" + mVisible);
+    mHandler.post(() -> {
+        if (DEBUG)
+            Slog.d(TAG, "run posted ext setMinimized " + minimized + " vis:" + mVisible);
+        if (!mVisible) {
+            return;
+        }
+        setHomeMinimized(minimized, mHomeStackResizable);
+    });
+}

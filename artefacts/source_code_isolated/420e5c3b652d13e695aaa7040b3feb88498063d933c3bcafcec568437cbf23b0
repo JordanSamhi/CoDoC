@@ -1,0 +1,10 @@
+public void oemHookRaw(int indicationType, ArrayList<Byte> data){
+    mRil.processIndication(indicationType);
+    byte[] response = RIL.arrayListToPrimitiveArray(data);
+    if (RIL.RILJ_LOGD) {
+        mRil.unsljLogvRet(RIL_UNSOL_OEM_HOOK_RAW, com.android.internal.telephony.uicc.IccUtils.bytesToHexString(response));
+    }
+    if (mRil.mUnsolOemHookRawRegistrant != null) {
+        mRil.mUnsolOemHookRawRegistrant.notifyRegistrant(new AsyncResult(null, response, null));
+    }
+}

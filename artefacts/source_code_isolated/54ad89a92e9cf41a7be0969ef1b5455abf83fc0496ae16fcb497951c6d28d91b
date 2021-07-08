@@ -1,0 +1,12 @@
+public static MoveToDisplayItem obtain(int targetDisplayId, @NonNull Configuration configuration){
+    if (configuration == null) {
+        throw new IllegalArgumentException("Configuration must not be null");
+    }
+    MoveToDisplayItem instance = ObjectPool.obtain(MoveToDisplayItem.class);
+    if (instance == null) {
+        instance = new MoveToDisplayItem();
+    }
+    instance.mTargetDisplayId = targetDisplayId;
+    instance.mConfiguration = configuration;
+    return instance;
+}

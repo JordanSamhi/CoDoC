@@ -1,0 +1,14 @@
+public RemoteViews createHeadsUpContentView(boolean increasedHeight){
+    if (mN.headsUpContentView != null && useExistingRemoteView()) {
+        return mN.headsUpContentView;
+    } else if (mStyle != null) {
+        final RemoteViews styleView = mStyle.makeHeadsUpContentView(increasedHeight);
+        if (styleView != null) {
+            return styleView;
+        }
+    } else if (mActions.size() == 0) {
+        return null;
+    }
+    StandardTemplateParams p = mParams.reset().fillTextsFrom(this).setMaxRemoteInputHistory(1);
+    return applyStandardTemplateWithActions(getBigBaseLayoutResource(), p, null);
+}

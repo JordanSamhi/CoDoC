@@ -1,0 +1,9 @@
+public int getIndexBefore(long time){
+    int index = Arrays.binarySearch(bucketStart, 0, bucketCount, time);
+    if (index < 0) {
+        index = (~index) - 1;
+    } else {
+        index -= 1;
+    }
+    return MathUtils.constrain(index, 0, bucketCount - 1);
+}

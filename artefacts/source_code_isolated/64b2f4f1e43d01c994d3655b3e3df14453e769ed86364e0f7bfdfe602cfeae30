@@ -1,0 +1,26 @@
+public void addFocusables(ArrayList<View> views, int direction, int focusableMode){
+    final int focusableCount = views.size();
+    final int descendantFocusability = getDescendantFocusability();
+    if (descendantFocusability != FOCUS_BLOCK_DESCENDANTS) {
+        for (int i = 0; i < getChildCount(); i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() == VISIBLE) {
+                ItemInfo ii = infoForChild(child);
+                if (ii != null && ii.position == mCurItem) {
+                    child.addFocusables(views, direction, focusableMode);
+                }
+            }
+        }
+    }
+    if (descendantFocusability != FOCUS_AFTER_DESCENDANTS || (focusableCount == views.size())) {
+        if (!isFocusable()) {
+            return;
+        }
+        if ((focusableMode & FOCUSABLES_TOUCH_MODE) == FOCUSABLES_TOUCH_MODE && isInTouchMode() && !isFocusableInTouchMode()) {
+            return;
+        }
+        if (views != null) {
+            views.add(this);
+        }
+    }
+}

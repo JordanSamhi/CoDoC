@@ -1,0 +1,7 @@
+public void update(Matrix z){
+    Matrix y = z.minus(mH.dot(mx));
+    Matrix tS = mH.dot(mP).dotTranspose(mH).plus(mR);
+    Matrix tK = mP.dotTranspose(mH).dot(tS.inverse());
+    mx = mx.plus(tK.dot(y));
+    mP = mP.minus(tK.dot(mH).dot(mP));
+}

@@ -1,0 +1,62 @@
+public void copyFrom(PermissionsState other){
+    if (other == this) {
+        return;
+    }
+    synchronized (mLock) {
+        if (mPermissions != null) {
+            if (other.mPermissions == null) {
+                mPermissions = null;
+            } else {
+                mPermissions.clear();
+            }
+        }
+        if (other.mPermissions != null) {
+            if (mPermissions == null) {
+                mPermissions = new ArrayMap<>();
+            }
+            final int permissionCount = other.mPermissions.size();
+            for (int i = 0; i < permissionCount; i++) {
+                String name = other.mPermissions.keyAt(i);
+                PermissionData permissionData = other.mPermissions.valueAt(i);
+                mPermissions.put(name, new PermissionData(permissionData));
+            }
+        }
+    }
+    mGlobalGids = NO_GIDS;
+    if (other.mGlobalGids != NO_GIDS) {
+        mGlobalGids = Arrays.copyOf(other.mGlobalGids, other.mGlobalGids.length);
+    }
+    if (mMissing != null) {
+        if (other.mMissing == null) {
+            mMissing = null;
+        } else {
+            mMissing.clear();
+        }
+    }
+    if (other.mMissing != null) {
+        if (mMissing == null) {
+            mMissing = new SparseBooleanArray();
+        }
+        final int missingSize = other.mMissing.size();
+        for (int i = 0; i < missingSize; i++) {
+            mMissing.put(other.mMissing.keyAt(i), other.mMissing.valueAt(i));
+        }
+    }
+    if (mPermissionReviewRequired != null) {
+        if (other.mPermissionReviewRequired == null) {
+            mPermissionReviewRequired = null;
+        } else {
+            mPermissionReviewRequired.clear();
+        }
+    }
+    if (other.mPermissionReviewRequired != null) {
+        if (mPermissionReviewRequired == null) {
+            mPermissionReviewRequired = new SparseBooleanArray();
+        }
+        final int userCount = other.mPermissionReviewRequired.size();
+        for (int i = 0; i < userCount; i++) {
+            final boolean reviewRequired = other.mPermissionReviewRequired.valueAt(i);
+            mPermissionReviewRequired.put(other.mPermissionReviewRequired.keyAt(i), reviewRequired);
+        }
+    }
+}

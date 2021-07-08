@@ -1,0 +1,23 @@
+public void onDefaultNetworkChanged(@NonNull Network network){
+    Log.d(TAG, "Starting IKEv2/IPsec session on new network: " + network);
+    mExecutor.execute(() -> {
+        try {
+            if (!mIsRunning) {
+                Log.d(TAG, "onDefaultNetworkChanged after exit");
+                return;
+            }
+            resetIkeState();
+            mActiveNetwork = network;
+            final IkeSessionParams ikeSessionParams = VpnIkev2Utils.buildIkeSessionParams(mContext, mProfile, network);
+            final ChildSessionParams childSessionParams = VpnIkev2Utils.buildChildSessionParams(mProfile.getAllowedAlgorithms());
+            final InetAddress address = InetAddress.getLocalHost();
+            mTunnelIface = mIpSecManager.createIpSecTunnelInterface(address, address, network);
+            mNetd.setInterfaceUp(mTunnelIface.getInterfaceName());
+            mSession = mIkev2SessionCreator.createIkeSession(mContext, ikeSessionParams, childSessionParams, mExecutor, new VpnIkev2Utils.IkeSessionCallbackImpl(TAG, IkeV2VpnRunner.this, network), new VpnIkev2Utils.ChildSessionCallbackImpl(TAG, IkeV2VpnRunner.this, network));
+            Log.d(TAG, "Ike Session started for network " + network);
+        } catch (Exception e) {
+            Log.i(TAG, "Setup failed for network " + network + ". Aborting", e);
+            onSessionLost(network);
+        }
+    });
+}

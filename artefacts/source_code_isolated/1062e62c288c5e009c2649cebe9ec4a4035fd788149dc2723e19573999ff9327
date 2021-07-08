@@ -1,0 +1,13 @@
+public String getDestinationString(String transportName){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "getDestinationString");
+    try {
+        String string = mTransportManager.getTransportCurrentDestinationString(transportName);
+        if (MORE_DEBUG) {
+            Slog.d(TAG, addUserIdToLogMessage(mUserId, "getDestinationString() returning " + string));
+        }
+        return string;
+    } catch (TransportNotRegisteredException e) {
+        Slog.e(TAG, addUserIdToLogMessage(mUserId, "Unable to get destination string from transport: " + e.getMessage()));
+        return null;
+    }
+}

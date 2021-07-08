@@ -1,0 +1,15 @@
+public Drawable loadIcon(PackageManager pm){
+    Drawable dr = null;
+    if (resolvePackageName != null && iconResourceId != 0) {
+        dr = pm.getDrawable(resolvePackageName, iconResourceId, null);
+    }
+    ComponentInfo ci = getComponentInfo();
+    if (dr == null && iconResourceId != 0) {
+        ApplicationInfo ai = ci.applicationInfo;
+        dr = pm.getDrawable(ci.packageName, iconResourceId, ai);
+    }
+    if (dr != null) {
+        return pm.getUserBadgedIcon(dr, new UserHandle(pm.getUserId()));
+    }
+    return ci.loadIcon(pm);
+}

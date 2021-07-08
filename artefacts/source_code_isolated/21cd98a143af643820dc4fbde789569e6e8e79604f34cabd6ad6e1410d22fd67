@@ -1,0 +1,18 @@
+public long setupQuotasFromFile() throws IOException{
+    Pair<Long, List<CacheQuotaHint>> cachedValues = null;
+    try (FileInputStream stream = mPreviousValuesFile.openRead()) {
+        try {
+            cachedValues = readFromXml(stream);
+        } catch (XmlPullParserException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    } catch (FileNotFoundException e) {
+        return -1;
+    }
+    if (cachedValues == null) {
+        Slog.e(TAG, "An error occurred while parsing the cache quota file.");
+        return -1;
+    }
+    pushProcessedQuotas(cachedValues.second);
+    return cachedValues.first;
+}

@@ -1,0 +1,9 @@
+public static MediaRouter2 getInstance(@NonNull Context context){
+    Objects.requireNonNull(context, "context must not be null");
+    synchronized (sRouterLock) {
+        if (sInstance == null) {
+            sInstance = new MediaRouter2(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+}

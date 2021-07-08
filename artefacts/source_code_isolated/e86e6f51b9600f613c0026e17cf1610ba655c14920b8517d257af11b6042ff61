@@ -1,0 +1,19 @@
+public Result init(long timeout){
+    Result result = acquireLock(timeout);
+    if (result != null) {
+        return result;
+    }
+    HardwareConfig hardwareConfig = mParams.getHardwareConfig();
+    DisplayMetrics metrics = new DisplayMetrics();
+    metrics.densityDpi = metrics.noncompatDensityDpi = hardwareConfig.getDensity().getDpiValue();
+    metrics.density = metrics.noncompatDensity = metrics.densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT;
+    metrics.scaledDensity = metrics.noncompatScaledDensity = metrics.density;
+    metrics.widthPixels = metrics.noncompatWidthPixels = hardwareConfig.getScreenWidth();
+    metrics.heightPixels = metrics.noncompatHeightPixels = hardwareConfig.getScreenHeight();
+    metrics.xdpi = metrics.noncompatXdpi = hardwareConfig.getXdpi();
+    metrics.ydpi = metrics.noncompatYdpi = hardwareConfig.getYdpi();
+    RenderResources resources = mParams.getResources();
+    mContext = new BridgeContext(mParams.getProjectKey(), metrics, resources, mParams.getAssets(), mParams.getLayoutlibCallback(), getConfiguration(mParams), mParams.getTargetSdkVersion(), mParams.isRtlSupported(), Boolean.TRUE.equals(mParams.getFlag(RenderParamsFlags.FLAG_ENABLE_SHADOW)), Boolean.TRUE.equals(mParams.getFlag(RenderParamsFlags.FLAG_RENDER_HIGH_QUALITY_SHADOW)));
+    setUp();
+    return SUCCESS.createResult();
+}

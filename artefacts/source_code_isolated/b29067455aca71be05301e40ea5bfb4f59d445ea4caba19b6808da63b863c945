@@ -1,0 +1,40 @@
+public boolean updateAddressDisplay(ImsCall imsCall){
+    if (imsCall == null) {
+        return false;
+    }
+    boolean changed = false;
+    ImsCallProfile callProfile = imsCall.getCallProfile();
+    if (callProfile != null && isIncoming()) {
+        String address = callProfile.getCallExtra(ImsCallProfile.EXTRA_OI);
+        String name = callProfile.getCallExtra(ImsCallProfile.EXTRA_CNA);
+        int nump = ImsCallProfile.OIRToPresentation(callProfile.getCallExtraInt(ImsCallProfile.EXTRA_OIR));
+        int namep = ImsCallProfile.OIRToPresentation(callProfile.getCallExtraInt(ImsCallProfile.EXTRA_CNAP));
+        if (Phone.DEBUG_PHONE) {
+            Rlog.d(LOG_TAG, "updateAddressDisplay: callId = " + getTelecomCallId() + " address = " + Rlog.pii(LOG_TAG, address) + " name = " + Rlog.pii(LOG_TAG, name) + " nump = " + nump + " namep = " + namep);
+        }
+        if (!mIsMergeInProcess) {
+            if (!equalsBaseDialString(mAddress, address)) {
+                mAddress = address;
+                changed = true;
+            }
+            if (TextUtils.isEmpty(name)) {
+                if (!TextUtils.isEmpty(mCnapName)) {
+                    mCnapName = "";
+                    changed = true;
+                }
+            } else if (!name.equals(mCnapName)) {
+                mCnapName = name;
+                changed = true;
+            }
+            if (mNumberPresentation != nump) {
+                mNumberPresentation = nump;
+                changed = true;
+            }
+            if (mCnapNamePresentation != namep) {
+                mCnapNamePresentation = namep;
+                changed = true;
+            }
+        }
+    }
+    return changed;
+}

@@ -1,0 +1,9 @@
+public void setTransitionAlpha(float alpha){
+    ensureTransformationInfo();
+    if (mTransformationInfo.mTransitionAlpha != alpha) {
+        mTransformationInfo.mTransitionAlpha = alpha;
+        mPrivateFlags &= ~PFLAG_ALPHA_SET;
+        invalidateViewProperty(true, false);
+        mRenderNode.setAlpha(getFinalAlpha());
+    }
+}

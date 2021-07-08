@@ -1,0 +1,34 @@
+public static boolean areActionsVisiblyDifferent(Notification first, Notification second){
+    Notification.Action[] firstAs = first.actions;
+    Notification.Action[] secondAs = second.actions;
+    if (firstAs == null && secondAs != null || firstAs != null && secondAs == null) {
+        return true;
+    }
+    if (firstAs != null && secondAs != null) {
+        if (firstAs.length != secondAs.length) {
+            return true;
+        }
+        for (int i = 0; i < firstAs.length; i++) {
+            if (!Objects.equals(String.valueOf(firstAs[i].title), String.valueOf(secondAs[i].title))) {
+                return true;
+            }
+            RemoteInput[] firstRs = firstAs[i].getRemoteInputs();
+            RemoteInput[] secondRs = secondAs[i].getRemoteInputs();
+            if (firstRs == null) {
+                firstRs = new RemoteInput[0];
+            }
+            if (secondRs == null) {
+                secondRs = new RemoteInput[0];
+            }
+            if (firstRs.length != secondRs.length) {
+                return true;
+            }
+            for (int j = 0; j < firstRs.length; j++) {
+                if (!Objects.equals(String.valueOf(firstRs[j].getLabel()), String.valueOf(secondRs[j].getLabel()))) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}

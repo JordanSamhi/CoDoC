@@ -1,0 +1,16 @@
+public boolean shouldForceAutoNetworkSelect(){
+    int nwMode = Phone.PREFERRED_NT_MODE;
+    int subId = getSubId();
+    if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+        return false;
+    }
+    nwMode = android.provider.Settings.Global.getInt(mContext.getContentResolver(), android.provider.Settings.Global.PREFERRED_NETWORK_MODE + subId, nwMode);
+    logd("shouldForceAutoNetworkSelect in mode = " + nwMode);
+    if (isManualSelProhibitedInGlobalMode() && ((nwMode == TelephonyManager.NETWORK_MODE_LTE_CDMA_EVDO_GSM_WCDMA) || (nwMode == TelephonyManager.NETWORK_MODE_GLOBAL))) {
+        logd("Should force auto network select mode = " + nwMode);
+        return true;
+    } else {
+        logd("Should not force auto network select mode = " + nwMode);
+    }
+    return false;
+}

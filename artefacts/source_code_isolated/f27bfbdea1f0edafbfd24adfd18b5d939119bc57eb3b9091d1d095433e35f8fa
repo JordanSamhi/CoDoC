@@ -1,0 +1,8 @@
+public int getFft(byte[] fft) throws IllegalStateException{
+    synchronized (mStateLock) {
+        if (mState != STATE_ENABLED) {
+            throw (new IllegalStateException("getFft() called in wrong state: " + mState));
+        }
+        return native_getFft(fft);
+    }
+}

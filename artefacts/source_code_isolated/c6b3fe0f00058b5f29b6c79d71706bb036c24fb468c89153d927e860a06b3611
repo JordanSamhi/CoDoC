@@ -1,0 +1,10 @@
+public void mergeStats(SysMemUsageTable that){
+    final int N = that.getKeyCount();
+    for (int i = 0; i < N; i++) {
+        final int key = that.getKeyAt(i);
+        final int state = SparseMappingTable.getIdFromKey(key);
+        final long[] addData = that.getArrayForKey(key);
+        final int addOff = SparseMappingTable.getIndexFromKey(key);
+        mergeStats(state, addData, addOff);
+    }
+}

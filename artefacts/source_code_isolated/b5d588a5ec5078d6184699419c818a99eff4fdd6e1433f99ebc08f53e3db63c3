@@ -1,0 +1,13 @@
+public void advance(int numBytes){
+    if (numBytes < 0) {
+        throw new IllegalArgumentException();
+    }
+    long longNewIndex = (long) mIndex + (long) numBytes;
+    if (longNewIndex <= (long) mBytes.length) {
+        mReadCount += numBytes;
+        mIndex += numBytes;
+    } else {
+        mIndex = mBytes.length;
+        throw new IndexOutOfBoundsException();
+    }
+}

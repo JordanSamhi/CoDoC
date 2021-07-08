@@ -1,0 +1,16 @@
+public void addPrintJobStateChangeListener(PrintJobStateChangeListener listener){
+    if (mService == null) {
+        Log.w(LOG_TAG, "Feature android.software.print not available");
+        return;
+    }
+    if (mPrintJobStateChangeListeners == null) {
+        mPrintJobStateChangeListeners = new ArrayMap<>();
+    }
+    PrintJobStateChangeListenerWrapper wrappedListener = new PrintJobStateChangeListenerWrapper(listener, mHandler);
+    try {
+        mService.addPrintJobStateChangeListener(wrappedListener, mAppId, mUserId);
+        mPrintJobStateChangeListeners.put(listener, wrappedListener);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

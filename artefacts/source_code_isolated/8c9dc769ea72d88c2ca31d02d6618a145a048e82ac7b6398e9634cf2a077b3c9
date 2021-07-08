@@ -1,0 +1,14 @@
+public TestAccessPointBuilder setLevel(int level){
+    WifiManager wifiManager = mContext.getSystemService(WifiManager.class);
+    int maxSignalLevel = wifiManager.getMaxSignalLevel();
+    if (level == 0) {
+        mRssi = MIN_RSSI;
+    } else if (level > maxSignalLevel) {
+        mRssi = MAX_RSSI;
+    } else {
+        float inputRange = MAX_RSSI - MIN_RSSI;
+        float outputRange = maxSignalLevel;
+        mRssi = (int) (level * inputRange / outputRange + MIN_RSSI);
+    }
+    return this;
+}

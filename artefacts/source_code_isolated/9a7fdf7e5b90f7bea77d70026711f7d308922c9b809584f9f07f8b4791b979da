@@ -1,0 +1,17 @@
+public void getBounds(@IntRange(from = 0) int start, @IntRange(from = 0) int end, @NonNull Rect bounds){
+    Preconditions.checkArgument(0 <= start && start <= mText.length(), "invalid start offset");
+    Preconditions.checkArgument(0 <= end && end <= mText.length(), "invalid end offset");
+    Preconditions.checkArgument(start <= end, "start offset can not be larger than end offset");
+    Preconditions.checkNotNull(bounds);
+    if (start == end) {
+        bounds.set(0, 0, 0, 0);
+        return;
+    }
+    final int paraIndex = findParaIndex(start);
+    final int paraStart = getParagraphStart(paraIndex);
+    final int paraEnd = getParagraphEnd(paraIndex);
+    if (start < paraStart || paraEnd < end) {
+        throw new IllegalArgumentException("Cannot measured across the paragraph:" + "para: (" + paraStart + ", " + paraEnd + "), " + "request: (" + start + ", " + end + ")");
+    }
+    getMeasuredParagraph(paraIndex).getBounds(start - paraStart, end - paraStart, bounds);
+}

@@ -1,0 +1,32 @@
+public boolean noteConnectionFailureAndTriggerIfNeeded(String ssid, String bssid, int reason){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "noteConnectionFailureAndTriggerIfNeeded: [" + ssid + ", " + bssid + ", " + reason + "]");
+    }
+    updateFailureCountForNetwork(ssid, bssid, reason);
+    if (!mWatchdogAllowedToTrigger) {
+        mWifiMetrics.incrementWatchdogTotalConnectionFailureCountAfterTrigger();
+        mWatchdogFixedWifi = false;
+    }
+    boolean isRestartNeeded = checkTriggerCondition();
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "isRestartNeeded = " + isRestartNeeded);
+    }
+    if (isRestartNeeded) {
+        if (getWifiWatchdogFeature()) {
+            localLog("Trigger recovery: setWatchdogTriggerEnabled to false");
+            setWatchdogTriggerEnabled(false);
+            mWatchdogFixedWifi = true;
+            loge("Watchdog triggering recovery");
+            mSsidLastTrigger = ssid;
+            mTimeLastTrigger = mClock.getElapsedSinceBootMillis();
+            localLog(toString());
+            mWifiInjector.getSelfRecovery().trigger(SelfRecovery.REASON_LAST_RESORT_WATCHDOG);
+            incrementWifiMetricsTriggerCounts();
+        } else {
+            loge("bugreport notification");
+            setWatchdogTriggerEnabled(false);
+            takeBugReportWithCurrentProbability("Wifi Watchdog bite");
+        }
+    }
+    return isRestartNeeded;
+}

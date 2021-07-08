@@ -1,0 +1,19 @@
+public void notifyChildRebuilt(){
+    if (mView instanceof RootViewSurfaceTaker) {
+        if (mSurfaceHolderCallback != null) {
+            mSurfaceHolder.removeCallback(mSurfaceHolderCallback);
+        }
+        mSurfaceHolderCallback = ((RootViewSurfaceTaker) mView).willYouTakeTheSurface();
+        if (mSurfaceHolderCallback != null) {
+            mSurfaceHolder = new TakenSurfaceHolder();
+            mSurfaceHolder.setFormat(PixelFormat.UNKNOWN);
+            mSurfaceHolder.addCallback(mSurfaceHolderCallback);
+        } else {
+            mSurfaceHolder = null;
+        }
+        mInputQueueCallback = ((RootViewSurfaceTaker) mView).willYouTakeTheInputQueue();
+        if (mInputQueueCallback != null) {
+            mInputQueueCallback.onInputQueueCreated(mInputQueue);
+        }
+    }
+}

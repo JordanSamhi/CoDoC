@@ -1,0 +1,21 @@
+public UUID getUuidForPath(@NonNull File path) throws IOException{
+    Preconditions.checkNotNull(path);
+    final String pathString = path.getCanonicalPath();
+    if (FileUtils.contains(Environment.getDataDirectory().getAbsolutePath(), pathString)) {
+        return UUID_DEFAULT;
+    }
+    try {
+        for (VolumeInfo vol : mStorageManager.getVolumes(0)) {
+            if (vol.path != null && FileUtils.contains(vol.path, pathString) && vol.type != VolumeInfo.TYPE_PUBLIC && vol.type != VolumeInfo.TYPE_STUB) {
+                try {
+                    return convert(vol.fsUuid);
+                } catch (IllegalArgumentException e) {
+                    continue;
+                }
+            }
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new FileNotFoundException("Failed to find a storage device for " + path);
+}

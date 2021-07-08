@@ -1,0 +1,17 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("mWatchdogFeatureEnabled: ").append(getWifiWatchdogFeature());
+    sb.append("\nmWatchdogAllowedToTrigger: ").append(mWatchdogAllowedToTrigger);
+    sb.append("\nmWifiIsConnected: ").append(mWifiIsConnected);
+    sb.append("\nmRecentAvailableNetworks: ").append(mRecentAvailableNetworks.size());
+    for (Map.Entry<String, AvailableNetworkFailureCount> entry : mRecentAvailableNetworks.entrySet()) {
+        sb.append("\n ").append(entry.getKey()).append(": ").append(entry.getValue()).append(", Age: ").append(entry.getValue().age);
+    }
+    sb.append("\nmSsidFailureCount:");
+    for (Map.Entry<String, Pair<AvailableNetworkFailureCount, Integer>> entry : mSsidFailureCount.entrySet()) {
+        final AvailableNetworkFailureCount failureCount = entry.getValue().first;
+        final Integer apCount = entry.getValue().second;
+        sb.append("\n").append(entry.getKey()).append(": ").append(apCount).append(",").append(failureCount.toString());
+    }
+    return sb.toString();
+}

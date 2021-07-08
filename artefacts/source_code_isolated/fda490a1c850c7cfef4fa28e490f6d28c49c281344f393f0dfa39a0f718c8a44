@@ -1,0 +1,13 @@
+public boolean refresh(){
+    if (DBG)
+        Log.d(TAG, "refresh() - device: " + mDevice.getAddress());
+    if (mService == null || mClientIf == 0)
+        return false;
+    try {
+        mService.refreshDevice(mClientIf, mDevice.getAddress());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

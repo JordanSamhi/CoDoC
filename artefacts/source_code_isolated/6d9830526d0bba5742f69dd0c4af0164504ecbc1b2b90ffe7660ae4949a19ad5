@@ -1,0 +1,10 @@
+public void endCall() throws SipException{
+    if (DBG)
+        log("endCall: mSipSession" + mSipSession);
+    synchronized (mLock) {
+        stopCall(RELEASE_SOCKET);
+        mInCall = false;
+        if (mSipSession != null)
+            mSipSession.endCall();
+    }
+}

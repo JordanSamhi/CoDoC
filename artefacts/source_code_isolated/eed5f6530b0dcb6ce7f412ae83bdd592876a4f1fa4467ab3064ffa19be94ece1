@@ -1,0 +1,7 @@
+public void testDump_forSystemUser_DoesNotHaveUserPrefix() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService service = BackupManagerServiceTestUtils.createUserBackupManagerServiceAndRunTasks(UserHandle.USER_SYSTEM, mContext, mBackupThread, mBaseStateDir, mDataDir, mTransportManager);
+    StringWriter dump = new StringWriter();
+    service.dump(new FileDescriptor(), new PrintWriter(dump), new String[0]);
+    assertThat(dump.toString()).startsWith("Backup Manager is ");
+}

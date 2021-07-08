@@ -1,0 +1,47 @@
+public void startEnergyScan() throws LowpanException{
+    Map<String, Object> map = createScanOptionMap();
+    ILowpanEnergyScanCallback binderListener = new ILowpanEnergyScanCallback.Stub() {
+
+        public void onEnergyScanResult(int channel, int rssi) {
+            Callback callback = mCallback;
+            Handler handler = mHandler;
+            if (callback == null) {
+                return;
+            }
+            Runnable runnable = () -> {
+                if (callback != null) {
+                    LowpanEnergyScanResult result = new LowpanEnergyScanResult();
+                    result.setChannel(channel);
+                    result.setMaxRssi(rssi);
+                    callback.onEnergyScanResult(result);
+                }
+            };
+            if (handler != null) {
+                handler.post(runnable);
+            } else {
+                runnable.run();
+            }
+        }
+
+        public void onEnergyScanFinished() {
+            Callback callback = mCallback;
+            Handler handler = mHandler;
+            if (callback == null) {
+                return;
+            }
+            Runnable runnable = () -> callback.onScanFinished();
+            if (handler != null) {
+                handler.post(runnable);
+            } else {
+                runnable.run();
+            }
+        }
+    };
+    try {
+        mBinder.startEnergyScan(map, binderListener);
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

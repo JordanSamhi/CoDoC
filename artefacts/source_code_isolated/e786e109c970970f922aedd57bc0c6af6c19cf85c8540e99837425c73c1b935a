@@ -1,0 +1,10 @@
+public void writeRestrictions(@NonNull XmlSerializer serializer, @NonNull String outerTag) throws IOException{
+    serializer.startTag(null, outerTag);
+    for (int i = 0; i < mUserRestrictions.size(); i++) {
+        serializer.startTag(null, TAG_RESTRICTIONS_USER);
+        serializer.attribute(null, USER_ID, String.valueOf(mUserRestrictions.keyAt(i)));
+        UserRestrictionsUtils.writeRestrictions(serializer, mUserRestrictions.valueAt(i), TAG_RESTRICTIONS);
+        serializer.endTag(null, TAG_RESTRICTIONS_USER);
+    }
+    serializer.endTag(null, outerTag);
+}

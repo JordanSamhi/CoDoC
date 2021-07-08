@@ -1,0 +1,23 @@
+public void copyToFieldPacker(int xoff, int yoff, int zoff, int component_number, FieldPacker fp){
+    mRS.validate();
+    if (component_number >= mType.mElement.mElements.length) {
+        throw new RSIllegalArgumentException("Component_number " + component_number + " out of range.");
+    }
+    if (xoff < 0) {
+        throw new RSIllegalArgumentException("Offset x must be >= 0.");
+    }
+    if (yoff < 0) {
+        throw new RSIllegalArgumentException("Offset y must be >= 0.");
+    }
+    if (zoff < 0) {
+        throw new RSIllegalArgumentException("Offset z must be >= 0.");
+    }
+    final byte[] data = fp.getData();
+    int data_length = data.length;
+    int eSize = mType.mElement.mElements[component_number].getBytesSize();
+    eSize *= mType.mElement.mArraySizes[component_number];
+    if (data_length != eSize) {
+        throw new RSIllegalArgumentException("Field packer sizelength " + data_length + " does not match component size " + eSize + ".");
+    }
+    mRS.nAllocationElementRead(getIDSafe(), xoff, yoff, zoff, mSelectedLOD, component_number, data, data_length);
+}

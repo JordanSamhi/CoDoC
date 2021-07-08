@@ -1,0 +1,18 @@
+public static Bitmap decodeResourceStream(@Nullable Resources res, @Nullable TypedValue value, @Nullable InputStream is, @Nullable Rect pad, @Nullable Options opts){
+    validate(opts);
+    if (opts == null) {
+        opts = new Options();
+    }
+    if (opts.inDensity == 0 && value != null) {
+        final int density = value.density;
+        if (density == TypedValue.DENSITY_DEFAULT) {
+            opts.inDensity = DisplayMetrics.DENSITY_DEFAULT;
+        } else if (density != TypedValue.DENSITY_NONE) {
+            opts.inDensity = density;
+        }
+    }
+    if (opts.inTargetDensity == 0 && res != null) {
+        opts.inTargetDensity = res.getDisplayMetrics().densityDpi;
+    }
+    return decodeStream(is, pad, opts);
+}

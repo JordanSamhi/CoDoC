@@ -1,0 +1,13 @@
+public void onExtractedSetSpan(Object span, int start, int end, int flags){
+    InputConnection conn = getCurrentInputConnection();
+    if (conn != null) {
+        if (!conn.setSelection(start, end))
+            return;
+        CharSequence text = conn.getSelectedText(InputConnection.GET_TEXT_WITH_STYLES);
+        if (text instanceof Spannable) {
+            ((Spannable) text).setSpan(span, 0, text.length(), flags);
+            conn.setComposingRegion(start, end);
+            conn.commitText(text, 1);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+public Collection<CrateInfo> queryCratesForUid(@NonNull UUID storageUuid, int uid) throws IOException, PackageManager.NameNotFoundException{
+    try {
+        ParceledListSlice<CrateInfo> crateInfoList = mService.queryCratesForUid(convert(storageUuid), uid, mContext.getOpPackageName());
+        return Objects.requireNonNull(crateInfoList).getList();
+    } catch (ParcelableException e) {
+        e.maybeRethrow(PackageManager.NameNotFoundException.class);
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

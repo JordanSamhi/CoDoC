@@ -1,0 +1,13 @@
+public static PrivateKey readPrivateKey(Parcel in){
+    String algorithm = in.readString();
+    if (algorithm == null) {
+        return null;
+    }
+    byte[] userKeyBytes = in.createByteArray();
+    try {
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(userKeyBytes));
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        return null;
+    }
+}

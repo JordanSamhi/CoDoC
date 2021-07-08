@@ -1,0 +1,33 @@
+
+     * Specifies that a sync should be requested with the specified the account, authority,
+     * and extras at the given frequency. If there is already another periodic sync scheduled
+     * with the account, authority and extras then a new periodic sync won't be added, instead
+     * the frequency of the previous one will be updated.
+     * <p>
+     * These periodic syncs honor the "syncAutomatically" and "masterSyncAutomatically" settings.
+     * Although these sync are scheduled at the specified frequency, it may take longer for it to
+     * actually be started if other syncs are ahead of it in the sync operation queue. This means
+     * that the actual start time may drift.
+     * <p>
+     * Periodic syncs are not allowed to have any of {@link #SYNC_EXTRAS_DO_NOT_RETRY},
+     * {@link #SYNC_EXTRAS_IGNORE_BACKOFF}, {@link #SYNC_EXTRAS_IGNORE_SETTINGS},
+     * {@link #SYNC_EXTRAS_INITIALIZE}, {@link #SYNC_EXTRAS_FORCE},
+     * {@link #SYNC_EXTRAS_EXPEDITED}, {@link #SYNC_EXTRAS_MANUAL} set to true.
+     * If any are supplied then an {@link IllegalArgumentException} will be thrown.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#WRITE_SYNC_SETTINGS}.
+     * <p>The bundle for a periodic sync can be queried by applications with the correct
+     * permissions using
+     * {@link ContentResolver#getPeriodicSyncs(Account account, String provider)}, so no
+     * sensitive data should be transferred here.
+     *
+     * @param account the account to specify in the sync
+     * @param authority the provider to specify in the sync request
+     * @param extras extra parameters to go along with the sync request
+     * @param pollFrequency how frequently the sync should be performed, in seconds.
+     * On Android API level 24 and above, a minmam interval of 15 minutes is enforced.
+     * On previous versions, the minimum interval is 1 hour.
+     * @throws IllegalArgumentException if an illegal extra was set or if any of the parameters
+     * are null.
+     

@@ -1,0 +1,11 @@
+public long getManagedProfileMaximumTimeOff(@NonNull ComponentName admin){
+    throwIfParentInstance("getManagedProfileMaximumTimeOff");
+    if (mService != null) {
+        try {
+            return mService.getManagedProfileMaximumTimeOff(admin);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return 0;
+}

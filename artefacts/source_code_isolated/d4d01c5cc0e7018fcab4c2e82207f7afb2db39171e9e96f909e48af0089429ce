@@ -1,0 +1,49 @@
+public void setIsImportantConversation(boolean isImportantConversation, boolean animate){
+    mImportantConversation = isImportantConversation;
+    mImportanceRingView.setVisibility(isImportantConversation && mIcon.getVisibility() != GONE ? VISIBLE : GONE);
+    if (animate && isImportantConversation) {
+        GradientDrawable ring = (GradientDrawable) mImportanceRingView.getDrawable();
+        ring.mutate();
+        GradientDrawable bg = (GradientDrawable) mConversationIconBadgeBg.getDrawable();
+        bg.mutate();
+        int ringColor = getResources().getColor(R.color.conversation_important_highlight);
+        int standardThickness = getResources().getDimensionPixelSize(R.dimen.importance_ring_stroke_width);
+        int largeThickness = getResources().getDimensionPixelSize(R.dimen.importance_ring_anim_max_stroke_width);
+        int standardSize = getResources().getDimensionPixelSize(R.dimen.importance_ring_size);
+        int baseSize = standardSize - standardThickness * 2;
+        int bgSize = getResources().getDimensionPixelSize(R.dimen.conversation_icon_size_badged);
+        ValueAnimator.AnimatorUpdateListener animatorUpdateListener = animation -> {
+            int strokeWidth = Math.round((float) animation.getAnimatedValue());
+            ring.setStroke(strokeWidth, ringColor);
+            int newSize = baseSize + strokeWidth * 2;
+            ring.setSize(newSize, newSize);
+            mImportanceRingView.invalidate();
+        };
+        ValueAnimator growAnimation = ValueAnimator.ofFloat(0, largeThickness);
+        growAnimation.setInterpolator(LINEAR_OUT_SLOW_IN);
+        growAnimation.setDuration(IMPORTANCE_ANIM_GROW_DURATION);
+        growAnimation.addUpdateListener(animatorUpdateListener);
+        ValueAnimator shrinkAnimation = ValueAnimator.ofFloat(largeThickness, standardThickness);
+        shrinkAnimation.setDuration(IMPORTANCE_ANIM_SHRINK_DURATION);
+        shrinkAnimation.setStartDelay(IMPORTANCE_ANIM_SHRINK_DELAY);
+        shrinkAnimation.setInterpolator(OVERSHOOT);
+        shrinkAnimation.addUpdateListener(animatorUpdateListener);
+        shrinkAnimation.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                bg.setSize(baseSize, baseSize);
+                mConversationIconBadgeBg.invalidate();
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                bg.setSize(bgSize, bgSize);
+                mConversationIconBadgeBg.invalidate();
+            }
+        });
+        AnimatorSet anims = new AnimatorSet();
+        anims.playSequentially(growAnimation, shrinkAnimation);
+        anims.start();
+    }
+}

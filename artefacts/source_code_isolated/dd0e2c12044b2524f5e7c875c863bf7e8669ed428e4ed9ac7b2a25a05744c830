@@ -1,0 +1,17 @@
+public void setCountLimit(@NonNull Category category, int limit, long timeWindowMs){
+    if (limit < 0 || timeWindowMs < 0) {
+        throw new IllegalArgumentException("Limit and window size must be nonnegative.");
+    }
+    synchronized (mLock) {
+        final Integer oldLimit = mMaxCategoryCounts.put(category, limit);
+        final long newWindowSizeMs = Math.max(MIN_WINDOW_SIZE_MS, Math.min(timeWindowMs, MAX_WINDOW_SIZE_MS));
+        final Long oldWindowSizeMs = mCategoryCountWindowSizesMs.put(category, newWindowSizeMs);
+        if (oldLimit != null && oldWindowSizeMs != null && oldLimit == limit && oldWindowSizeMs == newWindowSizeMs) {
+            return;
+        }
+        mDeleteOldEventTimesFunctor.updateMaxPeriod();
+        mMaxPeriodMs = mDeleteOldEventTimesFunctor.mMaxPeriodMs;
+        invalidateAllExecutionStatsLocked();
+    }
+    scheduleQuotaCheck();
+}

@@ -1,0 +1,12 @@
+public static void prepareAndAuthorize(Context context){
+    IConnectivityManager cm = getService();
+    String packageName = context.getPackageName();
+    try {
+        int userId = context.getUserId();
+        if (!cm.prepareVpn(packageName, null, userId)) {
+            cm.prepareVpn(null, packageName, userId);
+        }
+        cm.setVpnPackageAuthorization(packageName, userId, VpnManager.TYPE_VPN_SERVICE);
+    } catch (RemoteException e) {
+    }
+}

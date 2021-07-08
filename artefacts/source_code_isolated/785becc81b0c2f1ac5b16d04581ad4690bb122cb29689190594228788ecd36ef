@@ -1,0 +1,17 @@
+public static List<String> getTimeZoneIdsForCountryCode(@NonNull String countryCode){
+    if (countryCode == null) {
+        throw new NullPointerException("countryCode == null");
+    }
+    TimeZoneFinder timeZoneFinder = TimeZoneFinder.getInstance();
+    CountryTimeZones countryTimeZones = timeZoneFinder.lookupCountryTimeZones(countryCode.toLowerCase());
+    if (countryTimeZones == null) {
+        return null;
+    }
+    List<String> timeZoneIds = new ArrayList<>();
+    for (TimeZoneMapping timeZoneMapping : countryTimeZones.getTimeZoneMappings()) {
+        if (timeZoneMapping.isShownInPicker()) {
+            timeZoneIds.add(timeZoneMapping.getTimeZoneId());
+        }
+    }
+    return Collections.unmodifiableList(timeZoneIds);
+}

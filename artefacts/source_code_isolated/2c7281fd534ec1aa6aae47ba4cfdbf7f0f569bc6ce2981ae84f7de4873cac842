@@ -1,0 +1,10 @@
+public void setRouteTypes(int types){
+    if (mRouteTypes != types) {
+        mRouteTypes = types;
+        if (mAttachedToWindow) {
+            mRouter.removeCallback(mCallback);
+            mRouter.addCallback(types, mCallback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
+        }
+        refreshRoutes();
+    }
+}

@@ -1,0 +1,10 @@
+public static Typeface findFromCache(AssetManager mgr, String path){
+    synchronized (sDynamicCacheLock) {
+        final String key = Builder.createAssetUid(mgr, path, 0, null, RESOLVE_BY_FONT_TABLE, RESOLVE_BY_FONT_TABLE, DEFAULT_FAMILY);
+        Typeface typeface = sDynamicTypefaceCache.get(key);
+        if (typeface != null) {
+            return typeface;
+        }
+    }
+    return null;
+}

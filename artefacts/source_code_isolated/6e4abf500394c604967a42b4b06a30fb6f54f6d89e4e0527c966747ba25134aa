@@ -1,0 +1,10 @@
+public Icon getCustomPrinterIcon(@NonNull PrinterId printerId){
+    Icon icon = mSpooler.getCustomPrinterIcon(printerId);
+    if (icon == null) {
+        RemotePrintService service = mActiveServices.get(printerId.getServiceName());
+        if (service != null) {
+            service.requestCustomPrinterIcon(printerId);
+        }
+    }
+    return icon;
+}

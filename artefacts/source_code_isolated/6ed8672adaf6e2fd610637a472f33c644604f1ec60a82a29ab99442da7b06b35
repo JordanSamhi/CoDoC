@@ -1,0 +1,32 @@
+public void forceVolumeControlStream(int streamType, IBinder cb){
+    if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.MODIFY_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+        return;
+    }
+    if (DEBUG_VOL) {
+        Log.d(TAG, String.format("forceVolumeControlStream(%d)", streamType));
+    }
+    synchronized (mForceControlStreamLock) {
+        if (mVolumeControlStream != -1 && streamType != -1) {
+            mUserSelectedVolumeControlStream = true;
+        }
+        mVolumeControlStream = streamType;
+        if (mVolumeControlStream == -1) {
+            if (mForceControlStreamClient != null) {
+                mForceControlStreamClient.release();
+                mForceControlStreamClient = null;
+            }
+            mUserSelectedVolumeControlStream = false;
+        } else {
+            if (null == mForceControlStreamClient) {
+                mForceControlStreamClient = new ForceControlStreamClient(cb);
+            } else {
+                if (mForceControlStreamClient.getBinder() == cb) {
+                    Log.d(TAG, "forceVolumeControlStream cb:" + cb + " is already linked.");
+                } else {
+                    mForceControlStreamClient.release();
+                    mForceControlStreamClient = new ForceControlStreamClient(cb);
+                }
+            }
+        }
+    }
+}

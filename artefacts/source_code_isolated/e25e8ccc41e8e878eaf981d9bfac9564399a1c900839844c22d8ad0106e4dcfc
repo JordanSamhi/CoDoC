@@ -1,0 +1,10 @@
+public RectF renderText(int start, int limit, int bidiFlags, float[] advances, int advancesIndex, boolean draw){
+    mBidi.setPara(Arrays.copyOfRange(mText, start, limit), (byte) getIcuFlags(bidiFlags), null);
+    mText = mBidi.getText();
+    for (int i = 0; i < mBidi.countRuns(); i++) {
+        BidiRun visualRun = mBidi.getVisualRun(i);
+        boolean isRtl = visualRun.getDirection() == Bidi.RTL;
+        renderText(visualRun.getStart(), visualRun.getLimit(), isRtl, advances, advancesIndex, draw);
+    }
+    return mBounds;
+}

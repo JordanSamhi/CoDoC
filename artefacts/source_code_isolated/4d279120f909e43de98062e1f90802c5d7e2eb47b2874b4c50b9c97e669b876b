@@ -1,0 +1,9 @@
+public void onAvailable(Network network){
+    logd("network onAvailable " + network);
+    TelephonyMetrics.getInstance().writeNetworkValidate(TelephonyEvent.NetworkValidationState.NETWORK_VALIDATION_STATE_AVAILABLE);
+    if (mValidatedNetworkCache.isRecentlyValidated(mSubId)) {
+        reportValidationResult(true, ConnectivityNetworkCallback.this.mSubId);
+    } else {
+        reportNetworkAvailable(network, ConnectivityNetworkCallback.this.mSubId);
+    }
+}

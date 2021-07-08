@@ -1,0 +1,6 @@
+public void testUpdateTransportAttributes_whenTransportComponentNull_throwsException() throws Exception{
+    setUpForUpdateTransportAttributes();
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    expectThrows(RuntimeException.class, () -> backupManagerService.updateTransportAttributes(mTransportUid, null, mTransportName, new Intent(), "currentDestinationString", new Intent(), "dataManagementLabel"));
+}

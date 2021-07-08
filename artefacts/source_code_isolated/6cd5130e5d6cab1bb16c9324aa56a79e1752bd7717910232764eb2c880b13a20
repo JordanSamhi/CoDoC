@@ -1,0 +1,9 @@
+public void send(byte[] msg, int offset, int count, long timestamp) throws IOException{
+    int messageSize = getMaxMessageSize();
+    while (count > 0) {
+        int length = (count > messageSize ? messageSize : count);
+        onSend(msg, offset, length, timestamp);
+        offset += length;
+        count -= length;
+    }
+}

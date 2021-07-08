@@ -1,0 +1,11 @@
+public void updateKeyphraseSoundModel(@NonNull SoundTrigger.KeyphraseSoundModel model){
+    Objects.requireNonNull(model);
+    try {
+        int status = mVoiceInteractionManagerService.updateKeyphraseSoundModel(model);
+        if (status != SoundTrigger.STATUS_OK) {
+            throw new ServiceSpecificException(status);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

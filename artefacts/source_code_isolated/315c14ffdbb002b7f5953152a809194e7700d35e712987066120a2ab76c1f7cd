@@ -1,0 +1,10 @@
+public Drawable getDrawable(){
+    final ColorManagementProxy cmProxy = getColorManagementProxy();
+    Bitmap bm = sGlobals.peekWallpaperBitmap(mContext, true, FLAG_SYSTEM, cmProxy);
+    if (bm != null) {
+        Drawable dr = new BitmapDrawable(mContext.getResources(), bm);
+        dr.setDither(false);
+        return dr;
+    }
+    return null;
+}

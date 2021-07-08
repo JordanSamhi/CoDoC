@@ -1,0 +1,11 @@
+public void writeRawVarint64(long val){
+    while (true) {
+        if ((val & ~0x7FL) == 0) {
+            writeRawByte((byte) val);
+            return;
+        } else {
+            writeRawByte((byte) ((val & 0x7F) | 0x80));
+            val >>>= 7;
+        }
+    }
+}

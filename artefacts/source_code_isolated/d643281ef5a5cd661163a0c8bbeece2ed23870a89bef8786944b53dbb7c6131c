@@ -1,0 +1,8 @@
+public void postOnAnimationDelayed(Runnable action, long delayMillis){
+    final AttachInfo attachInfo = mAttachInfo;
+    if (attachInfo != null) {
+        attachInfo.mViewRootImpl.mChoreographer.postCallbackDelayed(Choreographer.CALLBACK_ANIMATION, action, null, delayMillis);
+    } else {
+        getRunQueue().postDelayed(action, delayMillis);
+    }
+}

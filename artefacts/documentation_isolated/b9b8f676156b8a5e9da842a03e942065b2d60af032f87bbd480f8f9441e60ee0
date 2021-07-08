@@ -1,0 +1,14 @@
+
+     * Start a new write operation on the file.  This returns a FileOutputStream
+     * to which you can write the new file data.  The existing file is replaced
+     * with the new data.  You <em>must not</em> directly close the given
+     * FileOutputStream; instead call either {@link #finishWrite(FileOutputStream)}
+     * or {@link #failWrite(FileOutputStream)}.
+     *
+     * <p>Note that if another thread is currently performing
+     * a write, this will simply replace whatever that thread is writing
+     * with the new file being written by this thread, and when the other
+     * thread finishes the write the new write operation will no longer be
+     * safe (or will be lost).  You must do your own threading protection for
+     * access to AtomicFile.
+     

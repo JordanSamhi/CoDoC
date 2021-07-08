@@ -1,0 +1,10 @@
+public static AccessibilityInteractionClient getInstanceForThread(long threadId){
+    synchronized (sStaticLock) {
+        AccessibilityInteractionClient client = sClients.get(threadId);
+        if (client == null) {
+            client = new AccessibilityInteractionClient();
+            sClients.put(threadId, client);
+        }
+        return client;
+    }
+}

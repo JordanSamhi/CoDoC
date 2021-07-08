@@ -1,0 +1,12 @@
+public float getAudioDescriptionMixLeveldB(){
+    float[] level = { Float.NEGATIVE_INFINITY };
+    try {
+        final int status = native_get_audio_description_mix_level_db(level);
+        if (status != SUCCESS || Float.isNaN(level[0])) {
+            return Float.NEGATIVE_INFINITY;
+        }
+    } catch (Exception e) {
+        return Float.NEGATIVE_INFINITY;
+    }
+    return level[0];
+}

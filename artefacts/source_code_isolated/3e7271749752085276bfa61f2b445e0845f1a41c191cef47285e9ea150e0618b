@@ -1,0 +1,9 @@
+public Builder appendStyleRun(@NonNull Paint paint, @IntRange(from = 0) int length, boolean isRtl){
+    Preconditions.checkNotNull(paint);
+    Preconditions.checkArgument(length > 0, "length can not be negative");
+    final int end = mCurrentOffset + length;
+    Preconditions.checkArgument(end <= mText.length, "Style exceeds the text length");
+    nAddStyleRun(mNativePtr, paint.getNativeInstance(), mCurrentOffset, end, isRtl);
+    mCurrentOffset = end;
+    return this;
+}

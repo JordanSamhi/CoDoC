@@ -1,0 +1,13 @@
+public void notifySession2Created(@NonNull Session2Token token){
+    if (token == null) {
+        throw new IllegalArgumentException("token shouldn't be null");
+    }
+    if (token.getType() != Session2Token.TYPE_SESSION) {
+        throw new IllegalArgumentException("token's type should be TYPE_SESSION");
+    }
+    try {
+        mService.notifySession2Created(token);
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

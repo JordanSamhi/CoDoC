@@ -1,0 +1,14 @@
+public int getIoCapability(){
+    if (getState() != STATE_ON)
+        return BluetoothAdapter.IO_CAPABILITY_UNKNOWN;
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null)
+            return mService.getIoCapability();
+    } catch (RemoteException e) {
+        Log.e(TAG, e.getMessage(), e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return BluetoothAdapter.IO_CAPABILITY_UNKNOWN;
+}

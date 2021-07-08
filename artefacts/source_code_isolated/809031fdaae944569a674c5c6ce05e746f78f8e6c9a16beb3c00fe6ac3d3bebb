@@ -1,0 +1,10 @@
+public boolean registerGnssNavigationMessageCallback(@NonNull GnssNavigationMessage.Callback callback, @Nullable Handler handler){
+    if (handler == null) {
+        handler = new Handler();
+    }
+    try {
+        return mGnssNavigationMessageListenerTransport.addListener(callback, handler);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

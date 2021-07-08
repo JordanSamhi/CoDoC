@@ -1,0 +1,9 @@
+public static int dragViewBy(InstrumentationTestCase test, View v, int gravity, int deltaX, int deltaY){
+    int[] xy = new int[2];
+    getStartLocation(v, gravity, xy);
+    final int fromX = xy[0];
+    final int fromY = xy[1];
+    int distance = (int) Math.hypot(deltaX, deltaY);
+    drag(test, fromX, fromX + deltaX, fromY, fromY + deltaY, distance);
+    return distance;
+}

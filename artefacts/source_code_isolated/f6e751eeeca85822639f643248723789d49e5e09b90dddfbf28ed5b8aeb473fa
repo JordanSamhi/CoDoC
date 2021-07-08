@@ -1,0 +1,12 @@
+public void setNotedAppOpsCollector(@Nullable AppOpsCollector collector){
+    synchronized (sLock) {
+        if (collector != null) {
+            if (isListeningForOpNoted()) {
+                setOnOpNotedCallback(null, null);
+            }
+            setOnOpNotedCallback(new HandlerExecutor(Handler.getMain()), collector);
+        } else if (sOnOpNotedCallback != null) {
+            setOnOpNotedCallback(null, null);
+        }
+    }
+}

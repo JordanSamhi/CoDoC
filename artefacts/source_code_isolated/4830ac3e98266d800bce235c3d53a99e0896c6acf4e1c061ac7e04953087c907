@@ -1,0 +1,58 @@
+public static VpnProfile decode(String key, byte[] value){
+    try {
+        if (key == null) {
+            return null;
+        }
+        String[] values = new String(value, StandardCharsets.UTF_8).split(VALUE_DELIMITER, -1);
+        if ((values.length < 14 || values.length > 19) && values.length != 24 && values.length != 25) {
+            return null;
+        }
+        final boolean isRestrictedToTestNetworks;
+        if (values.length >= 25) {
+            isRestrictedToTestNetworks = Boolean.parseBoolean(values[24]);
+        } else {
+            isRestrictedToTestNetworks = false;
+        }
+        VpnProfile profile = new VpnProfile(key, isRestrictedToTestNetworks);
+        profile.name = values[0];
+        profile.type = Integer.parseInt(values[1]);
+        if (profile.type < 0 || profile.type > TYPE_MAX) {
+            return null;
+        }
+        profile.server = values[2];
+        profile.username = values[3];
+        profile.password = values[4];
+        profile.dnsServers = values[5];
+        profile.searchDomains = values[6];
+        profile.routes = values[7];
+        profile.mppe = Boolean.parseBoolean(values[8]);
+        profile.l2tpSecret = values[9];
+        profile.ipsecIdentifier = values[10];
+        profile.ipsecSecret = values[11];
+        profile.ipsecUserCert = values[12];
+        profile.ipsecCaCert = values[13];
+        profile.ipsecServerCert = (values.length > 14) ? values[14] : "";
+        if (values.length > 15) {
+            String host = (values.length > 15) ? values[15] : "";
+            String port = (values.length > 16) ? values[16] : "";
+            String exclList = (values.length > 17) ? values[17] : "";
+            String pacFileUrl = (values.length > 18) ? values[18] : "";
+            if (!host.isEmpty() || !port.isEmpty() || !exclList.isEmpty()) {
+                profile.proxy = new ProxyInfo(host, port.isEmpty() ? 0 : Integer.parseInt(port), exclList);
+            } else if (!pacFileUrl.isEmpty()) {
+                profile.proxy = new ProxyInfo(pacFileUrl);
+            }
+        }
+        if (values.length >= 24) {
+            profile.mAllowedAlgorithms = Arrays.asList(values[19].split(LIST_DELIMITER));
+            profile.isBypassable = Boolean.parseBoolean(values[20]);
+            profile.isMetered = Boolean.parseBoolean(values[21]);
+            profile.maxMtu = Integer.parseInt(values[22]);
+            profile.areAuthParamsInline = Boolean.parseBoolean(values[23]);
+        }
+        profile.saveLogin = !profile.username.isEmpty() || !profile.password.isEmpty();
+        return profile;
+    } catch (Exception e) {
+    }
+    return null;
+}

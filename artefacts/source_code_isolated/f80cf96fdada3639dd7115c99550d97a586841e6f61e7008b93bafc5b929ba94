@@ -1,0 +1,13 @@
+public List<String> getPackagesWithCarrierPrivileges(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getPackagesWithCarrierPrivileges(getPhoneId());
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getPackagesWithCarrierPrivileges RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "getPackagesWithCarrierPrivileges NPE", ex);
+    }
+    return Collections.EMPTY_LIST;
+}

@@ -1,0 +1,9 @@
+public final void notifyUserActionIfNecessary(){
+    synchronized (mLock) {
+        if (mNotifyUserActionSent) {
+            return;
+        }
+        mPrivOps.notifyUserAction();
+        mNotifyUserActionSent = true;
+    }
+}

@@ -1,0 +1,11 @@
+public final Animation getAnimationForView(View view){
+    final long delay = getDelayForView(view) + mAnimation.getStartOffset();
+    mMaxDelay = Math.max(mMaxDelay, delay);
+    try {
+        final Animation animation = mAnimation.clone();
+        animation.setStartOffset(delay);
+        return animation;
+    } catch (CloneNotSupportedException e) {
+        return null;
+    }
+}

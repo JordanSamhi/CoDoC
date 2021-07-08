@@ -1,0 +1,24 @@
+public String checkContentProviderAccess(String authority, int userId){
+    if (userId == UserHandle.USER_ALL) {
+        mContext.enforceCallingOrSelfPermission(Manifest.permission.INTERACT_ACROSS_USERS_FULL, TAG);
+        userId = UserHandle.getCallingUserId();
+    }
+    ProviderInfo cpi = null;
+    try {
+        cpi = AppGlobals.getPackageManager().resolveContentProvider(authority, STOCK_PM_FLAGS | PackageManager.GET_URI_PERMISSION_PATTERNS | PackageManager.MATCH_DISABLED_COMPONENTS | PackageManager.MATCH_DIRECT_BOOT_AWARE | PackageManager.MATCH_DIRECT_BOOT_UNAWARE, userId);
+    } catch (RemoteException ignored) {
+    }
+    if (cpi == null) {
+        return "Failed to find provider " + authority + " for user " + userId + "; expected to find a valid ContentProvider for this authority";
+    }
+    ProcessRecord r = null;
+    synchronized (mPidsSelfLocked) {
+        r = mPidsSelfLocked.get(Binder.getCallingPid());
+    }
+    if (r == null) {
+        return "Failed to find PID " + Binder.getCallingPid();
+    }
+    synchronized (this) {
+        return checkContentProviderPermissionLocked(cpi, r, userId, true);
+    }
+}

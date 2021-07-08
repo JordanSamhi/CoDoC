@@ -1,0 +1,19 @@
+public static TelephonyNetworkFactory getNetworkFactory(int phoneId){
+    synchronized (sLockProxyPhones) {
+        if (!sMadeDefaults) {
+            throw new IllegalStateException("Default phones haven't been made yet!");
+        }
+        final String dbgInfo;
+        if (phoneId == SubscriptionManager.DEFAULT_PHONE_INDEX) {
+            dbgInfo = "getNetworkFactory with DEFAULT_PHONE_ID => factory for sPhone";
+            phoneId = sPhone.getSubId();
+        } else {
+            dbgInfo = "getNetworkFactory with non-default, return factory for passed id";
+        }
+        final TelephonyNetworkFactory factory = (sTelephonyNetworkFactories != null && (phoneId >= 0 && phoneId < sTelephonyNetworkFactories.length)) ? sTelephonyNetworkFactories[phoneId] : null;
+        if (DBG) {
+            Rlog.d(LOG_TAG, "getNetworkFactory:-" + dbgInfo + " phoneId=" + phoneId + " factory=" + factory);
+        }
+        return factory;
+    }
+}

@@ -1,0 +1,44 @@
+public void requestCapabilities(@NonNull @CallbackExecutor Executor executor, @NonNull List<Uri> contactNumbers, @NonNull CapabilitiesCallback c) throws ImsException{
+    if (c == null) {
+        throw new IllegalArgumentException("Must include a non-null AvailabilityCallback.");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Must include a non-null Executor.");
+    }
+    if (contactNumbers == null) {
+        throw new IllegalArgumentException("Must include non-null contact number list.");
+    }
+    IImsRcsController imsRcsController = getIImsRcsController();
+    if (imsRcsController == null) {
+        Log.e(TAG, "requestCapabilities: IImsRcsController is null");
+        throw new ImsException("Can not find remote IMS service", ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+    IRcsUceControllerCallback internalCallback = new IRcsUceControllerCallback.Stub() {
+
+        @Override
+        public void onCapabilitiesReceived(List<RcsContactUceCapability> contactCapabilities) {
+            long callingIdentity = Binder.clearCallingIdentity();
+            try {
+                executor.execute(() -> c.onCapabilitiesReceived(contactCapabilities));
+            } finally {
+                restoreCallingIdentity(callingIdentity);
+            }
+        }
+
+        @Override
+        public void onError(int errorCode) {
+            long callingIdentity = Binder.clearCallingIdentity();
+            try {
+                executor.execute(() -> c.onError(errorCode));
+            } finally {
+                restoreCallingIdentity(callingIdentity);
+            }
+        }
+    };
+    try {
+        imsRcsController.requestCapabilities(mSubId, mContext.getOpPackageName(), mContext.getAttributionTag(), contactNumbers, internalCallback);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling IImsRcsController#requestCapabilities", e);
+        throw new ImsException("Remote IMS Service is not available", ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+}

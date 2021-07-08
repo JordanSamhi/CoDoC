@@ -1,0 +1,24 @@
+public static Object getSystemService(ContextImpl ctx, String name){
+    if (name == null) {
+        return null;
+    }
+    final ServiceFetcher<?> fetcher = SYSTEM_SERVICE_FETCHERS.get(name);
+    if (fetcher == null) {
+        if (sEnableServiceNotFoundWtf) {
+            Slog.wtf(TAG, "Unknown manager requested: " + name);
+        }
+        return null;
+    }
+    final Object ret = fetcher.getService(ctx);
+    if (sEnableServiceNotFoundWtf && ret == null) {
+        switch(name) {
+            case Context.CONTENT_CAPTURE_MANAGER_SERVICE:
+            case Context.APP_PREDICTION_SERVICE:
+            case Context.INCREMENTAL_SERVICE:
+                return null;
+        }
+        Slog.wtf(TAG, "Manager wrapper not available: " + name);
+        return null;
+    }
+    return ret;
+}

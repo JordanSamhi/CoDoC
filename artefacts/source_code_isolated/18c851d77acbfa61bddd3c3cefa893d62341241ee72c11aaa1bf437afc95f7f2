@@ -1,0 +1,25 @@
+public boolean setFontVariationSettings(String fontVariationSettings){
+    final String settings = TextUtils.nullIfEmpty(fontVariationSettings);
+    if (settings == mFontVariationSettings || (settings != null && settings.equals(mFontVariationSettings))) {
+        return true;
+    }
+    if (settings == null || settings.length() == 0) {
+        mFontVariationSettings = null;
+        setTypeface(Typeface.createFromTypefaceWithVariation(mTypeface, Collections.emptyList()));
+        return true;
+    }
+    Typeface targetTypeface = mTypeface == null ? Typeface.DEFAULT : mTypeface;
+    FontVariationAxis[] axes = FontVariationAxis.fromFontVariationSettings(settings);
+    final ArrayList<FontVariationAxis> filteredAxes = new ArrayList<FontVariationAxis>();
+    for (final FontVariationAxis axis : axes) {
+        if (targetTypeface.isSupportedAxes(axis.getOpenTypeTagValue())) {
+            filteredAxes.add(axis);
+        }
+    }
+    if (filteredAxes.isEmpty()) {
+        return false;
+    }
+    mFontVariationSettings = settings;
+    setTypeface(Typeface.createFromTypefaceWithVariation(targetTypeface, filteredAxes));
+    return true;
+}

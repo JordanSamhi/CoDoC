@@ -1,0 +1,10 @@
+public boolean onRequestSendAccessibilityEventInternal(View child, AccessibilityEvent event){
+    if (super.onRequestSendAccessibilityEventInternal(child, event)) {
+        AccessibilityEvent record = AccessibilityEvent.obtain();
+        onInitializeAccessibilityEvent(record);
+        child.dispatchPopulateAccessibilityEvent(record);
+        event.appendRecord(record);
+        return true;
+    }
+    return false;
+}

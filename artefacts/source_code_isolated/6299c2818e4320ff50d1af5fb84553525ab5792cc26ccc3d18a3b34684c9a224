@@ -1,0 +1,38 @@
+public static FontConfig.Alias[] buildSystemFallback(@NonNull String xmlPath, @NonNull String fontDir, @NonNull FontCustomizationParser.Result oemCustomization, @NonNull ArrayMap<String, FontFamily[]> fallbackMap, @NonNull ArrayList<Font> availableFonts){
+    try {
+        final FileInputStream fontsIn = new FileInputStream(xmlPath);
+        final FontConfig fontConfig = FontListParser.parse(fontsIn, fontDir);
+        final HashMap<String, ByteBuffer> bufferCache = new HashMap<String, ByteBuffer>();
+        final FontConfig.Family[] xmlFamilies = fontConfig.getFamilies();
+        final ArrayMap<String, ArrayList<FontFamily>> fallbackListMap = new ArrayMap<>();
+        for (final FontConfig.Family xmlFamily : xmlFamilies) {
+            final String familyName = xmlFamily.getName();
+            if (familyName == null) {
+                continue;
+            }
+            appendNamedFamily(xmlFamily, bufferCache, fallbackListMap, availableFonts);
+        }
+        for (int i = 0; i < oemCustomization.mAdditionalNamedFamilies.size(); ++i) {
+            appendNamedFamily(oemCustomization.mAdditionalNamedFamilies.get(i), bufferCache, fallbackListMap, availableFonts);
+        }
+        for (int i = 0; i < xmlFamilies.length; i++) {
+            final FontConfig.Family xmlFamily = xmlFamilies[i];
+            if (i == 0 || xmlFamily.getName() == null) {
+                pushFamilyToFallback(xmlFamily, fallbackListMap, bufferCache, availableFonts);
+            }
+        }
+        for (int i = 0; i < fallbackListMap.size(); i++) {
+            final String fallbackName = fallbackListMap.keyAt(i);
+            final List<FontFamily> familyList = fallbackListMap.valueAt(i);
+            final FontFamily[] families = familyList.toArray(new FontFamily[familyList.size()]);
+            fallbackMap.put(fallbackName, families);
+        }
+        final ArrayList<FontConfig.Alias> list = new ArrayList<>();
+        list.addAll(Arrays.asList(fontConfig.getAliases()));
+        list.addAll(oemCustomization.mAdditionalAliases);
+        return list.toArray(new FontConfig.Alias[list.size()]);
+    } catch (IOException | XmlPullParserException e) {
+        Log.e(TAG, "Failed initialize system fallbacks.", e);
+        return ArrayUtils.emptyArray(FontConfig.Alias.class);
+    }
+}

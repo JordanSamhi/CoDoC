@@ -1,0 +1,8 @@
+public void clearLaunchParamsForPackages(List<String> packageNames){
+    mAmInternal.enforceCallingPermission(Manifest.permission.MANAGE_ACTIVITY_STACKS, "clearLaunchParamsForPackages");
+    synchronized (mGlobalLock) {
+        for (int i = 0; i < packageNames.size(); ++i) {
+            mStackSupervisor.mLaunchParamsPersister.removeRecordForPackage(packageNames.get(i));
+        }
+    }
+}

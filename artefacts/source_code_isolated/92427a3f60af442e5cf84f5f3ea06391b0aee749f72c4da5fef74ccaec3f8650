@@ -1,0 +1,10 @@
+public T call(@NonNull Supplier<T> supplier, T valueToReturnOnTimeout){
+    Mutable<T> result = new Mutable<>();
+    boolean runWithScissorsSuccess = runWithScissors(mHandler, () -> result.value = supplier.get(), RUN_WITH_SCISSORS_TIMEOUT_MILLIS);
+    if (runWithScissorsSuccess) {
+        return result.value;
+    } else {
+        Log.e(TAG, "WifiThreadRunner.call() timed out!", new Throwable("Stack trace:"));
+        return valueToReturnOnTimeout;
+    }
+}

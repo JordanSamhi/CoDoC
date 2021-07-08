@@ -1,0 +1,11 @@
+public void notifyWatchNextProgramBrowsableDisabled(String packageName, long programId){
+    Intent intent = new Intent();
+    intent.setAction(TvContract.ACTION_WATCH_NEXT_PROGRAM_BROWSABLE_DISABLED);
+    intent.putExtra(TvContract.EXTRA_WATCH_NEXT_PROGRAM_ID, programId);
+    intent.setPackage(packageName);
+    try {
+        mService.sendTvInputNotifyIntent(intent, mUserId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

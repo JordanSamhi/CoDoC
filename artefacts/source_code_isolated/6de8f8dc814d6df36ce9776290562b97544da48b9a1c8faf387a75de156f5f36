@@ -1,0 +1,25 @@
+public void onSetAdditionalProviderPackages(List<String> packageNames){
+    int maxCount = Math.min(MAX_ADDITIONAL_PACKAGES, packageNames.size());
+    ArraySet<String> allPackages = new ArraySet<>(maxCount + 1);
+    for (String packageName : packageNames) {
+        if (packageNames.size() >= maxCount) {
+            return;
+        }
+        try {
+            mContext.getPackageManager().getPackageInfo(packageName, MATCH_SYSTEM_ONLY);
+            allPackages.add(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, mServiceWatcher + " specified unknown additional provider package: " + packageName);
+        }
+    }
+    synchronized (mLock) {
+        if (!mBound) {
+            return;
+        }
+        ComponentName service = mServiceWatcher.getBoundService().component;
+        if (service != null) {
+            allPackages.add(service.getPackageName());
+        }
+        setPackageNames(allPackages);
+    }
+}

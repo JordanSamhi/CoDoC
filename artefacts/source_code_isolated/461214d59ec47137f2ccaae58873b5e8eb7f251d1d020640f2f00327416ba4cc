@@ -1,0 +1,24 @@
+public String decoratePseudonymWith3GppRealm(@NonNull WifiConfiguration config, String pseudonym){
+    if (TextUtils.isEmpty(pseudonym)) {
+        return null;
+    }
+    if (pseudonym.contains("@")) {
+        return pseudonym;
+    }
+    int subId = getBestMatchSubscriptionId(config);
+    TelephonyManager specifiedTm = mTelephonyManager.createForSubscriptionId(subId);
+    if (specifiedTm.getSimState() != TelephonyManager.SIM_STATE_READY) {
+        return null;
+    }
+    String mccMnc = specifiedTm.getSimOperator();
+    if (mccMnc == null || mccMnc.isEmpty()) {
+        return null;
+    }
+    String mcc = mccMnc.substring(0, 3);
+    String mnc = mccMnc.substring(3);
+    if (mnc.length() == 2) {
+        mnc = "0" + mnc;
+    }
+    String realm = String.format(THREE_GPP_NAI_REALM_FORMAT, mnc, mcc);
+    return String.format("%s@%s", pseudonym, realm);
+}

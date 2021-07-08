@@ -1,0 +1,17 @@
+public boolean isOtaSpNumber(String dialStr){
+    if (isPhoneTypeGsm()) {
+        return super.isOtaSpNumber(dialStr);
+    } else {
+        boolean isOtaSpNum = false;
+        String dialableStr = PhoneNumberUtils.extractNetworkPortionAlt(dialStr);
+        if (dialableStr != null) {
+            isOtaSpNum = isIs683OtaSpDialStr(dialableStr);
+            if (isOtaSpNum == false) {
+                isOtaSpNum = isCarrierOtaSpNum(dialableStr);
+            }
+        }
+        if (DBG)
+            Rlog.d(LOG_TAG, "isOtaSpNumber " + isOtaSpNum);
+        return isOtaSpNum;
+    }
+}

@@ -1,0 +1,22 @@
+public TetheredInterfaceRequest requestTetheredInterface(@NonNull final Executor executor, @NonNull final TetheredInterfaceCallback callback){
+    Objects.requireNonNull(callback, "Callback must be non-null");
+    Objects.requireNonNull(executor, "Executor must be non-null");
+    final ITetheredInterfaceCallback cbInternal = new ITetheredInterfaceCallback.Stub() {
+
+        @Override
+        public void onAvailable(String iface) {
+            executor.execute(() -> callback.onAvailable(iface));
+        }
+
+        @Override
+        public void onUnavailable() {
+            executor.execute(() -> callback.onUnavailable());
+        }
+    };
+    try {
+        mService.requestTetheredInterface(cbInternal);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return new TetheredInterfaceRequest(mService, cbInternal);
+}

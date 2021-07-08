@@ -1,0 +1,15 @@
+public void updateContent(GLCanvas canvas){
+    if (!isLoaded()) {
+        if (mThrottled && ++sUploadedCount > UPLOAD_LIMIT) {
+            return;
+        }
+        uploadToCanvas(canvas);
+    } else if (!mContentValid) {
+        Bitmap bitmap = getBitmap();
+        int format = GLUtils.getInternalFormat(bitmap);
+        int type = GLUtils.getType(bitmap);
+        canvas.texSubImage2D(this, mBorder, mBorder, bitmap, format, type);
+        freeBitmap();
+        mContentValid = true;
+    }
+}

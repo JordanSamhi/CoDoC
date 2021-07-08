@@ -1,0 +1,10 @@
+public synchronized void onSystemReady(){
+    if (mLocationManagerInternal != null) {
+        return;
+    }
+    mAppOpsHelper.onSystemReady();
+    mSettingsHelper.onSystemReady();
+    mAppForegroundHelper.onSystemReady();
+    mLocationManagerInternal = LocalServices.getService(LocationManagerInternal.class);
+    mAppForegroundHelper.addListener(this::onAppForegroundChanged);
+}

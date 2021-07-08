@@ -1,0 +1,16 @@
+public List<WifiConfiguration> retrieveWifiConfigurations(){
+    ArrayList<WifiConfiguration> wifiConfigurations = new ArrayList<>();
+    for (SupplicantNetwork net : mNetworks) {
+        try {
+            WifiConfiguration wifiConfiguration = net.createWifiConfiguration();
+            if (wifiConfiguration != null) {
+                Log.v(TAG, "Parsed Configuration: " + wifiConfiguration.getKey());
+                wifiConfigurations.add(wifiConfiguration);
+            }
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Error parsing wifi configuration: " + e);
+            return null;
+        }
+    }
+    return wifiConfigurations;
+}

@@ -1,0 +1,10 @@
+public void dump(ProtoOutputStream proto, long fieldId){
+    final long token = proto.start(fieldId);
+    synchronized (mLock) {
+        proto.write(QuotaTrackerProto.IS_ENABLED, mIsEnabled);
+        proto.write(QuotaTrackerProto.IS_GLOBAL_QUOTA_FREE, mIsQuotaFree);
+        proto.write(QuotaTrackerProto.ELAPSED_REALTIME, mInjector.getElapsedRealtime());
+        mInQuotaAlarmListener.dumpLocked(proto, QuotaTrackerProto.IN_QUOTA_ALARM_LISTENER);
+    }
+    proto.end(token);
+}

@@ -1,0 +1,18 @@
+public void onContentChanged(){
+    super.onContentChanged();
+    View emptyView = findViewById(com.android.internal.R.id.empty);
+    mList = (ExpandableListView) findViewById(com.android.internal.R.id.list);
+    if (mList == null) {
+        throw new RuntimeException("Your content must have a ExpandableListView whose id attribute is " + "'android.R.id.list'");
+    }
+    if (emptyView != null) {
+        mList.setEmptyView(emptyView);
+    }
+    mList.setOnChildClickListener(this);
+    mList.setOnGroupExpandListener(this);
+    mList.setOnGroupCollapseListener(this);
+    if (mFinishedStart) {
+        setListAdapter(mAdapter);
+    }
+    mFinishedStart = true;
+}

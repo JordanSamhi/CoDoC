@@ -1,0 +1,20 @@
+public boolean setLoggingEventHandler(WifiNative.WifiLoggerEventHandler handler){
+    if (handler == null)
+        return boolResult(false);
+    synchronized (sLock) {
+        if (mIWifiChip == null)
+            return boolResult(false);
+        if (mLogEventHandler != null)
+            return boolResult(false);
+        try {
+            WifiStatus status = mIWifiChip.enableDebugErrorAlerts(true);
+            if (!ok(status))
+                return false;
+            mLogEventHandler = handler;
+            return true;
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+            return false;
+        }
+    }
+}

@@ -1,0 +1,25 @@
+
+     * Opens a seekable {@link ParcelFileDescriptor} that proxies all low-level
+     * I/O requests back to the given {@link ProxyFileDescriptorCallback}.
+     * <p>
+     * This can be useful when you want to provide quick access to a large file
+     * that isn't backed by a real file on disk, such as a file on a network
+     * share, cloud storage service, etc. As an example, you could respond to a
+     * {@link ContentResolver#openFileDescriptor(android.net.Uri, String)}
+     * request by returning a {@link ParcelFileDescriptor} created with this
+     * method, and then stream the content on-demand as requested.
+     * <p>
+     * Another useful example might be where you have an encrypted file that
+     * you're willing to decrypt on-demand, but where you want to avoid
+     * persisting the cleartext version.
+     *
+     * @param mode The desired access mode, must be one of
+     *            {@link ParcelFileDescriptor#MODE_READ_ONLY},
+     *            {@link ParcelFileDescriptor#MODE_WRITE_ONLY}, or
+     *            {@link ParcelFileDescriptor#MODE_READ_WRITE}
+     * @param callback Callback to process file operation requests issued on
+     *            returned file descriptor.
+     * @param handler Handler that invokes callback methods.
+     * @return Seekable ParcelFileDescriptor.
+     * @throws IOException
+     

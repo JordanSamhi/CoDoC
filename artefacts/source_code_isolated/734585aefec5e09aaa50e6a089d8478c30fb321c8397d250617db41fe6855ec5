@@ -1,0 +1,12 @@
+public String selectBackupTransport(String transportName){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.BACKUP, "selectBackupTransport");
+    final long oldId = Binder.clearCallingIdentity();
+    try {
+        String previousTransportName = mTransportManager.selectTransport(transportName);
+        updateStateForTransport(transportName);
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "selectBackupTransport(transport = " + transportName + "): previous transport = " + previousTransportName));
+        return previousTransportName;
+    } finally {
+        Binder.restoreCallingIdentity(oldId);
+    }
+}

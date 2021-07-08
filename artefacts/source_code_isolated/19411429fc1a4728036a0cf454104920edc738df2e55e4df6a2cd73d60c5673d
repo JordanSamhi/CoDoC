@@ -1,0 +1,8 @@
+public void updateSubscribe(int clientId, int sessionId, SubscribeConfig subscribeConfig){
+    Message msg = mSm.obtainMessage(MESSAGE_TYPE_COMMAND);
+    msg.arg1 = COMMAND_TYPE_UPDATE_SUBSCRIBE;
+    msg.arg2 = clientId;
+    msg.obj = subscribeConfig;
+    msg.getData().putInt(MESSAGE_BUNDLE_KEY_SESSION_ID, sessionId);
+    mSm.sendMessage(msg);
+}

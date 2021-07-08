@@ -1,0 +1,25 @@
+public boolean equals(Object obj){
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null) {
+        return false;
+    }
+    if (obj instanceof IfdData) {
+        IfdData data = (IfdData) obj;
+        if (data.getId() == mIfdId && data.getTagCount() == getTagCount()) {
+            ExifTag[] tags = data.getAllTags();
+            for (ExifTag tag : tags) {
+                if (ExifInterface.isOffsetTag(tag.getTagId())) {
+                    continue;
+                }
+                ExifTag tag2 = mExifTags.get(tag.getTagId());
+                if (!tag.equals(tag2)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}

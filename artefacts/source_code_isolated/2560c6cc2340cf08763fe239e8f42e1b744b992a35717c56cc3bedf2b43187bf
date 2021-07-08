@@ -1,0 +1,39 @@
+public final BridgeTypedArray internalObtainStyledAttributes(int resId, int[] attrs) throws Resources.NotFoundException{
+    StyleResourceValue style = null;
+    if (resId != 0) {
+        style = getStyleByDynamicId(resId);
+        if (style == null) {
+            ResourceReference ref = resolveId(resId);
+            if (ref != null) {
+                style = mRenderResources.getStyle(ref);
+            }
+        }
+        if (style == null) {
+            Bridge.getLog().error(LayoutLog.TAG_RESOURCES_RESOLVE, "Failed to find style with " + resId, null, null);
+            return null;
+        }
+    }
+    if (mTypedArrayCache == null) {
+        mTypedArrayCache = new TypedArrayCache();
+    }
+    List<StyleResourceValue> currentThemes = mRenderResources.getAllThemes();
+    Pair<BridgeTypedArray, Map<ResourceReference, ResourceValue>> typeArrayAndPropertiesPair = mTypedArrayCache.get(attrs, currentThemes, resId);
+    if (typeArrayAndPropertiesPair == null) {
+        typeArrayAndPropertiesPair = createStyleBasedTypedArray(style, attrs);
+        mTypedArrayCache.put(attrs, currentThemes, resId, typeArrayAndPropertiesPair);
+    }
+    if (typeArrayAndPropertiesPair.getSecond() != null) {
+        BridgeXmlBlockParser parser = getCurrentParser();
+        Object key = parser != null ? parser.getViewCookie() : null;
+        if (key != null) {
+            Map<ResourceReference, ResourceValue> defaultPropMap = mDefaultPropMaps.get(key);
+            if (defaultPropMap == null) {
+                defaultPropMap = typeArrayAndPropertiesPair.getSecond();
+                mDefaultPropMaps.put(key, defaultPropMap);
+            } else {
+                defaultPropMap.putAll(typeArrayAndPropertiesPair.getSecond());
+            }
+        }
+    }
+    return typeArrayAndPropertiesPair.getFirst();
+}

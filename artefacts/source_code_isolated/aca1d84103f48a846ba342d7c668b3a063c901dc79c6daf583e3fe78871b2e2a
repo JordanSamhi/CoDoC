@@ -1,0 +1,17 @@
+public final void showControl(IBinder binder){
+    if (mControlsView != null) {
+        Log.w(TAG, "control view is visible");
+        return;
+    }
+    final Point viewSize = mTmpPoint;
+    mControlsView = onCreateView(LayoutInflater.from(mContext), viewSize);
+    final LayoutParams lp = new LayoutParams();
+    final int defaultSize = mContext.getResources().getDimensionPixelSize(R.dimen.magnification_controls_size);
+    lp.width = viewSize.x <= 0 ? defaultSize : viewSize.x;
+    lp.height = viewSize.y <= 0 ? defaultSize : viewSize.y;
+    lp.token = binder;
+    setDefaultParams(lp);
+    setDefaultPosition(lp);
+    mWindowManager.addView(mControlsView, lp);
+    updateDraggableBound(lp.width, lp.height);
+}

@@ -1,0 +1,7 @@
+public synchronized boolean isBlockingUid(int uid){
+    if (mNetworkInfo.isConnected()) {
+        return !appliesToUid(uid);
+    } else {
+        return UidRange.containsUid(mBlockedUidsAsToldToNetd, uid);
+    }
+}

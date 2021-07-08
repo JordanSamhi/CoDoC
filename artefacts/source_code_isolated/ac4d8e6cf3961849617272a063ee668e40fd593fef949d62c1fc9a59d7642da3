@@ -1,0 +1,15 @@
+public boolean removeUidDeviceAffinity(int uid){
+    synchronized (mLock) {
+        if (mStatus != POLICY_STATUS_REGISTERED) {
+            throw new IllegalStateException("Cannot use unregistered AudioPolicy");
+        }
+        final IAudioService service = getService();
+        try {
+            final int status = service.removeUidDeviceAffinity(this.cb(), uid);
+            return (status == AudioManager.SUCCESS);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Dead object in removeUidDeviceAffinity", e);
+            return false;
+        }
+    }
+}

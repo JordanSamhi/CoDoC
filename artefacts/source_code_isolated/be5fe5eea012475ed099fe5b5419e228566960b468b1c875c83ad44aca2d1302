@@ -1,0 +1,10 @@
+public synchronized void writeServiceStateChanged(int phoneId, ServiceState serviceState){
+    TelephonyEvent event = new TelephonyEventBuilder(phoneId).setServiceState(toServiceStateProto(serviceState)).build();
+    if (mLastServiceState.get(phoneId) != null && Arrays.equals(TelephonyServiceState.toByteArray(mLastServiceState.get(phoneId)), TelephonyServiceState.toByteArray(event.serviceState))) {
+        return;
+    }
+    mLastServiceState.put(phoneId, event.serviceState);
+    addTelephonyEvent(event);
+    annotateInProgressCallSession(event.timestampMillis, phoneId, new CallSessionEventBuilder(TelephonyCallSession.Event.Type.RIL_SERVICE_STATE_CHANGED).setServiceState(event.serviceState));
+    annotateInProgressSmsSession(event.timestampMillis, phoneId, new SmsSessionEventBuilder(SmsSession.Event.Type.RIL_SERVICE_STATE_CHANGED).setServiceState(event.serviceState));
+}

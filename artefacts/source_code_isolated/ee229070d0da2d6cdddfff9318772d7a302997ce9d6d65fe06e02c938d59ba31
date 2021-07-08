@@ -1,0 +1,15 @@
+public static TextEncodingDetails calculateLength(CharSequence msgBody, boolean use7bitOnly){
+    CharSequence newMsgBody = null;
+    Resources r = Resources.getSystem();
+    if (r.getBoolean(com.android.internal.R.bool.config_sms_force_7bit_encoding)) {
+        newMsgBody = Sms7BitEncodingTranslator.translate(msgBody, false);
+    }
+    if (TextUtils.isEmpty(newMsgBody)) {
+        newMsgBody = msgBody;
+    }
+    TextEncodingDetails ted = GsmAlphabet.countGsmSeptets(newMsgBody, use7bitOnly);
+    if (ted == null) {
+        return SmsMessageBase.calcUnicodeEncodingDetails(newMsgBody);
+    }
+    return ted;
+}

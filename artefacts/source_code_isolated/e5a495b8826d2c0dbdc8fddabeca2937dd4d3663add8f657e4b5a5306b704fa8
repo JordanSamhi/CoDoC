@@ -1,0 +1,11 @@
+public Bundle getUserRestrictions(@NonNull ComponentName admin){
+    Bundle ret = null;
+    if (mService != null) {
+        try {
+            ret = mService.getUserRestrictions(admin, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return ret == null ? new Bundle() : ret;
+}

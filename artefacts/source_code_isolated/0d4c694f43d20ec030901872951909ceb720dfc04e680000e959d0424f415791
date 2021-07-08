@@ -1,0 +1,16 @@
+public static String getFieldIdString(long fieldId){
+    final long fieldCount = fieldId & FIELD_COUNT_MASK;
+    String countString = getFieldCountString(fieldCount);
+    if (countString == null) {
+        countString = "fieldCount=" + fieldCount;
+    }
+    if (countString.length() > 0) {
+        countString += " ";
+    }
+    final long fieldType = fieldId & FIELD_TYPE_MASK;
+    String typeString = getFieldTypeString(fieldType);
+    if (typeString == null) {
+        typeString = "fieldType=" + fieldType;
+    }
+    return countString + typeString + " tag=" + ((int) fieldId) + " fieldId=0x" + Long.toHexString(fieldId);
+}

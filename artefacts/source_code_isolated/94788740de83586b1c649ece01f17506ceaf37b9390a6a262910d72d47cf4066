@@ -1,0 +1,15 @@
+public boolean filter(byte[][] pdus, String format){
+    if (pdus.length != 1) {
+        return false;
+    }
+    if (mCarrierConfig != null) {
+        String[] originators = mCarrierConfig.getStringArray(CarrierConfigManager.KEY_MISSED_INCOMING_CALL_SMS_ORIGINATOR_STRING_ARRAY);
+        if (originators != null) {
+            SmsMessage message = SmsMessage.createFromPdu(pdus[0], format);
+            if (message != null && !TextUtils.isEmpty(message.getOriginatingAddress()) && Arrays.asList(originators).contains(message.getOriginatingAddress())) {
+                return processSms(message);
+            }
+        }
+    }
+    return false;
+}

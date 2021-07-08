@@ -1,0 +1,51 @@
+public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
+    SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+    if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+        String suggestSelection;
+        String[] myArgs;
+        if (TextUtils.isEmpty(selectionArgs[0])) {
+            suggestSelection = null;
+            myArgs = null;
+        } else {
+            String like = "%" + selectionArgs[0] + "%";
+            if (mTwoLineDisplay) {
+                myArgs = new String[] { like, like };
+            } else {
+                myArgs = new String[] { like };
+            }
+            suggestSelection = mSuggestSuggestionClause;
+        }
+        Cursor c = db.query(sSuggestions, mSuggestionProjection, suggestSelection, myArgs, null, null, ORDER_BY, null);
+        c.setNotificationUri(getContext().getContentResolver(), uri);
+        return c;
+    }
+    int length = uri.getPathSegments().size();
+    if (length != 1 && length != 2) {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    String base = uri.getPathSegments().get(0);
+    if (!base.equals(sSuggestions)) {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    String[] useProjection = null;
+    if (projection != null && projection.length > 0) {
+        useProjection = new String[projection.length + 1];
+        System.arraycopy(projection, 0, useProjection, 0, projection.length);
+        useProjection[projection.length] = "_id AS _id";
+    }
+    StringBuilder whereClause = new StringBuilder(256);
+    if (length == 2) {
+        whereClause.append("(_id = ").append(uri.getPathSegments().get(1)).append(")");
+    }
+    if (selection != null && selection.length() > 0) {
+        if (whereClause.length() > 0) {
+            whereClause.append(" AND ");
+        }
+        whereClause.append('(');
+        whereClause.append(selection);
+        whereClause.append(')');
+    }
+    Cursor c = db.query(base, useProjection, whereClause.toString(), selectionArgs, null, null, sortOrder, null);
+    c.setNotificationUri(getContext().getContentResolver(), uri);
+    return c;
+}

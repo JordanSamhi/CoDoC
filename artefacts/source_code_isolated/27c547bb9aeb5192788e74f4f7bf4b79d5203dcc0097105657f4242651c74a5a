@@ -1,0 +1,20 @@
+public void register(){
+    if (mProvider != null) {
+        throw new IllegalStateException("A NetworkFactory must only be registered once");
+    }
+    if (DBG)
+        log("Registering NetworkFactory");
+    mProvider = new NetworkProvider(mContext, NetworkFactory.this.getLooper(), LOG_TAG) {
+
+        @Override
+        public void onNetworkRequested(@NonNull NetworkRequest request, int score, int servingProviderId) {
+            handleAddRequest(request, score, servingProviderId);
+        }
+
+        @Override
+        public void onNetworkRequestWithdrawn(@NonNull NetworkRequest request) {
+            handleRemoveRequest(request);
+        }
+    };
+    ((ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE)).registerNetworkProvider(mProvider);
+}

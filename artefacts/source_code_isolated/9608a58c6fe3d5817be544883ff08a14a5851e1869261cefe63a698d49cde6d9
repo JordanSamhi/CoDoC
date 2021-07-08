@@ -1,0 +1,32 @@
+public boolean removeNetwork(int networkId, int uid, String packageName){
+    if (!doesUidBelongToCurrentUser(uid)) {
+        Log.e(TAG, "UID " + uid + " not visible to the current user");
+        return false;
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        return false;
+    }
+    if (!canModifyNetwork(config, uid, packageName)) {
+        Log.e(TAG, "UID " + uid + " does not have permission to delete configuration " + config.getKey());
+        return false;
+    }
+    if (!removeNetworkInternal(config, uid)) {
+        Log.e(TAG, "Failed to remove network " + config.getPrintableSsid());
+        return false;
+    }
+    if (networkId == mLastSelectedNetworkId) {
+        clearLastSelectedNetwork();
+    }
+    if (!config.ephemeral && !config.isPasspoint()) {
+        mLruConnectionTracker.removeNetwork(config);
+    }
+    sendConfiguredNetworkChangedBroadcast(WifiManager.CHANGE_REASON_REMOVED);
+    if (!config.ephemeral && !config.isPasspoint()) {
+        saveToStore(true);
+    }
+    for (OnNetworkUpdateListener listener : mListeners) {
+        listener.onNetworkRemoved(createExternalWifiConfiguration(config, true, Process.WIFI_UID));
+    }
+    return true;
+}

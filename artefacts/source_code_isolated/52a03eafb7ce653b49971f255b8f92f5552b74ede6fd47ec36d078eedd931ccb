@@ -1,0 +1,7 @@
+public static SelectionEvent createSelectionActionEvent(int start, int end, @SelectionEvent.ActionType int actionType, @NonNull TextClassification classification){
+    Preconditions.checkArgument(end >= start, "end cannot be less than start");
+    Objects.requireNonNull(classification);
+    checkActionType(actionType);
+    final String entityType = classification.getEntityCount() > 0 ? classification.getEntity(0) : TextClassifier.TYPE_UNKNOWN;
+    return new SelectionEvent(start, end, actionType, entityType, INVOCATION_UNKNOWN, classification.getId());
+}

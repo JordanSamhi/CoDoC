@@ -1,0 +1,15 @@
+public static Sampler WRAP_LINEAR_MIP_LINEAR(RenderScript rs){
+    if (rs.mSampler_WRAP_LINEAR_MIP_LINEAR == null) {
+        synchronized (rs) {
+            if (rs.mSampler_WRAP_LINEAR_MIP_LINEAR == null) {
+                Builder b = new Builder(rs);
+                b.setMinification(Value.LINEAR_MIP_LINEAR);
+                b.setMagnification(Value.LINEAR);
+                b.setWrapS(Value.WRAP);
+                b.setWrapT(Value.WRAP);
+                rs.mSampler_WRAP_LINEAR_MIP_LINEAR = b.create();
+            }
+        }
+    }
+    return rs.mSampler_WRAP_LINEAR_MIP_LINEAR;
+}

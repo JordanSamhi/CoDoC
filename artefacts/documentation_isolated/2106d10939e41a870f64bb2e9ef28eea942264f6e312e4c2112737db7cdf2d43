@@ -1,0 +1,31 @@
+
+     * Checks whether the provided set of camera devices and their corresponding
+     * {@link SessionConfiguration} can be configured concurrently.
+     *
+     * <p>This method performs a runtime check of the given {@link SessionConfiguration} and camera
+     * id combinations. The result confirms whether or not the passed session configurations can be
+     * successfully used to create camera capture sessions concurrently, on the given camera
+     * devices using {@link CameraDevice#createCaptureSession(SessionConfiguration)}.
+     * </p>
+     *
+     * <p>The method can be called at any point before, during and after active capture sessions.
+     * It will not impact normal camera behavior in any way and must complete significantly
+     * faster than creating a regular or constrained capture session.</p>
+     *
+     * <p>Although this method is faster than creating a new capture session, it is not intended
+     * to be used for exploring the entire space of supported concurrent stream combinations. The
+     * available mandatory concurrent stream combinations may be obtained by querying
+     * {@link #getCameraCharacteristics} for the key
+     * {@link android.hardware.camera2.CameraCharacteristics#SCALER_MANDATORY_CONCURRENT_STREAM_COMBINATIONS}. </p>
+     *
+     * <p>Note that session parameters will be ignored and calls to
+     * {@link SessionConfiguration#setSessionParameters} are not required.</p>
+     *
+     * @return {@code true} if the given combination of session configurations and corresponding
+     *                      camera ids are concurrently supported by the camera sub-system,
+     *         {@code false} otherwise OR if the set of camera devices provided is not a subset of
+     *                       those returned by {@link #getConcurrentCameraIds}.
+     *
+     * @throws CameraAccessException if one of the camera devices queried is no longer connected.
+     *
+     

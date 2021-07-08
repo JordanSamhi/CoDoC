@@ -1,0 +1,16 @@
+public static double score(@NonNull List<Mean> means){
+    double score = 0;
+    final int meansSize = means.size();
+    for (int i = 0; i < meansSize; i++) {
+        Mean mean = means.get(i);
+        for (int j = 0; j < meansSize; j++) {
+            Mean compareTo = means.get(j);
+            if (mean == compareTo) {
+                continue;
+            }
+            double distance = Math.sqrt(sqDistance(mean.mCentroid, compareTo.mCentroid));
+            score += distance;
+        }
+    }
+    return score;
+}

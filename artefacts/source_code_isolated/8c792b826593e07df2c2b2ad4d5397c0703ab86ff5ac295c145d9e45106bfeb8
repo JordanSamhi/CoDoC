@@ -1,0 +1,28 @@
+public static String networkNameToString(byte[] data, int offset, int length){
+    String ret;
+    if ((data[offset] & 0x80) != 0x80 || length < 1) {
+        return "";
+    }
+    switch((data[offset] >>> 4) & 0x7) {
+        case 0:
+            int countSeptets;
+            int unusedBits = data[offset] & 7;
+            countSeptets = (((length - 1) * 8) - unusedBits) / 7;
+            ret = GsmAlphabet.gsm7BitPackedToString(data, offset + 1, countSeptets);
+            break;
+        case 1:
+            try {
+                ret = new String(data, offset + 1, length - 1, "utf-16");
+            } catch (UnsupportedEncodingException ex) {
+                ret = "";
+                Rlog.e(LOG_TAG, "implausible UnsupportedEncodingException", ex);
+            }
+            break;
+        default:
+            ret = "";
+            break;
+    }
+    if ((data[offset] & 0x40) != 0) {
+    }
+    return ret;
+}

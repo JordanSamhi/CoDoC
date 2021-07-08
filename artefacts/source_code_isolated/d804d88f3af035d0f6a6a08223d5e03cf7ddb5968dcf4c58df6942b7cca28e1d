@@ -1,0 +1,10 @@
+public Intent[] getIntents(){
+    Intent[] intents = new Intent[mIntents.size()];
+    if (intents.length == 0)
+        return intents;
+    intents[0] = new Intent(mIntents.get(0)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+    for (int i = 1; i < intents.length; i++) {
+        intents[i] = new Intent(mIntents.get(i));
+    }
+    return intents;
+}

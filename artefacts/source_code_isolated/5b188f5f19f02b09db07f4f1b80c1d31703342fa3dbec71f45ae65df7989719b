@@ -1,0 +1,10 @@
+public Builder addDnsServer(@NonNull InetAddress address){
+    if (address.isLoopbackAddress() || address.isAnyLocalAddress()) {
+        throw new IllegalArgumentException("Bad address");
+    }
+    if (mConfig.dnsServers == null) {
+        mConfig.dnsServers = new ArrayList<String>();
+    }
+    mConfig.dnsServers.add(address.getHostAddress());
+    return this;
+}

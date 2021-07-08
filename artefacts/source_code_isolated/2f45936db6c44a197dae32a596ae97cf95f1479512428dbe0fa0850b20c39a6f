@@ -1,0 +1,17 @@
+public static ParagraphInfo[] createMeasuredParagraphs(@NonNull CharSequence text, @NonNull Params params, @IntRange(from = 0) int start, @IntRange(from = 0) int end, boolean computeLayout){
+    ArrayList<ParagraphInfo> result = new ArrayList<>();
+    Preconditions.checkNotNull(text);
+    Preconditions.checkNotNull(params);
+    final boolean needHyphenation = params.getBreakStrategy() != Layout.BREAK_STRATEGY_SIMPLE && params.getHyphenationFrequency() != Layout.HYPHENATION_FREQUENCY_NONE;
+    int paraEnd = 0;
+    for (int paraStart = start; paraStart < end; paraStart = paraEnd) {
+        paraEnd = TextUtils.indexOf(text, LINE_FEED, paraStart, end);
+        if (paraEnd < 0) {
+            paraEnd = end;
+        } else {
+            paraEnd++;
+        }
+        result.add(new ParagraphInfo(paraEnd, MeasuredParagraph.buildForStaticLayout(params.getTextPaint(), text, paraStart, paraEnd, params.getTextDirection(), needHyphenation, computeLayout, null, null)));
+    }
+    return result.toArray(new ParagraphInfo[result.size()]);
+}

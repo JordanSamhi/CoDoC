@@ -1,0 +1,11 @@
+public VpnConfig getVpnConfig(int userId){
+    enforceCrossUserPermission(userId);
+    synchronized (mVpns) {
+        Vpn vpn = mVpns.get(userId);
+        if (vpn != null) {
+            return vpn.getVpnConfig();
+        } else {
+            return null;
+        }
+    }
+}

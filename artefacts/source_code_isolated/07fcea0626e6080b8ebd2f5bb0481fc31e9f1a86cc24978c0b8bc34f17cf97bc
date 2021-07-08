@@ -1,0 +1,15 @@
+public void onUserStopping(int userId){
+    if (!shouldHandle(null)) {
+        return;
+    }
+    StorageUserConnection connection = null;
+    synchronized (mLock) {
+        connection = mConnections.get(userId);
+    }
+    if (connection != null) {
+        Slog.i(TAG, "Removing all sessions for user: " + userId);
+        connection.removeAllSessions();
+    } else {
+        Slog.w(TAG, "No connection found for user: " + userId);
+    }
+}

@@ -1,0 +1,13 @@
+public void startSession(String sessionId, ParcelFileDescriptor pfd, String upperPath, String lowerPath) throws ExternalStorageServiceException{
+    Objects.requireNonNull(sessionId);
+    Objects.requireNonNull(pfd);
+    Objects.requireNonNull(upperPath);
+    Objects.requireNonNull(lowerPath);
+    prepareRemote();
+    synchronized (mLock) {
+        Preconditions.checkArgument(!mSessions.containsKey(sessionId));
+        Session session = new Session(sessionId, upperPath, lowerPath);
+        mSessions.put(sessionId, session);
+        mActiveConnection.startSessionLocked(session, pfd);
+    }
+}

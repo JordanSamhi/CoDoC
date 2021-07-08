@@ -1,0 +1,19 @@
+public void makeFile(@NonNull String path, long size, @Nullable UUID id, @Nullable byte[] metadata, @Nullable byte[] v4signatureBytes) throws IOException{
+    try {
+        if (id == null && metadata == null) {
+            throw new IOException("File ID and metadata cannot both be null");
+        }
+        validateV4Signature(v4signatureBytes);
+        final IncrementalNewFileParams params = new IncrementalNewFileParams();
+        params.size = size;
+        params.metadata = (metadata == null ? new byte[0] : metadata);
+        params.fileId = idToBytes(id);
+        params.signature = v4signatureBytes;
+        int res = mService.makeFile(mId, path, params);
+        if (res != 0) {
+            throw new IOException("makeFile() failed with errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

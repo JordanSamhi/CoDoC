@@ -1,0 +1,7 @@
+public IpSecTunnelInterface createIpSecTunnelInterface(@NonNull InetAddress localAddress, @NonNull InetAddress remoteAddress, @NonNull Network underlyingNetwork) throws ResourceUnavailableException, IOException{
+    try {
+        return new IpSecTunnelInterface(mContext, mService, localAddress, remoteAddress, underlyingNetwork);
+    } catch (ServiceSpecificException e) {
+        throw rethrowCheckedExceptionFromServiceSpecificException(e);
+    }
+}

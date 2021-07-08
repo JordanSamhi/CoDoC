@@ -1,0 +1,19 @@
+public static int determineMode(int frequency, int maxRate, boolean foundHe, boolean foundVht, boolean foundHt, boolean foundErp){
+    if (foundHe) {
+        return MODE_11AX;
+    } else if (!ScanResult.is24GHz(frequency) && foundVht) {
+        return MODE_11AC;
+    } else if (foundHt) {
+        return MODE_11N;
+    } else if (foundErp) {
+        return MODE_11G;
+    } else if (ScanResult.is24GHz(frequency)) {
+        if (maxRate < 24000000) {
+            return MODE_11B;
+        } else {
+            return MODE_11G;
+        }
+    } else {
+        return MODE_11A;
+    }
+}

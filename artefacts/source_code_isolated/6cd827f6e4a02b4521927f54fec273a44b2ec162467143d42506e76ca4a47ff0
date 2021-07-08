@@ -1,0 +1,15 @@
+public static TextLinks generateLegacyLinks(@NonNull TextLinks.Request request){
+    final String string = request.getText().toString();
+    final TextLinks.Builder links = new TextLinks.Builder(string);
+    final Collection<String> entities = request.getEntityConfig().resolveEntityListModifications(Collections.emptyList());
+    if (entities.contains(TextClassifier.TYPE_URL)) {
+        addLinks(links, string, TextClassifier.TYPE_URL);
+    }
+    if (entities.contains(TextClassifier.TYPE_PHONE)) {
+        addLinks(links, string, TextClassifier.TYPE_PHONE);
+    }
+    if (entities.contains(TextClassifier.TYPE_EMAIL)) {
+        addLinks(links, string, TextClassifier.TYPE_EMAIL);
+    }
+    return links.build();
+}

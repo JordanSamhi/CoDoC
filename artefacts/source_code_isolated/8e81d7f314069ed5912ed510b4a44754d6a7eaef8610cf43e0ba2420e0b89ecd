@@ -1,0 +1,26 @@
+public void updateCursor(View view, int left, int top, int right, int bottom){
+    final InputMethodManager fallbackImm = getFallbackInputMethodManagerIfNecessary(view);
+    if (fallbackImm != null) {
+        fallbackImm.updateCursor(view, left, top, right, bottom);
+        return;
+    }
+    checkFocus();
+    synchronized (mH) {
+        if (!hasServedByInputMethodLocked(view) || mCurrentTextBoxAttribute == null || mCurMethod == null) {
+            return;
+        }
+        mTmpCursorRect.set(left, top, right, bottom);
+        if (!mCursorRect.equals(mTmpCursorRect)) {
+            if (DEBUG)
+                Log.d(TAG, "updateCursor");
+            try {
+                if (DEBUG)
+                    Log.v(TAG, "CURSOR CHANGE: " + mCurMethod);
+                mCurMethod.updateCursor(mTmpCursorRect);
+                mCursorRect.set(mTmpCursorRect);
+            } catch (RemoteException e) {
+                Log.w(TAG, "IME died: " + mCurId, e);
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public ImsUtInterface getSupplementaryServiceConfiguration() throws ImsException{
+    if (mUt != null && mUt.isBinderAlive()) {
+        return mUt;
+    }
+    checkAndThrowExceptionIfServiceUnavailable();
+    try {
+        IImsUt iUt = mMmTelFeatureConnection.getUtInterface();
+        if (iUt == null) {
+            throw new ImsException("getSupplementaryServiceConfiguration()", ImsReasonInfo.CODE_UT_NOT_SUPPORTED);
+        }
+        mUt = new ImsUt(iUt);
+    } catch (RemoteException e) {
+        throw new ImsException("getSupplementaryServiceConfiguration()", e, ImsReasonInfo.CODE_LOCAL_IMS_SERVICE_DOWN);
+    }
+    return mUt;
+}

@@ -1,0 +1,46 @@
+public boolean invite(WifiP2pGroup group, String peerAddress){
+    if (TextUtils.isEmpty(peerAddress))
+        return false;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("invite"))
+            return false;
+        if (group == null) {
+            Log.e(TAG, "Cannot invite to null group.");
+            return false;
+        }
+        if (group.getOwner() == null) {
+            Log.e(TAG, "Cannot invite to group with null owner.");
+            return false;
+        }
+        if (group.getOwner().deviceAddress == null) {
+            Log.e(TAG, "Group owner has no mac address.");
+            return false;
+        }
+        byte[] ownerMacAddress = null;
+        try {
+            ownerMacAddress = NativeUtil.macAddressToByteArray(group.getOwner().deviceAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Group owner mac address parse error.", e);
+            return false;
+        }
+        if (peerAddress == null) {
+            Log.e(TAG, "Cannot parse peer mac address.");
+            return false;
+        }
+        byte[] peerMacAddress;
+        try {
+            peerMacAddress = NativeUtil.macAddressToByteArray(peerAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Peer mac address parse error.", e);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("invite(" + group.getInterface() + ", " + group.getOwner().deviceAddress + ", " + peerAddress + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.invite(group.getInterface(), ownerMacAddress, peerMacAddress));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

@@ -1,0 +1,20 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeInt(mHdmiDeviceType);
+    dest.writeInt(mPhysicalAddress);
+    dest.writeInt(mPortId);
+    switch(mHdmiDeviceType) {
+        case HDMI_DEVICE_TYPE_CEC:
+            dest.writeInt(mLogicalAddress);
+            dest.writeInt(mDeviceType);
+            dest.writeInt(mVendorId);
+            dest.writeInt(mDevicePowerStatus);
+            dest.writeString(mDisplayName);
+            break;
+        case HDMI_DEVICE_TYPE_MHL:
+            dest.writeInt(mDeviceId);
+            dest.writeInt(mAdopterId);
+            break;
+        case HDMI_DEVICE_TYPE_INACTIVE:
+        default:
+    }
+}

@@ -1,0 +1,14 @@
+public void moveFile(@NonNull String sourcepath, @NonNull String destpath) throws IOException{
+    try {
+        int res = mService.makeLink(mId, sourcepath, mId, destpath);
+        if (res < 0) {
+            throw new IOException("moveFile() failed at makeLink(), errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+    try {
+        mService.unlink(mId, sourcepath);
+    } catch (RemoteException ignored) {
+    }
+}

@@ -1,0 +1,29 @@
+public void performBackup(boolean incremental) throws GeneralSecurityException, IOException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, NonIncrementalBackupRequiredException{
+    if (mTertiaryKeyManager.wasKeyRotated()) {
+        Slog.d(TAG, "Tertiary key is new so clearing package state.");
+        deleteListings(mPackageName);
+    }
+    Optional<Pair<KeyValueListingProto.KeyValueListing, ChunksMetadataProto.ChunkListing>> oldListings = getListingsAndEnsureConsistency(mPackageName);
+    if (oldListings.isPresent() && !incremental) {
+        Slog.d(TAG, "Non-incremental backup requested but incremental state existed, clearing it");
+        deleteListings(mPackageName);
+        oldListings = Optional.empty();
+    }
+    if (!oldListings.isPresent() && incremental) {
+        throw new NonIncrementalBackupRequiredException();
+    }
+    if (oldListings.isPresent()) {
+        mKvBackupEncrypter.setOldKeyValueListing(oldListings.get().first);
+    }
+    ChunksMetadataProto.ChunkListing newChunkListing;
+    if (oldListings.isPresent()) {
+        Slog.v(TAG, "Old listings existed, performing incremental backup");
+        newChunkListing = mEncryptedBackupTask.performIncrementalBackup(mTertiaryKeyManager.getKey(), mTertiaryKeyManager.getWrappedKey(), oldListings.get().second);
+    } else {
+        Slog.v(TAG, "Old listings did not exist, performing non-incremental backup");
+        byte[] fingerprintMixerSalt = null;
+        newChunkListing = mEncryptedBackupTask.performNonIncrementalBackup(mTertiaryKeyManager.getKey(), mTertiaryKeyManager.getWrappedKey(), fingerprintMixerSalt);
+    }
+    Slog.v(TAG, "Backup and upload succeeded, saving new listings");
+    saveListings(mPackageName, mKvBackupEncrypter.getNewKeyValueListing(), newChunkListing);
+}

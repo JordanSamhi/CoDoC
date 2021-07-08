@@ -1,0 +1,10 @@
+public List<BlobHandle> getLeasedBlobs() throws IOException{
+    try {
+        return mService.getLeasedBlobs(mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

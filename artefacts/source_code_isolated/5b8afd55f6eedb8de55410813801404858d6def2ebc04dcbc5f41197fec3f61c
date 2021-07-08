@@ -1,0 +1,22 @@
+public ArrayList<HardwareConfig> getAllSimsForModem(int modemIndex){
+    synchronized (mLock) {
+        if (mSims.isEmpty()) {
+            loge("getAllSimsForModem: no registered sim device?!?");
+            return null;
+        }
+        if (modemIndex > getModemCount()) {
+            loge("getAllSimsForModem: out-of-bounds access for modem device " + modemIndex + " max: " + getModemCount());
+            return null;
+        }
+        if (DBG)
+            logd("getAllSimsForModem " + modemIndex);
+        ArrayList<HardwareConfig> result = new ArrayList<HardwareConfig>();
+        HardwareConfig modem = getModem(modemIndex);
+        for (HardwareConfig sim : mSims) {
+            if (sim.modemUuid.equals(modem.uuid)) {
+                result.add(sim);
+            }
+        }
+        return result;
+    }
+}

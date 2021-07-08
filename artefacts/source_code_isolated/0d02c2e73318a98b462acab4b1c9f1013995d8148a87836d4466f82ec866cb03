@@ -1,0 +1,13 @@
+public void updatePublish(@NonNull PublishConfig publishConfig){
+    if (mTerminated) {
+        Log.w(TAG, "updatePublish: called on terminated session");
+        return;
+    } else {
+        WifiAwareManager mgr = mMgr.get();
+        if (mgr == null) {
+            Log.w(TAG, "updatePublish: called post GC on WifiAwareManager");
+            return;
+        }
+        mgr.updatePublish(mClientId, mSessionId, publishConfig);
+    }
+}

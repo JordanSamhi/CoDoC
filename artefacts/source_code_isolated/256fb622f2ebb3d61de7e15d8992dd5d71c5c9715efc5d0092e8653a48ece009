@@ -1,0 +1,16 @@
+public boolean startDtmf(char c){
+    boolean result = false;
+    if (VDBG) {
+        Rlog.d(LOG_TAG, " startDtmf(" + c + ")");
+        Rlog.d(LOG_TAG, toString());
+    }
+    if (hasActiveFgCall()) {
+        getActiveFgCall().getPhone().startDtmf(c);
+        result = true;
+    }
+    if (VDBG) {
+        Rlog.d(LOG_TAG, "End startDtmf(" + c + ")");
+        Rlog.d(LOG_TAG, toString());
+    }
+    return result;
+}

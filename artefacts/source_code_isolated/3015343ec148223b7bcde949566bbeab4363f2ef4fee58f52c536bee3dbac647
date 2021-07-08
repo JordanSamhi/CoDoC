@@ -1,0 +1,12 @@
+public int checkCarrierPrivilegesForPackage(String pkgName){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.checkCarrierPrivilegesForPackage(getSubId(), pkgName);
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "checkCarrierPrivilegesForPackage RemoteException", ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "checkCarrierPrivilegesForPackage NPE", ex);
+    }
+    return CARRIER_PRIVILEGE_STATUS_NO_ACCESS;
+}

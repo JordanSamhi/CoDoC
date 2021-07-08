@@ -1,0 +1,10 @@
+public Runnable wrap(Runnable r){
+    acquire();
+    return () -> {
+        try {
+            r.run();
+        } finally {
+            release();
+        }
+    };
+}

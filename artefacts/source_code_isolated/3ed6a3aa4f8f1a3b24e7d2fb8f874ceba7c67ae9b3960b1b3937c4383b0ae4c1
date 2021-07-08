@@ -1,0 +1,13 @@
+public String getPrintableSsid(){
+    if (SSID == null)
+        return "";
+    final int length = SSID.length();
+    if (length > 2 && (SSID.charAt(0) == '"') && SSID.charAt(length - 1) == '"') {
+        return SSID.substring(1, length - 1);
+    }
+    if (length > 3 && (SSID.charAt(0) == 'P') && (SSID.charAt(1) == '"') && (SSID.charAt(length - 1) == '"')) {
+        WifiSsid wifiSsid = WifiSsid.createFromAsciiEncoded(SSID.substring(2, length - 1));
+        return wifiSsid.toString();
+    }
+    return SSID;
+}

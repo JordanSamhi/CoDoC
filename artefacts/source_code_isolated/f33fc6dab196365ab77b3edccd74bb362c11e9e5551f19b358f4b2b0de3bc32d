@@ -1,0 +1,11 @@
+public int getInputState(@NonNull String inputId){
+    Preconditions.checkNotNull(inputId);
+    synchronized (mLock) {
+        Integer state = mStateMap.get(inputId);
+        if (state == null) {
+            Log.w(TAG, "Unrecognized input ID: " + inputId);
+            return INPUT_STATE_DISCONNECTED;
+        }
+        return state;
+    }
+}

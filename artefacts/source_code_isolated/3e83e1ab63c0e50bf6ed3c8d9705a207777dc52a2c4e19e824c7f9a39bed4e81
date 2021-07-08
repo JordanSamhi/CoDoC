@@ -1,0 +1,39 @@
+public static List<DashboardCategory> getCategories(Context context, Map<Pair<String, String>, Tile> cache){
+    final long startTime = System.currentTimeMillis();
+    final boolean setup = Global.getInt(context.getContentResolver(), Global.DEVICE_PROVISIONED, 0) != 0;
+    final ArrayList<Tile> tiles = new ArrayList<>();
+    final UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+    for (UserHandle user : userManager.getUserProfiles()) {
+        if (user.getIdentifier() == ActivityManager.getCurrentUser()) {
+            loadTilesForAction(context, user, SETTINGS_ACTION, cache, null, tiles, true);
+            loadTilesForAction(context, user, OPERATOR_SETTINGS, cache, OPERATOR_DEFAULT_CATEGORY, tiles, false);
+            loadTilesForAction(context, user, MANUFACTURER_SETTINGS, cache, MANUFACTURER_DEFAULT_CATEGORY, tiles, false);
+        }
+        if (setup) {
+            loadTilesForAction(context, user, EXTRA_SETTINGS_ACTION, cache, null, tiles, false);
+            loadTilesForAction(context, user, IA_SETTINGS_ACTION, cache, null, tiles, false);
+        }
+    }
+    final HashMap<String, DashboardCategory> categoryMap = new HashMap<>();
+    for (Tile tile : tiles) {
+        final String categoryKey = tile.getCategory();
+        DashboardCategory category = categoryMap.get(categoryKey);
+        if (category == null) {
+            category = new DashboardCategory(categoryKey);
+            if (category == null) {
+                Log.w(LOG_TAG, "Couldn't find category " + categoryKey);
+                continue;
+            }
+            categoryMap.put(categoryKey, category);
+        }
+        category.addTile(tile);
+    }
+    final ArrayList<DashboardCategory> categories = new ArrayList<>(categoryMap.values());
+    for (DashboardCategory category : categories) {
+        category.sortTiles();
+    }
+    if (DEBUG_TIMING) {
+        Log.d(LOG_TAG, "getCategories took " + (System.currentTimeMillis() - startTime) + " ms");
+    }
+    return categories;
+}

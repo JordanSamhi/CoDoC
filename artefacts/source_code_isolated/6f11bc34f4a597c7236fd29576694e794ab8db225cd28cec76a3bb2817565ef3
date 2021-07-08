@@ -1,0 +1,6 @@
+public void unwrap_throwsForMissingMetadata() throws Exception{
+    SecretKey secondaryKey = generateAesKey();
+    WrappedKeyProto.WrappedKey wrappedKey = KeyWrapUtils.wrap(secondaryKey, generateAesKey());
+    wrappedKey.metadata = null;
+    KeyWrapUtils.unwrap(secondaryKey, wrappedKey);
+}

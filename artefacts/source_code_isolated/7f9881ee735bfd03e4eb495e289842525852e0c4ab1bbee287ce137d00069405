@@ -1,0 +1,15 @@
+public static String macAddressFromByteArray(byte[] macArray){
+    if (macArray == null) {
+        throw new IllegalArgumentException("null mac bytes");
+    }
+    if (macArray.length != MAC_LENGTH) {
+        throw new IllegalArgumentException("invalid macArray length: " + macArray.length);
+    }
+    StringBuilder sb = new StringBuilder(MAC_STR_LENGTH);
+    for (int i = 0; i < macArray.length; i++) {
+        if (i != 0)
+            sb.append(":");
+        sb.append(new String(HexEncoding.encode(macArray, i, 1)));
+    }
+    return sb.toString().toLowerCase();
+}

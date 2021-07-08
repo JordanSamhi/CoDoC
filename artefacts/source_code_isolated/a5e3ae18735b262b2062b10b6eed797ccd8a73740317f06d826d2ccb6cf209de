@@ -1,0 +1,7 @@
+public static InnerAuthEAP parse(ByteBuffer payload, int length) throws ProtocolException{
+    if (length != EXPECTED_LENGTH_VALUE) {
+        throw new ProtocolException("Invalid length: " + length);
+    }
+    int eapMethodID = payload.get() & 0xFF;
+    return new InnerAuthEAP(eapMethodID);
+}

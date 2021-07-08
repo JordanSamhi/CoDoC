@@ -1,0 +1,11 @@
+public UiccCard getUiccCardForPhone(int phoneId){
+    synchronized (mLock) {
+        if (isValidPhoneIndex(phoneId)) {
+            UiccSlot uiccSlot = getUiccSlotForPhone(phoneId);
+            if (uiccSlot != null) {
+                return uiccSlot.getUiccCard();
+            }
+        }
+        return null;
+    }
+}

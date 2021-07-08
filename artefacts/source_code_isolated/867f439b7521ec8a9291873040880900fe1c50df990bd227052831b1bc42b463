@@ -1,0 +1,39 @@
+public static PrintServiceInfo create(Context context, ResolveInfo resolveInfo){
+    String settingsActivityName = null;
+    String addPrintersActivityName = null;
+    String advancedPrintOptionsActivityName = null;
+    XmlResourceParser parser = null;
+    PackageManager packageManager = context.getPackageManager();
+    parser = resolveInfo.serviceInfo.loadXmlMetaData(packageManager, PrintService.SERVICE_META_DATA);
+    if (parser != null) {
+        try {
+            int type = 0;
+            while (type != XmlPullParser.END_DOCUMENT && type != XmlPullParser.START_TAG) {
+                type = parser.next();
+            }
+            String nodeName = parser.getName();
+            if (!TAG_PRINT_SERVICE.equals(nodeName)) {
+                Log.e(LOG_TAG, "Ignoring meta-data that does not start with " + TAG_PRINT_SERVICE + " tag");
+            } else {
+                Resources resources = packageManager.getResourcesForApplication(resolveInfo.serviceInfo.applicationInfo);
+                AttributeSet allAttributes = Xml.asAttributeSet(parser);
+                TypedArray attributes = resources.obtainAttributes(allAttributes, com.android.internal.R.styleable.PrintService);
+                settingsActivityName = attributes.getString(com.android.internal.R.styleable.PrintService_settingsActivity);
+                addPrintersActivityName = attributes.getString(com.android.internal.R.styleable.PrintService_addPrintersActivity);
+                advancedPrintOptionsActivityName = attributes.getString(com.android.internal.R.styleable.PrintService_advancedPrintOptionsActivity);
+                attributes.recycle();
+            }
+        } catch (IOException ioe) {
+            Log.w(LOG_TAG, "Error reading meta-data:" + ioe);
+        } catch (XmlPullParserException xppe) {
+            Log.w(LOG_TAG, "Error reading meta-data:" + xppe);
+        } catch (NameNotFoundException e) {
+            Log.e(LOG_TAG, "Unable to load resources for: " + resolveInfo.serviceInfo.packageName);
+        } finally {
+            if (parser != null) {
+                parser.close();
+            }
+        }
+    }
+    return new PrintServiceInfo(resolveInfo, settingsActivityName, addPrintersActivityName, advancedPrintOptionsActivityName);
+}

@@ -1,0 +1,18 @@
+public boolean removeAllNetworks(@NonNull String ifaceName){
+    synchronized (mLock) {
+        ArrayList<Integer> networks = listNetworks(ifaceName);
+        if (networks == null) {
+            Log.e(TAG, "removeAllNetworks failed, got null networks");
+            return false;
+        }
+        for (int id : networks) {
+            if (!removeNetwork(ifaceName, id)) {
+                Log.e(TAG, "removeAllNetworks failed to remove network: " + id);
+                return false;
+            }
+        }
+        mCurrentNetworkRemoteHandles.remove(ifaceName);
+        mCurrentNetworkLocalConfigs.remove(ifaceName);
+        return true;
+    }
+}

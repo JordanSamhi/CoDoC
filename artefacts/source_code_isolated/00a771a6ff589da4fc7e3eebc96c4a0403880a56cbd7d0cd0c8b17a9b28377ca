@@ -1,0 +1,25 @@
+public final T createItem(String tagName, String prefix, AttributeSet attrs){
+    String qualifiedName = tagName;
+    if (prefix != null && qualifiedName.indexOf('.') == -1) {
+        qualifiedName = prefix.concat(qualifiedName);
+    }
+    @SuppressWarnings("unchecked")
+    Constructor<? extends T> constructor = (Constructor<? extends T>) constructorMap.get(qualifiedName);
+    try {
+        if (constructor == null) {
+            @SuppressWarnings("unchecked")
+            Class<? extends T> clazz = (Class<? extends T>) context.getClassLoader().loadClass(qualifiedName);
+            constructor = clazz.getConstructor(CONSTRUCTOR_SIGNATURE);
+            constructor.setAccessible(true);
+            constructorMap.put(tagName, constructor);
+        }
+        tempConstructorArgs[0] = context;
+        tempConstructorArgs[1] = attrs;
+        final T item = constructor.newInstance(tempConstructorArgs);
+        tempConstructorArgs[0] = null;
+        tempConstructorArgs[1] = null;
+        return item;
+    } catch (Exception e) {
+        throw new InflateException(attrs.getPositionDescription() + ": Error inflating class " + qualifiedName, e);
+    }
+}

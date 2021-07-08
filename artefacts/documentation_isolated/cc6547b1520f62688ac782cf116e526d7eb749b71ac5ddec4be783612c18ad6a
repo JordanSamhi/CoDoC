@@ -1,0 +1,18 @@
+
+     * Starts observing the health of the {@code packages} for {@code observer} and notifies
+     * {@code observer} of any package failures within the monitoring duration.
+     *
+     * <p>If monitoring a package supporting explicit health check, at the end of the monitoring
+     * duration if {@link #onHealthCheckPassed} was never called,
+     * {@link PackageHealthObserver#execute} will be called as if the package failed.
+     *
+     * <p>If {@code observer} is already monitoring a package in {@code packageNames},
+     * the monitoring window of that package will be reset to {@code durationMs} and the health
+     * check state will be reset to a default depending on if the package is contained in
+     * {@link mPackagesWithExplicitHealthCheckEnabled}.
+     *
+     * <p>If {@code packageNames} is empty, this will be a no-op.
+     *
+     * <p>If {@code durationMs} is less than 1, a default monitoring duration
+     * {@link #DEFAULT_OBSERVING_DURATION_MS} will be used.
+     

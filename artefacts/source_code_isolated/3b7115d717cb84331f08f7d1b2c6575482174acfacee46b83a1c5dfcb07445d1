@@ -1,0 +1,24 @@
+public boolean registerApp(BluetoothHidDeviceAppSdpSettings sdp, BluetoothHidDeviceAppQosSettings inQos, BluetoothHidDeviceAppQosSettings outQos, Executor executor, Callback callback){
+    boolean result = false;
+    if (sdp == null) {
+        throw new IllegalArgumentException("sdp parameter cannot be null");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("executor parameter cannot be null");
+    }
+    if (callback == null) {
+        throw new IllegalArgumentException("callback parameter cannot be null");
+    }
+    final IBluetoothHidDevice service = getService();
+    if (service != null) {
+        try {
+            CallbackWrapper cbw = new CallbackWrapper(executor, callback);
+            result = service.registerApp(sdp, inQos, outQos, cbw);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+    }
+    return result;
+}

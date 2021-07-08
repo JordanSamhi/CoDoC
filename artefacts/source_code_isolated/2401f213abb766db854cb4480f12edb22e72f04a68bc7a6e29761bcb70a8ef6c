@@ -1,0 +1,12 @@
+public void onDestroy(){
+    super.onDestroy();
+    synchronized (mLock) {
+        List<MediaSession2> sessions = getSessions();
+        for (MediaSession2 session : sessions) {
+            removeSession(session);
+        }
+        mSessions.clear();
+        mNotifications.clear();
+    }
+    mStub.close();
+}

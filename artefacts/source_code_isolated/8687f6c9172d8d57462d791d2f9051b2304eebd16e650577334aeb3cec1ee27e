@@ -1,0 +1,17 @@
+public ConfigurationInfo getDeviceConfigurationInfo(){
+    ConfigurationInfo config = new ConfigurationInfo();
+    synchronized (mGlobalLock) {
+        final Configuration globalConfig = getGlobalConfigurationForCallingPid();
+        config.reqTouchScreen = globalConfig.touchscreen;
+        config.reqKeyboardType = globalConfig.keyboard;
+        config.reqNavigation = globalConfig.navigation;
+        if (globalConfig.navigation == Configuration.NAVIGATION_DPAD || globalConfig.navigation == Configuration.NAVIGATION_TRACKBALL) {
+            config.reqInputFeatures |= ConfigurationInfo.INPUT_FEATURE_FIVE_WAY_NAV;
+        }
+        if (globalConfig.keyboard != Configuration.KEYBOARD_UNDEFINED && globalConfig.keyboard != Configuration.KEYBOARD_NOKEYS) {
+            config.reqInputFeatures |= ConfigurationInfo.INPUT_FEATURE_HARD_KEYBOARD;
+        }
+        config.reqGlEsVersion = GL_ES_VERSION;
+    }
+    return config;
+}

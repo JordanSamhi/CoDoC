@@ -1,0 +1,29 @@
+public static synchronized Partner get(Context context){
+    if (!searched) {
+        PackageManager pm = context.getPackageManager();
+        final Intent intent = new Intent(ACTION_PARTNER_CUSTOMIZATION);
+        List<ResolveInfo> receivers;
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            receivers = pm.queryBroadcastReceivers(intent, PackageManager.MATCH_SYSTEM_ONLY | PackageManager.MATCH_DIRECT_BOOT_AWARE | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+        } else {
+            receivers = pm.queryBroadcastReceivers(intent, 0);
+        }
+        for (ResolveInfo info : receivers) {
+            if (info.activityInfo == null) {
+                continue;
+            }
+            final ApplicationInfo appInfo = info.activityInfo.applicationInfo;
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                try {
+                    final Resources res = pm.getResourcesForApplication(appInfo);
+                    partner = new Partner(appInfo.packageName, res);
+                    break;
+                } catch (NameNotFoundException e) {
+                    Log.w(TAG, "Failed to find resources for " + appInfo.packageName);
+                }
+            }
+        }
+        searched = true;
+    }
+    return partner;
+}

@@ -1,0 +1,13 @@
+public void setOnCancelListener(OnCancelListener listener){
+    synchronized (this) {
+        waitForCancelFinishedLocked();
+        if (mOnCancelListener == listener) {
+            return;
+        }
+        mOnCancelListener = listener;
+        if (!mIsCanceled || listener == null) {
+            return;
+        }
+    }
+    listener.onCancel();
+}

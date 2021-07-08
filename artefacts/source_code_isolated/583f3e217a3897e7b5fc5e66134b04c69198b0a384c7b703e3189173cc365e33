@@ -1,0 +1,11 @@
+public void retainSubscriptionsForFactoryReset(PendingIntent callbackIntent){
+    if (!isEnabled()) {
+        sendUnavailableError(callbackIntent);
+        return;
+    }
+    try {
+        getIEuiccController().retainSubscriptionsForFactoryReset(mCardId, callbackIntent);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

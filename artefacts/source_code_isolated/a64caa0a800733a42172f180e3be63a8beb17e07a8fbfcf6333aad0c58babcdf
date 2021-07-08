@@ -1,0 +1,6 @@
+public void runOnMainSync(Runnable runner){
+    validateNotAppThread();
+    SyncRunnable sr = new SyncRunnable(runner);
+    mThread.getHandler().post(sr);
+    sr.waitForComplete();
+}

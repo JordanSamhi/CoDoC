@@ -1,0 +1,12 @@
+public String getField(String field) throws RemoteException{
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.CRYPT_KEEPER, "no permission to access the crypt keeper");
+    if (!StorageManager.isBlockEncrypted()) {
+        return null;
+    }
+    try {
+        return mVold.fdeGetField(field);
+    } catch (Exception e) {
+        Slog.wtf(TAG, e);
+        return null;
+    }
+}

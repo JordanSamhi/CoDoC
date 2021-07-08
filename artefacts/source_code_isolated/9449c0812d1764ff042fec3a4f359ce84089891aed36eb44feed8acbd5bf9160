@@ -1,0 +1,12 @@
+public void sendDtmf(int code, Message result){
+    synchronized (mLock) {
+        AudioGroup audioGroup = getAudioGroup();
+        if ((audioGroup != null) && (mSipSession != null) && (SipSession.State.IN_CALL == getState())) {
+            if (DBG)
+                log("sendDtmf: code=" + code + " result=" + result);
+            audioGroup.sendDtmf(code);
+        }
+        if (result != null)
+            result.sendToTarget();
+    }
+}

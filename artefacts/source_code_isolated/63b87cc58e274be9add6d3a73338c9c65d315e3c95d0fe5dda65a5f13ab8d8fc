@@ -1,0 +1,13 @@
+public void setVolume(int volume){
+    volume = Math.max(0, Math.min(volume, getVolumeMax()));
+    if (mVolume != volume) {
+        mVolume = volume;
+        if (mSvp != null) {
+            mSvp.setCurrentVolume(mVolume);
+        }
+        dispatchRouteVolumeChanged(this);
+        if (mGroup != null) {
+            mGroup.memberVolumeChanged(this);
+        }
+    }
+}

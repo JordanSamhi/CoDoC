@@ -1,0 +1,19 @@
+public void setupTestNetwork(@NonNull String iface, @Nullable LinkProperties lp, boolean isMetered, @NonNull int[] administratorUids, @NonNull IBinder binder){
+    enforceTestNetworkPermissions(mContext);
+    Objects.requireNonNull(iface, "missing Iface");
+    Objects.requireNonNull(binder, "missing IBinder");
+    if (!(iface.startsWith(INetd.IPSEC_INTERFACE_PREFIX) || iface.startsWith(TEST_TUN_PREFIX))) {
+        throw new IllegalArgumentException("Cannot create network for non ipsec, non-testtun interface");
+    }
+    try {
+        Binder.withCleanCallingIdentity(() -> mNMS.setInterfaceUp(iface));
+        synchronized (mTestNetworkTracker) {
+            TestNetworkAgent agent = registerTestNetworkAgent(mHandler.getLooper(), mContext, iface, lp, isMetered, Binder.getCallingUid(), administratorUids, binder);
+            mTestNetworkTracker.put(agent.getNetwork().netId, agent);
+        }
+    } catch (SocketException e) {
+        throw new UncheckedIOException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

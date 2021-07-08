@@ -1,0 +1,20 @@
+public static ComponentName getServiceSettingsComponentName(){
+    final IBinder binder = ServiceManager.checkService(Context.CONTENT_CAPTURE_MANAGER_SERVICE);
+    if (binder == null)
+        return null;
+    final IContentCaptureManager service = IContentCaptureManager.Stub.asInterface(binder);
+    final SyncResultReceiver resultReceiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        service.getServiceSettingsActivity(resultReceiver);
+        final int resultCode = resultReceiver.getIntResult();
+        if (resultCode == RESULT_CODE_SECURITY_EXCEPTION) {
+            throw new SecurityException(resultReceiver.getStringResult());
+        }
+        return resultReceiver.getParcelableResult();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        Log.e(TAG, "Fail to get service settings componentName: " + e);
+        return null;
+    }
+}

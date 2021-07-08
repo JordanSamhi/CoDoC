@@ -1,0 +1,14 @@
+public boolean decodeUintvarInteger(int startIndex){
+    int index = startIndex;
+    mUnsigned32bit = 0;
+    while ((mWspData[index] & 0x80) != 0) {
+        if ((index - startIndex) >= 4) {
+            return false;
+        }
+        mUnsigned32bit = (mUnsigned32bit << 7) | (mWspData[index] & 0x7f);
+        index++;
+    }
+    mUnsigned32bit = (mUnsigned32bit << 7) | (mWspData[index] & 0x7f);
+    mDataLength = index - startIndex + 1;
+    return true;
+}

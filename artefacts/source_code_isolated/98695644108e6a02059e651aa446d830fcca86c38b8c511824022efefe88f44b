@@ -1,0 +1,17 @@
+public static Bitmap getCachedBitmap(String value, Object projectKey){
+    if (projectKey != null) {
+        Map<String, SoftReference<Bitmap>> map = sProjectBitmapCache.get(projectKey);
+        if (map != null) {
+            SoftReference<Bitmap> ref = map.get(value);
+            if (ref != null) {
+                return ref.get();
+            }
+        }
+    } else {
+        SoftReference<Bitmap> ref = sFrameworkBitmapCache.get(value);
+        if (ref != null) {
+            return ref.get();
+        }
+    }
+    return null;
+}

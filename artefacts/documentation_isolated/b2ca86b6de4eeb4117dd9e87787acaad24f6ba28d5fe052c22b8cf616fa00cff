@@ -1,0 +1,22 @@
+
+     * Retrieve the set of output buffers.  Call this after start()
+     * returns and whenever dequeueOutputBuffer signals an output
+     * buffer change by returning {@link
+     * #INFO_OUTPUT_BUFFERS_CHANGED}. After calling this method, any
+     * ByteBuffers previously returned by an earlier call to this
+     * method MUST no longer be used.
+     *
+     * @deprecated Use the new {@link #getOutputBuffer} method instead
+     * each time an output buffer is dequeued.  This method is not
+     * supported if codec is configured in asynchronous mode.
+     *
+     * <b>Note:</b> As of API 21, the position and limit of output
+     * buffers that are dequeued will be set to the valid data
+     * range.
+     *
+     * <em>Do not use this method if using an output surface.</em>
+     *
+     * @throws IllegalStateException if not in the Executing state,
+     *         or codec is configured in asynchronous mode.
+     * @throws MediaCodec.CodecException upon codec error.
+     

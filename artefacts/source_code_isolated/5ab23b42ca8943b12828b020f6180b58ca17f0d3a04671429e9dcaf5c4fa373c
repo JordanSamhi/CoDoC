@@ -1,0 +1,7 @@
+public int checkUriPermission(Uri uri, int pid, int uid, int modeFlags, IBinder callerToken){
+    try {
+        return ActivityManager.getService().checkUriPermission(ContentProvider.getUriWithoutUserId(uri), pid, uid, modeFlags, resolveUserId(uri), callerToken);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

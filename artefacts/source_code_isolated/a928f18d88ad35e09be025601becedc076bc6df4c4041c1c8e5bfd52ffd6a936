@@ -1,0 +1,21 @@
+public void onInvocationProgress(float progress){
+    if (progress == 0) {
+        setVisibility(View.GONE);
+    } else {
+        attemptRegisterNavBarListener();
+        float cornerLengthNormalized = mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM_LEFT);
+        float arcLengthNormalized = cornerLengthNormalized * MINIMUM_CORNER_RATIO;
+        float arcOffsetNormalized = (cornerLengthNormalized - arcLengthNormalized) / 2f;
+        float minLightLength = 0;
+        float maxLightLength = mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM) / 4f;
+        float lightLength = MathUtils.lerp(minLightLength, maxLightLength, progress);
+        float leftStart = (-cornerLengthNormalized + arcOffsetNormalized) * (1 - progress);
+        float rightStart = mGuide.getRegionWidth(PerimeterPathGuide.Region.BOTTOM) + (cornerLengthNormalized - arcOffsetNormalized) * (1 - progress);
+        setLight(0, leftStart, leftStart + lightLength);
+        setLight(1, leftStart + lightLength, leftStart + lightLength * 2);
+        setLight(2, rightStart - (lightLength * 2), rightStart - lightLength);
+        setLight(3, rightStart - lightLength, rightStart);
+        setVisibility(View.VISIBLE);
+    }
+    invalidate();
+}

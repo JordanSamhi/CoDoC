@@ -1,0 +1,9 @@
+public final void cancelNotification(String pkg, String tag, int id){
+    if (!isBound())
+        return;
+    try {
+        getNotificationInterface().cancelNotificationFromListener(mWrapper, pkg, tag, id);
+    } catch (android.os.RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+    }
+}

@@ -1,0 +1,9 @@
+public boolean setFlagBubble(boolean shouldBubble){
+    boolean wasBubble = isBubble();
+    if (!shouldBubble) {
+        mSbn.getNotification().flags &= ~FLAG_BUBBLE;
+    } else if (mBubbleMetadata != null && canBubble()) {
+        mSbn.getNotification().flags |= FLAG_BUBBLE;
+    }
+    return wasBubble != isBubble();
+}

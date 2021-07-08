@@ -1,0 +1,10 @@
+public List<String> getUnsupportedCountries(){
+    if (!isEnabled()) {
+        return Collections.emptyList();
+    }
+    try {
+        return getIEuiccController().getSupportedCountries(false);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

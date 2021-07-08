@@ -1,0 +1,14 @@
+public boolean enableNoAutoConnect(){
+    if (isEnabled()) {
+        if (DBG) {
+            Log.d(TAG, "enableNoAutoConnect(): BT already enabled!");
+        }
+        return true;
+    }
+    try {
+        return mManagerService.enableNoAutoConnect(ActivityThread.currentPackageName());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return false;
+}

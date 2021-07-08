@@ -1,0 +1,8 @@
+public void onRemoveRoleHolder(@NonNull String roleName, @NonNull String packageName, @RoleManager.ManageHoldersFlags int flags, @NonNull RemoteCallback callback){
+    AndroidFuture<Bundle> operation = mRemoteService.postAsync(service -> {
+        AndroidFuture<Bundle> future = new AndroidFuture<>();
+        service.onRemoveRoleHolder(roleName, packageName, flags, new RemoteCallback(future::complete));
+        return future;
+    });
+    propagateCallback(operation, "onRemoveRoleHolder", callback);
+}

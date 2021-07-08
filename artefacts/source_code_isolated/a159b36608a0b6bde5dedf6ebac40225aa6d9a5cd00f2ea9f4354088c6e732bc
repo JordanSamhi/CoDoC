@@ -1,0 +1,14 @@
+public static ParseTypeImpl forDefaultParsing(){
+    IPlatformCompat platformCompat = IPlatformCompat.Stub.asInterface(ServiceManager.getService(Context.PLATFORM_COMPAT_SERVICE));
+    return new ParseTypeImpl((changeId, packageName, targetSdkVersion) -> {
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.packageName = packageName;
+        appInfo.targetSdkVersion = targetSdkVersion;
+        try {
+            return platformCompat.isChangeEnabled(changeId, appInfo);
+        } catch (Exception e) {
+            Slog.wtf(ParsingUtils.TAG, "IPlatformCompat query failed", e);
+            return true;
+        }
+    });
+}

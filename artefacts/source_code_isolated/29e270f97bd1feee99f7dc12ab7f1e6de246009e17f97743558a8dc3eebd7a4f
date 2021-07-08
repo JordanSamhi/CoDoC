@@ -1,0 +1,10 @@
+public boolean isLocationModeEnabled(){
+    if (!retrieveLocationManagerIfNecessary())
+        return false;
+    try {
+        return mLocationManager.isLocationEnabledForUser(UserHandle.of(mWifiPermissionsWrapper.getCurrentUser()));
+    } catch (Exception e) {
+        Log.e(TAG, "Failure to get location mode via API, falling back to settings", e);
+        return mFrameworkFacade.getIntegerSetting(mContext, Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF) == Settings.Secure.LOCATION_MODE_ON;
+    }
+}

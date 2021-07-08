@@ -1,0 +1,13 @@
+public static File buildUniqueFile(File parent, String displayName) throws FileNotFoundException{
+    final String name;
+    final String ext;
+    final int lastDot = displayName.lastIndexOf('.');
+    if (lastDot >= 0) {
+        name = displayName.substring(0, lastDot);
+        ext = displayName.substring(lastDot + 1);
+    } else {
+        name = displayName;
+        ext = null;
+    }
+    return buildUniqueFileWithExtension(parent, name, ext);
+}

@@ -1,0 +1,24 @@
+public void isKeyRotationDue_naturallyStaggersBackupsOverTime(){
+    List<String> apps = makeTestApps(MAXIMUM_ROTATIONS_PER_WINDOW * MAX_BACKUPS_TILL_ROTATION);
+    HashMap<String, ArrayList<Integer>> rotationDays = new HashMap<>();
+    for (String app : apps) {
+        rotationDays.put(app, new ArrayList<>());
+    }
+    for (int i = 0; i < 300; i++) {
+        setTimeMillis(i * TimeUnit.HOURS.toMillis(24));
+        for (String app : apps) {
+            if (mScheduler.isKeyRotationDue(app)) {
+                rotationDays.get(app).add(i);
+                mScheduler.recordKeyRotation(app);
+            } else {
+                mScheduler.recordBackup(app);
+            }
+        }
+    }
+    for (String app : apps) {
+        List<Integer> days = rotationDays.get(app);
+        for (int i = 1; i < days.size(); i++) {
+            assertThat(days.get(i) - days.get(i - 1)).isEqualTo(MAX_BACKUPS_TILL_ROTATION + 1);
+        }
+    }
+}

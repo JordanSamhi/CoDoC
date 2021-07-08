@@ -1,0 +1,24 @@
+public boolean shouldResetShortTermModel(float ambientLux, float shortTermModelAnchor){
+    BrightnessConfiguration config = getBrightnessConfiguration();
+    float minThresholdRatio = SHORT_TERM_MODEL_THRESHOLD_RATIO;
+    float maxThresholdRatio = SHORT_TERM_MODEL_THRESHOLD_RATIO;
+    if (config != null) {
+        if (!Float.isNaN(config.getShortTermModelLowerLuxMultiplier())) {
+            minThresholdRatio = config.getShortTermModelLowerLuxMultiplier();
+        }
+        if (!Float.isNaN(config.getShortTermModelUpperLuxMultiplier())) {
+            maxThresholdRatio = config.getShortTermModelUpperLuxMultiplier();
+        }
+    }
+    final float minAmbientLux = shortTermModelAnchor - shortTermModelAnchor * minThresholdRatio;
+    final float maxAmbientLux = shortTermModelAnchor + shortTermModelAnchor * maxThresholdRatio;
+    if (minAmbientLux < ambientLux && ambientLux <= maxAmbientLux) {
+        if (mLoggingEnabled) {
+            Slog.d(TAG, "ShortTermModel: re-validate user data, ambient lux is " + minAmbientLux + " < " + ambientLux + " < " + maxAmbientLux);
+        }
+        return false;
+    } else {
+        Slog.d(TAG, "ShortTermModel: reset data, ambient lux is " + ambientLux + "(" + minAmbientLux + ", " + maxAmbientLux + ")");
+        return true;
+    }
+}

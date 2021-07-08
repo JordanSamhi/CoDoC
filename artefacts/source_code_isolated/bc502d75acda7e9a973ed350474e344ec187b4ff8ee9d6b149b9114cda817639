@@ -1,0 +1,24 @@
+public InputMethodSubtype get(final int index){
+    if (index < 0 || mCount <= index) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    InputMethodSubtype[] instance = mInstance;
+    if (instance == null) {
+        synchronized (mLockObject) {
+            instance = mInstance;
+            if (instance == null) {
+                final byte[] decompressedData = decompress(mCompressedData, mDecompressedSize);
+                mCompressedData = null;
+                mDecompressedSize = 0;
+                if (decompressedData != null) {
+                    instance = unmarshall(decompressedData);
+                } else {
+                    Slog.e(TAG, "Failed to decompress data. Returns null as fallback.");
+                    instance = new InputMethodSubtype[mCount];
+                }
+                mInstance = instance;
+            }
+        }
+    }
+    return instance[index];
+}

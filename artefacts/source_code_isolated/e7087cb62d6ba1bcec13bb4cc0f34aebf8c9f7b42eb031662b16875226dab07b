@@ -1,0 +1,42 @@
+public void sendRawPdu(SmsTracker[] trackers){
+    int error = RESULT_ERROR_NONE;
+    PackageInfo appInfo = null;
+    if (mSmsSendDisabled) {
+        Rlog.e(TAG, "Device does not support sending sms.");
+        error = RESULT_ERROR_NO_SERVICE;
+    } else {
+        for (SmsTracker tracker : trackers) {
+            if (tracker.getData().get(MAP_KEY_PDU) == null) {
+                Rlog.e(TAG, "Empty PDU");
+                error = RESULT_ERROR_NULL_PDU;
+                break;
+            }
+        }
+        if (error == RESULT_ERROR_NONE) {
+            UserHandle userHandle = UserHandle.of(trackers[0].mUserId);
+            PackageManager pm = mContext.createContextAsUser(userHandle, 0).getPackageManager();
+            try {
+                appInfo = pm.getPackageInfo(trackers[0].getAppPackageName(), PackageManager.GET_SIGNATURES);
+            } catch (PackageManager.NameNotFoundException e) {
+                Rlog.e(TAG, "Can't get calling app package info: refusing to send SMS" + " id: " + getMultiTrackermessageId(trackers));
+                error = RESULT_ERROR_GENERIC_FAILURE;
+            }
+        }
+    }
+    if (error != RESULT_ERROR_NONE) {
+        handleSmsTrackersFailure(trackers, error, NO_ERROR_CODE);
+        return;
+    }
+    if (checkDestination(trackers)) {
+        if (!mSmsDispatchersController.getUsageMonitor().check(appInfo.packageName, trackers.length)) {
+            sendMessage(obtainMessage(EVENT_SEND_LIMIT_REACHED_CONFIRMATION, trackers));
+            return;
+        }
+        for (SmsTracker tracker : trackers) {
+            sendSms(tracker);
+        }
+    }
+    if (PhoneNumberUtils.isLocalEmergencyNumber(mContext, trackers[0].mDestAddress)) {
+        new AsyncEmergencyContactNotifier(mContext).execute();
+    }
+}

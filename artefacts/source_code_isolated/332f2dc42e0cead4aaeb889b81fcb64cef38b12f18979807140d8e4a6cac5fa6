@@ -1,0 +1,16 @@
+public boolean updateNetworkAfterDisconnect(int networkId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Update network after disconnect for " + networkId);
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        return false;
+    }
+    config.lastDisconnected = mClock.getWallClockMillis();
+    config.randomizedMacExpirationTimeMs = Math.max(config.randomizedMacExpirationTimeMs, config.lastDisconnected + AGGRESSIVE_MAC_WAIT_AFTER_DISCONNECT_MS);
+    if (config.status == WifiConfiguration.Status.CURRENT) {
+        setNetworkStatus(config, WifiConfiguration.Status.ENABLED);
+    }
+    saveToStore(false);
+    return true;
+}

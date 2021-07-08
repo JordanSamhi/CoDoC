@@ -1,0 +1,16 @@
+public boolean setHwPnoList(WifiNative.PnoSettings pnoSettings){
+    mStatusPerImpl.clear();
+    boolean anySuccess = false;
+    for (Map.Entry<String, WifiScannerImpl> entry : mScannerImpls.entrySet()) {
+        String ifaceName = entry.getKey();
+        WifiScannerImpl impl = entry.getValue();
+        boolean success = impl.setHwPnoList(pnoSettings, new PnoEventHandler(ifaceName));
+        if (!success) {
+            Log.e(TAG, "Failed to start pno on " + ifaceName);
+            continue;
+        }
+        mStatusPerImpl.put(ifaceName, STATUS_PENDING);
+        anySuccess = true;
+    }
+    return anySuccess;
+}

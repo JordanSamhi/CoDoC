@@ -1,0 +1,9 @@
+public static int chmod(String path, int mode){
+    try {
+        Os.chmod(path, mode);
+        return 0;
+    } catch (ErrnoException e) {
+        Log.w(TAG, "Failed to chmod(" + path + ", " + mode + "): ", e);
+        return e.errno;
+    }
+}

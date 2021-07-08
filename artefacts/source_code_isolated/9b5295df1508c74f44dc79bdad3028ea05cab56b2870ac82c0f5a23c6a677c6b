@@ -1,0 +1,21 @@
+public static boolean is24HourLocale(@NonNull Locale locale){
+    synchronized (sLocaleLock) {
+        if (sIs24HourLocale != null && sIs24HourLocale.equals(locale)) {
+            return sIs24Hour;
+        }
+    }
+    final java.text.DateFormat natural = java.text.DateFormat.getTimeInstance(java.text.DateFormat.LONG, locale);
+    final boolean is24Hour;
+    if (natural instanceof SimpleDateFormat) {
+        final SimpleDateFormat sdf = (SimpleDateFormat) natural;
+        final String pattern = sdf.toPattern();
+        is24Hour = hasDesignator(pattern, 'H');
+    } else {
+        is24Hour = false;
+    }
+    synchronized (sLocaleLock) {
+        sIs24HourLocale = locale;
+        sIs24Hour = is24Hour;
+    }
+    return is24Hour;
+}

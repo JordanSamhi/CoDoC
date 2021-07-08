@@ -1,0 +1,13 @@
+public void setYear(final int year){
+    mAdapter.setSelection(year);
+    post(new Runnable() {
+
+        @Override
+        public void run() {
+            final int position = mAdapter.getPositionForYear(year);
+            if (position >= 0 && position < getCount()) {
+                setSelectionCentered(position);
+            }
+        }
+    });
+}

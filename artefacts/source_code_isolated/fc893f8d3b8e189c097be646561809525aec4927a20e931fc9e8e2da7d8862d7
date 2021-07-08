@@ -1,0 +1,19 @@
+public String getStackTrace(){
+    if (mStackTrace == null) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new FastPrintWriter(sw, false, 256);
+        mViolation.printStackTrace(pw);
+        for (StackTraceElement[] traces : mBinderStack) {
+            pw.append("# via Binder call with stack:\n");
+            for (StackTraceElement traceElement : traces) {
+                pw.append("\tat ");
+                pw.append(traceElement.toString());
+                pw.append('\n');
+            }
+        }
+        pw.flush();
+        pw.close();
+        mStackTrace = sw.toString();
+    }
+    return mStackTrace;
+}

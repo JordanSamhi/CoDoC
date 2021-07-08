@@ -1,0 +1,12 @@
+public void recordDisableAware(){
+    synchronized (mLock) {
+        if (mLastEnableAwareMs == 0) {
+            return;
+        }
+        long now = mClock.getElapsedSinceBootMillis();
+        MetricsUtils.addValueToLogHistogram(now - mLastEnableAwareMs, mHistogramAwareEnabledDurationMs, DURATION_LOG_HISTOGRAM);
+        mEnabledTimeMs += now - mLastEnableAwareInThisSampleWindowMs;
+        mLastEnableAwareMs = 0;
+        mLastEnableAwareInThisSampleWindowMs = 0;
+    }
+}

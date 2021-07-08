@@ -1,0 +1,21 @@
+public void addPeriodicSync(Account account, String authority, Bundle extras, long pollFrequency){
+    Bundle.setDefusable(extras, true);
+    if (account == null) {
+        throw new IllegalArgumentException("Account must not be null");
+    }
+    if (TextUtils.isEmpty(authority)) {
+        throw new IllegalArgumentException("Authority must not be empty.");
+    }
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS, "no permission to write the sync settings");
+    validateExtras(Binder.getCallingUid(), extras);
+    int userId = UserHandle.getCallingUserId();
+    pollFrequency = clampPeriod(pollFrequency);
+    long defaultFlex = SyncStorageEngine.calculateDefaultFlexTime(pollFrequency);
+    long identityToken = clearCallingIdentity();
+    try {
+        SyncStorageEngine.EndPoint info = new SyncStorageEngine.EndPoint(account, authority, userId);
+        getSyncManager().updateOrAddPeriodicSync(info, pollFrequency, defaultFlex, extras);
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+}

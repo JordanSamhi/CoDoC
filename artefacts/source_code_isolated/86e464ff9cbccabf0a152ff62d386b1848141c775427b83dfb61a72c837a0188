@@ -1,0 +1,9 @@
+public final void unsnoozeNotification(@NonNull String key){
+    if (!isBound())
+        return;
+    try {
+        getNotificationInterface().unsnoozeNotificationFromAssistant(mWrapper, key);
+    } catch (android.os.RemoteException ex) {
+        Log.v(TAG, "Unable to contact notification manager", ex);
+    }
+}

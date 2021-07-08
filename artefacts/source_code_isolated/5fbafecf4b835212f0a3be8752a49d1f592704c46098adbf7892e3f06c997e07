@@ -1,0 +1,31 @@
+public void connectAsync(TransportConnectionListener listener, String caller){
+    synchronized (mStateLock) {
+        checkStateIntegrityLocked();
+        switch(mState) {
+            case State.UNUSABLE:
+                log(Priority.WARN, caller, "Async connect: UNUSABLE client");
+                notifyListener(listener, null, caller);
+                break;
+            case State.IDLE:
+                boolean hasBound = mContext.bindServiceAsUser(mBindIntent, mConnection, Context.BIND_AUTO_CREATE, UserHandle.of(mUserId));
+                if (hasBound) {
+                    log(Priority.DEBUG, caller, "Async connect: service bound, connecting");
+                    setStateLocked(State.BOUND_AND_CONNECTING, null);
+                    mListeners.put(listener, caller);
+                } else {
+                    log(Priority.ERROR, "Async connect: bindService returned false");
+                    mContext.unbindService(mConnection);
+                    notifyListener(listener, null, caller);
+                }
+                break;
+            case State.BOUND_AND_CONNECTING:
+                log(Priority.DEBUG, caller, "Async connect: already connecting, adding listener");
+                mListeners.put(listener, caller);
+                break;
+            case State.CONNECTED:
+                log(Priority.DEBUG, caller, "Async connect: reusing transport");
+                notifyListener(listener, mTransport, caller);
+                break;
+        }
+    }
+}

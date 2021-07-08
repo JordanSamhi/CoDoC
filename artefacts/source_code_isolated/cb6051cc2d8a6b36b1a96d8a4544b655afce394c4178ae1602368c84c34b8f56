@@ -1,0 +1,37 @@
+public static int classifyExternalStorageDirectory(File dir){
+    int res = 0;
+    for (File f : FileUtils.listFilesOrEmpty(dir)) {
+        if (f.isFile() && isInterestingFile(f)) {
+            res |= HAS_OTHER;
+        } else if (f.isDirectory() && hasInterestingFiles(f)) {
+            final String name = f.getName();
+            if (DIRECTORY_MUSIC.equals(name))
+                res |= HAS_MUSIC;
+            else if (DIRECTORY_PODCASTS.equals(name))
+                res |= HAS_PODCASTS;
+            else if (DIRECTORY_RINGTONES.equals(name))
+                res |= HAS_RINGTONES;
+            else if (DIRECTORY_ALARMS.equals(name))
+                res |= HAS_ALARMS;
+            else if (DIRECTORY_NOTIFICATIONS.equals(name))
+                res |= HAS_NOTIFICATIONS;
+            else if (DIRECTORY_PICTURES.equals(name))
+                res |= HAS_PICTURES;
+            else if (DIRECTORY_MOVIES.equals(name))
+                res |= HAS_MOVIES;
+            else if (DIRECTORY_DOWNLOADS.equals(name))
+                res |= HAS_DOWNLOADS;
+            else if (DIRECTORY_DCIM.equals(name))
+                res |= HAS_DCIM;
+            else if (DIRECTORY_DOCUMENTS.equals(name))
+                res |= HAS_DOCUMENTS;
+            else if (DIRECTORY_AUDIOBOOKS.equals(name))
+                res |= HAS_AUDIOBOOKS;
+            else if (DIRECTORY_ANDROID.equals(name))
+                res |= HAS_ANDROID;
+            else
+                res |= HAS_OTHER;
+        }
+    }
+    return res;
+}

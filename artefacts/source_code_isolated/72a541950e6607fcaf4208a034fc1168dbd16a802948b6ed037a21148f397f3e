@@ -1,0 +1,21 @@
+public static ColorSpace[] getCompositionColorSpaces(){
+    int[] dataspaces = nativeGetCompositionDataspaces();
+    ColorSpace srgb = ColorSpace.get(ColorSpace.Named.SRGB);
+    ColorSpace[] colorSpaces = { srgb, srgb };
+    if (dataspaces.length == 2) {
+        for (int i = 0; i < 2; ++i) {
+            switch(dataspaces[i]) {
+                case INTERNAL_DATASPACE_DISPLAY_P3:
+                    colorSpaces[i] = ColorSpace.get(ColorSpace.Named.DISPLAY_P3);
+                    break;
+                case INTERNAL_DATASPACE_SCRGB:
+                    colorSpaces[i] = ColorSpace.get(ColorSpace.Named.EXTENDED_SRGB);
+                    break;
+                case INTERNAL_DATASPACE_SRGB:
+                default:
+                    break;
+            }
+        }
+    }
+    return colorSpaces;
+}

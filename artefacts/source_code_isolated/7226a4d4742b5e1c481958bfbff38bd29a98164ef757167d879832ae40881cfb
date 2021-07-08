@@ -1,0 +1,14 @@
+public boolean has(final int index) throws IllegalStateException, IndexOutOfBoundsException{
+    Trace.beginSection("has");
+    if (index < mOffset) {
+        Trace.endSection();
+        throw new IllegalStateException(String.format("Index %d is before buffer %d", index, mOffset));
+    }
+    final int i = index - mOffset;
+    if (i >= mFilled || i >= mBuffer.length) {
+        Trace.endSection();
+        return fill(index);
+    }
+    Trace.endSection();
+    return true;
+}

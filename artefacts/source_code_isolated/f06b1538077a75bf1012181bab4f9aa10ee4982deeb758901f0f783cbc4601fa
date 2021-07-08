@@ -1,0 +1,30 @@
+public boolean onFingerprintGesture(int fingerprintKeyCode){
+    int idForFingerprintGestureManager;
+    final List<FingerprintGestureClient> clientList;
+    synchronized (mLock) {
+        if (mCapturingClients.isEmpty()) {
+            return false;
+        }
+        switch(fingerprintKeyCode) {
+            case KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP:
+                idForFingerprintGestureManager = FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_UP;
+                break;
+            case KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN:
+                idForFingerprintGestureManager = FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_DOWN;
+                break;
+            case KeyEvent.KEYCODE_SYSTEM_NAVIGATION_RIGHT:
+                idForFingerprintGestureManager = FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_RIGHT;
+                break;
+            case KeyEvent.KEYCODE_SYSTEM_NAVIGATION_LEFT:
+                idForFingerprintGestureManager = FingerprintGestureController.FINGERPRINT_GESTURE_SWIPE_LEFT;
+                break;
+            default:
+                return false;
+        }
+        clientList = new ArrayList<>(mCapturingClients);
+    }
+    for (int i = 0; i < clientList.size(); i++) {
+        clientList.get(i).onFingerprintGesture(idForFingerprintGestureManager);
+    }
+    return true;
+}

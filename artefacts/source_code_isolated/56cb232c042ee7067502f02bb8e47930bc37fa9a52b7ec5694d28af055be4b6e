@@ -1,0 +1,13 @@
+public void stopRecording(){
+    try {
+        if (mStopIntent != null) {
+            mStopIntent.send();
+        } else {
+            Log.e(TAG, "Stop intent was null");
+        }
+        updateState(false);
+    } catch (PendingIntent.CanceledException e) {
+        Log.e(TAG, "Error stopping: " + e.getMessage());
+    }
+    mBroadcastDispatcher.unregisterReceiver(mUserChangeReceiver);
+}

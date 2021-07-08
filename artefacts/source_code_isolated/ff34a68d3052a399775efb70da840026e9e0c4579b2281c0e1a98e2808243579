@@ -1,0 +1,14 @@
+public int checkUriPermission(@NonNull Uri uri, int uid, @Intent.AccessUriMode int modeFlags) throws RemoteException{
+    Objects.requireNonNull(uri, "uri");
+    beforeRemote();
+    try {
+        return mContentProvider.checkUriPermission(mPackageName, mAttributionTag, uri, uid, modeFlags);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

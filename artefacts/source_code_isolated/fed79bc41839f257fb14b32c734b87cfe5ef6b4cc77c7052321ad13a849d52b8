@@ -1,0 +1,15 @@
+public int getNextIndexToLoad(){
+    synchronized (mIndicesToLoad) {
+        int index = mIndicesToLoad.indexOfValue(true);
+        if (index < 0) {
+            index = mIndicesToLoad.indexOfValue(false);
+        }
+        if (index < 0) {
+            return -1;
+        } else {
+            int key = mIndicesToLoad.keyAt(index);
+            mIndicesToLoad.removeAt(index);
+            return key;
+        }
+    }
+}

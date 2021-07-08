@@ -1,0 +1,51 @@
+public static synchronized NfcAdapter getNfcAdapter(Context context){
+    if (!sIsInitialized) {
+        sHasNfcFeature = hasNfcFeature();
+        sHasBeamFeature = hasBeamFeature();
+        boolean hasHceFeature = hasNfcHceFeature();
+        if (!sHasNfcFeature && !hasHceFeature) {
+            Log.v(TAG, "this device does not have NFC support");
+            throw new UnsupportedOperationException();
+        }
+        sService = getServiceInterface();
+        if (sService == null) {
+            Log.e(TAG, "could not retrieve NFC service");
+            throw new UnsupportedOperationException();
+        }
+        if (sHasNfcFeature) {
+            try {
+                sTagService = sService.getNfcTagInterface();
+            } catch (RemoteException e) {
+                Log.e(TAG, "could not retrieve NFC Tag service");
+                throw new UnsupportedOperationException();
+            }
+        }
+        if (hasHceFeature) {
+            try {
+                sNfcFCardEmulationService = sService.getNfcFCardEmulationInterface();
+            } catch (RemoteException e) {
+                Log.e(TAG, "could not retrieve NFC-F card emulation service");
+                throw new UnsupportedOperationException();
+            }
+            try {
+                sCardEmulationService = sService.getNfcCardEmulationInterface();
+            } catch (RemoteException e) {
+                Log.e(TAG, "could not retrieve card emulation service");
+                throw new UnsupportedOperationException();
+            }
+        }
+        sIsInitialized = true;
+    }
+    if (context == null) {
+        if (sNullContextNfcAdapter == null) {
+            sNullContextNfcAdapter = new NfcAdapter(null);
+        }
+        return sNullContextNfcAdapter;
+    }
+    NfcAdapter adapter = sNfcAdapters.get(context);
+    if (adapter == null) {
+        adapter = new NfcAdapter(context);
+        sNfcAdapters.put(context, adapter);
+    }
+    return adapter;
+}

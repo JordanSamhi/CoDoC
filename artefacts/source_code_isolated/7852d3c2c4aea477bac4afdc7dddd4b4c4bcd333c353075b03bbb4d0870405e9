@@ -1,0 +1,28 @@
+public static void readAndLogNotedAppops(@NonNull Parcel p){
+    int numAttributionsWithNotedAppOps = p.readInt();
+    for (int i = 0; i < numAttributionsWithNotedAppOps; i++) {
+        String attributionTag = p.readString();
+        long[] rawNotedAppOps = new long[2];
+        rawNotedAppOps[0] = p.readLong();
+        rawNotedAppOps[1] = p.readLong();
+        if (rawNotedAppOps[0] != 0 || rawNotedAppOps[1] != 0) {
+            BitSet notedAppOps = BitSet.valueOf(rawNotedAppOps);
+            synchronized (sLock) {
+                for (int code = notedAppOps.nextSetBit(0); code != -1; code = notedAppOps.nextSetBit(code + 1)) {
+                    if (sOnOpNotedCallback != null) {
+                        sOnOpNotedCallback.onNoted(new SyncNotedAppOp(code, attributionTag));
+                    } else {
+                        String message = getFormattedStackTrace();
+                        sUnforwardedOps.add(new AsyncNotedAppOp(code, Process.myUid(), attributionTag, message, System.currentTimeMillis()));
+                        if (sUnforwardedOps.size() > MAX_UNFORWARDED_OPS) {
+                            sUnforwardedOps.remove(0);
+                        }
+                    }
+                }
+            }
+            for (int code = notedAppOps.nextSetBit(0); code != -1; code = notedAppOps.nextSetBit(code + 1)) {
+                sMessageCollector.onNoted(new SyncNotedAppOp(code, attributionTag));
+            }
+        }
+    }
+}

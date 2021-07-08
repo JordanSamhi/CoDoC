@@ -1,0 +1,24 @@
+public boolean shouldCheckIpLayer(){
+    int nud = mScoringParams.getNudKnob();
+    if (nud == 0) {
+        return false;
+    }
+    long millis = mClock.getWallClockMillis();
+    long deltaMillis = millis - mLastKnownNudCheckTimeMillis;
+    if (deltaMillis < NUD_THROTTLE_MILLIS) {
+        return false;
+    }
+    double nextNudBreach = ConnectedScore.WIFI_TRANSITION_SCORE;
+    if (mWifiConnectedNetworkScorerHolder == null) {
+        double deltaLevel = 11 - nud;
+        if (mLastKnownNudCheckScore < ConnectedScore.WIFI_TRANSITION_SCORE && deltaMillis < 5.0 * TIME_CONSTANT_MILLIS) {
+            double a = Math.exp(-deltaMillis / TIME_CONSTANT_MILLIS);
+            nextNudBreach = a * (mLastKnownNudCheckScore - deltaLevel) + (1.0 - a) * nextNudBreach;
+        }
+    }
+    if (mScore >= nextNudBreach) {
+        return false;
+    }
+    mNudYes++;
+    return true;
+}

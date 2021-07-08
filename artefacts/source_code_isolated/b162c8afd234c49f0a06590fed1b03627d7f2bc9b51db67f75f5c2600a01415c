@@ -1,0 +1,15 @@
+public final T findViewByPredicateInsideOut(View start, Predicate<View> predicate){
+    View childToSkip = null;
+    for (; ; ) {
+        T view = start.findViewByPredicateTraversal(predicate, childToSkip);
+        if (view != null || start == this) {
+            return view;
+        }
+        ViewParent parent = start.getParent();
+        if (parent == null || !(parent instanceof View)) {
+            return null;
+        }
+        childToSkip = start;
+        start = (View) parent;
+    }
+}

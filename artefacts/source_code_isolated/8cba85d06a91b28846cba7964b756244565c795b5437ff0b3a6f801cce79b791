@@ -1,0 +1,27 @@
+public void setWorkSource(WorkSource ws){
+    synchronized (mToken) {
+        if (ws != null && ws.isEmpty()) {
+            ws = null;
+        }
+        final boolean changed;
+        if (ws == null) {
+            changed = mWorkSource != null;
+            mWorkSource = null;
+        } else if (mWorkSource == null) {
+            changed = true;
+            mWorkSource = new WorkSource(ws);
+        } else {
+            changed = !mWorkSource.equals(ws);
+            if (changed) {
+                mWorkSource.set(ws);
+            }
+        }
+        if (changed && mHeld) {
+            try {
+                mService.updateWakeLockWorkSource(mToken, mWorkSource, mHistoryTag);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

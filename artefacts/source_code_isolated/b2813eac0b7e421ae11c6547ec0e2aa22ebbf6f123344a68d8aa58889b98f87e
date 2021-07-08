@@ -1,0 +1,10 @@
+public void recycle(){
+    synchronized (sPoolSync) {
+        if (sPoolId != mPoolId) {
+            return;
+        }
+        clear();
+        next = sPool;
+        sPool = this;
+    }
+}

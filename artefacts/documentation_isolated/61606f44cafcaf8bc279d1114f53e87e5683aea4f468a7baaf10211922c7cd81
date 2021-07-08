@@ -1,0 +1,44 @@
+
+     * Schedule an alarm to be delivered within a given window of time.  This method
+     * is similar to {@link #set(int, long, PendingIntent)}, but allows the
+     * application to precisely control the degree to which its delivery might be
+     * adjusted by the OS. This method allows an application to take advantage of the
+     * battery optimizations that arise from delivery batching even when it has
+     * modest timeliness requirements for its alarms.
+     *
+     * <p>
+     * This method can also be used to achieve strict ordering guarantees among
+     * multiple alarms by ensuring that the windows requested for each alarm do
+     * not intersect.
+     *
+     * <p>
+     * When precise delivery is not required, applications should use the standard
+     * {@link #set(int, long, PendingIntent)} method.  This will give the OS the most
+     * flexibility to minimize wakeups and battery use.  For alarms that must be delivered
+     * at precisely-specified times with no acceptable variation, applications can use
+     * {@link #setExact(int, long, PendingIntent)}.
+     *
+     * @param type type of alarm.
+     * @param windowStartMillis The earliest time, in milliseconds, that the alarm should
+     *        be delivered, expressed in the appropriate clock's units (depending on the alarm
+     *        type).
+     * @param windowLengthMillis The length of the requested delivery window,
+     *        in milliseconds.  The alarm will be delivered no later than this many
+     *        milliseconds after {@code windowStartMillis}.  Note that this parameter
+     *        is a <i>duration,</i> not the timestamp of the end of the window.
+     * @param operation Action to perform when the alarm goes off;
+     *        typically comes from {@link PendingIntent#getBroadcast
+     *        IntentSender.getBroadcast()}.
+     *
+     * @see #set
+     * @see #setExact
+     * @see #setRepeating
+     * @see #cancel
+     * @see android.content.Context#sendBroadcast
+     * @see android.content.Context#registerReceiver
+     * @see android.content.Intent#filterEquals
+     * @see #ELAPSED_REALTIME
+     * @see #ELAPSED_REALTIME_WAKEUP
+     * @see #RTC
+     * @see #RTC_WAKEUP
+     

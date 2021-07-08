@@ -1,0 +1,69 @@
+public static void read(InputStream in, IntervalStats stats) throws IOException{
+    final ProtoInputStream proto = new ProtoInputStream(in);
+    while (true) {
+        switch(proto.nextField()) {
+            case (int) IntervalStatsObfuscatedProto.END_TIME_MS:
+                stats.endTime = stats.beginTime + proto.readLong(IntervalStatsObfuscatedProto.END_TIME_MS);
+                break;
+            case (int) IntervalStatsObfuscatedProto.MAJOR_VERSION:
+                stats.majorVersion = proto.readInt(IntervalStatsObfuscatedProto.MAJOR_VERSION);
+                break;
+            case (int) IntervalStatsObfuscatedProto.MINOR_VERSION:
+                stats.minorVersion = proto.readInt(IntervalStatsObfuscatedProto.MINOR_VERSION);
+                break;
+            case (int) IntervalStatsObfuscatedProto.INTERACTIVE:
+                loadCountAndTime(proto, IntervalStatsObfuscatedProto.INTERACTIVE, stats.interactiveTracker);
+                break;
+            case (int) IntervalStatsObfuscatedProto.NON_INTERACTIVE:
+                loadCountAndTime(proto, IntervalStatsObfuscatedProto.NON_INTERACTIVE, stats.nonInteractiveTracker);
+                break;
+            case (int) IntervalStatsObfuscatedProto.KEYGUARD_SHOWN:
+                loadCountAndTime(proto, IntervalStatsObfuscatedProto.KEYGUARD_SHOWN, stats.keyguardShownTracker);
+                break;
+            case (int) IntervalStatsObfuscatedProto.KEYGUARD_HIDDEN:
+                loadCountAndTime(proto, IntervalStatsObfuscatedProto.KEYGUARD_HIDDEN, stats.keyguardHiddenTracker);
+                break;
+            case (int) IntervalStatsObfuscatedProto.PACKAGES:
+                try {
+                    final long packagesToken = proto.start(IntervalStatsObfuscatedProto.PACKAGES);
+                    UsageStats usageStats = parseUsageStats(proto, stats.beginTime);
+                    proto.end(packagesToken);
+                    if (usageStats.mPackageToken != PackagesTokenData.UNASSIGNED_TOKEN) {
+                        stats.packageStatsObfuscated.put(usageStats.mPackageToken, usageStats);
+                    }
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some usage stats from proto.", e);
+                }
+                break;
+            case (int) IntervalStatsObfuscatedProto.CONFIGURATIONS:
+                try {
+                    final long configsToken = proto.start(IntervalStatsObfuscatedProto.CONFIGURATIONS);
+                    loadConfigStats(proto, stats);
+                    proto.end(configsToken);
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some configuration stats from proto.", e);
+                }
+                break;
+            case (int) IntervalStatsObfuscatedProto.EVENT_LOG:
+                try {
+                    final long eventsToken = proto.start(IntervalStatsObfuscatedProto.EVENT_LOG);
+                    UsageEvents.Event event = parseEvent(proto, stats.beginTime);
+                    proto.end(eventsToken);
+                    if (event != null) {
+                        stats.events.insert(event);
+                    }
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some events from proto.", e);
+                }
+                break;
+            case ProtoInputStream.NO_MORE_FIELDS:
+                final int usageStatsSize = stats.packageStatsObfuscated.size();
+                for (int i = 0; i < usageStatsSize; i++) {
+                    final UsageStats usageStats = stats.packageStatsObfuscated.valueAt(i);
+                    usageStats.mBeginTimeStamp = stats.beginTime;
+                    usageStats.mEndTimeStamp = stats.endTime;
+                }
+                return;
+        }
+    }
+}

@@ -1,0 +1,39 @@
+public void startDppAsEnrolleeInitiator(int uid, IBinder binder, String configuratorUri, IDppCallback callback){
+    mDppMetrics.updateDppEnrolleeInitiatorRequests();
+    if (mDppRequestInfo != null) {
+        try {
+            Log.e(TAG, "DPP request already in progress");
+            Log.e(TAG, "Ongoing request UID: " + mDppRequestInfo.uid + ", new UID: " + uid);
+            mDppMetrics.updateDppFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_BUSY);
+            callback.onFailure(EasyConnectStatusCallback.EASY_CONNECT_EVENT_FAILURE_BUSY, null, null, new int[0]);
+        } catch (RemoteException e) {
+        }
+        return;
+    }
+    mDppRequestInfo = new DppRequestInfo();
+    mDppRequestInfo.uid = uid;
+    mDppRequestInfo.binder = binder;
+    mDppRequestInfo.callback = callback;
+    if (!linkToDeath(mDppRequestInfo)) {
+        onFailure(DppFailureCode.FAILURE);
+        return;
+    }
+    mDppRequestInfo.startTime = mClock.getElapsedSinceBootMillis();
+    mDppTimeoutMessage.schedule(mDppRequestInfo.startTime + DPP_TIMEOUT_MS);
+    mClientIfaceName = mWifiNative.getClientInterfaceName();
+    logd("Interface " + mClientIfaceName + ": Initializing URI: " + configuratorUri);
+    int peerId = mWifiNative.addDppPeerUri(mClientIfaceName, configuratorUri);
+    if (peerId < 0) {
+        Log.e(TAG, "DPP add URI failure");
+        onFailure(DppFailureCode.INVALID_URI);
+        return;
+    }
+    mDppRequestInfo.peerId = peerId;
+    logd("Authenticating");
+    if (!mWifiNative.startDppEnrolleeInitiator(mClientIfaceName, mDppRequestInfo.peerId, 0)) {
+        Log.e(TAG, "DPP Start Enrollee Initiator failure");
+        onFailure(DppFailureCode.FAILURE);
+        return;
+    }
+    logd("Success: Started DPP Initiator with peer ID " + mDppRequestInfo.peerId);
+}

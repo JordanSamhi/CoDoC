@@ -1,0 +1,11 @@
+public static void screenshot(IBinder display, Surface consumer, Rect sourceCrop, int width, int height, boolean useIdentityTransform, int rotation){
+    if (consumer == null) {
+        throw new IllegalArgumentException("consumer must not be null");
+    }
+    final ScreenshotGraphicBuffer buffer = screenshotToBuffer(display, sourceCrop, width, height, useIdentityTransform, rotation);
+    try {
+        consumer.attachAndQueueBufferWithColorSpace(buffer.getGraphicBuffer(), buffer.getColorSpace());
+    } catch (RuntimeException e) {
+        Log.w(TAG, "Failed to take screenshot - " + e.getMessage());
+    }
+}

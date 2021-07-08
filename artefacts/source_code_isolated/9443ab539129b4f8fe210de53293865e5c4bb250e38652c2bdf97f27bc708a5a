@@ -1,0 +1,19 @@
+public static void init(String flags){
+    if (TextUtils.isEmpty(flags)) {
+        sInitialized = true;
+        return;
+    }
+    KeyValueListParser parser = new KeyValueListParser(',');
+    try {
+        parser.setString(flags);
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Setting has invalid format: " + flags, e);
+        sInitialized = true;
+        return;
+    }
+    sLegacyCompatibilityWalEnabled = parser.getBoolean("legacy_compatibility_wal_enabled", false);
+    sWALSyncMode = parser.getString("wal_syncmode", SQLiteGlobal.getWALSyncMode());
+    sTruncateSize = parser.getInt("truncate_size", -1);
+    Log.i(TAG, "Read compatibility WAL flags: legacy_compatibility_wal_enabled=" + sLegacyCompatibilityWalEnabled + ", wal_syncmode=" + sWALSyncMode);
+    sInitialized = true;
+}

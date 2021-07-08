@@ -1,0 +1,8 @@
+public void isRoleVisible(@NonNull String roleName, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
+    AndroidFuture<Bundle> operation = mRemoteService.postAsync(service -> {
+        AndroidFuture<Bundle> future = new AndroidFuture<>();
+        service.isRoleVisible(roleName, new RemoteCallback(future::complete));
+        return future;
+    });
+    propagateCallback(operation, "isRoleVisible", executor, callback);
+}

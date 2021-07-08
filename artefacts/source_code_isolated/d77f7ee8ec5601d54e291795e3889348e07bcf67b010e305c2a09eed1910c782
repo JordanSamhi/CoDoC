@@ -1,0 +1,16 @@
+public ArrayList<UsbDescriptor> getACInterfaceDescriptors(byte subtype, int subclass){
+    ArrayList<UsbDescriptor> list = new ArrayList<UsbDescriptor>();
+    for (UsbDescriptor descriptor : mDescriptors) {
+        if (descriptor.getType() == UsbDescriptor.DESCRIPTORTYPE_CLASSSPECIFIC_INTERFACE) {
+            if (descriptor instanceof UsbACInterface) {
+                UsbACInterface acDescriptor = (UsbACInterface) descriptor;
+                if (acDescriptor.getSubtype() == subtype && acDescriptor.getSubclass() == subclass) {
+                    list.add(descriptor);
+                }
+            } else {
+                Log.w(TAG, "Unrecognized Audio Interface len: " + descriptor.getLength() + " type:0x" + Integer.toHexString(descriptor.getType()));
+            }
+        }
+    }
+    return list;
+}

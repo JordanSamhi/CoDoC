@@ -1,0 +1,12 @@
+public static void dumpStats(IndentingPrintWriter pw, BaseBundle bundle){
+    pw.increaseIndent();
+    if (bundle == null) {
+        pw.println("[null]");
+        return;
+    }
+    final ArrayMap<String, Object> map = bundle.getMap();
+    for (int i = 0; i < map.size(); i++) {
+        dumpStats(pw, map.keyAt(i), map.valueAt(i));
+    }
+    pw.decreaseIndent();
+}

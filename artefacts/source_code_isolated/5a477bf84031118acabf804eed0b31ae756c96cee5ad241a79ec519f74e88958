@@ -1,0 +1,17 @@
+public boolean addRoute(@NonNull RouteInfo route){
+    String routeIface = route.getInterface();
+    if (routeIface != null && !routeIface.equals(mIfaceName)) {
+        throw new IllegalArgumentException("Route added with non-matching interface: " + routeIface + " vs. " + mIfaceName);
+    }
+    route = routeWithInterface(route);
+    int i = findRouteIndexByRouteKey(route);
+    if (i == -1) {
+        mRoutes.add(route);
+        return true;
+    } else if (mRoutes.get(i).equals(route)) {
+        return false;
+    } else {
+        mRoutes.set(i, route);
+        return true;
+    }
+}

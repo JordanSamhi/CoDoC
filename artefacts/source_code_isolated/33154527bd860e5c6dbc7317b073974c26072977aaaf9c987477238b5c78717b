@@ -1,0 +1,15 @@
+public void handleDataPathTimeout(NetworkSpecifier networkSpecifier){
+    if (mDbg)
+        Log.v(TAG, "handleDataPathTimeout: networkSpecifier=" + networkSpecifier);
+    AwareNetworkRequestInformation nnri = mNetworkRequestsCache.remove(networkSpecifier);
+    if (nnri == null) {
+        if (VDBG) {
+            Log.v(TAG, "handleDataPathTimeout: network request not found for networkSpecifier=" + networkSpecifier);
+        }
+        return;
+    }
+    mAwareMetrics.recordNdpStatus(NanStatusType.INTERNAL_FAILURE, nnri.networkSpecifier.isOutOfBand(), nnri.startTimestamp);
+    mNetworkFactory.letAppKnowThatRequestsAreUnavailable(nnri);
+    mMgr.endDataPath(nnri.ndpId);
+    nnri.state = AwareNetworkRequestInformation.STATE_TERMINATING;
+}

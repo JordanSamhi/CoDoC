@@ -1,0 +1,13 @@
+public void startTimerRecording(int recorderAddress, int sourceType, TimerRecordSource source){
+    if (source == null) {
+        throw new IllegalArgumentException("source must not be null.");
+    }
+    checkTimerRecordingSourceType(sourceType);
+    try {
+        byte[] data = new byte[source.getDataSize()];
+        source.toByteArray(data, 0);
+        mService.startTimerRecording(recorderAddress, sourceType, data);
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to start record: ", e);
+    }
+}

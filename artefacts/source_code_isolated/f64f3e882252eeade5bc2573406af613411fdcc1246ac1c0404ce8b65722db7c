@@ -1,0 +1,11 @@
+public static WrappedKeyProto.WrappedKey wrap(SecretKey secondaryKey, SecretKey tertiaryKey) throws InvalidKeyException, IllegalBlockSizeException, NoSuchAlgorithmException, NoSuchPaddingException{
+    Cipher cipher = getCipher();
+    cipher.init(Cipher.WRAP_MODE, secondaryKey);
+    WrappedKeyProto.WrappedKey wrappedKey = new WrappedKeyProto.WrappedKey();
+    wrappedKey.key = cipher.wrap(tertiaryKey);
+    wrappedKey.nonce = cipher.getIV();
+    wrappedKey.wrapAlgorithm = WrappedKeyProto.WrappedKey.AES_256_GCM;
+    wrappedKey.metadata = new WrappedKeyProto.KeyMetadata();
+    wrappedKey.metadata.type = WrappedKeyProto.KeyMetadata.AES_256_GCM;
+    return wrappedKey;
+}

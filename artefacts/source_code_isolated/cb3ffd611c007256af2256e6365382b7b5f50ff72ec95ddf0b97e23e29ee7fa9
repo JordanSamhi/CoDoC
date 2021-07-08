@@ -1,0 +1,9 @@
+public static SoundTriggerModule attachModule(int moduleId, @NonNull StatusListener listener, @Nullable Handler handler){
+    Looper looper = handler != null ? handler.getLooper() : Looper.getMainLooper();
+    try {
+        return new SoundTriggerModule(getService(), moduleId, listener, looper);
+    } catch (Exception e) {
+        Log.e(TAG, "", e);
+        return null;
+    }
+}

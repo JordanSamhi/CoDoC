@@ -1,0 +1,37 @@
+public void startListening(){
+    if (sService == null) {
+        return;
+    }
+    final int[] idsToUpdate;
+    synchronized (mViews) {
+        int N = mViews.size();
+        idsToUpdate = new int[N];
+        for (int i = 0; i < N; i++) {
+            idsToUpdate[i] = mViews.keyAt(i);
+        }
+    }
+    List<PendingHostUpdate> updates;
+    try {
+        updates = sService.startListening(mCallbacks, mContextOpPackageName, mHostId, idsToUpdate).getList();
+    } catch (RemoteException e) {
+        throw new RuntimeException("system server dead?", e);
+    }
+    int N = updates.size();
+    for (int i = 0; i < N; i++) {
+        PendingHostUpdate update = updates.get(i);
+        switch(update.type) {
+            case PendingHostUpdate.TYPE_VIEWS_UPDATE:
+                updateAppWidgetView(update.appWidgetId, update.views);
+                break;
+            case PendingHostUpdate.TYPE_PROVIDER_CHANGED:
+                onProviderChanged(update.appWidgetId, update.widgetInfo);
+                break;
+            case PendingHostUpdate.TYPE_VIEW_DATA_CHANGED:
+                viewDataChanged(update.appWidgetId, update.viewId);
+                break;
+            case PendingHostUpdate.TYPE_APP_WIDGET_REMOVED:
+                dispatchOnAppWidgetRemoved(update.appWidgetId);
+                break;
+        }
+    }
+}

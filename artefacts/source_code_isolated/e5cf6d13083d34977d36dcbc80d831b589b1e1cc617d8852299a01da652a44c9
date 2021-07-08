@@ -1,0 +1,16 @@
+public int delete(Uri uri, String selection, String[] selectionArgs){
+    SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+    final int length = uri.getPathSegments().size();
+    if (length != 1) {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    final String base = uri.getPathSegments().get(0);
+    int count = 0;
+    if (base.equals(sSuggestions)) {
+        count = db.delete(sSuggestions, selection, selectionArgs);
+    } else {
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+    getContext().getContentResolver().notifyChange(uri, null);
+    return count;
+}

@@ -1,0 +1,36 @@
+
+     * Called by a device/profile owner to set the timeout after which unlocking with secondary, non
+     * strong auth (e.g. fingerprint, face, trust agents) times out, i.e. the user has to use a
+     * strong authentication method like password, pin or pattern.
+     *
+     * <p>This timeout is used internally to reset the timer to require strong auth again after
+     * specified timeout each time it has been successfully used.
+     *
+     * <p>Fingerprint can also be disabled altogether using {@link #KEYGUARD_DISABLE_FINGERPRINT}.
+     *
+     * <p>Trust agents can also be disabled altogether using {@link #KEYGUARD_DISABLE_TRUST_AGENTS}.
+     *
+     * <p>The calling device admin must be a device or profile owner. If it is not,
+     * a {@link SecurityException} will be thrown.
+     *
+     * <p>The calling device admin can verify the value it has set by calling
+     * {@link #getRequiredStrongAuthTimeout(ComponentName)} and passing in its instance.
+     *
+     * <p>This method can be called on the {@link DevicePolicyManager} instance returned by
+     * {@link #getParentProfileInstance(ComponentName)} in order to set restrictions on the parent
+     * profile.
+     *
+     * <p>On devices not supporting {@link PackageManager#FEATURE_SECURE_LOCK_SCREEN} feature,
+     * calling this methods has no effect - i.e. the timeout is not set.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param timeoutMs The new timeout in milliseconds, after which the user will have to unlock
+     *         with strong authentication method. A value of 0 means the admin is not participating
+     *         in controlling the timeout.
+     *         The minimum and maximum timeouts are platform-defined and are typically 1 hour and
+     *         72 hours, respectively. Though discouraged, the admin may choose to require strong
+     *         auth at all times using {@link #KEYGUARD_DISABLE_FINGERPRINT} and/or
+     *         {@link #KEYGUARD_DISABLE_TRUST_AGENTS}.
+     *
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     

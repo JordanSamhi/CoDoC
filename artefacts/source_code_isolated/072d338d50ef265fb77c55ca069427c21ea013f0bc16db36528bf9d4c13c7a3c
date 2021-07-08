@@ -1,0 +1,10 @@
+public void getRealSize(Point outSize){
+    synchronized (this) {
+        updateDisplayInfoLocked();
+        outSize.x = mDisplayInfo.logicalWidth;
+        outSize.y = mDisplayInfo.logicalHeight;
+        if (mMayAdjustByFixedRotation) {
+            getDisplayAdjustments().adjustSize(outSize, mDisplayInfo.rotation);
+        }
+    }
+}

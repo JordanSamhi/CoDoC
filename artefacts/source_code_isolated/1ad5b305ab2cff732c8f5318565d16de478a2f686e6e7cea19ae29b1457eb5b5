@@ -1,0 +1,8 @@
+public void log(LogLevel level, IProtoLogGroup group, int messageHash, int paramsMask, @Nullable String messageString, Object[] args){
+    if (group.isLogToProto()) {
+        logToProto(messageHash, paramsMask, args);
+    }
+    if (group.isLogToLogcat()) {
+        logToLogcat(group.getTag(), level, messageHash, messageString, args);
+    }
+}

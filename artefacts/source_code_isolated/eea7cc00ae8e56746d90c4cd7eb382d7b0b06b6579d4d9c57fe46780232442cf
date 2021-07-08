@@ -1,0 +1,38 @@
+public boolean removeIf(Predicate<? super E> filter){
+    if (mSize == 0) {
+        return false;
+    }
+    int replaceIndex = 0;
+    int numRemoved = 0;
+    for (int i = 0; i < mSize; ++i) {
+        if (filter.test((E) mArray[i])) {
+            numRemoved++;
+        } else {
+            if (replaceIndex != i) {
+                mArray[replaceIndex] = mArray[i];
+                mHashes[replaceIndex] = mHashes[i];
+            }
+            replaceIndex++;
+        }
+    }
+    if (numRemoved == 0) {
+        return false;
+    } else if (numRemoved == mSize) {
+        clear();
+        return true;
+    }
+    mSize -= numRemoved;
+    if (shouldShrink()) {
+        final int n = getNewShrunkenSize();
+        final int[] ohashes = mHashes;
+        final Object[] oarray = mArray;
+        allocArrays(n);
+        System.arraycopy(ohashes, 0, mHashes, 0, mSize);
+        System.arraycopy(oarray, 0, mArray, 0, mSize);
+    } else {
+        for (int i = mSize; i < mArray.length; ++i) {
+            mArray[i] = null;
+        }
+    }
+    return true;
+}

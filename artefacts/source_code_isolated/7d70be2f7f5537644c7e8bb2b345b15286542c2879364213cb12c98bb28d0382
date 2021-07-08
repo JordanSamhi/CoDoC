@@ -1,0 +1,62 @@
+public WifiConfiguration selectNetwork(List<WifiCandidates.Candidate> candidates){
+    if (candidates == null || candidates.size() == 0) {
+        return null;
+    }
+    WifiCandidates wifiCandidates = new WifiCandidates(mWifiScoreCard, mContext, candidates);
+    final WifiCandidates.CandidateScorer activeScorer = getActiveCandidateScorer();
+    Collection<Collection<WifiCandidates.Candidate>> groupedCandidates = wifiCandidates.getGroupedCandidates();
+    for (Collection<WifiCandidates.Candidate> group : groupedCandidates) {
+        WifiCandidates.ScoredCandidate choice = activeScorer.scoreCandidates(group);
+        if (choice == null)
+            continue;
+        ScanDetail scanDetail = getScanDetailForCandidateKey(choice.candidateKey);
+        if (scanDetail == null)
+            continue;
+        mWifiConfigManager.setNetworkCandidateScanResult(choice.candidateKey.networkId, scanDetail.getScanResult(), 0);
+    }
+    for (Collection<WifiCandidates.Candidate> group : groupedCandidates) {
+        for (WifiCandidates.Candidate candidate : group.stream().sorted((a, b) -> (b.getScanRssi() - a.getScanRssi())).collect(Collectors.toList())) {
+            localLog(candidate.toString());
+        }
+    }
+    ArrayMap<Integer, Integer> experimentNetworkSelections = new ArrayMap<>();
+    int selectedNetworkId = WifiConfiguration.INVALID_NETWORK_ID;
+    boolean legacyOverrideWanted = true;
+    for (WifiCandidates.CandidateScorer candidateScorer : mCandidateScorers.values()) {
+        WifiCandidates.ScoredCandidate choice;
+        try {
+            choice = wifiCandidates.choose(candidateScorer);
+        } catch (RuntimeException e) {
+            Log.wtf(TAG, "Exception running a CandidateScorer", e);
+            continue;
+        }
+        int networkId = choice.candidateKey == null ? WifiConfiguration.INVALID_NETWORK_ID : choice.candidateKey.networkId;
+        String chooses = " would choose ";
+        if (candidateScorer == activeScorer) {
+            chooses = " chooses ";
+            legacyOverrideWanted = choice.userConnectChoiceOverride;
+            selectedNetworkId = networkId;
+            updateChosenPasspointNetwork(choice);
+        }
+        String id = candidateScorer.getIdentifier();
+        int expid = experimentIdFromIdentifier(id);
+        localLog(id + chooses + networkId + " score " + choice.value + "+/-" + choice.err + " expid " + expid);
+        experimentNetworkSelections.put(expid, networkId);
+    }
+    final int activeExperimentId = experimentIdFromIdentifier(activeScorer.getIdentifier());
+    for (Map.Entry<Integer, Integer> entry : experimentNetworkSelections.entrySet()) {
+        int experimentId = entry.getKey();
+        if (experimentId == activeExperimentId)
+            continue;
+        int thisSelectedNetworkId = entry.getValue();
+        mWifiMetrics.logNetworkSelectionDecision(experimentId, activeExperimentId, selectedNetworkId == thisSelectedNetworkId, groupedCandidates.size());
+    }
+    WifiConfiguration selectedNetwork = mWifiConfigManager.getConfiguredNetwork(selectedNetworkId);
+    if (selectedNetwork != null && legacyOverrideWanted) {
+        selectedNetwork = overrideCandidateWithUserConnectChoice(selectedNetwork);
+    }
+    if (selectedNetwork != null) {
+        mLastNetworkSelectionTimeStamp = mClock.getElapsedSinceBootMillis();
+    }
+    return selectedNetwork;
+}

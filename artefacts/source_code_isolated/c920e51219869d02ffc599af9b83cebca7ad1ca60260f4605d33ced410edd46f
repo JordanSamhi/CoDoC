@@ -1,0 +1,9 @@
+public T getOrCreate(int userId, @NonNull String packageName, @Nullable String tag, Function<Void, T> creator){
+    final ArrayMap<String, T> data = mData.get(userId, packageName);
+    if (data == null || !data.containsKey(tag)) {
+        final T val = creator.apply(null);
+        add(userId, packageName, tag, val);
+        return val;
+    }
+    return data.get(tag);
+}

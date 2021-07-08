@@ -1,0 +1,13 @@
+public void notifyItemRangeChanged(int position, int itemCount){
+    if (position < 0) {
+        Log.w(TAG, "notifyItemRangeChanged: Invalid position=" + position);
+        return;
+    }
+    if (itemCount < 0) {
+        Log.w(TAG, "notifyItemRangeChanged: Invalid itemCount=" + itemCount);
+        return;
+    }
+    for (Observer observer : observers) {
+        observer.onItemRangeChanged(this, position, itemCount);
+    }
+}

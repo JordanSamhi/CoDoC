@@ -1,0 +1,18 @@
+public long[] setActiveConfigsChangedOperation(@Nullable PendingIntent pendingIntent) throws StatsUnavailableException{
+    synchronized (sLock) {
+        try {
+            IStatsManagerService service = getIStatsManagerServiceLocked();
+            if (pendingIntent == null) {
+                service.removeActiveConfigsChangedOperation(mContext.getOpPackageName());
+                return new long[0];
+            } else {
+                return service.setActiveConfigsChangedOperation(pendingIntent, mContext.getOpPackageName());
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to connect to statsmanager " + "when registering active configs listener.");
+            throw new StatsUnavailableException("could not connect", e);
+        } catch (SecurityException e) {
+            throw new StatsUnavailableException(e.getMessage(), e);
+        }
+    }
+}

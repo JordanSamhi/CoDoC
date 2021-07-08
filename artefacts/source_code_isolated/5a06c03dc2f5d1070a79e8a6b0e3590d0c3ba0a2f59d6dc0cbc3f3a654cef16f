@@ -1,0 +1,8 @@
+public final IBinder onBind(Intent intent){
+    mServiceComponentName = intent.getComponent();
+    if (SERVICE_INTERFACE.equals(intent.getAction())) {
+        return new AugmentedAutofillServiceImpl();
+    }
+    Log.w(TAG, "Tried to bind to wrong intent (should be " + SERVICE_INTERFACE + ": " + intent);
+    return null;
+}

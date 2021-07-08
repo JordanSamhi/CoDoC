@@ -1,0 +1,13 @@
+public void updateSubscribe(@NonNull SubscribeConfig subscribeConfig){
+    if (mTerminated) {
+        Log.w(TAG, "updateSubscribe: called on terminated session");
+        return;
+    } else {
+        WifiAwareManager mgr = mMgr.get();
+        if (mgr == null) {
+            Log.w(TAG, "updateSubscribe: called post GC on WifiAwareManager");
+            return;
+        }
+        mgr.updateSubscribe(mClientId, mSessionId, subscribeConfig);
+    }
+}

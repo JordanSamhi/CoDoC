@@ -1,0 +1,10 @@
+public boolean hasBindAppWidgetPermission(String packageName){
+    if (mService == null) {
+        return false;
+    }
+    try {
+        return mService.hasBindAppWidgetPermission(packageName, mContext.getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

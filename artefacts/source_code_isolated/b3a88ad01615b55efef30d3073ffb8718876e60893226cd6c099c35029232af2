@@ -1,0 +1,10 @@
+public void setSystemSetting(@NonNull ComponentName admin, @NonNull @SystemSettingsWhitelist String setting, String value){
+    throwIfParentInstance("setSystemSetting");
+    if (mService != null) {
+        try {
+            mService.setSystemSetting(admin, setting, value);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

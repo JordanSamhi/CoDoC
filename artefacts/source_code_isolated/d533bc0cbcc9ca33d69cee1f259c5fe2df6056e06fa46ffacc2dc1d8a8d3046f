@@ -1,0 +1,35 @@
+public boolean setPackageAuthorization(String packageName, @VpnManager.VpnType int vpnType){
+    enforceControlPermissionOrInternalCaller();
+    final int uid = getAppUid(packageName, mUserHandle);
+    if (uid == -1 || VpnConfig.LEGACY_VPN.equals(packageName)) {
+        return false;
+    }
+    final long token = Binder.clearCallingIdentity();
+    try {
+        final int[] toChange;
+        switch(vpnType) {
+            case VpnManager.TYPE_VPN_NONE:
+                toChange = new int[] { AppOpsManager.OP_ACTIVATE_VPN, AppOpsManager.OP_ACTIVATE_PLATFORM_VPN };
+                break;
+            case VpnManager.TYPE_VPN_PLATFORM:
+                toChange = new int[] { AppOpsManager.OP_ACTIVATE_PLATFORM_VPN };
+                break;
+            case VpnManager.TYPE_VPN_SERVICE:
+                toChange = new int[] { AppOpsManager.OP_ACTIVATE_VPN };
+                break;
+            default:
+                Log.wtf(TAG, "Unrecognized VPN type while granting authorization");
+                return false;
+        }
+        final AppOpsManager appOpMgr = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
+        for (final int appOp : toChange) {
+            appOpMgr.setMode(appOp, uid, packageName, vpnType == VpnManager.TYPE_VPN_NONE ? AppOpsManager.MODE_IGNORED : AppOpsManager.MODE_ALLOWED);
+        }
+        return true;
+    } catch (Exception e) {
+        Log.wtf(TAG, "Failed to set app ops for package " + packageName + ", uid " + uid, e);
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+    return false;
+}

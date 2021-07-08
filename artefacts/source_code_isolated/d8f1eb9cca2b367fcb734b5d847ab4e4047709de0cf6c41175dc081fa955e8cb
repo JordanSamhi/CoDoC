@@ -1,0 +1,13 @@
+public List<PasspointConfiguration> getProviderConfigs(int callingUid, boolean privileged){
+    List<PasspointConfiguration> configs = new ArrayList<>();
+    for (Map.Entry<String, PasspointProvider> entry : mProviders.entrySet()) {
+        PasspointProvider provider = entry.getValue();
+        if (privileged || callingUid == provider.getCreatorUid()) {
+            if (provider.isFromSuggestion()) {
+                continue;
+            }
+            configs.add(provider.getConfig());
+        }
+    }
+    return configs;
+}

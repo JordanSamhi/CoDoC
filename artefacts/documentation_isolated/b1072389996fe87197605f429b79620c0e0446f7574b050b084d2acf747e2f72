@@ -1,0 +1,19 @@
+
+     * Queues the request to send or receive data on its endpoint.
+     *
+     * <p>For OUT endpoints, the remaining bytes of the buffer will be sent on the endpoint. For IN
+     * endpoints, the endpoint will attempt to fill the remaining bytes of the buffer. If the
+     * queueing operation is successful, return true. The result will be returned via
+     * {@link UsbDeviceConnection#requestWait}</p>
+     *
+     * @param buffer the buffer containing the bytes to send, or the buffer to fill. The state
+     *               of the buffer is undefined until the request is returned by
+     *               {@link UsbDeviceConnection#requestWait}. If the request failed the buffer
+     *               will be unchanged; if the request succeeded the position of the buffer is
+     *               incremented by the number of bytes sent/received. Before
+     *               {@value Build.VERSION_CODES#P}, a buffer of length larger than 16384 bytes
+     *               would throw IllegalArgumentException. In API {@value Build.VERSION_CODES#P}
+     *               and after, any size buffer is valid.
+     *
+     * @return true if the queueing operation succeeded
+     

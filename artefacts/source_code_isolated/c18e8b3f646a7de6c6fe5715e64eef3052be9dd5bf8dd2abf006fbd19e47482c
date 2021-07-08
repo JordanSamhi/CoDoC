@@ -1,0 +1,16 @@
+public int setMetadataFilter(Set<Integer> allow, Set<Integer> block){
+    Parcel request = newRequest();
+    int capacity = request.dataSize() + 4 * (1 + allow.size() + 1 + block.size());
+    if (request.dataCapacity() < capacity) {
+        request.setDataCapacity(capacity);
+    }
+    request.writeInt(allow.size());
+    for (Integer t : allow) {
+        request.writeInt(t);
+    }
+    request.writeInt(block.size());
+    for (Integer t : block) {
+        request.writeInt(t);
+    }
+    return native_setMetadataFilter(request);
+}

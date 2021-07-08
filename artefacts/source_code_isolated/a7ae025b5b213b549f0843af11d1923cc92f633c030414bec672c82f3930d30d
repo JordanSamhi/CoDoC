@@ -1,0 +1,54 @@
+public void addDeviceCapability(Asn1Node.Builder devCapBuilder, String devCapItem){
+    String[] split = devCapItem.split(",");
+    if (split.length != 2) {
+        loge("Invalid device capability item: " + Arrays.toString(split));
+        return;
+    }
+    String devCap = split[0].trim();
+    Integer version;
+    try {
+        version = Integer.parseInt(split[1].trim());
+    } catch (NumberFormatException e) {
+        loge("Invalid device capability version number.", e);
+        return;
+    }
+    byte[] versionBytes = new byte[] { version.byteValue(), 0, 0 };
+    switch(devCap) {
+        case DEV_CAP_GSM:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_0, versionBytes);
+            break;
+        case DEV_CAP_UTRAN:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_1, versionBytes);
+            break;
+        case DEV_CAP_CDMA_1X:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_2, versionBytes);
+            break;
+        case DEV_CAP_HRPD:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_3, versionBytes);
+            break;
+        case DEV_CAP_EHRPD:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_4, versionBytes);
+            break;
+        case DEV_CAP_EUTRAN:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_5, versionBytes);
+            break;
+        case DEV_CAP_NFC:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_6, versionBytes);
+            break;
+        case DEV_CAP_CRL:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_7, versionBytes);
+            break;
+        case DEV_CAP_NREPC:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_9, versionBytes);
+            break;
+        case DEV_CAP_NR5GC:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_10, versionBytes);
+            break;
+        case DEV_CAP_EUTRAN5GC:
+            devCapBuilder.addChildAsBytes(Tags.TAG_CTX_11, versionBytes);
+            break;
+        default:
+            loge("Invalid device capability name: " + devCap);
+            break;
+    }
+}

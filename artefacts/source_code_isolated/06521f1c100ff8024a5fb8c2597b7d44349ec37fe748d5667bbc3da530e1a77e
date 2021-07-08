@@ -1,0 +1,10 @@
+public PhoneAccount getPhoneAccount(PhoneAccountHandle account){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getPhoneAccount(account);
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getPhoneAccount", e);
+    }
+    return null;
+}

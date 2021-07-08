@@ -1,0 +1,57 @@
+public boolean resolveTextAlignment(){
+    mPrivateFlags2 &= ~(PFLAG2_TEXT_ALIGNMENT_RESOLVED | PFLAG2_TEXT_ALIGNMENT_RESOLVED_MASK);
+    if (hasRtlSupport()) {
+        final int textAlignment = getRawTextAlignment();
+        switch(textAlignment) {
+            case TEXT_ALIGNMENT_INHERIT:
+                if (!canResolveTextAlignment()) {
+                    mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+                    return false;
+                }
+                try {
+                    if (!mParent.isTextAlignmentResolved()) {
+                        mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+                        return false;
+                    }
+                } catch (AbstractMethodError e) {
+                    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() + " does not fully implement ViewParent", e);
+                    mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED | PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+                    return true;
+                }
+                int parentResolvedTextAlignment;
+                try {
+                    parentResolvedTextAlignment = mParent.getTextAlignment();
+                } catch (AbstractMethodError e) {
+                    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() + " does not fully implement ViewParent", e);
+                    parentResolvedTextAlignment = TEXT_ALIGNMENT_GRAVITY;
+                }
+                switch(parentResolvedTextAlignment) {
+                    case TEXT_ALIGNMENT_GRAVITY:
+                    case TEXT_ALIGNMENT_TEXT_START:
+                    case TEXT_ALIGNMENT_TEXT_END:
+                    case TEXT_ALIGNMENT_CENTER:
+                    case TEXT_ALIGNMENT_VIEW_START:
+                    case TEXT_ALIGNMENT_VIEW_END:
+                        mPrivateFlags2 |= (parentResolvedTextAlignment << PFLAG2_TEXT_ALIGNMENT_RESOLVED_MASK_SHIFT);
+                        break;
+                    default:
+                        mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+                }
+                break;
+            case TEXT_ALIGNMENT_GRAVITY:
+            case TEXT_ALIGNMENT_TEXT_START:
+            case TEXT_ALIGNMENT_TEXT_END:
+            case TEXT_ALIGNMENT_CENTER:
+            case TEXT_ALIGNMENT_VIEW_START:
+            case TEXT_ALIGNMENT_VIEW_END:
+                mPrivateFlags2 |= (textAlignment << PFLAG2_TEXT_ALIGNMENT_RESOLVED_MASK_SHIFT);
+                break;
+            default:
+                mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+        }
+    } else {
+        mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT;
+    }
+    mPrivateFlags2 |= PFLAG2_TEXT_ALIGNMENT_RESOLVED;
+    return true;
+}

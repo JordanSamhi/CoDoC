@@ -1,0 +1,21 @@
+public ArrayList<ResolverActivity.ResolvedComponentInfo> filterLowPriority(List<ResolverActivity.ResolvedComponentInfo> inputList, boolean returnCopyOfOriginalListIfModified){
+    ArrayList<ResolverActivity.ResolvedComponentInfo> listToReturn = null;
+    ResolverActivity.ResolvedComponentInfo rci0 = inputList.get(0);
+    ResolveInfo r0 = rci0.getResolveInfoAt(0);
+    int N = inputList.size();
+    for (int i = 1; i < N; i++) {
+        ResolveInfo ri = inputList.get(i).getResolveInfoAt(0);
+        if (DEBUG)
+            Log.v(TAG, r0.activityInfo.name + "=" + r0.priority + "/" + r0.isDefault + " vs " + ri.activityInfo.name + "=" + ri.priority + "/" + ri.isDefault);
+        if (r0.priority != ri.priority || r0.isDefault != ri.isDefault) {
+            while (i < N) {
+                if (returnCopyOfOriginalListIfModified && listToReturn == null) {
+                    listToReturn = new ArrayList<>(inputList);
+                }
+                inputList.remove(i);
+                N--;
+            }
+        }
+    }
+    return listToReturn;
+}

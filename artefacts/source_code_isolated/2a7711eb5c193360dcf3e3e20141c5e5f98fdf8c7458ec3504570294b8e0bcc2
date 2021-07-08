@@ -1,0 +1,15 @@
+public static RouteInfo selectBestRoute(@Nullable Collection<RouteInfo> routes, @Nullable InetAddress dest){
+    if ((routes == null) || (dest == null))
+        return null;
+    RouteInfo bestRoute = null;
+    for (RouteInfo route : routes) {
+        if (addressTypeMatches(route.getDestination().getAddress(), dest)) {
+            if ((bestRoute != null) && (bestRoute.getDestination().getPrefixLength() >= route.getDestination().getPrefixLength())) {
+                continue;
+            }
+            if (route.matches(dest))
+                bestRoute = route;
+        }
+    }
+    return bestRoute;
+}

@@ -1,0 +1,9 @@
+public int[] getRecoverySecretTypes() throws InternalRecoveryServiceException{
+    try {
+        return mBinder.getRecoverySecretTypes();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        throw wrapUnexpectedServiceSpecificException(e);
+    }
+}

@@ -1,0 +1,15 @@
+
+     * Detect and throw if the other end of a pipe or socket pair encountered an
+     * error or crashed. This allows a reader to distinguish between a valid EOF
+     * and an error/crash.
+     * <p>
+     * If this ParcelFileDescriptor is unable to detect remote errors, it will
+     * return silently.
+     *
+     * @throws IOException for normal errors.
+     * @throws FileDescriptorDetachedException
+     *            if the remote side called {@link #detachFd()}. Once detached, the remote
+     *            side is unable to communicate any errors through
+     *            {@link #closeWithError(String)}.
+     * @see #canDetectErrors()
+     

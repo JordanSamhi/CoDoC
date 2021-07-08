@@ -1,0 +1,8 @@
+public void initPowerManagement(){
+    final PowerManagerInternal powerMgr = LocalServices.getService(PowerManagerInternal.class);
+    powerMgr.registerLowPowerModeObserver(this);
+    synchronized (mStats) {
+        mStats.notePowerSaveModeLocked(powerMgr.getLowPowerState(ServiceType.BATTERY_STATS).batterySaverEnabled);
+    }
+    (new WakeupReasonThread()).start();
+}

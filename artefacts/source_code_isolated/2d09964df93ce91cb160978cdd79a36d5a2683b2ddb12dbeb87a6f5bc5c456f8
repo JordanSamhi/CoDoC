@@ -1,0 +1,10 @@
+public void testBackupManifest_withApk_writesApk() throws Exception{
+    PackageInfo packageInfo = createPackageInfo(TEST_PACKAGE, TEST_PACKAGE_INSTALLER, TEST_PACKAGE_VERSION_CODE);
+    File manifestFile = createFile(BACKUP_MANIFEST_FILENAME);
+    mBackupWriter.backupManifest(packageInfo, manifestFile, mFilesDir, true);
+    byte[] manifestBytes = getWrittenBytes(mBackupDataOutputFile, false);
+    String[] manifest = new String(manifestBytes, StandardCharsets.UTF_8).split("\n");
+    assertThat(manifest.length).isEqualTo(7);
+    assertThat(manifest[5]).isEqualTo("1");
+    manifestFile.delete();
+}

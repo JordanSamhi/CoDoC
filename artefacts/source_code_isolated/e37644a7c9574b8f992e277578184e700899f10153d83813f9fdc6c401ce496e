@@ -1,0 +1,26 @@
+public void onGoNegotiationRequest(byte[] srcAddress, short passwordId){
+    WifiP2pConfig config = new WifiP2pConfig();
+    try {
+        config.deviceAddress = NativeUtil.macAddressFromByteArray(srcAddress);
+    } catch (Exception e) {
+        Log.e(TAG, "Could not decode device address.", e);
+        return;
+    }
+    config.wps = new WpsInfo();
+    switch(passwordId) {
+        case WpsDevPasswordId.USER_SPECIFIED:
+            config.wps.setup = WpsInfo.DISPLAY;
+            break;
+        case WpsDevPasswordId.PUSHBUTTON:
+            config.wps.setup = WpsInfo.PBC;
+            break;
+        case WpsDevPasswordId.REGISTRAR_SPECIFIED:
+            config.wps.setup = WpsInfo.KEYPAD;
+            break;
+        default:
+            config.wps.setup = WpsInfo.PBC;
+            break;
+    }
+    logd("Group Owner negotiation initiated on " + mInterface + ": " + config);
+    mMonitor.broadcastP2pGoNegotiationRequest(mInterface, config);
+}

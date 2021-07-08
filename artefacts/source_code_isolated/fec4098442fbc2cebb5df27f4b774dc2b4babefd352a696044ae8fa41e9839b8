@@ -1,0 +1,7 @@
+public void OnFailure(int reason){
+    mEventHandler.post(() -> runIfFirstCall(() -> {
+        mAlarmManager.cancel(mTimeoutCallback);
+        Binder.clearCallingIdentity();
+        mExecutor.execute(() -> mCallback.onFailure(reason));
+    }));
+}

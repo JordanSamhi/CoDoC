@@ -1,0 +1,19 @@
+public View inflate(){
+    final ViewParent viewParent = getParent();
+    if (viewParent != null && viewParent instanceof ViewGroup) {
+        if (mLayoutResource != 0) {
+            final ViewGroup parent = (ViewGroup) viewParent;
+            final View view = inflateViewNoAdd(parent);
+            replaceSelfWithView(view, parent);
+            mInflatedViewRef = new WeakReference<>(view);
+            if (mInflateListener != null) {
+                mInflateListener.onInflate(this, view);
+            }
+            return view;
+        } else {
+            throw new IllegalArgumentException("ViewStub must have a valid layoutResource");
+        }
+    } else {
+        throw new IllegalStateException("ViewStub must have a non-null ViewGroup viewParent");
+    }
+}

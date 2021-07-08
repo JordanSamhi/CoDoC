@@ -1,0 +1,11 @@
+public long setRecoverySecretTypes(int userId, int uid, int[] secretTypes){
+    SQLiteDatabase db = mKeyStoreDbHelper.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    StringJoiner joiner = new StringJoiner(",");
+    Arrays.stream(secretTypes).forEach(i -> joiner.add(Integer.toString(i)));
+    String typesAsCsv = joiner.toString();
+    values.put(RecoveryServiceMetadataEntry.COLUMN_NAME_SECRET_TYPES, typesAsCsv);
+    String selection = RecoveryServiceMetadataEntry.COLUMN_NAME_USER_ID + " = ? AND " + RecoveryServiceMetadataEntry.COLUMN_NAME_UID + " = ?";
+    ensureRecoveryServiceMetadataEntryExists(userId, uid);
+    return db.update(RecoveryServiceMetadataEntry.TABLE_NAME, values, selection, new String[] { String.valueOf(userId), String.valueOf(uid) });
+}

@@ -1,0 +1,37 @@
+public SubscriptionInfo getActiveSubscriptionInfoForSimSlotIndex(int slotIndex, String callingPackage, String callingFeatureId){
+    Phone phone = PhoneFactory.getPhone(slotIndex);
+    if (phone == null) {
+        if (DBG) {
+            loge("[getActiveSubscriptionInfoForSimSlotIndex] no phone, slotIndex=" + slotIndex);
+        }
+        return null;
+    }
+    if (!TelephonyPermissions.checkCallingOrSelfReadPhoneState(mContext, phone.getSubId(), callingPackage, callingFeatureId, "getActiveSubscriptionInfoForSimSlotIndex")) {
+        return null;
+    }
+    final long identity = Binder.clearCallingIdentity();
+    List<SubscriptionInfo> subList;
+    try {
+        subList = getActiveSubscriptionInfoList(mContext.getOpPackageName(), mContext.getAttributionTag());
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+    if (subList != null) {
+        for (SubscriptionInfo si : subList) {
+            if (si.getSimSlotIndex() == slotIndex) {
+                if (DBG) {
+                    logd("[getActiveSubscriptionInfoForSimSlotIndex]+ slotIndex=" + slotIndex + " subId=" + si);
+                }
+                return conditionallyRemoveIdentifiers(si, callingPackage, callingFeatureId, "getActiveSubscriptionInfoForSimSlotIndex");
+            }
+        }
+        if (DBG) {
+            logd("[getActiveSubscriptionInfoForSimSlotIndex]+ slotIndex=" + slotIndex + " subId=null");
+        }
+    } else {
+        if (DBG) {
+            logd("[getActiveSubscriptionInfoForSimSlotIndex]+ subList=null");
+        }
+    }
+    return null;
+}

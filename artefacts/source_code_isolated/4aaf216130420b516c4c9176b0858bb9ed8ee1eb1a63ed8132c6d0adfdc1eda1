@@ -1,0 +1,24 @@
+public void setPatternPath(Path patternPath){
+    PathMeasure pathMeasure = new PathMeasure(patternPath, false);
+    float length = pathMeasure.getLength();
+    float[] pos = new float[2];
+    pathMeasure.getPosTan(length, pos, null);
+    float endX = pos[0];
+    float endY = pos[1];
+    pathMeasure.getPosTan(0, pos, null);
+    float startX = pos[0];
+    float startY = pos[1];
+    if (startX == endX && startY == endY) {
+        throw new IllegalArgumentException("pattern must not end at the starting point");
+    }
+    mTempMatrix.setTranslate(-startX, -startY);
+    float dx = endX - startX;
+    float dy = endY - startY;
+    float distance = (float) Math.hypot(dx, dy);
+    float scale = 1 / distance;
+    mTempMatrix.postScale(scale, scale);
+    double angle = Math.atan2(dy, dx);
+    mTempMatrix.postRotate((float) Math.toDegrees(-angle));
+    patternPath.transform(mTempMatrix, mPatternPath);
+    mOriginalPatternPath = patternPath;
+}

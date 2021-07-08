@@ -1,0 +1,10 @@
+public List<PhoneAccountHandle> getAllPhoneAccountHandles(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getAllPhoneAccountHandles();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getAllPhoneAccountHandles", e);
+    }
+    return Collections.EMPTY_LIST;
+}

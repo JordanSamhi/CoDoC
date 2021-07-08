@@ -1,0 +1,19 @@
+public boolean startInput(@StartInputReason int startInputReason, View focusedView, @StartInputFlags int startInputFlags, @SoftInputModeFlags int softInputMode, int windowFlags){
+    final View servedView;
+    synchronized (mH) {
+        mCurrentTextBoxAttribute = null;
+        mCompletions = null;
+        mServedConnecting = true;
+        servedView = getServedViewLocked();
+    }
+    if (servedView != null && servedView.getHandler() != null) {
+        servedView.getHandler().post(() -> {
+            if (!servedView.onCheckIsTextEditor()) {
+                synchronized (mH) {
+                    maybeCallServedViewChangedLocked(null);
+                }
+            }
+        });
+    }
+    return startInputInner(startInputReason, focusedView != null ? focusedView.getWindowToken() : null, startInputFlags, softInputMode, windowFlags);
+}

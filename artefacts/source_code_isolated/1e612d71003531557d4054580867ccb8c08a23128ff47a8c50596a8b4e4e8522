@@ -1,0 +1,19 @@
+public WifiWakeStats.Session buildProto(){
+    WifiWakeStats.Session sessionProto = new WifiWakeStats.Session();
+    sessionProto.startTimeMillis = mStartTimestamp;
+    sessionProto.lockedNetworksAtStart = mStartNetworks;
+    if (mInitEvent != null) {
+        sessionProto.lockedNetworksAtInitialize = mInitializeNetworks;
+        sessionProto.initializeEvent = mInitEvent.buildProto();
+    }
+    if (mUnlockEvent != null) {
+        sessionProto.unlockEvent = mUnlockEvent.buildProto();
+    }
+    if (mWakeupEvent != null) {
+        sessionProto.wakeupEvent = mWakeupEvent.buildProto();
+    }
+    if (mResetEvent != null) {
+        sessionProto.resetEvent = mResetEvent.buildProto();
+    }
+    return sessionProto;
+}

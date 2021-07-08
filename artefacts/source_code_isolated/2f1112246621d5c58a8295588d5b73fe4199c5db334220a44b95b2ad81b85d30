@@ -1,0 +1,35 @@
+public void startResetEventTracker(){
+    if (DBG)
+        log("startResetEventTracker");
+    mPhone.getServiceStateTracker().registerForDataRegStateOrRatChanged(mTransportType, mHandler, DctConstants.EVENT_DATA_RAT_CHANGED, null);
+    mPhone.mCi.registerForOffOrNotAvailable(mHandler, DctConstants.EVENT_RADIO_OFF_OR_NOT_AVAILABLE, null);
+    mContext.registerReceiver(mSimStateReceiver, new IntentFilter(TelephonyIntents.ACTION_SIM_STATE_CHANGED));
+    CellLocation currentCellLocation = mPhone.getCellIdentity().asCellLocation();
+    if (currentCellLocation instanceof GsmCellLocation) {
+        mPreviousLocation = (GsmCellLocation) mPhone.getCellIdentity().asCellLocation();
+        if (DBG)
+            log("DataConnection mPreviousLocation : " + mPreviousLocation);
+    }
+    int ddsSubId = SubscriptionManager.getDefaultDataSubscriptionId();
+    if (mPhoneStateListener == null) {
+        mPhoneStateListener = new PhoneStateListener() {
+
+            public void onCellLocationChanged(CellLocation location) {
+                if (DBG)
+                    log("DataConnection onCellLocationChanged : " + location);
+                if (location instanceof GsmCellLocation) {
+                    GsmCellLocation currentLocation = (GsmCellLocation) location;
+                    if (mPreviousLocation != null && currentLocation != null) {
+                        if (mPreviousLocation.getCid() != currentLocation.getCid() || mPreviousLocation.getLac() != currentLocation.getLac()) {
+                            if (DBG)
+                                log("DataConnection location updated");
+                            notifyResetEvent("LOCATION_UPDATED", true);
+                        }
+                    }
+                    mPreviousLocation = currentLocation;
+                }
+            }
+        };
+    }
+    mTelephonyManager.createForSubscriptionId(ddsSubId).listen(mPhoneStateListener, PhoneStateListener.LISTEN_CELL_LOCATION);
+}

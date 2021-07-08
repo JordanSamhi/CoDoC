@@ -1,0 +1,9 @@
+public void currentLinkCapacityEstimate(int indicationType, android.hardware.radio.V1_2.LinkCapacityEstimate lce){
+    mRil.processIndication(indicationType);
+    LinkCapacityEstimate response = RIL.convertHalLceData(lce, mRil);
+    if (RIL.RILJ_LOGD)
+        mRil.unsljLogRet(RIL_UNSOL_LCEDATA_RECV, response);
+    if (mRil.mLceInfoRegistrants != null) {
+        mRil.mLceInfoRegistrants.notifyRegistrants(new AsyncResult(null, response, null));
+    }
+}

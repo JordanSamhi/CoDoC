@@ -1,0 +1,12 @@
+public boolean cameraIdHasConcurrentStreamsLocked(String cameraId){
+    if (!mDeviceStatus.containsKey(cameraId)) {
+        Log.e(TAG, "cameraIdHasConcurrentStreamsLocked called on non existing camera id");
+        return false;
+    }
+    for (Set<String> comb : mConcurrentCameraIdCombinations) {
+        if (comb.contains(cameraId)) {
+            return true;
+        }
+    }
+    return false;
+}

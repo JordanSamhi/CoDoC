@@ -1,0 +1,16 @@
+public void onUssdFinished(String ussdMessage, boolean isUssdRequest){
+    if (mState == State.PENDING) {
+        if (TextUtils.isEmpty(ussdMessage)) {
+            Rlog.d(LOG_TAG, "onUssdFinished: no network provided message; using default.");
+            mMessage = mContext.getText(com.android.internal.R.string.mmiComplete);
+        } else {
+            mMessage = ussdMessage;
+        }
+        mIsUssdRequest = isUssdRequest;
+        if (!isUssdRequest) {
+            mState = State.COMPLETE;
+        }
+        Rlog.d(LOG_TAG, "onUssdFinished: ussdMessage=" + ussdMessage);
+        mPhone.onMMIDone(this);
+    }
+}

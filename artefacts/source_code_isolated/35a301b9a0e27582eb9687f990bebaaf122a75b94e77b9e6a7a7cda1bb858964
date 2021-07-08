@@ -1,0 +1,10 @@
+public static boolean isPresent(){
+    IBinder b = ServiceManager.getService(Context.LOCATION_SERVICE);
+    ILocationManager lm = ILocationManager.Stub.asInterface(b);
+    try {
+        return lm.geocoderIsPresent();
+    } catch (RemoteException e) {
+        Log.e(TAG, "isPresent: got RemoteException", e);
+        return false;
+    }
+}

@@ -1,0 +1,55 @@
+public static String getTitle(Context context, Uri uri, boolean followSettingsUri, boolean allowRemote){
+    ContentResolver res = context.getContentResolver();
+    String title = null;
+    if (uri != null) {
+        String authority = ContentProvider.getAuthorityWithoutUserId(uri.getAuthority());
+        if (Settings.AUTHORITY.equals(authority)) {
+            if (followSettingsUri) {
+                Uri actualUri = RingtoneManager.getActualDefaultRingtoneUri(context, RingtoneManager.getDefaultType(uri));
+                String actualTitle = getTitle(context, actualUri, false, allowRemote);
+                title = context.getString(com.android.internal.R.string.ringtone_default_with_actual, actualTitle);
+            }
+        } else {
+            Cursor cursor = null;
+            try {
+                if (MediaStore.AUTHORITY.equals(authority)) {
+                    final String mediaSelection = allowRemote ? null : MEDIA_SELECTION;
+                    cursor = res.query(uri, MEDIA_COLUMNS, mediaSelection, null, null);
+                    if (cursor != null && cursor.getCount() == 1) {
+                        cursor.moveToFirst();
+                        return cursor.getString(1);
+                    }
+                }
+            } catch (SecurityException e) {
+                IRingtonePlayer mRemotePlayer = null;
+                if (allowRemote) {
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    mRemotePlayer = audioManager.getRingtonePlayer();
+                }
+                if (mRemotePlayer != null) {
+                    try {
+                        title = mRemotePlayer.getTitle(uri);
+                    } catch (RemoteException re) {
+                    }
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+                cursor = null;
+            }
+            if (title == null) {
+                title = uri.getLastPathSegment();
+            }
+        }
+    } else {
+        title = context.getString(com.android.internal.R.string.ringtone_silent);
+    }
+    if (title == null) {
+        title = context.getString(com.android.internal.R.string.ringtone_unknown);
+        if (title == null) {
+            title = "";
+        }
+    }
+    return title;
+}

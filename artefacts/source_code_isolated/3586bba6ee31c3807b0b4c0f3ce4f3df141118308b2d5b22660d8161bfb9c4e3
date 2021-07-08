@@ -1,0 +1,35 @@
+public MediaParser setParameter(@NonNull @ParameterName String parameterName, @NonNull Object value){
+    if (mExtractor != null) {
+        throw new IllegalStateException("setParameters() must be called before the first advance() call.");
+    }
+    Class expectedType = EXPECTED_TYPE_BY_PARAMETER_NAME.get(parameterName);
+    if (expectedType != null && !expectedType.isInstance(value)) {
+        throw new IllegalArgumentException(parameterName + " expects a " + expectedType.getSimpleName() + " but a " + value.getClass().getSimpleName() + " was passed.");
+    }
+    if (PARAMETER_TS_MODE.equals(parameterName) && !TS_MODE_SINGLE_PMT.equals(value) && !TS_MODE_HLS.equals(value) && !TS_MODE_MULTI_PMT.equals(value)) {
+        throw new IllegalArgumentException(PARAMETER_TS_MODE + " does not accept: " + value);
+    }
+    if (PARAMETER_IN_BAND_CRYPTO_INFO.equals(parameterName)) {
+        mInBandCryptoInfo = (boolean) value;
+    }
+    if (PARAMETER_INCLUDE_SUPPLEMENTAL_DATA.equals(parameterName)) {
+        mIncludeSupplementalData = (boolean) value;
+    }
+    if (PARAMETER_IGNORE_TIMESTAMP_OFFSET.equals(parameterName)) {
+        mIgnoreTimestampOffset = (boolean) value;
+    }
+    if (PARAMETER_EAGERLY_EXPOSE_TRACKTYPE.equals(parameterName)) {
+        mEagerlyExposeTrackType = (boolean) value;
+    }
+    if (PARAMETER_EXPOSE_DUMMY_SEEKMAP.equals(parameterName)) {
+        mExposeDummySeekMap = (boolean) value;
+    }
+    if (PARAMETER_EXPOSE_CHUNK_INDEX_AS_MEDIA_FORMAT.equals(parameterName)) {
+        mExposeChunkIndexAsMediaFormat = (boolean) value;
+    }
+    if (PARAMETER_EXPOSE_CAPTION_FORMATS.equals(parameterName)) {
+        setMuxedCaptionFormats((List<MediaFormat>) value);
+    }
+    mParserParameters.put(parameterName, value);
+    return this;
+}

@@ -1,0 +1,11 @@
+public byte readRawByte(){
+    if (mReadBufIndex > mBufferCount || (mReadBufIndex == mBufferCount - 1 && mReadIndex >= mReadLimit)) {
+        throw new IndexOutOfBoundsException("Trying to read too much data" + " mReadBufIndex=" + mReadBufIndex + " mBufferCount=" + mBufferCount + " mReadIndex=" + mReadIndex + " mReadLimit=" + mReadLimit);
+    }
+    if (mReadIndex >= mChunkSize) {
+        mReadBufIndex++;
+        mReadBuffer = mBuffers.get(mReadBufIndex);
+        mReadIndex = 0;
+    }
+    return mReadBuffer[mReadIndex++];
+}

@@ -1,0 +1,12 @@
+public void explicitCallTransfer() throws CallStateException{
+    ImsCall fgImsCall = mForegroundCall.getImsCall();
+    ImsCall bgImsCall = mBackgroundCall.getImsCall();
+    if ((fgImsCall == null) || (bgImsCall == null) || !canTransfer()) {
+        throw new CallStateException("cannot transfer");
+    }
+    try {
+        fgImsCall.consultativeTransfer(bgImsCall);
+    } catch (ImsException e) {
+        throw new CallStateException(e.getMessage());
+    }
+}

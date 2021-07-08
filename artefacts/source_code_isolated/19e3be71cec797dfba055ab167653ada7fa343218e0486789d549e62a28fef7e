@@ -1,0 +1,11 @@
+public void onDataPathConfirmNotification(int ndpId, byte[] mac, boolean accept, int reason, byte[] message, List<NanDataPathChannelInfo> channelInfo){
+    Message msg = mSm.obtainMessage(MESSAGE_TYPE_NOTIFICATION);
+    msg.arg1 = NOTIFICATION_TYPE_ON_DATA_PATH_CONFIRM;
+    msg.arg2 = ndpId;
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_MAC_ADDRESS, mac);
+    msg.getData().putBoolean(MESSAGE_BUNDLE_KEY_SUCCESS_FLAG, accept);
+    msg.getData().putInt(MESSAGE_BUNDLE_KEY_STATUS_CODE, reason);
+    msg.getData().putByteArray(MESSAGE_BUNDLE_KEY_MESSAGE_DATA, message);
+    msg.obj = channelInfo;
+    mSm.sendMessage(msg);
+}

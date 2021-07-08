@@ -1,0 +1,29 @@
+public int startUsingNetworkFeature(int networkType, String feature){
+    checkLegacyRoutingApiAccess();
+    NetworkCapabilities netCap = networkCapabilitiesForFeature(networkType, feature);
+    if (netCap == null) {
+        Log.d(TAG, "Can't satisfy startUsingNetworkFeature for " + networkType + ", " + feature);
+        return DEPRECATED_PHONE_CONSTANT_APN_REQUEST_FAILED;
+    }
+    NetworkRequest request = null;
+    synchronized (sLegacyRequests) {
+        LegacyRequest l = sLegacyRequests.get(netCap);
+        if (l != null) {
+            Log.d(TAG, "renewing startUsingNetworkFeature request " + l.networkRequest);
+            renewRequestLocked(l);
+            if (l.currentNetwork != null) {
+                return DEPRECATED_PHONE_CONSTANT_APN_ALREADY_ACTIVE;
+            } else {
+                return DEPRECATED_PHONE_CONSTANT_APN_REQUEST_STARTED;
+            }
+        }
+        request = requestNetworkForFeatureLocked(netCap);
+    }
+    if (request != null) {
+        Log.d(TAG, "starting startUsingNetworkFeature for request " + request);
+        return DEPRECATED_PHONE_CONSTANT_APN_REQUEST_STARTED;
+    } else {
+        Log.d(TAG, " request Failed");
+        return DEPRECATED_PHONE_CONSTANT_APN_REQUEST_FAILED;
+    }
+}

@@ -1,0 +1,29 @@
+public static SuspendDialogInfo restoreFromXml(XmlPullParser in){
+    final SuspendDialogInfo.Builder dialogInfoBuilder = new SuspendDialogInfo.Builder();
+    try {
+        final int iconId = XmlUtils.readIntAttribute(in, XML_ATTR_ICON_RES_ID, ID_NULL);
+        final int titleId = XmlUtils.readIntAttribute(in, XML_ATTR_TITLE_RES_ID, ID_NULL);
+        final int buttonTextId = XmlUtils.readIntAttribute(in, XML_ATTR_BUTTON_TEXT_RES_ID, ID_NULL);
+        final int buttonAction = XmlUtils.readIntAttribute(in, XML_ATTR_BUTTON_ACTION, BUTTON_ACTION_MORE_DETAILS);
+        final int dialogMessageResId = XmlUtils.readIntAttribute(in, XML_ATTR_DIALOG_MESSAGE_RES_ID, ID_NULL);
+        final String dialogMessage = XmlUtils.readStringAttribute(in, XML_ATTR_DIALOG_MESSAGE);
+        if (iconId != ID_NULL) {
+            dialogInfoBuilder.setIcon(iconId);
+        }
+        if (titleId != ID_NULL) {
+            dialogInfoBuilder.setTitle(titleId);
+        }
+        if (buttonTextId != ID_NULL) {
+            dialogInfoBuilder.setNeutralButtonText(buttonTextId);
+        }
+        if (dialogMessageResId != ID_NULL) {
+            dialogInfoBuilder.setMessage(dialogMessageResId);
+        } else if (dialogMessage != null) {
+            dialogInfoBuilder.setMessage(dialogMessage);
+        }
+        dialogInfoBuilder.setNeutralButtonAction(buttonAction);
+    } catch (Exception e) {
+        Slog.e(TAG, "Exception while parsing from xml. Some fields may default", e);
+    }
+    return dialogInfoBuilder.build();
+}

@@ -1,0 +1,11 @@
+public void addOnUnhandledKeyEventListener(OnUnhandledKeyEventListener listener){
+    ArrayList<OnUnhandledKeyEventListener> listeners = getListenerInfo().mUnhandledKeyListeners;
+    if (listeners == null) {
+        listeners = new ArrayList<>();
+        getListenerInfo().mUnhandledKeyListeners = listeners;
+    }
+    listeners.add(listener);
+    if (listeners.size() == 1 && mParent instanceof ViewGroup) {
+        ((ViewGroup) mParent).incrementChildUnhandledKeyListeners();
+    }
+}

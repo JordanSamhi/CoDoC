@@ -1,0 +1,11 @@
+public void terminate(int reason){
+    logi("terminate :: reason=" + reason);
+    synchronized (mLockObj) {
+        mHold = false;
+        mInCall = false;
+        mTerminationRequestPending = true;
+        if (mSession != null) {
+            mSession.terminate(reason);
+        }
+    }
+}

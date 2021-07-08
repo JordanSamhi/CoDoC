@@ -1,0 +1,10 @@
+public PowerStatePlatformSleepState getAndUpdatePlatformState(String name, long timeMs, int count){
+    PowerStatePlatformSleepState e = mPlatformLowPowerStats.get(name);
+    if (e == null) {
+        e = new PowerStatePlatformSleepState();
+        mPlatformLowPowerStats.put(name, e);
+    }
+    e.mTimeMs = timeMs;
+    e.mCount = count;
+    return e;
+}

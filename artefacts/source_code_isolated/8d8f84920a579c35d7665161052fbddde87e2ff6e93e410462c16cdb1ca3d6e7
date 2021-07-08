@@ -1,0 +1,18 @@
+public void onChange(boolean selfChange){
+    boolean previousSetupComplete = mUserBackupManagerService.isSetupComplete();
+    boolean newSetupComplete = getSetupCompleteSettingForUser(mContext, mUserId);
+    boolean resolvedSetupComplete = previousSetupComplete || newSetupComplete;
+    mUserBackupManagerService.setSetupComplete(resolvedSetupComplete);
+    if (MORE_DEBUG) {
+        Slog.d(TAG, "Setup complete change: was=" + previousSetupComplete + " new=" + newSetupComplete + " resolved=" + resolvedSetupComplete);
+    }
+    synchronized (mUserBackupManagerService.getQueueLock()) {
+        if (resolvedSetupComplete && !previousSetupComplete && mUserBackupManagerService.isEnabled()) {
+            if (MORE_DEBUG) {
+                Slog.d(TAG, "Setup complete so starting backups");
+            }
+            KeyValueBackupJob.schedule(mUserBackupManagerService.getUserId(), mContext, mUserBackupManagerService.getConstants());
+            mUserBackupManagerService.scheduleNextFullBackupJob(0);
+        }
+    }
+}

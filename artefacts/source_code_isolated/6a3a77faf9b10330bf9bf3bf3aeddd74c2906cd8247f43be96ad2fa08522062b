@@ -1,0 +1,18 @@
+public boolean equals(Object obj){
+    if (obj == null) {
+        return false;
+    } else if (this == obj) {
+        return true;
+    } else if (obj instanceof OutputConfiguration) {
+        final OutputConfiguration other = (OutputConfiguration) obj;
+        if (mRotation != other.mRotation || !mConfiguredSize.equals(other.mConfiguredSize) || mConfiguredFormat != other.mConfiguredFormat || mSurfaceGroupId != other.mSurfaceGroupId || mSurfaceType != other.mSurfaceType || mIsDeferredConfig != other.mIsDeferredConfig || mIsShared != other.mIsShared || mConfiguredFormat != other.mConfiguredFormat || mConfiguredDataspace != other.mConfiguredDataspace || mConfiguredGenerationId != other.mConfiguredGenerationId || !Objects.equals(mPhysicalCameraId, other.mPhysicalCameraId))
+            return false;
+        int minLen = Math.min(mSurfaces.size(), other.mSurfaces.size());
+        for (int i = 0; i < minLen; i++) {
+            if (mSurfaces.get(i) != other.mSurfaces.get(i))
+                return false;
+        }
+        return true;
+    }
+    return false;
+}

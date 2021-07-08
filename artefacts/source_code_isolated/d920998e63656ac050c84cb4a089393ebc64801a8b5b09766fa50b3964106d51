@@ -1,0 +1,23 @@
+public void notifyDisplayInfoChanged(int phoneId, int subId, @NonNull TelephonyDisplayInfo telephonyDisplayInfo){
+    if (!checkNotifyPermission("notifyDisplayInfoChanged()")) {
+        return;
+    }
+    if (VDBG) {
+        log("notifyDisplayInfoChanged: PhoneId=" + phoneId + " subId=" + subId + " telephonyDisplayInfo=" + telephonyDisplayInfo);
+    }
+    synchronized (mRecords) {
+        if (validatePhoneId(phoneId)) {
+            mTelephonyDisplayInfos[phoneId] = telephonyDisplayInfo;
+            for (Record r : mRecords) {
+                if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_DISPLAY_INFO_CHANGED) && idMatchWithoutDefaultPhoneCheck(r.subId, subId)) {
+                    try {
+                        r.callback.onDisplayInfoChanged(telephonyDisplayInfo);
+                    } catch (RemoteException ex) {
+                        mRemoveList.add(r.binder);
+                    }
+                }
+            }
+        }
+        handleRemoveListLocked();
+    }
+}

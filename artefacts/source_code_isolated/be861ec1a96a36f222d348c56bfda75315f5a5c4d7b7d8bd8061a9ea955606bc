@@ -1,0 +1,58 @@
+public ArrayList<ExportedCallStat> getExportedCallStats(){
+    if (!mDetailedTracking) {
+        return new ArrayList<>();
+    }
+    ArrayList<ExportedCallStat> resultCallStats = new ArrayList<>();
+    synchronized (mLock) {
+        final int uidEntriesSize = mUidEntries.size();
+        for (int entryIdx = 0; entryIdx < uidEntriesSize; entryIdx++) {
+            final UidEntry entry = mUidEntries.valueAt(entryIdx);
+            for (CallStat stat : entry.getCallStatsList()) {
+                ExportedCallStat exported = new ExportedCallStat();
+                exported.workSourceUid = entry.workSourceUid;
+                exported.callingUid = stat.callingUid;
+                exported.className = stat.binderClass.getName();
+                exported.binderClass = stat.binderClass;
+                exported.transactionCode = stat.transactionCode;
+                exported.screenInteractive = stat.screenInteractive;
+                exported.cpuTimeMicros = stat.cpuTimeMicros;
+                exported.maxCpuTimeMicros = stat.maxCpuTimeMicros;
+                exported.latencyMicros = stat.latencyMicros;
+                exported.maxLatencyMicros = stat.maxLatencyMicros;
+                exported.recordedCallCount = stat.recordedCallCount;
+                exported.callCount = stat.callCount;
+                exported.maxRequestSizeBytes = stat.maxRequestSizeBytes;
+                exported.maxReplySizeBytes = stat.maxReplySizeBytes;
+                exported.exceptionCount = stat.exceptionCount;
+                resultCallStats.add(exported);
+            }
+        }
+    }
+    ExportedCallStat previous = null;
+    Method getDefaultTransactionName = null;
+    String previousMethodName = null;
+    resultCallStats.sort(BinderCallsStats::compareByBinderClassAndCode);
+    for (ExportedCallStat exported : resultCallStats) {
+        final boolean isClassDifferent = previous == null || !previous.className.equals(exported.className);
+        if (isClassDifferent) {
+            getDefaultTransactionName = getDefaultTransactionNameMethod(exported.binderClass);
+        }
+        final boolean isCodeDifferent = previous == null || previous.transactionCode != exported.transactionCode;
+        final String methodName;
+        if (isClassDifferent || isCodeDifferent) {
+            String resolvedCode = resolveTransactionCode(getDefaultTransactionName, exported.transactionCode);
+            methodName = resolvedCode == null ? String.valueOf(exported.transactionCode) : resolvedCode;
+        } else {
+            methodName = previousMethodName;
+        }
+        previousMethodName = methodName;
+        exported.methodName = methodName;
+    }
+    if (mAddDebugEntries && mBatteryStopwatch != null) {
+        resultCallStats.add(createDebugEntry("start_time_millis", mStartElapsedTime));
+        resultCallStats.add(createDebugEntry("end_time_millis", SystemClock.elapsedRealtime()));
+        resultCallStats.add(createDebugEntry("battery_time_millis", mBatteryStopwatch.getMillis()));
+        resultCallStats.add(createDebugEntry("sampling_interval", mPeriodicSamplingInterval));
+    }
+    return resultCallStats;
+}

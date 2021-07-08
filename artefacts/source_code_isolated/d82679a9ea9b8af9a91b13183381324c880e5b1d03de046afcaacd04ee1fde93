@@ -1,0 +1,35 @@
+public synchronized void onRilSrvccStateChanged(int state){
+    List<Connection> handoverConnections = null;
+    if (mPhone.getImsPhone() != null) {
+        loge("onRilSrvccStateChanged: ImsPhone is null");
+    } else {
+        handoverConnections = mPhone.getImsPhone().getHandoverConnection();
+    }
+    List<Integer> imsConnIds;
+    if (handoverConnections == null) {
+        imsConnIds = getImsConnectionIds();
+        loge("onRilSrvccStateChanged: ImsPhone has no handover, we have %d", imsConnIds.size());
+    } else {
+        imsConnIds = handoverConnections.stream().map(VoiceCallSessionStats::getConnectionId).collect(Collectors.toList());
+    }
+    switch(state) {
+        case TelephonyManager.SRVCC_STATE_HANDOVER_COMPLETED:
+            for (int id : imsConnIds) {
+                VoiceCallSession proto = mCallProtos.get(id);
+                proto.srvccCompleted = true;
+                proto.bearerAtEnd = VOICE_CALL_SESSION__BEARER_AT_END__CALL_BEARER_CS;
+            }
+            break;
+        case TelephonyManager.SRVCC_STATE_HANDOVER_FAILED:
+            for (int id : imsConnIds) {
+                mCallProtos.get(id).srvccFailureCount++;
+            }
+            break;
+        case TelephonyManager.SRVCC_STATE_HANDOVER_CANCELED:
+            for (int id : imsConnIds) {
+                mCallProtos.get(id).srvccCancellationCount++;
+            }
+            break;
+        default:
+    }
+}

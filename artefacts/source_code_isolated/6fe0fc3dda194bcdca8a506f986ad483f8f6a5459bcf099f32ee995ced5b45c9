@@ -1,0 +1,12 @@
+public boolean setPhonebookAccessPermission(@AccessPermission int value){
+    final IBluetooth service = sService;
+    if (service == null) {
+        return false;
+    }
+    try {
+        return service.setPhonebookAccessPermission(this, value);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    }
+    return false;
+}

@@ -1,0 +1,10 @@
+public void registerForLockedRecordsLoaded(Handler h, int what, Object obj){
+    if (mDestroyed.get()) {
+        return;
+    }
+    Registrant r = new Registrant(h, what, obj);
+    mLockedRecordsLoadedRegistrants.add(r);
+    if (getLockedRecordsLoaded()) {
+        r.notifyRegistrant(new AsyncResult(null, null, null));
+    }
+}

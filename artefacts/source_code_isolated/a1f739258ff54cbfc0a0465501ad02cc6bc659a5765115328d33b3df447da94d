@@ -1,0 +1,14 @@
+public String describeFirstNonRequestableCapability(){
+    final long nonRequestable = (mNetworkCapabilities | mUnwantedNetworkCapabilities) & NON_REQUESTABLE_CAPABILITIES;
+    if (nonRequestable != 0) {
+        return capabilityNameOf(BitUtils.unpackBits(nonRequestable)[0]);
+    }
+    if (mLinkUpBandwidthKbps != 0 || mLinkDownBandwidthKbps != 0)
+        return "link bandwidth";
+    if (hasSignalStrength())
+        return "signalStrength";
+    if (isPrivateDnsBroken()) {
+        return "privateDnsBroken";
+    }
+    return null;
+}

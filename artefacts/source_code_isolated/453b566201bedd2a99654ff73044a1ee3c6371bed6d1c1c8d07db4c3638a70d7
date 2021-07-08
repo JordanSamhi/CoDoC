@@ -1,0 +1,25 @@
+public boolean reject(String peerAddress){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("reject"))
+            return false;
+        if (peerAddress == null) {
+            Log.e(TAG, "Cannot parse rejected peer's mac address.");
+            return false;
+        }
+        byte[] macAddress = null;
+        try {
+            macAddress = NativeUtil.macAddressToByteArray(peerAddress);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not parse peer mac address.", e);
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("reject(" + peerAddress + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.reject(macAddress));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

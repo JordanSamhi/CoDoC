@@ -1,0 +1,13 @@
+public int getNonDecorDisplayHeight(int fullWidth, int fullHeight, int rotation, int uiMode, DisplayCutout displayCutout){
+    int height = fullHeight;
+    if (hasNavigationBar()) {
+        final int navBarPosition = navigationBarPosition(fullWidth, fullHeight, rotation);
+        if (navBarPosition == NAV_BAR_BOTTOM) {
+            height -= getNavigationBarHeight(rotation, uiMode);
+        }
+    }
+    if (displayCutout != null) {
+        height -= displayCutout.getSafeInsetTop() + displayCutout.getSafeInsetBottom();
+    }
+    return height;
+}

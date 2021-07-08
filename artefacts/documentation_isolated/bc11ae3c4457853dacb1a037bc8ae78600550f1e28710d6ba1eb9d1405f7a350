@@ -1,0 +1,28 @@
+
+     * Called by a device or profile owner, or delegated certificate installer, to install a
+     * certificate and corresponding private key. All apps within the profile will be able to access
+     * the certificate and use the private key, given direct user approval.
+     *
+     * <p>Access to the installed credentials will not be granted to the caller of this API without
+     * direct user approval. This is for security - should a certificate installer become
+     * compromised, certificates it had already installed will be protected.
+     *
+     * <p>If the installer must have access to the credentials, call
+     * {@link #installKeyPair(ComponentName, PrivateKey, Certificate[], String, boolean)} instead.
+     *
+     * <p>Note: If the provided {@code alias} is of an existing alias, all former grants that apps
+     * have been given to access the key and certificates associated with this alias will be
+     * revoked.
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with, or
+     *            {@code null} if calling from a delegated certificate installer.
+     * @param privKey The private key to install.
+     * @param cert The certificate to install.
+     * @param alias The private key alias under which to install the certificate. If a certificate
+     * with that alias already exists, it will be overwritten.
+     * @return {@code true} if the keys were installed, {@code false} otherwise.
+     * @throws SecurityException if {@code admin} is not {@code null} and not a device or profile
+     *         owner.
+     * @see #setDelegatedScopes
+     * @see #DELEGATION_CERT_INSTALL
+     

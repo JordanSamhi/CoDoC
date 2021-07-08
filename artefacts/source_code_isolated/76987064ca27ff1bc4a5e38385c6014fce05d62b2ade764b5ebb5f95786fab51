@@ -1,0 +1,18 @@
+public Cursor swapCursor(Cursor newCursor){
+    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+        Log.v(TAG, "swapCursor old=" + (mCursor == null ? -1 : mCursor.getCount()) + "; new=" + (newCursor == null ? -1 : newCursor.getCount()));
+    }
+    if (newCursor == mCursor) {
+        return null;
+    }
+    Cursor oldCursor = mCursor;
+    mCursor = newCursor;
+    if (newCursor != null) {
+        mRowIDColumn = newCursor.getColumnIndex(PhotoContract.PhotoViewColumns.URI);
+    } else {
+        mRowIDColumn = -1;
+    }
+    setItemPosition();
+    notifyDataSetChanged();
+    return oldCursor;
+}

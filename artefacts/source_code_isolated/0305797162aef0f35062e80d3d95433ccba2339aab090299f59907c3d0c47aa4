@@ -1,0 +1,41 @@
+public static Intent restoreFromXml(XmlPullParser in) throws IOException, XmlPullParserException{
+    Intent intent = new Intent();
+    final int outerDepth = in.getDepth();
+    int attrCount = in.getAttributeCount();
+    for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
+        final String attrName = in.getAttributeName(attrNdx);
+        final String attrValue = in.getAttributeValue(attrNdx);
+        if (ATTR_ACTION.equals(attrName)) {
+            intent.setAction(attrValue);
+        } else if (ATTR_DATA.equals(attrName)) {
+            intent.setData(Uri.parse(attrValue));
+        } else if (ATTR_TYPE.equals(attrName)) {
+            intent.setType(attrValue);
+        } else if (ATTR_IDENTIFIER.equals(attrName)) {
+            intent.setIdentifier(attrValue);
+        } else if (ATTR_COMPONENT.equals(attrName)) {
+            intent.setComponent(ComponentName.unflattenFromString(attrValue));
+        } else if (ATTR_FLAGS.equals(attrName)) {
+            intent.setFlags(Integer.parseInt(attrValue, 16));
+        } else {
+            Log.e(TAG, "restoreFromXml: unknown attribute=" + attrName);
+        }
+    }
+    int event;
+    String name;
+    while (((event = in.next()) != XmlPullParser.END_DOCUMENT) && (event != XmlPullParser.END_TAG || in.getDepth() < outerDepth)) {
+        if (event == XmlPullParser.START_TAG) {
+            name = in.getName();
+            if (TAG_CATEGORIES.equals(name)) {
+                attrCount = in.getAttributeCount();
+                for (int attrNdx = attrCount - 1; attrNdx >= 0; --attrNdx) {
+                    intent.addCategory(in.getAttributeValue(attrNdx));
+                }
+            } else {
+                Log.w(TAG, "restoreFromXml: unknown name=" + name);
+                XmlUtils.skipCurrentTag(in);
+            }
+        }
+    }
+    return intent;
+}

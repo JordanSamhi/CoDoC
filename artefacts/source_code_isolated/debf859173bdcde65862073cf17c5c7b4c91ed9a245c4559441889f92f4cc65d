@@ -1,0 +1,14 @@
+public List<Sensor> getDynamicSensorList(int type){
+    final List<Sensor> fullList = getFullDynamicSensorList();
+    if (type == Sensor.TYPE_ALL) {
+        return Collections.unmodifiableList(fullList);
+    } else {
+        List<Sensor> list = new ArrayList();
+        for (Sensor i : fullList) {
+            if (i.getType() == type) {
+                list.add(i);
+            }
+        }
+        return Collections.unmodifiableList(list);
+    }
+}

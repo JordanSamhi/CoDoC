@@ -1,0 +1,11 @@
+public final void notifyIncomingCallSession(IImsCallSession c, Bundle extras){
+    IImsMmTelListener listener = getListener();
+    if (listener == null) {
+        throw new IllegalStateException("Session is not available.");
+    }
+    try {
+        listener.onIncomingCall(c, extras);
+    } catch (RemoteException e) {
+        throw new RuntimeException(e);
+    }
+}

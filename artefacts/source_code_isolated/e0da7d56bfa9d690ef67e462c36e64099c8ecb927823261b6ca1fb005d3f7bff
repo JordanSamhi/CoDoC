@@ -1,0 +1,22 @@
+public void binderDied(){
+    Log.w(TAG, "CameraDevice " + mCameraId + " died unexpectedly");
+    if (mRemoteDevice == null) {
+        return;
+    }
+    mInError = true;
+    Runnable r = new Runnable() {
+
+        @Override
+        public void run() {
+            if (!isClosed()) {
+                mDeviceCallback.onError(CameraDeviceImpl.this, StateCallback.ERROR_CAMERA_SERVICE);
+            }
+        }
+    };
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        CameraDeviceImpl.this.mDeviceExecutor.execute(r);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

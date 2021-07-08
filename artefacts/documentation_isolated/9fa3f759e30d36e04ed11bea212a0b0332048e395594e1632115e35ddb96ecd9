@@ -1,0 +1,28 @@
+
+     * Enable qemu tracing. For this to work requires running everything inside
+     * the qemu emulator; otherwise, this method will have no effect. The trace
+     * file is specified on the command line when the emulator is started. For
+     * example, the following command line <br />
+     * <code>emulator -trace foo</code><br />
+     * will start running the emulator and create a trace file named "foo". This
+     * method simply enables writing the trace records to the trace file.
+     *
+     * <p>
+     * The main differences between this and {@link #startMethodTracing()} are
+     * that tracing in the qemu emulator traces every cpu instruction of every
+     * process, including kernel code, so we have more complete information,
+     * including all context switches. We can also get more detailed information
+     * such as cache misses. The sequence of calls is determined by
+     * post-processing the instruction trace. The qemu tracing is also done
+     * without modifying the application or perturbing the timing of calls
+     * because no instrumentation is added to the application being traced.
+     * </p>
+     *
+     * <p>
+     * One limitation of using this method compared to using
+     * {@link #startMethodTracing()} on the real device is that the emulator
+     * does not model all of the real hardware effects such as memory and
+     * bus contention.  The emulator also has a simple cache model and cannot
+     * capture all the complexities of a real cache.
+     * </p>
+     

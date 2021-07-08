@@ -1,0 +1,8 @@
+public void register(@NonNull Context context, @Nullable Looper thread, @Nullable UserHandle user){
+    if (mRegisteredContext != null) {
+        throw new IllegalStateException("Already registered");
+    }
+    Handler handler = new Handler(thread == null ? getStaticLooper() : thread);
+    mRegisteredContext = user == null ? context : context.createContextAsUser(user, 0);
+    mRegisteredContext.registerReceiver(this, sPackageIntentFilter, null, handler);
+}

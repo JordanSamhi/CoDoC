@@ -1,0 +1,17 @@
+public WebContent getWebContentFromUrlWithRetry(URL url, long fileSizeLimit, int connectionTimeoutMillis, int backoffMillis, int retry) throws AssociationServiceException, IOException, InterruptedException{
+    if (retry <= 0) {
+        throw new IllegalArgumentException("retry should be a postive inetger.");
+    }
+    while (retry > 0) {
+        try {
+            return getWebContentFromUrl(url, fileSizeLimit, connectionTimeoutMillis);
+        } catch (IOException e) {
+            retry--;
+            if (retry == 0) {
+                throw e;
+            }
+        }
+        Thread.sleep(backoffMillis);
+    }
+    return null;
+}

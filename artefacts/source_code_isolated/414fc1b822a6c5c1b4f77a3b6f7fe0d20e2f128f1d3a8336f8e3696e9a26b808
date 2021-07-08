@@ -1,0 +1,16 @@
+public TlvConstructor allocateAndPut(@Nullable List<byte[]> list){
+    if (list != null) {
+        int size = 0;
+        for (byte[] field : list) {
+            size += mTypeSize + mLengthSize;
+            if (field != null) {
+                size += field.length;
+            }
+        }
+        allocate(size);
+        for (byte[] field : list) {
+            putByteArray(0, field);
+        }
+    }
+    return this;
+}

@@ -1,0 +1,15 @@
+public void destroy(){
+    if (mService != null) {
+        try {
+            mService.cancel(mListener, mContext.getOpPackageName(), mContext.getAttributionTag());
+        } catch (final RemoteException e) {
+        }
+    }
+    if (mConnection != null) {
+        mContext.unbindService(mConnection);
+    }
+    mPendingTasks.clear();
+    mService = null;
+    mConnection = null;
+    mListener.mInternalListener = null;
+}

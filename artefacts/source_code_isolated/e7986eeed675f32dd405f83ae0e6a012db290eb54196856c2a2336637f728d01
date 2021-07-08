@@ -1,0 +1,8 @@
+public static void startDataProfiling(Context context){
+    synchronized (sProfilingLock) {
+        if (sActiveProfilingStart != null) {
+            throw new IllegalStateException("already profiling data");
+        }
+        sActiveProfilingStart = getDataLayerSnapshotForUid(context);
+    }
+}

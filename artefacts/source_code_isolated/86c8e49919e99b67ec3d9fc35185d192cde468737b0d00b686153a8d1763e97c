@@ -1,0 +1,17 @@
+public boolean removeService(BluetoothGattService service){
+    if (DBG)
+        Log.d(TAG, "removeService() - service: " + service.getUuid());
+    if (mService == null || mServerIf == 0)
+        return false;
+    BluetoothGattService intService = getService(service.getUuid(), service.getInstanceId(), service.getType());
+    if (intService == null)
+        return false;
+    try {
+        mService.removeService(mServerIf, service.getInstanceId());
+        mServices.remove(intService);
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

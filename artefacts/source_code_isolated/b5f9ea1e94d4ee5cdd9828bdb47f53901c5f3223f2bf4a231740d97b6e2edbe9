@@ -1,0 +1,32 @@
+public void requestLoadAllAdnLike(int efid, int extensionEf, Message response){
+    ArrayList<Message> waiters;
+    ArrayList<AdnRecord> result;
+    if (efid == EF_PBR) {
+        result = mUsimPhoneBookManager.loadEfFilesFromUsim();
+    } else {
+        result = getRecordsIfLoaded(efid);
+    }
+    if (result != null) {
+        if (response != null) {
+            AsyncResult.forMessage(response).result = result;
+            response.sendToTarget();
+        }
+        return;
+    }
+    waiters = mAdnLikeWaiters.get(efid);
+    if (waiters != null) {
+        waiters.add(response);
+        return;
+    }
+    waiters = new ArrayList<Message>();
+    waiters.add(response);
+    mAdnLikeWaiters.put(efid, waiters);
+    if (extensionEf < 0) {
+        if (response != null) {
+            AsyncResult.forMessage(response).exception = new RuntimeException("EF is not known ADN-like EF:0x" + Integer.toHexString(efid).toUpperCase());
+            response.sendToTarget();
+        }
+        return;
+    }
+    new AdnRecordLoader(mFh).loadAllFromEF(efid, extensionEf, obtainMessage(EVENT_LOAD_ALL_ADN_LIKE_DONE, efid, 0));
+}

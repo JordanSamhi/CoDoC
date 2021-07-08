@@ -1,0 +1,5 @@
+public void setScanThrottleEnabled(boolean enable){
+    enforceNetworkSettingsPermission();
+    mLog.info("setScanThrottleEnabled uid=% verbose=%").c(Binder.getCallingUid()).c(enable).flush();
+    mWifiThreadRunner.post(() -> mScanRequestProxy.setScanThrottleEnabled(enable));
+}

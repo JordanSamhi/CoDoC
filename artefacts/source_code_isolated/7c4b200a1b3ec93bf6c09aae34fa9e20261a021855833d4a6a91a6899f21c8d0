@@ -1,0 +1,14 @@
+public boolean stopFind(){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("stopFind"))
+            return false;
+        SupplicantResult<Void> result = new SupplicantResult("stopFind()");
+        try {
+            result.setResult(mISupplicantP2pIface.stopFind());
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

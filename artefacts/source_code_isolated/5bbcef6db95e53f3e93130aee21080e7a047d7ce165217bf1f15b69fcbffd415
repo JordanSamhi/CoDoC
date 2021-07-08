@@ -1,0 +1,10 @@
+public static boolean isGrayscale(int color){
+    int alpha = 0xFF & (color >> 24);
+    if (alpha < ALPHA_TOLERANCE) {
+        return true;
+    }
+    int r = 0xFF & (color >> 16);
+    int g = 0xFF & (color >> 8);
+    int b = 0xFF & color;
+    return Math.abs(r - g) < TOLERANCE && Math.abs(r - b) < TOLERANCE && Math.abs(g - b) < TOLERANCE;
+}

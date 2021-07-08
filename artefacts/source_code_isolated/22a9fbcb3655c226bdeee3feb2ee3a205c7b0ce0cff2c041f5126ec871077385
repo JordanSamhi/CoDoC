@@ -1,0 +1,34 @@
+public static FontVariationAxis[] fromFontVariationSettings(@Nullable String settings){
+    if (settings == null || settings.isEmpty()) {
+        return null;
+    }
+    final ArrayList<FontVariationAxis> axisList = new ArrayList<>();
+    final int length = settings.length();
+    for (int i = 0; i < length; i++) {
+        final char c = settings.charAt(i);
+        if (Character.isWhitespace(c)) {
+            continue;
+        }
+        if (!(c == '\'' || c == '"') || length < i + 6 || settings.charAt(i + 5) != c) {
+            throw new IllegalArgumentException("Tag should be wrapped with double or single quote: " + settings);
+        }
+        final String tagString = settings.substring(i + 1, i + 5);
+        i += 6;
+        int endOfValueString = settings.indexOf(',', i);
+        if (endOfValueString == -1) {
+            endOfValueString = length;
+        }
+        final float value;
+        try {
+            value = Float.parseFloat(settings.substring(i, endOfValueString));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Failed to parse float string: " + e.getMessage());
+        }
+        axisList.add(new FontVariationAxis(tagString, value));
+        i = endOfValueString;
+    }
+    if (axisList.isEmpty()) {
+        return null;
+    }
+    return axisList.toArray(new FontVariationAxis[0]);
+}

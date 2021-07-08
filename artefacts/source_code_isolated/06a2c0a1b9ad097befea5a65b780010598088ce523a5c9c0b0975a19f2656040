@@ -1,0 +1,21 @@
+public void onExecuteWrite(String address, int status){
+    if (VDBG) {
+        Log.d(TAG, "onExecuteWrite() - Device=" + address + " status=" + status);
+    }
+    if (!address.equals(mDevice.getAddress())) {
+        return;
+    }
+    synchronized (mDeviceBusyLock) {
+        mDeviceBusy = false;
+    }
+    runOrQueueCallback(new Runnable() {
+
+        @Override
+        public void run() {
+            final BluetoothGattCallback callback = mCallback;
+            if (callback != null) {
+                callback.onReliableWriteCompleted(BluetoothGatt.this, status);
+            }
+        }
+    });
+}

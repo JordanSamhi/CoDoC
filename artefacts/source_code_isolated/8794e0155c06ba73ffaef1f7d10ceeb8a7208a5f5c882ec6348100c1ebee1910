@@ -1,0 +1,10 @@
+public void disableAutofillServices(){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    try {
+        mService.disableOwnedAutofillServices(mContext.getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

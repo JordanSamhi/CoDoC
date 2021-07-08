@@ -1,0 +1,8 @@
+public void writeRilSrvcc(int phoneId, int rilSrvccState){
+    InProgressCallSession callSession = mInProgressCallSessions.get(phoneId);
+    if (callSession == null) {
+        Rlog.e(TAG, "writeRilSrvcc: Call session is missing");
+    } else {
+        callSession.addEvent(new CallSessionEventBuilder(TelephonyCallSession.Event.Type.RIL_CALL_SRVCC).setSrvccState(rilSrvccState + 1));
+    }
+}

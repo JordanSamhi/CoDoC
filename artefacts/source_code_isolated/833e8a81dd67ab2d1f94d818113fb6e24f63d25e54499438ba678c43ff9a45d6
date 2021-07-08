@@ -1,0 +1,12 @@
+public void abortScan(@NonNull String ifaceName){
+    IWifiScannerImpl scannerImpl = getScannerImpl(ifaceName);
+    if (scannerImpl == null) {
+        Log.e(TAG, "No valid wificond scanner interface handler");
+        return;
+    }
+    try {
+        scannerImpl.abortScan();
+    } catch (RemoteException e1) {
+        Log.e(TAG, "Failed to request abortScan due to remote exception");
+    }
+}

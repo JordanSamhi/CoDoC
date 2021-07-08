@@ -1,0 +1,6 @@
+public static boolean checkAndNoteChangeNetworkStateOperation(Context context, int uid, String callingPackage, boolean throwException){
+    if (context.checkCallingOrSelfPermission(android.Manifest.permission.CHANGE_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED) {
+        return true;
+    }
+    return isCallingPackageAllowedToPerformAppOpsProtectedOperation(context, uid, callingPackage, throwException, AppOpsManager.OP_WRITE_SETTINGS, PM_CHANGE_NETWORK_STATE, true);
+}

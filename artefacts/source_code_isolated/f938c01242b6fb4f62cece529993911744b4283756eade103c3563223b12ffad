@@ -1,0 +1,34 @@
+public void onSearchComplete(String address, List<BluetoothGattService> services, int status){
+    if (DBG) {
+        Log.d(TAG, "onSearchComplete() = Device=" + address + " Status=" + status);
+    }
+    if (!address.equals(mDevice.getAddress())) {
+        return;
+    }
+    for (BluetoothGattService s : services) {
+        s.setDevice(mDevice);
+    }
+    mServices.addAll(services);
+    for (BluetoothGattService fixedService : mServices) {
+        ArrayList<BluetoothGattService> includedServices = new ArrayList(fixedService.getIncludedServices());
+        fixedService.getIncludedServices().clear();
+        for (BluetoothGattService brokenRef : includedServices) {
+            BluetoothGattService includedService = getService(mDevice, brokenRef.getUuid(), brokenRef.getInstanceId());
+            if (includedService != null) {
+                fixedService.addIncludedService(includedService);
+            } else {
+                Log.e(TAG, "Broken GATT database: can't find included service.");
+            }
+        }
+    }
+    runOrQueueCallback(new Runnable() {
+
+        @Override
+        public void run() {
+            final BluetoothGattCallback callback = mCallback;
+            if (callback != null) {
+                callback.onServicesDiscovered(BluetoothGatt.this, status);
+            }
+        }
+    });
+}

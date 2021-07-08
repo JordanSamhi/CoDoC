@@ -1,0 +1,21 @@
+public void updateDisplayColorTemperature(){
+    float ambientColorTemperature = -1.0f;
+    if (mAmbientColorTemperature == -1.0f && mPendingAmbientColorTemperature == -1.0f) {
+        ambientColorTemperature = mLastAmbientColorTemperature;
+    }
+    if (mPendingAmbientColorTemperature != -1.0f && mPendingAmbientColorTemperature != mAmbientColorTemperature) {
+        ambientColorTemperature = mPendingAmbientColorTemperature;
+    }
+    if (ambientColorTemperature == -1.0f) {
+        return;
+    }
+    mAmbientColorTemperature = ambientColorTemperature;
+    if (mLoggingEnabled) {
+        Slog.d(TAG, "ambient color temperature: " + mAmbientColorTemperature);
+    }
+    mPendingAmbientColorTemperature = -1.0f;
+    mAmbientColorTemperatureHistory.add(mAmbientColorTemperature);
+    Slog.d(TAG, "Display cct: " + mAmbientColorTemperature + " Latest ambient cct: " + mLatestAmbientColorTemperature + " Latest ambient lux: " + mLatestAmbientBrightness + " Latest low light bias: " + mLatestLowLightBias + " Latest high light bias: " + mLatestHighLightBias);
+    mColorDisplayServiceInternal.setDisplayWhiteBalanceColorTemperature((int) mAmbientColorTemperature);
+    mLastAmbientColorTemperature = mAmbientColorTemperature;
+}

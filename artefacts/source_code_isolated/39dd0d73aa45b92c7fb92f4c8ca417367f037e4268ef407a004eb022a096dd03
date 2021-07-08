@@ -1,0 +1,14 @@
+public void merge(WindowContainerTransaction other, boolean transfer){
+    for (int i = 0, n = other.mChanges.size(); i < n; ++i) {
+        final IBinder key = other.mChanges.keyAt(i);
+        Change existing = mChanges.get(key);
+        if (existing == null) {
+            existing = new Change();
+            mChanges.put(key, existing);
+        }
+        existing.merge(other.mChanges.valueAt(i), transfer);
+    }
+    for (int i = 0, n = other.mHierarchyOps.size(); i < n; ++i) {
+        mHierarchyOps.add(transfer ? other.mHierarchyOps.get(i) : new HierarchyOp(other.mHierarchyOps.get(i)));
+    }
+}

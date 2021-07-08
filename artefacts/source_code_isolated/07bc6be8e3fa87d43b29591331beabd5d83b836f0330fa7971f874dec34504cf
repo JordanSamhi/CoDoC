@@ -1,0 +1,11 @@
+public void sort(@NonNull Comparator<? super T> comparator){
+    synchronized (mLock) {
+        if (mOriginalValues != null) {
+            Collections.sort(mOriginalValues, comparator);
+        } else {
+            Collections.sort(mObjects, comparator);
+        }
+    }
+    if (mNotifyOnChange)
+        notifyDataSetChanged();
+}

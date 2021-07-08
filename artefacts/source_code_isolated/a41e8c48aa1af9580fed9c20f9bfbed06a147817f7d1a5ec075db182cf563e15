@@ -1,0 +1,46 @@
+public boolean decodeContentType(int startIndex){
+    int mediaPrefixLength;
+    mContentParameters = new HashMap<String, String>();
+    try {
+        if (decodeValueLength(startIndex) == false) {
+            boolean found = decodeConstrainedEncoding(startIndex);
+            if (found) {
+                expandWellKnownMimeType();
+            }
+            return found;
+        }
+        int headersLength = (int) mUnsigned32bit;
+        mediaPrefixLength = getDecodedDataLength();
+        if (decodeIntegerValue(startIndex + mediaPrefixLength) == true) {
+            mDataLength += mediaPrefixLength;
+            int readLength = mDataLength;
+            mStringValue = null;
+            expandWellKnownMimeType();
+            long wellKnownValue = mUnsigned32bit;
+            String mimeType = mStringValue;
+            if (readContentParameters(startIndex + mDataLength, (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
+                mDataLength += readLength;
+                mUnsigned32bit = wellKnownValue;
+                mStringValue = mimeType;
+                return true;
+            }
+            return false;
+        }
+        if (decodeExtensionMedia(startIndex + mediaPrefixLength) == true) {
+            mDataLength += mediaPrefixLength;
+            int readLength = mDataLength;
+            expandWellKnownMimeType();
+            long wellKnownValue = mUnsigned32bit;
+            String mimeType = mStringValue;
+            if (readContentParameters(startIndex + mDataLength, (headersLength - (mDataLength - mediaPrefixLength)), 0)) {
+                mDataLength += readLength;
+                mUnsigned32bit = wellKnownValue;
+                mStringValue = mimeType;
+                return true;
+            }
+        }
+    } catch (ArrayIndexOutOfBoundsException e) {
+        return false;
+    }
+    return false;
+}

@@ -1,0 +1,8 @@
+public void setStatus(@Nullable CharSequence status){
+    PrintService.throwIfNotCalledOnMainThread();
+    try {
+        mPrintServiceClient.setStatus(mCachedInfo.getId(), status);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error setting status for job: " + mCachedInfo.getId(), re);
+    }
+}

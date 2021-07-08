@@ -1,0 +1,13 @@
+public int findWindowIdLocked(int userId, @NonNull IBinder token){
+    final int globalIndex = mGlobalWindowTokens.indexOfValue(token);
+    if (globalIndex >= 0) {
+        return mGlobalWindowTokens.keyAt(globalIndex);
+    }
+    if (isValidUserForWindowTokensLocked(userId)) {
+        final int userIndex = getWindowTokensForUserLocked(userId).indexOfValue(token);
+        if (userIndex >= 0) {
+            return getWindowTokensForUserLocked(userId).keyAt(userIndex);
+        }
+    }
+    return -1;
+}

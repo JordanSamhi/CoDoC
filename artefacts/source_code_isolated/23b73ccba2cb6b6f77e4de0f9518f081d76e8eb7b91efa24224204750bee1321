@@ -1,0 +1,14 @@
+public void hide(){
+    if (mView.isAttachedToWindow()) {
+        mParent.removeView(mView);
+    }
+    if (mClient != null) {
+        try {
+            mClient.asBinder().unlinkToDeath(mKeyguardClientDeathRecipient, 0);
+        } catch (NoSuchElementException e) {
+            Log.w(TAG, "IKeyguardClient death recipient already released");
+        }
+        mContext.unbindService(mConnection);
+        mClient = null;
+    }
+}

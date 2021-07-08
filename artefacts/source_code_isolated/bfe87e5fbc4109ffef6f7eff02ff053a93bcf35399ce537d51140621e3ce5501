@@ -1,0 +1,8 @@
+public static HashingInfo fromByteArray(@NonNull byte[] bytes) throws IOException{
+    ByteBuffer buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+    final int hashAlgorithm = buffer.getInt();
+    final byte log2BlockSize = buffer.get();
+    byte[] salt = readBytes(buffer);
+    byte[] rawRootHash = readBytes(buffer);
+    return new HashingInfo(hashAlgorithm, log2BlockSize, salt, rawRootHash);
+}

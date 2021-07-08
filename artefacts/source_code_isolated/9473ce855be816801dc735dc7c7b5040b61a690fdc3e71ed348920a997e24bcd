@@ -1,0 +1,16 @@
+public void setForceScoAudio(boolean forced){
+    if (VDBG)
+        log("setForceScoAudio " + String.valueOf(forced));
+    final IBluetoothHeadset service = mService;
+    if (service != null && isEnabled()) {
+        try {
+            service.setForceScoAudio(forced);
+        } catch (RemoteException e) {
+            Log.e(TAG, e.toString());
+        }
+    } else {
+        Log.w(TAG, "Proxy not attached to service");
+        if (DBG)
+            Log.d(TAG, Log.getStackTraceString(new Throwable()));
+    }
+}

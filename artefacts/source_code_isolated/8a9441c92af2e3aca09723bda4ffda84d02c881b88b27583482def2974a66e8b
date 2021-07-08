@@ -1,0 +1,18 @@
+public void setBatteryStatus(boolean newPowered, int newLevel, boolean newBatteryLevelLow){
+    if (DEBUG) {
+        Slog.d(TAG, "setBatteryStatus: powered=" + newPowered + " level=" + newLevel + " low=" + newBatteryLevelLow);
+    }
+    synchronized (mLock) {
+        mBatteryStatusSet = true;
+        final boolean poweredChanged = mIsPowered != newPowered;
+        final boolean levelChanged = mBatteryLevel != newLevel;
+        final boolean lowChanged = mIsBatteryLevelLow != newBatteryLevelLow;
+        if (!(poweredChanged || levelChanged || lowChanged)) {
+            return;
+        }
+        mIsPowered = newPowered;
+        mBatteryLevel = newLevel;
+        mIsBatteryLevelLow = newBatteryLevelLow;
+        doAutoBatterySaverLocked();
+    }
+}

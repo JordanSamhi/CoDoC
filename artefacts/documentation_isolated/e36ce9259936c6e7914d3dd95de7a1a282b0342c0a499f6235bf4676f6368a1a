@@ -1,0 +1,24 @@
+
+     * Ask the system track that time the user spends in the app being launched, and
+     * report it back once done.  The report will be sent to the given receiver, with
+     * the extras {@link #EXTRA_USAGE_TIME_REPORT} and {@link #EXTRA_USAGE_TIME_REPORT_PACKAGES}
+     * filled in.
+     *
+     * <p>The time interval tracked is from launching this activity until the user leaves
+     * that activity's flow.  They are considered to stay in the flow as long as
+     * new activities are being launched or returned to from the original flow,
+     * even if this crosses package or task boundaries.  For example, if the originator
+     * starts an activity to view an image, and while there the user selects to share,
+     * which launches their email app in a new task, and they complete the share, the
+     * time during that entire operation will be included until they finally hit back from
+     * the original image viewer activity.</p>
+     *
+     * <p>The user is considered to complete a flow once they switch to another
+     * activity that is not part of the tracked flow.  This may happen, for example, by
+     * using the notification shade, launcher, or recents to launch or switch to another
+     * app.  Simply going in to these navigation elements does not break the flow (although
+     * the launcher and recents stops time tracking of the session); it is the act of
+     * going somewhere else that completes the tracking.</p>
+     *
+     * @param receiver A broadcast receiver that willl receive the report.
+     

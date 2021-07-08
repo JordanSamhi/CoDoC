@@ -1,0 +1,27 @@
+public void notifyRemovedLocked(NotificationRecord r, int reason, NotificationStats notificationStats){
+    final StatusBarNotification sbn = r.getSbn();
+    final StatusBarNotification sbnLight = sbn.cloneLight();
+    for (final ManagedServiceInfo info : getServices()) {
+        if (!isVisibleToListener(sbn, info)) {
+            continue;
+        }
+        if (r.isHidden() && reason != REASON_PACKAGE_SUSPENDED && info.targetSdkVersion < Build.VERSION_CODES.P) {
+            continue;
+        }
+        if (reason == REASON_PACKAGE_SUSPENDED && info.targetSdkVersion >= Build.VERSION_CODES.P) {
+            continue;
+        }
+        final NotificationStats stats = mAssistants.isServiceTokenValidLocked(info.service) ? notificationStats : null;
+        final NotificationRankingUpdate update = makeRankingUpdateLocked(info);
+        mHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                notifyRemoved(info, sbnLight, update, stats, reason);
+            }
+        });
+    }
+    mHandler.post(() -> {
+        updateUriPermissions(null, r, null, UserHandle.USER_SYSTEM);
+    });
+}

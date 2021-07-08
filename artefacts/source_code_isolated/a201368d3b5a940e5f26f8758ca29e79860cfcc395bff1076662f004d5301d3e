@@ -1,0 +1,7 @@
+public static SecretKey unwrapTertiaryKey(RecoverableKeyStoreSecondaryKeyManagerProvider secondaryKeyManagerProvider, String secondaryKeyAlias, WrappedKeyProto.WrappedKey wrappedTertiaryKey) throws KeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException{
+    Optional<RecoverableKeyStoreSecondaryKey> secondaryKey = getSecondaryKey(secondaryKeyManagerProvider, secondaryKeyAlias);
+    if (!secondaryKey.isPresent()) {
+        throw new KeyException("No key:" + secondaryKeyAlias);
+    }
+    return KeyWrapUtils.unwrap(secondaryKey.get().getSecretKey(), wrappedTertiaryKey);
+}

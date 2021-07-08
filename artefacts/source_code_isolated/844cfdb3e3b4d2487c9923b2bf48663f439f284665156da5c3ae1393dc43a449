@@ -1,0 +1,15 @@
+public Range<Integer>[] getHighSpeedVideoFpsRangesFor(Size size){
+    Integer fpsRangeCount = mHighSpeedVideoSizeMap.get(size);
+    if (fpsRangeCount == null || fpsRangeCount == 0) {
+        throw new IllegalArgumentException(String.format("Size %s does not support high speed video recording", size));
+    }
+    @SuppressWarnings("unchecked")
+    Range<Integer>[] fpsRanges = new Range[fpsRangeCount];
+    int i = 0;
+    for (HighSpeedVideoConfiguration config : mHighSpeedVideoConfigurations) {
+        if (size.equals(config.getSize())) {
+            fpsRanges[i++] = config.getFpsRange();
+        }
+    }
+    return fpsRanges;
+}

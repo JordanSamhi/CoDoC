@@ -1,0 +1,21 @@
+public int estimatePercentInternetAvailability(){
+    int trials = 2;
+    int successes = 1;
+    for (PerSignal s : mSignalForEventAndFrequency.values()) {
+        switch(s.event) {
+            case IP_CONFIGURATION_SUCCESS:
+                if (s.elapsedMs != null) {
+                    trials += s.elapsedMs.count;
+                }
+                break;
+            case VALIDATION_SUCCESS:
+                if (s.elapsedMs != null) {
+                    successes += s.elapsedMs.count;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return Math.min(Math.max(Math.round(successes * 100.0f / trials), 0), 100);
+}

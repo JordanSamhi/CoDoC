@@ -1,0 +1,11 @@
+public Builder setDevice(@NonNull AudioDeviceInfo device) throws IllegalArgumentException{
+    if (device == null) {
+        throw new IllegalArgumentException("Illegal null AudioDeviceInfo argument");
+    }
+    if (!device.isSink()) {
+        throw new IllegalArgumentException("Unsupported device type on mix, not a sink");
+    }
+    mDeviceSystemType = AudioDeviceInfo.convertDeviceTypeToInternalDevice(device.getType());
+    mDeviceAddress = device.getAddress();
+    return this;
+}

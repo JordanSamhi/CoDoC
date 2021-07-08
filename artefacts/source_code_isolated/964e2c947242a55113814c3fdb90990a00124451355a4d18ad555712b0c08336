@@ -1,0 +1,59 @@
+public boolean advance(@NonNull SeekableInputReader seekableInputReader) throws IOException{
+    if (mExtractorInput == null) {
+        mExtractorInput = new DefaultExtractorInput(mExoDataReader, seekableInputReader.getPosition(), seekableInputReader.getLength());
+    }
+    mExoDataReader.mInputReader = seekableInputReader;
+    if (mExtractor == null) {
+        mPendingExtractorInit = true;
+        if (!mParserName.equals(PARSER_NAME_UNKNOWN)) {
+            mExtractor = createExtractor(mParserName);
+        } else {
+            for (String parserName : mParserNamesPool) {
+                Extractor extractor = createExtractor(parserName);
+                try {
+                    if (extractor.sniff(mExtractorInput)) {
+                        mParserName = parserName;
+                        mExtractor = extractor;
+                        mPendingExtractorInit = true;
+                        break;
+                    }
+                } catch (EOFException e) {
+                } finally {
+                    mExtractorInput.resetPeekPosition();
+                }
+            }
+            if (mExtractor == null) {
+                throw UnrecognizedInputFormatException.createForExtractors(mParserNamesPool);
+            }
+            return true;
+        }
+    }
+    if (mPendingExtractorInit) {
+        if (mExposeDummySeekMap) {
+            mOutputConsumer.onSeekMapFound(SeekMap.DUMMY);
+        }
+        mExtractor.init(new ExtractorOutputAdapter());
+        mPendingExtractorInit = false;
+        return true;
+    }
+    if (isPendingSeek()) {
+        mExtractor.seek(mPendingSeekPosition, mPendingSeekTimeMicros);
+        removePendingSeek();
+    }
+    mPositionHolder.position = seekableInputReader.getPosition();
+    int result;
+    try {
+        result = mExtractor.read(mExtractorInput, mPositionHolder);
+    } catch (ParserException e) {
+        throw new ParsingException(e);
+    }
+    if (result == Extractor.RESULT_END_OF_INPUT) {
+        mExtractorInput = null;
+        return false;
+    }
+    if (result == Extractor.RESULT_SEEK) {
+        mExtractorInput = null;
+        seekableInputReader.seekToPosition(mPositionHolder.position);
+    }
+    return true;
+}

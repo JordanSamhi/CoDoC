@@ -1,0 +1,11 @@
+public ParseResult take(){
+    try {
+        if (mInterruptedInThread != null) {
+            throw new InterruptedException("Interrupted in " + mInterruptedInThread);
+        }
+        return mQueue.take();
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new IllegalStateException(e);
+    }
+}

@@ -1,0 +1,11 @@
+public void startKeepAliveProcess(int interval, SipProfile peerProfile, KeepAliveProcessCallback callback) throws SipException{
+    synchronized (SipSessionGroup.this) {
+        if (mSipKeepAlive != null) {
+            throw new SipException("Cannot create more than one " + "keepalive process in a SipSession");
+        }
+        mPeerProfile = peerProfile;
+        mSipKeepAlive = new SipKeepAlive();
+        mProxy.setListener(mSipKeepAlive);
+        mSipKeepAlive.start(interval, callback);
+    }
+}

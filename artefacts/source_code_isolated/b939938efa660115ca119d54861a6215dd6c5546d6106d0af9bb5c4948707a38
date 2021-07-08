@@ -1,0 +1,9 @@
+public void open(){
+    synchronized (this) {
+        boolean old = mCondition;
+        mCondition = true;
+        if (!old) {
+            this.notifyAll();
+        }
+    }
+}

@@ -1,0 +1,12 @@
+public int getWallpaperIdForUser(@SetWallpaperFlags int which, int userId){
+    try {
+        if (sGlobals.mService == null) {
+            Log.w(TAG, "WallpaperService not running");
+            throw new RuntimeException(new DeadSystemException());
+        } else {
+            return sGlobals.mService.getWallpaperIdForUser(which, userId);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

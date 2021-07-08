@@ -1,0 +1,21 @@
+public static TextLine recycle(TextLine tl){
+    tl.mText = null;
+    tl.mPaint = null;
+    tl.mDirections = null;
+    tl.mSpanned = null;
+    tl.mTabs = null;
+    tl.mChars = null;
+    tl.mComputed = null;
+    tl.mMetricAffectingSpanSpanSet.recycle();
+    tl.mCharacterStyleSpanSet.recycle();
+    tl.mReplacementSpanSpanSet.recycle();
+    synchronized (sCached) {
+        for (int i = 0; i < sCached.length; ++i) {
+            if (sCached[i] == null) {
+                sCached[i] = tl;
+                break;
+            }
+        }
+    }
+    return null;
+}

@@ -1,0 +1,11 @@
+public Intent createShortcutResultIntent(@NonNull ShortcutInfo inShortcut, int userId){
+    final int launcherUserId = mService.getParentOrSelfUserId(userId);
+    final ComponentName defaultLauncher = mService.getDefaultLauncher(launcherUserId);
+    if (defaultLauncher == null) {
+        Log.e(TAG, "Default launcher not found.");
+        return null;
+    }
+    mService.throwIfUserLockedL(launcherUserId);
+    final PinItemRequest request = requestPinShortcutLocked(inShortcut, null, Pair.create(defaultLauncher, launcherUserId));
+    return new Intent().putExtra(LauncherApps.EXTRA_PIN_ITEM_REQUEST, request);
+}

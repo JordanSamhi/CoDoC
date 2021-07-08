@@ -1,0 +1,10 @@
+public PhoneAccountHandle getUserSelectedOutgoingPhoneAccount(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getUserSelectedOutgoingPhoneAccount(mContext.getOpPackageName());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getUserSelectedOutgoingPhoneAccount", e);
+    }
+    return null;
+}

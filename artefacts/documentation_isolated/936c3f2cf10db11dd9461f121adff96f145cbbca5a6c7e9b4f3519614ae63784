@@ -1,0 +1,35 @@
+
+         * Developer-provided extras handed back when sync actually occurs. This bundle is copied
+         * into the SyncRequest returned by {@link #build()}.
+         *
+         * Example:
+         * <pre>
+         *   String[] syncItems = {"dog", "cat", "frog", "child"};
+         *   SyncRequest.Builder builder =
+         *     new SyncRequest.Builder()
+         *       .setSyncAdapter(dummyAccount, dummyProvider)
+         *       .syncOnce();
+         *
+         *   for (String syncData : syncItems) {
+         *     Bundle extras = new Bundle();
+         *     extras.setString("data", syncData);
+         *     builder.setExtras(extras);
+         *     ContentResolver.sync(builder.build()); // Each sync() request creates a unique sync.
+         *   }
+         * </pre>
+         * Only values of the following types may be used in the extras bundle:
+         * <ul>
+         * <li>Integer</li>
+         * <li>Long</li>
+         * <li>Boolean</li>
+         * <li>Float</li>
+         * <li>Double</li>
+         * <li>String</li>
+         * <li>Account</li>
+         * <li>null</li>
+         * </ul>
+         * If any data is present in the bundle not of this type, build() will
+         * throw a runtime exception.
+         *
+         * @param bundle extras bundle to set.
+         

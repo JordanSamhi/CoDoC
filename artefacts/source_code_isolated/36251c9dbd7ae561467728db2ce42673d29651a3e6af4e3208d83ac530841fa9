@@ -1,0 +1,13 @@
+public final void draw(Canvas canvas){
+    mPrivateFlags = (mPrivateFlags & ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;
+    if (canvas.isHardwareAccelerated()) {
+        RecordingCanvas recordingCanvas = (RecordingCanvas) canvas;
+        TextureLayer layer = getTextureLayer();
+        if (layer != null) {
+            applyUpdate();
+            applyTransformMatrix();
+            mLayer.setLayerPaint(mLayerPaint);
+            recordingCanvas.drawTextureLayer(layer);
+        }
+    }
+}

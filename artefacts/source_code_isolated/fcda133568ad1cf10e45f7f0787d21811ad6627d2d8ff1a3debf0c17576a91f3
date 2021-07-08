@@ -1,0 +1,24 @@
+public void addOnWifiUsabilityStatsListener(@NonNull @CallbackExecutor Executor executor, @NonNull OnWifiUsabilityStatsListener listener){
+    if (executor == null)
+        throw new IllegalArgumentException("executor cannot be null");
+    if (listener == null)
+        throw new IllegalArgumentException("listener cannot be null");
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "addOnWifiUsabilityStatsListener: listener=" + listener);
+    }
+    try {
+        mService.addOnWifiUsabilityStatsListener(new Binder(), new IOnWifiUsabilityStatsListener.Stub() {
+
+            @Override
+            public void onWifiUsabilityStats(int seqNum, boolean isSameBssidAndFreq, WifiUsabilityStatsEntry stats) {
+                if (mVerboseLoggingEnabled) {
+                    Log.v(TAG, "OnWifiUsabilityStatsListener: " + "onWifiUsabilityStats: seqNum=" + seqNum);
+                }
+                Binder.clearCallingIdentity();
+                executor.execute(() -> listener.onWifiUsabilityStats(seqNum, isSameBssidAndFreq, stats));
+            }
+        }, listener.hashCode());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

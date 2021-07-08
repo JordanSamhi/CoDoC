@@ -1,0 +1,12 @@
+public void stopConnectedNetworkScorer(){
+    mNetworkAgent = null;
+    if (mWifiConnectedNetworkScorerHolder == null) {
+        return;
+    }
+    mWifiConnectedNetworkScorerHolder.stopSession();
+    long millis = mClock.getWallClockMillis();
+    if ((mLastScoreBreachLowTimeMillis != INVALID_WALL_CLOCK_MILLIS) && ((millis - mLastScoreBreachLowTimeMillis) >= MIN_TIME_TO_WAIT_BEFORE_BLOCKLIST_BSSID_MILLIS)) {
+        mBssidBlocklistMonitor.blockBssidForDurationMs(mWifiInfo.getBSSID(), mWifiInfo.getSSID(), DURATION_TO_BLOCKLIST_BSSID_AFTER_FIRST_EXITING_MILLIS);
+        mLastScoreBreachLowTimeMillis = INVALID_WALL_CLOCK_MILLIS;
+    }
+}

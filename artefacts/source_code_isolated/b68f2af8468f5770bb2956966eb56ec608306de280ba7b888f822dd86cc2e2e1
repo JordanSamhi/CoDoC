@@ -1,0 +1,5 @@
+public static EncryptedFullBackupTask newInstance(Context context, CryptoBackupServer cryptoBackupServer, SecureRandom secureRandom, RecoverableKeyStoreSecondaryKey secondaryKey, String packageName, InputStream inputStream) throws IOException{
+    EncryptedBackupTask encryptedBackupTask = new EncryptedBackupTask(cryptoBackupServer, secureRandom, packageName, new BackupStreamEncrypter(inputStream, MIN_CHUNK_SIZE_BYTES, MAX_CHUNK_SIZE_BYTES, AVERAGE_CHUNK_SIZE_BYTES));
+    TertiaryKeyManager tertiaryKeyManager = new TertiaryKeyManager(context, secureRandom, TertiaryKeyRotationScheduler.getInstance(context), secondaryKey, packageName);
+    return new EncryptedFullBackupTask(ProtoStore.createChunkListingStore(context), tertiaryKeyManager, encryptedBackupTask, inputStream, packageName, new SecureRandom());
+}

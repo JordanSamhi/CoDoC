@@ -1,0 +1,15 @@
+public BulkCursorDescriptor getBulkCursorDescriptor(){
+    synchronized (mLock) {
+        throwIfCursorIsClosed();
+        BulkCursorDescriptor d = new BulkCursorDescriptor();
+        d.cursor = this;
+        d.columnNames = mCursor.getColumnNames();
+        d.wantsAllOnMoveCalls = mCursor.getWantsAllOnMoveCalls();
+        d.count = mCursor.getCount();
+        d.window = mCursor.getWindow();
+        if (d.window != null) {
+            d.window.acquireReference();
+        }
+        return d;
+    }
+}

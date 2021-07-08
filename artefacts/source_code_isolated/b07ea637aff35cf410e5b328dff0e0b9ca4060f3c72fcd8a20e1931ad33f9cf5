@@ -1,0 +1,17 @@
+public void createAllInterfaces(){
+    if (mDbg)
+        Log.v(TAG, "createAllInterfaces");
+    if (mMgr.getCapabilities() == null) {
+        Log.e(TAG, "createAllInterfaces: capabilities aren't initialized yet!");
+        return;
+    }
+    for (int i = 0; i < mMgr.getCapabilities().maxNdiInterfaces; ++i) {
+        String name = AWARE_INTERFACE_PREFIX + i;
+        if (mInterfaces.contains(name)) {
+            Log.e(TAG, "createAllInterfaces(): interface already up, " + name + ", possibly failed to delete - deleting/creating again to be safe");
+            mMgr.deleteDataPathInterface(name);
+            mInterfaces.remove(name);
+        }
+        mMgr.createDataPathInterface(name);
+    }
+}

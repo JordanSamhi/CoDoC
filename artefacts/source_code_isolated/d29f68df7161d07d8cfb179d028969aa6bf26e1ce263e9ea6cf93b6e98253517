@@ -1,0 +1,15 @@
+public static Sampler CLAMP_LINEAR(RenderScript rs){
+    if (rs.mSampler_CLAMP_LINEAR == null) {
+        synchronized (rs) {
+            if (rs.mSampler_CLAMP_LINEAR == null) {
+                Builder b = new Builder(rs);
+                b.setMinification(Value.LINEAR);
+                b.setMagnification(Value.LINEAR);
+                b.setWrapS(Value.CLAMP);
+                b.setWrapT(Value.CLAMP);
+                rs.mSampler_CLAMP_LINEAR = b.create();
+            }
+        }
+    }
+    return rs.mSampler_CLAMP_LINEAR;
+}

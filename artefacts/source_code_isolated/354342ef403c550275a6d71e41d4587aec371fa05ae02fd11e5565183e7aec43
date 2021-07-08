@@ -1,0 +1,14 @@
+public int getMarginEnd(){
+    if (endMargin != DEFAULT_MARGIN_RELATIVE)
+        return endMargin;
+    if ((mMarginFlags & NEED_RESOLUTION_MASK) == NEED_RESOLUTION_MASK) {
+        doResolveMargins();
+    }
+    switch(mMarginFlags & LAYOUT_DIRECTION_MASK) {
+        case View.LAYOUT_DIRECTION_RTL:
+            return leftMargin;
+        case View.LAYOUT_DIRECTION_LTR:
+        default:
+            return rightMargin;
+    }
+}

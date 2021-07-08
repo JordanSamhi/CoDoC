@@ -1,0 +1,9 @@
+public ApplicationInfo generate(AndroidPackage pkg, @PackageManager.ApplicationInfoFlags int flags, PackageUserState state, int userId, @Nullable PackageSetting pkgSetting){
+    ApplicationInfo appInfo = mCache.get(pkg.getPackageName());
+    if (appInfo != null) {
+        return appInfo;
+    }
+    appInfo = PackageInfoUtils.generateApplicationInfo(pkg, flags, state, userId, pkgSetting);
+    mCache.put(pkg.getPackageName(), appInfo);
+    return appInfo;
+}

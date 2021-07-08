@@ -1,0 +1,14 @@
+public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen){
+    final int newLidState = lidOpen ? LID_OPEN : LID_CLOSED;
+    if (newLidState == mDefaultDisplayPolicy.getLidState()) {
+        return;
+    }
+    mDefaultDisplayPolicy.setLidState(newLidState);
+    applyLidSwitchState();
+    updateRotation(true);
+    if (lidOpen) {
+        wakeUp(SystemClock.uptimeMillis(), mAllowTheaterModeWakeFromLidSwitch, PowerManager.WAKE_REASON_LID, "android.policy:LID");
+    } else if (getLidBehavior() != LID_BEHAVIOR_SLEEP) {
+        mPowerManager.userActivity(SystemClock.uptimeMillis(), false);
+    }
+}

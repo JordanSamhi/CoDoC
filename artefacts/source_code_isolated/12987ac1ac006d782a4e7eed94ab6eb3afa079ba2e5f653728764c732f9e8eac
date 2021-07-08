@@ -1,0 +1,12 @@
+public String getUserName(){
+    if (UserHandle.myUserId() == mUserId) {
+        try {
+            return mService.getUserName();
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    } else {
+        UserInfo userInfo = getUserInfo(mUserId);
+        return userInfo == null ? "" : userInfo.name;
+    }
+}

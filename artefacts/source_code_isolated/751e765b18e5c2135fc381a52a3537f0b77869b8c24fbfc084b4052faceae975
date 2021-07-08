@@ -1,0 +1,11 @@
+public int getImportance(int uid){
+    synchronized (this) {
+        Preconditions.checkState(mActivityManager != null);
+    }
+    long identity = Binder.clearCallingIdentity();
+    try {
+        return mActivityManager.getUidImportance(uid);
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

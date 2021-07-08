@@ -1,0 +1,8 @@
+public void startActivity(@NonNull PendingIntent pendingIntent, @Nullable Intent fillInIntent, @NonNull ActivityOptions options){
+    prepareActivityOptions(options);
+    try {
+        pendingIntent.send(mContext, 0, fillInIntent, null, null, null, options.toBundle());
+    } catch (PendingIntent.CanceledException e) {
+        throw new RuntimeException(e);
+    }
+}

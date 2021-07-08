@@ -1,0 +1,8 @@
+public void addDnsResult(int eventType, int returnCode, int latencyMs){
+    if (pendingSummary == null) {
+        pendingSummary = new Summary(netId, transports);
+    }
+    boolean isSuccess = dnsMetrics.addResult((byte) eventType, (byte) returnCode, latencyMs);
+    pendingSummary.dnsLatencies.count(latencyMs);
+    pendingSummary.dnsErrorRate.count(isSuccess ? 0 : 1);
+}

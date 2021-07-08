@@ -1,0 +1,19 @@
+public void notifyTimeShiftStatusChanged(@TvInputManager.TimeShiftStatus final int status){
+    executeOrPostRunnableOnMainThread(new Runnable() {
+
+        @MainThread
+        @Override
+        public void run() {
+            timeShiftEnablePositionTracking(status == TvInputManager.TIME_SHIFT_STATUS_AVAILABLE);
+            try {
+                if (DEBUG)
+                    Log.d(TAG, "notifyTimeShiftStatusChanged");
+                if (mSessionCallback != null) {
+                    mSessionCallback.onTimeShiftStatusChanged(status);
+                }
+            } catch (RemoteException e) {
+                Log.w(TAG, "error in notifyTimeShiftStatusChanged", e);
+            }
+        }
+    });
+}

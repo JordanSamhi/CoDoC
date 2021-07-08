@@ -1,0 +1,21 @@
+public final boolean equals(Object o){
+    if (this == o) {
+        return true;
+    }
+    if (o == null || this.hashCode() != o.hashCode()) {
+        return false;
+    }
+    Key<?> lhs;
+    if (o instanceof CaptureResult.Key) {
+        lhs = ((CaptureResult.Key) o).getNativeKey();
+    } else if (o instanceof CaptureRequest.Key) {
+        lhs = ((CaptureRequest.Key) o).getNativeKey();
+    } else if (o instanceof CameraCharacteristics.Key) {
+        lhs = ((CameraCharacteristics.Key) o).getNativeKey();
+    } else if ((o instanceof Key)) {
+        lhs = (Key<?>) o;
+    } else {
+        return false;
+    }
+    return mName.equals(lhs.mName) && mTypeReference.equals(lhs.mTypeReference);
+}

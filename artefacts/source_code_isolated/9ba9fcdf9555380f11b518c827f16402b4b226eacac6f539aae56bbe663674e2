@@ -1,0 +1,19 @@
+public ParcelFileDescriptor openAccessory(UsbAccessory accessory){
+    if (mDeviceManager != null) {
+        int uid = Binder.getCallingUid();
+        int user = UserHandle.getUserId(uid);
+        long ident = clearCallingIdentity();
+        try {
+            synchronized (mLock) {
+                if (mUserManager.isSameProfileGroup(user, mCurrentUserId)) {
+                    return mDeviceManager.openAccessory(accessory, getPermissionsForUser(user), uid);
+                } else {
+                    Slog.w(TAG, "Cannot open " + accessory + " for user " + user + " as user is not active.");
+                }
+            }
+        } finally {
+            restoreCallingIdentity(ident);
+        }
+    }
+    return null;
+}

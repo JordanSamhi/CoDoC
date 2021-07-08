@@ -1,0 +1,15 @@
+public Drawable getIcon(int density){
+    final int iconRes = mActivityInfo.getIconResource();
+    Drawable icon = null;
+    if (density != 0 && iconRes != 0) {
+        try {
+            final Resources resources = mPm.getResourcesForApplication(mActivityInfo.applicationInfo);
+            icon = resources.getDrawableForDensity(iconRes, density);
+        } catch (NameNotFoundException | Resources.NotFoundException exc) {
+        }
+    }
+    if (icon == null) {
+        icon = mActivityInfo.loadIcon(mPm);
+    }
+    return icon;
+}

@@ -1,0 +1,21 @@
+public boolean pageScroll(int direction){
+    boolean right = direction == View.FOCUS_RIGHT;
+    int width = getWidth();
+    if (right) {
+        mTempRect.left = getScrollX() + width;
+        int count = getChildCount();
+        if (count > 0) {
+            View view = getChildAt(0);
+            if (mTempRect.left + width > view.getRight()) {
+                mTempRect.left = view.getRight() - width;
+            }
+        }
+    } else {
+        mTempRect.left = getScrollX() - width;
+        if (mTempRect.left < 0) {
+            mTempRect.left = 0;
+        }
+    }
+    mTempRect.right = mTempRect.left + width;
+    return scrollAndFocus(direction, mTempRect.left, mTempRect.right);
+}

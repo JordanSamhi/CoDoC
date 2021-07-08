@@ -1,0 +1,12 @@
+public void resetBssidBlocklistStreakForSsid(@NonNull String ssid){
+    Iterator<Map.Entry<MacAddress, PerBssid>> it = mApForBssid.entrySet().iterator();
+    while (it.hasNext()) {
+        PerBssid perBssid = it.next().getValue();
+        if (!ssid.equals(perBssid.ssid)) {
+            continue;
+        }
+        for (int i = 0; i < perBssid.blocklistStreakCount.length; i++) {
+            perBssid.blocklistStreakCount[i] = 0;
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public CrateMetadata[] getUserCrates(String uuid, @UserIdInt int userId) throws InstallerException{
+    if (!checkBeforeRemote())
+        return null;
+    try {
+        return mInstalld.getUserCrates(uuid, userId);
+    } catch (Exception e) {
+        throw InstallerException.from(e);
+    }
+}

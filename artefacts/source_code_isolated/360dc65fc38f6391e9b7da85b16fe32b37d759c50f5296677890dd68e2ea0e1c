@@ -1,0 +1,16 @@
+public String getHash(){
+    MessageDigest digest;
+    try {
+        digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException("Could not get sha256 hash object");
+    }
+    if (version >= 1) {
+        digest.update(sourceUri.toString().getBytes(StandardCharsets.UTF_8));
+        digest.update(destinationUri.toString().getBytes(StandardCharsets.UTF_8));
+        if (serializedResultIntentForApp != null) {
+            digest.update(serializedResultIntentForApp.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+    return Base64.encodeToString(digest.digest(), Base64.URL_SAFE | Base64.NO_WRAP);
+}

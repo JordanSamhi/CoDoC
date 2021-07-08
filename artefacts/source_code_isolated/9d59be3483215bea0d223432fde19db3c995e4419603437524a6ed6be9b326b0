@@ -1,0 +1,10 @@
+public int speak(final CharSequence text, final int queueMode, final Bundle params, final String utteranceId){
+    return runAction((ITextToSpeechService service) -> {
+        Uri utteranceUri = mUtterances.get(text);
+        if (utteranceUri != null) {
+            return service.playAudio(getCallerIdentity(), utteranceUri, queueMode, getParams(params), utteranceId);
+        } else {
+            return service.speak(getCallerIdentity(), text, queueMode, getParams(params), utteranceId);
+        }
+    }, ERROR, "speak");
+}

@@ -1,0 +1,9 @@
+public static ExpandedEAPMethod parse(ByteBuffer payload, int length, boolean inner) throws ProtocolException{
+    if (length != EXPECTED_LENGTH_VALUE) {
+        throw new ProtocolException("Invalid length value: " + length);
+    }
+    int vendorID = (int) ByteBufferReader.readInteger(payload, ByteOrder.BIG_ENDIAN, 3) & 0xFFFFFF;
+    long vendorType = ByteBufferReader.readInteger(payload, ByteOrder.BIG_ENDIAN, 4) & 0xFFFFFFFF;
+    int authType = inner ? AuthParam.PARAM_TYPE_EXPANDED_INNER_EAP_METHOD : AuthParam.PARAM_TYPE_EXPANDED_EAP_METHOD;
+    return new ExpandedEAPMethod(authType, vendorID, vendorType);
+}

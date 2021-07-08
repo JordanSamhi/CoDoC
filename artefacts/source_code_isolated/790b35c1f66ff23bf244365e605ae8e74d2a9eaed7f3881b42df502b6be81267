@@ -1,0 +1,20 @@
+public int getPackageTokenOrAdd(String packageName, long timeStamp){
+    final Long timeRemoved = removedPackagesMap.get(packageName);
+    if (timeRemoved != null && timeRemoved > timeStamp) {
+        return UNASSIGNED_TOKEN;
+    }
+    ArrayMap<String, Integer> packageTokensMap = packagesToTokensMap.get(packageName);
+    if (packageTokensMap == null) {
+        packageTokensMap = new ArrayMap<>();
+        packagesToTokensMap.put(packageName, packageTokensMap);
+    }
+    int token = packageTokensMap.getOrDefault(packageName, UNASSIGNED_TOKEN);
+    if (token == UNASSIGNED_TOKEN) {
+        token = counter++;
+        ArrayList<String> tokenPackages = new ArrayList<>();
+        tokenPackages.add(packageName);
+        packageTokensMap.put(packageName, token);
+        tokensToPackagesMap.put(token, tokenPackages);
+    }
+    return token;
+}

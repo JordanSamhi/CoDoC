@@ -1,0 +1,38 @@
+public boolean startScan(@NonNull String ifaceName, @WifiAnnotations.ScanType int scanType, @Nullable Set<Integer> freqs, @Nullable List<byte[]> hiddenNetworkSSIDs){
+    IWifiScannerImpl scannerImpl = getScannerImpl(ifaceName);
+    if (scannerImpl == null) {
+        Log.e(TAG, "No valid wificond scanner interface handler");
+        return false;
+    }
+    SingleScanSettings settings = new SingleScanSettings();
+    try {
+        settings.scanType = getScanType(scanType);
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "Invalid scan type ", e);
+        return false;
+    }
+    settings.channelSettings = new ArrayList<>();
+    settings.hiddenNetworks = new ArrayList<>();
+    if (freqs != null) {
+        for (Integer freq : freqs) {
+            ChannelSettings channel = new ChannelSettings();
+            channel.frequency = freq;
+            settings.channelSettings.add(channel);
+        }
+    }
+    if (hiddenNetworkSSIDs != null) {
+        for (byte[] ssid : hiddenNetworkSSIDs) {
+            HiddenNetwork network = new HiddenNetwork();
+            network.ssid = ssid;
+            if (!settings.hiddenNetworks.contains(network)) {
+                settings.hiddenNetworks.add(network);
+            }
+        }
+    }
+    try {
+        return scannerImpl.scan(settings);
+    } catch (RemoteException e1) {
+        Log.e(TAG, "Failed to request scan due to remote exception");
+    }
+    return false;
+}

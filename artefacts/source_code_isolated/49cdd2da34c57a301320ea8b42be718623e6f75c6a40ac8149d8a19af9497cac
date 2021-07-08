@@ -1,0 +1,26 @@
+public boolean getFirmwareRoamingInfo(){
+    mFirmwareRoamingSupported = false;
+    mMaxNumBlacklistBssid = INVALID_LIST_SIZE;
+    mMaxNumWhitelistSsid = INVALID_LIST_SIZE;
+    long fwFeatureSet = mWifiNative.getSupportedFeatureSet(mWifiNative.getClientInterfaceName());
+    Log.d(TAG, "Firmware supported feature set: " + Long.toHexString(fwFeatureSet));
+    if ((fwFeatureSet & WIFI_FEATURE_CONTROL_ROAMING) == 0) {
+        Log.d(TAG, "Firmware roaming is not supported");
+        return true;
+    }
+    WifiNative.RoamingCapabilities roamingCap = new WifiNative.RoamingCapabilities();
+    if (mWifiNative.getRoamingCapabilities(mWifiNative.getClientInterfaceName(), roamingCap)) {
+        if (roamingCap.maxBlacklistSize < 0 || roamingCap.maxWhitelistSize < 0) {
+            Log.e(TAG, "Invalid firmware roaming capabilities: max num blacklist bssid=" + roamingCap.maxBlacklistSize + " max num whitelist ssid=" + roamingCap.maxWhitelistSize);
+        } else {
+            mFirmwareRoamingSupported = true;
+            mMaxNumBlacklistBssid = roamingCap.maxBlacklistSize;
+            mMaxNumWhitelistSsid = roamingCap.maxWhitelistSize;
+            Log.d(TAG, "Firmware roaming supported with capabilities: max num blacklist bssid=" + mMaxNumBlacklistBssid + " max num whitelist ssid=" + mMaxNumWhitelistSsid);
+            return true;
+        }
+    } else {
+        Log.e(TAG, "Failed to get firmware roaming capabilities");
+    }
+    return false;
+}

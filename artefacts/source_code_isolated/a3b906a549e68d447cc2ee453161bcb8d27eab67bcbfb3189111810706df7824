@@ -1,0 +1,16 @@
+public static Set<ComponentName> getEnabledServicesFromSettings(Context context, int userId){
+    final String enabledServicesSetting = Settings.Secure.getStringForUser(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, userId);
+    if (TextUtils.isEmpty(enabledServicesSetting)) {
+        return Collections.emptySet();
+    }
+    final Set<ComponentName> enabledServices = new HashSet<>();
+    final TextUtils.StringSplitter colonSplitter = new TextUtils.SimpleStringSplitter(ENABLED_ACCESSIBILITY_SERVICES_SEPARATOR);
+    colonSplitter.setString(enabledServicesSetting);
+    for (String componentNameString : colonSplitter) {
+        final ComponentName enabledService = ComponentName.unflattenFromString(componentNameString);
+        if (enabledService != null) {
+            enabledServices.add(enabledService);
+        }
+    }
+    return enabledServices;
+}

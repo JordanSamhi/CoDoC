@@ -1,0 +1,29 @@
+public static long copyInternalSendfile(FileDescriptor in, FileDescriptor out, long count, CancellationSignal signal, Executor executor, ProgressListener listener) throws ErrnoException{
+    long progress = 0;
+    long checkpoint = 0;
+    long t;
+    while ((t = Os.sendfile(out, in, null, Math.min(count, COPY_CHECKPOINT_BYTES))) != 0) {
+        progress += t;
+        checkpoint += t;
+        count -= t;
+        if (checkpoint >= COPY_CHECKPOINT_BYTES) {
+            if (signal != null) {
+                signal.throwIfCanceled();
+            }
+            if (executor != null && listener != null) {
+                final long progressSnapshot = progress;
+                executor.execute(() -> {
+                    listener.onProgress(progressSnapshot);
+                });
+            }
+            checkpoint = 0;
+        }
+    }
+    if (executor != null && listener != null) {
+        final long progressSnapshot = progress;
+        executor.execute(() -> {
+            listener.onProgress(progressSnapshot);
+        });
+    }
+    return progress;
+}

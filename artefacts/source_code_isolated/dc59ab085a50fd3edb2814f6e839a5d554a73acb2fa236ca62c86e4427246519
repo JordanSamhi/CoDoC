@@ -1,0 +1,11 @@
+public ContextHubTransaction<Void> disableNanoApp(@NonNull ContextHubInfo hubInfo, long nanoAppId){
+    Objects.requireNonNull(hubInfo, "ContextHubInfo cannot be null");
+    ContextHubTransaction<Void> transaction = new ContextHubTransaction<>(ContextHubTransaction.TYPE_DISABLE_NANOAPP);
+    IContextHubTransactionCallback callback = createTransactionCallback(transaction);
+    try {
+        mService.disableNanoApp(hubInfo.getId(), callback, nanoAppId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    return transaction;
+}

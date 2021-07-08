@@ -1,0 +1,12 @@
+public boolean completedPreDhcpAction(){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.completedPreDhcpAction();
+        return true;
+    } catch (RemoteException e) {
+        log("Error completing PreDhcpAction", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

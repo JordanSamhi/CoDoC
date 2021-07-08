@@ -1,0 +1,12 @@
+public boolean isProjected(){
+    if (isBounded()) {
+        return false;
+    }
+    final int radius = mState.mMaxRadius;
+    final Rect drawableBounds = getBounds();
+    final Rect hotspotBounds = mHotspotBounds;
+    if (radius != RADIUS_AUTO && radius <= hotspotBounds.width() / 2 && radius <= hotspotBounds.height() / 2 && (drawableBounds.equals(hotspotBounds) || drawableBounds.contains(hotspotBounds))) {
+        return false;
+    }
+    return true;
+}

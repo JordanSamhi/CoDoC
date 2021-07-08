@@ -1,0 +1,34 @@
+public void appendPhotoLine(final String encodedValue, final String photoType){
+    StringBuilder tmpBuilder = new StringBuilder();
+    tmpBuilder.append(VCardConstants.PROPERTY_PHOTO);
+    tmpBuilder.append(VCARD_PARAM_SEPARATOR);
+    if (mIsV30OrV40) {
+        tmpBuilder.append(VCARD_PARAM_ENCODING_BASE64_AS_B);
+    } else {
+        tmpBuilder.append(VCARD_PARAM_ENCODING_BASE64_V21);
+    }
+    tmpBuilder.append(VCARD_PARAM_SEPARATOR);
+    appendTypeParameter(tmpBuilder, photoType);
+    tmpBuilder.append(VCARD_DATA_SEPARATOR);
+    tmpBuilder.append(encodedValue);
+    final String tmpStr = tmpBuilder.toString();
+    tmpBuilder = new StringBuilder();
+    int lineCount = 0;
+    final int length = tmpStr.length();
+    final int maxNumForFirstLine = VCardConstants.MAX_CHARACTER_NUMS_BASE64_V30 - VCARD_END_OF_LINE.length();
+    final int maxNumInGeneral = maxNumForFirstLine - VCARD_WS.length();
+    int maxNum = maxNumForFirstLine;
+    for (int i = 0; i < length; i++) {
+        tmpBuilder.append(tmpStr.charAt(i));
+        lineCount++;
+        if (lineCount > maxNum) {
+            tmpBuilder.append(VCARD_END_OF_LINE);
+            tmpBuilder.append(VCARD_WS);
+            maxNum = maxNumInGeneral;
+            lineCount = 0;
+        }
+    }
+    mBuilder.append(tmpBuilder.toString());
+    mBuilder.append(VCARD_END_OF_LINE);
+    mBuilder.append(VCARD_END_OF_LINE);
+}

@@ -1,0 +1,14 @@
+public void continueOperation(Intent resolutionIntent, Bundle resolutionExtras){
+    if (!isEnabled()) {
+        PendingIntent callbackIntent = resolutionIntent.getParcelableExtra(EuiccManager.EXTRA_EMBEDDED_SUBSCRIPTION_RESOLUTION_CALLBACK_INTENT);
+        if (callbackIntent != null) {
+            sendUnavailableError(callbackIntent);
+        }
+        return;
+    }
+    try {
+        getIEuiccController().continueOperation(mCardId, resolutionIntent, resolutionExtras);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,15 @@
+public int convertToAbsoluteDirection(int flags, int layoutDirection){
+    int masked = flags & RELATIVE_DIR_FLAGS;
+    if (masked == 0) {
+        return flags;
+    }
+    flags &= ~masked;
+    if (layoutDirection == View.LAYOUT_DIRECTION_LTR) {
+        flags |= masked >> 2;
+        return flags;
+    } else {
+        flags |= ((masked >> 1) & ~RELATIVE_DIR_FLAGS);
+        flags |= ((masked >> 1) & RELATIVE_DIR_FLAGS) >> 2;
+    }
+    return flags;
+}

@@ -1,0 +1,52 @@
+
+     * <p>
+     * Queue an input {@link Image} back to ImageWriter for the downstream
+     * consumer to access.
+     * </p>
+     * <p>
+     * The input {@link Image} could be from ImageReader (acquired via
+     * {@link ImageReader#acquireNextImage} or
+     * {@link ImageReader#acquireLatestImage}), or from this ImageWriter
+     * (acquired via {@link #dequeueInputImage}). In the former case, the Image
+     * data will be moved to this ImageWriter. Note that the Image properties
+     * (size, format, strides, etc.) must be the same as the properties of the
+     * images dequeued from this ImageWriter, or this method will throw an
+     * {@link IllegalArgumentException}. In the latter case, the application has
+     * filled the input image with data. This method then passes the filled
+     * buffer to the downstream consumer. In both cases, it's up to the caller
+     * to ensure that the Image timestamp (in nanoseconds) is correctly set, as
+     * the downstream component may want to use it to indicate the Image data
+     * capture time.
+     * </p>
+     * <p>
+     * After this method is called and the downstream consumer consumes and
+     * releases the Image, an {@link OnImageReleasedListener#onImageReleased}
+     * callback will fire. The application can use this callback to avoid
+     * sending Images faster than the downstream consumer processing rate in
+     * steady state.
+     * </p>
+     * <p>
+     * Passing in an Image from some other component (e.g. an
+     * {@link ImageReader}) requires a free input Image from this ImageWriter as
+     * the destination. In this case, this call will block, as
+     * {@link #dequeueInputImage} does, if there are no free Images available.
+     * To avoid blocking, the application should ensure that there is at least
+     * one free Image available in this ImageWriter before calling this method.
+     * </p>
+     * <p>
+     * After this call, the input Image is no longer valid for further access,
+     * as if the Image is {@link Image#close closed}. Attempting to access the
+     * {@link ByteBuffer ByteBuffers} returned by an earlier
+     * {@link Image.Plane#getBuffer Plane#getBuffer} call will result in an
+     * {@link IllegalStateException}.
+     * </p>
+     *
+     * @param image The Image to be queued back to ImageWriter for future
+     *            consumption.
+     * @throws IllegalStateException if the image was already queued previously,
+     *            or the image was aborted previously, or the input
+     *            {@link android.view.Surface Surface} has been abandoned by the
+     *            consumer component that provided the
+     *            {@link android.view.Surface Surface}.
+     * @see #dequeueInputImage()
+     

@@ -1,0 +1,24 @@
+
+     * Special function for writing an exception result at the header of
+     * a parcel, to be used when returning an exception from a transaction.
+     * Note that this currently only supports a few exception types; any other
+     * exception will be re-thrown by this function as a RuntimeException
+     * (to be caught by the system's last-resort exception handling when
+     * dispatching a transaction).
+     *
+     * <p>The supported exception types are:
+     * <ul>
+     * <li>{@link BadParcelableException}
+     * <li>{@link IllegalArgumentException}
+     * <li>{@link IllegalStateException}
+     * <li>{@link NullPointerException}
+     * <li>{@link SecurityException}
+     * <li>{@link UnsupportedOperationException}
+     * <li>{@link NetworkOnMainThreadException}
+     * </ul>
+     *
+     * @param e The Exception to be written.
+     *
+     * @see #writeNoException
+     * @see #readException
+     

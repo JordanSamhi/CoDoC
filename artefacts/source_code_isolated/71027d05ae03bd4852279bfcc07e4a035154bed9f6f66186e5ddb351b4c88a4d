@@ -1,0 +1,15 @@
+public final void writeNoException(){
+    AppOpsManager.prefixParcelWithAppOpsIfNeeded(this);
+    if (StrictMode.hasGatheredViolations()) {
+        writeInt(EX_HAS_STRICTMODE_REPLY_HEADER);
+        final int sizePosition = dataPosition();
+        writeInt(0);
+        StrictMode.writeGatheredViolationsToParcel(this);
+        final int payloadPosition = dataPosition();
+        setDataPosition(sizePosition);
+        writeInt(payloadPosition - sizePosition);
+        setDataPosition(payloadPosition);
+    } else {
+        writeInt(0);
+    }
+}

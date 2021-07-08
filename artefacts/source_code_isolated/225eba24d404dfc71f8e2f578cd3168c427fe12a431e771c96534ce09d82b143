@@ -1,0 +1,12 @@
+public static synchronized BluetoothAdapter getDefaultAdapter(){
+    if (sAdapter == null) {
+        IBinder b = ServiceManager.getService(BLUETOOTH_MANAGER_SERVICE);
+        if (b != null) {
+            IBluetoothManager managerService = IBluetoothManager.Stub.asInterface(b);
+            sAdapter = new BluetoothAdapter(managerService);
+        } else {
+            Log.e(TAG, "Bluetooth binder is null");
+        }
+    }
+    return sAdapter;
+}

@@ -1,0 +1,5 @@
+public static SettingsObserver createAndRegister(InputMethodService service){
+    final SettingsObserver observer = new SettingsObserver(service);
+    service.getContentResolver().registerContentObserver(Settings.Secure.getUriFor(Settings.Secure.SHOW_IME_WITH_HARD_KEYBOARD), false, observer);
+    return observer;
+}

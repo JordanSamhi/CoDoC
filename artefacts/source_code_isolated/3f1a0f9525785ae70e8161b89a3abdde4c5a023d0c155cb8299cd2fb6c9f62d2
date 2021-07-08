@@ -1,0 +1,33 @@
+public ArrayList<ProcessCpuUsage> getProcessCpuUsage(){
+    if (DEBUG) {
+        Slog.d(TAG, "Reading CPU thread usages for processes owned by UIDs");
+    }
+    final ArrayList<ProcessCpuUsage> processCpuUsages = new ArrayList<>();
+    try (DirectoryStream<Path> processPaths = Files.newDirectoryStream(mProcPath, PROCESS_DIRECTORY_FILTER)) {
+        for (Path processPath : processPaths) {
+            final int processId = getProcessId(processPath);
+            final int uid = mInjector.getUidForPid(processId);
+            if (uid == ID_ERROR || processId == ID_ERROR) {
+                continue;
+            }
+            if (!mUidPredicate.test(uid)) {
+                continue;
+            }
+            final ProcessCpuUsage processCpuUsage = getProcessCpuUsage(processPath, processId, uid);
+            if (processCpuUsage != null) {
+                processCpuUsages.add(processCpuUsage);
+            }
+        }
+    } catch (IOException e) {
+        Slog.w(TAG, "Failed to iterate over process paths", e);
+        return null;
+    }
+    if (processCpuUsages.isEmpty()) {
+        Slog.w(TAG, "Didn't successfully get any process CPU information for UIDs specified");
+        return null;
+    }
+    if (DEBUG) {
+        Slog.d(TAG, "Read usage for " + processCpuUsages.size() + " processes");
+    }
+    return processCpuUsages;
+}

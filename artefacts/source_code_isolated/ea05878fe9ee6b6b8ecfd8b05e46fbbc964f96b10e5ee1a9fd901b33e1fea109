@@ -1,0 +1,11 @@
+public Transaction merge(@NonNull Transaction other){
+    if (this == other) {
+        return this;
+    }
+    mResizedSurfaces.putAll(other.mResizedSurfaces);
+    other.mResizedSurfaces.clear();
+    mReparentedSurfaces.putAll(other.mReparentedSurfaces);
+    other.mReparentedSurfaces.clear();
+    nativeMergeTransaction(mNativeObject, other.mNativeObject);
+    return this;
+}

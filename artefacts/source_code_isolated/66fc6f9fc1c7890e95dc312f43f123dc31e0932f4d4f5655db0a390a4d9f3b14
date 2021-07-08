@@ -1,0 +1,43 @@
+public AudioMix build() throws IllegalArgumentException{
+    if (mRule == null) {
+        throw new IllegalArgumentException("Illegal null AudioMixingRule");
+    }
+    if (mRouteFlags == 0) {
+        mRouteFlags = ROUTE_FLAG_LOOP_BACK;
+    }
+    if (mFormat == null) {
+        int rate = AudioSystem.getPrimaryOutputSamplingRate();
+        if (rate <= 0) {
+            rate = 44100;
+        }
+        mFormat = new AudioFormat.Builder().setSampleRate(rate).build();
+    }
+    if ((mDeviceSystemType != AudioSystem.DEVICE_NONE) && (mDeviceSystemType != AudioSystem.DEVICE_OUT_REMOTE_SUBMIX) && (mDeviceSystemType != AudioSystem.DEVICE_IN_REMOTE_SUBMIX)) {
+        if ((mRouteFlags & ROUTE_FLAG_RENDER) == 0) {
+            throw new IllegalArgumentException("Can't have audio device without flag ROUTE_FLAG_RENDER");
+        }
+        if (mRule.getTargetMixType() != AudioMix.MIX_TYPE_PLAYERS) {
+            throw new IllegalArgumentException("Unsupported device on non-playback mix");
+        }
+    } else {
+        if ((mRouteFlags & ROUTE_FLAG_SUPPORTED) == ROUTE_FLAG_RENDER) {
+            throw new IllegalArgumentException("Can't have flag ROUTE_FLAG_RENDER without an audio device");
+        }
+        if ((mRouteFlags & ROUTE_FLAG_LOOP_BACK) == ROUTE_FLAG_LOOP_BACK) {
+            if (mRule.getTargetMixType() == MIX_TYPE_PLAYERS) {
+                mDeviceSystemType = AudioSystem.DEVICE_OUT_REMOTE_SUBMIX;
+            } else if (mRule.getTargetMixType() == MIX_TYPE_RECORDERS) {
+                mDeviceSystemType = AudioSystem.DEVICE_IN_REMOTE_SUBMIX;
+            } else {
+                throw new IllegalArgumentException("Unknown mixing rule type");
+            }
+        }
+    }
+    if (mRule.allowPrivilegedPlaybackCapture()) {
+        String error = AudioMix.canBeUsedForPrivilegedCapture(mFormat);
+        if (error != null) {
+            throw new IllegalArgumentException(error);
+        }
+    }
+    return new AudioMix(mRule, mFormat, mRouteFlags, mCallbackFlags, mDeviceSystemType, mDeviceAddress);
+}

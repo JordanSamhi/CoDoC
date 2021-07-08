@@ -1,0 +1,7 @@
+public void testGetConstant_whenSettingIsMalformed_doesNotUpdateParamsOrThrow(){
+    long testFuzz = BackupManagerConstants.DEFAULT_KEY_VALUE_BACKUP_FUZZ_MILLISECONDS * 2;
+    final String invalidSettingFormat = BackupManagerConstants.KEY_VALUE_BACKUP_FUZZ_MILLISECONDS + "=," + testFuzz;
+    putStringAndNotify(invalidSettingFormat);
+    long keyValueBackupFuzzMilliseconds = mConstants.getKeyValueBackupFuzzMilliseconds();
+    assertThat(keyValueBackupFuzzMilliseconds).isEqualTo(BackupManagerConstants.DEFAULT_KEY_VALUE_BACKUP_FUZZ_MILLISECONDS);
+}

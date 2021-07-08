@@ -1,0 +1,35 @@
+public void tieManagedProfileLockIfNecessary(int managedUserId, LockscreenCredential managedUserPassword){
+    if (DEBUG)
+        Slog.v(TAG, "Check child profile lock for user: " + managedUserId);
+    if (!mUserManager.getUserInfo(managedUserId).isManagedProfile()) {
+        return;
+    }
+    if (getSeparateProfileChallengeEnabledInternal(managedUserId)) {
+        return;
+    }
+    if (mStorage.hasChildProfileLock(managedUserId)) {
+        return;
+    }
+    final int parentId = mUserManager.getProfileParent(managedUserId).id;
+    if (!isUserSecure(parentId) && !managedUserPassword.isNone()) {
+        if (DEBUG)
+            Slog.v(TAG, "Parent does not have a screen lock but profile has one");
+        setLockCredentialInternal(LockscreenCredential.createNone(), managedUserPassword, managedUserId, true);
+        return;
+    }
+    try {
+        if (getGateKeeperService().getSecureUserId(parentId) == 0) {
+            return;
+        }
+    } catch (RemoteException e) {
+        Slog.e(TAG, "Failed to talk to GateKeeper service", e);
+        return;
+    }
+    if (DEBUG)
+        Slog.v(TAG, "Tie managed profile to parent now!");
+    try (LockscreenCredential unifiedProfilePassword = generateRandomProfilePassword()) {
+        setLockCredentialInternal(unifiedProfilePassword, managedUserPassword, managedUserId, true);
+        tieProfileLockToParent(managedUserId, unifiedProfilePassword);
+        mManagedProfilePasswordCache.storePassword(managedUserId, unifiedProfilePassword);
+    }
+}

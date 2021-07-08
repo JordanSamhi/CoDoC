@@ -1,0 +1,38 @@
+public int checkDestination(String destAddress, String countryIso){
+    synchronized (mSettingsObserverHandler) {
+        if (PhoneNumberUtils.isEmergencyNumber(destAddress, countryIso)) {
+            if (DBG)
+                Rlog.d(TAG, "isEmergencyNumber");
+            return SmsManager.SMS_CATEGORY_NOT_SHORT_CODE;
+        }
+        if (!mCheckEnabled.get()) {
+            if (DBG)
+                Rlog.e(TAG, "check disabled");
+            return SmsManager.SMS_CATEGORY_NOT_SHORT_CODE;
+        }
+        if (countryIso != null) {
+            if (mCurrentCountry == null || !countryIso.equals(mCurrentCountry) || mPatternFile.lastModified() != mPatternFileLastModified) {
+                if (mPatternFile.exists()) {
+                    if (DBG)
+                        Rlog.d(TAG, "Loading SMS Short Code patterns from file");
+                    mCurrentPatternMatcher = getPatternMatcherFromFile(countryIso);
+                } else {
+                    if (DBG)
+                        Rlog.d(TAG, "Loading SMS Short Code patterns from resource");
+                    mCurrentPatternMatcher = getPatternMatcherFromResource(countryIso);
+                }
+                mCurrentCountry = countryIso;
+            }
+        }
+        if (mCurrentPatternMatcher != null) {
+            return mCurrentPatternMatcher.getNumberCategory(destAddress);
+        } else {
+            Rlog.e(TAG, "No patterns for \"" + countryIso + "\": using generic short code rule");
+            if (destAddress.length() <= 5) {
+                return SmsManager.SMS_CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE;
+            } else {
+                return SmsManager.SMS_CATEGORY_NOT_SHORT_CODE;
+            }
+        }
+    }
+}

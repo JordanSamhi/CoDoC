@@ -1,0 +1,11 @@
+public void setEnabledExclusiveInCategory(@NonNull final String packageName, @NonNull UserHandle user) throws SecurityException, IllegalStateException{
+    try {
+        if (!mService.setEnabledExclusiveInCategory(packageName, user.getIdentifier())) {
+            throw new IllegalStateException("setEnabledExclusiveInCategory failed");
+        }
+    } catch (SecurityException e) {
+        rethrowSecurityException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

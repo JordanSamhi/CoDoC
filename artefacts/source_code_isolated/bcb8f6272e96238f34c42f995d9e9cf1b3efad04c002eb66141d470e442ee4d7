@@ -1,0 +1,9 @@
+public void migrate(String value, int userId){
+    try {
+        JSONObject json = new JSONObject();
+        json.put(CLOCK_FIELD, value);
+        Settings.Secure.putStringForUser(mContentResolver, CUSTOM_CLOCK_FACE, json.toString(), userId);
+    } catch (JSONException ex) {
+        Log.e(TAG, "Failed migrating settings value to JSON format", ex);
+    }
+}

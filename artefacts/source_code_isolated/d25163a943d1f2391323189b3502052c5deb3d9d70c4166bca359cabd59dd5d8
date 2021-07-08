@@ -1,0 +1,12 @@
+public void releaseSession(@NonNull RoutingSessionInfo sessionInfo){
+    Objects.requireNonNull(sessionInfo, "sessionInfo must not be null");
+    Client client = getOrCreateClient();
+    if (client != null) {
+        try {
+            int requestId = mNextRequestId.getAndIncrement();
+            mMediaRouterService.releaseSessionWithManager(client, requestId, sessionInfo.getId());
+        } catch (RemoteException ex) {
+            Log.e(TAG, "releaseSession: Failed to send a request", ex);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+public static X509Certificate toCertificate(@NonNull byte[] bytes){
+    if (bytes == null) {
+        throw new IllegalArgumentException("bytes == null");
+    }
+    try {
+        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+        Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(bytes));
+        return (X509Certificate) cert;
+    } catch (CertificateException e) {
+        throw new AssertionError(e);
+    }
+}

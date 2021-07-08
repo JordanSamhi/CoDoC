@@ -1,0 +1,9 @@
+public boolean initialize(UsbDeviceConnection connection, UsbEndpoint endpoint){
+    mEndpoint = endpoint;
+    mConnection = Objects.requireNonNull(connection, "connection");
+    boolean wasInitialized = native_init(connection, endpoint.getAddress(), endpoint.getAttributes(), endpoint.getMaxPacketSize(), endpoint.getInterval());
+    if (wasInitialized) {
+        mCloseGuard.open("close");
+    }
+    return wasInitialized;
+}

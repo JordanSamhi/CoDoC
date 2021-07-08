@@ -1,0 +1,11 @@
+public final void setMovementMethod(MovementMethod movement){
+    if (mMovement != movement) {
+        mMovement = movement;
+        if (movement != null && mSpannable == null) {
+            setText(mText);
+        }
+        fixFocusableAndClickableSettings();
+        if (mEditor != null)
+            mEditor.prepareCursorControllers();
+    }
+}

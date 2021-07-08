@@ -1,0 +1,9 @@
+public WindowContainerTransaction setBoundsChangeTransaction(@NonNull WindowContainerToken task, @NonNull Rect surfaceBounds){
+    Change chg = getOrCreateChange(task.asBinder());
+    if (chg.mBoundsChangeSurfaceBounds == null) {
+        chg.mBoundsChangeSurfaceBounds = new Rect();
+    }
+    chg.mBoundsChangeSurfaceBounds.set(surfaceBounds);
+    chg.mChangeMask |= Change.CHANGE_BOUNDS_TRANSACTION_RECT;
+    return this;
+}

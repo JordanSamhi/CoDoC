@@ -1,0 +1,47 @@
+public void acceptCall(int videoState) throws CallStateException{
+    if (DBG)
+        log("acceptCall");
+    mOperationLocalLog.log("accepted incoming call");
+    if (mForegroundCall.getState().isAlive() && mBackgroundCall.getState().isAlive()) {
+        throw new CallStateException("cannot accept call");
+    }
+    if ((mRingingCall.getState() == ImsPhoneCall.State.WAITING) && mForegroundCall.getState().isAlive()) {
+        setMute(false);
+        boolean answeringWillDisconnect = false;
+        ImsCall activeCall = mForegroundCall.getImsCall();
+        ImsCall ringingCall = mRingingCall.getImsCall();
+        if (mForegroundCall.hasConnections() && mRingingCall.hasConnections()) {
+            answeringWillDisconnect = shouldDisconnectActiveCallOnAnswer(activeCall, ringingCall);
+        }
+        mPendingCallVideoState = videoState;
+        if (answeringWillDisconnect) {
+            mForegroundCall.hangup();
+            mPhone.getVoiceCallSessionStats().onImsAcceptCall(mRingingCall.getConnections());
+            try {
+                ringingCall.accept(ImsCallProfile.getCallTypeFromVideoState(videoState));
+            } catch (ImsException e) {
+                throw new CallStateException("cannot accept call");
+            }
+        } else {
+            holdActiveCallForWaitingCall();
+        }
+    } else if (mRingingCall.getState().isRinging()) {
+        if (DBG)
+            log("acceptCall: incoming...");
+        setMute(false);
+        try {
+            ImsCall imsCall = mRingingCall.getImsCall();
+            if (imsCall != null) {
+                mPhone.getVoiceCallSessionStats().onImsAcceptCall(mRingingCall.getConnections());
+                imsCall.accept(ImsCallProfile.getCallTypeFromVideoState(videoState));
+                mMetrics.writeOnImsCommand(mPhone.getPhoneId(), imsCall.getSession(), ImsCommand.IMS_CMD_ACCEPT);
+            } else {
+                throw new CallStateException("no valid ims call");
+            }
+        } catch (ImsException e) {
+            throw new CallStateException("cannot accept call");
+        }
+    } else {
+        throw new CallStateException("phone not ringing");
+    }
+}

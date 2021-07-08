@@ -1,0 +1,12 @@
+public String getPermissionControllerPackageName(){
+    synchronized (mLock) {
+        if (mPermissionsControllerPackageName == null) {
+            try {
+                mPermissionsControllerPackageName = mPM.getPermissionControllerPackageName();
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+        return mPermissionsControllerPackageName;
+    }
+}

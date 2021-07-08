@@ -1,0 +1,29 @@
+public void sendMgmtFrame(@NonNull String ifaceName, @NonNull byte[] frame, int mcs, @NonNull @CallbackExecutor Executor executor, @NonNull SendMgmtFrameCallback callback){
+    if (callback == null || executor == null) {
+        Log.e(TAG, "callback cannot be null!");
+        return;
+    }
+    if (frame == null) {
+        Log.e(TAG, "frame cannot be null!");
+        executor.execute(() -> callback.onFailure(SEND_MGMT_FRAME_ERROR_UNKNOWN));
+        return;
+    }
+    IClientInterface clientInterface = getClientInterface(ifaceName);
+    if (clientInterface == null) {
+        Log.e(TAG, "No valid wificond client interface handler");
+        executor.execute(() -> callback.onFailure(SEND_MGMT_FRAME_ERROR_UNKNOWN));
+        return;
+    }
+    if (!mSendMgmtFrameInProgress.compareAndSet(false, true)) {
+        Log.e(TAG, "An existing management frame transmission is in progress!");
+        executor.execute(() -> callback.onFailure(SEND_MGMT_FRAME_ERROR_ALREADY_STARTED));
+        return;
+    }
+    SendMgmtFrameEvent sendMgmtFrameEvent = new SendMgmtFrameEvent(executor, callback);
+    try {
+        clientInterface.SendMgmtFrame(frame, sendMgmtFrameEvent, mcs);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Exception while starting link probe: " + e);
+        sendMgmtFrameEvent.OnFailure(SEND_MGMT_FRAME_ERROR_UNKNOWN);
+    }
+}

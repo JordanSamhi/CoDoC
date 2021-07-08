@@ -1,0 +1,15 @@
+public synchronized int beginSendObject(MtpObject parent, String name, int format){
+    if (sDebug)
+        Log.v(TAG, "beginSendObject " + name);
+    if (!parent.isDir())
+        return -1;
+    if (parent.isRoot() && mSubdirectories != null && !mSubdirectories.contains(name))
+        return -1;
+    getChildren(parent);
+    MtpObject obj = addObjectToCache(parent, name, format == MtpConstants.FORMAT_ASSOCIATION);
+    if (obj == null)
+        return -1;
+    obj.setState(MtpObjectState.FROZEN);
+    obj.setOperation(MtpOperation.ADD);
+    return obj.getId();
+}

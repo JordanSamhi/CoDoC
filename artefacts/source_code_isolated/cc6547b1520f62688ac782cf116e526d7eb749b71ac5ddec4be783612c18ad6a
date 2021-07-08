@@ -1,0 +1,35 @@
+public void startObservingHealth(PackageHealthObserver observer, List<String> packageNames, long durationMs){
+    if (packageNames.isEmpty()) {
+        Slog.wtf(TAG, "No packages to observe, " + observer.getName());
+        return;
+    }
+    if (durationMs < 1) {
+        Slog.wtf(TAG, "Invalid duration " + durationMs + "ms for observer " + observer.getName() + ". Not observing packages " + packageNames);
+        durationMs = DEFAULT_OBSERVING_DURATION_MS;
+    }
+    List<MonitoredPackage> packages = new ArrayList<>();
+    for (int i = 0; i < packageNames.size(); i++) {
+        MonitoredPackage pkg = newMonitoredPackage(packageNames.get(i), durationMs, false);
+        if (pkg != null) {
+            packages.add(pkg);
+        }
+    }
+    if (packages.isEmpty()) {
+        return;
+    }
+    mLongTaskHandler.post(() -> {
+        syncState("observing new packages");
+        synchronized (mLock) {
+            ObserverInternal oldObserver = mAllObservers.get(observer.getName());
+            if (oldObserver == null) {
+                Slog.d(TAG, observer.getName() + " started monitoring health " + "of packages " + packageNames);
+                mAllObservers.put(observer.getName(), new ObserverInternal(observer.getName(), packages));
+            } else {
+                Slog.d(TAG, observer.getName() + " added the following " + "packages to monitor " + packageNames);
+                oldObserver.updatePackagesLocked(packages);
+            }
+        }
+        registerHealthObserver(observer);
+        syncState("updated observers");
+    });
+}

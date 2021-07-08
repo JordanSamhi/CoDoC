@@ -1,0 +1,33 @@
+
+     * Associate this app with a companion device, selected by user
+     *
+     * <p>Once at least one appropriate device is found, {@code callback} will be called with a
+     * {@link PendingIntent} that can be used to show the list of available devices for the user
+     * to select.
+     * It should be started for result (i.e. using
+     * {@link android.app.Activity#startIntentSenderForResult}), as the resulting
+     * {@link android.content.Intent} will contain extra {@link #EXTRA_DEVICE}, with the selected
+     * device. (e.g. {@link android.bluetooth.BluetoothDevice})</p>
+     *
+     * <p>If your app needs to be excluded from battery optimizations (run in the background)
+     * or to have unrestricted data access (use data in the background) you can declare that
+     * you use the {@link android.Manifest.permission#REQUEST_COMPANION_RUN_IN_BACKGROUND} and {@link
+     * android.Manifest.permission#REQUEST_COMPANION_USE_DATA_IN_BACKGROUND} respectively. Note that these
+     * special capabilities have a negative effect on the device's battery and user's data
+     * usage, therefore you should requested them when absolutely necessary.</p>
+     *
+     * <p>You can call {@link #getAssociations} to get the list of currently associated
+     * devices, and {@link #disassociate} to remove an association. Consider doing so when the
+     * association is no longer relevant to avoid unnecessary battery and/or data drain resulting
+     * from special privileges that the association provides</p>
+     *
+     * <p>Calling this API requires a uses-feature
+     * {@link PackageManager#FEATURE_COMPANION_DEVICE_SETUP} declaration in the manifest</p>
+     *
+     * @param request specific details about this request
+     * @param callback will be called once there's at least one device found for user to choose from
+     * @param handler A handler to control which thread the callback will be delivered on, or null,
+     *                to deliver it on main thread
+     *
+     * @see AssociationRequest
+     

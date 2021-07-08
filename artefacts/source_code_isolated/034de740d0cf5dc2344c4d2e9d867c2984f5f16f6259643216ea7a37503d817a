@@ -1,0 +1,31 @@
+public VpnProfile toVpnProfile() throws IOException, GeneralSecurityException{
+    final VpnProfile profile = new VpnProfile("", mIsRestrictedToTestNetworks);
+    profile.type = mType;
+    profile.server = mServerAddr;
+    profile.ipsecIdentifier = mUserIdentity;
+    profile.proxy = mProxyInfo;
+    profile.setAllowedAlgorithms(mAllowedAlgorithms);
+    profile.isBypassable = mIsBypassable;
+    profile.isMetered = mIsMetered;
+    profile.maxMtu = mMaxMtu;
+    profile.areAuthParamsInline = true;
+    profile.saveLogin = true;
+    switch(mType) {
+        case TYPE_IKEV2_IPSEC_USER_PASS:
+            profile.username = mUsername;
+            profile.password = mPassword;
+            profile.ipsecCaCert = mServerRootCaCert == null ? "" : certificateToPemString(mServerRootCaCert);
+            break;
+        case TYPE_IKEV2_IPSEC_PSK:
+            profile.ipsecSecret = encodeForIpsecSecret(mPresharedKey);
+            break;
+        case TYPE_IKEV2_IPSEC_RSA:
+            profile.ipsecUserCert = certificateToPemString(mUserCert);
+            profile.ipsecSecret = PREFIX_INLINE + encodeForIpsecSecret(mRsaPrivateKey.getEncoded());
+            profile.ipsecCaCert = mServerRootCaCert == null ? "" : certificateToPemString(mServerRootCaCert);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid auth method set");
+    }
+    return profile;
+}

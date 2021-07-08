@@ -1,0 +1,9 @@
+public void setSbn(@NonNull StatusBarNotification sbn){
+    requireNonNull(sbn);
+    requireNonNull(sbn.getKey());
+    if (!sbn.getKey().equals(mKey)) {
+        throw new IllegalArgumentException("New key " + sbn.getKey() + " doesn't match existing key " + mKey);
+    }
+    mSbn = sbn;
+    mBubbleMetadata = mSbn.getNotification().getBubbleMetadata();
+}

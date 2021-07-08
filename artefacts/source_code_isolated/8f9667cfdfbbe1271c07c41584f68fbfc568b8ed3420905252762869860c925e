@@ -1,0 +1,25 @@
+public static void initialize(@NonNull Context context){
+    if (context == null) {
+        throw new IllegalArgumentException("AnomalyReporter needs a non-null context.");
+    }
+    context.enforceCallingOrSelfPermission(android.Manifest.permission.MODIFY_PHONE_STATE, "This app does not have privileges to send debug events");
+    sContext = context;
+    PackageManager pm = sContext.getPackageManager();
+    if (pm == null)
+        return;
+    List<ResolveInfo> packages = pm.queryBroadcastReceivers(new Intent(TelephonyManager.ACTION_ANOMALY_REPORTED), PackageManager.MATCH_SYSTEM_ONLY | PackageManager.MATCH_DIRECT_BOOT_AWARE | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+    if (packages == null || packages.isEmpty())
+        return;
+    if (packages.size() > 1) {
+        Rlog.e(TAG, "Multiple Anomaly Receivers installed.");
+    }
+    for (ResolveInfo r : packages) {
+        if (r.activityInfo == null || pm.checkPermission(android.Manifest.permission.READ_PRIVILEGED_PHONE_STATE, r.activityInfo.packageName) != PackageManager.PERMISSION_GRANTED) {
+            Rlog.w(TAG, "Found package without proper permissions or no activity" + r.activityInfo.packageName);
+            continue;
+        }
+        Rlog.d(TAG, "Found a valid package " + r.activityInfo.packageName);
+        sDebugPackageName = r.activityInfo.packageName;
+        break;
+    }
+}

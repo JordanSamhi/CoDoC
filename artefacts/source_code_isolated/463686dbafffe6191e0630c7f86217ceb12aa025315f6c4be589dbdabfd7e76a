@@ -1,0 +1,37 @@
+public RemoteViews makePublicContentView(boolean isLowPriority){
+    if (mN.publicVersion != null) {
+        final Builder builder = recoverBuilder(mContext, mN.publicVersion);
+        return builder.createContentView();
+    }
+    Bundle savedBundle = mN.extras;
+    Style style = mStyle;
+    mStyle = null;
+    Icon largeIcon = mN.mLargeIcon;
+    mN.mLargeIcon = null;
+    Bitmap largeIconLegacy = mN.largeIcon;
+    mN.largeIcon = null;
+    ArrayList<Action> actions = mActions;
+    mActions = new ArrayList<>();
+    Bundle publicExtras = new Bundle();
+    publicExtras.putBoolean(EXTRA_SHOW_WHEN, savedBundle.getBoolean(EXTRA_SHOW_WHEN));
+    publicExtras.putBoolean(EXTRA_SHOW_CHRONOMETER, savedBundle.getBoolean(EXTRA_SHOW_CHRONOMETER));
+    publicExtras.putBoolean(EXTRA_CHRONOMETER_COUNT_DOWN, savedBundle.getBoolean(EXTRA_CHRONOMETER_COUNT_DOWN));
+    String appName = savedBundle.getString(EXTRA_SUBSTITUTE_APP_NAME);
+    if (appName != null) {
+        publicExtras.putString(EXTRA_SUBSTITUTE_APP_NAME, appName);
+    }
+    mN.extras = publicExtras;
+    RemoteViews view;
+    StandardTemplateParams params = mParams.reset().fillTextsFrom(this);
+    if (isLowPriority) {
+        params.forceDefaultColor();
+    }
+    view = makeNotificationHeader(params);
+    view.setBoolean(R.id.notification_header, "setExpandOnlyOnButton", true);
+    mN.extras = savedBundle;
+    mN.mLargeIcon = largeIcon;
+    mN.largeIcon = largeIconLegacy;
+    mActions = actions;
+    mStyle = style;
+    return view;
+}

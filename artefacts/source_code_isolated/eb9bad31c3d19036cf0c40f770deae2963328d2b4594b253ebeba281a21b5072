@@ -1,0 +1,7 @@
+public void registerService(NsdServiceInfo serviceInfo, int protocolType, RegistrationListener listener){
+    checkArgument(serviceInfo.getPort() > 0, "Invalid port number");
+    checkServiceInfo(serviceInfo);
+    checkProtocol(protocolType);
+    int key = putListener(listener, serviceInfo);
+    mAsyncChannel.sendMessage(REGISTER_SERVICE, 0, key, serviceInfo);
+}

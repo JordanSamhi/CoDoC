@@ -1,0 +1,11 @@
+public void registerNetworkStatsProvider(@NonNull String tag, @NonNull NetworkStatsProvider provider){
+    try {
+        if (provider.getProviderCallbackBinder() != null) {
+            throw new IllegalArgumentException("provider is already registered");
+        }
+        final INetworkStatsProviderCallback cbBinder = mService.registerNetworkStatsProvider(tag, provider.getProviderBinder());
+        provider.setProviderCallbackBinder(cbBinder);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,29 @@
+public void opComplete(int token, long result){
+    if (MORE_DEBUG) {
+        Slog.v(TAG, addUserIdToLogMessage(mUserId, "opComplete: " + Integer.toHexString(token) + " result=" + result));
+    }
+    Operation op = null;
+    synchronized (mCurrentOpLock) {
+        op = mCurrentOperations.get(token);
+        if (op != null) {
+            if (op.state == OP_TIMEOUT) {
+                op = null;
+                mCurrentOperations.delete(token);
+            } else if (op.state == OP_ACKNOWLEDGED) {
+                if (DEBUG) {
+                    Slog.w(TAG, addUserIdToLogMessage(mUserId, "Received duplicate ack for token=" + Integer.toHexString(token)));
+                }
+                op = null;
+                mCurrentOperations.remove(token);
+            } else if (op.state == OP_PENDING) {
+                op.state = OP_ACKNOWLEDGED;
+            }
+        }
+        mCurrentOpLock.notifyAll();
+    }
+    if (op != null && op.callback != null) {
+        Pair<BackupRestoreTask, Long> callbackAndResult = Pair.create(op.callback, result);
+        Message msg = mBackupHandler.obtainMessage(MSG_OP_COMPLETE, callbackAndResult);
+        mBackupHandler.sendMessage(msg);
+    }
+}

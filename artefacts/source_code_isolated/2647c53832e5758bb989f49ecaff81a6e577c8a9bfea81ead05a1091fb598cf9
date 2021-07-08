@@ -1,0 +1,24 @@
+public boolean performAccessibilityActionInternal(int action, Bundle arguments){
+    if (super.performAccessibilityActionInternal(action, arguments)) {
+        return true;
+    }
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+            {
+                if (isEnabled() && mItemCount > 0 && mSelectedPosition < mItemCount - 1) {
+                    final int currentChildIndex = mSelectedPosition - mFirstPosition;
+                    return scrollToChild(currentChildIndex + 1);
+                }
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+            {
+                if (isEnabled() && mItemCount > 0 && mSelectedPosition > 0) {
+                    final int currentChildIndex = mSelectedPosition - mFirstPosition;
+                    return scrollToChild(currentChildIndex - 1);
+                }
+            }
+            return false;
+    }
+    return false;
+}

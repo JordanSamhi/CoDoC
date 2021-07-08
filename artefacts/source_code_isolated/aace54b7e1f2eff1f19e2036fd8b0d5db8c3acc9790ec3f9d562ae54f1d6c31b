@@ -1,0 +1,21 @@
+public WifiAwareNetworkSpecifier build(){
+    if (mDiscoverySession == null) {
+        throw new IllegalStateException("Null discovery session!?");
+    }
+    if (mPeerHandle == null) {
+        throw new IllegalStateException("Null peerHandle!?");
+    }
+    if (mPskPassphrase != null & mPmk != null) {
+        throw new IllegalStateException("Can only specify a Passphrase or a PMK - not both!");
+    }
+    int role = mDiscoverySession instanceof SubscribeDiscoverySession ? WIFI_AWARE_DATA_PATH_ROLE_INITIATOR : WifiAwareManager.WIFI_AWARE_DATA_PATH_ROLE_RESPONDER;
+    if (mPort != 0 || mTransportProtocol != -1) {
+        if (role != WifiAwareManager.WIFI_AWARE_DATA_PATH_ROLE_RESPONDER) {
+            throw new IllegalStateException("Port and transport protocol information can only " + "be specified on the Publisher device (which is the server");
+        }
+        if (TextUtils.isEmpty(mPskPassphrase) && mPmk == null) {
+            throw new IllegalStateException("Port and transport protocol information can " + "only be specified on a secure link");
+        }
+    }
+    return new WifiAwareNetworkSpecifier(WifiAwareNetworkSpecifier.NETWORK_SPECIFIER_TYPE_IB, role, mDiscoverySession.mClientId, mDiscoverySession.mSessionId, mPeerHandle.peerId, null, mPmk, mPskPassphrase, mPort, mTransportProtocol);
+}

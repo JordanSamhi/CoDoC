@@ -1,0 +1,8 @@
+public synchronized void put(int uid, KeyChainSnapshot snapshot){
+    mSnapshotByUid.put(uid, snapshot);
+    try {
+        writeToDisk(uid, snapshot);
+    } catch (IOException | CertificateEncodingException e) {
+        Log.e(TAG, String.format(Locale.US, "Error persisting snapshot for %d to disk", uid), e);
+    }
+}

@@ -1,0 +1,13 @@
+public boolean canChangeDtmfToneLength(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.canChangeDtmfToneLength(mSubId, getOpPackageName(), getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#canChangeDtmfToneLength", e);
+    } catch (SecurityException e) {
+        Log.e(TAG, "Permission error calling ITelephony#canChangeDtmfToneLength", e);
+    }
+    return false;
+}

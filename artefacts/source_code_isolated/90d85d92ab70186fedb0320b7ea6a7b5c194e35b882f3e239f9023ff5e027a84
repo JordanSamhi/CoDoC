@@ -1,0 +1,19 @@
+public void dump(IndentingPrintWriter pw){
+    synchronized (mLock) {
+        if (mConnections.size() == 0) {
+            return;
+        }
+        pw.println("Owner Services:");
+        pw.increaseIndent();
+        for (int i = 0; i < mConnections.size(); i++) {
+            final int userId = mConnections.keyAt(i);
+            pw.print("User: ");
+            pw.println(userId);
+            final DevicePolicyServiceConnection con = mConnections.valueAt(i);
+            pw.increaseIndent();
+            con.dump("", pw);
+            pw.decreaseIndent();
+        }
+        pw.decreaseIndent();
+    }
+}

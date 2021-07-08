@@ -1,0 +1,10 @@
+public Builder setDiscoveryWindowInterval(int band, int interval){
+    if (band != NAN_BAND_24GHZ && band != NAN_BAND_5GHZ && band != NAN_BAND_6GHZ) {
+        throw new IllegalArgumentException("Invalid band value");
+    }
+    if ((band == NAN_BAND_24GHZ && (interval < 1 || interval > 5)) || (band == NAN_BAND_5GHZ && (interval < 0 || interval > 5)) || (band == NAN_BAND_6GHZ && (interval < 0 || interval > 5))) {
+        throw new IllegalArgumentException("Invalid interval value: 2.4 GHz [1,5] or 5GHz/6GHz [0,5]");
+    }
+    mDiscoveryWindowInterval[band] = interval;
+    return this;
+}

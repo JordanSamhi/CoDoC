@@ -1,0 +1,31 @@
+public boolean setAlwaysOnVpnPackage(ComponentName who, String vpnPackage, boolean lockdown, List<String> lockdownWhitelist) throws SecurityException{
+    enforceProfileOrDeviceOwner(who);
+    final int userId = mInjector.userHandleGetCallingUserId();
+    mInjector.binderWithCleanCallingIdentity(() -> {
+        if (vpnPackage != null && !isPackageInstalledForUser(vpnPackage, userId)) {
+            Slog.w(LOG_TAG, "Non-existent VPN package specified: " + vpnPackage);
+            throw new ServiceSpecificException(DevicePolicyManager.ERROR_VPN_PACKAGE_NOT_FOUND, vpnPackage);
+        }
+        if (vpnPackage != null && lockdown && lockdownWhitelist != null) {
+            for (String packageName : lockdownWhitelist) {
+                if (!isPackageInstalledForUser(packageName, userId)) {
+                    Slog.w(LOG_TAG, "Non-existent package in VPN whitelist: " + packageName);
+                    throw new ServiceSpecificException(DevicePolicyManager.ERROR_VPN_PACKAGE_NOT_FOUND, packageName);
+                }
+            }
+        }
+        if (!mInjector.getConnectivityManager().setAlwaysOnVpnPackageForUser(userId, vpnPackage, lockdown, lockdownWhitelist)) {
+            throw new UnsupportedOperationException();
+        }
+        DevicePolicyEventLogger.createEvent(DevicePolicyEnums.SET_ALWAYS_ON_VPN_PACKAGE).setAdmin(who).setStrings(vpnPackage).setBoolean(lockdown).setInt(lockdownWhitelist != null ? lockdownWhitelist.size() : 0).write();
+    });
+    synchronized (getLockObject()) {
+        ActiveAdmin admin = getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER);
+        if (!TextUtils.equals(vpnPackage, admin.mAlwaysOnVpnPackage) || lockdown != admin.mAlwaysOnVpnLockdown) {
+            admin.mAlwaysOnVpnPackage = vpnPackage;
+            admin.mAlwaysOnVpnLockdown = lockdown;
+            saveSettingsLocked(userId);
+        }
+    }
+    return true;
+}

@@ -1,0 +1,22 @@
+
+     * Create a listening, secure RFCOMM Bluetooth socket with Service Record.
+     * <p>A remote device connecting to this socket will be authenticated and
+     * communication on this socket will be encrypted.
+     * <p>Use {@link BluetoothServerSocket#accept} to retrieve incoming
+     * connections from a listening {@link BluetoothServerSocket}.
+     * <p>The system will assign an unused RFCOMM channel to listen on.
+     * <p>The system will also register a Service Discovery
+     * Protocol (SDP) record with the local SDP server containing the specified
+     * UUID, service name, and auto-assigned channel. Remote Bluetooth devices
+     * can use the same UUID to query our SDP server and discover which channel
+     * to connect to. This SDP record will be removed when this socket is
+     * closed, or if this application closes unexpectedly.
+     * <p>Use {@link BluetoothDevice#createRfcommSocketToServiceRecord} to
+     * connect to this socket from another device using the same {@link UUID}.
+     *
+     * @param name service name for SDP record
+     * @param uuid uuid for SDP record
+     * @return a listening RFCOMM BluetoothServerSocket
+     * @throws IOException on error, for example Bluetooth not available, or insufficient
+     * permissions, or channel in use.
+     

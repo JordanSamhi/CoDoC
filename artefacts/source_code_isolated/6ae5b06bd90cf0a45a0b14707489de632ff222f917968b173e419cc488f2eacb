@@ -1,0 +1,9 @@
+public void executeWhenUnlocked(OnDismissAction action, boolean requiresShadeOpen){
+    KeyguardDismissHandler dismissHandler = mDismissHandler;
+    if (dismissHandler == null) {
+        Log.wtf(TAG, "KeyguardDismissHandler not set.");
+        action.onDismiss();
+        return;
+    }
+    dismissHandler.executeWhenUnlocked(action, requiresShadeOpen);
+}

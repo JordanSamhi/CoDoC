@@ -1,0 +1,10 @@
+public void clearDeviceOwnerApp(String packageName){
+    throwIfParentInstance("clearDeviceOwnerApp");
+    if (mService != null) {
+        try {
+            mService.clearDeviceOwner(packageName);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

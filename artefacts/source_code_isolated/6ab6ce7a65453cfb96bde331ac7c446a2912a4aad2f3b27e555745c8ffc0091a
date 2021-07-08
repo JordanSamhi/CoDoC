@@ -1,0 +1,15 @@
+public Drawable loadIcon(@NonNull Context context){
+    if (mIcon != null) {
+        return mIcon.loadDrawable(context);
+    } else if (mIconUri != null) {
+        try (InputStream is = context.getContentResolver().openInputStream(mIconUri)) {
+            Drawable drawable = Drawable.createFromStream(is, null);
+            if (drawable != null) {
+                return drawable;
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "Loading the default icon due to a failure on loading " + mIconUri, e);
+        }
+    }
+    return loadServiceIcon(context);
+}

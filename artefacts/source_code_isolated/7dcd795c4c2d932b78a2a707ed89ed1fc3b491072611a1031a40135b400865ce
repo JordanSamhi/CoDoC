@@ -1,0 +1,19 @@
+public void setCurrentFunctions(long functions){
+    if (DEBUG) {
+        Slog.d(TAG, "setCurrentFunctions(" + UsbManager.usbFunctionsToString(functions) + ")");
+    }
+    if (functions == UsbManager.FUNCTION_NONE) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_CHARGING);
+    } else if (functions == UsbManager.FUNCTION_MTP) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_MTP);
+    } else if (functions == UsbManager.FUNCTION_PTP) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_PTP);
+    } else if (functions == UsbManager.FUNCTION_MIDI) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_MIDI);
+    } else if (functions == UsbManager.FUNCTION_RNDIS) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_RNDIS);
+    } else if (functions == UsbManager.FUNCTION_ACCESSORY) {
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_USB_CONFIG_ACCESSORY);
+    }
+    mHandler.sendMessage(MSG_SET_CURRENT_FUNCTIONS, functions);
+}

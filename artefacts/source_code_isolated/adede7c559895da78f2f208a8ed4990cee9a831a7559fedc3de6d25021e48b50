@@ -1,0 +1,42 @@
+public void animateTo(View child, AnimationProperties animationProperties){
+    boolean wasVisible = child.getVisibility() == View.VISIBLE;
+    final float alpha = this.alpha;
+    if (!wasVisible && (alpha != 0 || child.getAlpha() != 0) && !this.gone && !this.hidden) {
+        child.setVisibility(View.VISIBLE);
+    }
+    float childAlpha = child.getAlpha();
+    boolean alphaChanging = this.alpha != childAlpha;
+    if (child instanceof ExpandableView) {
+        alphaChanging &= !((ExpandableView) child).willBeGone();
+    }
+    if (child.getTranslationX() != this.xTranslation) {
+        startXTranslationAnimation(child, animationProperties);
+    } else {
+        abortAnimation(child, TAG_ANIMATOR_TRANSLATION_X);
+    }
+    if (child.getTranslationY() != this.yTranslation) {
+        startYTranslationAnimation(child, animationProperties);
+    } else {
+        abortAnimation(child, TAG_ANIMATOR_TRANSLATION_Y);
+    }
+    if (child.getTranslationZ() != this.zTranslation) {
+        startZTranslationAnimation(child, animationProperties);
+    } else {
+        abortAnimation(child, TAG_ANIMATOR_TRANSLATION_Z);
+    }
+    if (child.getScaleX() != scaleX) {
+        PropertyAnimator.startAnimation(child, SCALE_X_PROPERTY, scaleX, animationProperties);
+    } else {
+        abortAnimation(child, SCALE_X_PROPERTY.getAnimatorTag());
+    }
+    if (child.getScaleY() != scaleY) {
+        PropertyAnimator.startAnimation(child, SCALE_Y_PROPERTY, scaleY, animationProperties);
+    } else {
+        abortAnimation(child, SCALE_Y_PROPERTY.getAnimatorTag());
+    }
+    if (alphaChanging) {
+        startAlphaAnimation(child, animationProperties);
+    } else {
+        abortAnimation(child, TAG_ANIMATOR_ALPHA);
+    }
+}

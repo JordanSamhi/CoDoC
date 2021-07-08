@@ -1,0 +1,22 @@
+public void incrementRxLinkSpeedBandCount(int rxLinkSpeed, int frequency){
+    if (!(mContext.getResources().getBoolean(R.bool.config_wifiLinkSpeedMetricsEnabled) && rxLinkSpeed >= MIN_LINK_SPEED_MBPS)) {
+        return;
+    }
+    synchronized (mLock) {
+        if (ScanResult.is24GHz(frequency)) {
+            mRxLinkSpeedCount2g.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_5_GHZ_LOW_END_FREQ) {
+            mRxLinkSpeedCount5gLow.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_5_GHZ_MID_END_FREQ) {
+            mRxLinkSpeedCount5gMid.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_5_GHZ_HIGH_END_FREQ) {
+            mRxLinkSpeedCount5gHigh.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_6_GHZ_LOW_END_FREQ) {
+            mRxLinkSpeedCount6gLow.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_6_GHZ_MID_END_FREQ) {
+            mRxLinkSpeedCount6gMid.increment(rxLinkSpeed);
+        } else if (frequency <= KnownBandsChannelHelper.BAND_6_GHZ_HIGH_END_FREQ) {
+            mRxLinkSpeedCount6gHigh.increment(rxLinkSpeed);
+        }
+    }
+}

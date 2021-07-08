@@ -1,0 +1,11 @@
+public List<KeyValuePairProto.KeyValuePair> getPairs(){
+    checkState(mClosed, "Must close() before getPairs()");
+    Collections.sort(mUnsortedPairs, new Comparator<KeyValuePairProto.KeyValuePair>() {
+
+        @Override
+        public int compare(KeyValuePairProto.KeyValuePair o1, KeyValuePairProto.KeyValuePair o2) {
+            return o1.key.compareTo(o2.key);
+        }
+    });
+    return mUnsortedPairs;
+}

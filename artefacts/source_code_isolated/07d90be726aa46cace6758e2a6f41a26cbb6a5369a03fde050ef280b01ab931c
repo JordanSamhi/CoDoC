@@ -1,0 +1,57 @@
+public DrmInitData getDrmInitData(){
+    Map<String, Object> formatMap = getFileFormatNative();
+    if (formatMap == null) {
+        return null;
+    }
+    if (formatMap.containsKey("pssh")) {
+        Map<UUID, byte[]> psshMap = getPsshInfo();
+        DrmInitData.SchemeInitData[] schemeInitDatas = psshMap.entrySet().stream().map(entry -> new DrmInitData.SchemeInitData(entry.getKey(), "cenc", entry.getValue())).toArray(DrmInitData.SchemeInitData[]::new);
+        final Map<UUID, DrmInitData.SchemeInitData> initDataMap = Arrays.stream(schemeInitDatas).collect(Collectors.toMap(initData -> initData.uuid, initData -> initData));
+        return new DrmInitData() {
+
+            public SchemeInitData get(UUID schemeUuid) {
+                return initDataMap.get(schemeUuid);
+            }
+
+            @Override
+            public int getSchemeInitDataCount() {
+                return schemeInitDatas.length;
+            }
+
+            @Override
+            public SchemeInitData getSchemeInitDataAt(int index) {
+                return schemeInitDatas[index];
+            }
+        };
+    } else {
+        int numTracks = getTrackCount();
+        for (int i = 0; i < numTracks; ++i) {
+            Map<String, Object> trackFormatMap = getTrackFormatNative(i);
+            if (!trackFormatMap.containsKey("crypto-key")) {
+                continue;
+            }
+            ByteBuffer buf = (ByteBuffer) trackFormatMap.get("crypto-key");
+            buf.rewind();
+            final byte[] data = new byte[buf.remaining()];
+            buf.get(data);
+            DrmInitData.SchemeInitData webmSchemeInitData = new DrmInitData.SchemeInitData(DrmInitData.SchemeInitData.UUID_NIL, "webm", data);
+            return new DrmInitData() {
+
+                public SchemeInitData get(UUID schemeUuid) {
+                    return webmSchemeInitData;
+                }
+
+                @Override
+                public int getSchemeInitDataCount() {
+                    return 1;
+                }
+
+                @Override
+                public SchemeInitData getSchemeInitDataAt(int index) {
+                    return webmSchemeInitData;
+                }
+            };
+        }
+    }
+    return null;
+}

@@ -1,0 +1,12 @@
+public static OrientedBoundingBox computeOrientedBoundingBox(ArrayList<GesturePoint> originalPoints){
+    final int count = originalPoints.size();
+    float[] points = new float[count * 2];
+    for (int i = 0; i < count; i++) {
+        GesturePoint point = originalPoints.get(i);
+        int index = i * 2;
+        points[index] = point.x;
+        points[index + 1] = point.y;
+    }
+    float[] meanVector = computeCentroid(points);
+    return computeOrientedBoundingBox(points, meanVector);
+}

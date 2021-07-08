@@ -1,0 +1,18 @@
+public int dexoptSystemServerPath(String dexPath, PackageDexUsage.DexUseInfo dexUseInfo, DexoptOptions options){
+    int dexoptFlags = DEXOPT_PUBLIC | (options.isBootComplete() ? DEXOPT_BOOTCOMPLETE : 0) | (options.isDexoptIdleBackgroundJob() ? DEXOPT_IDLE_BACKGROUND_JOB : 0);
+    int result = DEX_OPT_SKIPPED;
+    for (String isa : dexUseInfo.getLoaderIsas()) {
+        int dexoptNeeded = getDexoptNeeded(dexPath, isa, options.getCompilerFilter(), dexUseInfo.getClassLoaderContext(), false, false);
+        if (dexoptNeeded == DexFile.NO_DEXOPT_NEEDED) {
+            continue;
+        }
+        try {
+            mInstaller.dexopt(dexPath, android.os.Process.SYSTEM_UID, "android", isa, dexoptNeeded, null, dexoptFlags, options.getCompilerFilter(), StorageManager.UUID_PRIVATE_INTERNAL, dexUseInfo.getClassLoaderContext(), null, false, 0, null, null, getReasonName(options.getCompilationReason()));
+        } catch (InstallerException e) {
+            Slog.w(TAG, "Failed to dexopt", e);
+            return DEX_OPT_FAILED;
+        }
+        result = DEX_OPT_PERFORMED;
+    }
+    return result;
+}

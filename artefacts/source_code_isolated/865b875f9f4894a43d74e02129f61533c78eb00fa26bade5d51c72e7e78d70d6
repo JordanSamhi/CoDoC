@@ -1,0 +1,13 @@
+public DeviceWiphyCapabilities getDeviceWiphyCapabilities(@NonNull String ifaceName){
+    synchronized (mLock) {
+        Iface iface = mIfaceMgr.getIface(ifaceName);
+        if (iface == null) {
+            Log.e(TAG, "Failed to get device capabilities, interface not found: " + ifaceName);
+            return null;
+        }
+        if (iface.phyCapabilities == null) {
+            iface.phyCapabilities = mWifiCondManager.getDeviceWiphyCapabilities(ifaceName);
+        }
+        return iface.phyCapabilities;
+    }
+}

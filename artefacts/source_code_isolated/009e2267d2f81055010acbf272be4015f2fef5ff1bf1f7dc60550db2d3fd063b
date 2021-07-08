@@ -1,0 +1,13 @@
+public void updateOtaEmergencyNumberDbFilePath(@NonNull ParcelFileDescriptor otaParcelFileDescriptor){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            telephony.updateOtaEmergencyNumberDbFilePath(otaParcelFileDescriptor);
+        } else {
+            throw new IllegalStateException("telephony service is null.");
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "updateOtaEmergencyNumberDbFilePath RemoteException", ex);
+        ex.rethrowAsRuntimeException();
+    }
+}

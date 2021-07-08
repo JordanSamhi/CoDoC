@@ -1,0 +1,65 @@
+public static void read(InputStream in, IntervalStats statsOut) throws IOException{
+    final ProtoInputStream proto = new ProtoInputStream(in);
+    List<String> stringPool = null;
+    statsOut.packageStats.clear();
+    statsOut.configurations.clear();
+    statsOut.activeConfiguration = null;
+    statsOut.events.clear();
+    while (true) {
+        switch(proto.nextField()) {
+            case (int) IntervalStatsProto.END_TIME_MS:
+                statsOut.endTime = statsOut.beginTime + proto.readLong(IntervalStatsProto.END_TIME_MS);
+                break;
+            case (int) IntervalStatsProto.MAJOR_VERSION:
+                statsOut.majorVersion = proto.readInt(IntervalStatsProto.MAJOR_VERSION);
+                break;
+            case (int) IntervalStatsProto.MINOR_VERSION:
+                statsOut.minorVersion = proto.readInt(IntervalStatsProto.MINOR_VERSION);
+                break;
+            case (int) IntervalStatsProto.INTERACTIVE:
+                loadCountAndTime(proto, IntervalStatsProto.INTERACTIVE, statsOut.interactiveTracker);
+                break;
+            case (int) IntervalStatsProto.NON_INTERACTIVE:
+                loadCountAndTime(proto, IntervalStatsProto.NON_INTERACTIVE, statsOut.nonInteractiveTracker);
+                break;
+            case (int) IntervalStatsProto.KEYGUARD_SHOWN:
+                loadCountAndTime(proto, IntervalStatsProto.KEYGUARD_SHOWN, statsOut.keyguardShownTracker);
+                break;
+            case (int) IntervalStatsProto.KEYGUARD_HIDDEN:
+                loadCountAndTime(proto, IntervalStatsProto.KEYGUARD_HIDDEN, statsOut.keyguardHiddenTracker);
+                break;
+            case (int) IntervalStatsProto.STRINGPOOL:
+                try {
+                    stringPool = readStringPool(proto);
+                    statsOut.mStringCache.addAll(stringPool);
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read string pool from proto.", e);
+                }
+                break;
+            case (int) IntervalStatsProto.PACKAGES:
+                try {
+                    loadUsageStats(proto, IntervalStatsProto.PACKAGES, statsOut, stringPool);
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some usage stats from proto.", e);
+                }
+                break;
+            case (int) IntervalStatsProto.CONFIGURATIONS:
+                try {
+                    loadConfigStats(proto, IntervalStatsProto.CONFIGURATIONS, statsOut);
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some configuration stats from proto.", e);
+                }
+                break;
+            case (int) IntervalStatsProto.EVENT_LOG:
+                try {
+                    loadEvent(proto, IntervalStatsProto.EVENT_LOG, statsOut, stringPool);
+                } catch (IOException e) {
+                    Slog.e(TAG, "Unable to read some events from proto.", e);
+                }
+                break;
+            case ProtoInputStream.NO_MORE_FIELDS:
+                statsOut.upgradeIfNeeded();
+                return;
+        }
+    }
+}

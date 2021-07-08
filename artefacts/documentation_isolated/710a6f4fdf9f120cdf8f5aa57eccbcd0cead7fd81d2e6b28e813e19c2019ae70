@@ -1,0 +1,32 @@
+
+         * Adds a listener to the {@code ListenerList}.
+         *
+         * The {@code ListenerList} is most often used to hold {@code multiple} listeners.
+         *
+         * Per Android style, for a single method Listener interface, the add and remove
+         * would be wrapped in "addSomeListener" or "removeSomeListener";
+         * or a lambda implemented abstract class callback, wrapped in
+         * "registerSomeCallback" or "unregisterSomeCallback".
+         *
+         * We allow a general {@code key} to be attached to add and remove that specific
+         * listener.  It could be the {@code listener} object itself.
+         *
+         * For some implementations, there may be only a {@code single} listener permitted.
+         *
+         * Per Android style, for a single listener {@code ListenerList},
+         * the naming of the wrapping call to {@link #add} would be
+         * "setSomeListener" with a nullable listener, which would be null
+         * to call {@link #remove}.
+         *
+         * In that case, the caller may use this {@link #add} with a single constant object for
+         * the {@code key} to enforce only one Listener in the {@code ListenerList}.
+         * Likewise on remove it would use that
+         * same single constant object to remove the listener.
+         * That {@code key} object could be the {@code ListenerList} itself for convenience.
+         *
+         * @param key is a unique object that is used to identify the listener
+         *     when {@code remove()} is called. It can be the listener itself.
+         * @param executor is used to execute the callback.
+         * @param listener is the {@link AudioTrack.ListenerList.Listener}
+         *     interface to be called upon {@link notify}.
+         

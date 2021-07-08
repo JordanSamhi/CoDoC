@@ -1,0 +1,10 @@
+public void registerForNetworkLockedRecordsLoaded(Handler h, int what, Object obj){
+    if (mDestroyed.get()) {
+        return;
+    }
+    Registrant r = new Registrant(h, what, obj);
+    mNetworkLockedRecordsLoadedRegistrants.add(r);
+    if (getNetworkLockedRecordsLoaded()) {
+        r.notifyRegistrant(new AsyncResult(null, null, null));
+    }
+}

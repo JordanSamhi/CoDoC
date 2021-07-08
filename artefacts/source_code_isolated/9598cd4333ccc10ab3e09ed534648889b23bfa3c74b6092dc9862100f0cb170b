@@ -1,0 +1,26 @@
+public synchronized boolean prepare(String oldPackage, String newPackage, @VpnManager.VpnType int vpnType){
+    if (oldPackage != null) {
+        if (mAlwaysOn && !isCurrentPreparedPackage(oldPackage)) {
+            return false;
+        }
+        if (!isCurrentPreparedPackage(oldPackage)) {
+            if (!oldPackage.equals(VpnConfig.LEGACY_VPN) && isVpnPreConsented(mContext, oldPackage, vpnType)) {
+                prepareInternal(oldPackage);
+                return true;
+            }
+            return false;
+        } else if (!oldPackage.equals(VpnConfig.LEGACY_VPN) && !isVpnPreConsented(mContext, oldPackage, vpnType)) {
+            prepareInternal(VpnConfig.LEGACY_VPN);
+            return false;
+        }
+    }
+    if (newPackage == null || (!newPackage.equals(VpnConfig.LEGACY_VPN) && isCurrentPreparedPackage(newPackage))) {
+        return true;
+    }
+    enforceControlPermission();
+    if (mAlwaysOn && !isCurrentPreparedPackage(newPackage)) {
+        return false;
+    }
+    prepareInternal(newPackage);
+    return true;
+}

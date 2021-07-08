@@ -1,0 +1,10 @@
+public String createOneEntry(Method getEntityIteratorMethod){
+    if (mIsDoCoMo && !mFirstVCardEmittedInDoCoMoCase) {
+        mFirstVCardEmittedInDoCoMoCase = true;
+    }
+    final String vcard = createOneEntryInternal(mCursor.getLong(mIdColumn), getEntityIteratorMethod);
+    if (!mCursor.moveToNext()) {
+        Log.e(LOG_TAG, "Cursor#moveToNext() returned false");
+    }
+    return vcard;
+}

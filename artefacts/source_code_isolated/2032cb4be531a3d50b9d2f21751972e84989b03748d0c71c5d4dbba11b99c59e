@@ -1,0 +1,10 @@
+public UserHandle createAndManageUser(@NonNull ComponentName admin, @NonNull String name, @NonNull ComponentName profileOwner, @Nullable PersistableBundle adminExtras, @CreateAndManageUserFlags int flags){
+    throwIfParentInstance("createAndManageUser");
+    try {
+        return mService.createAndManageUser(admin, name, profileOwner, adminExtras, flags);
+    } catch (ServiceSpecificException e) {
+        throw new UserOperationException(e.getMessage(), e.errorCode);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

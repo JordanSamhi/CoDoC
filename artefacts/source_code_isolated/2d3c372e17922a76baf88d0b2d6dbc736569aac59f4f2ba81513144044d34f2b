@@ -1,0 +1,14 @@
+public Entry getNextEntry(String tag, long msec){
+    try {
+        return mService.getNextEntry(tag, msec, mContext.getOpPackageName());
+    } catch (SecurityException e) {
+        if (mContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.P) {
+            throw e;
+        } else {
+            Log.w(TAG, e.getMessage());
+            return null;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public final AccessibilityButtonController getAccessibilityButtonController(int displayId){
+    synchronized (mLock) {
+        AccessibilityButtonController controller = mAccessibilityButtonControllers.get(displayId);
+        if (controller == null) {
+            controller = new AccessibilityButtonController(AccessibilityInteractionClient.getInstance().getConnection(mConnectionId));
+            mAccessibilityButtonControllers.put(displayId, controller);
+        }
+        return controller;
+    }
+}

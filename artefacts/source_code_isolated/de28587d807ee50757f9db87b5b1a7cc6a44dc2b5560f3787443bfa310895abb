@@ -1,0 +1,14 @@
+public void readExif(String inFileName) throws FileNotFoundException, IOException{
+    if (inFileName == null) {
+        throw new IllegalArgumentException(NULL_ARGUMENT_STRING);
+    }
+    InputStream is = null;
+    try {
+        is = (InputStream) new BufferedInputStream(new FileInputStream(inFileName));
+        readExif(is);
+    } catch (IOException e) {
+        closeSilently(is);
+        throw e;
+    }
+    is.close();
+}

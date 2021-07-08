@@ -1,0 +1,14 @@
+public ServiceState createLocationInfoSanitizedCopy(boolean removeCoarseLocation){
+    ServiceState state = new ServiceState(this);
+    synchronized (state.mNetworkRegistrationInfos) {
+        List<NetworkRegistrationInfo> networkRegistrationInfos = state.mNetworkRegistrationInfos.stream().map(NetworkRegistrationInfo::sanitizeLocationInfo).collect(Collectors.toList());
+        state.mNetworkRegistrationInfos.clear();
+        state.mNetworkRegistrationInfos.addAll(networkRegistrationInfos);
+    }
+    if (!removeCoarseLocation)
+        return state;
+    state.mOperatorAlphaLong = null;
+    state.mOperatorAlphaShort = null;
+    state.mOperatorNumeric = null;
+    return state;
+}

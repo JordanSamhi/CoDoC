@@ -1,0 +1,12 @@
+public static int getHtmlColor(@NonNull String color){
+    Integer i = sColorNameMap.get(color.toLowerCase(Locale.ROOT));
+    if (i != null) {
+        return i;
+    } else {
+        try {
+            return XmlUtils.convertValueToInt(color, -1);
+        } catch (NumberFormatException nfe) {
+            return -1;
+        }
+    }
+}

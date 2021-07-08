@@ -1,0 +1,17 @@
+public void setActivated(Boolean activated, @NonNull LocalDateTime lastActivationTime){
+    if (activated == null) {
+        super.setActivated(null);
+        return;
+    }
+    boolean activationStateChanged = activated != isActivated();
+    if (!isActivatedStateNotSet() && activationStateChanged) {
+        Secure.putStringForUser(getContext().getContentResolver(), Secure.NIGHT_DISPLAY_LAST_ACTIVATED_TIME, lastActivationTime.toString(), mCurrentUser);
+    }
+    if (isActivatedStateNotSet() || activationStateChanged) {
+        super.setActivated(activated);
+        if (isActivatedSetting() != activated) {
+            Secure.putIntForUser(getContext().getContentResolver(), Secure.NIGHT_DISPLAY_ACTIVATED, activated ? 1 : 0, mCurrentUser);
+        }
+        onActivated(activated);
+    }
+}

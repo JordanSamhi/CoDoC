@@ -1,0 +1,10 @@
+public boolean waitToAvoidStates(final int states){
+    Log.v(TAG, "waitToAvoidStates - states = " + Integer.toBinaryString(states));
+    return waitForCondition(new ConditionChecker() {
+
+        @Override
+        public boolean success() {
+            return (states & getState()) == 0;
+        }
+    }, CameraAgent.CAMERA_OPERATION_TIMEOUT_MS);
+}

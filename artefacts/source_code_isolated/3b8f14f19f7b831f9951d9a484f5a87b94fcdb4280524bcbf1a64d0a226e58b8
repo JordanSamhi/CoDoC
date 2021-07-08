@@ -1,0 +1,13 @@
+public void logPnoScanStop(){
+    synchronized (mLock) {
+        if (mCurrentDeviceMobilityStatePnoScanStartMs < 0) {
+            Log.e(TAG, "Called WifiMetrics#logPNoScanStop() without calling " + "WifiMetrics#logPnoScanStart() first!");
+            return;
+        }
+        DeviceMobilityStatePnoScanStats stats = getOrCreateDeviceMobilityStatePnoScanStats(mCurrentDeviceMobilityState);
+        long now = mClock.getElapsedSinceBootMillis();
+        stats.pnoDurationMs += now - mCurrentDeviceMobilityStatePnoScanStartMs;
+        mCurrentDeviceMobilityStatePnoScanStartMs = -1;
+        updateCurrentMobilityStateTotalDuration(now);
+    }
+}

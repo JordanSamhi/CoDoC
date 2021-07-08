@@ -1,0 +1,12 @@
+public Item putString(String key, String value){
+    final byte[] keyBytes = key.getBytes(MEDIAMETRICS_CHARSET);
+    final byte[] valueBytes = value.getBytes(MEDIAMETRICS_CHARSET);
+    final char propSize = (char) reserveProperty(keyBytes, valueBytes.length + 1);
+    final int estimatedFinalPosition = mBuffer.position() + propSize;
+    mBuffer.putChar(propSize).put((byte) TYPE_CSTRING).put(keyBytes).put((byte) 0).put(valueBytes).put((byte) 0);
+    ++mPropertyCount;
+    if (mBuffer.position() != estimatedFinalPosition) {
+        throw new IllegalStateException("Final position " + mBuffer.position() + " != estimatedFinalPosition " + estimatedFinalPosition);
+    }
+    return this;
+}

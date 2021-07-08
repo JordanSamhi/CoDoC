@@ -1,0 +1,11 @@
+public void acquireLease(@NonNull BlobHandle blobHandle, @IdRes int descriptionResId, @CurrentTimeMillisLong long leaseExpiryTimeMillis) throws IOException{
+    try {
+        mService.acquireLease(blobHandle, descriptionResId, null, leaseExpiryTimeMillis, mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        e.maybeRethrow(LimitExceededException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

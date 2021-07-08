@@ -1,0 +1,18 @@
+public static ThreeGPPNetworkElement parse(ByteBuffer payload) throws ProtocolException{
+    int gudVersion = payload.get() & 0xFF;
+    if (gudVersion != GUD_VERSION_1) {
+        throw new ProtocolException("Unsupported GUD version: " + gudVersion);
+    }
+    int length = payload.get() & 0xFF;
+    if (length != payload.remaining()) {
+        throw new ProtocolException("Mismatch length and buffer size: length=" + length + " bufferSize=" + payload.remaining());
+    }
+    List<CellularNetwork> networks = new ArrayList<>();
+    while (payload.hasRemaining()) {
+        CellularNetwork network = CellularNetwork.parse(payload);
+        if (network != null) {
+            networks.add(network);
+        }
+    }
+    return new ThreeGPPNetworkElement(networks);
+}

@@ -1,0 +1,13 @@
+public long getCurrentPlayTime(){
+    if (!mInitialized || (!mStarted && mSeekFraction < 0)) {
+        return 0;
+    }
+    if (mSeekFraction >= 0) {
+        return (long) (mDuration * mSeekFraction);
+    }
+    float durationScale = resolveDurationScale();
+    if (durationScale == 0f) {
+        durationScale = 1f;
+    }
+    return (long) ((AnimationUtils.currentAnimationTimeMillis() - mStartTime) / durationScale);
+}

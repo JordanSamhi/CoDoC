@@ -1,0 +1,11 @@
+public void enterDeviceMobilityState(@DeviceMobilityState int newState){
+    synchronized (mLock) {
+        long now = mClock.getElapsedSinceBootMillis();
+        updateCurrentMobilityStateTotalDuration(now);
+        if (newState == mCurrentDeviceMobilityState)
+            return;
+        mCurrentDeviceMobilityState = newState;
+        DeviceMobilityStatePnoScanStats stats = getOrCreateDeviceMobilityStatePnoScanStats(mCurrentDeviceMobilityState);
+        stats.numTimesEnteredState++;
+    }
+}

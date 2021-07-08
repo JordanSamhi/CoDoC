@@ -1,0 +1,17 @@
+public Resources getResourcesForApplicationAsUser(String appPackageName, int userId) throws NameNotFoundException{
+    if (userId < 0) {
+        throw new IllegalArgumentException("Call does not support special user #" + userId);
+    }
+    if ("system".equals(appPackageName)) {
+        return mContext.mMainThread.getSystemUiContext().getResources();
+    }
+    try {
+        ApplicationInfo ai = mPM.getApplicationInfo(appPackageName, sDefaultFlags, userId);
+        if (ai != null) {
+            return getResourcesForApplication(ai);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException("Package " + appPackageName + " doesn't exist");
+}

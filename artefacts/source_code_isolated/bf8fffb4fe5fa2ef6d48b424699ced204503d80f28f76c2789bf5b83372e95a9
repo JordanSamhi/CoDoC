@@ -1,0 +1,15 @@
+public static EnforcedAdmin checkIfRemoteContactSearchDisallowed(Context context, int userId){
+    DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+    if (dpm == null) {
+        return null;
+    }
+    EnforcedAdmin admin = getProfileOwner(context, userId);
+    if (admin == null) {
+        return null;
+    }
+    UserHandle userHandle = UserHandle.of(userId);
+    if (dpm.getCrossProfileContactsSearchDisabled(userHandle) && dpm.getCrossProfileCallerIdDisabled(userHandle)) {
+        return admin;
+    }
+    return null;
+}

@@ -1,0 +1,23 @@
+public SyncStatusInfo getSyncStatusAsUser(Account account, String authority, ComponentName cname, int userId){
+    if (TextUtils.isEmpty(authority)) {
+        throw new IllegalArgumentException("Authority must not be empty");
+    }
+    enforceCrossUserPermission(userId, "no permission to read the sync stats for user " + userId);
+    mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS, "no permission to read the sync stats");
+    long identityToken = clearCallingIdentity();
+    try {
+        SyncManager syncManager = getSyncManager();
+        if (syncManager == null) {
+            return null;
+        }
+        SyncStorageEngine.EndPoint info;
+        if (!(account == null || authority == null)) {
+            info = new SyncStorageEngine.EndPoint(account, authority, userId);
+        } else {
+            throw new IllegalArgumentException("Must call sync status with valid authority");
+        }
+        return syncManager.getSyncStorageEngine().getStatusByAuthority(info);
+    } finally {
+        restoreCallingIdentity(identityToken);
+    }
+}

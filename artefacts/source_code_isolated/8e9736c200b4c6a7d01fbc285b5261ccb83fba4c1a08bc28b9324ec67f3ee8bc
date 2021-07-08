@@ -1,0 +1,10 @@
+public void destroy(){
+    synchronized (mLock) {
+        if (mDestroyed) {
+            throw new IllegalStateException("This RoleUserState has already been destroyed");
+        }
+        mWriteHandler.removeCallbacksAndMessages(null);
+        mPersistence.deleteForUser(UserHandle.of(mUserId));
+        mDestroyed = true;
+    }
+}

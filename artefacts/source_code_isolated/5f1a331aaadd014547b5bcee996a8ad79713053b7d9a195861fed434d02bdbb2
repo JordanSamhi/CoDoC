@@ -1,0 +1,13 @@
+public void setQuotaFree(boolean isFree){
+    synchronized (mLock) {
+        if (mIsQuotaFree == isFree) {
+            return;
+        }
+        mIsQuotaFree = isFree;
+        if (!mIsEnabled) {
+            return;
+        }
+        onQuotaFreeChangedLocked(mIsQuotaFree);
+    }
+    scheduleQuotaCheck();
+}

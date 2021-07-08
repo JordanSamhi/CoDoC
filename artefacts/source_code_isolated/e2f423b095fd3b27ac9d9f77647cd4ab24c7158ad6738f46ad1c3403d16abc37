@@ -1,0 +1,37 @@
+public boolean acceptRequest(NetworkRequest networkRequest, int score){
+    NetworkSpecifier ns = networkRequest.getNetworkSpecifier();
+    if (ns == null) {
+    } else {
+        if (!isRequestWithNetworkSpecifierValid(networkRequest)) {
+            releaseRequestAsUnfulfillableByAnyFactory(networkRequest);
+            return false;
+        }
+        if (!mWifiEnabled) {
+            Log.e(TAG, "Wifi off. Rejecting");
+            return false;
+        }
+        WifiNetworkSpecifier wns = (WifiNetworkSpecifier) ns;
+        if (!mWifiPermissionsUtil.checkNetworkSettingsPermission(networkRequest.getRequestorUid()) && !isRequestFromForegroundAppOrService(networkRequest.getRequestorPackageName())) {
+            Log.e(TAG, "Request not from foreground app or service." + " Rejecting request from " + networkRequest.getRequestorPackageName());
+            releaseRequestAsUnfulfillableByAnyFactory(networkRequest);
+            return false;
+        }
+        if (!canNewRequestOverrideExistingRequest(networkRequest, mActiveSpecificNetworkRequest)) {
+            Log.e(TAG, "Request cannot override active request." + " Rejecting request from " + networkRequest.getRequestorPackageName());
+            releaseRequestAsUnfulfillableByAnyFactory(networkRequest);
+            return false;
+        }
+        if (!canNewRequestOverrideExistingRequest(networkRequest, mConnectedSpecificNetworkRequest)) {
+            Log.e(TAG, "Request cannot override connected request." + " Rejecting request from " + networkRequest.getRequestorPackageName());
+            releaseRequestAsUnfulfillableByAnyFactory(networkRequest);
+            return false;
+        }
+        if (mVerboseLoggingEnabled) {
+            Log.v(TAG, "Accepted network request with specifier from fg " + (isRequestFromForegroundApp(networkRequest.getRequestorPackageName()) ? "app" : "service"));
+        }
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Accepted network request " + networkRequest);
+    }
+    return true;
+}

@@ -1,0 +1,13 @@
+public int getMaxConnectedAudioDevices(){
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.getMaxConnectedAudioDevices();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to get getMaxConnectedAudioDevices, error: ", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return 1;
+}

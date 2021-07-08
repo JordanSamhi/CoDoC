@@ -1,0 +1,8 @@
+public void unregisterHomeVisibilityObserver(@NonNull HomeVisibilityObserver observer){
+    Preconditions.checkNotNull(observer);
+    try {
+        getService().unregisterProcessObserver(observer.mObserver);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

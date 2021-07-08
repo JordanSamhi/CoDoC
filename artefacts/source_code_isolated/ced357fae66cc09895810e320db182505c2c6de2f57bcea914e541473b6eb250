@@ -1,0 +1,17 @@
+public static void setUpBackupManagerServiceBasics(UserBackupManagerService backupManagerService, Application application, TransportManager transportManager, PackageManager packageManager, Handler backupHandler, UserBackupManagerService.BackupWakeLock wakeLock, BackupAgentTimeoutParameters agentTimeoutParameters){
+    when(backupManagerService.getContext()).thenReturn(application);
+    when(backupManagerService.getTransportManager()).thenReturn(transportManager);
+    when(backupManagerService.getPackageManager()).thenReturn(packageManager);
+    when(backupManagerService.getBackupHandler()).thenReturn(backupHandler);
+    when(backupManagerService.getCurrentOpLock()).thenReturn(new Object());
+    when(backupManagerService.getQueueLock()).thenReturn(new Object());
+    when(backupManagerService.getActivityManager()).thenReturn(mock(IActivityManager.class));
+    when(backupManagerService.getWakelock()).thenReturn(wakeLock);
+    when(backupManagerService.getAgentTimeoutParameters()).thenReturn(agentTimeoutParameters);
+    AccessorMock backupEnabled = mockAccessor(false);
+    doAnswer(backupEnabled.getter).when(backupManagerService).isBackupEnabled();
+    doAnswer(backupEnabled.setter).when(backupManagerService).setBackupEnabled(anyBoolean());
+    AccessorMock backupRunning = mockAccessor(false);
+    doAnswer(backupEnabled.getter).when(backupManagerService).isBackupRunning();
+    doAnswer(backupRunning.setter).when(backupManagerService).setBackupRunning(anyBoolean());
+}

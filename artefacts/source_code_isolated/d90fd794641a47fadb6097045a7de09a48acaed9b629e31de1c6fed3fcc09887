@@ -1,0 +1,20 @@
+public Builder scaleToEndVolume(float volume){
+    final boolean log = (mOptionFlags & OPTION_FLAG_VOLUME_IN_DBFS) != 0;
+    checkCurveForErrorsAndThrowException(mTimes, mVolumes, log, true);
+    checkValidVolumeAndThrowException(volume, log);
+    final float startVolume = mVolumes[0];
+    final float endVolume = mVolumes[mVolumes.length - 1];
+    if (endVolume == startVolume) {
+        final float offset = volume - startVolume;
+        for (int i = 0; i < mVolumes.length; ++i) {
+            mVolumes[i] = mVolumes[i] + offset * mTimes[i];
+        }
+    } else {
+        final float scale = (volume - startVolume) / (endVolume - startVolume);
+        for (int i = 0; i < mVolumes.length; ++i) {
+            mVolumes[i] = scale * (mVolumes[i] - startVolume) + startVolume;
+        }
+    }
+    clampVolume(mVolumes, log);
+    return this;
+}

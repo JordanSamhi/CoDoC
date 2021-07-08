@@ -1,0 +1,9 @@
+public RemoteViews makeLowPriorityContentView(boolean useRegularSubtext){
+    StandardTemplateParams p = mParams.reset().forceDefaultColor().fillTextsFrom(this);
+    if (!useRegularSubtext || TextUtils.isEmpty(mParams.summaryText)) {
+        p.summaryText(createSummaryText());
+    }
+    RemoteViews header = makeNotificationHeader(p);
+    header.setBoolean(R.id.notification_header, "setAcceptAllTouches", true);
+    return header;
+}

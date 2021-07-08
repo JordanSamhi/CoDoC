@@ -1,0 +1,11 @@
+public boolean shouldYieldConnection(SQLiteConnection connection, int connectionFlags){
+    synchronized (mLock) {
+        if (!mAcquiredConnections.containsKey(connection)) {
+            throw new IllegalStateException("Cannot perform this operation " + "because the specified connection was not acquired " + "from this pool or has already been released.");
+        }
+        if (!mIsOpen) {
+            return false;
+        }
+        return isSessionBlockingImportantConnectionWaitersLocked(connection.isPrimaryConnection(), connectionFlags);
+    }
+}

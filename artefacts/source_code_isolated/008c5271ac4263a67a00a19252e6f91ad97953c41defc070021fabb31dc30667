@@ -1,0 +1,11 @@
+public long createSession(@NonNull BlobHandle blobHandle) throws IOException{
+    try {
+        return mService.createSession(blobHandle, mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        e.maybeRethrow(LimitExceededException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

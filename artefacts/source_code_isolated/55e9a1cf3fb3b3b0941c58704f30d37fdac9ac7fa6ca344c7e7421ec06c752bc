@@ -1,0 +1,10 @@
+public boolean isDataConnectivityPossible(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.isDataConnectivityPossible(getSubId(SubscriptionManager.getActiveDataSubscriptionId()));
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#isDataAllowed", e);
+    }
+    return false;
+}

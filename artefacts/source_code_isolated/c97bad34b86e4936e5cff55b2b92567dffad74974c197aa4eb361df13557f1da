@@ -1,0 +1,15 @@
+public void initRecoveryService(@NonNull String rootCertificateAlias, @NonNull byte[] certificateFile, @NonNull byte[] signatureFile) throws CertificateException, InternalRecoveryServiceException{
+    try {
+        mBinder.initRecoveryServiceWithSigFile(rootCertificateAlias, certificateFile, signatureFile);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == ERROR_BAD_CERTIFICATE_FORMAT || e.errorCode == ERROR_INVALID_CERTIFICATE) {
+            throw new CertificateException("Invalid certificate for recovery service", e);
+        }
+        if (e.errorCode == ERROR_DOWNGRADE_CERTIFICATE) {
+            throw new CertificateException("Downgrading certificate serial version isn't supported.", e);
+        }
+        throw wrapUnexpectedServiceSpecificException(e);
+    }
+}

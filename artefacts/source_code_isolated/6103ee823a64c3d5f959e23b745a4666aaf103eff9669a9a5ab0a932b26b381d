@@ -1,0 +1,5 @@
+public boolean clickAndSync(final int x, final int y, long timeout){
+    String logString = String.format("clickAndSync(%d, %d)", x, y);
+    Log.d(LOG_TAG, logString);
+    return runAndWaitForEvents(clickRunnable(x, y), new WaitForAnyEventPredicate(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED | AccessibilityEvent.TYPE_VIEW_SELECTED), timeout) != null;
+}

@@ -1,0 +1,9 @@
+public String getNotificationDelegate(){
+    INotificationManager service = getService();
+    String pkg = mContext.getPackageName();
+    try {
+        return service.getNotificationDelegate(pkg);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

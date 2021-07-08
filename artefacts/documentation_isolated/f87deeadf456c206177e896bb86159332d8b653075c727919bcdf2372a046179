@@ -1,0 +1,56 @@
+
+     * Gets an auth token of the specified type for a particular account,
+     * prompting the user for credentials if necessary.  This method is
+     * intended for applications running in the foreground where it makes
+     * sense to ask the user directly for a password.
+     *
+     * <p>If a previously generated auth token is cached for this account and
+     * type, then it is returned.  Otherwise, if a saved password is
+     * available, it is sent to the server to generate a new auth token.
+     * Otherwise, the user is prompted to enter a password.
+     *
+     * <p>Some authenticators have auth token <em>types</em>, whose value
+     * is authenticator-dependent.  Some services use different token types to
+     * access different functionality -- for example, Google uses different auth
+     * tokens to access Gmail and Google Calendar for the same account.
+     *
+     * <p><b>NOTE:</b> If targeting your app to work on API level 22 and before,
+     * USE_CREDENTIALS permission is needed for those platforms. See docs for
+     * this function in API level 22.
+     *
+     * <p>This method may be called from any thread, but the returned
+     * {@link AccountManagerFuture} must not be used on the main thread.
+     *
+     * @param account The account to fetch an auth token for
+     * @param authTokenType The auth token type, an authenticator-dependent
+     *     string token, must not be null
+     * @param options Authenticator-specific options for the request,
+     *     may be null or empty
+     * @param activity The {@link Activity} context to use for launching a new
+     *     authenticator-defined sub-Activity to prompt the user for a password
+     *     if necessary; used only to call startActivity(); must not be null.
+     * @param callback Callback to invoke when the request completes,
+     *     null for no callback
+     * @param handler {@link Handler} identifying the callback thread,
+     *     null for the main thread
+     * @return An {@link AccountManagerFuture} which resolves to a Bundle with
+     *     at least the following fields:
+     * <ul>
+     * <li> {@link #KEY_ACCOUNT_NAME} - the name of the account you supplied
+     * <li> {@link #KEY_ACCOUNT_TYPE} - the type of the account
+     * <li> {@link #KEY_AUTHTOKEN} - the auth token you wanted
+     * </ul>
+     *
+     * (Other authenticator-specific values may be returned.)  If an auth token
+     * could not be fetched, {@link AccountManagerFuture#getResult()} throws:
+     * <ul>
+     * <li> {@link AuthenticatorException} if the authenticator failed to respond
+     * <li> {@link OperationCanceledException} if the operation is canceled for
+     *      any reason, incluidng the user canceling a credential request
+     * <li> {@link IOException} if the authenticator experienced an I/O problem
+     *      creating a new auth token, usually because of network trouble
+     * </ul>
+     * If the account is no longer present on the device, the return value is
+     * authenticator-dependent.  The caller should verify the validity of the
+     * account before requesting an auth token.
+     

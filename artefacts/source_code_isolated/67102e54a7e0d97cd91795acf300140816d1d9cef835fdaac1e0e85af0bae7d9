@@ -1,0 +1,21 @@
+public String describeStateLocked(){
+    final StringBuilder sb = new StringBuilder(128);
+    if (mCurrentBroadcast != null) {
+        sb.append("1 in flight, ");
+    }
+    sb.append(mOrderedBroadcasts.size());
+    sb.append(" ordered");
+    int n = pendingInDeferralsList(mAlarmBroadcasts);
+    if (n > 0) {
+        sb.append(", ");
+        sb.append(n);
+        sb.append(" deferrals in alarm recipients");
+    }
+    n = pendingInDeferralsList(mDeferredBroadcasts);
+    if (n > 0) {
+        sb.append(", ");
+        sb.append(n);
+        sb.append(" deferred");
+    }
+    return sb.toString();
+}

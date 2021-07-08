@@ -1,0 +1,15 @@
+public Builder addSanitizer(@NonNull Sanitizer sanitizer, @NonNull AutofillId... ids){
+    throwIfDestroyed();
+    Preconditions.checkArgument(!ArrayUtils.isEmpty(ids), "ids cannot be empty or null");
+    Preconditions.checkArgument((sanitizer instanceof InternalSanitizer), "not provided by Android System: " + sanitizer);
+    if (mSanitizers == null) {
+        mSanitizers = new ArrayMap<>();
+        mSanitizerIds = new ArraySet<>(ids.length);
+    }
+    for (AutofillId id : ids) {
+        Preconditions.checkArgument(!mSanitizerIds.contains(id), "already added %s", id);
+        mSanitizerIds.add(id);
+    }
+    mSanitizers.put((InternalSanitizer) sanitizer, ids);
+    return this;
+}

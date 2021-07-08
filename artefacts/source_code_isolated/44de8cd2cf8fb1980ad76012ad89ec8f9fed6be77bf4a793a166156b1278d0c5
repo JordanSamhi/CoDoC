@@ -1,0 +1,11 @@
+public void notifySplitScreenBoundsChanged(Rect secondaryWindowBounds, Rect secondaryWindowInsets){
+    try {
+        if (mOverviewProxy != null) {
+            mOverviewProxy.onSplitScreenSecondaryBoundsChanged(secondaryWindowBounds, secondaryWindowInsets);
+        } else {
+            Log.e(TAG_OPS, "Failed to get overview proxy for split screen bounds.");
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG_OPS, "Failed to call onSplitScreenSecondaryBoundsChanged()", e);
+    }
+}

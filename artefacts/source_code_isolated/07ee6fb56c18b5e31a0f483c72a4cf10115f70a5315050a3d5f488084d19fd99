@@ -1,0 +1,9 @@
+public boolean isSignedByExactly(String packageName, KeySet ks){
+    Objects.requireNonNull(packageName);
+    Objects.requireNonNull(ks);
+    try {
+        return mPM.isPackageSignedByKeySetExactly(packageName, ks);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

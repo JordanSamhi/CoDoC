@@ -1,0 +1,6 @@
+public static ProtocolPortTuple parse(ByteBuffer payload){
+    int protocol = payload.get();
+    int port = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
+    int status = payload.get() & 0xFF;
+    return new ProtocolPortTuple(protocol, port, status);
+}

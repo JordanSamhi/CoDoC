@@ -1,0 +1,11 @@
+public void connect(LocalSocketAddress endpoint) throws IOException{
+    synchronized (this) {
+        if (isConnected) {
+            throw new IOException("already connected");
+        }
+        implCreateIfNeeded();
+        impl.connect(endpoint, 0);
+        isConnected = true;
+        isBound = true;
+    }
+}

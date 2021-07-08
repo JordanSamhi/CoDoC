@@ -1,0 +1,60 @@
+public static String readTextFile(File file, int max, String ellipsis) throws IOException{
+    InputStream input = new FileInputStream(file);
+    BufferedInputStream bis = new BufferedInputStream(input);
+    try {
+        long size = file.length();
+        if (max > 0 || (size > 0 && max == 0)) {
+            if (size > 0 && (max == 0 || size < max))
+                max = (int) size;
+            byte[] data = new byte[max + 1];
+            int length = bis.read(data);
+            if (length <= 0)
+                return "";
+            if (length <= max)
+                return new String(data, 0, length);
+            if (ellipsis == null)
+                return new String(data, 0, max);
+            return new String(data, 0, max) + ellipsis;
+        } else if (max < 0) {
+            int len;
+            boolean rolled = false;
+            byte[] last = null;
+            byte[] data = null;
+            do {
+                if (last != null)
+                    rolled = true;
+                byte[] tmp = last;
+                last = data;
+                data = tmp;
+                if (data == null)
+                    data = new byte[-max];
+                len = bis.read(data);
+            } while (len == data.length);
+            if (last == null && len <= 0)
+                return "";
+            if (last == null)
+                return new String(data, 0, len);
+            if (len > 0) {
+                rolled = true;
+                System.arraycopy(last, len, last, 0, last.length - len);
+                System.arraycopy(data, 0, last, last.length - len, len);
+            }
+            if (ellipsis == null || !rolled)
+                return new String(last);
+            return ellipsis + new String(last);
+        } else {
+            ByteArrayOutputStream contents = new ByteArrayOutputStream();
+            int len;
+            byte[] data = new byte[1024];
+            do {
+                len = bis.read(data);
+                if (len > 0)
+                    contents.write(data, 0, len);
+            } while (len == data.length);
+            return contents.toString();
+        }
+    } finally {
+        bis.close();
+        input.close();
+    }
+}

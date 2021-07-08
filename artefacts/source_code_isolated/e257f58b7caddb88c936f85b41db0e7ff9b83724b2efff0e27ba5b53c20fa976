@@ -1,0 +1,12 @@
+public void dumpDebug(ProtoOutputStream protoOutputStream, long fieldId){
+    final long token = protoOutputStream.start(fieldId);
+    if (mAppBounds != null) {
+        mAppBounds.dumpDebug(protoOutputStream, APP_BOUNDS);
+    }
+    protoOutputStream.write(WINDOWING_MODE, mWindowingMode);
+    protoOutputStream.write(ACTIVITY_TYPE, mActivityType);
+    if (mBounds != null) {
+        mBounds.dumpDebug(protoOutputStream, BOUNDS);
+    }
+    protoOutputStream.end(token);
+}

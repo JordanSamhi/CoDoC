@@ -1,0 +1,29 @@
+public static TextEncodingDetails calcUnicodeEncodingDetails(CharSequence msgBody){
+    TextEncodingDetails ted = new TextEncodingDetails();
+    int octets = msgBody.length() * 2;
+    ted.codeUnitSize = SmsConstants.ENCODING_16BIT;
+    ted.codeUnitCount = msgBody.length();
+    if (octets > SmsConstants.MAX_USER_DATA_BYTES) {
+        int maxUserDataBytesWithHeader = SmsConstants.MAX_USER_DATA_BYTES_WITH_HEADER;
+        if (!SmsMessage.hasEmsSupport()) {
+            if (octets <= 9 * (maxUserDataBytesWithHeader - 2)) {
+                maxUserDataBytesWithHeader -= 2;
+            }
+        }
+        int pos = 0;
+        int msgCount = 0;
+        while (pos < msgBody.length()) {
+            int nextPos = findNextUnicodePosition(pos, maxUserDataBytesWithHeader, msgBody);
+            if (nextPos == msgBody.length()) {
+                ted.codeUnitsRemaining = pos + maxUserDataBytesWithHeader / 2 - msgBody.length();
+            }
+            pos = nextPos;
+            msgCount++;
+        }
+        ted.msgCount = msgCount;
+    } else {
+        ted.msgCount = 1;
+        ted.codeUnitsRemaining = (SmsConstants.MAX_USER_DATA_BYTES - octets) / 2;
+    }
+    return ted;
+}

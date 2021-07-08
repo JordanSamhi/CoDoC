@@ -1,0 +1,44 @@
+public boolean verifySignature(String config, String base64Signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
+    byte[] signature;
+    try {
+        signature = Base64.getDecoder().decode(base64Signature);
+    } catch (IllegalArgumentException e) {
+        mEvent.status = FrameworkStatsLog.SIGNED_CONFIG_REPORTED__STATUS__BASE64_FAILURE_SIGNATURE;
+        Slog.e(TAG, "Failed to base64 decode signature");
+        return false;
+    }
+    byte[] data = config.getBytes(StandardCharsets.UTF_8);
+    if (DBG)
+        Slog.i(TAG, "Data: " + Base64.getEncoder().encodeToString(data));
+    if (Build.IS_DEBUGGABLE) {
+        if (mDebugKey != null) {
+            if (DBG)
+                Slog.w(TAG, "Trying to verify signature using debug key");
+            if (verifyWithPublicKey(mDebugKey, data, signature)) {
+                Slog.i(TAG, "Verified config using debug key");
+                mEvent.verifiedWith = FrameworkStatsLog.SIGNED_CONFIG_REPORTED__VERIFIED_WITH__DEBUG;
+                return true;
+            } else {
+                if (DBG)
+                    Slog.i(TAG, "Config verification failed using debug key");
+            }
+        } else {
+            Slog.w(TAG, "Debuggable build, but have no debug key");
+        }
+    }
+    if (mProdKey == null) {
+        Slog.e(TAG, "No prod key; construction failed?");
+        mEvent.status = FrameworkStatsLog.SIGNED_CONFIG_REPORTED__STATUS__SIGNATURE_CHECK_FAILED_PROD_KEY_ABSENT;
+        return false;
+    }
+    if (verifyWithPublicKey(mProdKey, data, signature)) {
+        Slog.i(TAG, "Verified config using production key");
+        mEvent.verifiedWith = FrameworkStatsLog.SIGNED_CONFIG_REPORTED__VERIFIED_WITH__PRODUCTION;
+        return true;
+    } else {
+        if (DBG)
+            Slog.i(TAG, "Verification failed using production key");
+        mEvent.status = FrameworkStatsLog.SIGNED_CONFIG_REPORTED__STATUS__SIGNATURE_CHECK_FAILED;
+        return false;
+    }
+}

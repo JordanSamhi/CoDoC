@@ -1,0 +1,22 @@
+public float draw(Canvas canvas, float currentDrawPosition, int charHeight, float yPosition, float charLength){
+    boolean textVisible = currentTextSizeFactor > 0;
+    boolean dotVisible = currentDotSizeFactor > 0;
+    float charWidth = charLength * currentWidthFactor;
+    if (textVisible) {
+        float currYPosition = yPosition + charHeight / 2.0f * currentTextSizeFactor + charHeight * currentTextTranslationY * 0.8f;
+        canvas.save();
+        float centerX = currentDrawPosition + charWidth / 2;
+        canvas.translate(centerX, currYPosition);
+        canvas.scale(currentTextSizeFactor, currentTextSizeFactor);
+        canvas.drawText(Character.toString(whichChar), 0, 0, mDrawPaint);
+        canvas.restore();
+    }
+    if (dotVisible) {
+        canvas.save();
+        float centerX = currentDrawPosition + charWidth / 2;
+        canvas.translate(centerX, yPosition);
+        canvas.drawCircle(0, 0, mDotSize / 2 * currentDotSizeFactor, mDrawPaint);
+        canvas.restore();
+    }
+    return charWidth + mCharPadding * currentWidthFactor;
+}

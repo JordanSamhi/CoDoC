@@ -1,0 +1,23 @@
+public static Map<String, Uri> getDataResultsFromIntent(Intent intent, String remoteInputResultKey){
+    Intent clipDataIntent = getClipDataIntentFromIntent(intent);
+    if (clipDataIntent == null) {
+        return null;
+    }
+    Map<String, Uri> results = new HashMap<>();
+    Bundle extras = clipDataIntent.getExtras();
+    for (String key : extras.keySet()) {
+        if (key.startsWith(EXTRA_DATA_TYPE_RESULTS_DATA)) {
+            String mimeType = key.substring(EXTRA_DATA_TYPE_RESULTS_DATA.length());
+            if (mimeType == null || mimeType.isEmpty()) {
+                continue;
+            }
+            Bundle bundle = clipDataIntent.getBundleExtra(key);
+            String uriStr = bundle.getString(remoteInputResultKey);
+            if (uriStr == null || uriStr.isEmpty()) {
+                continue;
+            }
+            results.put(mimeType, Uri.parse(uriStr));
+        }
+    }
+    return results.isEmpty() ? null : results;
+}

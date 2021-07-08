@@ -1,0 +1,21 @@
+public SharedUserSetting updateFrom(SharedUserSetting sharedUser){
+    copyFrom(sharedUser);
+    this.userId = sharedUser.userId;
+    this.uidFlags = sharedUser.uidFlags;
+    this.uidPrivateFlags = sharedUser.uidPrivateFlags;
+    this.seInfoTargetSdkVersion = sharedUser.seInfoTargetSdkVersion;
+    this.packages.clear();
+    this.packages.addAll(sharedUser.packages);
+    this.signaturesChanged = sharedUser.signaturesChanged;
+    if (sharedUser.processes != null) {
+        final int numProcs = sharedUser.processes.size();
+        this.processes = new ArrayMap<>(numProcs);
+        for (int i = 0; i < numProcs; i++) {
+            ParsedProcess proc = new ParsedProcess(sharedUser.processes.valueAt(i));
+            this.processes.put(proc.getName(), proc);
+        }
+    } else {
+        this.processes = null;
+    }
+    return this;
+}

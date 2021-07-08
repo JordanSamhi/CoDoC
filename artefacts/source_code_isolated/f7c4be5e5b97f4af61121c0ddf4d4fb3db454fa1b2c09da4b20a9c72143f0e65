@@ -1,0 +1,5 @@
+public final AssetFileDescriptor openAssetFile(Uri uri, String mode) throws FileNotFoundException{
+    enforceTree(uri);
+    final ParcelFileDescriptor fd = openDocument(getDocumentId(uri), mode, null);
+    return fd != null ? new AssetFileDescriptor(fd, 0, -1) : null;
+}

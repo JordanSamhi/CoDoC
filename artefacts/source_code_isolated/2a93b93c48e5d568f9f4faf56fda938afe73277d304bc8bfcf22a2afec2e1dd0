@@ -1,0 +1,10 @@
+public void init(Looper looper){
+    mLooper = looper;
+    mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+    mProvisioningStateMachine.start(new Handler(mLooper));
+    mOsuNetworkConnection.init(mProvisioningStateMachine.getHandler());
+    mProvisioningStateMachine.getHandler().post(() -> {
+        mWfaKeyStore.load();
+        mOsuServerConnection.init(mObjectFactory.getSSLContext(TLS_VERSION), mObjectFactory.getTrustManagerFactory(mWfaKeyStore.get()));
+    });
+}

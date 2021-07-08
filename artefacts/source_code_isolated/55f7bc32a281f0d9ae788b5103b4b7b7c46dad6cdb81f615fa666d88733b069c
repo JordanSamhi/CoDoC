@@ -1,0 +1,8 @@
+public int getMeasurementMode() throws IllegalStateException{
+    synchronized (mStateLock) {
+        if (mState == STATE_UNINITIALIZED) {
+            throw (new IllegalStateException("getMeasurementMode() called in wrong state: " + mState));
+        }
+        return native_getMeasurementMode();
+    }
+}

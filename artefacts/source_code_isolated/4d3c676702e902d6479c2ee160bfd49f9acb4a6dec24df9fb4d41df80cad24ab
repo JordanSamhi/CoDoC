@@ -1,0 +1,23 @@
+public static synchronized CameraAgent getAndroidCameraAgent(Context context, CameraApi api){
+    api = validateApiChoice(api);
+    if (api == CameraApi.API_1) {
+        if (sAndroidCameraAgent == null) {
+            sAndroidCameraAgent = new AndroidCameraAgentImpl();
+            sAndroidCameraAgentClientCount = 1;
+        } else {
+            ++sAndroidCameraAgentClientCount;
+        }
+        return sAndroidCameraAgent;
+    } else {
+        if (highestSupportedApi() == CameraApi.API_1) {
+            throw new UnsupportedOperationException("Camera API_2 unavailable on this device");
+        }
+        if (sAndroidCamera2Agent == null) {
+            sAndroidCamera2Agent = new AndroidCamera2AgentImpl(context);
+            sAndroidCamera2AgentClientCount = 1;
+        } else {
+            ++sAndroidCamera2AgentClientCount;
+        }
+        return sAndroidCamera2Agent;
+    }
+}

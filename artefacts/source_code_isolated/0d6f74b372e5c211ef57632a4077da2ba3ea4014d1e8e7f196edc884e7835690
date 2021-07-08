@@ -1,0 +1,11 @@
+public void disconnect(){
+    if (DBG)
+        log("disconnect");
+    removeCallbacks(mGetServiceRunnable);
+    synchronized (mLock) {
+        if (mManager != null) {
+            mManager.removeNotifyStatusChangedCallback(mNotifyStatusChangedCallback);
+        }
+    }
+    notifyNotReady();
+}

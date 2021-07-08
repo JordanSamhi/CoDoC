@@ -1,0 +1,10 @@
+public void setApplicationRestrictions(@Nullable ComponentName admin, String packageName, Bundle settings){
+    throwIfParentInstance("setApplicationRestrictions");
+    if (mService != null) {
+        try {
+            mService.setApplicationRestrictions(admin, mContext.getPackageName(), packageName, settings);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

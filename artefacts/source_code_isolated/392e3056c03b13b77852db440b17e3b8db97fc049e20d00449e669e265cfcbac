@@ -1,0 +1,35 @@
+public static void processForRemoteInput(Notification n, Context context){
+    if (!ENABLE_REMOTE_INPUT) {
+        return;
+    }
+    if (n.extras != null && n.extras.containsKey("android.wearable.EXTENSIONS") && (n.actions == null || n.actions.length == 0)) {
+        Notification.Action viableAction = null;
+        Notification.WearableExtender we = new Notification.WearableExtender(n);
+        List<Notification.Action> actions = we.getActions();
+        final int numActions = actions.size();
+        for (int i = 0; i < numActions; i++) {
+            Notification.Action action = actions.get(i);
+            if (action == null) {
+                continue;
+            }
+            RemoteInput[] remoteInputs = action.getRemoteInputs();
+            if (remoteInputs == null) {
+                continue;
+            }
+            for (RemoteInput ri : remoteInputs) {
+                if (ri.getAllowFreeFormInput()) {
+                    viableAction = action;
+                    break;
+                }
+            }
+            if (viableAction != null) {
+                break;
+            }
+        }
+        if (viableAction != null) {
+            Notification.Builder rebuilder = Notification.Builder.recoverBuilder(context, n);
+            rebuilder.setActions(viableAction);
+            rebuilder.build();
+        }
+    }
+}

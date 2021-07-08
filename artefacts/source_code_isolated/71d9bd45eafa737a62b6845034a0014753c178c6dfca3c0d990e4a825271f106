@@ -1,0 +1,36 @@
+public static CatService getInstance(CommandsInterface ci, Context context, UiccProfile uiccProfile, int slotId){
+    UiccCardApplication ca = null;
+    IccFileHandler fh = null;
+    IccRecords ir = null;
+    if (uiccProfile != null) {
+        ca = uiccProfile.getApplicationIndex(0);
+        if (ca != null) {
+            fh = ca.getIccFileHandler();
+            ir = ca.getIccRecords();
+        }
+    }
+    synchronized (sInstanceLock) {
+        if (sInstance == null) {
+            int simCount = TelephonyManager.getDefault().getSupportedModemCount();
+            sInstance = new CatService[simCount];
+            for (int i = 0; i < simCount; i++) {
+                sInstance[i] = null;
+            }
+        }
+        if (sInstance[slotId] == null) {
+            if (ci == null || ca == null || ir == null || context == null || fh == null || uiccProfile == null) {
+                return null;
+            }
+            sInstance[slotId] = new CatService(ci, ca, ir, context, fh, uiccProfile, slotId);
+        } else if ((ir != null) && (mIccRecords != ir)) {
+            if (mIccRecords != null) {
+                mIccRecords.unregisterForRecordsLoaded(sInstance[slotId]);
+            }
+            mIccRecords = ir;
+            mUiccApplication = ca;
+            mIccRecords.registerForRecordsLoaded(sInstance[slotId], MSG_ID_ICC_RECORDS_LOADED, null);
+            CatLog.d(sInstance[slotId], "registerForRecordsLoaded slotid=" + slotId + " instance:" + sInstance[slotId]);
+        }
+        return sInstance[slotId];
+    }
+}

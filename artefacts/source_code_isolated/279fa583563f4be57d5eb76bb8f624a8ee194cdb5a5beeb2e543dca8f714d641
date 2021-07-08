@@ -1,0 +1,23 @@
+public Set<String> getPermissions(int userId){
+    enforceValidUserId(userId);
+    synchronized (mLock) {
+        if (mPermissions == null) {
+            return Collections.emptySet();
+        }
+        Set<String> permissions = new ArraySet<>(mPermissions.size());
+        final int permissionCount = mPermissions.size();
+        for (int i = 0; i < permissionCount; i++) {
+            String permission = mPermissions.keyAt(i);
+            if (hasInstallPermission(permission)) {
+                permissions.add(permission);
+                continue;
+            }
+            if (userId != UserHandle.USER_ALL) {
+                if (hasRuntimePermission(permission, userId)) {
+                    permissions.add(permission);
+                }
+            }
+        }
+        return permissions;
+    }
+}

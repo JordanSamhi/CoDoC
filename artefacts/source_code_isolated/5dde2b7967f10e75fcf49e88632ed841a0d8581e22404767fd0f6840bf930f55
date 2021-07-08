@@ -1,0 +1,18 @@
+public void setOnMediaKeyListener(OnMediaKeyListener listener, @Nullable Handler handler){
+    synchronized (mLock) {
+        try {
+            if (listener == null) {
+                mOnMediaKeyListener = null;
+                mService.setOnMediaKeyListener(null);
+            } else {
+                if (handler == null) {
+                    handler = new Handler();
+                }
+                mOnMediaKeyListener = new OnMediaKeyListenerImpl(listener, handler);
+                mService.setOnMediaKeyListener(mOnMediaKeyListener);
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to set media key listener", e);
+        }
+    }
+}

@@ -1,0 +1,3 @@
+public void getEuiccChallenge(AsyncResultCallback<byte[]> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_GET_EUICC_CHALLENGE).build().toHex())), (byte[] response) -> parseResponse(response).getChild(Tags.TAG_CTX_0).asBytes(), callback, handler);
+}

@@ -1,0 +1,16 @@
+public final void setConferenceables(List<Conferenceable> conferenceables){
+    clearConferenceableList();
+    for (Conferenceable c : conferenceables) {
+        if (!mConferenceables.contains(c)) {
+            if (c instanceof Connection) {
+                Connection connection = (Connection) c;
+                connection.addConnectionListener(mConnectionDeathListener);
+            } else if (c instanceof Conference) {
+                Conference conference = (Conference) c;
+                conference.addListener(mConferenceDeathListener);
+            }
+            mConferenceables.add(c);
+        }
+    }
+    fireOnConferenceableConnectionsChanged();
+}

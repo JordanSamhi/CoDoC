@@ -1,0 +1,36 @@
+public boolean onTouchExplorationHoverEvent(@NonNull MotionEvent event){
+    if (mBounds == null) {
+        return false;
+    }
+    final int x = (int) event.getX();
+    final int y = (int) event.getY();
+    boolean hit = true;
+    boolean handled = false;
+    final boolean isInbound = mBounds.contains(x, y);
+    switch(event.getActionMasked()) {
+        case MotionEvent.ACTION_HOVER_ENTER:
+            mDelegateTargeted = isInbound;
+            break;
+        case MotionEvent.ACTION_HOVER_MOVE:
+            if (isInbound) {
+                mDelegateTargeted = true;
+            } else {
+                if (mDelegateTargeted && !mSlopBounds.contains(x, y)) {
+                    hit = false;
+                }
+            }
+            break;
+        case MotionEvent.ACTION_HOVER_EXIT:
+            mDelegateTargeted = true;
+            break;
+    }
+    if (mDelegateTargeted) {
+        if (hit) {
+            event.setLocation(mDelegateView.getWidth() / 2, mDelegateView.getHeight() / 2);
+        } else {
+            mDelegateTargeted = false;
+        }
+        handled = mDelegateView.dispatchHoverEvent(event);
+    }
+    return handled;
+}

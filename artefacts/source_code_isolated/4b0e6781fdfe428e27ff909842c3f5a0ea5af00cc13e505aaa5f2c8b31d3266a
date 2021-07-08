@@ -1,0 +1,10 @@
+public void check(long timeoutMs, Consumer<Boolean> callback){
+    if (!mSensor.getSensorAvailable()) {
+        callback.accept(null);
+    }
+    mCallbacks.add(callback);
+    if (!mRegistered.getAndSet(true)) {
+        mSensor.register(mListener);
+        mDelayableExecutor.executeDelayed(this, timeoutMs);
+    }
+}

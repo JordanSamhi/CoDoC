@@ -1,0 +1,50 @@
+public void run(){
+    Slog.i(TAG, "Attempting to initiate a secondary key rotation.");
+    Optional<String> maybeCurrentAlias = mCryptoSettings.getActiveSecondaryKeyAlias();
+    if (!maybeCurrentAlias.isPresent()) {
+        Slog.w(TAG, "No active current alias. Cannot trigger a secondary rotation.");
+        return;
+    }
+    String currentAlias = maybeCurrentAlias.get();
+    Optional<String> maybeNextAlias = mCryptoSettings.getNextSecondaryKeyAlias();
+    if (maybeNextAlias.isPresent()) {
+        String nextAlias = maybeNextAlias.get();
+        if (nextAlias.equals(currentAlias)) {
+            Slog.e(TAG, "Was already trying to rotate to what is already the active key.");
+        } else {
+            Slog.w(TAG, "Was already rotating to another key. Cancelling that.");
+            try {
+                mSecondaryKeyManager.remove(nextAlias);
+            } catch (Exception e) {
+                Slog.wtf(TAG, "Could not remove old key", e);
+            }
+        }
+        mCryptoSettings.removeNextSecondaryKeyAlias();
+    }
+    RecoverableKeyStoreSecondaryKey newSecondaryKey;
+    try {
+        newSecondaryKey = mSecondaryKeyManager.generate();
+    } catch (LockScreenRequiredException e) {
+        Slog.e(TAG, "No lock screen is set - cannot generate a new key to rotate to.", e);
+        return;
+    } catch (InternalRecoveryServiceException e) {
+        Slog.e(TAG, "Internal error in Recovery Controller, failed to rotate key.", e);
+        return;
+    } catch (UnrecoverableKeyException e) {
+        Slog.e(TAG, "Failed to get key after generating, failed to rotate", e);
+        return;
+    }
+    String alias = newSecondaryKey.getAlias();
+    Slog.i(TAG, "Generated a new secondary key with alias '" + alias + "'.");
+    try {
+        mCryptoSettings.setNextSecondaryAlias(alias);
+        Slog.i(TAG, "Successfully set '" + alias + "' as next key to rotate to");
+    } catch (IllegalArgumentException e) {
+        Slog.e(TAG, "Unexpected error setting next alias", e);
+        try {
+            mSecondaryKeyManager.remove(alias);
+        } catch (Exception err) {
+            Slog.wtf(TAG, "Failed to remove generated key after encountering error", err);
+        }
+    }
+}

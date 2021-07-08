@@ -1,0 +1,22 @@
+public boolean resolveRtlPropertiesIfNeeded(){
+    if (!needRtlPropertiesResolution())
+        return false;
+    if (!isLayoutDirectionResolved()) {
+        resolveLayoutDirection();
+        resolveLayoutParams();
+    }
+    if (!isTextDirectionResolved()) {
+        resolveTextDirection();
+    }
+    if (!isTextAlignmentResolved()) {
+        resolveTextAlignment();
+    }
+    if (!areDrawablesResolved()) {
+        resolveDrawables();
+    }
+    if (!isPaddingResolved()) {
+        resolvePadding();
+    }
+    onRtlPropertiesChanged(getLayoutDirection());
+    return true;
+}

@@ -1,0 +1,18 @@
+public void pauseBgScan(@NonNull String ifaceName){
+    WifiStatus status;
+    synchronized (sLock) {
+        try {
+            IWifiStaIface iface = getStaIface(ifaceName);
+            if (iface == null)
+                return;
+            if (mScan != null && !mScan.paused) {
+                status = iface.stopBackgroundScan(mScan.cmdId);
+                if (!ok(status))
+                    return;
+                mScan.paused = true;
+            }
+        } catch (RemoteException e) {
+            handleRemoteException(e);
+        }
+    }
+}

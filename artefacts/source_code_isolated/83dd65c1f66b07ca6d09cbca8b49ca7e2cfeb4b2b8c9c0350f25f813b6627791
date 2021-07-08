@@ -1,0 +1,11 @@
+public final int areAllEffectsSupported(@NonNull @VibrationEffect.EffectType int... effectIds){
+    int support = VIBRATION_EFFECT_SUPPORT_YES;
+    for (int supported : areEffectsSupported(effectIds)) {
+        if (supported == VIBRATION_EFFECT_SUPPORT_NO) {
+            return VIBRATION_EFFECT_SUPPORT_NO;
+        } else if (supported == VIBRATION_EFFECT_SUPPORT_UNKNOWN) {
+            support = VIBRATION_EFFECT_SUPPORT_UNKNOWN;
+        }
+    }
+    return support;
+}

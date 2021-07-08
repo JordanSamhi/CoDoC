@@ -1,0 +1,26 @@
+
+     * Replaces the current {@code VolumeShaper}
+     * {@code configuration} with a new {@code configuration}.
+     *
+     * This allows the user to change the volume shape
+     * while the existing {@code VolumeShaper} is in effect.
+     *
+     * The effect of {@code replace()} is similar to an atomic close of
+     * the existing {@code VolumeShaper} and creation of a new {@code VolumeShaper}.
+     *
+     * If the {@code operation} is {@link VolumeShaper.Operation#PLAY} then the
+     * new curve starts immediately.
+     *
+     * If the {@code operation} is
+     * {@link VolumeShaper.Operation#REVERSE}, then the new curve will
+     * be delayed until {@code PLAY} is applied.
+     *
+     * @param configuration the new {@code configuration} to use.
+     * @param operation the {@code operation} to apply to the {@code VolumeShaper}
+     * @param join if true, match the start volume of the
+     *             new {@code configuration} to the current volume of the existing
+     *             {@code VolumeShaper}, to avoid discontinuity.
+     * @throws IllegalStateException if the player is uninitialized or if there
+     *         is a critical failure. In that case, the {@code VolumeShaper} should be
+     *         recreated.
+     

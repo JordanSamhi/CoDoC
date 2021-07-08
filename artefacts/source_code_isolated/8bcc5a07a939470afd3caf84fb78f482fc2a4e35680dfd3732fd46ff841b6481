@@ -1,0 +1,16 @@
+public boolean startSingleScan(WifiNative.ScanSettings scanSettings){
+    mStatusPerImpl.clear();
+    boolean anySuccess = false;
+    for (Map.Entry<String, WifiScannerImpl> entry : mScannerImpls.entrySet()) {
+        String ifaceName = entry.getKey();
+        WifiScannerImpl impl = entry.getValue();
+        boolean success = impl.startSingleScan(scanSettings, new ScanEventHandler(ifaceName));
+        if (!success) {
+            Log.e(TAG, "Failed to start single scan on " + ifaceName);
+            continue;
+        }
+        mStatusPerImpl.put(ifaceName, STATUS_PENDING);
+        anySuccess = true;
+    }
+    return anySuccess;
+}

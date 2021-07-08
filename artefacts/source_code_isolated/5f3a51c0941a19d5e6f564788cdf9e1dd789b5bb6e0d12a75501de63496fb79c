@@ -1,0 +1,10 @@
+public void bind(@NonNull String sourcePath, @NonNull String targetPath) throws IOException{
+    try {
+        int res = mService.makeBindMount(mId, sourcePath, targetPath, IIncrementalService.BIND_TEMPORARY);
+        if (res < 0) {
+            throw new IOException("bind() failed with errno " + -res);
+        }
+    } catch (RemoteException e) {
+        e.rethrowFromSystemServer();
+    }
+}

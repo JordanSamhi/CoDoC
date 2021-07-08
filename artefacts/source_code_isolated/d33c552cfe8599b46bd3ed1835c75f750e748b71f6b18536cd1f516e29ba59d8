@@ -1,0 +1,9 @@
+public static boolean isHeadlessRemoteDisplayProvider(PackageManager pm, String packageName){
+    if (pm.checkPermission(Manifest.permission.REMOTE_DISPLAY_PROVIDER, packageName) != PackageManager.PERMISSION_GRANTED) {
+        return false;
+    }
+    Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+    homeIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+    homeIntent.setPackage(packageName);
+    return pm.queryIntentActivities(homeIntent, 0).isEmpty();
+}

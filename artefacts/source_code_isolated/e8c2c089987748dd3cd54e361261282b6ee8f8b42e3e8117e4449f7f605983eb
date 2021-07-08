@@ -1,0 +1,15 @@
+public void onConnectedClientsChanged(List<WifiClient> clients){
+    synchronized (mLock) {
+        mTetheredSoftApConnectedClients = new ArrayList<>(clients);
+    }
+    Iterator<ISoftApCallback> iterator = mRegisteredSoftApCallbacks.getCallbacks().iterator();
+    while (iterator.hasNext()) {
+        ISoftApCallback callback = iterator.next();
+        try {
+            callback.onConnectedClientsChanged(mTetheredSoftApConnectedClients);
+        } catch (RemoteException e) {
+            Log.e(TAG, "onConnectedClientsChanged: remote exception -- " + e);
+            iterator.remove();
+        }
+    }
+}

@@ -1,0 +1,11 @@
+public synchronized VoiceCallSession[] getVoiceCallSessions(long minIntervalMillis){
+    if (getWallTimeMillis() - mAtoms.voiceCallSessionPullTimestampMillis > minIntervalMillis) {
+        mAtoms.voiceCallSessionPullTimestampMillis = getWallTimeMillis();
+        VoiceCallSession[] previousCalls = mAtoms.voiceCallSession;
+        mAtoms.voiceCallSession = new VoiceCallSession[0];
+        saveAtomsToFile();
+        return previousCalls;
+    } else {
+        return null;
+    }
+}

@@ -1,0 +1,36 @@
+public void registerSync(ScanResult scanResult, int skip, int timeout, PeriodicAdvertisingCallback callback, Handler handler){
+    if (callback == null) {
+        throw new IllegalArgumentException("callback can't be null");
+    }
+    if (scanResult == null) {
+        throw new IllegalArgumentException("scanResult can't be null");
+    }
+    if (scanResult.getAdvertisingSid() == ScanResult.SID_NOT_PRESENT) {
+        throw new IllegalArgumentException("scanResult must contain a valid sid");
+    }
+    if (skip < SKIP_MIN || skip > SKIP_MAX) {
+        throw new IllegalArgumentException("timeout must be between " + TIMEOUT_MIN + " and " + TIMEOUT_MAX);
+    }
+    if (timeout < TIMEOUT_MIN || timeout > TIMEOUT_MAX) {
+        throw new IllegalArgumentException("timeout must be between " + TIMEOUT_MIN + " and " + TIMEOUT_MAX);
+    }
+    IBluetoothGatt gatt;
+    try {
+        gatt = mBluetoothManager.getBluetoothGatt();
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to get Bluetooth gatt - ", e);
+        callback.onSyncEstablished(0, scanResult.getDevice(), scanResult.getAdvertisingSid(), skip, timeout, PeriodicAdvertisingCallback.SYNC_NO_RESOURCES);
+        return;
+    }
+    if (handler == null) {
+        handler = new Handler(Looper.getMainLooper());
+    }
+    IPeriodicAdvertisingCallback wrapped = wrap(callback, handler);
+    mCallbackWrappers.put(callback, wrapped);
+    try {
+        gatt.registerSync(scanResult, skip, timeout, wrapped);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to register sync - ", e);
+        return;
+    }
+}

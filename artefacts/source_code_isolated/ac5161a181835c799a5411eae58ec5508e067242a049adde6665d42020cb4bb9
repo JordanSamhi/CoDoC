@@ -1,0 +1,48 @@
+public static String[] getClassLoaderContexts(AndroidPackage pkg, List<SharedLibraryInfo> sharedLibraries, boolean[] pathsWithCode){
+    String sharedLibrariesContext = "";
+    if (sharedLibraries != null) {
+        sharedLibrariesContext = encodeSharedLibraries(sharedLibraries);
+    }
+    String baseApkContextClassLoader = encodeClassLoader("", pkg.getClassLoaderName(), sharedLibrariesContext);
+    if (pkg.getSplitCodePaths() == null) {
+        return new String[] { baseApkContextClassLoader };
+    }
+    String[] splitRelativeCodePaths = getSplitRelativeCodePaths(pkg);
+    String baseApkName = new File(pkg.getBaseCodePath()).getName();
+    String baseClassPath = baseApkName;
+    String[] classLoaderContexts = new String[1 + splitRelativeCodePaths.length];
+    classLoaderContexts[0] = pathsWithCode[0] ? baseApkContextClassLoader : null;
+    SparseArray<int[]> splitDependencies = pkg.getSplitDependencies();
+    if (!pkg.isIsolatedSplitLoading() || splitDependencies == null || splitDependencies.size() == 0) {
+        String classpath = baseClassPath;
+        for (int i = 1; i < classLoaderContexts.length; i++) {
+            if (pathsWithCode[i]) {
+                classLoaderContexts[i] = encodeClassLoader(classpath, pkg.getClassLoaderName(), sharedLibrariesContext);
+            } else {
+                classLoaderContexts[i] = null;
+            }
+            classpath = encodeClasspath(classpath, splitRelativeCodePaths[i - 1]);
+        }
+    } else {
+        String[] splitClassLoaderEncodingCache = new String[splitRelativeCodePaths.length];
+        for (int i = 0; i < splitRelativeCodePaths.length; i++) {
+            splitClassLoaderEncodingCache[i] = encodeClassLoader(splitRelativeCodePaths[i], pkg.getSplitClassLoaderNames()[i]);
+        }
+        String splitDependencyOnBase = encodeClassLoader(baseClassPath, pkg.getClassLoaderName());
+        for (int i = 1; i < splitDependencies.size(); i++) {
+            int splitIndex = splitDependencies.keyAt(i);
+            if (pathsWithCode[splitIndex]) {
+                getParentDependencies(splitIndex, splitClassLoaderEncodingCache, splitDependencies, classLoaderContexts, splitDependencyOnBase);
+            }
+        }
+        for (int i = 1; i < classLoaderContexts.length; i++) {
+            String splitClassLoader = encodeClassLoader("", pkg.getSplitClassLoaderNames()[i - 1]);
+            if (pathsWithCode[i]) {
+                classLoaderContexts[i] = classLoaderContexts[i] == null ? splitClassLoader : encodeClassLoaderChain(splitClassLoader, classLoaderContexts[i]) + sharedLibrariesContext;
+            } else {
+                classLoaderContexts[i] = null;
+            }
+        }
+    }
+    return classLoaderContexts;
+}

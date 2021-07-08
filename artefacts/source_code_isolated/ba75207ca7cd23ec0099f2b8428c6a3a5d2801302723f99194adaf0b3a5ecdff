@@ -1,0 +1,7 @@
+public int getConfigDisplayHeight(int fullWidth, int fullHeight, int rotation, int uiMode, DisplayCutout displayCutout){
+    int statusBarHeight = mStatusBarHeightForRotation[rotation];
+    if (displayCutout != null) {
+        statusBarHeight = Math.max(0, statusBarHeight - displayCutout.getSafeInsetTop());
+    }
+    return getNonDecorDisplayHeight(fullWidth, fullHeight, rotation, uiMode, displayCutout) - statusBarHeight;
+}

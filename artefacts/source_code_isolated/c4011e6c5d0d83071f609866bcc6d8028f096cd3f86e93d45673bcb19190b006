@@ -1,0 +1,11 @@
+public void stopBackgroundScan(ScanListener listener){
+    Objects.requireNonNull(listener, "listener cannot be null");
+    int key = removeListener(listener);
+    if (key == INVALID_KEY)
+        return;
+    validateChannel();
+    Bundle scanParams = new Bundle();
+    scanParams.putString(REQUEST_PACKAGE_NAME_KEY, mContext.getOpPackageName());
+    scanParams.putString(REQUEST_FEATURE_ID_KEY, mContext.getAttributionTag());
+    mAsyncChannel.sendMessage(CMD_STOP_BACKGROUND_SCAN, 0, key, scanParams);
+}

@@ -1,0 +1,7 @@
+public KeySetHandle getSigningKeySetByPackageNameLPr(String packageName){
+    PackageSetting p = mPackages.get(packageName);
+    if (p == null || p.keySetData == null || p.keySetData.getProperSigningKeySet() == PackageKeySetData.KEYSET_UNASSIGNED) {
+        return null;
+    }
+    return mKeySets.get(p.keySetData.getProperSigningKeySet());
+}

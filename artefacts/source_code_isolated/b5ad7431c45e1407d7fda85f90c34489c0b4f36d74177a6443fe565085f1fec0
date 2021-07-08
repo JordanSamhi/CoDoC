@@ -1,0 +1,102 @@
+public void countScanResults(List<ScanDetail> scanDetails){
+    if (scanDetails == null) {
+        return;
+    }
+    int totalResults = 0;
+    int openNetworks = 0;
+    int personalNetworks = 0;
+    int enterpriseNetworks = 0;
+    int hiddenNetworks = 0;
+    int hotspot2r1Networks = 0;
+    int hotspot2r2Networks = 0;
+    int hotspot2r3Networks = 0;
+    int enhacedOpenNetworks = 0;
+    int wpa3PersonalNetworks = 0;
+    int wpa3EnterpriseNetworks = 0;
+    int wapiPersonalNetworks = 0;
+    int wapiEnterpriseNetworks = 0;
+    int mboSupportedNetworks = 0;
+    int mboCellularDataAwareNetworks = 0;
+    int oceSupportedNetworks = 0;
+    int filsSupportedNetworks = 0;
+    int band6gNetworks = 0;
+    int standard11axNetworks = 0;
+    for (ScanDetail scanDetail : scanDetails) {
+        NetworkDetail networkDetail = scanDetail.getNetworkDetail();
+        ScanResult scanResult = scanDetail.getScanResult();
+        totalResults++;
+        if (networkDetail != null) {
+            if (networkDetail.isHiddenBeaconFrame()) {
+                hiddenNetworks++;
+            }
+            if (networkDetail.getHSRelease() != null) {
+                if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R1) {
+                    hotspot2r1Networks++;
+                } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R2) {
+                    hotspot2r2Networks++;
+                } else if (networkDetail.getHSRelease() == NetworkDetail.HSRelease.R3) {
+                    hotspot2r3Networks++;
+                }
+            }
+            if (networkDetail.isMboSupported()) {
+                mboSupportedNetworks++;
+                if (networkDetail.isMboCellularDataAware()) {
+                    mboCellularDataAwareNetworks++;
+                }
+                if (networkDetail.isOceSupported()) {
+                    oceSupportedNetworks++;
+                }
+            }
+            if (networkDetail.getWifiMode() == InformationElementUtil.WifiMode.MODE_11AX) {
+                standard11axNetworks++;
+            }
+        }
+        if (scanResult != null && scanResult.capabilities != null) {
+            if (ScanResultUtil.isScanResultForFilsSha256Network(scanResult) || ScanResultUtil.isScanResultForFilsSha384Network(scanResult)) {
+                filsSupportedNetworks++;
+            }
+            if (scanResult.is6GHz()) {
+                band6gNetworks++;
+            }
+            if (ScanResultUtil.isScanResultForEapSuiteBNetwork(scanResult)) {
+                wpa3EnterpriseNetworks++;
+            } else if (ScanResultUtil.isScanResultForWapiPskNetwork(scanResult)) {
+                wapiPersonalNetworks++;
+            } else if (ScanResultUtil.isScanResultForWapiCertNetwork(scanResult)) {
+                wapiEnterpriseNetworks++;
+            } else if (ScanResultUtil.isScanResultForEapNetwork(scanResult)) {
+                enterpriseNetworks++;
+            } else if (ScanResultUtil.isScanResultForSaeNetwork(scanResult)) {
+                wpa3PersonalNetworks++;
+            } else if (ScanResultUtil.isScanResultForPskNetwork(scanResult) || ScanResultUtil.isScanResultForWepNetwork(scanResult)) {
+                personalNetworks++;
+            } else if (ScanResultUtil.isScanResultForOweNetwork(scanResult)) {
+                enhacedOpenNetworks++;
+            } else {
+                openNetworks++;
+            }
+        }
+    }
+    synchronized (mLock) {
+        mWifiLogProto.numTotalScanResults += totalResults;
+        mWifiLogProto.numOpenNetworkScanResults += openNetworks;
+        mWifiLogProto.numLegacyPersonalNetworkScanResults += personalNetworks;
+        mWifiLogProto.numLegacyEnterpriseNetworkScanResults += enterpriseNetworks;
+        mWifiLogProto.numEnhancedOpenNetworkScanResults += enhacedOpenNetworks;
+        mWifiLogProto.numWpa3PersonalNetworkScanResults += wpa3PersonalNetworks;
+        mWifiLogProto.numWpa3EnterpriseNetworkScanResults += wpa3EnterpriseNetworks;
+        mWifiLogProto.numWapiPersonalNetworkScanResults += wapiPersonalNetworks;
+        mWifiLogProto.numWapiEnterpriseNetworkScanResults += wapiEnterpriseNetworks;
+        mWifiLogProto.numHiddenNetworkScanResults += hiddenNetworks;
+        mWifiLogProto.numHotspot2R1NetworkScanResults += hotspot2r1Networks;
+        mWifiLogProto.numHotspot2R2NetworkScanResults += hotspot2r2Networks;
+        mWifiLogProto.numHotspot2R3NetworkScanResults += hotspot2r3Networks;
+        mWifiLogProto.numMboSupportedNetworkScanResults += mboSupportedNetworks;
+        mWifiLogProto.numMboCellularDataAwareNetworkScanResults += mboCellularDataAwareNetworks;
+        mWifiLogProto.numOceSupportedNetworkScanResults += oceSupportedNetworks;
+        mWifiLogProto.numFilsSupportedNetworkScanResults += filsSupportedNetworks;
+        mWifiLogProto.num11AxNetworkScanResults += standard11axNetworks;
+        mWifiLogProto.num6GNetworkScanResults += band6gNetworks;
+        mWifiLogProto.numScans++;
+    }
+}

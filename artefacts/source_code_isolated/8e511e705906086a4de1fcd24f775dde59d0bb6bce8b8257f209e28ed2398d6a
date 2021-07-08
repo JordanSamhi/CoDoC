@@ -1,0 +1,10 @@
+public long getAllocatableBytes(@NonNull UUID storageUuid, @RequiresPermission @AllocateFlags int flags) throws IOException{
+    try {
+        return mStorageManager.getAllocatableBytes(convert(storageUuid), flags, mContext.getOpPackageName());
+    } catch (ParcelableException e) {
+        e.maybeRethrow(IOException.class);
+        throw new RuntimeException(e);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

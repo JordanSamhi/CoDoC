@@ -1,0 +1,8 @@
+public TransportClient getCurrentTransportClientOrThrow(String caller) throws TransportNotRegisteredException{
+    if (mCurrentTransportName == null) {
+        throw new IllegalStateException("No transport selected");
+    }
+    synchronized (mTransportLock) {
+        return getTransportClientOrThrow(mCurrentTransportName, caller);
+    }
+}

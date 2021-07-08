@@ -1,0 +1,23 @@
+public static Clock currentGnssTimeClock(){
+    return new SimpleClock(ZoneOffset.UTC) {
+
+        private final ILocationManager mMgr = ILocationManager.Stub.asInterface(ServiceManager.getService(Context.LOCATION_SERVICE));
+
+        @Override
+        public long millis() {
+            LocationTime time;
+            try {
+                time = mMgr.getGnssTimeMillis();
+            } catch (RemoteException e) {
+                e.rethrowFromSystemServer();
+                return 0;
+            }
+            if (time == null) {
+                throw new DateTimeException("Gnss based time is not available.");
+            }
+            long currentNanos = elapsedRealtimeNanos();
+            long deltaMs = (currentNanos - time.getElapsedRealtimeNanos()) / 1000000L;
+            return time.getTime() + deltaMs;
+        }
+    };
+}

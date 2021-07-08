@@ -1,0 +1,53 @@
+public void configureDisplayLocked(SurfaceControl.Transaction t, DisplayDevice device, boolean isBlanked){
+    device.setLayerStackLocked(t, isBlanked ? BLANK_LAYER_STACK : mLayerStack);
+    if (device == mPrimaryDisplayDevice) {
+        device.setDesiredDisplayModeSpecsLocked(mDesiredDisplayModeSpecs);
+        device.setRequestedColorModeLocked(mRequestedColorMode);
+    } else {
+        device.setDesiredDisplayModeSpecsLocked(new DisplayModeDirector.DesiredDisplayModeSpecs());
+        device.setRequestedColorModeLocked(0);
+    }
+    device.setAutoLowLatencyModeLocked(mRequestedMinimalPostProcessing);
+    device.setGameContentTypeLocked(mRequestedMinimalPostProcessing);
+    final DisplayInfo displayInfo = getDisplayInfoLocked();
+    final DisplayDeviceInfo displayDeviceInfo = device.getDisplayDeviceInfoLocked();
+    mTempLayerStackRect.set(0, 0, displayInfo.logicalWidth, displayInfo.logicalHeight);
+    int orientation = Surface.ROTATION_0;
+    if ((displayDeviceInfo.flags & DisplayDeviceInfo.FLAG_ROTATES_WITH_CONTENT) != 0) {
+        orientation = displayInfo.rotation;
+    }
+    orientation = (orientation + displayDeviceInfo.rotation) % 4;
+    boolean rotated = (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270);
+    int physWidth = rotated ? displayDeviceInfo.height : displayDeviceInfo.width;
+    int physHeight = rotated ? displayDeviceInfo.width : displayDeviceInfo.height;
+    Rect maskingInsets = getMaskingInsets(displayDeviceInfo);
+    InsetUtils.rotateInsets(maskingInsets, orientation);
+    physWidth -= maskingInsets.left + maskingInsets.right;
+    physHeight -= maskingInsets.top + maskingInsets.bottom;
+    int displayRectWidth, displayRectHeight;
+    if ((displayInfo.flags & Display.FLAG_SCALING_DISABLED) != 0 || mDisplayScalingDisabled) {
+        displayRectWidth = displayInfo.logicalWidth;
+        displayRectHeight = displayInfo.logicalHeight;
+    } else if (physWidth * displayInfo.logicalHeight < physHeight * displayInfo.logicalWidth) {
+        displayRectWidth = physWidth;
+        displayRectHeight = displayInfo.logicalHeight * physWidth / displayInfo.logicalWidth;
+    } else {
+        displayRectWidth = displayInfo.logicalWidth * physHeight / displayInfo.logicalHeight;
+        displayRectHeight = physHeight;
+    }
+    int displayRectTop = (physHeight - displayRectHeight) / 2;
+    int displayRectLeft = (physWidth - displayRectWidth) / 2;
+    mTempDisplayRect.set(displayRectLeft, displayRectTop, displayRectLeft + displayRectWidth, displayRectTop + displayRectHeight);
+    mTempDisplayRect.offset(maskingInsets.left, maskingInsets.top);
+    if (orientation == Surface.ROTATION_0) {
+        mTempDisplayRect.offset(mDisplayOffsetX, mDisplayOffsetY);
+    } else if (orientation == Surface.ROTATION_90) {
+        mTempDisplayRect.offset(mDisplayOffsetY, -mDisplayOffsetX);
+    } else if (orientation == Surface.ROTATION_180) {
+        mTempDisplayRect.offset(-mDisplayOffsetX, -mDisplayOffsetY);
+    } else {
+        mTempDisplayRect.offset(-mDisplayOffsetY, mDisplayOffsetX);
+    }
+    mDisplayPosition.set(mTempDisplayRect.left, mTempDisplayRect.top);
+    device.setProjectionLocked(t, orientation, mTempLayerStackRect, mTempDisplayRect);
+}

@@ -1,0 +1,13 @@
+public HealthStats[] takeUidSnapshots(int[] uids){
+    try {
+        final HealthStatsParceler[] parcelers = mBatteryStats.takeUidSnapshots(uids);
+        final HealthStats[] results = new HealthStats[uids.length];
+        final int N = uids.length;
+        for (int i = 0; i < N; i++) {
+            results[i] = parcelers[i].getHealthStats();
+        }
+        return results;
+    } catch (RemoteException ex) {
+        throw new RuntimeException(ex);
+    }
+}

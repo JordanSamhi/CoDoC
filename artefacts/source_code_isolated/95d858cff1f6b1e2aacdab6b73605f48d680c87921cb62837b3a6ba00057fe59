@@ -1,0 +1,10 @@
+public boolean shouldReport(){
+    if (!isWifiClientEnabled && !isWifiSapEnabled && !isWifiScanOnlyEnabled) {
+        mAllWifiDisabled = true;
+        return false;
+    }
+    if (mAllWifiDisabled) {
+        return true;
+    }
+    return ((isWifiSapEnabled != mLastReportedIsWifiSapEnabled) || (isVoiceCall != mLastReportedIsVoiceCall) || (isEarPieceActive != mLastReportedIsEarPieceActive));
+}

@@ -1,0 +1,24 @@
+
+     * Create a single use app specific incoming SMS request for the calling package.
+     *
+     * This method returns a token that if included in a subsequent incoming SMS message will cause
+     * {@code intent} to be sent with the SMS data.
+     *
+     * The token is only good for one use, after an SMS has been received containing the token all
+     * subsequent SMS messages with the token will be routed as normal.
+     *
+     * An app can only have one request at a time, if the app already has a request pending it will
+     * be replaced with a new request.
+     *
+     * <p class="note"><strong>Note:</strong> This method will never trigger an SMS disambiguation
+     * dialog. If this method is called on a device that has multiple active subscriptions, this
+     * {@link SmsManager} instance has been created with {@link #getDefault()}, and no user-defined
+     * default subscription is defined, the subscription ID associated with this message will be
+     * INVALID, which will result in the operation being completed on the subscription associated
+     * with logical slot 0. Use {@link #getSmsManagerForSubscriptionId(int)} to ensure the
+     * operation is performed on the correct subscription.
+     * </p>
+     *
+     * @return Token to include in an SMS message. The token will be 11 characters long.
+     * @see android.provider.Telephony.Sms.Intents#getMessagesFromIntent
+     

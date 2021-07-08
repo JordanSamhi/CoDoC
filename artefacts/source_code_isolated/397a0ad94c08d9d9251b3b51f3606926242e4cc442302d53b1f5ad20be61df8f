@@ -1,0 +1,19 @@
+public final boolean[] autofillClientGetViewVisibility(@NonNull AutofillId[] autofillIds){
+    final int autofillIdCount = autofillIds.length;
+    final boolean[] visible = new boolean[autofillIdCount];
+    for (int i = 0; i < autofillIdCount; i++) {
+        final AutofillId autofillId = autofillIds[i];
+        final View view = autofillClientFindViewByAutofillIdTraversal(autofillId);
+        if (view != null) {
+            if (!autofillId.isVirtualInt()) {
+                visible[i] = view.isVisibleToUser();
+            } else {
+                visible[i] = view.isVisibleToUserForAutofill(autofillId.getVirtualChildIntId());
+            }
+        }
+    }
+    if (android.view.autofill.Helper.sVerbose) {
+        Log.v(TAG, "autofillClientGetViewVisibility(): " + Arrays.toString(visible));
+    }
+    return visible;
+}

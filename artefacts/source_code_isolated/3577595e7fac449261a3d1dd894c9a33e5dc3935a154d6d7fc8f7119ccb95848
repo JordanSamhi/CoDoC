@@ -1,0 +1,13 @@
+public ComponentName getServiceComponentName(){
+    if (!isContentCaptureEnabled() && !mOptions.lite)
+        return null;
+    final SyncResultReceiver resultReceiver = new SyncResultReceiver(SYNC_CALLS_TIMEOUT_MS);
+    try {
+        mService.getServiceComponentName(resultReceiver);
+        return resultReceiver.getParcelableResult();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (SyncResultReceiver.TimeoutException e) {
+        throw new RuntimeException("Fail to get service componentName.");
+    }
+}

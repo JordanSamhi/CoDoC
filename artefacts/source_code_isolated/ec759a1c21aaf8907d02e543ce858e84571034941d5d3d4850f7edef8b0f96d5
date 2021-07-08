@@ -1,0 +1,17 @@
+public static String getBatteryRemainingStringFormatted(Context context, long drainTimeMs, @Nullable String percentageString, boolean basedOnUsage){
+    if (drainTimeMs > 0) {
+        if (drainTimeMs <= SEVEN_MINUTES_MILLIS) {
+            return getShutdownImminentString(context, percentageString);
+        } else if (drainTimeMs <= FIFTEEN_MINUTES_MILLIS) {
+            CharSequence timeString = StringUtil.formatElapsedTime(context, FIFTEEN_MINUTES_MILLIS, false);
+            return getUnderFifteenString(context, timeString, percentageString);
+        } else if (drainTimeMs >= TWO_DAYS_MILLIS) {
+            return getMoreThanTwoDaysString(context, percentageString);
+        } else if (drainTimeMs >= ONE_DAY_MILLIS) {
+            return getMoreThanOneDayString(context, drainTimeMs, percentageString, basedOnUsage);
+        } else {
+            return getRegularTimeRemainingString(context, drainTimeMs, percentageString, basedOnUsage);
+        }
+    }
+    return null;
+}

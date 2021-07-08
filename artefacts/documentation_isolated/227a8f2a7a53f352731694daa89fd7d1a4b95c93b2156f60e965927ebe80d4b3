@@ -1,0 +1,11 @@
+
+     * Returns the playback head position expressed in frames.
+     * Though the "int" type is signed 32-bits, the value should be reinterpreted as if it is
+     * unsigned 32-bits.  That is, the next position after 0x7FFFFFFF is (int) 0x80000000.
+     * This is a continuously advancing counter.  It will wrap (overflow) periodically,
+     * for example approximately once every 27:03:11 hours:minutes:seconds at 44.1 kHz.
+     * It is reset to zero by {@link #flush()}, {@link #reloadStaticData()}, and {@link #stop()}.
+     * If the track's creation mode is {@link #MODE_STATIC}, the return value indicates
+     * the total number of frames played since reset,
+     * <i>not</i> the current offset within the buffer.
+     

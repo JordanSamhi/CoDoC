@@ -1,0 +1,11 @@
+public void setCallDataUsage(long dataUsage){
+    if (mVideoCallbacks != null) {
+        for (IVideoCallback callback : mVideoCallbacks.values()) {
+            try {
+                callback.changeCallDataUsage(dataUsage);
+            } catch (RemoteException ignored) {
+                Log.w(this, "setCallDataUsage callback failed", ignored);
+            }
+        }
+    }
+}

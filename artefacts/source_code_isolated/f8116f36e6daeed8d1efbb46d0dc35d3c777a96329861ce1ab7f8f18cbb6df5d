@@ -1,0 +1,18 @@
+public InputMonitor monitorGestureInput(String inputChannelName, int displayId){
+    if (!checkCallingPermission(android.Manifest.permission.MONITOR_INPUT, "monitorInputRegion()")) {
+        throw new SecurityException("Requires MONITOR_INPUT permission");
+    }
+    Objects.requireNonNull(inputChannelName, "inputChannelName must not be null.");
+    if (displayId < Display.DEFAULT_DISPLAY) {
+        throw new IllegalArgumentException("displayId must >= 0.");
+    }
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        InputChannel[] inputChannels = InputChannel.openInputChannelPair(inputChannelName);
+        InputMonitorHost host = new InputMonitorHost(inputChannels[0]);
+        nativeRegisterInputMonitor(mPtr, inputChannels[0], displayId, true);
+        return new InputMonitor(inputChannels[1], host);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

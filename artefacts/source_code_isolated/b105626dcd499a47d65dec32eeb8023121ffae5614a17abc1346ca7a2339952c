@@ -1,0 +1,15 @@
+public void registerCallback(Callback callback, Handler handler){
+    synchronized (this) {
+        if (callback != null && findCallbackLocked(callback) < 0) {
+            boolean addedFirstCallback = mCallbacks.size() == 0;
+            addCallbackLocked(callback, handler);
+            if (addedFirstCallback) {
+                try {
+                    mService.addOnAppsChangedListener(mContext.getPackageName(), mAppsChangedListener);
+                } catch (RemoteException re) {
+                    throw re.rethrowFromSystemServer();
+                }
+            }
+        }
+    }
+}

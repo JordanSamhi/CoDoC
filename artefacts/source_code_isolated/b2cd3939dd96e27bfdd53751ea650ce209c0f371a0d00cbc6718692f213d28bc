@@ -1,0 +1,17 @@
+public static ColorStateList getTextColors(Context context, TypedArray attrs){
+    if (attrs == null) {
+        throw new NullPointerException();
+    }
+    final TypedArray a = context.obtainStyledAttributes(R.styleable.TextView);
+    ColorStateList colors = a.getColorStateList(R.styleable.TextView_textColor);
+    if (colors == null) {
+        final int ap = a.getResourceId(R.styleable.TextView_textAppearance, 0);
+        if (ap != 0) {
+            final TypedArray appearance = context.obtainStyledAttributes(ap, R.styleable.TextAppearance);
+            colors = appearance.getColorStateList(R.styleable.TextAppearance_textColor);
+            appearance.recycle();
+        }
+    }
+    a.recycle();
+    return colors;
+}

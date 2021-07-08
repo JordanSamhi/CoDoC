@@ -1,0 +1,12 @@
+public synchronized HealthMonitorMetrics buildProto(){
+    if (!mHasNewDataForWifiMetrics)
+        return null;
+    HealthMonitorMetrics metrics = new HealthMonitorMetrics();
+    metrics.failureStatsIncrease = failureStatsToProto(mFailureStatsIncrease);
+    metrics.failureStatsDecrease = failureStatsToProto(mFailureStatsDecrease);
+    metrics.failureStatsHigh = failureStatsToProto(mFailureStatsHigh);
+    metrics.numNetworkSufficientRecentStatsOnly = mNumNetworkSufficientRecentStatsOnly;
+    metrics.numNetworkSufficientRecentPrevStats = mNumNetworkSufficientRecentPrevStats;
+    mHasNewDataForWifiMetrics = false;
+    return metrics;
+}

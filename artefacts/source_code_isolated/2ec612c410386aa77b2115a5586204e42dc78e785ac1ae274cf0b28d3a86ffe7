@@ -1,0 +1,15 @@
+public void setTextIsSelectable(boolean selectable){
+    if (!selectable && mEditor == null)
+        return;
+    createEditorIfNeeded();
+    if (mEditor.mTextIsSelectable == selectable)
+        return;
+    mEditor.mTextIsSelectable = selectable;
+    setFocusableInTouchMode(selectable);
+    setFocusable(FOCUSABLE_AUTO);
+    setClickable(selectable);
+    setLongClickable(selectable);
+    setMovementMethod(selectable ? ArrowKeyMovementMethod.getInstance() : null);
+    setText(mText, selectable ? BufferType.SPANNABLE : BufferType.NORMAL);
+    mEditor.prepareCursorControllers();
+}

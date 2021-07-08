@@ -1,0 +1,10 @@
+public void setAssistHintBlocked(boolean blocked){
+    if (!mHandler.getLooper().isCurrentThread()) {
+        mHandler.post(() -> setAssistHintBlocked(blocked));
+        return;
+    }
+    mAssistHintBlocked = blocked;
+    if (mAssistHintVisible && mAssistHintBlocked) {
+        hideAssistHandles();
+    }
+}

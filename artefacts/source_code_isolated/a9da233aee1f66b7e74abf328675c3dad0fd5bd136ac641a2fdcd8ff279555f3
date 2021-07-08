@@ -1,0 +1,11 @@
+public void onAbsorb(int velocity){
+    mState = STATE_ABSORB;
+    velocity = Math.min(Math.max(MIN_VELOCITY, Math.abs(velocity)), MAX_VELOCITY);
+    mStartTime = AnimationUtils.currentAnimationTimeMillis();
+    mDuration = 0.15f + (velocity * 0.02f);
+    mGlowAlphaStart = GLOW_ALPHA_START;
+    mGlowScaleYStart = Math.max(mGlowScaleY, 0.f);
+    mGlowScaleYFinish = Math.min(0.025f + (velocity * (velocity / 100) * 0.00015f) / 2, 1.f);
+    mGlowAlphaFinish = Math.max(mGlowAlphaStart, Math.min(velocity * VELOCITY_GLOW_FACTOR * .00001f, MAX_ALPHA));
+    mTargetDisplacement = 0.5f;
+}

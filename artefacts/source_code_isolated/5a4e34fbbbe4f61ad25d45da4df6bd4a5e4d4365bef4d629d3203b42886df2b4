@@ -1,0 +1,81 @@
+public synchronized float getScale(@NonNull Drawable d, @Nullable RectF outBounds, @Nullable Path path, @Nullable boolean[] outMaskShape){
+    if (BaseIconFactory.ATLEAST_OREO && d instanceof AdaptiveIconDrawable) {
+        if (mAdaptiveIconScale == SCALE_NOT_INITIALIZED) {
+            mAdaptiveIconScale = normalizeAdaptiveIcon(d, mMaxSize, mAdaptiveIconBounds);
+        }
+        if (outBounds != null) {
+            outBounds.set(mAdaptiveIconBounds);
+        }
+        return mAdaptiveIconScale;
+    }
+    int width = d.getIntrinsicWidth();
+    int height = d.getIntrinsicHeight();
+    if (width <= 0 || height <= 0) {
+        width = width <= 0 || width > mMaxSize ? mMaxSize : width;
+        height = height <= 0 || height > mMaxSize ? mMaxSize : height;
+    } else if (width > mMaxSize || height > mMaxSize) {
+        int max = Math.max(width, height);
+        width = mMaxSize * width / max;
+        height = mMaxSize * height / max;
+    }
+    mBitmap.eraseColor(Color.TRANSPARENT);
+    d.setBounds(0, 0, width, height);
+    d.draw(mCanvas);
+    ByteBuffer buffer = ByteBuffer.wrap(mPixels);
+    buffer.rewind();
+    mBitmap.copyPixelsToBuffer(buffer);
+    int topY = -1;
+    int bottomY = -1;
+    int leftX = mMaxSize + 1;
+    int rightX = -1;
+    int index = 0;
+    int rowSizeDiff = mMaxSize - width;
+    int firstX, lastX;
+    for (int y = 0; y < height; y++) {
+        firstX = lastX = -1;
+        for (int x = 0; x < width; x++) {
+            if ((mPixels[index] & 0xFF) > MIN_VISIBLE_ALPHA) {
+                if (firstX == -1) {
+                    firstX = x;
+                }
+                lastX = x;
+            }
+            index++;
+        }
+        index += rowSizeDiff;
+        mLeftBorder[y] = firstX;
+        mRightBorder[y] = lastX;
+        if (firstX != -1) {
+            bottomY = y;
+            if (topY == -1) {
+                topY = y;
+            }
+            leftX = Math.min(leftX, firstX);
+            rightX = Math.max(rightX, lastX);
+        }
+    }
+    if (topY == -1 || rightX == -1) {
+        return 1;
+    }
+    convertToConvexArray(mLeftBorder, 1, topY, bottomY);
+    convertToConvexArray(mRightBorder, -1, topY, bottomY);
+    float area = 0;
+    for (int y = 0; y < height; y++) {
+        if (mLeftBorder[y] <= -1) {
+            continue;
+        }
+        area += mRightBorder[y] - mLeftBorder[y] + 1;
+    }
+    mBounds.left = leftX;
+    mBounds.right = rightX;
+    mBounds.top = topY;
+    mBounds.bottom = bottomY;
+    if (outBounds != null) {
+        outBounds.set(((float) mBounds.left) / width, ((float) mBounds.top) / height, 1 - ((float) mBounds.right) / width, 1 - ((float) mBounds.bottom) / height);
+    }
+    if (outMaskShape != null && mEnableShapeDetection && outMaskShape.length > 0) {
+        outMaskShape[0] = isShape(path);
+    }
+    float rectArea = (bottomY + 1 - topY) * (rightX + 1 - leftX);
+    return getScale(area, rectArea, width * height);
+}

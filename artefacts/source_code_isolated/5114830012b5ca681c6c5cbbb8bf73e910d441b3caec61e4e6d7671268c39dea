@@ -1,0 +1,8 @@
+public void removePasspointProviderWithPackage(@NonNull String packageName){
+    stopTrackingAppOpsChange(packageName);
+    for (Map.Entry<String, PasspointProvider> entry : getPasspointProviderWithPackage(packageName).entrySet()) {
+        String uniqueId = entry.getValue().getConfig().getUniqueId();
+        removeProvider(Process.WIFI_UID, true, uniqueId, null);
+        disconnectIfPasspointNetwork(uniqueId);
+    }
+}

@@ -1,0 +1,9 @@
+public boolean registerSuggestionConnectionStatusListener(@NonNull IBinder binder, @NonNull ISuggestionConnectionStatusListener listener, int listenerIdentifier, String packageName){
+    ExternalCallbackTracker<ISuggestionConnectionStatusListener> listenersTracker = mSuggestionStatusListenerPerApp.get(packageName);
+    if (listenersTracker == null) {
+        listenersTracker = new ExternalCallbackTracker<>(mHandler);
+    }
+    listenersTracker.add(binder, listener, listenerIdentifier);
+    mSuggestionStatusListenerPerApp.put(packageName, listenersTracker);
+    return true;
+}

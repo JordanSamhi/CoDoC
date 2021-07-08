@@ -1,0 +1,23 @@
+public void forceRewriteExif(String filename, Collection<ExifTag> tags) throws FileNotFoundException, IOException{
+    if (!rewriteExif(filename, tags)) {
+        ExifData tempData = mData;
+        mData = new ExifData(DEFAULT_BYTE_ORDER);
+        FileInputStream is = null;
+        ByteArrayOutputStream bytes = null;
+        try {
+            is = new FileInputStream(filename);
+            bytes = new ByteArrayOutputStream();
+            doExifStreamIO(is, bytes);
+            byte[] imageBytes = bytes.toByteArray();
+            readExif(imageBytes);
+            setTags(tags);
+            writeExif(imageBytes, filename);
+        } catch (IOException e) {
+            closeSilently(is);
+            throw e;
+        } finally {
+            is.close();
+            mData = tempData;
+        }
+    }
+}

@@ -1,0 +1,26 @@
+public String getActiveRootOfTrust(int userId, int uid){
+    SQLiteDatabase db = mKeyStoreDbHelper.getReadableDatabase();
+    String[] projection = { RecoveryServiceMetadataEntry._ID, RecoveryServiceMetadataEntry.COLUMN_NAME_USER_ID, RecoveryServiceMetadataEntry.COLUMN_NAME_UID, RecoveryServiceMetadataEntry.COLUMN_NAME_ACTIVE_ROOT_OF_TRUST };
+    String selection = RecoveryServiceMetadataEntry.COLUMN_NAME_USER_ID + " = ? AND " + RecoveryServiceMetadataEntry.COLUMN_NAME_UID + " = ?";
+    String[] selectionArguments = { Integer.toString(userId), Integer.toString(uid) };
+    try (Cursor cursor = db.query(RecoveryServiceMetadataEntry.TABLE_NAME, projection, selection, selectionArguments, null, null, null)) {
+        int count = cursor.getCount();
+        if (count == 0) {
+            return null;
+        }
+        if (count > 1) {
+            Log.wtf(TAG, String.format(Locale.US, "%d deviceId entries found for userId=%d uid=%d. " + "Should only ever be 0 or 1.", count, userId, uid));
+            return null;
+        }
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndexOrThrow(RecoveryServiceMetadataEntry.COLUMN_NAME_ACTIVE_ROOT_OF_TRUST);
+        if (cursor.isNull(idx)) {
+            return null;
+        }
+        String result = cursor.getString(idx);
+        if (TextUtils.isEmpty(result)) {
+            return null;
+        }
+        return result;
+    }
+}

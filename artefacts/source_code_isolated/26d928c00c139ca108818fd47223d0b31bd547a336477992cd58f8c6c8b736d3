@@ -1,0 +1,10 @@
+public void writeAudioCodecGsmCdma(int phoneId, int audioQuality){
+    InProgressCallSession callSession = mInProgressCallSessions.get(phoneId);
+    if (callSession == null) {
+        Rlog.e(TAG, "Call session is missing");
+        return;
+    }
+    int codec = convertGsmCdmaCodec(audioQuality);
+    callSession.addEvent(new CallSessionEventBuilder(TelephonyCallSession.Event.Type.AUDIO_CODEC).setAudioCodec(codec));
+    logv("Logged Audio Codec event. Value: " + codec);
+}

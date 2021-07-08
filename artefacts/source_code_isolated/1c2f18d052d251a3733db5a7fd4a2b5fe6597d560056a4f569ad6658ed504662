@@ -1,0 +1,23 @@
+public boolean queue(ByteBuffer buffer, int length){
+    boolean out = (mEndpoint.getDirection() == UsbConstants.USB_DIR_OUT);
+    boolean result;
+    if (mConnection.getContext().getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.P && length > MAX_USBFS_BUFFER_SIZE) {
+        length = MAX_USBFS_BUFFER_SIZE;
+    }
+    synchronized (mLock) {
+        mBuffer = buffer;
+        mLength = length;
+        if (buffer.isDirect()) {
+            result = native_queue_direct(buffer, length, out);
+        } else if (buffer.hasArray()) {
+            result = native_queue_array(buffer.array(), length, out);
+        } else {
+            throw new IllegalArgumentException("buffer is not direct and has no array");
+        }
+        if (!result) {
+            mBuffer = null;
+            mLength = 0;
+        }
+    }
+    return result;
+}

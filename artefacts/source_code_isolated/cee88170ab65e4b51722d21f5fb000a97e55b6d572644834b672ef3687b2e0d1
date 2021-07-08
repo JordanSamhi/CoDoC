@@ -1,0 +1,53 @@
+public static String calledPartyBCDToString(byte[] bytes, int offset, int length, @BcdExtendType int bcdExtType){
+    boolean prependPlus = false;
+    StringBuilder ret = new StringBuilder(1 + length * 2);
+    if (length < 2) {
+        return "";
+    }
+    if ((bytes[offset] & 0xf0) == (TOA_International & 0xf0)) {
+        prependPlus = true;
+    }
+    internalCalledPartyBCDFragmentToString(ret, bytes, offset + 1, length - 1, bcdExtType);
+    if (prependPlus && ret.length() == 0) {
+        return "";
+    }
+    if (prependPlus) {
+        String retString = ret.toString();
+        Pattern p = Pattern.compile("(^[#*])(.*)([#*])(.*)(#)$");
+        Matcher m = p.matcher(retString);
+        if (m.matches()) {
+            if ("".equals(m.group(2))) {
+                ret = new StringBuilder();
+                ret.append(m.group(1));
+                ret.append(m.group(3));
+                ret.append(m.group(4));
+                ret.append(m.group(5));
+                ret.append("+");
+            } else {
+                ret = new StringBuilder();
+                ret.append(m.group(1));
+                ret.append(m.group(2));
+                ret.append(m.group(3));
+                ret.append("+");
+                ret.append(m.group(4));
+                ret.append(m.group(5));
+            }
+        } else {
+            p = Pattern.compile("(^[#*])(.*)([#*])(.*)");
+            m = p.matcher(retString);
+            if (m.matches()) {
+                ret = new StringBuilder();
+                ret.append(m.group(1));
+                ret.append(m.group(2));
+                ret.append(m.group(3));
+                ret.append("+");
+                ret.append(m.group(4));
+            } else {
+                ret = new StringBuilder();
+                ret.append('+');
+                ret.append(retString);
+            }
+        }
+    }
+    return ret.toString();
+}

@@ -1,0 +1,30 @@
+public void dump(@NonNull IndentingPrintWriter pw){
+    final ConditionVariable dumpDone = new ConditionVariable();
+    mHandler.post(() -> {
+        pw.println("mIsBpfEnabled: " + mIsBpfEnabled);
+        pw.println("Polling " + (mPollingStarted ? "started" : "not started"));
+        pw.println("Stats provider " + (mStatsProvider != null ? "registered" : "not registered"));
+        pw.println("Upstream quota: " + mInterfaceQuotas.toString());
+        pw.println("Polling interval: " + getPollingInterval() + " ms");
+        pw.println("Forwarding stats:");
+        pw.increaseIndent();
+        if (mStats.size() == 0) {
+            pw.println("<empty>");
+        } else {
+            dumpStats(pw);
+        }
+        pw.decreaseIndent();
+        pw.println("Forwarding rules:");
+        pw.increaseIndent();
+        if (mIpv6ForwardingRules.size() == 0) {
+            pw.println("<empty>");
+        } else {
+            dumpIpv6ForwardingRules(pw);
+        }
+        pw.decreaseIndent();
+        dumpDone.open();
+    });
+    if (!dumpDone.block(DUMP_TIMEOUT_MS)) {
+        pw.println("... dump timed-out after " + DUMP_TIMEOUT_MS + "ms");
+    }
+}

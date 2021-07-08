@@ -1,0 +1,11 @@
+public String getName(BluetoothDevice device){
+    CachedBluetoothDevice cachedDevice = findDevice(device);
+    if (cachedDevice != null && cachedDevice.getName() != null) {
+        return cachedDevice.getName();
+    }
+    String name = device.getAlias();
+    if (name != null) {
+        return name;
+    }
+    return device.getAddress();
+}

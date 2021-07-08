@@ -1,0 +1,17 @@
+
+     * Check if the destination is a possible premium short code.
+     * NOTE: the caller is expected to strip non-digits from the destination number with
+     * {@link PhoneNumberUtils#extractNetworkPortion} before calling this method.
+     * This happens in {@link SMSDispatcher#sendRawPdu} so that we use the same phone number
+     * for testing and in the user confirmation dialog if the user needs to confirm the number.
+     * This makes it difficult for malware to fool the user or the short code pattern matcher
+     * by using non-ASCII characters to make the number appear to be different from the real
+     * destination phone number.
+     *
+     * @param destAddress the destination address to test for possible short code
+     * @return {@link SmsManager#SMS_CATEGORY_FREE_SHORT_CODE},
+     * {@link SmsManager#SMS_CATEGORY_NOT_SHORT_CODE},
+     *  {@link SmsManager#SMS_CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE},
+     *  {@link SmsManager#SMS_CATEGORY_STANDARD_SHORT_CODE}, or
+     *  {@link SmsManager#SMS_CATEGORY_POSSIBLE_PREMIUM_SHORT_CODE}
+     

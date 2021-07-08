@@ -1,0 +1,7 @@
+public void setUp() throws Exception{
+    MockitoAnnotations.initMocks(this);
+    mContext = RuntimeEnvironment.application;
+    mHandlerThread = BackupManagerServiceTestUtils.startSilentBackupThread(TAG);
+    mUserBackupManagerService = BackupManagerServiceTestUtils.createUserBackupManagerServiceAndRunTasks(USER_ID, mContext, mHandlerThread, new File(mContext.getDataDir(), "test1"), new File(mContext.getDataDir(), "test2"), mTransportManager);
+    mShadowJobScheduler = Shadows.shadowOf(mContext.getSystemService(JobScheduler.class));
+}

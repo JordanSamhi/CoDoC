@@ -1,0 +1,9 @@
+public Builder setUserAuthenticationValidityDurationSeconds(@IntRange(from = -1) int seconds){
+    if (seconds < -1) {
+        throw new IllegalArgumentException("seconds must be -1 or larger");
+    }
+    if (seconds == -1) {
+        return setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG);
+    }
+    return setUserAuthenticationParameters(seconds, KeyProperties.AUTH_DEVICE_CREDENTIAL | KeyProperties.AUTH_BIOMETRIC_STRONG);
+}

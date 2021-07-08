@@ -1,0 +1,10 @@
+public void stop() throws PluginException{
+    try {
+        synchronized (mLock) {
+            mPlugin.stop();
+            isRunning = false;
+        }
+    } catch (Throwable e) {
+        throw new PluginException(mPlugin, "Cannot stop", e);
+    }
+}

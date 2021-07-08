@@ -1,0 +1,16 @@
+public SyncStatusInfo getStatusByAuthority(EndPoint info){
+    if (info.account == null || info.provider == null) {
+        return null;
+    }
+    synchronized (mAuthorities) {
+        final int N = mSyncStatus.size();
+        for (int i = 0; i < N; i++) {
+            SyncStatusInfo cur = mSyncStatus.valueAt(i);
+            AuthorityInfo ainfo = mAuthorities.get(cur.authorityId);
+            if (ainfo != null && ainfo.target.matchesSpec(info)) {
+                return cur;
+            }
+        }
+        return null;
+    }
+}

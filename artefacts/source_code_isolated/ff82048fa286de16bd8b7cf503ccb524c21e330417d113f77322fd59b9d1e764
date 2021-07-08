@@ -1,0 +1,15 @@
+public long getLineRangeForDraw(Canvas canvas){
+    int dtop, dbottom;
+    synchronized (sTempRect) {
+        if (!canvas.getClipBounds(sTempRect)) {
+            return TextUtils.packRangeInLong(0, -1);
+        }
+        dtop = sTempRect.top;
+        dbottom = sTempRect.bottom;
+    }
+    final int top = Math.max(dtop, 0);
+    final int bottom = Math.min(getLineTop(getLineCount()), dbottom);
+    if (top >= bottom)
+        return TextUtils.packRangeInLong(0, -1);
+    return TextUtils.packRangeInLong(getLineForVertical(top), getLineForVertical(bottom));
+}

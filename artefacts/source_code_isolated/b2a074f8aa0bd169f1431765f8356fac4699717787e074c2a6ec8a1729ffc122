@@ -1,0 +1,11 @@
+public boolean setAllowedNetworkTypes(@NetworkTypeBitMask long allowedNetworkTypes){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.setAllowedNetworkTypes(getSubId(), allowedNetworkTypes);
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "setAllowedNetworkTypes RemoteException", ex);
+    }
+    return false;
+}

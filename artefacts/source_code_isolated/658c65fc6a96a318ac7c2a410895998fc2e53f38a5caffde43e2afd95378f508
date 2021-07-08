@@ -1,0 +1,9 @@
+public final void dispatchChange(boolean selfChange, @NonNull Collection<Uri> uris, @NotifyFlags int flags, @UserIdInt int userId){
+    if (mHandler == null) {
+        onChange(selfChange, uris, flags, userId);
+    } else {
+        mHandler.post(() -> {
+            onChange(selfChange, uris, flags, userId);
+        });
+    }
+}

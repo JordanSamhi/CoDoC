@@ -1,0 +1,16 @@
+public boolean execPendingActions(){
+    ensureExecReady(true);
+    boolean didSomething = false;
+    while (generateOpsForPendingActions(mTmpRecords, mTmpIsPop)) {
+        mExecutingActions = true;
+        try {
+            removeRedundantOperationsAndExecute(mTmpRecords, mTmpIsPop);
+        } finally {
+            cleanupExec();
+        }
+        didSomething = true;
+    }
+    doPendingDeferredStart();
+    burpActive();
+    return didSomething;
+}

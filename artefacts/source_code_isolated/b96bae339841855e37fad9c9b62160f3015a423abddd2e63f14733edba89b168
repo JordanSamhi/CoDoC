@@ -1,0 +1,15 @@
+public void managedProfileCreateUnlockInstallAndLaunchApp() throws Exception{
+    assumeTrue(mHasManagedUserFeature);
+    while (mRunner.keepRunning()) {
+        mRunner.pauseTiming();
+        WindowManagerGlobal.getWindowManagerService().dismissKeyguard(null, null);
+        mRunner.resumeTiming();
+        final int userId = createManagedProfile();
+        startUserInBackgroundAndWaitForUnlock(userId);
+        installPreexistingApp(userId, DUMMY_PACKAGE_NAME);
+        startApp(userId, DUMMY_PACKAGE_NAME);
+        mRunner.pauseTiming();
+        removeUser(userId);
+        mRunner.resumeTiming();
+    }
+}

@@ -1,0 +1,13 @@
+public void startPreviewWithCallback(final Handler h, final CameraStartPreviewCallback cb){
+    try {
+        getDispatchThread().runJob(new Runnable() {
+
+            @Override
+            public void run() {
+                getCameraHandler().obtainMessage(CameraActions.START_PREVIEW_ASYNC, CameraStartPreviewCallbackForward.getNewInstance(h, cb)).sendToTarget();
+            }
+        });
+    } catch (final RuntimeException ex) {
+        getAgent().getCameraExceptionHandler().onDispatchThreadException(ex);
+    }
+}

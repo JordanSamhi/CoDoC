@@ -1,0 +1,10 @@
+public void stopTethering(@TetheringType final int type){
+    final String callerPkg = mContext.getOpPackageName();
+    Log.i(TAG, "stopTethering caller:" + callerPkg);
+    getConnector(c -> c.stopTethering(type, callerPkg, new IIntResultListener.Stub() {
+
+        @Override
+        public void onResult(int resultCode) {
+        }
+    }));
+}

@@ -1,0 +1,13 @@
+public void addData(String tag, byte[] data, int flags){
+    if (data == null)
+        throw new NullPointerException("data == null");
+    try {
+        mService.add(new Entry(tag, 0, data, flags));
+    } catch (RemoteException e) {
+        if (e instanceof TransactionTooLargeException && mContext.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.N) {
+            Log.e(TAG, "App sent too much data, so it was ignored", e);
+            return;
+        }
+        throw e.rethrowFromSystemServer();
+    }
+}

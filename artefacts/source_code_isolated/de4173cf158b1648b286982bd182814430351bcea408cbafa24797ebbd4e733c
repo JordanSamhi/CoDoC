@@ -1,0 +1,11 @@
+public synchronized void track(T object){
+    Class<?> clazz = object.getClass();
+    @SuppressWarnings("unchecked")
+    TrackedClass<T> trackedClass = (TrackedClass<T>) mTrackedClasses.get(clazz);
+    if (trackedClass == null) {
+        trackedClass = new TrackedClass<T>();
+        mTrackedClasses.put(clazz, trackedClass);
+    }
+    trackedClass.track(object);
+    mTrackedCollections.track(trackedClass, clazz.getName());
+}

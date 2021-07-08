@@ -1,0 +1,16 @@
+public static NetworkCapabilities networkCapabilitiesForType(int type){
+    final NetworkCapabilities.Builder builder = new NetworkCapabilities.Builder();
+    final int notFound = -1;
+    final int transport = sLegacyTypeToTransport.get(type, notFound);
+    if (transport == notFound) {
+        throw new IllegalArgumentException("unknown legacy type: " + type);
+    }
+    builder.addTransportType(transport);
+    if (type == TYPE_MOBILE_DUN) {
+        builder.addCapability(NetworkCapabilities.NET_CAPABILITY_DUN);
+        builder.removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
+    } else {
+        builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+    return builder.build();
+}

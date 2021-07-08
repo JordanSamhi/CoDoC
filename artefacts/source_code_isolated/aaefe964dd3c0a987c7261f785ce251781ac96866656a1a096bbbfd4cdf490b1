@@ -1,0 +1,40 @@
+public void handleMessage(Message msg){
+    AsyncResult ar;
+    switch(msg.what) {
+        case EVENT_SET_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            onSetComplete(msg, ar);
+            break;
+        case EVENT_SET_CFF_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            if ((ar.exception == null) && (msg.arg1 == 1)) {
+                boolean cffEnabled = (msg.arg2 == 1);
+                mPhone.setVoiceCallForwardingFlag(1, cffEnabled, mDialingNumber);
+            }
+            onSetComplete(msg, ar);
+            break;
+        case EVENT_GET_CLIR_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            onGetClirComplete(ar);
+            break;
+        case EVENT_QUERY_CF_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            onQueryCfComplete(ar);
+            break;
+        case EVENT_QUERY_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            onQueryComplete(ar);
+            break;
+        case EVENT_USSD_COMPLETE:
+            ar = (AsyncResult) (msg.obj);
+            if (ar.exception != null) {
+                mState = State.FAILED;
+                mMessage = getErrorMessage(ar);
+                mPhone.onMMIDone(this);
+            }
+            break;
+        case EVENT_USSD_CANCEL_COMPLETE:
+            mPhone.onMMIDone(this);
+            break;
+    }
+}

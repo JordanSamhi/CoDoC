@@ -1,0 +1,16 @@
+public void destroyAppDataSnapshot(int rollbackId, PackageRollbackInfo packageRollbackInfo, int user){
+    int storageFlags = Installer.FLAG_STORAGE_DE;
+    final SparseLongArray ceSnapshotInodes = packageRollbackInfo.getCeSnapshotInodes();
+    long ceSnapshotInode = ceSnapshotInodes.get(user);
+    if (ceSnapshotInode > 0) {
+        storageFlags |= Installer.FLAG_STORAGE_CE;
+    }
+    try {
+        mInstaller.destroyAppDataSnapshot(packageRollbackInfo.getPackageName(), user, ceSnapshotInode, rollbackId, storageFlags);
+        if ((storageFlags & Installer.FLAG_STORAGE_CE) != 0) {
+            ceSnapshotInodes.delete(user);
+        }
+    } catch (InstallerException ie) {
+        Slog.e(TAG, "Unable to delete app data snapshot for " + packageRollbackInfo.getPackageName(), ie);
+    }
+}

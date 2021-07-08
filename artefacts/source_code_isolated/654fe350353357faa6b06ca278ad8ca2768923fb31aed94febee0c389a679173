@@ -1,0 +1,7 @@
+public String[] list(@NonNull String path) throws IOException{
+    Objects.requireNonNull(path, "path");
+    synchronized (this) {
+        ensureValidLocked();
+        return nativeList(mObject, path);
+    }
+}

@@ -1,0 +1,33 @@
+public void updateImsServiceConfig(boolean force){
+    if (!force) {
+        TelephonyManager tm = new TelephonyManager(mContext, getSubId());
+        if (tm.getSimState() != TelephonyManager.SIM_STATE_READY) {
+            log("updateImsServiceConfig: SIM not ready");
+            return;
+        }
+    }
+    if (!mConfigUpdated || force) {
+        try {
+            PersistableBundle imsCarrierConfigs = mConfigManager.getConfigByComponentForSubId(CarrierConfigManager.Ims.KEY_PREFIX, getSubId());
+            updateImsCarrierConfigs(imsCarrierConfigs);
+            CapabilityChangeRequest request = new CapabilityChangeRequest();
+            updateVolteFeatureValue(request);
+            updateWfcFeatureAndProvisionedValues(request);
+            updateVideoCallFeatureValue(request);
+            boolean isImsNeededForRtt = updateRttConfigValue() && isActiveSubscriptionPresent();
+            updateUtFeatureValue(request);
+            changeMmTelCapability(request);
+            if (isImsNeededForRtt || !isTurnOffImsAllowedByPlatform() || isImsNeeded(request)) {
+                log("updateImsServiceConfig: turnOnIms");
+                turnOnIms();
+            } else {
+                log("updateImsServiceConfig: turnOffIms");
+                turnOffIms();
+            }
+            mConfigUpdated = true;
+        } catch (ImsException e) {
+            loge("updateImsServiceConfig: ", e);
+            mConfigUpdated = false;
+        }
+    }
+}

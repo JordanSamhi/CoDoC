@@ -1,0 +1,13 @@
+public void noteSoftApConfigReset(SoftApConfiguration originalConfig, SoftApConfiguration newConfig){
+    synchronized (mLock) {
+        if (originalConfig.getSecurityType() != newConfig.getSecurityType()) {
+            mSoftApConfigLimitationMetrics.numSecurityTypeResetToDefault++;
+        }
+        if (originalConfig.getMaxNumberOfClients() != newConfig.getMaxNumberOfClients()) {
+            mSoftApConfigLimitationMetrics.numMaxClientSettingResetToDefault++;
+        }
+        if (originalConfig.isClientControlByUserEnabled() != newConfig.isClientControlByUserEnabled()) {
+            mSoftApConfigLimitationMetrics.numClientControlByUserResetToDefault++;
+        }
+    }
+}

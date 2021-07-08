@@ -1,0 +1,11 @@
+public void setBackDisposition(@BackDispositionMode int disposition){
+    if (disposition == mBackDisposition) {
+        return;
+    }
+    if (disposition > BACK_DISPOSITION_MAX || disposition < BACK_DISPOSITION_MIN) {
+        Log.e(TAG, "Invalid back disposition value (" + disposition + ") specified.");
+        return;
+    }
+    mBackDisposition = disposition;
+    setImeWindowStatus(mapToImeWindowStatus(), mBackDisposition);
+}

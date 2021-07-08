@@ -1,0 +1,21 @@
+public void setExpansion(float fraction){
+    float oldExpansion = mExpansion;
+    mExpansion = fraction;
+    if (mKeyguardView != null && !mIsAnimatingAway) {
+        float alpha = MathUtils.map(ALPHA_EXPANSION_THRESHOLD, 1, 1, 0, fraction);
+        mKeyguardView.setAlpha(MathUtils.constrain(alpha, 0f, 1f));
+        mKeyguardView.setTranslationY(fraction * mKeyguardView.getHeight());
+    }
+    if (fraction == EXPANSION_VISIBLE && oldExpansion != EXPANSION_VISIBLE) {
+        onFullyShown();
+        mExpansionCallback.onFullyShown();
+    } else if (fraction == EXPANSION_HIDDEN && oldExpansion != EXPANSION_HIDDEN) {
+        onFullyHidden();
+        mExpansionCallback.onFullyHidden();
+    } else if (fraction != EXPANSION_VISIBLE && oldExpansion == EXPANSION_VISIBLE) {
+        mExpansionCallback.onStartingToHide();
+        if (mKeyguardView != null) {
+            mKeyguardView.onStartingToHide();
+        }
+    }
+}

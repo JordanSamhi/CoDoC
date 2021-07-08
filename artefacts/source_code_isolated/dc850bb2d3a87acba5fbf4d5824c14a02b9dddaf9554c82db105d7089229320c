@@ -1,0 +1,17 @@
+public void close(){
+    setOnImageAvailableListener(null, null);
+    if (mSurface != null)
+        mSurface.release();
+    synchronized (mCloseLock) {
+        mIsReaderValid = false;
+        for (Image image : mAcquiredImages) {
+            image.close();
+        }
+        mAcquiredImages.clear();
+        nativeClose();
+        if (mEstimatedNativeAllocBytes > 0) {
+            VMRuntime.getRuntime().registerNativeFree(mEstimatedNativeAllocBytes);
+            mEstimatedNativeAllocBytes = 0;
+        }
+    }
+}

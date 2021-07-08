@@ -1,0 +1,7 @@
+public void testGetCurrentTransportComponent_whenNoTransportSelected() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    when(mTransportManager.getCurrentTransportComponent()).thenReturn(null);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    ComponentName transportComponent = backupManagerService.getCurrentTransportComponent();
+    assertThat(transportComponent).isNull();
+}

@@ -1,0 +1,13 @@
+public void initialize(){
+    mEventLog.log("Initializing");
+    Log.i(TAG, "Initializing cache.");
+    PhoneConfigurationManager.registerForMultiSimConfigChange(mHandler, HANDLER_MSIM_CONFIGURATION_CHANGE, null);
+    mFeatureQueryManager = mDynamicQueryManagerFactory.create(mContext, mDynamicQueryListener);
+    List<ImsServiceInfo> infos = getImsServiceInfo(null);
+    for (ImsServiceInfo info : infos) {
+        if (!mInstalledServicesCache.containsKey(info.name)) {
+            mInstalledServicesCache.put(info.name, info);
+        }
+    }
+    bindCarrierServicesIfAvailable();
+}

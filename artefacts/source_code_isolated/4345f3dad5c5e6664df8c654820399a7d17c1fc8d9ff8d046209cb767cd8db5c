@@ -1,0 +1,8 @@
+public void chunkify_withSmallChunks_combinesChunksUntilMinSize() throws Exception{
+    byte[] input = (SMALL_CHUNK + CHUNK_BOUNDARY + CHUNK_2 + CHUNK_BOUNDARY + CHUNK_3).getBytes(UTF_8);
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
+    ArrayList<String> result = new ArrayList<>();
+    mChunker.chunkify(inputStream, (chunk) -> result.add(new String(chunk, UTF_8)));
+    assertThat(result).containsExactly(SMALL_CHUNK + CHUNK_BOUNDARY + CHUNK_2 + CHUNK_BOUNDARY, CHUNK_3).inOrder();
+    assertThat(result.get(0).length()).isAtLeast(MIN_SIZE_BYTES);
+}

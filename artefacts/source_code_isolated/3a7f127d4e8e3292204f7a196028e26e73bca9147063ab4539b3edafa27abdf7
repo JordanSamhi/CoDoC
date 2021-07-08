@@ -1,0 +1,12 @@
+public boolean register(ProximitySensorListener listener){
+    if (!getSensorAvailable()) {
+        return false;
+    }
+    if (mListeners.contains(listener)) {
+        Log.d(TAG, "ProxListener registered multiple times: " + listener);
+    } else {
+        mListeners.add(listener);
+    }
+    registerInternal();
+    return true;
+}

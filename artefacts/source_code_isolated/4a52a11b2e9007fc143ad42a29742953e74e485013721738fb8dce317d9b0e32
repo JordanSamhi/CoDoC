@@ -1,0 +1,14 @@
+public Map<String, SecretKey> getAll() throws IOException, InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException{
+    Map<String, TertiaryKey> tertiaries;
+    try {
+        tertiaries = mDatabase.getTertiaryKeysTable().getAllKeys(mSecondaryKey.getAlias());
+    } finally {
+        mDatabase.close();
+    }
+    Map<String, SecretKey> unwrappedKeys = new ArrayMap<>();
+    for (String applicationName : tertiaries.keySet()) {
+        WrappedKeyProto.WrappedKey wrappedKey = WrappedKeyProto.WrappedKey.parseFrom(tertiaries.get(applicationName).getWrappedKeyBytes());
+        unwrappedKeys.put(applicationName, KeyWrapUtils.unwrap(mSecondaryKey.getSecretKey(), wrappedKey));
+    }
+    return unwrappedKeys;
+}

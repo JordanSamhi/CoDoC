@@ -1,0 +1,20 @@
+
+     * Called by a profile or device owner to set the permitted
+     * {@link android.accessibilityservice.AccessibilityService}. When set by
+     * a device owner or profile owner the restriction applies to all profiles of the user the
+     * device owner or profile owner is an admin for. By default, the user can use any accessibility
+     * service. When zero or more packages have been added, accessibility services that are not in
+     * the list and not part of the system can not be enabled by the user.
+     * <p>
+     * Calling with a null value for the list disables the restriction so that all services can be
+     * used, calling with an empty list only allows the built-in system services. Any non-system
+     * accessibility service that's currently enabled must be included in the list.
+     * <p>
+     * System accessibility services are always available to the user and this method can't
+     * disable them.
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param packageNames List of accessibility service package names.
+     * @return {@code true} if the operation succeeded, or {@code false} if the list didn't
+     *         contain every enabled non-system accessibility service.
+     * @throws SecurityException if {@code admin} is not a device or profile owner.
+     

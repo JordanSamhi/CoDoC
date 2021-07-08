@@ -1,0 +1,10 @@
+public static final Runnable zygoteInit(int targetSdkVersion, long[] disabledCompatChanges, String[] argv, ClassLoader classLoader){
+    if (RuntimeInit.DEBUG) {
+        Slog.d(RuntimeInit.TAG, "RuntimeInit: Starting application from zygote");
+    }
+    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "ZygoteInit");
+    RuntimeInit.redirectLogStreams();
+    RuntimeInit.commonInit();
+    ZygoteInit.nativeZygoteInit();
+    return RuntimeInit.applicationInit(targetSdkVersion, disabledCompatChanges, argv, classLoader);
+}

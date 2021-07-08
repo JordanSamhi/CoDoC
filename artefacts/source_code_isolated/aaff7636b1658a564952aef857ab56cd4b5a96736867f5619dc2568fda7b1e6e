@@ -1,0 +1,13 @@
+public Object[] serialize(){
+    Object[] out = new Object[entries.size() * 2];
+    for (int i = 0; i < entries.size(); i++) {
+        out[i * 2] = entries.keyAt(i);
+        out[i * 2 + 1] = entries.valueAt(i);
+    }
+    int size = out.toString().getBytes().length;
+    if (size > MAX_SERIALIZED_SIZE) {
+        Log.i(TAG, "Log line too long, did not emit: " + size + " bytes.");
+        throw new RuntimeException();
+    }
+    return out;
+}

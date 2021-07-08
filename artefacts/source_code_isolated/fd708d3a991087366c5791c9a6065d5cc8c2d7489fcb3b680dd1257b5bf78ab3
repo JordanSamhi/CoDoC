@@ -1,0 +1,33 @@
+public synchronized boolean setWifiEnabled(String packageName, boolean enable){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return false;
+    }
+    boolean isPrivileged = isPrivileged(Binder.getCallingPid(), Binder.getCallingUid());
+    if (!isPrivileged && !isDeviceOrProfileOwner(Binder.getCallingUid(), packageName) && !mWifiPermissionsUtil.isTargetSdkLessThan(packageName, Build.VERSION_CODES.Q, Binder.getCallingUid()) && !isSystem(packageName, Binder.getCallingUid())) {
+        mLog.info("setWifiEnabled not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return false;
+    }
+    if (mSettingsStore.isAirplaneModeOn() && !isPrivileged) {
+        mLog.err("setWifiEnabled in Airplane mode: only Settings can toggle wifi").flush();
+        return false;
+    }
+    if (!isPrivileged && mTetheredSoftApTracker.getState() == WIFI_AP_STATE_ENABLED) {
+        mLog.err("setWifiEnabled with SoftAp enabled: only Settings can toggle wifi").flush();
+        return false;
+    }
+    mLog.info("setWifiEnabled package=% uid=% enable=%").c(packageName).c(Binder.getCallingUid()).c(enable).flush();
+    long ident = Binder.clearCallingIdentity();
+    try {
+        if (!mSettingsStore.handleWifiToggled(enable)) {
+            return true;
+        }
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    if (mWifiPermissionsUtil.checkNetworkSettingsPermission(Binder.getCallingUid())) {
+        mWifiMetrics.logUserActionEvent(enable ? UserActionEvent.EVENT_TOGGLE_WIFI_ON : UserActionEvent.EVENT_TOGGLE_WIFI_OFF);
+    }
+    mWifiMetrics.incrementNumWifiToggles(isPrivileged, enable);
+    mActiveModeWarden.wifiToggled();
+    return true;
+}

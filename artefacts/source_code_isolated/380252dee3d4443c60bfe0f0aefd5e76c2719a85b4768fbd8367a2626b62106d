@@ -1,0 +1,5 @@
+public static List<String> callersWithin(Class<?> cls, int offset){
+    List<String> result = Arrays.stream(Thread.currentThread().getStackTrace()).skip(offset + 3).filter(st -> st.getClassName().startsWith(cls.getName())).map(StackTraceElement::getMethodName).collect(Collectors.toList());
+    Collections.reverse(result);
+    return result;
+}

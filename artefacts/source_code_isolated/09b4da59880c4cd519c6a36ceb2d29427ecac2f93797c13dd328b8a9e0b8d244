@@ -1,0 +1,27 @@
+public void cancelNotificationsFromListener(INotificationListener token, String[] keys){
+    final int callingUid = Binder.getCallingUid();
+    final int callingPid = Binder.getCallingPid();
+    long identity = Binder.clearCallingIdentity();
+    try {
+        synchronized (mNotificationLock) {
+            final ManagedServiceInfo info = mListeners.checkServiceTokenLocked(token);
+            if (keys != null) {
+                final int N = keys.length;
+                for (int i = 0; i < N; i++) {
+                    NotificationRecord r = mNotificationsByKey.get(keys[i]);
+                    if (r == null)
+                        continue;
+                    final int userId = r.getSbn().getUserId();
+                    if (userId != info.userid && userId != UserHandle.USER_ALL && !mUserProfiles.isCurrentProfile(userId)) {
+                        throw new SecurityException("Disallowed call from listener: " + info.service);
+                    }
+                    cancelNotificationFromListenerLocked(info, callingUid, callingPid, r.getSbn().getPackageName(), r.getSbn().getTag(), r.getSbn().getId(), userId);
+                }
+            } else {
+                cancelAllLocked(callingUid, callingPid, info.userid, REASON_LISTENER_CANCEL_ALL, info, info.supportsProfiles());
+            }
+        }
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

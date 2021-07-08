@@ -1,0 +1,21 @@
+public void onComputeInsets(Insets outInsets){
+    int[] loc = mTmpLocation;
+    if (mInputFrame.getVisibility() == View.VISIBLE) {
+        mInputFrame.getLocationInWindow(loc);
+    } else {
+        View decor = getWindow().getWindow().getDecorView();
+        loc[1] = decor.getHeight();
+    }
+    if (isFullscreenMode()) {
+        View decor = getWindow().getWindow().getDecorView();
+        outInsets.contentTopInsets = decor.getHeight();
+    } else {
+        outInsets.contentTopInsets = loc[1];
+    }
+    if (mCandidatesFrame.getVisibility() == View.VISIBLE) {
+        mCandidatesFrame.getLocationInWindow(loc);
+    }
+    outInsets.visibleTopInsets = loc[1];
+    outInsets.touchableInsets = Insets.TOUCHABLE_INSETS_VISIBLE;
+    outInsets.touchableRegion.setEmpty();
+}

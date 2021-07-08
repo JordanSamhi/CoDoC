@@ -1,0 +1,8 @@
+public Builder withValue(@NonNull String key, @Nullable Object value){
+    assertValuesAllowed();
+    if (!ContentValues.isSupportedValue(value)) {
+        throw new IllegalArgumentException("bad value type: " + value.getClass().getName());
+    }
+    setValue(key, value);
+    return this;
+}

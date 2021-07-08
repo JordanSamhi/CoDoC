@@ -1,0 +1,8 @@
+public boolean sendCurrentNetworkEapSimGsmAuthFailure(@NonNull String ifaceName){
+    synchronized (mLock) {
+        SupplicantStaNetworkHal networkHandle = checkSupplicantStaNetworkAndLogFailure(ifaceName, "sendCurrentNetworkEapSimGsmAuthFailure");
+        if (networkHandle == null)
+            return false;
+        return networkHandle.sendNetworkEapSimGsmAuthFailure();
+    }
+}

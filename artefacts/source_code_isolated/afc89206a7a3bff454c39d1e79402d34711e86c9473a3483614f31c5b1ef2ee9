@@ -1,0 +1,15 @@
+public LinkAddress[] getLinkAddresses() throws LowpanException{
+    try {
+        String[] linkAddressStrings = mBinder.getLinkAddresses();
+        LinkAddress[] ret = new LinkAddress[linkAddressStrings.length];
+        int i = 0;
+        for (String str : linkAddressStrings) {
+            ret[i++] = new LinkAddress(str);
+        }
+        return ret;
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

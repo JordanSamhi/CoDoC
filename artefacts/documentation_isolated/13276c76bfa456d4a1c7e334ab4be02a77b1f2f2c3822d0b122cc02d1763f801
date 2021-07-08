@@ -1,0 +1,25 @@
+
+     * Get the SubscriptionInfo(s) of the currently active SIM(s). The records will be sorted
+     * by {@link SubscriptionInfo#getSimSlotIndex} then by {@link SubscriptionInfo#getSubscriptionId}.
+     *
+     * <p>Requires Permission: {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     * or that the calling app has carrier privileges (see
+     * {@link TelephonyManager#hasCarrierPrivileges}). In the latter case, only records accessible
+     * to the calling app are returned.
+     *
+     * @return Sorted list of the currently {@link SubscriptionInfo} records available on the device.
+     * <ul>
+     * <li>
+     * If null is returned the current state is unknown but if a {@link OnSubscriptionsChangedListener}
+     * has been registered {@link OnSubscriptionsChangedListener#onSubscriptionsChanged} will be
+     * invoked in the future.
+     * </li>
+     * <li>
+     * If the list is empty then there are no {@link SubscriptionInfo} records currently available.
+     * </li>
+     * <li>
+     * if the list is non-empty the list is sorted by {@link SubscriptionInfo#getSimSlotIndex}
+     * then by {@link SubscriptionInfo#getSubscriptionId}.
+     * </li>
+     * </ul>
+     

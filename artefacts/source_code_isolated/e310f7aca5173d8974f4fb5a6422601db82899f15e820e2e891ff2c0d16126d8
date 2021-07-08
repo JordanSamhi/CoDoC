@@ -1,0 +1,11 @@
+public void addDisplayWindowListener(OnDisplaysChangedListener listener){
+    synchronized (mDisplays) {
+        if (mDisplayChangedListeners.contains(listener)) {
+            return;
+        }
+        mDisplayChangedListeners.add(listener);
+        for (int i = 0; i < mDisplays.size(); ++i) {
+            listener.onDisplayAdded(mDisplays.keyAt(i));
+        }
+    }
+}

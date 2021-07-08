@@ -1,0 +1,7 @@
+public boolean beginFullBackup(@UserIdInt int userId, FullBackupJob scheduledJob){
+    if (!isUserReadyForBackup(userId)) {
+        return false;
+    }
+    UserBackupManagerService userBackupManagerService = getServiceForUserIfCallerHasPermission(userId, "beginFullBackup()");
+    return userBackupManagerService != null && userBackupManagerService.beginFullBackup(scheduledJob);
+}

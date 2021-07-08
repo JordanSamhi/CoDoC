@@ -1,0 +1,13 @@
+public void requestNotificationAccess(ComponentName component){
+    if (!checkFeaturePresent()) {
+        return;
+    }
+    try {
+        IntentSender intentSender = mService.requestNotificationAccess(component).getIntentSender();
+        mContext.startIntentSender(intentSender, null, 0, 0, 0);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (IntentSender.SendIntentException e) {
+        throw new RuntimeException(e);
+    }
+}

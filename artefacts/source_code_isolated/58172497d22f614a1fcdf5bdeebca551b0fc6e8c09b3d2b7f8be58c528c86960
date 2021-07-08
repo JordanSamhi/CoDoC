@@ -1,0 +1,16 @@
+public String getName(){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("getName"))
+            return null;
+        SupplicantResult<String> result = new SupplicantResult("getName()");
+        try {
+            mISupplicantP2pIface.getName((SupplicantStatus status, String name) -> {
+                result.setResult(status, name);
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.getResult();
+    }
+}

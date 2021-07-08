@@ -1,0 +1,11 @@
+public static IFullBackupRestoreObserver sendOnRestorePackage(IFullBackupRestoreObserver observer, String name){
+    if (observer != null) {
+        try {
+            observer.onRestorePackage(name);
+        } catch (RemoteException e) {
+            Slog.w(TAG, "full restore observer went away: restorePackage");
+            observer = null;
+        }
+    }
+    return observer;
+}

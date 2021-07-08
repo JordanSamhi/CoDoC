@@ -1,0 +1,13 @@
+public KernelWakelockStats updateWakelockStats(WakeLockInfo[] wlStats, final KernelWakelockStats staleStats){
+    for (WakeLockInfo info : wlStats) {
+        if (!staleStats.containsKey(info.name)) {
+            staleStats.put(info.name, new KernelWakelockStats.Entry((int) info.activeCount, info.totalTime * 1000, sKernelWakelockUpdateVersion));
+        } else {
+            KernelWakelockStats.Entry kwlStats = staleStats.get(info.name);
+            kwlStats.mCount = (int) info.activeCount;
+            kwlStats.mTotalTime = info.totalTime * 1000;
+            kwlStats.mVersion = sKernelWakelockUpdateVersion;
+        }
+    }
+    return staleStats;
+}

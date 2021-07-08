@@ -1,0 +1,7 @@
+public void configure(Collection<Pair<Surface, Size>> outputs){
+    Handler handler = mRequestThread.waitAndGetHandler();
+    final ConditionVariable condition = new ConditionVariable(false);
+    ConfigureHolder holder = new ConfigureHolder(condition, outputs);
+    handler.sendMessage(handler.obtainMessage(MSG_CONFIGURE_OUTPUTS, 0, 0, holder));
+    condition.block();
+}

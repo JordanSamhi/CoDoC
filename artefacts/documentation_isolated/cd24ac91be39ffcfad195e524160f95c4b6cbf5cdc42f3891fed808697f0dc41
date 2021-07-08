@@ -1,0 +1,25 @@
+
+     * Requests a frontend resource.
+     *
+     * <p>There are three possible scenarios:
+     * <ul>
+     * <li>If there is frontend available, the API would send the id back.
+     *
+     * <li>If no Frontend is available but the current request info can show higher priority than
+     * other uses of Frontend, the API will send
+     * {@link IResourcesReclaimListener#onReclaimResources()} to the {@link Tuner}. Tuner would
+     * handle the resource reclaim on the holder of lower priority and notify the holder of its
+     * resource loss.
+     *
+     * <li>If no frontend can be granted, the API would return false.
+     * <ul>
+     *
+     * <p><strong>Note:</strong> {@link #setFrontendInfoList(TunerFrontendInfo[])} must be called
+     * before this request.
+     *
+     * @param request {@link TunerFrontendRequest} information of the current request.
+     * @param frontendHandle a one-element array to return the granted frontendHandle. If
+     *                       no frontend granted, this will return {@link #INVALID_RESOURCE_HANDLE}.
+     *
+     * @return true if there is frontend granted.
+     

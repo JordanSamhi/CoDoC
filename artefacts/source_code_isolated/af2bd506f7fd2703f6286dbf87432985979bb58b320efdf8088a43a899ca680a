@@ -1,0 +1,19 @@
+public Integer getIntValue(int formatType, int offset){
+    if ((offset + getTypeLen(formatType)) > mValue.length)
+        return null;
+    switch(formatType) {
+        case FORMAT_UINT8:
+            return unsignedByteToInt(mValue[offset]);
+        case FORMAT_UINT16:
+            return unsignedBytesToInt(mValue[offset], mValue[offset + 1]);
+        case FORMAT_UINT32:
+            return unsignedBytesToInt(mValue[offset], mValue[offset + 1], mValue[offset + 2], mValue[offset + 3]);
+        case FORMAT_SINT8:
+            return unsignedToSigned(unsignedByteToInt(mValue[offset]), 8);
+        case FORMAT_SINT16:
+            return unsignedToSigned(unsignedBytesToInt(mValue[offset], mValue[offset + 1]), 16);
+        case FORMAT_SINT32:
+            return unsignedToSigned(unsignedBytesToInt(mValue[offset], mValue[offset + 1], mValue[offset + 2], mValue[offset + 3]), 32);
+    }
+    return null;
+}

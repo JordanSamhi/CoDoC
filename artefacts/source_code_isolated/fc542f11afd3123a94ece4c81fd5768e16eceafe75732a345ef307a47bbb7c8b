@@ -1,0 +1,12 @@
+public void invalidateKey(int keyIndex){
+    if (mKeys == null)
+        return;
+    if (keyIndex < 0 || keyIndex >= mKeys.length) {
+        return;
+    }
+    final Key key = mKeys[keyIndex];
+    mInvalidatedKey = key;
+    mDirtyRect.union(key.x + mPaddingLeft, key.y + mPaddingTop, key.x + key.width + mPaddingLeft, key.y + key.height + mPaddingTop);
+    onBufferDraw();
+    invalidate(key.x + mPaddingLeft, key.y + mPaddingTop, key.x + key.width + mPaddingLeft, key.y + key.height + mPaddingTop);
+}

@@ -1,0 +1,28 @@
+public Drawable getDrawable(@NonNull Context context, PartnerConfig partnerConfig){
+    if (partnerConfig.getResourceType() != PartnerConfig.ResourceType.DRAWABLE) {
+        throw new IllegalArgumentException("Not a drawable resource");
+    }
+    if (mPartnerResourceCache.containsKey(partnerConfig)) {
+        return (Drawable) mPartnerResourceCache.get(partnerConfig);
+    }
+    Drawable result = null;
+    try {
+        String resourceName = partnerConfig.getResourceName();
+        ResourceEntry resourceEntry = getResourceEntryFromKey(resourceName);
+        if (resourceEntry == null) {
+            Log.w(TAG, "Resource not found: " + resourceName);
+            return null;
+        }
+        Resources resource = getResourcesByPackageName(context, resourceEntry.getPackageName());
+        TypedValue outValue = new TypedValue();
+        resource.getValue(resourceEntry.getResourceId(), outValue, true);
+        if (outValue.type == TypedValue.TYPE_REFERENCE && outValue.data == 0) {
+            return result;
+        }
+        result = resource.getDrawable(resourceEntry.getResourceId(), null);
+        mPartnerResourceCache.put(partnerConfig, result);
+    } catch (PackageManager.NameNotFoundException | NotFoundException exception) {
+        Log.e(TAG, exception.getMessage());
+    }
+    return result;
+}

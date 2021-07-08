@@ -1,0 +1,9 @@
+public void setServerParams(@NonNull byte[] serverParams) throws InternalRecoveryServiceException{
+    try {
+        mBinder.setServerParams(serverParams);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        throw wrapUnexpectedServiceSpecificException(e);
+    }
+}

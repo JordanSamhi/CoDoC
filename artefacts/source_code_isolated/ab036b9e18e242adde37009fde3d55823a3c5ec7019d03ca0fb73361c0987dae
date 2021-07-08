@@ -1,0 +1,7 @@
+public static void schedule(Context context, long minimumDelayMillis){
+    JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+    ComponentName idlerJobServiceName = new ComponentName(context, TimeZoneUpdateIdler.class);
+    JobInfo.Builder jobInfoBuilder = new JobInfo.Builder(TIME_ZONE_UPDATE_IDLE_JOB_ID, idlerJobServiceName).setRequiresDeviceIdle(true).setRequiresCharging(true).setMinimumLatency(minimumDelayMillis);
+    Slog.d(TAG, "schedule() called: minimumDelayMillis=" + minimumDelayMillis);
+    jobScheduler.schedule(jobInfoBuilder.build());
+}

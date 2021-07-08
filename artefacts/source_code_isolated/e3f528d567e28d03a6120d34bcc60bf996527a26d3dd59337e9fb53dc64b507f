@@ -1,0 +1,13 @@
+public synchronized boolean setAllowDataDuringVoiceCall(boolean allow){
+    localLog("setAllowDataDuringVoiceCall", allow);
+    if (allow == isDataAllowedInVoiceCall()) {
+        return true;
+    }
+    mDataEnabledOverride.setDataAllowedInVoiceCall(allow);
+    boolean changed = SubscriptionController.getInstance().setDataEnabledOverrideRules(mPhone.getSubId(), mDataEnabledOverride.getRules());
+    if (changed) {
+        updateDataEnabledAndNotify(REASON_OVERRIDE_RULE_CHANGED);
+        notifyDataEnabledOverrideChanged();
+    }
+    return changed;
+}

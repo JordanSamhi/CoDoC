@@ -1,0 +1,37 @@
+
+         * Adds a call to the call log.
+         *
+         * @param ci the CallerInfo object to get the target contact from.  Can be null
+         * if the contact is unknown.
+         * @param context the context used to get the ContentResolver
+         * @param number the phone number to be added to the calls db
+         * @param postDialDigits the post-dial digits that were dialed after the number,
+         *        if it was outgoing. Otherwise it is ''.
+         * @param viaNumber the secondary number that the incoming call received with. If the
+         *        call was received with the SIM assigned number, then this field must be ''.
+         * @param presentation enum value from TelecomManager.PRESENTATION_xxx, which
+         *        is set by the network and denotes the number presenting rules for
+         *        "allowed", "payphone", "restricted" or "unknown"
+         * @param callType enumerated values for "incoming", "outgoing", or "missed"
+         * @param features features of the call (e.g. Video).
+         * @param accountHandle The accountHandle object identifying the provider of the call
+         * @param start time stamp for the call in milliseconds
+         * @param duration call duration in seconds
+         * @param dataUsage data usage for the call in bytes, null if data usage was not tracked for
+         *                  the call.
+         * @param addForAllUsers If true, the call is added to the call log of all currently
+         *        running users. The caller must have the MANAGE_USERS permission if this is true.
+         * @param userToBeInsertedTo {@link UserHandle} of user that the call is going to be
+         *                           inserted to. null if it is inserted to the current user. The
+         *                           value is ignored if @{link addForAllUsers} is true.
+         * @param isRead Flag to show if the missed call log has been read by the user or not.
+         *                Used for call log restore of missed calls.
+         * @param callBlockReason The reason why the call is blocked.
+         * @param callScreeningAppName The call screening application name which block the call.
+         * @param callScreeningComponentName The call screening component name which block the call.
+         *
+         * @result The URI of the call log entry belonging to the user that made or received this
+         *        call.  This could be of the shadow provider.  Do not return it to non-system apps,
+         *        as they don't have permissions.
+         * {@hide}
+         

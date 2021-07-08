@@ -1,0 +1,8 @@
+public ArraySet<ComponentName> getWhitelistedComponents(@UserIdInt int userId, @NonNull String packageName){
+    synchronized (mGlobalWhitelistStateLock) {
+        if (mWhitelisterHelpers == null)
+            return null;
+        final WhitelistHelper helper = mWhitelisterHelpers.get(userId);
+        return helper == null ? null : helper.getWhitelistedComponents(packageName);
+    }
+}

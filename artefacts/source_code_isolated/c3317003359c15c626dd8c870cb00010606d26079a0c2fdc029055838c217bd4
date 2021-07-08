@@ -1,0 +1,11 @@
+public static long calculateInstalledSize(String packagePath, String abiOverride){
+    final File packageFile = new File(packagePath);
+    final PackageParser.PackageLite pkg;
+    try {
+        pkg = PackageParser.parsePackageLite(packageFile, 0);
+        return PackageHelper.calculateInstalledSize(pkg, abiOverride);
+    } catch (PackageParserException | IOException e) {
+        Slog.w(TAG, "Failed to calculate installed size: " + e);
+        return -1;
+    }
+}

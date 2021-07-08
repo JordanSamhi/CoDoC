@@ -1,0 +1,38 @@
+public void show(){
+    if (mShowing) {
+        if (mDecor != null) {
+            if (mWindow.hasFeature(Window.FEATURE_ACTION_BAR)) {
+                mWindow.invalidatePanelMenu(Window.FEATURE_ACTION_BAR);
+            }
+            mDecor.setVisibility(View.VISIBLE);
+        }
+        return;
+    }
+    mCanceled = false;
+    if (!mCreated) {
+        dispatchOnCreate(null);
+    } else {
+        final Configuration config = mContext.getResources().getConfiguration();
+        mWindow.getDecorView().dispatchConfigurationChanged(config);
+    }
+    onStart();
+    mDecor = mWindow.getDecorView();
+    if (mActionBar == null && mWindow.hasFeature(Window.FEATURE_ACTION_BAR)) {
+        final ApplicationInfo info = mContext.getApplicationInfo();
+        mWindow.setDefaultIcon(info.icon);
+        mWindow.setDefaultLogo(info.logo);
+        mActionBar = new WindowDecorActionBar(this);
+    }
+    WindowManager.LayoutParams l = mWindow.getAttributes();
+    boolean restoreSoftInputMode = false;
+    if ((l.softInputMode & WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION) == 0) {
+        l.softInputMode |= WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION;
+        restoreSoftInputMode = true;
+    }
+    mWindowManager.addView(mDecor, l);
+    if (restoreSoftInputMode) {
+        l.softInputMode &= ~WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION;
+    }
+    mShowing = true;
+    sendShowMessage();
+}

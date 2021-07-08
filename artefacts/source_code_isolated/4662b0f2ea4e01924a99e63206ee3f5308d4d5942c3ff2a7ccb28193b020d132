@@ -1,0 +1,15 @@
+public void disable(){
+    synchronized (mLock) {
+        if (mSensor == null) {
+            Slog.w(TAG, "Cannot detect sensors. Invalid disable");
+            return;
+        }
+        if (mEnabled == true) {
+            if (LOG) {
+                Slog.d(TAG, "WindowOrientationListener disabled");
+            }
+            mSensorManager.unregisterListener(mOrientationJudge);
+            mEnabled = false;
+        }
+    }
+}

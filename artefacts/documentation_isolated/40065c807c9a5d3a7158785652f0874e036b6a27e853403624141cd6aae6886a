@@ -1,0 +1,26 @@
+
+     * Handle the data delivered via the given file descriptor during a full restore
+     * operation.  The agent is given the path to the file's original location as well
+     * as its size and metadata.
+     * <p>
+     * The file descriptor can only be read for {@code size} bytes; attempting to read
+     * more data has undefined behavior.
+     * <p>
+     * The default implementation creates the destination file/directory and populates it
+     * with the data from the file descriptor, then sets the file's access mode and
+     * modification time to match the restore arguments.
+     *
+     * @param data A read-only file descriptor from which the agent can read {@code size}
+     *     bytes of file data.
+     * @param size The number of bytes of file content to be restored to the given
+     *     destination.  If the file system object being restored is a directory, {@code size}
+     *     will be zero.
+     * @param destination The File on disk to be restored with the given data.
+     * @param type The kind of file system object being restored.  This will be either
+     *     {@link BackupAgent#TYPE_FILE} or {@link BackupAgent#TYPE_DIRECTORY}.
+     * @param mode The access mode to be assigned to the destination after its data is
+     *     written.  This is in the standard format used by {@code chmod()}.
+     * @param mtime The modification time of the file when it was backed up, suitable to
+     *     be assigned to the file after its data is written.
+     * @throws IOException
+     

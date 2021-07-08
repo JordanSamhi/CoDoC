@@ -1,0 +1,13 @@
+public static ResourceEntry getResourceEntry(Context context, @AnyRes int id){
+    final Partner partner = Partner.get(context);
+    if (partner != null) {
+        final Resources ourResources = context.getResources();
+        final String name = ourResources.getResourceEntryName(id);
+        final String type = ourResources.getResourceTypeName(id);
+        final int partnerId = partner.getIdentifier(name, type);
+        if (partnerId != 0) {
+            return new ResourceEntry(partner.resources, partnerId, true);
+        }
+    }
+    return new ResourceEntry(context.getResources(), id, false);
+}

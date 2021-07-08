@@ -1,0 +1,22 @@
+public boolean getCapabilities(short transactionId){
+    if (mDbg)
+        Log.v(TAG, "getCapabilities: transactionId=" + transactionId);
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "getCapabilities: null interface");
+        return false;
+    }
+    try {
+        WifiStatus status = iface.getCapabilitiesRequest(transactionId);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "getCapabilities: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "getCapabilities: exception: " + e);
+        return false;
+    }
+}

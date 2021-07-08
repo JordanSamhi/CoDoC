@@ -1,0 +1,10 @@
+public void setLocusContext(@Nullable LocusId locusId, @Nullable Bundle bundle){
+    try {
+        ActivityManager.getService().setActivityLocusContext(mComponent, locusId, mToken);
+    } catch (RemoteException re) {
+        re.rethrowFromSystemServer();
+    }
+    if (locusId != null) {
+        setLocusContextToContentCapture(locusId, bundle);
+    }
+}

@@ -1,0 +1,9 @@
+public Builder withValues(@NonNull ContentValues values){
+    assertValuesAllowed();
+    ensureValues();
+    final ArrayMap<String, Object> rawValues = values.getValues();
+    for (int i = 0; i < rawValues.size(); i++) {
+        setValue(rawValues.keyAt(i), rawValues.valueAt(i));
+    }
+    return this;
+}

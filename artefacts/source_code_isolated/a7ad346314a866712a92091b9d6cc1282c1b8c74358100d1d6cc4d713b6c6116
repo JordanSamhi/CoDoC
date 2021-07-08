@@ -1,0 +1,52 @@
+public RenderNode updateDisplayListIfDirty(){
+    final RenderNode renderNode = mRenderNode;
+    if (!canHaveDisplayList()) {
+        return renderNode;
+    }
+    if ((mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == 0 || !renderNode.hasDisplayList() || (mRecreateDisplayList)) {
+        if (renderNode.hasDisplayList() && !mRecreateDisplayList) {
+            mPrivateFlags |= PFLAG_DRAWN | PFLAG_DRAWING_CACHE_VALID;
+            mPrivateFlags &= ~PFLAG_DIRTY_MASK;
+            dispatchGetDisplayList();
+            return renderNode;
+        }
+        mRecreateDisplayList = true;
+        int width = mRight - mLeft;
+        int height = mBottom - mTop;
+        int layerType = getLayerType();
+        final RecordingCanvas canvas = renderNode.beginRecording(width, height);
+        try {
+            if (layerType == LAYER_TYPE_SOFTWARE) {
+                buildDrawingCache(true);
+                Bitmap cache = getDrawingCache(true);
+                if (cache != null) {
+                    canvas.drawBitmap(cache, 0, 0, mLayerPaint);
+                }
+            } else {
+                computeScroll();
+                canvas.translate(-mScrollX, -mScrollY);
+                mPrivateFlags |= PFLAG_DRAWN | PFLAG_DRAWING_CACHE_VALID;
+                mPrivateFlags &= ~PFLAG_DIRTY_MASK;
+                if ((mPrivateFlags & PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) {
+                    dispatchDraw(canvas);
+                    drawAutofilledHighlight(canvas);
+                    if (mOverlay != null && !mOverlay.isEmpty()) {
+                        mOverlay.getOverlayView().draw(canvas);
+                    }
+                    if (isShowingLayoutBounds()) {
+                        debugDrawFocus(canvas);
+                    }
+                } else {
+                    draw(canvas);
+                }
+            }
+        } finally {
+            renderNode.endRecording();
+            setDisplayListProperties(renderNode);
+        }
+    } else {
+        mPrivateFlags |= PFLAG_DRAWN | PFLAG_DRAWING_CACHE_VALID;
+        mPrivateFlags &= ~PFLAG_DIRTY_MASK;
+    }
+    return renderNode;
+}

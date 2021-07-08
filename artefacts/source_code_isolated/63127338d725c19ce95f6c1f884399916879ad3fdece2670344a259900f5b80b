@@ -1,0 +1,22 @@
+public static VerifiedSigner extractCertificates(String apkFile) throws SignatureNotFoundException, SecurityException{
+    final File apk = new File(apkFile);
+    final byte[] signatureBytes = IncrementalManager.unsafeGetFileSignature(apk.getAbsolutePath());
+    if (signatureBytes == null || signatureBytes.length == 0) {
+        throw new SignatureNotFoundException("Failed to obtain signature bytes from IncFS.");
+    }
+    final V4Signature signature;
+    final V4Signature.HashingInfo hashingInfo;
+    final V4Signature.SigningInfo signingInfo;
+    try {
+        signature = V4Signature.readFrom(signatureBytes);
+        if (!signature.isVersionSupported()) {
+            throw new SecurityException("v4 signature version " + signature.version + " is not supported");
+        }
+        hashingInfo = V4Signature.HashingInfo.fromByteArray(signature.hashingInfo);
+        signingInfo = V4Signature.SigningInfo.fromByteArray(signature.signingInfo);
+    } catch (IOException e) {
+        throw new SignatureNotFoundException("Failed to read V4 signature.", e);
+    }
+    final byte[] signedData = V4Signature.getSigningData(apk.length(), hashingInfo, signingInfo);
+    return verifySigner(signingInfo, signedData);
+}

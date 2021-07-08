@@ -1,0 +1,22 @@
+public static void deleteCarrierInfoForImsiEncryption(Context context){
+    Log.i(LOG_TAG, "deleting carrier key from db");
+    String mcc = "";
+    String mnc = "";
+    final TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    String simOperator = telephonyManager.getSimOperator();
+    if (!TextUtils.isEmpty(simOperator)) {
+        mcc = simOperator.substring(0, 3);
+        mnc = simOperator.substring(3);
+    } else {
+        Log.e(LOG_TAG, "Invalid networkOperator: " + simOperator);
+        return;
+    }
+    ContentResolver mContentResolver = context.getContentResolver();
+    try {
+        String whereClause = "mcc=? and mnc=?";
+        String[] whereArgs = new String[] { mcc, mnc };
+        mContentResolver.delete(Telephony.CarrierColumns.CONTENT_URI, whereClause, whereArgs);
+    } catch (Exception e) {
+        Log.e(LOG_TAG, "Delete failed" + e);
+    }
+}

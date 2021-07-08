@@ -1,0 +1,16 @@
+public void dump(boolean showSensitive){
+    if (mActivityComponent == null) {
+        Log.i(TAG, "dump(): calling ensureData() first");
+        ensureData();
+    }
+    Log.i(TAG, "Task id: " + mTaskId);
+    Log.i(TAG, "Activity: " + (mActivityComponent != null ? mActivityComponent.flattenToShortString() : null));
+    Log.i(TAG, "Sanitize on write: " + mSanitizeOnWrite);
+    Log.i(TAG, "Flags: " + mFlags);
+    final int N = getWindowNodeCount();
+    for (int i = 0; i < N; i++) {
+        WindowNode node = getWindowNodeAt(i);
+        Log.i(TAG, "Window #" + i + " [" + node.getLeft() + "," + node.getTop() + " " + node.getWidth() + "x" + node.getHeight() + "]" + " " + node.getTitle());
+        dump("  ", node.getRootViewNode(), showSensitive);
+    }
+}

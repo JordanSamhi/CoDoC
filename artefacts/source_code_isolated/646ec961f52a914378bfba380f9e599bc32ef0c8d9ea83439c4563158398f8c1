@@ -1,0 +1,15 @@
+public boolean setLocalPrefixes(ArrayList<String> localPrefixes){
+    final String logmsg = String.format("setLocalPrefixes([%s])", String.join(",", localPrefixes));
+    final CbResults results = new CbResults();
+    try {
+        mOffloadControl.setLocalPrefixes(localPrefixes, (boolean success, String errMsg) -> {
+            results.mSuccess = success;
+            results.mErrMsg = errMsg;
+        });
+    } catch (RemoteException e) {
+        record(logmsg, e);
+        return false;
+    }
+    record(logmsg, results);
+    return results.mSuccess;
+}

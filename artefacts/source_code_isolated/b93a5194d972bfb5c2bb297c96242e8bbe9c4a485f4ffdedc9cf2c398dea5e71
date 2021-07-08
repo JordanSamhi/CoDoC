@@ -1,0 +1,15 @@
+public void switchUserStoresAndRead(@NonNull List<StoreFile> userStores) throws XmlPullParserException, IOException{
+    Preconditions.checkNotNull(userStores);
+    if (mUserStores != null) {
+        for (StoreFile userStoreFile : mUserStores) {
+            resetStoreData(userStoreFile);
+        }
+    }
+    stopBufferedWriteAlarm();
+    mUserStores = userStores;
+    long readStartTime = mClock.getElapsedSinceBootMillis();
+    readFromUserStoreFiles();
+    long readTime = mClock.getElapsedSinceBootMillis() - readStartTime;
+    mWifiMetrics.noteWifiConfigStoreReadDuration(toIntExact(readTime));
+    Log.d(TAG, "Reading from user stores completed in " + readTime + " ms.");
+}

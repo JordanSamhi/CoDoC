@@ -1,0 +1,10 @@
+public String[] getIsimPcscf(int subId) throws RemoteException{
+    return callPhoneMethodForSubIdWithPrivilegedCheck(subId, "getIsimPcscf", (phone) -> {
+        IsimRecords isim = phone.getIsimRecords();
+        if (isim != null) {
+            return isim.getIsimPcscf();
+        } else {
+            return null;
+        }
+    });
+}

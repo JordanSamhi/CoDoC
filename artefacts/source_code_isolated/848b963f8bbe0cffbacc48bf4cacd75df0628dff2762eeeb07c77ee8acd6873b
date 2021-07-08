@@ -1,0 +1,12 @@
+public static Formatter formatDateRange(Context context, Formatter formatter, long startMillis, long endMillis, int flags, String timeZone){
+    if ((flags & (FORMAT_SHOW_TIME | FORMAT_12HOUR | FORMAT_24HOUR)) == FORMAT_SHOW_TIME) {
+        flags |= DateFormat.is24HourFormat(context) ? FORMAT_24HOUR : FORMAT_12HOUR;
+    }
+    String range = DateIntervalFormat.formatDateRange(startMillis, endMillis, flags, timeZone);
+    try {
+        formatter.out().append(range);
+    } catch (IOException impossible) {
+        throw new AssertionError(impossible);
+    }
+    return formatter;
+}

@@ -1,0 +1,8 @@
+public void setCompatVersion(int rilRequest, @NonNull HalVersion halVersion){
+    HalVersion oldVersion = getCompatVersion(rilRequest);
+    if (oldVersion != null && halVersion.greaterOrEqual(oldVersion)) {
+        riljLoge("setCompatVersion with equal or greater one, ignored, halVerion=" + halVersion + ", oldVerion=" + oldVersion);
+        return;
+    }
+    mCompatOverrides.put(rilRequest, halVersion);
+}

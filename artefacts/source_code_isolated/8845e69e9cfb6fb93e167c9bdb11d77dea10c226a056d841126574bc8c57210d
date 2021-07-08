@@ -1,0 +1,14 @@
+public List<String> getCrossProfileWidgetProviders(@NonNull ComponentName admin){
+    throwIfParentInstance("getCrossProfileWidgetProviders");
+    if (mService != null) {
+        try {
+            List<String> providers = mService.getCrossProfileWidgetProviders(admin);
+            if (providers != null) {
+                return providers;
+            }
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return Collections.emptyList();
+}

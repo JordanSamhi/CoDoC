@@ -1,0 +1,52 @@
+public void adbBackup(ParcelFileDescriptor fd, boolean includeApks, boolean includeObbs, boolean includeShared, boolean doWidgets, boolean doAllApps, boolean includeSystem, boolean compress, boolean doKeyValue, String[] pkgList){
+    mContext.enforceCallingPermission(android.Manifest.permission.BACKUP, "adbBackup");
+    final int callingUserHandle = UserHandle.getCallingUserId();
+    if (callingUserHandle != UserHandle.USER_SYSTEM) {
+        throw new IllegalStateException("Backup supported only for the device owner");
+    }
+    if (!doAllApps) {
+        if (!includeShared) {
+            if (pkgList == null || pkgList.length == 0) {
+                throw new IllegalArgumentException("Backup requested but neither shared nor any apps named");
+            }
+        }
+    }
+    long oldId = Binder.clearCallingIdentity();
+    try {
+        if (!mSetupComplete) {
+            Slog.i(TAG, addUserIdToLogMessage(mUserId, "Backup not supported before setup"));
+            return;
+        }
+        if (DEBUG) {
+            Slog.v(TAG, addUserIdToLogMessage(mUserId, "Requesting backup: apks=" + includeApks + " obb=" + includeObbs + " shared=" + includeShared + " all=" + doAllApps + " system=" + includeSystem + " includekeyvalue=" + doKeyValue + " pkgs=" + pkgList));
+        }
+        Slog.i(TAG, addUserIdToLogMessage(mUserId, "Beginning adb backup..."));
+        AdbBackupParams params = new AdbBackupParams(fd, includeApks, includeObbs, includeShared, doWidgets, doAllApps, includeSystem, compress, doKeyValue, pkgList);
+        final int token = generateRandomIntegerToken();
+        synchronized (mAdbBackupRestoreConfirmations) {
+            mAdbBackupRestoreConfirmations.put(token, params);
+        }
+        if (DEBUG) {
+            Slog.d(TAG, addUserIdToLogMessage(mUserId, "Starting backup confirmation UI, token=" + token));
+        }
+        if (!startConfirmationUi(token, FullBackup.FULL_BACKUP_INTENT_ACTION)) {
+            Slog.e(TAG, addUserIdToLogMessage(mUserId, "Unable to launch backup confirmation UI"));
+            mAdbBackupRestoreConfirmations.delete(token);
+            return;
+        }
+        mPowerManager.userActivity(SystemClock.uptimeMillis(), PowerManager.USER_ACTIVITY_EVENT_OTHER, 0);
+        startConfirmationTimeout(token, params);
+        if (DEBUG) {
+            Slog.d(TAG, addUserIdToLogMessage(mUserId, "Waiting for backup completion..."));
+        }
+        waitForCompletion(params);
+    } finally {
+        try {
+            fd.close();
+        } catch (IOException e) {
+            Slog.e(TAG, addUserIdToLogMessage(mUserId, "IO error closing output for adb backup: " + e.getMessage()));
+        }
+        Binder.restoreCallingIdentity(oldId);
+        Slog.d(TAG, addUserIdToLogMessage(mUserId, "Adb backup processing complete."));
+    }
+}

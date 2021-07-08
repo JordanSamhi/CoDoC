@@ -1,0 +1,10 @@
+public void shareData(@NonNull DataShareRequest request, @NonNull @CallbackExecutor Executor executor, @NonNull DataShareWriteAdapter dataShareWriteAdapter){
+    Preconditions.checkNotNull(request);
+    Preconditions.checkNotNull(dataShareWriteAdapter);
+    Preconditions.checkNotNull(executor);
+    try {
+        mService.shareData(request, new DataShareAdapterDelegate(executor, dataShareWriteAdapter, mDataShareAdapterResourceManager));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

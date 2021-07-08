@@ -1,0 +1,12 @@
+public void copyElements(Rational[] destination, int offset){
+    checkArgumentNonnegative(offset, "offset must not be negative");
+    checkNotNull(destination, "destination must not be null");
+    if (destination.length - offset < COUNT) {
+        throw new ArrayIndexOutOfBoundsException("destination too small to fit elements");
+    }
+    for (int i = 0, j = 0; i < COUNT; ++i, j += RATIONAL_SIZE) {
+        int numerator = mElements[j + OFFSET_NUMERATOR];
+        int denominator = mElements[j + OFFSET_DENOMINATOR];
+        destination[i + offset] = new Rational(numerator, denominator);
+    }
+}

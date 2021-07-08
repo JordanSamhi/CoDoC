@@ -1,0 +1,9 @@
+public void open() throws EeIOException{
+    try {
+        Bundle b = mExtras.getService().open(mExtras.mPackageName, mToken);
+        throwBundle(b);
+    } catch (RemoteException e) {
+        mExtras.attemptDeadServiceRecovery(e);
+        throw new EeIOException("NFC Service was dead, try again");
+    }
+}

@@ -1,0 +1,12 @@
+public void setPictureInPictureParams(@NonNull PictureInPictureParams params){
+    try {
+        if (!deviceSupportsPictureInPictureMode()) {
+            return;
+        }
+        if (params == null) {
+            throw new IllegalArgumentException("Expected non-null picture-in-picture params");
+        }
+        ActivityTaskManager.getService().setPictureInPictureParams(mToken, params);
+    } catch (RemoteException e) {
+    }
+}

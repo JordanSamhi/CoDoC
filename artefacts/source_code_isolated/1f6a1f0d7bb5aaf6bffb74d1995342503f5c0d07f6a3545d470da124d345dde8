@@ -1,0 +1,5 @@
+public void unwrapTertiaryKey_missingSecondaryKey_throwsSpecificException() throws Exception{
+    WrappedKeyProto.WrappedKey wrappedTertiaryKey = KeyWrapUtils.wrap(createSecondaryKey().getSecretKey(), createTertiaryKey());
+    when(mSecondaryKeyManager.get(TEST_SECONDARY_KEY_ALIAS)).thenReturn(Optional.empty());
+    assertThrows(KeyException.class, () -> RestoreKeyFetcher.unwrapTertiaryKey(() -> mSecondaryKeyManager, TEST_SECONDARY_KEY_ALIAS, wrappedTertiaryKey));
+}

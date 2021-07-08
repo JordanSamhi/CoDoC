@@ -1,0 +1,6 @@
+public void filter(int limitUid, String[] limitIfaces, int limitTag){
+    if (limitUid == UID_ALL && limitTag == TAG_ALL && limitIfaces == INTERFACES_ALL) {
+        return;
+    }
+    filter(e -> (limitUid == UID_ALL || limitUid == e.uid) && (limitTag == TAG_ALL || limitTag == e.tag) && (limitIfaces == INTERFACES_ALL || ArrayUtils.contains(limitIfaces, e.iface)));
+}

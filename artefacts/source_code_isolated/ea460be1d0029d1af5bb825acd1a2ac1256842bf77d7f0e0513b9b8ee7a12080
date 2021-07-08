@@ -1,0 +1,11 @@
+public void setDefaultVoiceSubscriptionId(int subscriptionId){
+    if (VDBG)
+        logd("setDefaultVoiceSubId sub id = " + subscriptionId);
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            iSub.setDefaultVoiceSubId(subscriptionId);
+        }
+    } catch (RemoteException ex) {
+    }
+}

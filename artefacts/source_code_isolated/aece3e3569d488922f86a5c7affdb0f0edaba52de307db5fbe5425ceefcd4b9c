@@ -1,0 +1,12 @@
+public void ZSYRK(@Uplo int Uplo, @Transpose int Trans, Double2 alpha, Allocation A, Double2 beta, Allocation C){
+    validateTranspose(Trans);
+    validateUplo(Uplo);
+    validateL3(Element.F64_2(mRS), Trans, 0, 0, A, null, C);
+    int K = -1;
+    if (Trans != NO_TRANSPOSE) {
+        K = A.getType().getY();
+    } else {
+        K = A.getType().getX();
+    }
+    mRS.nScriptIntrinsicBLAS_Z(getID(mRS), RsBlas_zsyrk, Trans, 0, 0, Uplo, 0, 0, C.getType().getX(), K, alpha.x, alpha.y, A.getID(mRS), 0, beta.x, beta.y, C.getID(mRS), 0, 0, 0, 0);
+}

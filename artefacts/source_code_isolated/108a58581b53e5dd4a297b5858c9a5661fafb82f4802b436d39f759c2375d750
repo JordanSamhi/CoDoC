@@ -1,0 +1,8 @@
+public CharSequence loadLabel(@NonNull Context context){
+    if (mLabelResId != 0) {
+        return context.getPackageManager().getText(mService.serviceInfo.packageName, mLabelResId, null);
+    } else if (!TextUtils.isEmpty(mLabel)) {
+        return mLabel;
+    }
+    return mService.loadLabel(context.getPackageManager());
+}

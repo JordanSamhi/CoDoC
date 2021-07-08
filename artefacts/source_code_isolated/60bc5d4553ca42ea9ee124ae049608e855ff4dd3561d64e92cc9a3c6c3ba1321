@@ -1,0 +1,33 @@
+public final void removePrinters(@NonNull List<PrinterId> printerIds){
+    PrintService.throwIfNotCalledOnMainThread();
+    if (mIsDestroyed) {
+        Log.w(LOG_TAG, "Not removing printers - session destroyed.");
+        return;
+    }
+    if (mIsDiscoveryStarted) {
+        List<PrinterId> removedPrinterIds = new ArrayList<PrinterId>();
+        final int removedPrinterIdCount = printerIds.size();
+        for (int i = 0; i < removedPrinterIdCount; i++) {
+            PrinterId removedPrinterId = printerIds.get(i);
+            if (mPrinters.remove(removedPrinterId) != null) {
+                removedPrinterIds.add(removedPrinterId);
+            }
+        }
+        if (!removedPrinterIds.isEmpty()) {
+            try {
+                mObserver.onPrintersRemoved(new ParceledListSlice<PrinterId>(removedPrinterIds));
+            } catch (RemoteException re) {
+                Log.e(LOG_TAG, "Error sending removed printers", re);
+            }
+        }
+    } else {
+        if (mLastSentPrinters == null) {
+            mLastSentPrinters = new ArrayMap<PrinterId, PrinterInfo>(mPrinters);
+        }
+        final int removedPrinterIdCount = printerIds.size();
+        for (int i = 0; i < removedPrinterIdCount; i++) {
+            PrinterId removedPrinterId = printerIds.get(i);
+            mPrinters.remove(removedPrinterId);
+        }
+    }
+}

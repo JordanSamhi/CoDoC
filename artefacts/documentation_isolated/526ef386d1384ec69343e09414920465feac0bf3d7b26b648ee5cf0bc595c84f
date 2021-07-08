@@ -1,0 +1,45 @@
+
+         * Sets the image format for preview pictures.
+         * <p>If this is never called, the default format will be
+         * {@link android.graphics.ImageFormat#NV21}, which
+         * uses the NV21 encoding format.</p>
+         *
+         * <p>Use {@link Parameters#getSupportedPreviewFormats} to get a list of
+         * the available preview formats.
+         *
+         * <p>It is strongly recommended that either
+         * {@link android.graphics.ImageFormat#NV21} or
+         * {@link android.graphics.ImageFormat#YV12} is used, since
+         * they are supported by all camera devices.</p>
+         *
+         * <p>For YV12, the image buffer that is received is not necessarily
+         * tightly packed, as there may be padding at the end of each row of
+         * pixel data, as described in
+         * {@link android.graphics.ImageFormat#YV12}. For camera callback data,
+         * it can be assumed that the stride of the Y and UV data is the
+         * smallest possible that meets the alignment requirements. That is, if
+         * the preview size is <var>width x height</var>, then the following
+         * equations describe the buffer index for the beginning of row
+         * <var>y</var> for the Y plane and row <var>c</var> for the U and V
+         * planes:
+         *
+         * <pre>{@code
+         * yStride   = (int) ceil(width / 16.0) * 16;
+         * uvStride  = (int) ceil( (yStride / 2) / 16.0) * 16;
+         * ySize     = yStride * height;
+         * uvSize    = uvStride * height / 2;
+         * yRowIndex = yStride * y;
+         * uRowIndex = ySize + uvSize + uvStride * c;
+         * vRowIndex = ySize + uvStride * c;
+         * size      = ySize + uvSize * 2;
+         * }
+         *</pre>
+         *
+         * @param pixel_format the desired preview picture format, defined by
+         *   one of the {@link android.graphics.ImageFormat} constants.  (E.g.,
+         *   <var>ImageFormat.NV21</var> (default), or
+         *   <var>ImageFormat.YV12</var>)
+         *
+         * @see android.graphics.ImageFormat
+         * @see android.hardware.Camera.Parameters#getSupportedPreviewFormats
+         

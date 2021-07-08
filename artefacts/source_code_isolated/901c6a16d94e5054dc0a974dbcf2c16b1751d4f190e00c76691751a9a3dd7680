@@ -1,0 +1,20 @@
+public void removePassword(int userId){
+    synchronized (mEncryptedPasswords) {
+        String keyName = getEncryptionKeyName(userId);
+        String legacyKeyName = getLegacyEncryptionKeyName(userId);
+        try {
+            if (mKeyStore.containsAlias(keyName)) {
+                mKeyStore.deleteEntry(keyName);
+            }
+            if (mKeyStore.containsAlias(legacyKeyName)) {
+                mKeyStore.deleteEntry(legacyKeyName);
+            }
+        } catch (KeyStoreException e) {
+            Slog.d(TAG, "Cannot delete key", e);
+        }
+        if (mEncryptedPasswords.contains(userId)) {
+            Arrays.fill(mEncryptedPasswords.get(userId), (byte) 0);
+            mEncryptedPasswords.remove(userId);
+        }
+    }
+}

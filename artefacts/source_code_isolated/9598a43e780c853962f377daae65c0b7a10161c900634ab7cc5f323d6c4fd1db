@@ -1,0 +1,25 @@
+public void requestEnterTransition(Transition transition){
+    final ViewTreeObserver observer = getViewTreeObserver();
+    if (observer != null && transition != null) {
+        final Transition enterTransition = transition.clone();
+        observer.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                final ViewTreeObserver observer = getViewTreeObserver();
+                if (observer != null) {
+                    observer.removeOnGlobalLayoutListener(this);
+                }
+                final Rect epicenter = getTransitionEpicenter();
+                enterTransition.setEpicenterCallback(new EpicenterCallback() {
+
+                    @Override
+                    public Rect onGetEpicenter(Transition transition) {
+                        return epicenter;
+                    }
+                });
+                startEnterTransition(enterTransition);
+            }
+        });
+    }
+}

@@ -1,0 +1,10 @@
+public void showInCallScreen(boolean showDialpad){
+    ITelecomService service = getTelecomService();
+    if (service != null) {
+        try {
+            service.showInCallScreen(showDialpad, mContext.getOpPackageName(), mContext.getAttributionTag());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error calling ITelecomService#showCallScreen", e);
+        }
+    }
+}

@@ -1,0 +1,49 @@
+
+     * Creates a print job for printing a {@link PrintDocumentAdapter} with
+     * default print attributes.
+     * <p>
+     * Calling this method brings the print UI allowing the user to customize
+     * the print job and returns a {@link PrintJob} object without waiting for the
+     * user to customize or confirm the print job. The returned print job instance
+     * is in a {@link PrintJobInfo#STATE_CREATED created} state.
+     * <p>
+     * This method can be called only from an {@link Activity}. The rationale is that
+     * printing from a service will create an inconsistent user experience as the print
+     * UI would appear without any context.
+     * </p>
+     * <p>
+     * Also the passed in {@link PrintDocumentAdapter} will be considered invalid if
+     * your activity is finished. The rationale is that once the activity that
+     * initiated printing is finished, the provided adapter may be in an inconsistent
+     * state as it may depend on the UI presented by the activity.
+     * </p>
+     * <p>
+     * The default print attributes are a hint to the system how the data is to
+     * be printed. For example, a photo editor may look at the photo aspect ratio
+     * to determine the default orientation and provide a hint whether the printing
+     * should be in portrait or landscape. The system will do a best effort to
+     * selected the hinted options in the print dialog, given the current printer
+     * supports them.
+     * </p>
+     * <p>
+     * <strong>Note:</strong> Calling this method will bring the print dialog and
+     * the system will connect to the provided {@link PrintDocumentAdapter}. If a
+     * configuration change occurs that you application does not handle, for example
+     * a rotation change, the system will drop the connection to the adapter as the
+     * activity has to be recreated and the old adapter may be invalid in this context,
+     * hence a new adapter instance is required. As a consequence, if your activity
+     * does not handle configuration changes (default behavior), you have to save the
+     * state that you were printing and call this method again when your activity
+     * is recreated.
+     * </p>
+     *
+     * @param printJobName A name for the new print job which is shown to the user.
+     * @param documentAdapter An adapter that emits the document to print.
+     * @param attributes The default print job attributes or <code>null</code>.
+     * @return The created print job on success or null on failure.
+     * @throws IllegalStateException If not called from an {@link Activity}.
+     * @throws IllegalArgumentException If the print job name is empty or the
+     * document adapter is null.
+     *
+     * @see PrintJob
+     

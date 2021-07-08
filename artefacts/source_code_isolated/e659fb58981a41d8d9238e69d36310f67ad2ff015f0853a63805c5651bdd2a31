@@ -1,0 +1,35 @@
+public int[] getSubId(int slotIndex){
+    if (VDBG)
+        printStackTrace("[getSubId]+ slotIndex=" + slotIndex);
+    if (slotIndex == SubscriptionManager.DEFAULT_SIM_SLOT_INDEX) {
+        slotIndex = getSlotIndex(getDefaultSubId());
+        if (VDBG)
+            logd("[getSubId] map default slotIndex=" + slotIndex);
+    }
+    if (!SubscriptionManager.isValidSlotIndex(slotIndex) && slotIndex != SubscriptionManager.SLOT_INDEX_FOR_REMOTE_SIM_SUB) {
+        if (DBG)
+            logd("[getSubId]- invalid slotIndex=" + slotIndex);
+        return null;
+    }
+    int size = sSlotIndexToSubIds.size();
+    if (size == 0) {
+        if (VDBG) {
+            logd("[getSubId]- sSlotIndexToSubIds.size == 0, return null slotIndex=" + slotIndex);
+        }
+        return null;
+    }
+    ArrayList<Integer> subIds = sSlotIndexToSubIds.getCopy(slotIndex);
+    if (subIds != null && subIds.size() > 0) {
+        int[] subIdArr = new int[subIds.size()];
+        for (int i = 0; i < subIds.size(); i++) {
+            subIdArr[i] = subIds.get(i);
+        }
+        if (VDBG)
+            logd("[getSubId]- subIdArr=" + subIdArr);
+        return subIdArr;
+    } else {
+        if (DBG)
+            logd("[getSubId]- numSubIds == 0, return null slotIndex=" + slotIndex);
+        return null;
+    }
+}

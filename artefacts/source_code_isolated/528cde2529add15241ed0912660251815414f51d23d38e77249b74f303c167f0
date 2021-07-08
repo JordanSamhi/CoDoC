@@ -1,0 +1,17 @@
+public boolean maybeWriteSquashed(@NonNull Parcelable p){
+    if (!mAllowSquashing) {
+        writeInt(0);
+        return false;
+    }
+    ensureWrittenSquashableParcelables();
+    final Integer firstPos = mWrittenSquashableParcelables.get(p);
+    if (firstPos != null) {
+        final int pos = dataPosition();
+        writeInt(pos - firstPos + 4);
+        return true;
+    }
+    writeInt(0);
+    final int pos = dataPosition();
+    mWrittenSquashableParcelables.put(p, pos);
+    return false;
+}

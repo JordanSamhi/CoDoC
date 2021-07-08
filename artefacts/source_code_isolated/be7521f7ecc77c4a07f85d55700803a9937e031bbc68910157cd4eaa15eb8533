@@ -1,0 +1,10 @@
+public static CdmaSubscriptionSourceManager getInstance(Context context, CommandsInterface ci, Handler h, int what, Object obj){
+    synchronized (sReferenceCountMonitor) {
+        if (null == sInstance) {
+            sInstance = new CdmaSubscriptionSourceManager(context, ci);
+        }
+        CdmaSubscriptionSourceManager.sReferenceCount++;
+    }
+    sInstance.registerForCdmaSubscriptionSourceChanged(h, what, obj);
+    return sInstance;
+}

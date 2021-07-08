@@ -1,0 +1,11 @@
+public static Camera open(){
+    int numberOfCameras = getNumberOfCameras();
+    CameraInfo cameraInfo = new CameraInfo();
+    for (int i = 0; i < numberOfCameras; i++) {
+        getCameraInfo(i, cameraInfo);
+        if (cameraInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
+            return new Camera(i);
+        }
+    }
+    return null;
+}

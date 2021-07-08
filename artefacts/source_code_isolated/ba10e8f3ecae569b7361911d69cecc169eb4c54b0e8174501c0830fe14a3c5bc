@@ -1,0 +1,15 @@
+public void parseQuery(String query){
+    clear();
+    StringTokenizer tokenizer = new StringTokenizer(query, "&");
+    while (tokenizer.hasMoreElements()) {
+        String attributeValuePair = tokenizer.nextToken();
+        if (attributeValuePair.length() > 0) {
+            int assignmentIndex = attributeValuePair.indexOf('=');
+            if (assignmentIndex < 0) {
+                parseEntry(attributeValuePair, "");
+            } else {
+                parseEntry(attributeValuePair.substring(0, assignmentIndex), attributeValuePair.substring(assignmentIndex + 1));
+            }
+        }
+    }
+}

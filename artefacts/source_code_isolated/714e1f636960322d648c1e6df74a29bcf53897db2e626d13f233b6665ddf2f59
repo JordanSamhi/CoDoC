@@ -1,0 +1,15 @@
+public void setDrmPropertyString(@NonNull @MediaDrm.StringProperty String propertyName, @NonNull String value) throws NoDrmSchemeException{
+    Log.v(TAG, "setDrmPropertyString: propertyName: " + propertyName + " value: " + value);
+    synchronized (mDrmLock) {
+        if (!mActiveDrmScheme && !mDrmConfigAllowed) {
+            Log.w(TAG, "setDrmPropertyString NoDrmSchemeException");
+            throw new NoDrmSchemeException("setDrmPropertyString: Has to prepareDrm() first.");
+        }
+        try {
+            mDrmObj.setPropertyString(propertyName, value);
+        } catch (Exception e) {
+            Log.w(TAG, "setDrmPropertyString Exception " + e);
+            throw e;
+        }
+    }
+}

@@ -1,0 +1,14 @@
+public void resetInteractAcrossProfilesAppOps(@NonNull Collection<String> previousCrossProfilePackages, @NonNull Set<String> newCrossProfilePackages){
+    if (previousCrossProfilePackages.isEmpty()) {
+        return;
+    }
+    final List<String> unsetCrossProfilePackages = previousCrossProfilePackages.stream().filter(packageName -> !newCrossProfilePackages.contains(packageName)).collect(Collectors.toList());
+    if (unsetCrossProfilePackages.isEmpty()) {
+        return;
+    }
+    try {
+        mService.resetInteractAcrossProfilesAppOps(unsetCrossProfilePackages);
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

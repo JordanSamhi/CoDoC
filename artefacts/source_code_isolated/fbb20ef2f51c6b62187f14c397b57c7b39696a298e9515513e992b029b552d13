@@ -1,0 +1,10 @@
+public void enableSystemApp(@NonNull ComponentName admin, String packageName){
+    throwIfParentInstance("enableSystemApp");
+    if (mService != null) {
+        try {
+            mService.enableSystemApp(admin, mContext.getPackageName(), packageName);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public static ParcelFileDescriptor[] createReliablePipe() throws IOException{
+    try {
+        final FileDescriptor[] comm = createCommSocketPair();
+        final FileDescriptor[] fds = Os.pipe2(ifAtLeastQ(O_CLOEXEC));
+        return new ParcelFileDescriptor[] { new ParcelFileDescriptor(fds[0], comm[0]), new ParcelFileDescriptor(fds[1], comm[1]) };
+    } catch (ErrnoException e) {
+        throw e.rethrowAsIOException();
+    }
+}

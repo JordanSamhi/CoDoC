@@ -1,0 +1,5 @@
+public void registerListener(OnAudioPlayerActiveStateChangedListener listener, Handler handler){
+    synchronized (mLock) {
+        mListenerMap.put(listener, new MessageHandler((handler == null) ? Looper.myLooper() : handler.getLooper(), listener));
+    }
+}

@@ -1,0 +1,8 @@
+public final OutputStream openOutputStream(@NonNull Uri uri, @NonNull String mode) throws FileNotFoundException{
+    AssetFileDescriptor fd = openAssetFileDescriptor(uri, mode, null);
+    try {
+        return fd != null ? fd.createOutputStream() : null;
+    } catch (IOException e) {
+        throw new FileNotFoundException("Unable to create stream");
+    }
+}

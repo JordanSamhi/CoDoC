@@ -1,0 +1,17 @@
+public List<String> getDelegatedScopes(ComponentName who, String delegatePackage) throws SecurityException{
+    Objects.requireNonNull(delegatePackage, "Delegate package is null");
+    final int callingUid = mInjector.binderGetCallingUid();
+    final int userId = UserHandle.getUserId(callingUid);
+    synchronized (getLockObject()) {
+        if (who != null) {
+            getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_PROFILE_OWNER);
+        } else {
+            if (!isCallingFromPackage(delegatePackage, callingUid)) {
+                throw new SecurityException("Caller with uid " + callingUid + " is not " + delegatePackage);
+            }
+        }
+        final DevicePolicyData policy = getUserData(userId);
+        final List<String> scopes = policy.mDelegationMap.get(delegatePackage);
+        return scopes == null ? Collections.EMPTY_LIST : scopes;
+    }
+}

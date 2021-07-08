@@ -1,0 +1,29 @@
+public static NattKeepalivePacketData nattKeepalivePacket(InetAddress srcAddress, int srcPort, InetAddress dstAddress, int dstPort) throws InvalidPacketException{
+    if (!(srcAddress instanceof Inet4Address) || !(dstAddress instanceof Inet4Address)) {
+        throw new InvalidPacketException(ERROR_INVALID_IP_ADDRESS);
+    }
+    if (dstPort != NattSocketKeepalive.NATT_PORT) {
+        throw new InvalidPacketException(ERROR_INVALID_PORT);
+    }
+    int length = IPV4_HEADER_LENGTH + UDP_HEADER_LENGTH + 1;
+    ByteBuffer buf = ByteBuffer.allocate(length);
+    buf.order(ByteOrder.BIG_ENDIAN);
+    buf.putShort((short) 0x4500);
+    buf.putShort((short) length);
+    buf.putInt(0);
+    buf.put((byte) 64);
+    buf.put((byte) OsConstants.IPPROTO_UDP);
+    int ipChecksumOffset = buf.position();
+    buf.putShort((short) 0);
+    buf.put(srcAddress.getAddress());
+    buf.put(dstAddress.getAddress());
+    buf.putShort((short) srcPort);
+    buf.putShort((short) dstPort);
+    buf.putShort((short) (length - 20));
+    int udpChecksumOffset = buf.position();
+    buf.putShort((short) 0);
+    buf.put((byte) 0xff);
+    buf.putShort(ipChecksumOffset, IpUtils.ipChecksum(buf, 0));
+    buf.putShort(udpChecksumOffset, IpUtils.udpChecksum(buf, 0, IPV4_HEADER_LENGTH));
+    return new NattKeepalivePacketData(srcAddress, srcPort, dstAddress, dstPort, buf.array());
+}

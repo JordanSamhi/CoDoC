@@ -1,0 +1,14 @@
+public void notifyScreenshotError(int msgResId){
+    Resources res = mContext.getResources();
+    String errorMsg = res.getString(msgResId);
+    Notification.Builder b = new Notification.Builder(mContext, NotificationChannels.ALERTS).setTicker(res.getString(R.string.screenshot_failed_title)).setContentTitle(res.getString(R.string.screenshot_failed_title)).setContentText(errorMsg).setSmallIcon(R.drawable.stat_notify_image_error).setWhen(System.currentTimeMillis()).setVisibility(Notification.VISIBILITY_PUBLIC).setCategory(Notification.CATEGORY_ERROR).setAutoCancel(true).setColor(mContext.getColor(com.android.internal.R.color.system_notification_accent_color));
+    final DevicePolicyManager dpm = (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
+    final Intent intent = dpm.createAdminSupportIntent(DevicePolicyManager.POLICY_DISABLE_SCREEN_CAPTURE);
+    if (intent != null) {
+        final PendingIntent pendingIntent = PendingIntent.getActivityAsUser(mContext, 0, intent, 0, null, UserHandle.CURRENT);
+        b.setContentIntent(pendingIntent);
+    }
+    SystemUI.overrideNotificationAppName(mContext, b, true);
+    Notification n = new Notification.BigTextStyle(b).bigText(errorMsg).build();
+    mNotificationManager.notify(SystemMessageProto.SystemMessage.NOTE_GLOBAL_SCREENSHOT, n);
+}

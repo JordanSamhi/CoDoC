@@ -1,0 +1,25 @@
+public TargetInfo targetInfoForPosition(int position, boolean filtered){
+    if (position == NO_POSITION) {
+        return null;
+    }
+    int offset = 0;
+    final int serviceTargetCount = filtered ? getServiceTargetCount() : getSelectableServiceTargetCount();
+    if (position < serviceTargetCount) {
+        return mServiceTargets.get(position);
+    }
+    offset += serviceTargetCount;
+    final int callerTargetCount = getCallerTargetCount();
+    if (position - offset < callerTargetCount) {
+        return mCallerTargets.get(position - offset);
+    }
+    offset += callerTargetCount;
+    final int rankedTargetCount = getRankedTargetCount();
+    if (position - offset < rankedTargetCount) {
+        return filtered ? super.getItem(position - offset) : getDisplayResolveInfo(position - offset);
+    }
+    offset += rankedTargetCount;
+    if (position - offset < getAlphaTargetCount() && !mSortedList.isEmpty()) {
+        return mSortedList.get(position - offset);
+    }
+    return null;
+}

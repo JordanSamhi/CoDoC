@@ -1,0 +1,10 @@
+public boolean forceLowLatencyMode(boolean isEnabled){
+    mForceLowLatencyMode = isEnabled;
+    mForceHiPerfMode = false;
+    if (!updateOpMode()) {
+        Log.e(TAG, "Failed to force low-latency mode, returning to normal mode");
+        mForceLowLatencyMode = false;
+        return false;
+    }
+    return true;
+}

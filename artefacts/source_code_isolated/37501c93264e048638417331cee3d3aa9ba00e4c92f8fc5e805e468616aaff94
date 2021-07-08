@@ -1,0 +1,16 @@
+public boolean startGnssBatch(long periodNanos, boolean wakeOnFifoFull, String packageName, String featureId){
+    mContext.enforceCallingPermission(Manifest.permission.LOCATION_HARDWARE, null);
+    mContext.enforceCallingPermission(Manifest.permission.ACCESS_FINE_LOCATION, null);
+    CallerIdentity identity = CallerIdentity.fromBinder(mContext, packageName, featureId);
+    if (!mAppOpsHelper.checkLocationAccess(identity)) {
+        return false;
+    }
+    synchronized (mGnssBatchingLock) {
+        if (mGnssBatchingInProgress) {
+            Log.e(TAG, "startGnssBatch unexpectedly called w/o stopping prior batch");
+            stopGnssBatch();
+        }
+        mGnssBatchingInProgress = true;
+        return mGnssBatchingProvider.start(periodNanos, wakeOnFifoFull);
+    }
+}

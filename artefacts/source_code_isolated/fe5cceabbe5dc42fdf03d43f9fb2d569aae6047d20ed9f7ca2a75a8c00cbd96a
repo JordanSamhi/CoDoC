@@ -1,0 +1,18 @@
+public boolean getAutoTimeRequired(){
+    if (!mHasFeature) {
+        return false;
+    }
+    synchronized (getLockObject()) {
+        ActiveAdmin deviceOwner = getDeviceOwnerAdminLocked();
+        if (deviceOwner != null && deviceOwner.requireAutoTime) {
+            return true;
+        }
+        for (Integer userId : mOwners.getProfileOwnerKeys()) {
+            ActiveAdmin profileOwner = getProfileOwnerAdminLocked(userId);
+            if (profileOwner != null && profileOwner.requireAutoTime) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

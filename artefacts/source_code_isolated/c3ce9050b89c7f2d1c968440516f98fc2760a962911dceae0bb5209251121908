@@ -1,0 +1,7 @@
+public boolean requestPinAppWidget(@NonNull ComponentName provider, @Nullable Bundle extras, @Nullable PendingIntent successCallback){
+    try {
+        return mService.requestPinAppWidget(mPackageName, provider, extras, successCallback == null ? null : successCallback.getIntentSender());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

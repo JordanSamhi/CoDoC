@@ -1,0 +1,14 @@
+public String toString(){
+    byte[] ssidBytes = octets.toByteArray();
+    if (octets.size() <= 0 || isArrayAllZeroes(ssidBytes))
+        return "";
+    Charset charset = Charset.forName("UTF-8");
+    CharsetDecoder decoder = charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+    CharBuffer out = CharBuffer.allocate(32);
+    CoderResult result = decoder.decode(ByteBuffer.wrap(ssidBytes), out, true);
+    out.flip();
+    if (result.isError()) {
+        return WifiManager.UNKNOWN_SSID;
+    }
+    return out.toString();
+}

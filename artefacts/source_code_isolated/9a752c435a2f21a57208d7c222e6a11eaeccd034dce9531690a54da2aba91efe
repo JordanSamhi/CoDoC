@@ -1,0 +1,11 @@
+public void updateMetrics(){
+    int numProviders = mProviders.size();
+    int numConnectedProviders = 0;
+    for (Map.Entry<String, PasspointProvider> entry : mProviders.entrySet()) {
+        if (entry.getValue().getHasEverConnected()) {
+            numConnectedProviders++;
+        }
+    }
+    mWifiMetrics.updateSavedPasspointProfilesInfo(mProviders);
+    mWifiMetrics.updateSavedPasspointProfiles(numProviders, numConnectedProviders);
+}

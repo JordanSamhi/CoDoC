@@ -1,0 +1,15 @@
+public void onHangupLocal(){
+    ArrayList<Connection> connections = getConnections();
+    for (Connection conn : connections) {
+        ImsPhoneConnection imsConn = (ImsPhoneConnection) conn;
+        imsConn.onHangupLocal();
+    }
+    synchronized (this) {
+        if (mState.isAlive()) {
+            mState = State.DISCONNECTING;
+        }
+    }
+    if (VDBG) {
+        Rlog.v(LOG_TAG, "onHangupLocal : " + mCallContext + " state = " + mState);
+    }
+}

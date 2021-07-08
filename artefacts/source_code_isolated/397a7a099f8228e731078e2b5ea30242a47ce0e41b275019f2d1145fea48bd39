@@ -1,0 +1,11 @@
+public void close(){
+    for (Partition partition : mPartitions) {
+        Cursor cursor = partition.cursor;
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+    }
+    mPartitions.clear();
+    invalidate();
+    notifyDataSetChanged();
+}

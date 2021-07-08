@@ -1,0 +1,9 @@
+public void recalculateQuotas(){
+    createServiceConnection();
+    ComponentName component = getServiceComponentName();
+    if (component != null) {
+        Intent intent = new Intent();
+        intent.setComponent(component);
+        mContext.bindServiceAsUser(intent, mServiceConnection, Context.BIND_AUTO_CREATE, UserHandle.CURRENT);
+    }
+}

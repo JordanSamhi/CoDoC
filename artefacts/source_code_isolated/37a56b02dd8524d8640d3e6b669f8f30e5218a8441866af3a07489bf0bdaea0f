@@ -1,0 +1,7 @@
+public void testOnChange_whenNotPreviouslySetup_doesNotUpdateStateIfNoChange() throws Exception{
+    SetupObserver setupObserver = new SetupObserver(mUserBackupManagerService, new Handler());
+    mUserBackupManagerService.setSetupComplete(false);
+    changeSetupCompleteSettingForUser(false, USER_ID);
+    setupObserver.onChange(true);
+    assertThat(mUserBackupManagerService.isSetupComplete()).isFalse();
+}

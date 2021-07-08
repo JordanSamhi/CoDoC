@@ -1,0 +1,11 @@
+public int getPreferredDataSubscriptionId(){
+    int preferredSubId = SubscriptionManager.DEFAULT_SUBSCRIPTION_ID;
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            preferredSubId = iSub.getPreferredDataSubscriptionId();
+        }
+    } catch (RemoteException ex) {
+    }
+    return preferredSubId;
+}

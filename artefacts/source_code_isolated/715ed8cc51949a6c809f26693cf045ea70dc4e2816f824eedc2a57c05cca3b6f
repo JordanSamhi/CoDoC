@@ -1,0 +1,16 @@
+public List<BluetoothDevice> getConnectedDevices(){
+    if (DBG)
+        log("getConnectedDevices()");
+    final IBluetoothSap service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            return service.getConnectedDevices();
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return new ArrayList<BluetoothDevice>();
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return new ArrayList<BluetoothDevice>();
+}

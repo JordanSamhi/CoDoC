@@ -1,0 +1,31 @@
+public static Span enterCriticalSpan(String name){
+    if (Build.IS_USER) {
+        return NO_OP_SPAN;
+    }
+    if (name == null || name.isEmpty()) {
+        throw new IllegalArgumentException("name must be non-null and non-empty");
+    }
+    ThreadSpanState state = sThisThreadSpanState.get();
+    Span span = null;
+    synchronized (state) {
+        if (state.mFreeListHead != null) {
+            span = state.mFreeListHead;
+            state.mFreeListHead = span.mNext;
+            state.mFreeListSize--;
+        } else {
+            span = new Span(state);
+        }
+        span.mName = name;
+        span.mCreateMillis = SystemClock.uptimeMillis();
+        span.mNext = state.mActiveHead;
+        span.mPrev = null;
+        state.mActiveHead = span;
+        state.mActiveSize++;
+        if (span.mNext != null) {
+            span.mNext.mPrev = span;
+        }
+        if (LOG_V)
+            Log.d(TAG, "Span enter=" + name + "; size=" + state.mActiveSize);
+    }
+    return span;
+}

@@ -1,0 +1,27 @@
+public static OsuProviderInfo parse(ByteBuffer payload) throws ProtocolException{
+    int length = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
+    if (length < MINIMUM_LENGTH) {
+        throw new ProtocolException("Invalid length value: " + length);
+    }
+    int friendlyNameLength = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
+    ByteBuffer friendlyNameBuffer = getSubBuffer(payload, friendlyNameLength);
+    List<I18Name> friendlyNameList = parseI18Names(friendlyNameBuffer);
+    Uri serverUri = Uri.parse(ByteBufferReader.readStringWithByteLength(payload, StandardCharsets.UTF_8));
+    int methodListLength = payload.get() & 0xFF;
+    List<Integer> methodList = new ArrayList<>();
+    while (methodListLength > 0) {
+        methodList.add(payload.get() & 0xFF);
+        methodListLength--;
+    }
+    int availableIconLength = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
+    ByteBuffer iconBuffer = getSubBuffer(payload, availableIconLength);
+    List<IconInfo> iconInfoList = new ArrayList<>();
+    while (iconBuffer.hasRemaining()) {
+        iconInfoList.add(IconInfo.parse(iconBuffer));
+    }
+    String nai = ByteBufferReader.readStringWithByteLength(payload, StandardCharsets.UTF_8);
+    int serviceDescriptionLength = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
+    ByteBuffer descriptionsBuffer = getSubBuffer(payload, serviceDescriptionLength);
+    List<I18Name> serviceDescriptionList = parseI18Names(descriptionsBuffer);
+    return new OsuProviderInfo(friendlyNameList, serverUri, methodList, iconInfoList, nai, serviceDescriptionList);
+}

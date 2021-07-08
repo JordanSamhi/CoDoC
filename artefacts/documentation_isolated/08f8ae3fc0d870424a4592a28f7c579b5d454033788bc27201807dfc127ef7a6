@@ -1,0 +1,14 @@
+
+     * Select one of the pre-configured TX power level scenarios or reset it back to normal.
+     * Primarily used for meeting SAR requirements during voice calls.
+     *
+     * Note: If it was found out that the scenario to be reported is the same as last reported one,
+     *       then exit with success.
+     *       This is to handle the case when some HAL versions deal with different inputs equally,
+     *       in that case, we should not call the hal unless there is a change in scenario.
+     * Note: It is assumed that this method is only called if SAR is enabled. The logic of whether
+     *       to call it or not resides in SarManager class.
+     *
+     * @param sarInfo The collection of inputs to select the SAR scenario.
+     * @return true for success; false for failure or if the HAL version does not support this API.
+     

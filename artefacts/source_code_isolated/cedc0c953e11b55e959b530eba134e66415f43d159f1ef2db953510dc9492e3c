@@ -1,0 +1,17 @@
+public boolean preloadApp(ApplicationInfo appInfo, String abi) throws ZygoteStartFailedEx, IOException{
+    synchronized (mLock) {
+        ZygoteState state = openZygoteSocketIfNeeded(abi);
+        state.mZygoteOutputWriter.write("2");
+        state.mZygoteOutputWriter.newLine();
+        state.mZygoteOutputWriter.write("--preload-app");
+        state.mZygoteOutputWriter.newLine();
+        Parcel parcel = Parcel.obtain();
+        appInfo.writeToParcel(parcel, 0);
+        String encodedParcelData = Base64.getEncoder().encodeToString(parcel.marshall());
+        parcel.recycle();
+        state.mZygoteOutputWriter.write(encodedParcelData);
+        state.mZygoteOutputWriter.newLine();
+        state.mZygoteOutputWriter.flush();
+        return (state.mZygoteInputStream.readInt() == 0);
+    }
+}

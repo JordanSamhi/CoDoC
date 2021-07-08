@@ -1,0 +1,12 @@
+public PhoneConstants.State getState(){
+    PhoneConstants.State s = PhoneConstants.State.IDLE;
+    for (Phone phone : mPhones) {
+        if (phone.getState() == PhoneConstants.State.RINGING) {
+            s = PhoneConstants.State.RINGING;
+        } else if (phone.getState() == PhoneConstants.State.OFFHOOK) {
+            if (s == PhoneConstants.State.IDLE)
+                s = PhoneConstants.State.OFFHOOK;
+        }
+    }
+    return s;
+}

@@ -1,0 +1,86 @@
+public void startLegacyVpnPrivileged(VpnProfile profile, KeyStore keyStore, LinkProperties egress){
+    UserManager mgr = UserManager.get(mContext);
+    UserInfo user = mgr.getUserInfo(mUserHandle);
+    if (user.isRestricted() || mgr.hasUserRestriction(UserManager.DISALLOW_CONFIG_VPN, new UserHandle(mUserHandle))) {
+        throw new SecurityException("Restricted users cannot establish VPNs");
+    }
+    final RouteInfo ipv4DefaultRoute = findIPv4DefaultRoute(egress);
+    final String gateway = ipv4DefaultRoute.getGateway().getHostAddress();
+    final String iface = ipv4DefaultRoute.getInterface();
+    String privateKey = "";
+    String userCert = "";
+    String caCert = "";
+    String serverCert = "";
+    if (!profile.ipsecUserCert.isEmpty()) {
+        privateKey = Credentials.USER_PRIVATE_KEY + profile.ipsecUserCert;
+        byte[] value = keyStore.get(Credentials.USER_CERTIFICATE + profile.ipsecUserCert);
+        userCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+    }
+    if (!profile.ipsecCaCert.isEmpty()) {
+        byte[] value = keyStore.get(Credentials.CA_CERTIFICATE + profile.ipsecCaCert);
+        caCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+    }
+    if (!profile.ipsecServerCert.isEmpty()) {
+        byte[] value = keyStore.get(Credentials.USER_CERTIFICATE + profile.ipsecServerCert);
+        serverCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+    }
+    if (userCert == null || caCert == null || serverCert == null) {
+        throw new IllegalStateException("Cannot load credentials");
+    }
+    String[] racoon = null;
+    switch(profile.type) {
+        case VpnProfile.TYPE_IKEV2_IPSEC_RSA:
+            profile.ipsecSecret = Ikev2VpnProfile.PREFIX_KEYSTORE_ALIAS + privateKey;
+            profile.ipsecUserCert = userCert;
+        case VpnProfile.TYPE_IKEV2_IPSEC_USER_PASS:
+            profile.ipsecCaCert = caCert;
+            profile.setAllowedAlgorithms(Ikev2VpnProfile.DEFAULT_ALGORITHMS);
+            startVpnProfilePrivileged(profile, VpnConfig.LEGACY_VPN, keyStore);
+            return;
+        case VpnProfile.TYPE_IKEV2_IPSEC_PSK:
+            profile.ipsecSecret = Ikev2VpnProfile.encodeForIpsecSecret(profile.ipsecSecret.getBytes());
+            profile.setAllowedAlgorithms(Ikev2VpnProfile.DEFAULT_ALGORITHMS);
+            startVpnProfilePrivileged(profile, VpnConfig.LEGACY_VPN, keyStore);
+            return;
+        case VpnProfile.TYPE_L2TP_IPSEC_PSK:
+            racoon = new String[] { iface, profile.server, "udppsk", profile.ipsecIdentifier, profile.ipsecSecret, "1701" };
+            break;
+        case VpnProfile.TYPE_L2TP_IPSEC_RSA:
+            racoon = new String[] { iface, profile.server, "udprsa", privateKey, userCert, caCert, serverCert, "1701" };
+            break;
+        case VpnProfile.TYPE_IPSEC_XAUTH_PSK:
+            racoon = new String[] { iface, profile.server, "xauthpsk", profile.ipsecIdentifier, profile.ipsecSecret, profile.username, profile.password, "", gateway };
+            break;
+        case VpnProfile.TYPE_IPSEC_XAUTH_RSA:
+            racoon = new String[] { iface, profile.server, "xauthrsa", privateKey, userCert, caCert, serverCert, profile.username, profile.password, "", gateway };
+            break;
+        case VpnProfile.TYPE_IPSEC_HYBRID_RSA:
+            racoon = new String[] { iface, profile.server, "hybridrsa", caCert, serverCert, profile.username, profile.password, "", gateway };
+            break;
+    }
+    String[] mtpd = null;
+    switch(profile.type) {
+        case VpnProfile.TYPE_PPTP:
+            mtpd = new String[] { iface, "pptp", profile.server, "1723", "name", profile.username, "password", profile.password, "linkname", "vpn", "refuse-eap", "nodefaultroute", "usepeerdns", "idle", "1800", "mtu", "1400", "mru", "1400", (profile.mppe ? "+mppe" : "nomppe") };
+            break;
+        case VpnProfile.TYPE_L2TP_IPSEC_PSK:
+        case VpnProfile.TYPE_L2TP_IPSEC_RSA:
+            mtpd = new String[] { iface, "l2tp", profile.server, "1701", profile.l2tpSecret, "name", profile.username, "password", profile.password, "linkname", "vpn", "refuse-eap", "nodefaultroute", "usepeerdns", "idle", "1800", "mtu", "1400", "mru", "1400" };
+            break;
+    }
+    VpnConfig config = new VpnConfig();
+    config.legacy = true;
+    config.user = profile.key;
+    config.interfaze = iface;
+    config.session = profile.name;
+    config.isMetered = false;
+    config.proxyInfo = profile.proxy;
+    config.addLegacyRoutes(profile.routes);
+    if (!profile.dnsServers.isEmpty()) {
+        config.dnsServers = Arrays.asList(profile.dnsServers.split(" +"));
+    }
+    if (!profile.searchDomains.isEmpty()) {
+        config.searchDomains = Arrays.asList(profile.searchDomains.split(" +"));
+    }
+    startLegacyVpn(config, racoon, mtpd, profile);
+}

@@ -1,0 +1,31 @@
+public void setColorSpace(@NonNull ColorSpace colorSpace){
+    checkRecycled("setColorSpace called on a recycled bitmap");
+    if (colorSpace == null) {
+        throw new IllegalArgumentException("The colorSpace cannot be set to null");
+    }
+    if (getConfig() == Config.ALPHA_8) {
+        throw new IllegalArgumentException("Cannot set a ColorSpace on ALPHA_8");
+    }
+    final ColorSpace oldColorSpace = getColorSpace();
+    nativeSetColorSpace(mNativePtr, colorSpace.getNativeInstance());
+    mColorSpace = null;
+    final ColorSpace newColorSpace = getColorSpace();
+    try {
+        if (oldColorSpace.getComponentCount() != newColorSpace.getComponentCount()) {
+            throw new IllegalArgumentException("The new ColorSpace must have the same " + "component count as the current ColorSpace");
+        } else {
+            for (int i = 0; i < oldColorSpace.getComponentCount(); i++) {
+                if (oldColorSpace.getMinValue(i) < newColorSpace.getMinValue(i)) {
+                    throw new IllegalArgumentException("The new ColorSpace cannot increase the " + "minimum value for any of the components compared to the current " + "ColorSpace. To perform this type of conversion create a new " + "Bitmap in the desired ColorSpace and draw this Bitmap into it.");
+                }
+                if (oldColorSpace.getMaxValue(i) > newColorSpace.getMaxValue(i)) {
+                    throw new IllegalArgumentException("The new ColorSpace cannot decrease the " + "maximum value for any of the components compared to the current " + "ColorSpace/ To perform this type of conversion create a new " + "Bitmap in the desired ColorSpace and draw this Bitmap into it.");
+                }
+            }
+        }
+    } catch (IllegalArgumentException e) {
+        mColorSpace = oldColorSpace;
+        nativeSetColorSpace(mNativePtr, mColorSpace.getNativeInstance());
+        throw e;
+    }
+}

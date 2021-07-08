@@ -1,0 +1,14 @@
+public static final CharSequence formatSameDayTime(long then, long now, int dateStyle, int timeStyle){
+    Calendar thenCal = new GregorianCalendar();
+    thenCal.setTimeInMillis(then);
+    Date thenDate = thenCal.getTime();
+    Calendar nowCal = new GregorianCalendar();
+    nowCal.setTimeInMillis(now);
+    java.text.DateFormat f;
+    if (thenCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR) && thenCal.get(Calendar.MONTH) == nowCal.get(Calendar.MONTH) && thenCal.get(Calendar.DAY_OF_MONTH) == nowCal.get(Calendar.DAY_OF_MONTH)) {
+        f = java.text.DateFormat.getTimeInstance(timeStyle);
+    } else {
+        f = java.text.DateFormat.getDateInstance(dateStyle);
+    }
+    return f.format(thenDate);
+}

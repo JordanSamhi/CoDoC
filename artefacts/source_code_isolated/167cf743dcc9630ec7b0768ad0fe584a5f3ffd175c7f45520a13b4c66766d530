@@ -1,0 +1,15 @@
+public static void setLoggingLevel(@LoggingLevel int level){
+    Log.i(TAG, "Setting logging level to " + getLoggingLevelAsString(level));
+    sVerbose = sDebug = false;
+    switch(level) {
+        case LOGGING_LEVEL_VERBOSE:
+            sVerbose = true;
+        case LOGGING_LEVEL_DEBUG:
+            sDebug = true;
+            return;
+        case LOGGING_LEVEL_OFF:
+            return;
+        default:
+            Log.w(TAG, "setLoggingLevel(): invalud level: " + level);
+    }
+}

@@ -1,0 +1,11 @@
+public boolean requestANQP(long bssid, List<Constants.ANQPElementType> elements){
+    Pair<Set<Integer>, Set<Integer>> querySets = buildAnqpIdSet(elements);
+    if (bssid == 0 || querySets == null)
+        return false;
+    if (!mSupplicantHook.requestAnqp(mSupplicantHook.getClientInterfaceName(), Utils.macToString(bssid), querySets.first, querySets.second)) {
+        Log.d(Utils.hs2LogTag(getClass()), "ANQP failed on " + Utils.macToString(bssid));
+        return false;
+    }
+    Log.d(Utils.hs2LogTag(getClass()), "ANQP initiated on " + Utils.macToString(bssid));
+    return true;
+}

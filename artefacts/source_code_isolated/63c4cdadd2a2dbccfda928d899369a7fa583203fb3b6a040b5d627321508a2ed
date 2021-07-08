@@ -1,0 +1,10 @@
+public boolean registerGnssStatusCallback(@NonNull GnssStatus.Callback callback, @Nullable Handler handler){
+    if (handler == null) {
+        handler = new Handler();
+    }
+    try {
+        return mGnssStatusListenerManager.addListener(callback, handler);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

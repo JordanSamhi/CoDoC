@@ -1,0 +1,7 @@
+public boolean isUserRunningOrStopping(UserHandle user){
+    try {
+        return ActivityManager.getService().isUserRunning(user.getIdentifier(), ActivityManager.FLAG_OR_STOPPED);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

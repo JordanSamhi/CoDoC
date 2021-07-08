@@ -1,0 +1,13 @@
+public void stopSocketMonitor(final int slot){
+    final FileDescriptor fd;
+    synchronized (mListeners) {
+        fd = mListeners.get(slot);
+        if (null == fd)
+            return;
+        mListeners.remove(slot);
+    }
+    mFdHandlerQueue.removeOnFileDescriptorEventListener(fd);
+    if (DBG)
+        Log.d(TAG, "Moving socket out of repair mode for stop : " + fd);
+    switchOutOfRepairMode(fd);
+}

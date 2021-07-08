@@ -1,0 +1,9 @@
+public IpPrefix[] getLinkNetworks() throws LowpanException{
+    try {
+        return mBinder.getLinkNetworks();
+    } catch (RemoteException x) {
+        throw x.rethrowAsRuntimeException();
+    } catch (ServiceSpecificException x) {
+        throw LowpanException.rethrowFromServiceSpecificException(x);
+    }
+}

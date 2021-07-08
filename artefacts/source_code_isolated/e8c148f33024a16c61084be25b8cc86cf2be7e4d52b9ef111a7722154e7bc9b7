@@ -1,0 +1,9 @@
+public void releaseReferenceFromContainer(){
+    boolean refCountIsZero = false;
+    synchronized (this) {
+        refCountIsZero = --mReferenceCount == 0;
+    }
+    if (refCountIsZero) {
+        onAllReferencesReleasedFromContainer();
+    }
+}

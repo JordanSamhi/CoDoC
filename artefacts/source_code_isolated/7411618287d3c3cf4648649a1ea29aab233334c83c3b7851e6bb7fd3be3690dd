@@ -1,0 +1,7 @@
+public boolean addDynamicShortcuts(@NonNull List<ShortcutInfo> shortcutInfoList){
+    try {
+        return mService.addDynamicShortcuts(mContext.getPackageName(), new ParceledListSlice(shortcutInfoList), injectMyUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

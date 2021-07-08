@@ -1,0 +1,14 @@
+public void onCapabilityChanged(SoftApCapability capability){
+    synchronized (mLock) {
+        mTetheredSoftApCapability = new SoftApCapability(capability);
+    }
+    Iterator<ISoftApCallback> iterator = mRegisteredSoftApCallbacks.getCallbacks().iterator();
+    while (iterator.hasNext()) {
+        ISoftApCallback callback = iterator.next();
+        try {
+            callback.onCapabilityChanged(mTetheredSoftApCapability);
+        } catch (RemoteException e) {
+            Log.e(TAG, "onCapabiliyChanged: remote exception -- " + e);
+        }
+    }
+}

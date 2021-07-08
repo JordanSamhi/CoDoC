@@ -1,0 +1,9 @@
+public UiccCardApplication getUiccCardApplication(int phoneId, int family){
+    synchronized (mLock) {
+        UiccCard uiccCard = getUiccCardForPhone(phoneId);
+        if (uiccCard != null) {
+            return uiccCard.getApplication(family);
+        }
+        return null;
+    }
+}

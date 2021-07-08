@@ -1,0 +1,37 @@
+
+         * Set the estimated size of network traffic that will be performed by
+         * this job, in bytes.
+         * <p>
+         * Apps are encouraged to provide values that are as accurate as
+         * possible, but when the exact size isn't available, an
+         * order-of-magnitude estimate can be provided instead. Here are some
+         * specific examples:
+         * <ul>
+         * <li>A job that is backing up a photo knows the exact size of that
+         * photo, so it should provide that size as the estimate.
+         * <li>A job that refreshes top news stories wouldn't know an exact
+         * size, but if the size is expected to be consistently around 100KB, it
+         * can provide that order-of-magnitude value as the estimate.
+         * <li>A job that synchronizes email could end up using an extreme range
+         * of data, from under 1KB when nothing has changed, to dozens of MB
+         * when there are new emails with attachments. Jobs that cannot provide
+         * reasonable estimates should use the sentinel value
+         * {@link JobInfo#NETWORK_BYTES_UNKNOWN}.
+         * </ul>
+         * Note that the system may choose to delay jobs with large network
+         * usage estimates when the device has a poor network connection, in
+         * order to save battery.
+         * <p>
+         * The values provided here only reflect the traffic that will be
+         * performed by the base job; if you're using {@link JobWorkItem} then
+         * you also need to define the network traffic used by each work item
+         * when constructing them.
+         *
+         * @param downloadBytes The estimated size of network traffic that will
+         *            be downloaded by this job, in bytes.
+         * @param uploadBytes The estimated size of network traffic that will be
+         *            uploaded by this job, in bytes.
+         * @see JobInfo#getEstimatedNetworkDownloadBytes()
+         * @see JobInfo#getEstimatedNetworkUploadBytes()
+         * @see JobWorkItem#JobWorkItem(android.content.Intent, long, long)
+         

@@ -1,0 +1,16 @@
+public static RaParams getDeprecatedRaParams(RaParams oldRa, RaParams newRa){
+    RaParams newlyDeprecated = new RaParams();
+    if (oldRa != null) {
+        for (IpPrefix ipp : oldRa.prefixes) {
+            if (newRa == null || !newRa.prefixes.contains(ipp)) {
+                newlyDeprecated.prefixes.add(ipp);
+            }
+        }
+        for (Inet6Address dns : oldRa.dnses) {
+            if (newRa == null || !newRa.dnses.contains(dns)) {
+                newlyDeprecated.dnses.add(dns);
+            }
+        }
+    }
+    return newlyDeprecated;
+}

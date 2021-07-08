@@ -1,0 +1,7 @@
+public void unregister(){
+    if (mIsLegacy) {
+        throw new UnsupportedOperationException("Legacy agents can't call unregister.");
+    }
+    mNetworkInfo.setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, null, null);
+    queueOrSendMessage(EVENT_NETWORK_INFO_CHANGED, mNetworkInfo);
+}

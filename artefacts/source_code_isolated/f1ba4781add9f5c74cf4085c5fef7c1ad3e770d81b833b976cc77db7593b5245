@@ -1,0 +1,9 @@
+public SocketKeepalive createNattKeepalive(@NonNull Network network, @NonNull ParcelFileDescriptor pfd, @NonNull InetAddress source, @NonNull InetAddress destination, @NonNull @CallbackExecutor Executor executor, @NonNull Callback callback){
+    ParcelFileDescriptor dup;
+    try {
+        dup = pfd.dup();
+    } catch (IOException ignored) {
+        dup = new ParcelFileDescriptor(new FileDescriptor());
+    }
+    return new NattSocketKeepalive(mService, network, dup, INVALID_RESOURCE_ID, source, destination, executor, callback);
+}

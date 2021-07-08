@@ -1,0 +1,10 @@
+public void startTruncatedScan(List<TruncatedFilter> truncatedFilters, ScanSettings settings, final ScanCallback callback){
+    int filterSize = truncatedFilters.size();
+    List<ScanFilter> scanFilters = new ArrayList<ScanFilter>(filterSize);
+    List<List<ResultStorageDescriptor>> scanStorages = new ArrayList<List<ResultStorageDescriptor>>(filterSize);
+    for (TruncatedFilter filter : truncatedFilters) {
+        scanFilters.add(filter.getFilter());
+        scanStorages.add(filter.getStorageDescriptors());
+    }
+    startScan(scanFilters, settings, null, callback, null, scanStorages);
+}

@@ -1,0 +1,25 @@
+public static String filterDestAddr(Context context, int subId, String destAddr){
+    if (DBG)
+        Log.d(TAG, "enter filterDestAddr. destAddr=\"" + pii(TAG, destAddr) + "\"");
+    if (destAddr == null || !PhoneNumberUtils.isGlobalPhoneNumber(destAddr)) {
+        Log.w(TAG, "destAddr" + pii(TAG, destAddr) + " is not a global phone number! Nothing changed.");
+        return destAddr;
+    }
+    final TelephonyManager telephonyManager = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).createForSubscriptionId(subId);
+    final String networkOperator = telephonyManager.getNetworkOperator();
+    String result = null;
+    if (needToConvert(context, subId)) {
+        final int networkType = getNetworkType(telephonyManager);
+        if (networkType != -1 && !TextUtils.isEmpty(networkOperator)) {
+            String networkMcc = networkOperator.substring(0, 3);
+            if (networkMcc != null && networkMcc.trim().length() > 0) {
+                result = formatNumber(context, destAddr, networkMcc, networkType);
+            }
+        }
+    }
+    if (DBG) {
+        Log.d(TAG, "destAddr is " + ((result != null) ? "formatted." : "not formatted."));
+        Log.d(TAG, "leave filterDestAddr, new destAddr=\"" + (result != null ? pii(TAG, result) : pii(TAG, destAddr)) + "\"");
+    }
+    return result != null ? result : destAddr;
+}

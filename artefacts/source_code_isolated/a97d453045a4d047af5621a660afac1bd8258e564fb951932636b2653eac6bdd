@@ -1,0 +1,9 @@
+public void sendNotification(NotificationType notificationType){
+    if (!evaluateSendingMessage(notificationType)) {
+        return;
+    }
+    Context context = mPhone.getContext();
+    Notification.Builder builder = getNotificationBuilder(notificationType);
+    builder.setWhen(System.currentTimeMillis()).setAutoCancel(true).setSmallIcon(com.android.internal.R.drawable.stat_sys_warning).setColor(context.getResources().getColor(com.android.internal.R.color.system_notification_accent_color));
+    getNotificationManager(context).notify(notificationType.getNotificationTag(), notificationType.getNotificationId(), builder.build());
+}

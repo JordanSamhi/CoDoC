@@ -1,0 +1,38 @@
+public Palette generate(){
+    final TimingLogger logger = LOG_TIMINGS ? new TimingLogger(LOG_TAG, "Generation") : null;
+    List<Palette.Swatch> swatches;
+    if (mBitmap != null) {
+        final Bitmap bitmap = scaleBitmapDown(mBitmap);
+        if (logger != null) {
+            logger.addSplit("Processed Bitmap");
+        }
+        final Rect region = mRegion;
+        if (bitmap != mBitmap && region != null) {
+            final double scale = bitmap.getWidth() / (double) mBitmap.getWidth();
+            region.left = (int) Math.floor(region.left * scale);
+            region.top = (int) Math.floor(region.top * scale);
+            region.right = Math.min((int) Math.ceil(region.right * scale), bitmap.getWidth());
+            region.bottom = Math.min((int) Math.ceil(region.bottom * scale), bitmap.getHeight());
+        }
+        if (mQuantizer == null) {
+            mQuantizer = new ColorCutQuantizer();
+        }
+        mQuantizer.quantize(getPixelsFromBitmap(bitmap), mMaxColors, mFilters.isEmpty() ? null : mFilters.toArray(new Palette.Filter[mFilters.size()]));
+        if (bitmap != mBitmap) {
+            bitmap.recycle();
+        }
+        swatches = mQuantizer.getQuantizedColors();
+        if (logger != null) {
+            logger.addSplit("Color quantization completed");
+        }
+    } else {
+        swatches = mSwatches;
+    }
+    final Palette p = new Palette(swatches, mTargets);
+    p.generate();
+    if (logger != null) {
+        logger.addSplit("Created Palette");
+        logger.dumpToLog();
+    }
+    return p;
+}

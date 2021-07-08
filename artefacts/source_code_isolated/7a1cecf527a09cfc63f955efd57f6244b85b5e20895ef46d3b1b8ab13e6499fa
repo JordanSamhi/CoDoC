@@ -1,0 +1,8 @@
+public List<NotificationChannel> getNotificationChannels(){
+    INotificationManager service = getService();
+    try {
+        return service.getNotificationChannels(mContext.getOpPackageName(), mContext.getPackageName(), mContext.getUserId()).getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

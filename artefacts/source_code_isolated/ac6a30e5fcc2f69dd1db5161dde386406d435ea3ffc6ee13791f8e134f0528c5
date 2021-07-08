@@ -1,0 +1,13 @@
+public void cancel(){
+    synchronized (this) {
+        mOffAt = 0;
+        if (mThread != null) {
+            mThread.interrupt();
+            mThread = null;
+        }
+        if (!mOffCalled) {
+            mOffCalled = true;
+            off();
+        }
+    }
+}

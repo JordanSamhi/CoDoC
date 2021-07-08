@@ -1,0 +1,7 @@
+public static void noteUserspaceRebootSuccess(){
+    if (!PowerManager.isRebootingUserspaceSupportedImpl()) {
+        Slog.wtf(TAG, "Userspace reboot is not supported.");
+        return;
+    }
+    SystemProperties.set(USERSPACE_REBOOT_LAST_FINISHED_PROPERTY, String.valueOf(SystemClock.elapsedRealtime()));
+}

@@ -1,0 +1,17 @@
+public HashMap<String, Object> dispatchRetainNonConfigurationInstance(){
+    HashMap<String, Object> instanceMap = null;
+    final int N = mActivityArray.size();
+    for (int i = 0; i < N; i++) {
+        LocalActivityRecord r = mActivityArray.get(i);
+        if ((r != null) && (r.activity != null)) {
+            Object instance = r.activity.onRetainNonConfigurationInstance();
+            if (instance != null) {
+                if (instanceMap == null) {
+                    instanceMap = new HashMap<String, Object>();
+                }
+                instanceMap.put(r.id, instance);
+            }
+        }
+    }
+    return instanceMap;
+}

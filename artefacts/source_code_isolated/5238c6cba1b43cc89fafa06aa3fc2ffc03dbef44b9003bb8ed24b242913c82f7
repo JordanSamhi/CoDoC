@@ -1,0 +1,24 @@
+public ApnSetting getNextApnSetting(){
+    if (mWaitingApns == null || mWaitingApns.size() == 0) {
+        log("Waiting APN list is null or empty.");
+        return null;
+    }
+    if (mCurrentApnIndex != -1 && mModemSuggestedDelay != NO_SUGGESTED_RETRY_DELAY && mSameApnRetryCount < MAX_SAME_APN_RETRY) {
+        mSameApnRetryCount++;
+        return mWaitingApns.get(mCurrentApnIndex);
+    }
+    mSameApnRetryCount = 0;
+    int index = mCurrentApnIndex;
+    while (true) {
+        if (++index == mWaitingApns.size())
+            index = 0;
+        if (!mWaitingApns.get(index).getPermanentFailed()) {
+            break;
+        }
+        if (mWaitingApns.stream().allMatch(ApnSetting::getPermanentFailed)) {
+            return null;
+        }
+    }
+    mCurrentApnIndex = index;
+    return mWaitingApns.get(mCurrentApnIndex);
+}

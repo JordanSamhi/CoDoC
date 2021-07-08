@@ -1,0 +1,108 @@
+public void write(long fieldId, float val){
+    assertNotCompacted();
+    final int id = (int) fieldId;
+    switch((int) ((fieldId & (FIELD_TYPE_MASK | FIELD_COUNT_MASK)) >> FIELD_TYPE_SHIFT)) {
+        case (int) ((FIELD_TYPE_DOUBLE | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeDoubleImpl(id, (double) val);
+            break;
+        case (int) ((FIELD_TYPE_DOUBLE | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_DOUBLE | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedDoubleImpl(id, (double) val);
+            break;
+        case (int) ((FIELD_TYPE_FLOAT | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeFloatImpl(id, (float) val);
+            break;
+        case (int) ((FIELD_TYPE_FLOAT | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_FLOAT | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedFloatImpl(id, (float) val);
+            break;
+        case (int) ((FIELD_TYPE_INT32 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_INT32 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_INT32 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_INT64 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_INT64 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_INT64 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_UINT32 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeUInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_UINT32 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_UINT32 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedUInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_UINT64 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeUInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_UINT64 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_UINT64 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedUInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_SINT32 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeSInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_SINT32 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_SINT32 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedSInt32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_SINT64 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeSInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_SINT64 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_SINT64 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedSInt64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_FIXED32 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeFixed32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_FIXED32 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_FIXED32 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedFixed32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_FIXED64 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeFixed64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_FIXED64 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_FIXED64 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedFixed64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_SFIXED32 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeSFixed32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_SFIXED32 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_SFIXED32 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedSFixed32Impl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_SFIXED64 | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeSFixed64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_SFIXED64 | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_SFIXED64 | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedSFixed64Impl(id, (long) val);
+            break;
+        case (int) ((FIELD_TYPE_BOOL | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeBoolImpl(id, val != 0);
+            break;
+        case (int) ((FIELD_TYPE_BOOL | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_BOOL | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedBoolImpl(id, val != 0);
+            break;
+        case (int) ((FIELD_TYPE_ENUM | FIELD_COUNT_SINGLE) >> FIELD_TYPE_SHIFT):
+            writeEnumImpl(id, (int) val);
+            break;
+        case (int) ((FIELD_TYPE_ENUM | FIELD_COUNT_REPEATED) >> FIELD_TYPE_SHIFT):
+        case (int) ((FIELD_TYPE_ENUM | FIELD_COUNT_PACKED) >> FIELD_TYPE_SHIFT):
+            writeRepeatedEnumImpl(id, (int) val);
+            break;
+        default:
+            {
+                throw new IllegalArgumentException("Attempt to call write(long, float) with " + getFieldIdString(fieldId));
+            }
+    }
+}

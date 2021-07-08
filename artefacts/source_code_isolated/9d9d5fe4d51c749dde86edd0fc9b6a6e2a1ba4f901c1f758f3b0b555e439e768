@@ -1,0 +1,26 @@
+public void onCallStartFailed(ImsCall imsCall, ImsReasonInfo reasonInfo){
+    if (DBG)
+        log("onCallStartFailed reasonCode=" + reasonInfo.getCode());
+    if (mHoldSwitchingState == HoldSwapState.HOLDING_TO_ANSWER_INCOMING) {
+        if (mCallExpectedToResume != null && mCallExpectedToResume == imsCall) {
+            if (DBG)
+                log("onCallStarted: starting a call as a result of a switch.");
+            mHoldSwitchingState = HoldSwapState.INACTIVE;
+            mCallExpectedToResume = null;
+            logHoldSwapState("onCallStartFailed");
+        }
+    }
+    if (mPendingMO != null) {
+        if (reasonInfo.getCode() == ImsReasonInfo.CODE_LOCAL_CALL_CS_RETRY_REQUIRED && mBackgroundCall.getState() == ImsPhoneCall.State.IDLE && mRingingCall.getState() == ImsPhoneCall.State.IDLE) {
+            mForegroundCall.detach(mPendingMO);
+            removeConnection(mPendingMO);
+            mPendingMO.finalize();
+            mPendingMO = null;
+            mPhone.initiateSilentRedial();
+            return;
+        } else {
+            sendCallStartFailedDisconnect(imsCall, reasonInfo);
+        }
+        mMetrics.writeOnImsCallStartFailed(mPhone.getPhoneId(), imsCall.getCallSession(), reasonInfo);
+    }
+}

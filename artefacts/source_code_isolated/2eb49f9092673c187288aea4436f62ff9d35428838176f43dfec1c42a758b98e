@@ -1,0 +1,10 @@
+public int setHealthCheckActiveLocked(long initialHealthCheckDurationMs){
+    if (initialHealthCheckDurationMs <= 0) {
+        Slog.wtf(TAG, "Cannot set non-positive health check duration " + initialHealthCheckDurationMs + "ms for package " + getName() + ". Using total duration " + mDurationMs + "ms instead");
+        initialHealthCheckDurationMs = mDurationMs;
+    }
+    if (mHealthCheckState == HealthCheckState.INACTIVE) {
+        mHealthCheckDurationMs = initialHealthCheckDurationMs;
+    }
+    return updateHealthCheckStateLocked();
+}

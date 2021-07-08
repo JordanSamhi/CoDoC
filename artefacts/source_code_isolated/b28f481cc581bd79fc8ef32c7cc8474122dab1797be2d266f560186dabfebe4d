@@ -1,0 +1,18 @@
+public Set<String> getPhysicalCameraIds(){
+    int[] availableCapabilities = get(REQUEST_AVAILABLE_CAPABILITIES);
+    if (availableCapabilities == null) {
+        throw new AssertionError("android.request.availableCapabilities must be non-null " + "in the characteristics");
+    }
+    if (!ArrayUtils.contains(availableCapabilities, REQUEST_AVAILABLE_CAPABILITIES_LOGICAL_MULTI_CAMERA)) {
+        return Collections.emptySet();
+    }
+    byte[] physicalCamIds = get(LOGICAL_MULTI_CAMERA_PHYSICAL_IDS);
+    String physicalCamIdString = null;
+    try {
+        physicalCamIdString = new String(physicalCamIds, "UTF-8");
+    } catch (java.io.UnsupportedEncodingException e) {
+        throw new AssertionError("android.logicalCam.physicalIds must be UTF-8 string");
+    }
+    String[] physicalCameraIdArray = physicalCamIdString.split("\0");
+    return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(physicalCameraIdArray)));
+}

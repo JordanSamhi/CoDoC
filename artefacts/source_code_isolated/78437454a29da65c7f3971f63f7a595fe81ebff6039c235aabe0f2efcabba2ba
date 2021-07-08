@@ -1,0 +1,19 @@
+public static BridgeXmlBlockParser getXmlBlockParser(@NonNull BridgeContext context, @NonNull ResourceValue value) throws XmlPullParserException{
+    String stringValue = value.getValue();
+    if (RenderResources.REFERENCE_NULL.equals(stringValue)) {
+        return null;
+    }
+    XmlPullParser parser = null;
+    ResourceNamespace namespace;
+    LayoutlibCallback layoutlibCallback = context.getLayoutlibCallback();
+    if (!value.isFramework()) {
+        parser = layoutlibCallback.getParser(value);
+    }
+    if (parser != null) {
+        namespace = ((ILayoutPullParser) parser).getLayoutNamespace();
+    } else {
+        parser = ParserFactory.create(stringValue);
+        namespace = value.getNamespace();
+    }
+    return parser == null ? null : new BridgeXmlBlockParser(parser, context, namespace);
+}

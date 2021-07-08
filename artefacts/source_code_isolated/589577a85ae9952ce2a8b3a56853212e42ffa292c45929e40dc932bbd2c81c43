@@ -1,0 +1,13 @@
+public void unregisterLocalOnlyHotspotObserver(){
+    synchronized (mLock) {
+        if (mLOHSObserverProxy == null) {
+            return;
+        }
+        mLOHSObserverProxy = null;
+        try {
+            mService.stopWatchLocalOnlyHotspot();
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

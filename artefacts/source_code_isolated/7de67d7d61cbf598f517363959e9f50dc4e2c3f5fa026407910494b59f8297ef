@@ -1,0 +1,13 @@
+public static String getParentClass(Object object, String[] classNames){
+    Class superClass = object.getClass();
+    while (superClass != null) {
+        String name = superClass.getName();
+        for (String className : classNames) {
+            if (name.equals(className)) {
+                return className;
+            }
+        }
+        superClass = superClass.getSuperclass();
+    }
+    return null;
+}

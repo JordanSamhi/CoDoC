@@ -1,0 +1,23 @@
+public void disableAudioForUid(boolean disable, int uid){
+    synchronized (mPlayerLock) {
+        final int index = mBannedUids.indexOf(new Integer(uid));
+        if (index >= 0) {
+            if (!disable) {
+                if (DEBUG) {
+                    sEventLogger.log(new AudioEventLogger.StringEvent("unbanning uid:" + uid));
+                }
+                mBannedUids.remove(index);
+            }
+        } else {
+            if (disable) {
+                for (AudioPlaybackConfiguration apc : mPlayers.values()) {
+                    checkBanPlayer(apc, uid);
+                }
+                if (DEBUG) {
+                    sEventLogger.log(new AudioEventLogger.StringEvent("banning uid:" + uid));
+                }
+                mBannedUids.add(new Integer(uid));
+            }
+        }
+    }
+}

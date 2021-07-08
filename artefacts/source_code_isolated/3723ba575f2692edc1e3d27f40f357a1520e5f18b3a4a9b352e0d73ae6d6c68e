@@ -1,0 +1,20 @@
+public static VectorDrawable create(Resources resources, int rid){
+    try {
+        final XmlPullParser parser = resources.getXml(rid);
+        final AttributeSet attrs = Xml.asAttributeSet(parser);
+        int type;
+        while ((type = parser.next()) != XmlPullParser.START_TAG && type != XmlPullParser.END_DOCUMENT) {
+        }
+        if (type != XmlPullParser.START_TAG) {
+            throw new XmlPullParserException("No start tag found");
+        }
+        final VectorDrawable drawable = new VectorDrawable();
+        drawable.inflate(resources, parser, attrs);
+        return drawable;
+    } catch (XmlPullParserException e) {
+        Log.e(LOGTAG, "parser error", e);
+    } catch (IOException e) {
+        Log.e(LOGTAG, "parser error", e);
+    }
+    return null;
+}

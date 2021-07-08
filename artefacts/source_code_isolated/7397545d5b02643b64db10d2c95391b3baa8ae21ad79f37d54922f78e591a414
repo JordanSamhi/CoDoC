@@ -1,0 +1,10 @@
+public long getRequiredStrongAuthTimeout(@Nullable ComponentName admin, @UserIdInt int userId){
+    if (mService != null) {
+        try {
+            return mService.getRequiredStrongAuthTimeout(admin, userId, mParentInstance);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return DEFAULT_STRONG_AUTH_TIMEOUT_MS;
+}

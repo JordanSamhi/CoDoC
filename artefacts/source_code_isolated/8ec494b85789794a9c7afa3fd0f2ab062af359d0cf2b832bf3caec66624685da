@@ -1,0 +1,10 @@
+public boolean initiateTdlsDiscover(@NonNull String ifaceName, String macAddress){
+    synchronized (mLock) {
+        try {
+            return initiateTdlsDiscover(ifaceName, NativeUtil.macAddressToByteArray(macAddress));
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Illegal argument " + macAddress, e);
+            return false;
+        }
+    }
+}

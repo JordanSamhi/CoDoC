@@ -1,0 +1,9 @@
+public void removeNotificationFromList(int seqNumber, AsyncResultCallback<Void> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_REMOVE_NOTIFICATION_FROM_LIST).addChildAsInteger(Tags.TAG_CTX_0, seqNumber).build().toHex())), response -> {
+        int result = parseSimpleResult(response);
+        if (result != CODE_OK && result != CODE_NOTHING_TO_DELETE) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_REMOVE_NOTIFICATION_FROM_LIST, result);
+        }
+        return null;
+    }, callback, handler);
+}

@@ -1,0 +1,7 @@
+public void testRestoreAtInstall_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    backupManagerService.restoreAtInstall(mUserOneId, TEST_PACKAGE, 0);
+    verify(mUserOneService).restoreAtInstall(TEST_PACKAGE, 0);
+}

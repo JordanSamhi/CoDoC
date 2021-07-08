@@ -1,0 +1,19 @@
+public void disableWriteAheadLogging(){
+    synchronized (mLock) {
+        throwIfNotOpenLocked();
+        final int oldFlags = mConfigurationLocked.openFlags;
+        final boolean walEnabled = (oldFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0;
+        final boolean compatibilityWalEnabled = (oldFlags & ENABLE_LEGACY_COMPATIBILITY_WAL) != 0;
+        if (!walEnabled && !compatibilityWalEnabled) {
+            return;
+        }
+        mConfigurationLocked.openFlags &= ~ENABLE_WRITE_AHEAD_LOGGING;
+        mConfigurationLocked.openFlags &= ~ENABLE_LEGACY_COMPATIBILITY_WAL;
+        try {
+            mConnectionPoolLocked.reconfigure(mConfigurationLocked);
+        } catch (RuntimeException ex) {
+            mConfigurationLocked.openFlags = oldFlags;
+            throw ex;
+        }
+    }
+}

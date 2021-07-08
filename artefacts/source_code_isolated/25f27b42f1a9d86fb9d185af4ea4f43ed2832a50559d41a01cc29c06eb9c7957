@@ -1,0 +1,11 @@
+public void addPostalLocation(Context context, long postalId, double latitude, double longitude){
+    final ContentResolver resolver = context.getContentResolver();
+    ContentValues values = new ContentValues(2);
+    values.put(POSTAL_LOCATION_LATITUDE, latitude);
+    values.put(POSTAL_LOCATION_LONGITUDE, longitude);
+    Uri loc = resolver.insert(CONTENT_URI, values);
+    long locId = ContentUris.parseId(loc);
+    values.clear();
+    values.put(AUX_DATA, locId);
+    resolver.update(ContentUris.withAppendedId(CONTENT_URI, postalId), values, null, null);
+}

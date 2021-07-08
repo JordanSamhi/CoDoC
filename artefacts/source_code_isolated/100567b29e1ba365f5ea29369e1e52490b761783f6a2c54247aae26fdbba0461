@@ -1,0 +1,12 @@
+public static void dumpCursor(Cursor cursor, StringBuilder sb){
+    sb.append(">>>>> Dumping cursor " + cursor + "\n");
+    if (cursor != null) {
+        int startPos = cursor.getPosition();
+        cursor.moveToPosition(-1);
+        while (cursor.moveToNext()) {
+            dumpCurrentRow(cursor, sb);
+        }
+        cursor.moveToPosition(startPos);
+    }
+    sb.append("<<<<<\n");
+}

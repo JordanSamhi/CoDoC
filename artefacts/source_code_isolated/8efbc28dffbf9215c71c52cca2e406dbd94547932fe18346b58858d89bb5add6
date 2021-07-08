@@ -1,0 +1,21 @@
+public void testReadWrite(){
+    final File file = new File(getContext().getCacheDir(), "setting.xml");
+    file.delete();
+    final Object lock = new Object();
+    final SettingsState ssWriter = new SettingsState(getContext(), lock, file, 1, SettingsState.MAX_BYTES_PER_APP_PACKAGE_UNLIMITED, Looper.getMainLooper());
+    ssWriter.setVersionLocked(SettingsState.SETTINGS_VERSION_NEW_ENCODING);
+    ssWriter.insertSettingLocked("k1", "\u0000", null, false, "package");
+    ssWriter.insertSettingLocked("k2", "abc", null, false, "p2");
+    ssWriter.insertSettingLocked("k3", null, null, false, "p2");
+    ssWriter.insertSettingLocked("k4", CRAZY_STRING, null, false, "p3");
+    synchronized (lock) {
+        ssWriter.persistSyncLocked();
+    }
+    final SettingsState ssReader = new SettingsState(getContext(), lock, file, 1, SettingsState.MAX_BYTES_PER_APP_PACKAGE_UNLIMITED, Looper.getMainLooper());
+    synchronized (lock) {
+        assertEquals("\u0000", ssReader.getSettingLocked("k1").getValue());
+        assertEquals("abc", ssReader.getSettingLocked("k2").getValue());
+        assertEquals(null, ssReader.getSettingLocked("k3").getValue());
+        assertEquals(CRAZY_STRING, ssReader.getSettingLocked("k4").getValue());
+    }
+}

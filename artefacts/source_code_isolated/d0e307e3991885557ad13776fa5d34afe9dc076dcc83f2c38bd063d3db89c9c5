@@ -1,0 +1,47 @@
+public void onChildOpened(@NonNull Network network, @NonNull ChildSessionConfiguration childConfig){
+    if (!isActiveNetwork(network)) {
+        Log.d(TAG, "onOpened called for obsolete network " + network);
+        return;
+    }
+    try {
+        final String interfaceName = mTunnelIface.getInterfaceName();
+        final int maxMtu = mProfile.getMaxMtu();
+        final List<LinkAddress> internalAddresses = childConfig.getInternalAddresses();
+        final List<String> dnsAddrStrings = new ArrayList<>();
+        final Collection<RouteInfo> newRoutes = VpnIkev2Utils.getRoutesFromTrafficSelectors(childConfig.getOutboundTrafficSelectors());
+        for (final LinkAddress address : internalAddresses) {
+            mTunnelIface.addAddress(address.getAddress(), address.getPrefixLength());
+        }
+        for (InetAddress addr : childConfig.getInternalDnsServers()) {
+            dnsAddrStrings.add(addr.getHostAddress());
+        }
+        final NetworkAgent networkAgent;
+        final LinkProperties lp;
+        synchronized (Vpn.this) {
+            mInterface = interfaceName;
+            mConfig.mtu = maxMtu;
+            mConfig.interfaze = mInterface;
+            mConfig.addresses.clear();
+            mConfig.addresses.addAll(internalAddresses);
+            mConfig.routes.clear();
+            mConfig.routes.addAll(newRoutes);
+            if (mConfig.dnsServers == null)
+                mConfig.dnsServers = new ArrayList<>();
+            mConfig.dnsServers.clear();
+            mConfig.dnsServers.addAll(dnsAddrStrings);
+            networkAgent = mNetworkAgent;
+            if (networkAgent == null) {
+                if (isSettingsVpnLocked()) {
+                    prepareStatusIntent();
+                }
+                agentConnect();
+                return;
+            }
+            lp = makeLinkProperties();
+        }
+        networkAgent.sendLinkProperties(lp);
+    } catch (Exception e) {
+        Log.d(TAG, "Error in ChildOpened for network " + network, e);
+        onSessionLost(network);
+    }
+}

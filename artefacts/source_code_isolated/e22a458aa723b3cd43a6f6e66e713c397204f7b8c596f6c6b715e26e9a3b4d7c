@@ -1,0 +1,9 @@
+public void startConnectedNetworkScorer(int netId){
+    final int sessionId = getCurrentSessionId();
+    if (mWifiConnectedNetworkScorerHolder == null || netId != getCurrentNetId() || sessionId == INVALID_SESSION_ID) {
+        Log.w(TAG, "Cannot start external scoring" + " netId=" + netId + " currentNetId=" + getCurrentNetId() + " sessionId=" + sessionId);
+        return;
+    }
+    mWifiConnectedNetworkScorerHolder.startSession(sessionId);
+    mLastScoreBreachLowTimeMillis = INVALID_WALL_CLOCK_MILLIS;
+}

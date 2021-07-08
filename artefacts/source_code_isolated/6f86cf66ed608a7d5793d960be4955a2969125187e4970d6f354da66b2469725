@@ -1,0 +1,6 @@
+public void onTransientError(){
+    SharedPreferences.Editor editor = mStorage.edit();
+    editor.putLong(PREFIX + "lastErrorTimeMillis", currentTimeMillis());
+    editor.putInt(PREFIX + "errorCount", mStorage.getInt(PREFIX + "errorCount", 0) + 1);
+    SharedPreferencesCompat.apply(editor);
+}

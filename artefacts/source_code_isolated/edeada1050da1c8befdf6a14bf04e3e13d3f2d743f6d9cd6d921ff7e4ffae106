@@ -1,0 +1,11 @@
+public ListAdapter getAdapter(){
+    final ListView listView = getListViewInternal();
+    if (listView != null) {
+        final ListAdapter adapter = listView.getAdapter();
+        if (adapter instanceof HeaderViewListAdapter) {
+            return ((HeaderViewListAdapter) adapter).getWrappedAdapter();
+        }
+        return adapter;
+    }
+    return null;
+}

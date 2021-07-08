@@ -1,0 +1,12 @@
+public boolean finishComposingText(){
+    if (DEBUG)
+        Log.v(TAG, "finishComposingText");
+    final Editable content = getEditable();
+    if (content != null) {
+        beginBatchEdit();
+        removeComposingSpans(content);
+        sendCurrentText();
+        endBatchEdit();
+    }
+    return true;
+}

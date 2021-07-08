@@ -1,0 +1,16 @@
+public MidiOutputPort openOutputPort(int portNumber){
+    if (mIsDeviceClosed) {
+        return null;
+    }
+    try {
+        IBinder token = new Binder();
+        FileDescriptor fd = mDeviceServer.openOutputPort(token, portNumber);
+        if (fd == null) {
+            return null;
+        }
+        return new MidiOutputPort(mDeviceServer, token, fd, portNumber);
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException in openOutputPort");
+        return null;
+    }
+}

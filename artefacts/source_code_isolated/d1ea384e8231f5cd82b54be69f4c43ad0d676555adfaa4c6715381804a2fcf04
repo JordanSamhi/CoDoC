@@ -1,0 +1,11 @@
+public int forceSuspend(int timeoutMs){
+    int retVal;
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.DEVICE_POWER, null);
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        retVal = nativeForceSuspend(timeoutMs);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+    return retVal;
+}

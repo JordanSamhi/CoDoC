@@ -1,0 +1,9 @@
+public Voice getVoice(){
+    return runAction((ITextToSpeechService service) -> {
+        String voiceName = mParams.getString(Engine.KEY_PARAM_VOICE_NAME, "");
+        if (TextUtils.isEmpty(voiceName)) {
+            return null;
+        }
+        return getVoice(service, voiceName);
+    }, null, "getVoice");
+}

@@ -1,0 +1,22 @@
+public static Rational createRational(float value){
+    if (Float.isNaN(value)) {
+        return Rational.NaN;
+    } else if (value == Float.POSITIVE_INFINITY) {
+        return Rational.POSITIVE_INFINITY;
+    } else if (value == Float.NEGATIVE_INFINITY) {
+        return Rational.NEGATIVE_INFINITY;
+    } else if (value == 0.0f) {
+        return Rational.ZERO;
+    }
+    int den = RATIONAL_DENOMINATOR;
+    float numF;
+    do {
+        numF = value * den;
+        if ((numF > Integer.MIN_VALUE && numF < Integer.MAX_VALUE) || (den == 1)) {
+            break;
+        }
+        den /= 10;
+    } while (true);
+    int num = (int) numF;
+    return new Rational(num, den);
+}

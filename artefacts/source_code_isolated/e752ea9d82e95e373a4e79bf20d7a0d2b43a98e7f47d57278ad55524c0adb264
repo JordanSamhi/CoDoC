@@ -1,0 +1,10 @@
+public void onFailure(@Nullable CharSequence message){
+    Log.w(TAG, "onFailure(): " + message);
+    assertNotCalled();
+    mCalled = true;
+    try {
+        mCallback.onFailure(mRequestId, message);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,5 @@
+public final int getChargingSpeed(Context context){
+    final int slowThreshold = context.getResources().getInteger(R.integer.config_chargingSlowlyThreshold);
+    final int fastThreshold = context.getResources().getInteger(R.integer.config_chargingFastThreshold);
+    return maxChargingWattage <= 0 ? CHARGING_UNKNOWN : maxChargingWattage < slowThreshold ? CHARGING_SLOWLY : maxChargingWattage > fastThreshold ? CHARGING_FAST : CHARGING_REGULAR;
+}

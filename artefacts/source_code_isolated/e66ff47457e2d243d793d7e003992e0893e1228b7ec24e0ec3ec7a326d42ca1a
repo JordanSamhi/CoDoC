@@ -1,0 +1,18 @@
+public UiObject getChildByText(UiSelector childPattern, String text) throws UiObjectNotFoundException{
+    Tracer.trace(childPattern, text);
+    if (text != null) {
+        int count = getChildCount(childPattern);
+        for (int x = 0; x < count; x++) {
+            UiObject row = getChildByInstance(childPattern, x);
+            String nodeText = row.getText();
+            if (text.equals(nodeText)) {
+                return row;
+            }
+            UiObject item = row.getChild(new UiSelector().text(text));
+            if (item.exists()) {
+                return row;
+            }
+        }
+    }
+    throw new UiObjectNotFoundException("for text= \"" + text + "\"");
+}

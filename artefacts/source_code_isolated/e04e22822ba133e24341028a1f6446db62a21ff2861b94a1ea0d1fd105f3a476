@@ -1,0 +1,7 @@
+public MediaTimestamp getTimestamp(){
+    try {
+        return new MediaTimestamp(getCurrentPosition() * 1000L, System.nanoTime(), isPlaying() ? getPlaybackParams().getSpeed() : 0.f);
+    } catch (IllegalStateException e) {
+        return null;
+    }
+}

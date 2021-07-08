@@ -1,0 +1,11 @@
+public final void dispatchStartInputWithToken(@Nullable InputConnection inputConnection, @NonNull EditorInfo editorInfo, boolean restarting, @NonNull IBinder startInputToken, boolean shouldPreRenderIme){
+    mPrivOps.reportStartInput(startInputToken);
+    mCanPreRender = shouldPreRenderIme;
+    if (DEBUG)
+        Log.v(TAG, "Will Pre-render IME: " + mCanPreRender);
+    if (restarting) {
+        restartInput(inputConnection, editorInfo);
+    } else {
+        startInput(inputConnection, editorInfo);
+    }
+}

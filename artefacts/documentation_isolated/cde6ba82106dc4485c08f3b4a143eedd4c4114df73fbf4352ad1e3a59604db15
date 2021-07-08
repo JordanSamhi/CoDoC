@@ -1,0 +1,16 @@
+
+     * Like {@link #acquireContentProviderClient(Uri)}, but for use when you do
+     * not trust the stability of the target content provider.  This turns off
+     * the mechanism in the platform clean up processes that are dependent on
+     * a content provider if that content provider's process goes away.  Normally
+     * you can safely assume that once you have acquired a provider, you can freely
+     * use it as needed and it won't disappear, even if your process is in the
+     * background.  If using this method, you need to take care to deal with any
+     * failures when communicating with the provider, and be sure to close it
+     * so that it can be re-opened later.  In particular, catching a
+     * {@link android.os.DeadObjectException} from the calls there will let you
+     * know that the content provider has gone away; at that point the current
+     * ContentProviderClient object is invalid, and you should release it.  You
+     * can acquire a new one if you would like to try to restart the provider
+     * and perform new operations on it.
+     

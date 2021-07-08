@@ -1,0 +1,23 @@
+
+     * Limits the effective size of the <code>AudioTrack</code> buffer
+     * that the application writes to.
+     * <p> A write to this AudioTrack will not fill the buffer beyond this limit.
+     * If a blocking write is used then the write will block until the data
+     * can fit within this limit.
+     * <p>Changing this limit modifies the latency associated with
+     * the buffer for this track. A smaller size will give lower latency
+     * but there may be more glitches due to buffer underruns.
+     * <p>The actual size used may not be equal to this requested size.
+     * It will be limited to a valid range with a maximum of
+     * {@link #getBufferCapacityInFrames()}.
+     * It may also be adjusted slightly for internal reasons.
+     * If bufferSizeInFrames is less than zero then {@link #ERROR_BAD_VALUE}
+     * will be returned.
+     * <p>This method is only supported for PCM audio.
+     * It is not supported for compressed audio tracks.
+     *
+     * @param bufferSizeInFrames requested buffer size in frames
+     * @return the actual buffer size in frames or an error code,
+     *    {@link #ERROR_BAD_VALUE}, {@link #ERROR_INVALID_OPERATION}
+     * @throws IllegalStateException if track is not initialized.
+     

@@ -1,0 +1,8 @@
+public void testInitializeTransports_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    String[] transports = { TEST_TRANSPORT };
+    backupManagerService.initializeTransports(mUserOneId, transports, null);
+    verify(mUserOneService).initializeTransports(transports, null);
+}

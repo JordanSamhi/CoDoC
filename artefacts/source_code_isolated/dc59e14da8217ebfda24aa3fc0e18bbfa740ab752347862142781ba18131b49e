@@ -1,0 +1,7 @@
+public URLConnection openConnection(URL url, java.net.Proxy proxy) throws IOException{
+    if (proxy == null)
+        throw new IllegalArgumentException("proxy is null");
+    maybeInitUrlConnectionFactory();
+    SocketFactory socketFactory = getSocketFactory();
+    return mUrlConnectionFactory.openConnection(url, socketFactory, proxy);
+}

@@ -1,0 +1,8 @@
+public static long currentAnimationTimeMillis(){
+    AnimationState state = sAnimationState.get();
+    if (state.animationClockLocked) {
+        return Math.max(state.currentVsyncTimeMillis, state.lastReportedTimeMillis);
+    }
+    state.lastReportedTimeMillis = SystemClock.uptimeMillis();
+    return state.lastReportedTimeMillis;
+}

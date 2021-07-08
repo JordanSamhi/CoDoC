@@ -1,0 +1,11 @@
+public boolean pruneRemovedPrinter(PrinterId printerId){
+    final int holderCounts = mPrinterHolders.size();
+    for (int i = holderCounts - 1; i >= 0; i--) {
+        PrinterHolder printerHolder = mPrinterHolders.get(i);
+        if (printerHolder.printer.getId().equals(printerId) && printerHolder.removed) {
+            mPrinterHolders.remove(i);
+            return true;
+        }
+    }
+    return false;
+}

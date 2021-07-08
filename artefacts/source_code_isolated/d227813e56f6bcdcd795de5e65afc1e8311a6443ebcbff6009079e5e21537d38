@@ -1,0 +1,14 @@
+public static long usbFunctionsFromString(String functions){
+    if (functions == null || functions.equals(USB_FUNCTION_NONE)) {
+        return FUNCTION_NONE;
+    }
+    long ret = 0;
+    for (String function : functions.split(",")) {
+        if (FUNCTION_NAME_TO_CODE.containsKey(function)) {
+            ret |= FUNCTION_NAME_TO_CODE.get(function);
+        } else if (function.length() > 0) {
+            throw new IllegalArgumentException("Invalid usb function " + functions);
+        }
+    }
+    return ret;
+}

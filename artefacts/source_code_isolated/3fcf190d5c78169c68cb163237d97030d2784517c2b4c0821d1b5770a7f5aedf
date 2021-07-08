@@ -1,0 +1,9 @@
+public static ScheduleCalendar toScheduleCalendar(Uri conditionId){
+    final ScheduleInfo schedule = ZenModeConfig.tryParseScheduleConditionId(conditionId);
+    if (schedule == null || schedule.days == null || schedule.days.length == 0)
+        return null;
+    final ScheduleCalendar sc = new ScheduleCalendar();
+    sc.setSchedule(schedule);
+    sc.setTimeZone(TimeZone.getDefault());
+    return sc;
+}

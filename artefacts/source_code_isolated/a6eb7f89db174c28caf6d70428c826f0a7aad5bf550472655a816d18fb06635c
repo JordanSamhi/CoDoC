@@ -1,0 +1,15 @@
+public OutputStream openWrite(@NonNull String name, long offsetBytes, long lengthBytes) throws IOException{
+    try {
+        if (ENABLE_REVOCABLE_FD) {
+            return new ParcelFileDescriptor.AutoCloseOutputStream(mSession.openWrite(name, offsetBytes, lengthBytes));
+        } else {
+            final ParcelFileDescriptor clientSocket = mSession.openWrite(name, offsetBytes, lengthBytes);
+            return new FileBridge.FileBridgeOutputStream(clientSocket);
+        }
+    } catch (RuntimeException e) {
+        ExceptionUtils.maybeUnwrapIOException(e);
+        throw e;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public void updateActivityUsageStats(String packageName, int userId, int event){
+    if (DEBUG_SWITCH) {
+        Slog.d(TAG_SWITCH, "updateActivityUsageStats: package=" + packageName + " event=" + event);
+    }
+    synchronized (this) {
+        if (mUsageStatsService != null) {
+            mUsageStatsService.reportEvent(packageName, userId, event);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public static void verifyHostname(Socket socket, String hostname) throws IOException{
+    if (!(socket instanceof SSLSocket)) {
+        throw new IllegalArgumentException("Attempt to verify non-SSL socket");
+    }
+    if (!isSslCheckRelaxed()) {
+        SSLSocket ssl = (SSLSocket) socket;
+        ssl.startHandshake();
+        SSLSession session = ssl.getSession();
+        if (session == null) {
+            throw new SSLException("Cannot verify SSL socket without session");
+        }
+        if (!HttpsURLConnection.getDefaultHostnameVerifier().verify(hostname, session)) {
+            throw new SSLPeerUnverifiedException("Cannot verify hostname: " + hostname);
+        }
+    }
+}

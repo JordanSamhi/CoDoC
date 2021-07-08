@@ -1,0 +1,14 @@
+public void addChild(@NonNull IBinder token){
+    enforceNotSealed();
+    if (token == null) {
+        return;
+    }
+    if (mChildNodeIds == null) {
+        mChildNodeIds = new LongArray();
+    }
+    mLeashedChild = token;
+    if (mChildNodeIds.indexOf(LEASHED_NODE_ID) >= 0) {
+        return;
+    }
+    mChildNodeIds.add(LEASHED_NODE_ID);
+}

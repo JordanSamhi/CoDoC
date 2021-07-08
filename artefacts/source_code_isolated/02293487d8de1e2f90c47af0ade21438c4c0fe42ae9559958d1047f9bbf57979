@@ -1,0 +1,70 @@
+public void setBackgroundDrawable(Drawable background){
+    computeOpaqueFlags();
+    if (background == mBackground) {
+        return;
+    }
+    boolean requestLayout = false;
+    mBackgroundResource = 0;
+    if (mBackground != null) {
+        if (isAttachedToWindow()) {
+            mBackground.setVisible(false, false);
+        }
+        mBackground.setCallback(null);
+        unscheduleDrawable(mBackground);
+    }
+    if (background != null) {
+        Rect padding = sThreadLocal.get();
+        if (padding == null) {
+            padding = new Rect();
+            sThreadLocal.set(padding);
+        }
+        resetResolvedDrawablesInternal();
+        background.setLayoutDirection(getLayoutDirection());
+        if (background.getPadding(padding)) {
+            resetResolvedPaddingInternal();
+            switch(background.getLayoutDirection()) {
+                case LAYOUT_DIRECTION_RTL:
+                    mUserPaddingLeftInitial = padding.right;
+                    mUserPaddingRightInitial = padding.left;
+                    internalSetPadding(padding.right, padding.top, padding.left, padding.bottom);
+                    break;
+                case LAYOUT_DIRECTION_LTR:
+                default:
+                    mUserPaddingLeftInitial = padding.left;
+                    mUserPaddingRightInitial = padding.right;
+                    internalSetPadding(padding.left, padding.top, padding.right, padding.bottom);
+            }
+            mLeftPaddingDefined = false;
+            mRightPaddingDefined = false;
+        }
+        if (mBackground == null || mBackground.getMinimumHeight() != background.getMinimumHeight() || mBackground.getMinimumWidth() != background.getMinimumWidth()) {
+            requestLayout = true;
+        }
+        mBackground = background;
+        if (background.isStateful()) {
+            background.setState(getDrawableState());
+        }
+        if (isAttachedToWindow()) {
+            background.setVisible(getWindowVisibility() == VISIBLE && isShown(), false);
+        }
+        applyBackgroundTint();
+        background.setCallback(this);
+        if ((mPrivateFlags & PFLAG_SKIP_DRAW) != 0) {
+            mPrivateFlags &= ~PFLAG_SKIP_DRAW;
+            requestLayout = true;
+        }
+    } else {
+        mBackground = null;
+        if ((mViewFlags & WILL_NOT_DRAW) != 0 && (mDefaultFocusHighlight == null) && (mForegroundInfo == null || mForegroundInfo.mDrawable == null)) {
+            mPrivateFlags |= PFLAG_SKIP_DRAW;
+        }
+        requestLayout = true;
+    }
+    computeOpaqueFlags();
+    if (requestLayout) {
+        requestLayout();
+    }
+    mBackgroundSizeChanged = true;
+    invalidate(true);
+    invalidateOutline();
+}

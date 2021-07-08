@@ -1,0 +1,21 @@
+
+     * Make note of an application performing an operation on behalf of another application when
+     * handling an IPC. This function will verify that the calling uid and proxied package name
+     * match, and if not, return {@link #MODE_IGNORED}. If this call succeeds, the last execution
+     * time of the operation for the proxied app and your app will be updated to the current time.
+     *
+     * @param op The operation to note. One of the OP_* constants.
+     * @param proxiedPackageName The name of the application calling into the proxy application.
+     * @param proxiedUid The uid of the proxied application
+     * @param proxiedAttributionTag The proxied {@link Context#createAttributionContext
+     * attribution tag} or {@code null} for default attribution
+     * @param message A message describing the reason the op was noted
+     *
+     * @return Returns {@link #MODE_ALLOWED} if the operation is allowed, or {@link #MODE_IGNORED}
+     * if it is not allowed and should be silently ignored (without causing the app to crash).
+     *
+     * @throws SecurityException If the proxy or proxied app has been configured to crash on this
+     * op.
+     *
+     * @hide
+     

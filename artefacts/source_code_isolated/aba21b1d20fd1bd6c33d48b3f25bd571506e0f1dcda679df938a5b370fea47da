@@ -1,0 +1,72 @@
+public synchronized boolean checkConsistency(){
+    List<MtpObject> objs = new ArrayList<>();
+    objs.addAll(mRoots.values());
+    objs.addAll(mObjects.values());
+    boolean ret = true;
+    for (MtpObject obj : objs) {
+        if (!obj.exists()) {
+            Log.w(TAG, "Object doesn't exist " + obj.getPath() + " " + obj.getId());
+            ret = false;
+        }
+        if (obj.getState() != MtpObjectState.NORMAL) {
+            Log.w(TAG, "Object " + obj.getPath() + " in state " + obj.getState());
+            ret = false;
+        }
+        if (obj.getOperation() != MtpOperation.NONE) {
+            Log.w(TAG, "Object " + obj.getPath() + " in operation " + obj.getOperation());
+            ret = false;
+        }
+        if (!obj.isRoot() && mObjects.get(obj.getId()) != obj) {
+            Log.w(TAG, "Object " + obj.getPath() + " is not in map correctly");
+            ret = false;
+        }
+        if (obj.getParent() != null) {
+            if (obj.getParent().isRoot() && obj.getParent() != mRoots.get(obj.getParent().getId())) {
+                Log.w(TAG, "Root parent is not in root mapping " + obj.getPath());
+                ret = false;
+            }
+            if (!obj.getParent().isRoot() && obj.getParent() != mObjects.get(obj.getParent().getId())) {
+                Log.w(TAG, "Parent is not in object mapping " + obj.getPath());
+                ret = false;
+            }
+            if (obj.getParent().getChild(obj.getName()) != obj) {
+                Log.w(TAG, "Child does not exist in parent " + obj.getPath());
+                ret = false;
+            }
+        }
+        if (obj.isDir()) {
+            if (obj.isVisited() == (obj.getObserver() == null)) {
+                Log.w(TAG, obj.getPath() + " is " + (obj.isVisited() ? "" : "not ") + " visited but observer is " + obj.getObserver());
+                ret = false;
+            }
+            if (!obj.isVisited() && obj.getChildren().size() > 0) {
+                Log.w(TAG, obj.getPath() + " is not visited but has children");
+                ret = false;
+            }
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(obj.getPath())) {
+                Set<String> files = new HashSet<>();
+                for (Path file : stream) {
+                    if (obj.isVisited() && obj.getChild(file.getFileName().toString()) == null && (mSubdirectories == null || !obj.isRoot() || mSubdirectories.contains(file.getFileName().toString()))) {
+                        Log.w(TAG, "File exists in fs but not in children " + file);
+                        ret = false;
+                    }
+                    files.add(file.toString());
+                }
+                for (MtpObject child : obj.getChildren()) {
+                    if (!files.contains(child.getPath().toString())) {
+                        Log.w(TAG, "File in children doesn't exist in fs " + child.getPath());
+                        ret = false;
+                    }
+                    if (child != mObjects.get(child.getId())) {
+                        Log.w(TAG, "Child is not in object map " + child.getPath());
+                        ret = false;
+                    }
+                }
+            } catch (IOException | DirectoryIteratorException e) {
+                Log.w(TAG, e.toString());
+                ret = false;
+            }
+        }
+    }
+    return ret;
+}

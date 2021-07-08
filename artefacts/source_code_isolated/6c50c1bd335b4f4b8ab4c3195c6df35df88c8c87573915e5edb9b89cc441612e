@@ -1,0 +1,18 @@
+public void writeToParcel(Parcel dest, int flags){
+    dest.writeInt(status);
+    dest.writeInt(soundModelHandle);
+    dest.writeByte((byte) (captureAvailable ? 1 : 0));
+    dest.writeInt(captureSession);
+    dest.writeInt(captureDelayMs);
+    dest.writeInt(capturePreambleMs);
+    dest.writeByte((byte) (triggerInData ? 1 : 0));
+    if (captureFormat != null) {
+        dest.writeByte((byte) 1);
+        dest.writeInt(captureFormat.getSampleRate());
+        dest.writeInt(captureFormat.getEncoding());
+        dest.writeInt(captureFormat.getChannelMask());
+    } else {
+        dest.writeByte((byte) 0);
+    }
+    dest.writeBlob(data);
+}

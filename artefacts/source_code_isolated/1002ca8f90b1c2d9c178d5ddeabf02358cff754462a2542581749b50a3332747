@@ -1,0 +1,24 @@
+public ImsiEncryptionInfo getCarrierInfoForImsiEncryption(@KeyType int keyType){
+    try {
+        IPhoneSubInfo info = getSubscriberInfoService();
+        if (info == null) {
+            Rlog.e(TAG, "IMSI error: Subscriber Info is null");
+            return null;
+        }
+        int subId = getSubId(SubscriptionManager.getDefaultDataSubscriptionId());
+        if (keyType != KEY_TYPE_EPDG && keyType != KEY_TYPE_WLAN) {
+            throw new IllegalArgumentException("IMSI error: Invalid key type");
+        }
+        ImsiEncryptionInfo imsiEncryptionInfo = info.getCarrierInfoForImsiEncryption(subId, keyType, mContext.getOpPackageName());
+        if (imsiEncryptionInfo == null && isImsiEncryptionRequired(subId, keyType)) {
+            Rlog.e(TAG, "IMSI error: key is required but not found");
+            throw new IllegalArgumentException("IMSI error: key is required but not found");
+        }
+        return imsiEncryptionInfo;
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getCarrierInfoForImsiEncryption RemoteException" + ex);
+    } catch (NullPointerException ex) {
+        Rlog.e(TAG, "getCarrierInfoForImsiEncryption NullPointerException" + ex);
+    }
+    return null;
+}

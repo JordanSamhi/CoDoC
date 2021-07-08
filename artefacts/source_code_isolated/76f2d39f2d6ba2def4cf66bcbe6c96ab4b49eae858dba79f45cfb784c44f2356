@@ -1,0 +1,10 @@
+public static void run(NetdCommand cmd){
+    while (true) {
+        try {
+            cmd.run(get());
+            return;
+        } catch (RemoteException re) {
+            Log.e(TAG, "error communicating with netd: " + re);
+        }
+    }
+}

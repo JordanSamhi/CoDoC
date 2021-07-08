@@ -1,0 +1,20 @@
+public final void onCustomPrinterIconLoaded(@NonNull PrinterId printerId, @Nullable Icon icon){
+    throwIfCalledOnMainThread();
+    synchronized (mLock) {
+        throwIfDestroyedLocked();
+        mCanUnbind = false;
+    }
+    try {
+        mCustomPrinterIconLoadedCaller.onCustomPrinterIconLoaded(getRemoteInstanceLazy(), printerId, icon);
+    } catch (RemoteException | TimeoutException | InterruptedException re) {
+        Slog.e(LOG_TAG, "Error loading new custom printer icon.", re);
+    } finally {
+        if (DEBUG) {
+            Slog.i(LOG_TAG, "[user: " + mUserHandle.getIdentifier() + "] onCustomPrinterIconLoaded()");
+        }
+        synchronized (mLock) {
+            mCanUnbind = true;
+            mLock.notifyAll();
+        }
+    }
+}

@@ -1,0 +1,33 @@
+public void accept(JobStatus job){
+    if (isReadyToBeExecutedLocked(job)) {
+        try {
+            if (ActivityManager.getService().isAppStartModeDisabled(job.getUid(), job.getJob().getService().getPackageName())) {
+                Slog.w(TAG, "Aborting job " + job.getUid() + ":" + job.getJob().toString() + " -- package not allowed to start");
+                mHandler.obtainMessage(MSG_STOP_JOB, job).sendToTarget();
+                return;
+            }
+        } catch (RemoteException e) {
+        }
+        final boolean shouldForceBatchJob;
+        if (job.getEffectiveStandbyBucket() == RESTRICTED_INDEX) {
+            shouldForceBatchJob = true;
+        } else if (job.getNumFailures() > 0) {
+            shouldForceBatchJob = false;
+        } else {
+            final long nowElapsed = sElapsedRealtimeClock.millis();
+            final boolean batchDelayExpired = job.getFirstForceBatchedTimeElapsed() > 0 && nowElapsed - job.getFirstForceBatchedTimeElapsed() >= mConstants.MAX_NON_ACTIVE_JOB_BATCH_DELAY_MS;
+            shouldForceBatchJob = mConstants.MIN_READY_NON_ACTIVE_JOBS_COUNT > 1 && job.getEffectiveStandbyBucket() != ACTIVE_INDEX && !batchDelayExpired;
+        }
+        if (shouldForceBatchJob) {
+            forceBatchedCount++;
+            if (job.getFirstForceBatchedTimeElapsed() == 0) {
+                job.setFirstForceBatchedTimeElapsed(sElapsedRealtimeClock.millis());
+            }
+        } else {
+            unbatchedCount++;
+        }
+        runnableJobs.add(job);
+    } else {
+        evaluateControllerStatesLocked(job);
+    }
+}

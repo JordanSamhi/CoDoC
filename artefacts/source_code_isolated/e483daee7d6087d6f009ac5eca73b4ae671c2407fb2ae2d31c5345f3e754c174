@@ -1,0 +1,9 @@
+public static ClassLoader createClassLoader(String dexPath, String librarySearchPath, ClassLoader parent, String classloaderName, List<ClassLoader> sharedLibraries){
+    ClassLoader[] arrayOfSharedLibraries = (sharedLibraries == null) ? null : sharedLibraries.toArray(new ClassLoader[sharedLibraries.size()]);
+    if (isPathClassLoaderName(classloaderName)) {
+        return new PathClassLoader(dexPath, librarySearchPath, parent, arrayOfSharedLibraries);
+    } else if (isDelegateLastClassLoaderName(classloaderName)) {
+        return new DelegateLastClassLoader(dexPath, librarySearchPath, parent, arrayOfSharedLibraries);
+    }
+    throw new AssertionError("Invalid classLoaderName: " + classloaderName);
+}

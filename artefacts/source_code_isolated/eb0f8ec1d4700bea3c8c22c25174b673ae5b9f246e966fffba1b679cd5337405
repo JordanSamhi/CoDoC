@@ -1,0 +1,22 @@
+public NetworkStats groupedByIface(){
+    final NetworkStats stats = new NetworkStats(elapsedRealtime, 10);
+    final Entry entry = new Entry();
+    entry.uid = UID_ALL;
+    entry.set = SET_ALL;
+    entry.tag = TAG_NONE;
+    entry.metered = METERED_ALL;
+    entry.roaming = ROAMING_ALL;
+    entry.defaultNetwork = DEFAULT_NETWORK_ALL;
+    entry.operations = 0L;
+    for (int i = 0; i < size; i++) {
+        if (tag[i] != TAG_NONE)
+            continue;
+        entry.iface = iface[i];
+        entry.rxBytes = rxBytes[i];
+        entry.rxPackets = rxPackets[i];
+        entry.txBytes = txBytes[i];
+        entry.txPackets = txPackets[i];
+        stats.combineValues(entry);
+    }
+    return stats;
+}

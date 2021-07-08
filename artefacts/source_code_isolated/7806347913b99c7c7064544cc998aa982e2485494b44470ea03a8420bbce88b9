@@ -1,0 +1,13 @@
+public void copyFrom(Table copyFrom, int valueCount){
+    mTable = null;
+    mSize = 0;
+    final int N = copyFrom.getKeyCount();
+    for (int i = 0; i < N; i++) {
+        final int theirKey = copyFrom.getKeyAt(i);
+        final long[] theirLongs = copyFrom.mParent.mLongs.get(getArrayFromKey(theirKey));
+        final byte id = SparseMappingTable.getIdFromKey(theirKey);
+        final int myKey = this.getOrAddKey((byte) id, valueCount);
+        final long[] myLongs = mParent.mLongs.get(getArrayFromKey(myKey));
+        System.arraycopy(theirLongs, getIndexFromKey(theirKey), myLongs, getIndexFromKey(myKey), valueCount);
+    }
+}

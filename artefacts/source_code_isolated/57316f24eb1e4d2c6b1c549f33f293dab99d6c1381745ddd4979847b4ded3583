@@ -1,0 +1,15 @@
+public BluetoothAvrcpPlayerSettings getPlayerSettings(BluetoothDevice device){
+    if (DBG)
+        Log.d(TAG, "getPlayerSettings");
+    BluetoothAvrcpPlayerSettings settings = null;
+    final IBluetoothAvrcpController service = getService();
+    if (service != null && isEnabled()) {
+        try {
+            settings = service.getPlayerSettings(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error talking to BT service in getMetadata() " + e);
+            return null;
+        }
+    }
+    return settings;
+}

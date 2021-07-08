@@ -1,0 +1,15 @@
+
+     * Attempt to parse the incoming SMS as a visual voicemail SMS. If the parsing succeeded, A
+     * {@link VoicemailContract#ACTION_VOICEMAIL_SMS_RECEIVED} intent will be sent to telephony
+     * service, and the SMS will be dropped.
+     *
+     * <p>The accepted format for a visual voicemail SMS is a generalization of the OMTP format:
+     *
+     * <p>[clientPrefix]:[prefix]:([key]=[value];)*
+     *
+     * Additionally, if the SMS does not match the format, but matches the regex specified by the
+     * carrier in {@link com.android.internal.R.array#config_vvmSmsFilterRegexes}, the SMS will
+     * still be dropped and a {@link VoicemailContract#ACTION_VOICEMAIL_SMS_RECEIVED} will be sent.
+     *
+     * @return true if the SMS has been parsed to be a visual voicemail SMS and should be dropped
+     

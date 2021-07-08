@@ -1,0 +1,28 @@
+public int getTextWidths(CharSequence text, int start, int end, float[] widths){
+    if (text == null) {
+        throw new IllegalArgumentException("text cannot be null");
+    }
+    if ((start | end | (end - start) | (text.length() - end)) < 0) {
+        throw new IndexOutOfBoundsException();
+    }
+    if (end - start > widths.length) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    if (text.length() == 0 || start == end) {
+        return 0;
+    }
+    if (text instanceof String) {
+        return getTextWidths((String) text, start, end, widths);
+    }
+    if (text instanceof SpannedString || text instanceof SpannableString) {
+        return getTextWidths(text.toString(), start, end, widths);
+    }
+    if (text instanceof GraphicsOperations) {
+        return ((GraphicsOperations) text).getTextWidths(start, end, widths, this);
+    }
+    char[] buf = TemporaryBuffer.obtain(end - start);
+    TextUtils.getChars(text, start, end, buf, 0);
+    int result = getTextWidths(buf, 0, end - start, widths);
+    TemporaryBuffer.recycle(buf);
+    return result;
+}

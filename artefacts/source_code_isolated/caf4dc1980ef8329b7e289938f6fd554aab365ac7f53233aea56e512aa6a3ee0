@@ -1,0 +1,12 @@
+public boolean reassociate(String packageName){
+    if (enforceChangePermission(packageName) != MODE_ALLOWED) {
+        return false;
+    }
+    if (!isTargetSdkLessThanQOrPrivileged(packageName, Binder.getCallingPid(), Binder.getCallingUid())) {
+        mLog.info("reassociate not allowed for uid=%").c(Binder.getCallingUid()).flush();
+        return false;
+    }
+    mLog.info("reassociate uid=%").c(Binder.getCallingUid()).flush();
+    mClientModeImpl.reassociateCommand();
+    return true;
+}

@@ -1,0 +1,11 @@
+public int getGlobalPrivateDnsMode(@NonNull ComponentName admin){
+    throwIfParentInstance("setGlobalPrivateDns");
+    if (mService == null) {
+        return PRIVATE_DNS_MODE_UNKNOWN;
+    }
+    try {
+        return mService.getGlobalPrivateDnsMode(admin);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,12 @@
+public static PendingIntent getActivity(Context context, int requestCode, @NonNull Intent intent, @Flags int flags, @Nullable Bundle options){
+    String packageName = context.getPackageName();
+    String resolvedType = intent != null ? intent.resolveTypeIfNeeded(context.getContentResolver()) : null;
+    try {
+        intent.migrateExtraStreamToClipData(context);
+        intent.prepareToLeaveProcess(context);
+        IIntentSender target = ActivityManager.getService().getIntentSenderWithFeature(ActivityManager.INTENT_SENDER_ACTIVITY, packageName, context.getAttributionTag(), null, null, requestCode, new Intent[] { intent }, resolvedType != null ? new String[] { resolvedType } : null, flags, options, context.getUserId());
+        return target != null ? new PendingIntent(target) : null;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

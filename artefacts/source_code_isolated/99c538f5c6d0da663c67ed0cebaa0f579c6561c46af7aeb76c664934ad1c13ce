@@ -1,0 +1,12 @@
+public void tetherInterface(String iface){
+    try {
+        mNetdService.tetherInterfaceAdd(iface);
+    } catch (RemoteException | ServiceSpecificException e) {
+        throw new IllegalStateException(e);
+    }
+    List<RouteInfo> routes = new ArrayList<>();
+    LinkAddress dest = getInterfaceConfig(iface).getLinkAddress();
+    RouteInfo route = new RouteInfo(new IpPrefix(dest.getAddress(), dest.getPrefixLength()), null, null, RouteInfo.RTN_UNICAST);
+    routes.add(route);
+    addInterfaceToLocalNetwork(iface, routes);
+}

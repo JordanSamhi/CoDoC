@@ -1,0 +1,17 @@
+public void releaseHardware(int deviceId, ITvInputHardware hardware, int callingUid, int resolvedUserId){
+    synchronized (mLock) {
+        Connection connection = mConnections.get(deviceId);
+        if (connection == null) {
+            Slog.e(TAG, "Invalid deviceId : " + deviceId);
+            return;
+        }
+        if (connection.getHardwareLocked() != hardware || checkUidChangedLocked(connection, callingUid, resolvedUserId)) {
+            return;
+        }
+        ITvInputHardwareCallback callback = connection.getCallbackLocked();
+        if (callback != null) {
+            callback.asBinder().unlinkToDeath(connection, 0);
+        }
+        connection.resetLocked(null, null, null, null, null, null);
+    }
+}

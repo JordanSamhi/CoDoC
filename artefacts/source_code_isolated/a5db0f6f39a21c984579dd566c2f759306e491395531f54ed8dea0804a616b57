@@ -1,0 +1,11 @@
+public List<ScanResult> getMatchingScanResults(@NonNull PasspointConfiguration passpointConfiguration, @NonNull List<ScanResult> scanResults){
+    PasspointProvider provider = mObjectFactory.makePasspointProvider(passpointConfiguration, null, mWifiCarrierInfoManager, 0, 0, null, false);
+    List<ScanResult> filteredScanResults = new ArrayList<>();
+    for (ScanResult scanResult : scanResults) {
+        PasspointMatch matchInfo = provider.match(getANQPElements(scanResult), InformationElementUtil.getRoamingConsortiumIE(scanResult.informationElements));
+        if (matchInfo == PasspointMatch.HomeProvider || matchInfo == PasspointMatch.RoamingProvider) {
+            filteredScanResults.add(scanResult);
+        }
+    }
+    return filteredScanResults;
+}

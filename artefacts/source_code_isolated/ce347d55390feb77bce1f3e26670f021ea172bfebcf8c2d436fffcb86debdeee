@@ -1,0 +1,63 @@
+public Signature[] readAppManifestAndReturnSignatures(FileMetadata info) throws IOException{
+    if (info.size > 64 * 1024) {
+        throw new IOException("Restore manifest too big; corrupt? size=" + info.size);
+    }
+    byte[] buffer = new byte[(int) info.size];
+    if (MORE_DEBUG) {
+        Slog.i(TAG, "   readAppManifestAndReturnSignatures() looking for " + info.size + " bytes");
+    }
+    if (readExactly(mInputStream, buffer, 0, (int) info.size) == info.size) {
+        mBytesReadListener.onBytesRead(info.size);
+    } else {
+        throw new IOException("Unexpected EOF in manifest");
+    }
+    String[] str = new String[1];
+    int offset = 0;
+    try {
+        offset = extractLine(buffer, offset, str);
+        int version = Integer.parseInt(str[0]);
+        if (version == BACKUP_MANIFEST_VERSION) {
+            offset = extractLine(buffer, offset, str);
+            String manifestPackage = str[0];
+            if (manifestPackage.equals(info.packageName)) {
+                offset = extractLine(buffer, offset, str);
+                info.version = Integer.parseInt(str[0]);
+                offset = extractLine(buffer, offset, str);
+                Integer.parseInt(str[0]);
+                offset = extractLine(buffer, offset, str);
+                info.installerPackageName = (str[0].length() > 0) ? str[0] : null;
+                offset = extractLine(buffer, offset, str);
+                info.hasApk = str[0].equals("1");
+                offset = extractLine(buffer, offset, str);
+                int numSigs = Integer.parseInt(str[0]);
+                if (numSigs > 0) {
+                    Signature[] sigs = new Signature[numSigs];
+                    for (int i = 0; i < numSigs; i++) {
+                        offset = extractLine(buffer, offset, str);
+                        sigs[i] = new Signature(str[0]);
+                    }
+                    return sigs;
+                } else {
+                    Slog.i(TAG, "Missing signature on backed-up package " + info.packageName);
+                    mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_MISSING_SIGNATURE, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName));
+                }
+            } else {
+                Slog.i(TAG, "Expected package " + info.packageName + " but restore manifest claims " + manifestPackage);
+                Bundle monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName);
+                monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(monitoringExtras, EXTRA_LOG_MANIFEST_PACKAGE_NAME, manifestPackage);
+                mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, LOG_EVENT_ID_EXPECTED_DIFFERENT_PACKAGE, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, monitoringExtras);
+            }
+        } else {
+            Slog.i(TAG, "Unknown restore manifest version " + version + " for package " + info.packageName);
+            Bundle monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName);
+            monitoringExtras = BackupManagerMonitorUtils.putMonitoringExtra(monitoringExtras, EXTRA_LOG_EVENT_PACKAGE_VERSION, version);
+            mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, BackupManagerMonitor.LOG_EVENT_ID_UNKNOWN_VERSION, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, monitoringExtras);
+        }
+    } catch (NumberFormatException e) {
+        Slog.w(TAG, "Corrupt restore manifest for package " + info.packageName);
+        mMonitor = BackupManagerMonitorUtils.monitorEvent(mMonitor, BackupManagerMonitor.LOG_EVENT_ID_CORRUPT_MANIFEST, null, LOG_EVENT_CATEGORY_BACKUP_MANAGER_POLICY, BackupManagerMonitorUtils.putMonitoringExtra(null, EXTRA_LOG_EVENT_PACKAGE_NAME, info.packageName));
+    } catch (IllegalArgumentException e) {
+        Slog.w(TAG, e.getMessage());
+    }
+    return null;
+}

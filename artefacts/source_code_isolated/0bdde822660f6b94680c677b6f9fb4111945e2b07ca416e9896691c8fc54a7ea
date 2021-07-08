@@ -1,0 +1,11 @@
+public void testRequestBackup_withPermission_propagatesForNonCallingUser(){
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    registerUser(backupManagerService, mUserTwoId, mUserTwoService);
+    String[] packages = { TEST_PACKAGE };
+    IBackupObserver observer = mock(IBackupObserver.class);
+    IBackupManagerMonitor monitor = mock(IBackupManagerMonitor.class);
+    setCallerAndGrantInteractUserPermission(mUserOneId, true);
+    backupManagerService.requestBackup(mUserTwoId, packages, observer, monitor, 0);
+    verify(mUserTwoService).requestBackup(packages, observer, monitor, 0);
+}

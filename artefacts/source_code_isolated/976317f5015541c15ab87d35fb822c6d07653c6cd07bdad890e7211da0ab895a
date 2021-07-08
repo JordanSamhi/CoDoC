@@ -1,0 +1,18 @@
+public void logLinkProbeSuccess(long timeSinceLastTxSuccessMs, int rssi, int linkSpeed, int elapsedTimeMs){
+    synchronized (mLock) {
+        mProbeStatusSinceLastUpdate = android.net.wifi.WifiUsabilityStatsEntry.PROBE_STATUS_SUCCESS;
+        mProbeElapsedTimeSinceLastUpdateMs = elapsedTimeMs;
+        mLinkProbeSuccessSecondsSinceLastTxSuccessHistogram.increment((int) (timeSinceLastTxSuccessMs / 1000));
+        mLinkProbeSuccessRssiCounts.increment(rssi);
+        mLinkProbeSuccessLinkSpeedCounts.increment(linkSpeed);
+        mLinkProbeSuccessElapsedTimeMsHistogram.increment(elapsedTimeMs);
+        if (mLinkProbeStaEventCount < MAX_LINK_PROBE_STA_EVENTS) {
+            StaEvent event = new StaEvent();
+            event.type = StaEvent.TYPE_LINK_PROBE;
+            event.linkProbeWasSuccess = true;
+            event.linkProbeSuccessElapsedTimeMs = elapsedTimeMs;
+            addStaEvent(event);
+        }
+        mLinkProbeStaEventCount++;
+    }
+}

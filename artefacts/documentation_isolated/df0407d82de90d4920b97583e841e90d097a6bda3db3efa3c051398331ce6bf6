@@ -1,0 +1,19 @@
+
+     * Parse configuration from an APK.
+     *
+     * @param config Config string as read from the APK metadata.
+     * @param allowedKeys Set of allowed keys in the config. Any key/value mapping for a key not in
+     *                    this set will result in an {@link InvalidConfigException} being thrown.
+     * @param keyValueMappers Mappings for values per key. The keys in the top level map should be
+     *                        a subset of {@code allowedKeys}. The keys in the inner map indicate
+     *                        the set of allowed values for that keys value. This map will be
+     *                        applied to the value in the configuration. This is intended to allow
+     *                        enum-like values to be encoded as strings in the configuration, and
+     *                        mapped back to integers when the configuration is parsed.
+     *
+     *                        <p>Any config key with a value that does not appear in the
+     *                        corresponding map will result in an {@link InvalidConfigException}
+     *                        being thrown.
+     * @return Parsed configuration.
+     * @throws InvalidConfigException If there's a problem parsing the config.
+     

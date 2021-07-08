@@ -1,0 +1,12 @@
+public boolean requestQuota(){
+    long currentPeriod = getCurrentPeriod();
+    if (mLastPeriod < currentPeriod) {
+        mLastPeriod = currentPeriod;
+        mConsumedQuota = 0;
+    }
+    if (mConsumedQuota < mQuota) {
+        mConsumedQuota++;
+        return true;
+    }
+    return false;
+}

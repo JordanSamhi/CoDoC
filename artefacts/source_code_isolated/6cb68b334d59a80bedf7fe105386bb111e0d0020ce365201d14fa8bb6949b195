@@ -1,0 +1,12 @@
+public void destroy(){
+    mHandler.removeMessages(RANKER_SERVICE_RESULT);
+    mHandler.removeMessages(RANKER_RESULT_TIMEOUT);
+    if (mConnection != null) {
+        mContext.unbindService(mConnection);
+        mConnection.destroy();
+    }
+    afterCompute();
+    if (DEBUG) {
+        Log.d(TAG, "Unbinded Resolver Ranker.");
+    }
+}

@@ -1,0 +1,23 @@
+public WifiP2pConfig build(){
+    if (TextUtils.isEmpty(mNetworkName)) {
+        throw new IllegalStateException("network name must be non-empty.");
+    }
+    if (TextUtils.isEmpty(mPassphrase)) {
+        throw new IllegalStateException("passphrase must be non-empty.");
+    }
+    if (mGroupOperatingFrequency > 0 && mGroupOperatingBand > 0) {
+        throw new IllegalStateException("Preferred frequency and band are mutually exclusive.");
+    }
+    WifiP2pConfig config = new WifiP2pConfig();
+    config.deviceAddress = mDeviceAddress.toString();
+    config.networkName = mNetworkName;
+    config.passphrase = mPassphrase;
+    config.groupOwnerBand = GROUP_OWNER_BAND_AUTO;
+    if (mGroupOperatingFrequency > 0) {
+        config.groupOwnerBand = mGroupOperatingFrequency;
+    } else if (mGroupOperatingBand > 0) {
+        config.groupOwnerBand = mGroupOperatingBand;
+    }
+    config.netId = mNetId;
+    return config;
+}

@@ -1,0 +1,14 @@
+public void unregisterImsRegistrationCallback(@NonNull RegistrationManager.RegistrationCallback c){
+    if (c == null) {
+        throw new IllegalArgumentException("Must include a non-null RegistrationCallback.");
+    }
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new RuntimeException("Could not find Telephony Service.");
+    }
+    try {
+        iTelephony.unregisterImsRegistrationCallback(mSubId, c.getBinder());
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,16 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    pw.print("selected: ");
+    pw.println(mSelectedBubble != null ? mSelectedBubble.getKey() : "null");
+    pw.print("expanded: ");
+    pw.println(mExpanded);
+    pw.print("count:    ");
+    pw.println(mBubbles.size());
+    for (Bubble bubble : mBubbles) {
+        bubble.dump(fd, pw, args);
+    }
+    pw.print("summaryKeys: ");
+    pw.println(mSuppressedGroupKeys.size());
+    for (String key : mSuppressedGroupKeys.keySet()) {
+        pw.println("   suppressing: " + key);
+    }
+}

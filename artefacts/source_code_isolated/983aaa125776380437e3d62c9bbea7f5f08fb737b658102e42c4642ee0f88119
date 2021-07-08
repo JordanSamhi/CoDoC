@@ -1,0 +1,30 @@
+public static Options parseOptions(String spec, Options options) throws IllegalArgumentException{
+    for (String param : spec.split(" +")) {
+        if (param.length() == 0)
+            continue;
+        if (param.startsWith("backoff=")) {
+            String[] pieces = param.substring(8).split("\\+");
+            if (pieces.length > 3) {
+                throw new IllegalArgumentException("bad value for backoff: [" + spec + "]");
+            }
+            if (pieces.length > 0 && pieces[0].length() > 0) {
+                options.backoffFixedMillis = parseSeconds(pieces[0]);
+            }
+            if (pieces.length > 1 && pieces[1].length() > 0) {
+                options.backoffIncrementalMillis = parseSeconds(pieces[1]);
+            }
+            if (pieces.length > 2 && pieces[2].length() > 0) {
+                options.backoffExponentialMillis = (int) parseSeconds(pieces[2]);
+            }
+        } else if (param.startsWith("max=")) {
+            options.maxMoratoriumMillis = parseSeconds(param.substring(4));
+        } else if (param.startsWith("min=")) {
+            options.minTriggerMillis = parseSeconds(param.substring(4));
+        } else if (param.startsWith("period=")) {
+            options.periodicIntervalMillis = parseSeconds(param.substring(7));
+        } else {
+            options.periodicIntervalMillis = parseSeconds(param);
+        }
+    }
+    return options;
+}

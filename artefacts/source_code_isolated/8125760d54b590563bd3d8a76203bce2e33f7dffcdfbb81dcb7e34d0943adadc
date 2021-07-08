@@ -1,0 +1,7 @@
+public void testListAllTransports_onRegisteredUser_callsMethodForUser() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserOneId, false);
+    backupManagerService.listAllTransports(mUserOneId);
+    verify(mUserOneService).listAllTransports();
+}

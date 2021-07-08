@@ -1,0 +1,23 @@
+public void noteBoot(){
+    synchronized (mLock) {
+        if (mBootThreshold.incrementAndTest()) {
+            mBootThreshold.reset();
+            PackageHealthObserver currentObserverToNotify = null;
+            int currentObserverImpact = Integer.MAX_VALUE;
+            for (int i = 0; i < mAllObservers.size(); i++) {
+                final ObserverInternal observer = mAllObservers.valueAt(i);
+                PackageHealthObserver registeredObserver = observer.registeredObserver;
+                if (registeredObserver != null) {
+                    int impact = registeredObserver.onBootLoop();
+                    if (impact != PackageHealthObserverImpact.USER_IMPACT_NONE && impact < currentObserverImpact) {
+                        currentObserverToNotify = registeredObserver;
+                        currentObserverImpact = impact;
+                    }
+                }
+            }
+            if (currentObserverToNotify != null) {
+                currentObserverToNotify.executeBootLoopMitigation();
+            }
+        }
+    }
+}

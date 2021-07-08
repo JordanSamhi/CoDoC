@@ -1,0 +1,9 @@
+public static ParseTypeImpl forParsingWithoutPlatformCompat(){
+    return new ParseTypeImpl((changeId, packageName, targetSdkVersion) -> {
+        int gateSdkVersion = DeferredError.getTargetSdkForChange(changeId);
+        if (gateSdkVersion == -1) {
+            return false;
+        }
+        return targetSdkVersion > gateSdkVersion;
+    });
+}

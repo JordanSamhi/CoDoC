@@ -1,0 +1,13 @@
+public boolean waitUntilGone(long timeout){
+    Tracer.trace(timeout);
+    long startMills = SystemClock.uptimeMillis();
+    long currentMills = 0;
+    while (currentMills <= timeout) {
+        if (findAccessibilityNodeInfo(0) == null)
+            return true;
+        currentMills = SystemClock.uptimeMillis() - startMills;
+        if (timeout > 0)
+            SystemClock.sleep(WAIT_FOR_SELECTOR_POLL);
+    }
+    return false;
+}

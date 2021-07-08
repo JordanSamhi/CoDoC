@@ -1,0 +1,6 @@
+public static SensorAdditionalInfo createLocalGeomagneticField(float strength, float declination, float inclination){
+    if (strength < 10 || strength > 100 || declination < 0 || declination > Math.PI || inclination < -Math.PI / 2 || inclination > Math.PI / 2) {
+        throw new IllegalArgumentException("Geomagnetic field info out of range");
+    }
+    return new SensorAdditionalInfo(null, TYPE_LOCAL_GEOMAGNETIC_FIELD, 0, null, new float[] { strength, declination, inclination });
+}

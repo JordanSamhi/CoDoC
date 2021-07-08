@@ -1,0 +1,12 @@
+public int getPlayState(){
+    synchronized (mPlayStateLock) {
+        switch(mPlayState) {
+            case PLAYSTATE_STOPPING:
+                return PLAYSTATE_PLAYING;
+            case PLAYSTATE_PAUSED_STOPPING:
+                return PLAYSTATE_PAUSED;
+            default:
+                return mPlayState;
+        }
+    }
+}

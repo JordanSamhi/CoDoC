@@ -1,0 +1,11 @@
+public int tune(@NonNull FrontendSettings settings){
+    Log.d(TAG, "Tune to " + settings.getFrequency());
+    mFrontendType = settings.getType();
+    if (checkResource(TunerResourceManager.TUNER_RESOURCE_TYPE_FRONTEND)) {
+        mFrontendInfo = null;
+        Log.d(TAG, "Write Stats Log for tuning.");
+        FrameworkStatsLog.write(FrameworkStatsLog.TV_TUNER_STATE_CHANGED, mUserId, FrameworkStatsLog.TV_TUNER_STATE_CHANGED__STATE__TUNING);
+        return nativeTune(settings.getType(), settings);
+    }
+    return RESULT_UNAVAILABLE;
+}

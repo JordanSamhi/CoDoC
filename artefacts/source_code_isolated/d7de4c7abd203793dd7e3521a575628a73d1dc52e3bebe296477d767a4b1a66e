@@ -1,0 +1,12 @@
+public static boolean isNonDefaultBlockEncrypted(){
+    if (!isBlockEncrypted()) {
+        return false;
+    }
+    try {
+        IStorageManager storageManager = IStorageManager.Stub.asInterface(ServiceManager.getService("mount"));
+        return storageManager.getPasswordType() != CRYPT_TYPE_DEFAULT;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error getting encryption type");
+        return false;
+    }
+}

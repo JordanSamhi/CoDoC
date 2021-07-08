@@ -1,0 +1,12 @@
+public synchronized void stop(){
+    if (mLocationListeners != null) {
+        for (LocationListener listener : mLocationListeners) {
+            unregisterListener(listener);
+        }
+        mLocationListeners = null;
+    }
+    if (mTimer != null) {
+        mTimer.cancel();
+        mTimer = null;
+    }
+}

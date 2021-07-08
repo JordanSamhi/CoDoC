@@ -1,0 +1,12 @@
+public void setRetransmitEndpoint(InetSocketAddress endpoint) throws IllegalStateException, IllegalArgumentException{
+    String addrString = null;
+    int port = 0;
+    if (null != endpoint) {
+        addrString = endpoint.getAddress().getHostAddress();
+        port = endpoint.getPort();
+    }
+    int ret = native_setRetransmitEndpoint(addrString, port);
+    if (ret != 0) {
+        throw new IllegalArgumentException("Illegal re-transmit endpoint; native ret " + ret);
+    }
+}

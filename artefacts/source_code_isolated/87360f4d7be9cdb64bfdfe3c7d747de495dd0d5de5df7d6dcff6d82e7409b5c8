@@ -1,0 +1,16 @@
+public synchronized TextSize getTextSize(){
+    TextSize closestSize = null;
+    int smallestDelta = Integer.MAX_VALUE;
+    int textSize = getTextZoom();
+    for (TextSize size : TextSize.values()) {
+        int delta = Math.abs(textSize - size.value);
+        if (delta == 0) {
+            return size;
+        }
+        if (delta < smallestDelta) {
+            smallestDelta = delta;
+            closestSize = size;
+        }
+    }
+    return closestSize != null ? closestSize : TextSize.NORMAL;
+}

@@ -1,0 +1,13 @@
+public NetworkAgentInfo getBestNetwork(@NonNull final NetworkRequest request, @NonNull final Collection<NetworkAgentInfo> nais){
+    NetworkAgentInfo bestNetwork = null;
+    int bestScore = Integer.MIN_VALUE;
+    for (final NetworkAgentInfo nai : nais) {
+        if (!nai.satisfies(request))
+            continue;
+        if (nai.getCurrentScore() > bestScore) {
+            bestNetwork = nai;
+            bestScore = nai.getCurrentScore();
+        }
+    }
+    return bestNetwork;
+}

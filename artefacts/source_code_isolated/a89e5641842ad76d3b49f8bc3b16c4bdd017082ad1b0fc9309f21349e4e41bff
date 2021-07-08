@@ -1,0 +1,48 @@
+public boolean subscribe(short transactionId, byte subscribeId, SubscribeConfig subscribeConfig){
+    if (mDbg) {
+        Log.d(TAG, "subscribe: transactionId=" + transactionId + ", subscribeId=" + subscribeId + ", config=" + subscribeConfig);
+    }
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "subscribe: null interface");
+        return false;
+    }
+    NanSubscribeRequest req = new NanSubscribeRequest();
+    req.baseConfigs.sessionId = subscribeId;
+    req.baseConfigs.ttlSec = (short) subscribeConfig.mTtlSec;
+    req.baseConfigs.discoveryWindowPeriod = 1;
+    req.baseConfigs.discoveryCount = 0;
+    convertNativeByteArrayToArrayList(subscribeConfig.mServiceName, req.baseConfigs.serviceName);
+    req.baseConfigs.discoveryMatchIndicator = NanMatchAlg.MATCH_ONCE;
+    convertNativeByteArrayToArrayList(subscribeConfig.mServiceSpecificInfo, req.baseConfigs.serviceSpecificInfo);
+    convertNativeByteArrayToArrayList(subscribeConfig.mMatchFilter, subscribeConfig.mSubscribeType == SubscribeConfig.SUBSCRIBE_TYPE_ACTIVE ? req.baseConfigs.txMatchFilter : req.baseConfigs.rxMatchFilter);
+    req.baseConfigs.useRssiThreshold = false;
+    req.baseConfigs.disableDiscoveryTerminationIndication = !subscribeConfig.mEnableTerminateNotification;
+    req.baseConfigs.disableMatchExpirationIndication = true;
+    req.baseConfigs.disableFollowupReceivedIndication = false;
+    req.baseConfigs.rangingRequired = subscribeConfig.mMinDistanceMmSet || subscribeConfig.mMaxDistanceMmSet;
+    req.baseConfigs.configRangingIndications = 0;
+    if (subscribeConfig.mMinDistanceMmSet) {
+        req.baseConfigs.distanceEgressCm = (short) Math.min(subscribeConfig.mMinDistanceMm / 10, Short.MAX_VALUE);
+        req.baseConfigs.configRangingIndications |= NanRangingIndication.EGRESS_MET_MASK;
+    }
+    if (subscribeConfig.mMaxDistanceMmSet) {
+        req.baseConfigs.distanceIngressCm = (short) Math.min(subscribeConfig.mMaxDistanceMm / 10, Short.MAX_VALUE);
+        req.baseConfigs.configRangingIndications |= NanRangingIndication.INGRESS_MET_MASK;
+    }
+    req.baseConfigs.securityConfig.securityType = NanDataPathSecurityType.OPEN;
+    req.subscribeType = subscribeConfig.mSubscribeType;
+    try {
+        WifiStatus status = iface.startSubscribeRequest(transactionId, req);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "subscribe: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "subscribe: exception: " + e);
+        return false;
+    }
+}

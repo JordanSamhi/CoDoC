@@ -1,0 +1,14 @@
+public void getModemsConfigResponse(RadioResponseInfo responseInfo, ModemsConfig modemsConfig){
+    RILRequest rr = mRadioConfig.processResponse(responseInfo);
+    if (rr != null) {
+        if (responseInfo.error == RadioError.NONE) {
+            RadioResponse.sendMessageResponse(rr.mResult, modemsConfig);
+            Rlog.d(TAG, rr.serialString() + "< " + mRadioConfig.requestToString(rr.mRequest));
+        } else {
+            rr.onError(responseInfo.error, modemsConfig);
+            Rlog.e(TAG, rr.serialString() + "< " + mRadioConfig.requestToString(rr.mRequest) + " error " + responseInfo.error);
+        }
+    } else {
+        Rlog.e(TAG, "getModemsConfigResponse: Error " + responseInfo.toString());
+    }
+}

@@ -1,0 +1,15 @@
+public boolean canResolveTextDirection(){
+    switch(getRawTextDirection()) {
+        case TEXT_DIRECTION_INHERIT:
+            if (mParent != null) {
+                try {
+                    return mParent.canResolveTextDirection();
+                } catch (AbstractMethodError e) {
+                    Log.e(VIEW_LOG_TAG, mParent.getClass().getSimpleName() + " does not fully implement ViewParent", e);
+                }
+            }
+            return false;
+        default:
+            return true;
+    }
+}

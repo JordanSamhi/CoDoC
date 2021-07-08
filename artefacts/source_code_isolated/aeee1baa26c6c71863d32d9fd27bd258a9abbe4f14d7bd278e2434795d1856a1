@@ -1,0 +1,34 @@
+public final void dumpProto(FileDescriptor fd){
+    final long now = SystemClock.uptimeMillis();
+    final ProtoOutputStream proto = new ProtoOutputStream(fd);
+    final long currentLoadToken = proto.start(CpuUsageProto.CURRENT_LOAD);
+    proto.write(CpuUsageProto.Load.LOAD1, mLoad1);
+    proto.write(CpuUsageProto.Load.LOAD5, mLoad5);
+    proto.write(CpuUsageProto.Load.LOAD15, mLoad15);
+    proto.end(currentLoadToken);
+    buildWorkingProcs();
+    proto.write(CpuUsageProto.NOW, now);
+    proto.write(CpuUsageProto.LAST_SAMPLE_TIME, mLastSampleTime);
+    proto.write(CpuUsageProto.CURRENT_SAMPLE_TIME, mCurrentSampleTime);
+    proto.write(CpuUsageProto.LAST_SAMPLE_REAL_TIME, mLastSampleRealTime);
+    proto.write(CpuUsageProto.CURRENT_SAMPLE_REAL_TIME, mCurrentSampleRealTime);
+    proto.write(CpuUsageProto.LAST_SAMPLE_WALL_TIME, mLastSampleWallTime);
+    proto.write(CpuUsageProto.CURRENT_SAMPLE_WALL_TIME, mCurrentSampleWallTime);
+    proto.write(CpuUsageProto.TOTAL_USER_TIME, mRelUserTime);
+    proto.write(CpuUsageProto.TOTAL_SYSTEM_TIME, mRelSystemTime);
+    proto.write(CpuUsageProto.TOTAL_IOWAIT_TIME, mRelIoWaitTime);
+    proto.write(CpuUsageProto.TOTAL_IRQ_TIME, mRelIrqTime);
+    proto.write(CpuUsageProto.TOTAL_SOFT_IRQ_TIME, mRelSoftIrqTime);
+    proto.write(CpuUsageProto.TOTAL_IDLE_TIME, mRelIdleTime);
+    final int totalTime = mRelUserTime + mRelSystemTime + mRelIoWaitTime + mRelIrqTime + mRelSoftIrqTime + mRelIdleTime;
+    proto.write(CpuUsageProto.TOTAL_TIME, totalTime);
+    for (Stats st : mWorkingProcs) {
+        dumpProcessCpuProto(proto, st, null);
+        if (!st.removed && st.workingThreads != null) {
+            for (Stats tst : st.workingThreads) {
+                dumpProcessCpuProto(proto, tst, st);
+            }
+        }
+    }
+    proto.flush();
+}

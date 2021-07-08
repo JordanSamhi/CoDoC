@@ -1,0 +1,21 @@
+public int compareTo(TimeZoneInfo other){
+    if (this.getNowOffsetMillis() != other.getNowOffsetMillis()) {
+        return (other.getNowOffsetMillis() < this.getNowOffsetMillis()) ? -1 : 1;
+    }
+    if (this.mCountry == null) {
+        if (other.mCountry != null) {
+            return 1;
+        }
+    }
+    if (other.mCountry == null) {
+        return -1;
+    } else {
+        int diff = this.mCountry.compareTo(other.mCountry);
+        if (diff != 0) {
+            return diff;
+        }
+    }
+    if (mDisplayName != null && other.mDisplayName != null)
+        return this.mDisplayName.compareTo(other.mDisplayName);
+    return this.mTz.getDisplayName(Locale.getDefault()).compareTo(other.mTz.getDisplayName(Locale.getDefault()));
+}

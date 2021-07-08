@@ -1,0 +1,65 @@
+public void doCompute(List<ResolvedComponentInfo> targets){
+    final long recentSinceTime = mCurrentTime - RECENCY_TIME_PERIOD;
+    float mostRecencyScore = 1.0f;
+    float mostTimeSpentScore = 1.0f;
+    float mostLaunchScore = 1.0f;
+    float mostChooserScore = 1.0f;
+    for (ResolvedComponentInfo target : targets) {
+        final ResolverTarget resolverTarget = new ResolverTarget();
+        mTargetsDict.put(target.name, resolverTarget);
+        final UsageStats pkStats = mStats.get(target.name.getPackageName());
+        if (pkStats != null) {
+            if (!target.name.getPackageName().equals(mReferrerPackage) && !isPersistentProcess(target)) {
+                final float recencyScore = (float) Math.max(pkStats.getLastTimeUsed() - recentSinceTime, 0);
+                resolverTarget.setRecencyScore(recencyScore);
+                if (recencyScore > mostRecencyScore) {
+                    mostRecencyScore = recencyScore;
+                }
+            }
+            final float timeSpentScore = (float) pkStats.getTotalTimeInForeground();
+            resolverTarget.setTimeSpentScore(timeSpentScore);
+            if (timeSpentScore > mostTimeSpentScore) {
+                mostTimeSpentScore = timeSpentScore;
+            }
+            final float launchScore = (float) pkStats.mLaunchCount;
+            resolverTarget.setLaunchScore(launchScore);
+            if (launchScore > mostLaunchScore) {
+                mostLaunchScore = launchScore;
+            }
+            float chooserScore = 0.0f;
+            if (pkStats.mChooserCounts != null && mAction != null && pkStats.mChooserCounts.get(mAction) != null) {
+                chooserScore = (float) pkStats.mChooserCounts.get(mAction).getOrDefault(mContentType, 0);
+                if (mAnnotations != null) {
+                    final int size = mAnnotations.length;
+                    for (int i = 0; i < size; i++) {
+                        chooserScore += (float) pkStats.mChooserCounts.get(mAction).getOrDefault(mAnnotations[i], 0);
+                    }
+                }
+            }
+            if (DEBUG) {
+                if (mAction == null) {
+                    Log.d(TAG, "Action type is null");
+                } else {
+                    Log.d(TAG, "Chooser Count of " + mAction + ":" + target.name.getPackageName() + " is " + Float.toString(chooserScore));
+                }
+            }
+            resolverTarget.setChooserScore(chooserScore);
+            if (chooserScore > mostChooserScore) {
+                mostChooserScore = chooserScore;
+            }
+        }
+    }
+    if (DEBUG) {
+        Log.d(TAG, "compute - mostRecencyScore: " + mostRecencyScore + " mostTimeSpentScore: " + mostTimeSpentScore + " mostLaunchScore: " + mostLaunchScore + " mostChooserScore: " + mostChooserScore);
+    }
+    mTargets = new ArrayList<>(mTargetsDict.values());
+    for (ResolverTarget target : mTargets) {
+        final float recency = target.getRecencyScore() / mostRecencyScore;
+        setFeatures(target, recency * recency * RECENCY_MULTIPLIER, target.getLaunchScore() / mostLaunchScore, target.getTimeSpentScore() / mostTimeSpentScore, target.getChooserScore() / mostChooserScore);
+        addDefaultSelectProbability(target);
+        if (DEBUG) {
+            Log.d(TAG, "Scores: " + target);
+        }
+    }
+    predictSelectProbabilities(mTargets);
+}

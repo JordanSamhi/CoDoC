@@ -1,0 +1,27 @@
+
+     * Enable NDEF message push over NFC while this Activity is in the foreground.
+     *
+     * <p>You must explicitly call this method every time the activity is
+     * resumed, and you must call {@link #disableForegroundNdefPush} before
+     * your activity completes {@link Activity#onPause}.
+     *
+     * <p>Strongly recommend to use the new {@link #setNdefPushMessage}
+     * instead: it automatically hooks into your activity life-cycle,
+     * so you do not need to call enable/disable in your onResume/onPause.
+     *
+     * <p>For NDEF push to function properly the other NFC device must
+     * support either NFC Forum's SNEP (Simple Ndef Exchange Protocol), or
+     * Android's "com.android.npp" (Ndef Push Protocol). This was optional
+     * on Gingerbread level Android NFC devices, but SNEP is mandatory on
+     * Ice-Cream-Sandwich and beyond.
+     *
+     * <p>This method must be called from the main thread.
+     *
+     * <p class="note">Requires the {@link android.Manifest.permission#NFC} permission.
+     *
+     * @param activity foreground activity
+     * @param message a NDEF Message to push over NFC
+     * @throws IllegalStateException if the activity is not currently in the foreground
+     * @throws UnsupportedOperationException if FEATURE_NFC is unavailable.
+     * @deprecated use {@link #setNdefPushMessage} instead
+     

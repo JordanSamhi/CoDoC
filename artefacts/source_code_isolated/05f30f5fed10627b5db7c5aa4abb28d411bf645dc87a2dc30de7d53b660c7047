@@ -1,0 +1,39 @@
+public static IpConfiguration parseFromXml(XmlPullParser in, int outerTagDepth) throws XmlPullParserException, IOException{
+    IpConfiguration ipConfiguration = new IpConfiguration();
+    String ipAssignmentString = (String) XmlUtil.readNextValueWithName(in, XML_TAG_IP_ASSIGNMENT);
+    IpAssignment ipAssignment = IpAssignment.valueOf(ipAssignmentString);
+    ipConfiguration.setIpAssignment(ipAssignment);
+    switch(ipAssignment) {
+        case STATIC:
+            ipConfiguration.setStaticIpConfiguration(parseStaticIpConfigurationFromXml(in));
+            break;
+        case DHCP:
+        case UNASSIGNED:
+            break;
+        default:
+            Log.w(TAG, "Ignoring unknown ip assignment type: " + ipAssignment);
+            break;
+    }
+    String proxySettingsString = (String) XmlUtil.readNextValueWithName(in, XML_TAG_PROXY_SETTINGS);
+    ProxySettings proxySettings = ProxySettings.valueOf(proxySettingsString);
+    ipConfiguration.setProxySettings(proxySettings);
+    switch(proxySettings) {
+        case STATIC:
+            String proxyHost = (String) XmlUtil.readNextValueWithName(in, XML_TAG_PROXY_HOST);
+            int proxyPort = (int) XmlUtil.readNextValueWithName(in, XML_TAG_PROXY_PORT);
+            String proxyExclusionList = (String) XmlUtil.readNextValueWithName(in, XML_TAG_PROXY_EXCLUSION_LIST);
+            ipConfiguration.setHttpProxy(ProxyInfo.buildDirectProxy(proxyHost, proxyPort, parseProxyExclusionListString(proxyExclusionList)));
+            break;
+        case PAC:
+            String proxyPacFile = (String) XmlUtil.readNextValueWithName(in, XML_TAG_PROXY_PAC_FILE);
+            ipConfiguration.setHttpProxy(ProxyInfo.buildPacProxy(Uri.parse(proxyPacFile)));
+            break;
+        case NONE:
+        case UNASSIGNED:
+            break;
+        default:
+            Log.w(TAG, "Ignoring unknown proxy settings type: " + proxySettings);
+            break;
+    }
+    return ipConfiguration;
+}

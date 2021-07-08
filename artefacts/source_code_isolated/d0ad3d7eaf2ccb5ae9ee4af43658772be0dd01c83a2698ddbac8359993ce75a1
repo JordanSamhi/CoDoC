@@ -1,0 +1,21 @@
+public static boolean isConnecting(SupplicantState state){
+    switch(state) {
+        case AUTHENTICATING:
+        case ASSOCIATING:
+        case ASSOCIATED:
+        case FOUR_WAY_HANDSHAKE:
+        case GROUP_HANDSHAKE:
+        case COMPLETED:
+            return true;
+        case DISCONNECTED:
+        case INTERFACE_DISABLED:
+        case INACTIVE:
+        case SCANNING:
+        case DORMANT:
+        case UNINITIALIZED:
+        case INVALID:
+            return false;
+        default:
+            throw new IllegalArgumentException("Unknown supplicant state");
+    }
+}

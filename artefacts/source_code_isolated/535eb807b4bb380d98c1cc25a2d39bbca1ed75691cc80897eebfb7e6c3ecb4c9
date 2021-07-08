@@ -1,0 +1,8 @@
+public void processDied(String processName, int pid){
+    if (isInterestingJavaProcess(processName)) {
+        Slog.i(TAG, "Interesting Java process " + processName + " died. Pid " + pid);
+        synchronized (this) {
+            mInterestingJavaPids.remove(Integer.valueOf(pid));
+        }
+    }
+}

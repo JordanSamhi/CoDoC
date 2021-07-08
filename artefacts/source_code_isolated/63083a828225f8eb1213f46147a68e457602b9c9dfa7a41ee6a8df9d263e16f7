@@ -1,0 +1,6 @@
+public static SelectionEvent createSelectionModifiedEvent(int start, int end, @NonNull TextClassification classification){
+    Preconditions.checkArgument(end >= start, "end cannot be less than start");
+    Objects.requireNonNull(classification);
+    final String entityType = classification.getEntityCount() > 0 ? classification.getEntity(0) : TextClassifier.TYPE_UNKNOWN;
+    return new SelectionEvent(start, end, SelectionEvent.EVENT_SELECTION_MODIFIED, entityType, INVOCATION_UNKNOWN, classification.getId());
+}

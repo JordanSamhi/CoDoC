@@ -1,0 +1,16 @@
+public static BitmapRegionDecoder newInstance(String pathName, boolean isShareable) throws IOException{
+    BitmapRegionDecoder decoder = null;
+    InputStream stream = null;
+    try {
+        stream = new FileInputStream(pathName);
+        decoder = newInstance(stream, isShareable);
+    } finally {
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+    return decoder;
+}

@@ -1,0 +1,8 @@
+public synchronized int setParameter(int soundModelHandle, @ModelParams int modelParam, int value){
+    try {
+        mService.setModelParameter(soundModelHandle, ConversionUtil.api2aidlModelParameter(modelParam), value);
+        return SoundTrigger.STATUS_OK;
+    } catch (Exception e) {
+        return SoundTrigger.handleException(e);
+    }
+}

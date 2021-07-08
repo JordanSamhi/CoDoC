@@ -1,0 +1,12 @@
+public int getDualMonoMode(){
+    int[] dualMonoMode = { DUAL_MONO_MODE_OFF };
+    try {
+        final int status = native_get_dual_mono_mode(dualMonoMode);
+        if (status != SUCCESS || !isValidDualMonoMode(dualMonoMode[0])) {
+            return DUAL_MONO_MODE_OFF;
+        }
+    } catch (Exception e) {
+        return DUAL_MONO_MODE_OFF;
+    }
+    return dualMonoMode[0];
+}

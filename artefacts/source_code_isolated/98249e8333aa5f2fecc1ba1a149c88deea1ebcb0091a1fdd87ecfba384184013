@@ -1,0 +1,15 @@
+public static int getCallTypeFromVideoState(int videoState){
+    boolean videoTx = isVideoStateSet(videoState, VideoProfile.STATE_TX_ENABLED);
+    boolean videoRx = isVideoStateSet(videoState, VideoProfile.STATE_RX_ENABLED);
+    boolean isPaused = isVideoStateSet(videoState, VideoProfile.STATE_PAUSED);
+    if (isPaused) {
+        return ImsCallProfile.CALL_TYPE_VT_NODIR;
+    } else if (videoTx && !videoRx) {
+        return ImsCallProfile.CALL_TYPE_VT_TX;
+    } else if (!videoTx && videoRx) {
+        return ImsCallProfile.CALL_TYPE_VT_RX;
+    } else if (videoTx && videoRx) {
+        return ImsCallProfile.CALL_TYPE_VT;
+    }
+    return ImsCallProfile.CALL_TYPE_VOICE;
+}

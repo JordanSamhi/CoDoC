@@ -1,0 +1,10 @@
+public void onServerConnectionState(int status, int serverIf, boolean connected, String address){
+    if (DBG) {
+        Log.d(TAG, "onServerConnectionState() - status=" + status + " serverIf=" + serverIf + " device=" + address);
+    }
+    try {
+        mCallback.onConnectionStateChange(mAdapter.getRemoteDevice(address), status, connected ? BluetoothProfile.STATE_CONNECTED : BluetoothProfile.STATE_DISCONNECTED);
+    } catch (Exception ex) {
+        Log.w(TAG, "Unhandled exception in callback", ex);
+    }
+}

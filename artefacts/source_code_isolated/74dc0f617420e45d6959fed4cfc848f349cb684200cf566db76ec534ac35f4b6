@@ -1,0 +1,13 @@
+public void addOnOpportunisticSubscriptionsChangedListener(@NonNull @CallbackExecutor Executor executor, @NonNull OnOpportunisticSubscriptionsChangedListener listener){
+    if (executor == null || listener == null) {
+        return;
+    }
+    String pkgName = mContext != null ? mContext.getOpPackageName() : "<unknown>";
+    if (DBG) {
+        logd("register addOnOpportunisticSubscriptionsChangedListener pkgName=" + pkgName + " listener=" + listener);
+    }
+    TelephonyRegistryManager telephonyRegistryManager = (TelephonyRegistryManager) mContext.getSystemService(Context.TELEPHONY_REGISTRY_SERVICE);
+    if (telephonyRegistryManager != null) {
+        telephonyRegistryManager.addOnOpportunisticSubscriptionsChangedListener(listener, executor);
+    }
+}

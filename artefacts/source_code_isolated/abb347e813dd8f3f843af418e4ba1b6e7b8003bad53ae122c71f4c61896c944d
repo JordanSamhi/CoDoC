@@ -1,0 +1,21 @@
+public byte[] provideKeyResponse(@Nullable byte[] keySetId, @NonNull byte[] response) throws NoDrmSchemeException, DeniedByServerException{
+    Log.v(TAG, "provideKeyResponse: keySetId: " + keySetId + " response: " + response);
+    synchronized (mDrmLock) {
+        if (!mActiveDrmScheme) {
+            Log.e(TAG, "getKeyRequest NoDrmSchemeException");
+            throw new NoDrmSchemeException("getKeyRequest: Has to set a DRM scheme first.");
+        }
+        try {
+            byte[] scope = (keySetId == null) ? mDrmSessionId : keySetId;
+            byte[] keySetResult = mDrmObj.provideKeyResponse(scope, response);
+            Log.v(TAG, "provideKeyResponse: keySetId: " + keySetId + " response: " + response + " --> " + keySetResult);
+            return keySetResult;
+        } catch (NotProvisionedException e) {
+            Log.w(TAG, "provideKeyResponse NotProvisionedException: " + "Unexpected. Shouldn't have reached here.");
+            throw new IllegalStateException("provideKeyResponse: " + "Unexpected provisioning error.");
+        } catch (Exception e) {
+            Log.w(TAG, "provideKeyResponse Exception " + e);
+            throw e;
+        }
+    }
+}

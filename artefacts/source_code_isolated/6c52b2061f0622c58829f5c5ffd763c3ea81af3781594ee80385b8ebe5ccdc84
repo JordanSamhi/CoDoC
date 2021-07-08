@@ -1,0 +1,13 @@
+public static String substring(CharSequence source, int start, int end){
+    if (source instanceof String)
+        return ((String) source).substring(start, end);
+    if (source instanceof StringBuilder)
+        return ((StringBuilder) source).substring(start, end);
+    if (source instanceof StringBuffer)
+        return ((StringBuffer) source).substring(start, end);
+    char[] temp = obtain(end - start);
+    getChars(source, start, end, temp, 0);
+    String ret = new String(temp, 0, end - start);
+    recycle(temp);
+    return ret;
+}

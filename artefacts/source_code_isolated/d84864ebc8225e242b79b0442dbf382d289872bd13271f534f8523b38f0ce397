@@ -1,0 +1,85 @@
+public boolean start(){
+    if (started())
+        return true;
+    if (isOffloadDisabled()) {
+        mLog.i("tethering offload disabled");
+        return false;
+    }
+    if (!mConfigInitialized) {
+        mConfigInitialized = mHwInterface.initOffloadConfig();
+        if (!mConfigInitialized) {
+            mLog.i("tethering offload config not supported");
+            stop();
+            return false;
+        }
+    }
+    mControlInitialized = mHwInterface.initOffloadControl(new OffloadHardwareInterface.ControlCallback() {
+
+        @Override
+        public void onStarted() {
+            if (!started())
+                return;
+            mLog.log("onStarted");
+        }
+
+        @Override
+        public void onStoppedError() {
+            if (!started())
+                return;
+            mLog.log("onStoppedError");
+        }
+
+        @Override
+        public void onStoppedUnsupported() {
+            if (!started())
+                return;
+            mLog.log("onStoppedUnsupported");
+            updateStatsForAllUpstreams();
+            if (mStatsProvider != null)
+                mStatsProvider.pushTetherStats();
+        }
+
+        @Override
+        public void onSupportAvailable() {
+            if (!started())
+                return;
+            mLog.log("onSupportAvailable");
+            updateStatsForAllUpstreams();
+            if (mStatsProvider != null)
+                mStatsProvider.pushTetherStats();
+            computeAndPushLocalPrefixes(UpdateType.FORCE);
+            pushAllDownstreamState();
+            pushUpstreamParameters(null);
+        }
+
+        @Override
+        public void onStoppedLimitReached() {
+            if (!started())
+                return;
+            mLog.log("onStoppedLimitReached");
+            updateStatsForCurrentUpstream();
+            if (mStatsProvider != null) {
+                mStatsProvider.pushTetherStats();
+                mStatsProvider.notifyLimitReached();
+            }
+        }
+
+        @Override
+        public void onNatTimeoutUpdate(int proto, String srcAddr, int srcPort, String dstAddr, int dstPort) {
+            if (!started())
+                return;
+            updateNatTimeout(proto, srcAddr, srcPort, dstAddr, dstPort);
+        }
+    });
+    final boolean isStarted = started();
+    if (!isStarted) {
+        mLog.i("tethering offload control not supported");
+        stop();
+    } else {
+        mLog.log("tethering offload started");
+        mNatUpdateCallbacksReceived = 0;
+        mNatUpdateNetlinkErrors = 0;
+        maybeSchedulePollingStats();
+    }
+    return isStarted;
+}

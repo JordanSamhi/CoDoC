@@ -1,0 +1,19 @@
+public void requestEuiccChallenge(String cardId, @CallbackExecutor Executor executor, ResultCallback<byte[]> callback){
+    try {
+        getIEuiccCardController().getEuiccChallenge(mContext.getOpPackageName(), cardId, new IGetEuiccChallengeCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, byte[] challenge) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, challenge));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling getEuiccChallenge", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

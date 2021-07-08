@@ -1,0 +1,34 @@
+public static void writeToParcel(@Nullable CharSequence cs, @NonNull Parcel p, int parcelableFlags){
+    if (cs instanceof Spanned) {
+        p.writeInt(0);
+        p.writeString8(cs.toString());
+        Spanned sp = (Spanned) cs;
+        Object[] os = sp.getSpans(0, cs.length(), Object.class);
+        for (int i = 0; i < os.length; i++) {
+            Object o = os[i];
+            Object prop = os[i];
+            if (prop instanceof CharacterStyle) {
+                prop = ((CharacterStyle) prop).getUnderlying();
+            }
+            if (prop instanceof ParcelableSpan) {
+                final ParcelableSpan ps = (ParcelableSpan) prop;
+                final int spanTypeId = ps.getSpanTypeIdInternal();
+                if (spanTypeId < FIRST_SPAN || spanTypeId > LAST_SPAN) {
+                    Log.e(TAG, "External class \"" + ps.getClass().getSimpleName() + "\" is attempting to use the frameworks-only ParcelableSpan" + " interface");
+                } else {
+                    p.writeInt(spanTypeId);
+                    ps.writeToParcelInternal(p, parcelableFlags);
+                    writeWhere(p, sp, o);
+                }
+            }
+        }
+        p.writeInt(0);
+    } else {
+        p.writeInt(1);
+        if (cs != null) {
+            p.writeString8(cs.toString());
+        } else {
+            p.writeString8(null);
+        }
+    }
+}

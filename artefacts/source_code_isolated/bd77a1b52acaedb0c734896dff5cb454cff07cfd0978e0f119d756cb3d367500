@@ -1,0 +1,135 @@
+public String toString(String prefix){
+    StringBuilder sb = new StringBuilder(256);
+    sb.append('{');
+    dumpDimensions(sb);
+    if (horizontalMargin != 0) {
+        sb.append(" hm=");
+        sb.append(horizontalMargin);
+    }
+    if (verticalMargin != 0) {
+        sb.append(" vm=");
+        sb.append(verticalMargin);
+    }
+    if (gravity != 0) {
+        sb.append(" gr=");
+        sb.append(Gravity.toString(gravity));
+    }
+    if (softInputMode != 0) {
+        sb.append(" sim={");
+        sb.append(softInputModeToString(softInputMode));
+        sb.append('}');
+    }
+    if (layoutInDisplayCutoutMode != 0) {
+        sb.append(" layoutInDisplayCutoutMode=");
+        sb.append(layoutInDisplayCutoutModeToString(layoutInDisplayCutoutMode));
+    }
+    sb.append(" ty=");
+    sb.append(ViewDebug.intToString(LayoutParams.class, "type", type));
+    if (format != PixelFormat.OPAQUE) {
+        sb.append(" fmt=");
+        sb.append(PixelFormat.formatToString(format));
+    }
+    if (windowAnimations != 0) {
+        sb.append(" wanim=0x");
+        sb.append(Integer.toHexString(windowAnimations));
+    }
+    if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+        sb.append(" or=");
+        sb.append(ActivityInfo.screenOrientationToString(screenOrientation));
+    }
+    if (alpha != 1.0f) {
+        sb.append(" alpha=");
+        sb.append(alpha);
+    }
+    if (screenBrightness != BRIGHTNESS_OVERRIDE_NONE) {
+        sb.append(" sbrt=");
+        sb.append(screenBrightness);
+    }
+    if (buttonBrightness != BRIGHTNESS_OVERRIDE_NONE) {
+        sb.append(" bbrt=");
+        sb.append(buttonBrightness);
+    }
+    if (rotationAnimation != ROTATION_ANIMATION_ROTATE) {
+        sb.append(" rotAnim=");
+        sb.append(rotationAnimationToString(rotationAnimation));
+    }
+    if (preferredRefreshRate != 0) {
+        sb.append(" preferredRefreshRate=");
+        sb.append(preferredRefreshRate);
+    }
+    if (preferredDisplayModeId != 0) {
+        sb.append(" preferredDisplayMode=");
+        sb.append(preferredDisplayModeId);
+    }
+    if (hasSystemUiListeners) {
+        sb.append(" sysuil=");
+        sb.append(hasSystemUiListeners);
+    }
+    if (inputFeatures != 0) {
+        sb.append(" if=").append(inputFeatureToString(inputFeatures));
+    }
+    if (userActivityTimeout >= 0) {
+        sb.append(" userActivityTimeout=").append(userActivityTimeout);
+    }
+    if (surfaceInsets.left != 0 || surfaceInsets.top != 0 || surfaceInsets.right != 0 || surfaceInsets.bottom != 0 || hasManualSurfaceInsets || !preservePreviousSurfaceInsets) {
+        sb.append(" surfaceInsets=").append(surfaceInsets);
+        if (hasManualSurfaceInsets) {
+            sb.append(" (manual)");
+        }
+        if (!preservePreviousSurfaceInsets) {
+            sb.append(" (!preservePreviousSurfaceInsets)");
+        }
+    }
+    if (mColorMode != COLOR_MODE_DEFAULT) {
+        sb.append(" colorMode=").append(ActivityInfo.colorModeToString(mColorMode));
+    }
+    if (preferMinimalPostProcessing) {
+        sb.append(" preferMinimalPostProcessing=");
+        sb.append(preferMinimalPostProcessing);
+    }
+    sb.append(System.lineSeparator());
+    sb.append(prefix).append("  fl=").append(ViewDebug.flagsToString(LayoutParams.class, "flags", flags));
+    if (privateFlags != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  pfl=").append(ViewDebug.flagsToString(LayoutParams.class, "privateFlags", privateFlags));
+    }
+    if (systemUiVisibility != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  sysui=").append(ViewDebug.flagsToString(View.class, "mSystemUiVisibility", systemUiVisibility));
+    }
+    if (subtreeSystemUiVisibility != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  vsysui=").append(ViewDebug.flagsToString(View.class, "mSystemUiVisibility", subtreeSystemUiVisibility));
+    }
+    if (insetsFlags.appearance != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  apr=").append(ViewDebug.flagsToString(InsetsFlags.class, "appearance", insetsFlags.appearance));
+    }
+    if (insetsFlags.behavior != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  bhv=").append(ViewDebug.flagsToString(InsetsFlags.class, "behavior", insetsFlags.behavior));
+    }
+    if (mFitInsetsTypes != 0) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  fitTypes=").append(ViewDebug.flagsToString(LayoutParams.class, "mFitInsetsTypes", mFitInsetsTypes));
+    }
+    if (mFitInsetsSides != Side.all()) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  fitSides=").append(ViewDebug.flagsToString(LayoutParams.class, "mFitInsetsSides", mFitInsetsSides));
+    }
+    if (mFitInsetsIgnoringVisibility) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  fitIgnoreVis");
+    }
+    if (providesInsetsTypes != null) {
+        sb.append(System.lineSeparator());
+        sb.append(prefix).append("  insetsTypes=");
+        for (int i = 0; i < providesInsetsTypes.length; ++i) {
+            if (i > 0)
+                sb.append(' ');
+            sb.append(InsetsState.typeToString(providesInsetsTypes[i]));
+        }
+    }
+    sb.append('}');
+    return sb.toString();
+}

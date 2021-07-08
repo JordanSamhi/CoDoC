@@ -1,0 +1,19 @@
+public void resetMemory(String cardId, @ResetOption int options, @CallbackExecutor Executor executor, ResultCallback<Void> callback){
+    try {
+        getIEuiccCardController().resetMemory(mContext.getOpPackageName(), cardId, options, new IResetMemoryCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, null));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling resetMemory", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

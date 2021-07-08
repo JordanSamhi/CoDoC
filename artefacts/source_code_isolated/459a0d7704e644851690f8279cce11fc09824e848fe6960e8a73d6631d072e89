@@ -1,0 +1,25 @@
+public void registerAudioRecordingCallback(@NonNull AudioRecordingCallback cb, @Nullable Handler handler){
+    if (cb == null) {
+        throw new IllegalArgumentException("Illegal null AudioRecordingCallback argument");
+    }
+    synchronized (mRecordCallbackLock) {
+        if (mRecordCallbackList == null) {
+            mRecordCallbackList = new ArrayList<AudioRecordingCallbackInfo>();
+        }
+        final int oldCbCount = mRecordCallbackList.size();
+        if (!hasRecordCallback_sync(cb)) {
+            mRecordCallbackList.add(new AudioRecordingCallbackInfo(cb, new ServiceEventHandlerDelegate(handler).getHandler()));
+            final int newCbCount = mRecordCallbackList.size();
+            if ((oldCbCount == 0) && (newCbCount > 0)) {
+                final IAudioService service = getService();
+                try {
+                    service.registerRecordingCallback(mRecCb);
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
+        } else {
+            Log.w(TAG, "attempt to call registerAudioRecordingCallback() on a previously" + "registered callback");
+        }
+    }
+}

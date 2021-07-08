@@ -1,0 +1,36 @@
+public Address toAddress(){
+    if (!mIsValid) {
+        return null;
+    }
+    Address address = new Address(Locale.US);
+    String room = formatAddressElement("Room: ", getCivicElementValue(CivicLocationKeys.ROOM));
+    String desk = formatAddressElement(" Desk: ", getCivicElementValue(CivicLocationKeys.DESK));
+    String floor = formatAddressElement(", Flr: ", getCivicElementValue(CivicLocationKeys.FLOOR));
+    String houseNumber = formatAddressElement("", getCivicElementValue(CivicLocationKeys.HNO));
+    String houseNumberSuffix = formatAddressElement("", getCivicElementValue(CivicLocationKeys.HNS));
+    String road = formatAddressElement(" ", getCivicElementValue(CivicLocationKeys.PRIMARY_ROAD_NAME));
+    String roadSuffix = formatAddressElement(" ", getCivicElementValue(CivicLocationKeys.STS));
+    String apt = formatAddressElement(", Apt: ", getCivicElementValue(CivicLocationKeys.APT));
+    String city = formatAddressElement("", getCivicElementValue(CivicLocationKeys.CITY));
+    String state = formatAddressElement("", getCivicElementValue(CivicLocationKeys.STATE));
+    String postalCode = formatAddressElement(" ", getCivicElementValue(CivicLocationKeys.POSTAL_CODE));
+    String addressLine0 = new StringBuilder().append(room).append(desk).append(floor).toString();
+    String addressLine1 = new StringBuilder().append(houseNumber).append(houseNumberSuffix).append(road).append(roadSuffix).append(apt).toString();
+    String addressLine2 = city;
+    String addressLine3 = new StringBuilder().append(state).append(postalCode).toString();
+    String addressLine4 = mCountryCode;
+    address.setAddressLine(ADDRESS_LINE_0_ROOM_DESK_FLOOR, addressLine0);
+    address.setAddressLine(ADDRESS_LINE_1_NUMBER_ROAD_SUFFIX_APT, addressLine1);
+    address.setAddressLine(ADDRESS_LINE_2_CITY, addressLine2);
+    address.setAddressLine(ADDRESS_LINE_3_STATE_POSTAL_CODE, addressLine3);
+    address.setAddressLine(ADDRESS_LINE_4_COUNTRY, addressLine4);
+    address.setFeatureName(getCivicElementValue(CivicLocationKeys.NAM));
+    address.setSubThoroughfare(getCivicElementValue(CivicLocationKeys.HNO));
+    address.setThoroughfare(getCivicElementValue(CivicLocationKeys.PRIMARY_ROAD_NAME));
+    address.setSubLocality(getCivicElementValue(CivicLocationKeys.NEIGHBORHOOD));
+    address.setSubAdminArea(getCivicElementValue(CivicLocationKeys.COUNTY));
+    address.setAdminArea(getCivicElementValue(CivicLocationKeys.STATE));
+    address.setPostalCode(getCivicElementValue(CivicLocationKeys.POSTAL_CODE));
+    address.setCountryCode(mCountryCode);
+    return address;
+}

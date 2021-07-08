@@ -1,0 +1,16 @@
+public static void redactEvents(ArrayList<SecurityEvent> logList, int accessingUser){
+    if (accessingUser == UserHandle.USER_ALL)
+        return;
+    int end = 0;
+    for (int i = 0; i < logList.size(); i++) {
+        SecurityEvent event = logList.get(i);
+        event = event.redact(accessingUser);
+        if (event != null) {
+            logList.set(end, event);
+            end++;
+        }
+    }
+    for (int i = logList.size() - 1; i >= end; i--) {
+        logList.remove(i);
+    }
+}

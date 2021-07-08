@@ -1,0 +1,13 @@
+public void clearPendingNotification(boolean resetRepeatTime){
+    if (resetRepeatTime) {
+        mNotificationRepeatTime = 0;
+    }
+    if (mState != STATE_NO_NOTIFICATION) {
+        getNotificationManager().cancel(mSystemMessageNotificationId);
+        if (mRecommendedNetwork != null) {
+            Log.d(mTag, "Notification with state=" + mState + " was cleared for recommended network: " + "\"" + mRecommendedNetwork.SSID + "\"");
+        }
+        mState = STATE_NO_NOTIFICATION;
+        mRecommendedNetwork = null;
+    }
+}

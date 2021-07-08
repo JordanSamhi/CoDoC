@@ -1,0 +1,8 @@
+public void addOnRoutingChangedListener(AudioRouting.OnRoutingChangedListener listener, Handler handler){
+    synchronized (mRoutingChangeListeners) {
+        if (listener != null && !mRoutingChangeListeners.containsKey(listener)) {
+            enableNativeRoutingCallbacksLocked(true);
+            mRoutingChangeListeners.put(listener, new NativeRoutingEventHandlerDelegate(this, listener, handler != null ? handler : mEventHandler));
+        }
+    }
+}

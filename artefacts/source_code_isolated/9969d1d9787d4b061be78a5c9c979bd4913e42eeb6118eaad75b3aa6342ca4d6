@@ -1,0 +1,13 @@
+public Network register(){
+    if (VDBG)
+        log("Registering NetworkAgent");
+    synchronized (mRegisterLock) {
+        if (mNetwork != null) {
+            throw new IllegalStateException("Agent already registered");
+        }
+        final ConnectivityManager cm = (ConnectivityManager) mInitialConfiguration.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        mNetwork = cm.registerNetworkAgent(new Messenger(mHandler), new NetworkInfo(mInitialConfiguration.info), mInitialConfiguration.properties, mInitialConfiguration.capabilities, mInitialConfiguration.score, mInitialConfiguration.config, providerId);
+        mInitialConfiguration = null;
+    }
+    return mNetwork;
+}

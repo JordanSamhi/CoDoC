@@ -1,0 +1,3 @@
+public static boolean hasAccess(int uid, int flags, int ownerUid, int displayId){
+    return (flags & Display.FLAG_PRIVATE) == 0 || uid == ownerUid || uid == Process.SYSTEM_UID || uid == 0 || DisplayManagerGlobal.getInstance().isUidPresentOnDisplay(uid, displayId);
+}

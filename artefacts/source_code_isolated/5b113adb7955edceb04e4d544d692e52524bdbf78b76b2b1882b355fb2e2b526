@@ -1,0 +1,7 @@
+public void unregisterScanResultsCallback(@NonNull IScanResultsCallback callback){
+    if (mVerboseLoggingEnabled) {
+        mLog.info("unregisterScanResultCallback uid=%").c(Binder.getCallingUid()).flush();
+    }
+    enforceAccessPermission();
+    mWifiThreadRunner.post(() -> mWifiInjector.getScanRequestProxy().unregisterScanResultsCallback(callback));
+}

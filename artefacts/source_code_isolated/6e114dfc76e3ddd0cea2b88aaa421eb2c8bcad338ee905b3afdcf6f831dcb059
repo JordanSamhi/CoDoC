@@ -1,0 +1,8 @@
+public static AppInterface getInstance(){
+    int slotId = PhoneConstants.DEFAULT_SLOT_INDEX;
+    SubscriptionController sControl = SubscriptionController.getInstance();
+    if (sControl != null) {
+        slotId = sControl.getSlotIndex(sControl.getDefaultSubId());
+    }
+    return getInstance(null, null, null, slotId);
+}

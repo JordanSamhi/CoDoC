@@ -1,0 +1,18 @@
+public static Interpolator loadInterpolator(Context context, @AnimRes @InterpolatorRes int id) throws NotFoundException{
+    XmlResourceParser parser = null;
+    try {
+        parser = context.getResources().getAnimation(id);
+        return createInterpolatorFromXml(context.getResources(), context.getTheme(), parser);
+    } catch (XmlPullParserException ex) {
+        NotFoundException rnf = new NotFoundException("Can't load animation resource ID #0x" + Integer.toHexString(id));
+        rnf.initCause(ex);
+        throw rnf;
+    } catch (IOException ex) {
+        NotFoundException rnf = new NotFoundException("Can't load animation resource ID #0x" + Integer.toHexString(id));
+        rnf.initCause(ex);
+        throw rnf;
+    } finally {
+        if (parser != null)
+            parser.close();
+    }
+}

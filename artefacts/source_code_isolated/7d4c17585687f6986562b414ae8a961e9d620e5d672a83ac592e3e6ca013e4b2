@@ -1,0 +1,13 @@
+public void openCamera(final Handler handler, final int cameraId, final CameraOpenCallback callback){
+    try {
+        getDispatchThread().runJob(new Runnable() {
+
+            @Override
+            public void run() {
+                getCameraHandler().obtainMessage(CameraActions.OPEN_CAMERA, cameraId, 0, CameraOpenCallbackForward.getNewInstance(handler, callback)).sendToTarget();
+            }
+        });
+    } catch (final RuntimeException ex) {
+        getCameraExceptionHandler().onDispatchThreadException(ex);
+    }
+}

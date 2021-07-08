@@ -1,0 +1,17 @@
+public static Pair<ComponentName, Integer> getTopPipActivity(Context context, IActivityManager activityManager){
+    try {
+        final String sysUiPackageName = context.getPackageName();
+        final StackInfo pinnedStackInfo = ActivityTaskManager.getService().getStackInfo(WINDOWING_MODE_PINNED, ACTIVITY_TYPE_UNDEFINED);
+        if (pinnedStackInfo != null && pinnedStackInfo.taskIds != null && pinnedStackInfo.taskIds.length > 0) {
+            for (int i = pinnedStackInfo.taskNames.length - 1; i >= 0; i--) {
+                ComponentName cn = ComponentName.unflattenFromString(pinnedStackInfo.taskNames[i]);
+                if (cn != null && !cn.getPackageName().equals(sysUiPackageName)) {
+                    return new Pair<>(cn, pinnedStackInfo.taskUserIds[i]);
+                }
+            }
+        }
+    } catch (RemoteException e) {
+        Log.w(TAG, "Unable to get pinned stack.");
+    }
+    return new Pair<>(null, 0);
+}

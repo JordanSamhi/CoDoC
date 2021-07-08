@@ -1,0 +1,21 @@
+public AssetFileDescriptor openAssetFile(@NonNull Uri url, @NonNull String mode, @Nullable CancellationSignal signal) throws RemoteException, FileNotFoundException{
+    Objects.requireNonNull(url, "url");
+    Objects.requireNonNull(mode, "mode");
+    beforeRemote();
+    try {
+        ICancellationSignal remoteSignal = null;
+        if (signal != null) {
+            signal.throwIfCanceled();
+            remoteSignal = mContentProvider.createCancellationSignal();
+            signal.setRemote(remoteSignal);
+        }
+        return mContentProvider.openAssetFile(mPackageName, mAttributionTag, url, mode, remoteSignal);
+    } catch (DeadObjectException e) {
+        if (!mStable) {
+            mContentResolver.unstableProviderDied(mContentProvider);
+        }
+        throw e;
+    } finally {
+        afterRemote();
+    }
+}

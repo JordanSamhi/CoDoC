@@ -1,0 +1,6 @@
+public void requestLocationUpdates(long minTimeMs, float minDistanceM, @NonNull Criteria criteria, @NonNull LocationListener listener, @Nullable Looper looper){
+    Preconditions.checkArgument(criteria != null, "invalid null criteria");
+    Preconditions.checkArgument(listener != null, "invalid null listener");
+    LocationRequest request = LocationRequest.createFromDeprecatedCriteria(criteria, minTimeMs, minDistanceM, false);
+    requestLocationUpdates(request, listener, looper);
+}

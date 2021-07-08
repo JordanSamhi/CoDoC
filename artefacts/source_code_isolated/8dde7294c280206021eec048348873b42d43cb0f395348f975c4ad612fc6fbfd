@@ -1,0 +1,28 @@
+public boolean pushDynamicShortcut(@NonNull ShortcutInfo newShortcut, @NonNull List<ShortcutInfo> changedShortcuts){
+    Preconditions.checkArgument(newShortcut.isEnabled(), "pushDynamicShortcuts() cannot publish disabled shortcuts");
+    newShortcut.addFlags(ShortcutInfo.FLAG_DYNAMIC);
+    changedShortcuts.clear();
+    final ShortcutInfo oldShortcut = mShortcuts.get(newShortcut.getId());
+    boolean deleted = false;
+    if (oldShortcut == null) {
+        final ShortcutService service = mShortcutUser.mService;
+        final int maxShortcuts = service.getMaxActivityShortcuts();
+        final ArrayMap<ComponentName, ArrayList<ShortcutInfo>> all = sortShortcutsToActivities();
+        final ArrayList<ShortcutInfo> activityShortcuts = all.get(newShortcut.getActivity());
+        if (activityShortcuts != null && activityShortcuts.size() == maxShortcuts) {
+            Collections.sort(activityShortcuts, mShortcutTypeAndRankComparator);
+            final ShortcutInfo shortcut = activityShortcuts.get(maxShortcuts - 1);
+            if (shortcut.isManifestShortcut()) {
+                Slog.e(TAG, "Failed to remove manifest shortcut while pushing dynamic shortcut " + newShortcut.getId());
+                return true;
+            }
+            changedShortcuts.add(shortcut);
+            deleted = deleteDynamicWithId(shortcut.getId(), true) != null;
+        }
+    } else {
+        oldShortcut.ensureUpdatableWith(newShortcut, false);
+        newShortcut.addFlags(oldShortcut.getFlags() & (ShortcutInfo.FLAG_PINNED | ShortcutInfo.FLAG_CACHED_ALL));
+    }
+    forceReplaceShortcutInner(newShortcut);
+    return deleted;
+}

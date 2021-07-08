@@ -1,0 +1,13 @@
+public Menu getMenu(){
+    if (mMenu == null) {
+        final Context context = getContext();
+        mMenu = new MenuBuilder(context);
+        mMenu.setCallback(new MenuBuilderCallback());
+        mPresenter = new ActionMenuPresenter(context);
+        mPresenter.setReserveOverflow(true);
+        mPresenter.setCallback(mActionMenuPresenterCallback != null ? mActionMenuPresenterCallback : new ActionMenuPresenterCallback());
+        mMenu.addMenuPresenter(mPresenter, mPopupContext);
+        mPresenter.setMenuView(this);
+    }
+    return mMenu;
+}

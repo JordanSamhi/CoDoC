@@ -1,0 +1,23 @@
+public boolean compileLayouts(AndroidPackage pkg){
+    try {
+        final String packageName = pkg.getPackageName();
+        final String apkPath = pkg.getBaseCodePath();
+        File dataDir = PackageInfoWithoutStateUtils.getDataDir(pkg, UserHandle.myUserId());
+        final String outDexFile = dataDir.getAbsolutePath() + "/code_cache/compiled_view.dex";
+        if (pkg.isPrivileged() || pkg.isUseEmbeddedDex() || pkg.isDefaultToDeviceProtectedStorage()) {
+            return false;
+        }
+        Log.i("PackageManager", "Compiling layouts in " + packageName + " (" + apkPath + ") to " + outDexFile);
+        long callingId = Binder.clearCallingIdentity();
+        try {
+            synchronized (mInstallLock) {
+                return mInstaller.compileLayouts(apkPath, packageName, outDexFile, pkg.getUid());
+            }
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
+    } catch (Throwable e) {
+        Log.e("PackageManager", "Failed to compile layouts", e);
+        return false;
+    }
+}

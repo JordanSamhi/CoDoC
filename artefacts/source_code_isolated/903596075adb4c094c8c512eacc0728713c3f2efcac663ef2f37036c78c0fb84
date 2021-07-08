@@ -1,0 +1,18 @@
+public static void validateServiceName(byte[] serviceNameData) throws IllegalArgumentException{
+    if (serviceNameData == null) {
+        throw new IllegalArgumentException("Invalid service name - null");
+    }
+    if (serviceNameData.length < 1 || serviceNameData.length > 255) {
+        throw new IllegalArgumentException("Invalid service name length - must be between " + "1 and 255 bytes (UTF-8 encoding)");
+    }
+    int index = 0;
+    while (index < serviceNameData.length) {
+        byte b = serviceNameData[index];
+        if ((b & 0x80) == 0x00) {
+            if (!((b >= '0' && b <= '9') || (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || b == '-' || b == '.')) {
+                throw new IllegalArgumentException("Invalid service name - illegal characters," + " allowed = (0-9, a-z,A-Z, -, .)");
+            }
+        }
+        ++index;
+    }
+}

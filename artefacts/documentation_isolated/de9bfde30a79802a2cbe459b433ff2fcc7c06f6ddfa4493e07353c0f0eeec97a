@@ -1,0 +1,28 @@
+
+     * Attach to the Wi-Fi Aware service - enabling the application to create discovery sessions or
+     * create connections to peers. The device will attach to an existing cluster if it can find
+     * one or create a new cluster (if it is the first to enable Aware in its vicinity). Results
+     * (e.g. successful attach to a cluster) are provided to the {@code attachCallback} object.
+     * An application <b>must</b> call {@link WifiAwareSession#close()} when done with the
+     * Wi-Fi Aware object.
+     * <p>
+     * Note: a Aware cluster is a shared resource - if the device is already attached to a cluster
+     * then this function will simply indicate success immediately using the same {@code
+     * attachCallback}.
+     * <p>
+     * This version of the API attaches a listener to receive the MAC address of the Aware interface
+     * on startup and whenever it is updated (it is randomized at regular intervals for privacy).
+     * The application must have the {@link android.Manifest.permission#ACCESS_FINE_LOCATION}
+     * permission to execute this attach request. Otherwise, use the
+     * {@link #attach(AttachCallback, Handler)} version. Note that aside from permission
+     * requirements this listener will wake up the host at regular intervals causing higher power
+     * consumption, do not use it unless the information is necessary (e.g. for OOB discovery).
+     *
+     * @param attachCallback A callback for attach events, extended from
+     * {@link AttachCallback}.
+     * @param identityChangedListener A listener for changed identity, extended from
+     * {@link IdentityChangedListener}.
+     * @param handler The Handler on whose thread to execute the callbacks of the {@code
+     * attachCallback} and {@code identityChangedListener} objects. If a null is provided then the
+     *                application's main thread will be used.
+     

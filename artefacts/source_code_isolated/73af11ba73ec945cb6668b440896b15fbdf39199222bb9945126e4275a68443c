@@ -1,0 +1,37 @@
+public void dump(String prefix, PrintWriter printWriter){
+    synchronized (this) {
+        IndentingPrintWriter pw = new IndentingPrintWriter(printWriter, "  ");
+        for (int i = 0; i < prefix.length() / 2; i++) {
+            pw.increaseIndent();
+        }
+        pw.println("ResourcesManager:");
+        pw.increaseIndent();
+        if (mLoadedApkAssets != null) {
+            pw.print("cached apks: total=");
+            pw.print(mLoadedApkAssets.size());
+            pw.print(" created=");
+            pw.print(mLoadedApkAssets.createCount());
+            pw.print(" evicted=");
+            pw.print(mLoadedApkAssets.evictionCount());
+            pw.print(" hit=");
+            pw.print(mLoadedApkAssets.hitCount());
+            pw.print(" miss=");
+            pw.print(mLoadedApkAssets.missCount());
+            pw.print(" max=");
+            pw.print(mLoadedApkAssets.maxSize());
+        } else {
+            pw.print("cached apks: 0 [cache disabled]");
+        }
+        pw.println();
+        pw.print("total apks: ");
+        pw.println(countLiveReferences(mCachedApkAssets.values()));
+        pw.print("resources: ");
+        int references = countLiveReferences(mResourceReferences);
+        for (ActivityResources activityResources : mActivityResourceReferences.values()) {
+            references += countLiveReferences(activityResources.activityResources);
+        }
+        pw.println(references);
+        pw.print("resource impls: ");
+        pw.println(countLiveReferences(mResourceImpls.values()));
+    }
+}

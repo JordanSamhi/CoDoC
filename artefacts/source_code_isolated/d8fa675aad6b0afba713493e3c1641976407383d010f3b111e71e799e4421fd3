@@ -1,0 +1,10 @@
+public boolean setChargingStateUpdateDelayMillis(int delayMillis){
+    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.POWER_SAVER, null);
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        final ContentResolver contentResolver = mContext.getContentResolver();
+        return Settings.Global.putLong(contentResolver, Settings.Global.BATTERY_CHARGING_STATE_UPDATE_DELAY, delayMillis);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

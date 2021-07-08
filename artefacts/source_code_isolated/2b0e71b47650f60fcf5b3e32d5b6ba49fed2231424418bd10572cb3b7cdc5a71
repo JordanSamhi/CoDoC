@@ -1,0 +1,10 @@
+public void updateAppWidget(int[] appWidgetIds, RemoteViews views){
+    if (mService == null) {
+        return;
+    }
+    try {
+        mService.updateAppWidgetIds(mPackageName, appWidgetIds, views);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

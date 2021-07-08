@@ -1,0 +1,10 @@
+public boolean isInCall(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().isInCall(mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException calling isInCall().", e);
+    }
+    return false;
+}

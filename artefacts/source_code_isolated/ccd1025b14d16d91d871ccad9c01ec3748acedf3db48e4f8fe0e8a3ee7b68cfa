@@ -1,0 +1,32 @@
+public void onAuthenticationResult(int authenticationId, Intent data, View focusView){
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    if (sDebug) {
+        Log.d(TAG, "onAuthenticationResult(): id= " + authenticationId + ", data=" + data);
+    }
+    synchronized (mLock) {
+        if (!isActiveLocked()) {
+            return;
+        }
+        if (!mOnInvisibleCalled && focusView != null && focusView.canNotifyAutofillEnterExitEvent()) {
+            notifyViewExitedLocked(focusView);
+            notifyViewEnteredLocked(focusView, 0);
+        }
+        if (data == null) {
+            return;
+        }
+        final Parcelable result = data.getParcelableExtra(EXTRA_AUTHENTICATION_RESULT);
+        final Bundle responseData = new Bundle();
+        responseData.putParcelable(EXTRA_AUTHENTICATION_RESULT, result);
+        final Bundle newClientState = data.getBundleExtra(EXTRA_CLIENT_STATE);
+        if (newClientState != null) {
+            responseData.putBundle(EXTRA_CLIENT_STATE, newClientState);
+        }
+        try {
+            mService.setAuthenticationResult(responseData, mSessionId, authenticationId, mContext.getUserId());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error delivering authentication result", e);
+        }
+    }
+}

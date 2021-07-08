@@ -1,0 +1,13 @@
+public void unregisterVrStateCallback(@NonNull VrStateCallback callback){
+    CallbackEntry entry = mCallbackMap.remove(callback);
+    if (entry != null) {
+        try {
+            mService.unregisterListener(entry.mStateCallback);
+        } catch (RemoteException ignore) {
+        }
+        try {
+            mService.unregisterPersistentVrStateListener(entry.mPersistentStateCallback);
+        } catch (RemoteException ignore) {
+        }
+    }
+}

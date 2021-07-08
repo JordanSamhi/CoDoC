@@ -1,0 +1,22 @@
+public void prune(final long currentTimeMillis){
+    synchronized (mLock) {
+        mCal.setTimeInMillis(currentTimeMillis);
+        mCal.addYears(-3);
+        pruneFilesOlderThan(mIntervalDirs[UsageStatsManager.INTERVAL_YEARLY], mCal.getTimeInMillis());
+        mCal.setTimeInMillis(currentTimeMillis);
+        mCal.addMonths(-6);
+        pruneFilesOlderThan(mIntervalDirs[UsageStatsManager.INTERVAL_MONTHLY], mCal.getTimeInMillis());
+        mCal.setTimeInMillis(currentTimeMillis);
+        mCal.addWeeks(-4);
+        pruneFilesOlderThan(mIntervalDirs[UsageStatsManager.INTERVAL_WEEKLY], mCal.getTimeInMillis());
+        mCal.setTimeInMillis(currentTimeMillis);
+        mCal.addDays(-10);
+        pruneFilesOlderThan(mIntervalDirs[UsageStatsManager.INTERVAL_DAILY], mCal.getTimeInMillis());
+        mCal.setTimeInMillis(currentTimeMillis);
+        mCal.addDays(-SELECTION_LOG_RETENTION_LEN);
+        for (int i = 0; i < mIntervalDirs.length; ++i) {
+            pruneChooserCountsOlderThan(mIntervalDirs[i], mCal.getTimeInMillis());
+        }
+        indexFilesLocked();
+    }
+}

@@ -1,0 +1,16 @@
+public List<BluetoothDevice> getMostRecentlyConnectedDevices(){
+    if (getState() != STATE_ON) {
+        return new ArrayList<>();
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.getMostRecentlyConnectedDevices();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return new ArrayList<>();
+}

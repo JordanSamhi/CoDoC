@@ -1,0 +1,15 @@
+public int getCarrierPrivilegeStatus(Signature signature, String packageName){
+    int state = mState.get();
+    if (state == STATE_LOADING) {
+        return TelephonyManager.CARRIER_PRIVILEGE_STATUS_RULES_NOT_LOADED;
+    } else if (state == STATE_ERROR) {
+        return TelephonyManager.CARRIER_PRIVILEGE_STATUS_ERROR_LOADING_RULES;
+    }
+    for (UiccAccessRule ar : mAccessRules) {
+        int accessStatus = ar.getCarrierPrivilegeStatus(signature, packageName);
+        if (accessStatus != TelephonyManager.CARRIER_PRIVILEGE_STATUS_NO_ACCESS) {
+            return accessStatus;
+        }
+    }
+    return TelephonyManager.CARRIER_PRIVILEGE_STATUS_NO_ACCESS;
+}

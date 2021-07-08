@@ -1,0 +1,16 @@
+public boolean hasNext(){
+    if (mCompareResultIsValid) {
+        switch(mCompareResult) {
+            case BOTH:
+                return !mCursorLeft.isLast() || !mCursorRight.isLast();
+            case LEFT:
+                return !mCursorLeft.isLast() || !mCursorRight.isAfterLast();
+            case RIGHT:
+                return !mCursorLeft.isAfterLast() || !mCursorRight.isLast();
+            default:
+                throw new IllegalStateException("bad value for mCompareResult, " + mCompareResult);
+        }
+    } else {
+        return !mCursorLeft.isAfterLast() || !mCursorRight.isAfterLast();
+    }
+}

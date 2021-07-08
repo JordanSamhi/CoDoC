@@ -1,0 +1,15 @@
+public void restoreToFile(File targetFile) throws IOException{
+    try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(targetFile))) {
+        byte[] buffer = new byte[mBufferSize];
+        int bytesRead = mFullRestoreDownloader.readNextChunk(buffer);
+        while (bytesRead != END_OF_STREAM) {
+            outputStream.write(buffer, 0, bytesRead);
+            bytesRead = mFullRestoreDownloader.readNextChunk(buffer);
+        }
+        outputStream.flush();
+        mFullRestoreDownloader.finish(FinishType.FINISHED);
+    } catch (IOException e) {
+        mFullRestoreDownloader.finish(FinishType.TRANSFER_FAILURE);
+        throw e;
+    }
+}

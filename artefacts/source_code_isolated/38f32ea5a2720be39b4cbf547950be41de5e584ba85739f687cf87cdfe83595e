@@ -1,0 +1,26 @@
+public static ParsedActivity makeAppDetailsActivity(String packageName, String processName, int uiOptions, String taskAffinity, boolean hardwareAccelerated){
+    ParsedActivity activity = new ParsedActivity();
+    activity.setPackageName(packageName);
+    activity.theme = android.R.style.Theme_NoDisplay;
+    activity.exported = true;
+    activity.setName(PackageManager.APP_DETAILS_ACTIVITY_CLASS_NAME);
+    activity.setProcessName(processName);
+    activity.uiOptions = uiOptions;
+    activity.taskAffinity = taskAffinity;
+    activity.launchMode = ActivityInfo.LAUNCH_MULTIPLE;
+    activity.documentLaunchMode = ActivityInfo.DOCUMENT_LAUNCH_NONE;
+    activity.maxRecents = ActivityTaskManager.getDefaultAppRecentsLimitStatic();
+    activity.configChanges = PackageParser.getActivityConfigChanges(0, 0);
+    activity.softInputMode = 0;
+    activity.persistableMode = ActivityInfo.PERSIST_NEVER;
+    activity.screenOrientation = SCREEN_ORIENTATION_UNSPECIFIED;
+    activity.resizeMode = RESIZE_MODE_FORCE_RESIZEABLE;
+    activity.lockTaskLaunchMode = 0;
+    activity.setDirectBootAware(false);
+    activity.rotationAnimation = ROTATION_ANIMATION_UNSPECIFIED;
+    activity.colorMode = ActivityInfo.COLOR_MODE_DEFAULT;
+    if (hardwareAccelerated) {
+        activity.setFlags(activity.getFlags() | ActivityInfo.FLAG_HARDWARE_ACCELERATED);
+    }
+    return activity;
+}

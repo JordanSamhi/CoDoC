@@ -1,0 +1,11 @@
+public List<InstantAppInfo> getInstantApps(){
+    try {
+        ParceledListSlice<InstantAppInfo> slice = mPM.getInstantApps(getUserId());
+        if (slice != null) {
+            return slice.getList();
+        }
+        return Collections.emptyList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

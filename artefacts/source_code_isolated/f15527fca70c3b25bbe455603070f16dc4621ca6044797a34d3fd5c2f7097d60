@@ -1,0 +1,8 @@
+public void testGetAncestralSerialNumber_set_returnsCorrectValue() throws Exception{
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService service = createUserBackupManagerServiceAndRunTasks();
+    service.setAncestralSerialNumberFile(createTestFile());
+    long testSerialNumber = 20L;
+    service.setAncestralSerialNumber(testSerialNumber);
+    assertThat(service.getAncestralSerialNumber()).isEqualTo(testSerialNumber);
+}

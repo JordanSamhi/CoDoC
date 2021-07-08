@@ -1,0 +1,90 @@
+public boolean addAccessPoint(@NonNull String ifaceName, @NonNull SoftApConfiguration config, @NonNull Runnable onFailureListener){
+    synchronized (mLock) {
+        final String methodStr = "addAccessPoint";
+        IHostapd.IfaceParams ifaceParams = new IHostapd.IfaceParams();
+        ifaceParams.ifaceName = ifaceName;
+        ifaceParams.hwModeParams.enable80211N = true;
+        ifaceParams.hwModeParams.enable80211AC = mContext.getResources().getBoolean(R.bool.config_wifi_softap_ieee80211ac_supported);
+        int band;
+        boolean enableAcs = ApConfigUtil.isAcsSupported(mContext) && config.getChannel() == 0 && !mForceApChannel;
+        if (enableAcs) {
+            ifaceParams.channelParams.enableAcs = true;
+            ifaceParams.channelParams.acsShouldExcludeDfs = !mContext.getResources().getBoolean(R.bool.config_wifiSoftapAcsIncludeDfs);
+        }
+        ifaceParams.channelParams.channel = mForceApChannel ? mForcedApChannel : config.getChannel();
+        band = mForceApChannel ? mForcedApBand : config.getBand();
+        android.hardware.wifi.hostapd.V1_2.IHostapd.NetworkParams nwParamsV1_2 = prepareNetworkParams(config);
+        if (nwParamsV1_2 == null)
+            return false;
+        if (!checkHostapdAndLogFailure(methodStr))
+            return false;
+        try {
+            HostapdStatus status;
+            if (!isV1_1() && !isV1_2()) {
+                ifaceParams.channelParams.band = getHalBand(band);
+                status = mIHostapd.addAccessPoint(ifaceParams, nwParamsV1_2.V1_0);
+                if (!checkStatusAndLogFailure(status, methodStr)) {
+                    return false;
+                }
+            } else {
+                android.hardware.wifi.hostapd.V1_1.IHostapd.IfaceParams ifaceParams1_1 = new android.hardware.wifi.hostapd.V1_1.IHostapd.IfaceParams();
+                ifaceParams1_1.V1_0 = ifaceParams;
+                if (!isV1_2()) {
+                    ifaceParams.channelParams.band = getHalBand(band);
+                    if (ifaceParams.channelParams.enableAcs) {
+                        if ((band & SoftApConfiguration.BAND_2GHZ) != 0) {
+                            ifaceParams1_1.channelParams.acsChannelRanges.addAll(toAcsChannelRanges(mContext.getResources().getString(R.string.config_wifiSoftap2gChannelList)));
+                        }
+                        if ((band & SoftApConfiguration.BAND_5GHZ) != 0) {
+                            ifaceParams1_1.channelParams.acsChannelRanges.addAll(toAcsChannelRanges(mContext.getResources().getString(R.string.config_wifiSoftap5gChannelList)));
+                        }
+                    }
+                    android.hardware.wifi.hostapd.V1_1.IHostapd iHostapdV1_1 = getHostapdMockableV1_1();
+                    if (iHostapdV1_1 == null)
+                        return false;
+                    status = iHostapdV1_1.addAccessPoint_1_1(ifaceParams1_1, nwParamsV1_2.V1_0);
+                    if (!checkStatusAndLogFailure(status, methodStr)) {
+                        return false;
+                    }
+                } else {
+                    android.hardware.wifi.hostapd.V1_2.HostapdStatus status12;
+                    android.hardware.wifi.hostapd.V1_2.IHostapd.IfaceParams ifaceParams1_2 = new android.hardware.wifi.hostapd.V1_2.IHostapd.IfaceParams();
+                    ifaceParams1_2.V1_1 = ifaceParams1_1;
+                    ifaceParams1_2.hwModeParams.enable80211AX = mContext.getResources().getBoolean(R.bool.config_wifiSoftapIeee80211axSupported);
+                    ifaceParams1_2.hwModeParams.enable6GhzBand = mContext.getResources().getBoolean(R.bool.config_wifiSoftap6ghzSupported);
+                    ifaceParams1_2.hwModeParams.enableHeSingleUserBeamformer = mContext.getResources().getBoolean(R.bool.config_wifiSoftapHeSuBeamformerSupported);
+                    ifaceParams1_2.hwModeParams.enableHeSingleUserBeamformee = mContext.getResources().getBoolean(R.bool.config_wifiSoftapHeSuBeamformeeSupported);
+                    ifaceParams1_2.hwModeParams.enableHeMultiUserBeamformer = mContext.getResources().getBoolean(R.bool.config_wifiSoftapHeMuBeamformerSupported);
+                    ifaceParams1_2.hwModeParams.enableHeTargetWakeTime = mContext.getResources().getBoolean(R.bool.config_wifiSoftapHeTwtSupported);
+                    ifaceParams1_2.channelParams.bandMask = getHalBandMask(band);
+                    if (ifaceParams.channelParams.enableAcs && isSendFreqRangesNeeded(band)) {
+                        if ((band & SoftApConfiguration.BAND_2GHZ) != 0) {
+                            ifaceParams1_2.channelParams.acsChannelFreqRangesMhz.addAll(toAcsFreqRanges(SoftApConfiguration.BAND_2GHZ));
+                        }
+                        if ((band & SoftApConfiguration.BAND_5GHZ) != 0) {
+                            ifaceParams1_2.channelParams.acsChannelFreqRangesMhz.addAll(toAcsFreqRanges(SoftApConfiguration.BAND_5GHZ));
+                        }
+                        if ((band & SoftApConfiguration.BAND_6GHZ) != 0) {
+                            ifaceParams1_2.channelParams.acsChannelFreqRangesMhz.addAll(toAcsFreqRanges(SoftApConfiguration.BAND_6GHZ));
+                        }
+                    }
+                    android.hardware.wifi.hostapd.V1_2.IHostapd iHostapdV1_2 = getHostapdMockableV1_2();
+                    if (iHostapdV1_2 == null)
+                        return false;
+                    status12 = iHostapdV1_2.addAccessPoint_1_2(ifaceParams1_2, nwParamsV1_2);
+                    if (!checkStatusAndLogFailure12(status12, methodStr)) {
+                        return false;
+                    }
+                }
+            }
+            mSoftApFailureListeners.put(ifaceName, onFailureListener);
+            return true;
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "Unrecognized apBand: " + band);
+            return false;
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

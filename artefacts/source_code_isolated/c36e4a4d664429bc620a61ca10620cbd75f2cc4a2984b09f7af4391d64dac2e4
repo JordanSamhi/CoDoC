@@ -1,0 +1,14 @@
+public void addNetworkRegistrationInfo(NetworkRegistrationInfo nri){
+    if (nri == null)
+        return;
+    synchronized (mNetworkRegistrationInfos) {
+        for (int i = 0; i < mNetworkRegistrationInfos.size(); i++) {
+            NetworkRegistrationInfo curRegState = mNetworkRegistrationInfos.get(i);
+            if (curRegState.getTransportType() == nri.getTransportType() && curRegState.getDomain() == nri.getDomain()) {
+                mNetworkRegistrationInfos.remove(i);
+                break;
+            }
+        }
+        mNetworkRegistrationInfos.add(new NetworkRegistrationInfo(nri));
+    }
+}

@@ -1,0 +1,119 @@
+public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info){
+    if (mAttachInfo == null) {
+        return;
+    }
+    Rect bounds = mAttachInfo.mTmpInvalRect;
+    getDrawingRect(bounds);
+    info.setBoundsInParent(bounds);
+    getBoundsOnScreen(bounds, true);
+    info.setBoundsInScreen(bounds);
+    ViewParent parent = getParentForAccessibility();
+    if (parent instanceof View) {
+        info.setParent((View) parent);
+    }
+    if (mID != View.NO_ID) {
+        View rootView = getRootView();
+        if (rootView == null) {
+            rootView = this;
+        }
+        View label = rootView.findLabelForView(this, mID);
+        if (label != null) {
+            info.setLabeledBy(label);
+        }
+        if ((mAttachInfo.mAccessibilityFetchFlags & AccessibilityNodeInfo.FLAG_REPORT_VIEW_IDS) != 0 && Resources.resourceHasPackage(mID)) {
+            try {
+                String viewId = getResources().getResourceName(mID);
+                info.setViewIdResourceName(viewId);
+            } catch (Resources.NotFoundException nfe) {
+            }
+        }
+    }
+    if (mLabelForId != View.NO_ID) {
+        View rootView = getRootView();
+        if (rootView == null) {
+            rootView = this;
+        }
+        View labeled = rootView.findViewInsideOutShouldExist(this, mLabelForId);
+        if (labeled != null) {
+            info.setLabelFor(labeled);
+        }
+    }
+    if (mAccessibilityTraversalBeforeId != View.NO_ID) {
+        View rootView = getRootView();
+        if (rootView == null) {
+            rootView = this;
+        }
+        View next = rootView.findViewInsideOutShouldExist(this, mAccessibilityTraversalBeforeId);
+        if (next != null && next.includeForAccessibility()) {
+            info.setTraversalBefore(next);
+        }
+    }
+    if (mAccessibilityTraversalAfterId != View.NO_ID) {
+        View rootView = getRootView();
+        if (rootView == null) {
+            rootView = this;
+        }
+        View next = rootView.findViewInsideOutShouldExist(this, mAccessibilityTraversalAfterId);
+        if (next != null && next.includeForAccessibility()) {
+            info.setTraversalAfter(next);
+        }
+    }
+    info.setVisibleToUser(isVisibleToUser());
+    info.setImportantForAccessibility(isImportantForAccessibility());
+    info.setPackageName(mContext.getPackageName());
+    info.setClassName(getAccessibilityClassName());
+    info.setStateDescription(getStateDescription());
+    info.setContentDescription(getContentDescription());
+    info.setEnabled(isEnabled());
+    info.setClickable(isClickable());
+    info.setFocusable(isFocusable());
+    info.setScreenReaderFocusable(isScreenReaderFocusable());
+    info.setFocused(isFocused());
+    info.setAccessibilityFocused(isAccessibilityFocused());
+    info.setSelected(isSelected());
+    info.setLongClickable(isLongClickable());
+    info.setContextClickable(isContextClickable());
+    info.setLiveRegion(getAccessibilityLiveRegion());
+    if ((mTooltipInfo != null) && (mTooltipInfo.mTooltipText != null)) {
+        info.setTooltipText(mTooltipInfo.mTooltipText);
+        info.addAction((mTooltipInfo.mTooltipPopup == null) ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_TOOLTIP : AccessibilityNodeInfo.AccessibilityAction.ACTION_HIDE_TOOLTIP);
+    }
+    info.addAction(AccessibilityNodeInfo.ACTION_SELECT);
+    info.addAction(AccessibilityNodeInfo.ACTION_CLEAR_SELECTION);
+    if (isFocusable()) {
+        if (isFocused()) {
+            info.addAction(AccessibilityNodeInfo.ACTION_CLEAR_FOCUS);
+        } else {
+            info.addAction(AccessibilityNodeInfo.ACTION_FOCUS);
+        }
+    }
+    if (!isAccessibilityFocused()) {
+        info.addAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS);
+    } else {
+        info.addAction(AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS);
+    }
+    if (isClickable() && isEnabled()) {
+        info.addAction(AccessibilityNodeInfo.ACTION_CLICK);
+    }
+    if (isLongClickable() && isEnabled()) {
+        info.addAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+    }
+    if (isContextClickable() && isEnabled()) {
+        info.addAction(AccessibilityAction.ACTION_CONTEXT_CLICK);
+    }
+    CharSequence text = getIterableTextForAccessibility();
+    if (text != null && text.length() > 0) {
+        info.setTextSelection(getAccessibilitySelectionStart(), getAccessibilitySelectionEnd());
+        info.addAction(AccessibilityNodeInfo.ACTION_SET_SELECTION);
+        info.addAction(AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+        info.addAction(AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
+        info.setMovementGranularities(AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_WORD | AccessibilityNodeInfo.MOVEMENT_GRANULARITY_PARAGRAPH);
+    }
+    info.addAction(AccessibilityAction.ACTION_SHOW_ON_SCREEN);
+    populateAccessibilityNodeInfoDrawingOrderInParent(info);
+    info.setPaneTitle(mAccessibilityPaneTitle);
+    info.setHeading(isAccessibilityHeading());
+    if (mTouchDelegate != null) {
+        info.setTouchDelegateInfo(mTouchDelegate.getTouchDelegateInfo());
+    }
+}

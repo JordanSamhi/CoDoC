@@ -1,0 +1,28 @@
+public void startTethering(int type, boolean showProvisioningUi, final OnStartTetheringCallback callback, Handler handler){
+    Preconditions.checkNotNull(callback, "OnStartTetheringCallback cannot be null.");
+    final Executor executor = new Executor() {
+
+        @Override
+        public void execute(Runnable command) {
+            if (handler == null) {
+                command.run();
+            } else {
+                handler.post(command);
+            }
+        }
+    };
+    final StartTetheringCallback tetheringCallback = new StartTetheringCallback() {
+
+        @Override
+        public void onTetheringStarted() {
+            callback.onTetheringStarted();
+        }
+
+        @Override
+        public void onTetheringFailed(final int error) {
+            callback.onTetheringFailed();
+        }
+    };
+    final TetheringRequest request = new TetheringRequest.Builder(type).setShouldShowEntitlementUi(showProvisioningUi).build();
+    mTetheringManager.startTethering(request, executor, tetheringCallback);
+}

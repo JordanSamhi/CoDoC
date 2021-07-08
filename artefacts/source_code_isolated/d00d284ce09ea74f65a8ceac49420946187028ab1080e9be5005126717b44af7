@@ -1,0 +1,9 @@
+public void userRelease() throws RemoteException{
+    if (mBinder == null) {
+        return;
+    }
+    mBinder.unlinkToDeath(this, 0);
+    mBinder = null;
+    mResource.invalidate();
+    releaseReference();
+}

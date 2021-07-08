@@ -1,0 +1,7 @@
+public long getAvSyncTime(int avSyncHwId){
+    if (!checkResource(TunerResourceManager.TUNER_RESOURCE_TYPE_DEMUX)) {
+        return INVALID_TIMESTAMP;
+    }
+    Long time = nativeGetAvSyncTime(avSyncHwId);
+    return time == null ? INVALID_TIMESTAMP : time;
+}

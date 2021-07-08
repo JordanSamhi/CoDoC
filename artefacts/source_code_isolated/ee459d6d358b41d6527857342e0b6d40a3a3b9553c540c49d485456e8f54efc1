@@ -1,0 +1,9 @@
+public static boolean shouldShowEmergencyCallNotification(Context context){
+    try {
+        final Bundle res = context.getContentResolver().call(AUTHORITY_URI, METHOD_SHOULD_SHOW_EMERGENCY_CALL_NOTIFICATION, null, null);
+        return res != null && res.getBoolean(RES_SHOW_EMERGENCY_CALL_NOTIFICATION, false);
+    } catch (NullPointerException | IllegalArgumentException ex) {
+        Log.w(null, "shouldShowEmergencyCallNotification: provider not ready.");
+        return false;
+    }
+}

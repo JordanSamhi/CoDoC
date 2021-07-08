@@ -1,0 +1,40 @@
+public static void throwAsPublicException(Throwable t) throws CameraAccessException{
+    if (t instanceof ServiceSpecificException) {
+        ServiceSpecificException e = (ServiceSpecificException) t;
+        int reason = CameraAccessException.CAMERA_ERROR;
+        switch(e.errorCode) {
+            case ICameraService.ERROR_DISCONNECTED:
+                reason = CameraAccessException.CAMERA_DISCONNECTED;
+                break;
+            case ICameraService.ERROR_DISABLED:
+                reason = CameraAccessException.CAMERA_DISABLED;
+                break;
+            case ICameraService.ERROR_CAMERA_IN_USE:
+                reason = CameraAccessException.CAMERA_IN_USE;
+                break;
+            case ICameraService.ERROR_MAX_CAMERAS_IN_USE:
+                reason = CameraAccessException.MAX_CAMERAS_IN_USE;
+                break;
+            case ICameraService.ERROR_DEPRECATED_HAL:
+                reason = CameraAccessException.CAMERA_DEPRECATED_HAL;
+                break;
+            case ICameraService.ERROR_ILLEGAL_ARGUMENT:
+            case ICameraService.ERROR_ALREADY_EXISTS:
+                throw new IllegalArgumentException(e.getMessage(), e);
+            case ICameraService.ERROR_PERMISSION_DENIED:
+                throw new SecurityException(e.getMessage(), e);
+            case ICameraService.ERROR_TIMED_OUT:
+            case ICameraService.ERROR_INVALID_OPERATION:
+            default:
+                reason = CameraAccessException.CAMERA_ERROR;
+        }
+        throw new CameraAccessException(reason, e.getMessage(), e);
+    } else if (t instanceof DeadObjectException) {
+        throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service has died unexpectedly", t);
+    } else if (t instanceof RemoteException) {
+        throw new UnsupportedOperationException("An unknown RemoteException was thrown" + " which should never happen.", t);
+    } else if (t instanceof RuntimeException) {
+        RuntimeException e = (RuntimeException) t;
+        throw e;
+    }
+}

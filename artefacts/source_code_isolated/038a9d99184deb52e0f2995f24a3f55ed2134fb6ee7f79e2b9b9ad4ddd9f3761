@@ -1,0 +1,14 @@
+public void initForUser(int userId){
+    uid = UserHandle.getUid(userId, UserHandle.getAppId(uid));
+    if ("android".equals(packageName)) {
+        dataDir = Environment.getDataSystemDirectory().getAbsolutePath();
+        return;
+    }
+    deviceProtectedDataDir = Environment.getDataUserDePackageDirectory(volumeUuid, userId, packageName).getAbsolutePath();
+    credentialProtectedDataDir = Environment.getDataUserCePackageDirectory(volumeUuid, userId, packageName).getAbsolutePath();
+    if ((privateFlags & PRIVATE_FLAG_DEFAULT_TO_DEVICE_PROTECTED_STORAGE) != 0 && PackageManager.APPLY_DEFAULT_TO_DEVICE_PROTECTED_STORAGE) {
+        dataDir = deviceProtectedDataDir;
+    } else {
+        dataDir = credentialProtectedDataDir;
+    }
+}

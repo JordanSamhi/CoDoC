@@ -1,0 +1,10 @@
+public boolean getCrossProfileContactsSearchDisabled(@NonNull UserHandle userHandle){
+    if (mService != null) {
+        try {
+            return mService.getCrossProfileContactsSearchDisabledForUser(userHandle.getIdentifier());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

@@ -1,0 +1,21 @@
+public String generateKeyWithMetadata(@NonNull String alias, @Nullable byte[] metadata) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    Objects.requireNonNull(alias, "alias is null");
+    int uid = Binder.getCallingUid();
+    int userId = UserHandle.getCallingUserId();
+    PlatformEncryptionKey encryptionKey;
+    try {
+        encryptionKey = mPlatformKeyManager.getEncryptKey(userId);
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException(e);
+    } catch (KeyStoreException | UnrecoverableKeyException | IOException e) {
+        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, e.getMessage());
+    }
+    try {
+        byte[] secretKey = mRecoverableKeyGenerator.generateAndStoreKey(encryptionKey, userId, uid, alias, metadata);
+        mApplicationKeyStorage.setSymmetricKeyEntry(userId, uid, alias, secretKey);
+        return getAlias(userId, uid, alias);
+    } catch (KeyStoreException | InvalidKeyException | RecoverableKeyStorageException e) {
+        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, e.getMessage());
+    }
+}

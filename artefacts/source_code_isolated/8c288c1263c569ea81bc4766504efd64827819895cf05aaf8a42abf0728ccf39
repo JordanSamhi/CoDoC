@@ -1,0 +1,15 @@
+public void handleMessage(Message msg){
+    switch(msg.what) {
+        case EVENT_NEW_SMS_STATUS_REPORT:
+            handleStatusReport((AsyncResult) msg.obj);
+            break;
+        case EVENT_NEW_ICC_SMS:
+            mGsmInboundSmsHandler.sendMessage(InboundSmsHandler.EVENT_NEW_SMS, msg.obj);
+            break;
+        case EVENT_ICC_CHANGED:
+            onUpdateIccAvailability();
+            break;
+        default:
+            super.handleMessage(msg);
+    }
+}

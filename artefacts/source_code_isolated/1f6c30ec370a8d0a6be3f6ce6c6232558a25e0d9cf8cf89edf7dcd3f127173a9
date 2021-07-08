@@ -1,0 +1,10 @@
+public List<PhoneAccountHandle> getCallCapablePhoneAccounts(boolean includeDisabledAccounts){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getCallCapablePhoneAccounts(includeDisabledAccounts, mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getCallCapablePhoneAccounts(" + includeDisabledAccounts + ")", e);
+    }
+    return new ArrayList<>();
+}

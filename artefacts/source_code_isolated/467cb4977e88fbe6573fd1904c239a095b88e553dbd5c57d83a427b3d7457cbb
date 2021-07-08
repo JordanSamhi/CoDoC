@@ -1,0 +1,13 @@
+public void addDomain(Iterator<String> labels, int match){
+    String labelName = labels.next();
+    Label subLabel = mSubDomains.get(labelName);
+    if (subLabel == null) {
+        subLabel = new Label(MATCH_NONE);
+        mSubDomains.put(labelName, subLabel);
+    }
+    if (labels.hasNext()) {
+        subLabel.addDomain(labels, match);
+    } else {
+        subLabel.mMatch = match;
+    }
+}

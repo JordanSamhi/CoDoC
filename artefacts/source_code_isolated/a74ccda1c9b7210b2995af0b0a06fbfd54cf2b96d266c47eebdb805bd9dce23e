@@ -1,0 +1,5 @@
+public static CharSequence getFormattedTime(Context context, long time, boolean isSameDay, int userHandle){
+    String skeleton = (!isSameDay ? "EEE " : "") + (DateFormat.is24HourFormat(context, userHandle) ? "Hm" : "hma");
+    final String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
+    return DateFormat.format(pattern, time);
+}

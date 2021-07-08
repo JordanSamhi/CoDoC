@@ -1,0 +1,47 @@
+
+     * Removes a whitelisted restricted permission for an app.
+     *
+     * <p> Permissions can be hard restricted which means that the app cannot hold
+     * them or soft restricted where the app can hold the permission but in a weaker
+     * form. Whether a permission is {@link PermissionInfo#FLAG_HARD_RESTRICTED hard
+     * restricted} or {@link PermissionInfo#FLAG_SOFT_RESTRICTED soft restricted}
+     * depends on the permission declaration. Whitelisting a hard restricted permission
+     * allows for the to hold that permission and whitelisting a soft restricted
+     * permission allows the app to hold the permission in its full, unrestricted form.
+     *
+     * <p><ol>There are three whitelists:
+     *
+     * <li>one for cases where the system permission policy whitelists a permission
+     * This list corresponds to the {@link #FLAG_PERMISSION_WHITELIST_SYSTEM} flag.
+     * Can only be modified by pre-installed holders of a dedicated permission.
+     *
+     * <li>one for cases where the system whitelists the permission when upgrading
+     * from an OS version in which the permission was not restricted to an OS version
+     * in which the permission is restricted. This list corresponds to the {@link
+     * #FLAG_PERMISSION_WHITELIST_UPGRADE} flag. Can be modified by pre-installed
+     * holders of a dedicated permission. The installer on record can only remove
+     * permissions from this whitelist.
+     *
+     * <li>one for cases where the installer of the package whitelists a permission.
+     * This list corresponds to the {@link #FLAG_PERMISSION_WHITELIST_INSTALLER} flag.
+     * Can be modified by pre-installed holders of a dedicated permission or the installer
+     * on record.
+     *
+     * <p>You need to specify the whitelists for which to set the whitelisted permissions
+     * which will clear the previous whitelisted permissions and replace them with the
+     * provided ones.
+     *
+     * @param packageName The app for which to get whitelisted permissions.
+     * @param permName The whitelisted permission to remove.
+     * @param whitelistFlags The whitelists from which to remove. Passing multiple flags
+     * updates all specified whitelists.
+     * @return Whether the permission was removed from the whitelist.
+     *
+     * @see #getWhitelistedRestrictedPermissions(String, int)
+     * @see #addWhitelistedRestrictedPermission(String, String, int)
+     * @see #FLAG_PERMISSION_WHITELIST_SYSTEM
+     * @see #FLAG_PERMISSION_WHITELIST_UPGRADE
+     * @see #FLAG_PERMISSION_WHITELIST_INSTALLER
+     *
+     * @throws SecurityException if you try to modify a whitelist that you have no access to.
+     

@@ -1,0 +1,17 @@
+public void dump(Context context, PrintWriter pw, String prefix){
+    synchronized (mLock) {
+        pw.println(prefix + "Audio playback (lastly played comes first)");
+        String indent = prefix + "  ";
+        for (int i = 0; i < mSortedAudioPlaybackClientUids.size(); i++) {
+            int uid = mSortedAudioPlaybackClientUids.get(i);
+            pw.print(indent + "uid=" + uid + " packages=");
+            String[] packages = context.getPackageManager().getPackagesForUid(uid);
+            if (packages != null && packages.length > 0) {
+                for (int j = 0; j < packages.length; j++) {
+                    pw.print(packages[j] + " ");
+                }
+            }
+            pw.println();
+        }
+    }
+}

@@ -1,0 +1,12 @@
+public void deleteIncidentReports(String pkg, String cls, String id) throws RemoteException{
+    if (pkg == null || cls == null || id == null || pkg.length() == 0 || cls.length() == 0 || id.length() == 0) {
+        throw new RuntimeException("Invalid pkg, cls or id");
+    }
+    enforceAccessReportsPermissions(pkg);
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        getIIncidentManager().deleteIncidentReports(pkg, cls, id);
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

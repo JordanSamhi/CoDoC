@@ -1,0 +1,15 @@
+public static void apply464xlatAdjustments(NetworkStats baseTraffic, NetworkStats stackedTraffic, Map<String, String> stackedIfaces){
+    Entry entry = null;
+    for (int i = 0; i < stackedTraffic.size; i++) {
+        entry = stackedTraffic.getValues(i, entry);
+        if (entry == null)
+            continue;
+        if (entry.iface == null)
+            continue;
+        if (!entry.iface.startsWith(CLATD_INTERFACE_PREFIX))
+            continue;
+        entry.rxBytes += entry.rxPackets * IPV4V6_HEADER_DELTA;
+        entry.txBytes += entry.txPackets * IPV4V6_HEADER_DELTA;
+        stackedTraffic.setValues(i, entry);
+    }
+}

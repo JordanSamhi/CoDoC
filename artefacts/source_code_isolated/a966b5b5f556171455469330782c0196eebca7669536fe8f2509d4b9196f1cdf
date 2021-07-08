@@ -1,0 +1,14 @@
+public boolean isTrustedForMediaControl(@NonNull RemoteUserInfo userInfo){
+    if (userInfo == null) {
+        throw new IllegalArgumentException("userInfo may not be null");
+    }
+    if (userInfo.getPackageName() == null) {
+        return false;
+    }
+    try {
+        return mService.isTrusted(userInfo.getPackageName(), userInfo.getPid(), userInfo.getUid());
+    } catch (RemoteException e) {
+        Log.wtf(TAG, "Cannot communicate with the service.", e);
+    }
+    return false;
+}

@@ -1,0 +1,19 @@
+public void run(){
+    synchronized (SipSessionGroup.this) {
+        if (!mRunning)
+            return;
+        if (DBG_PING) {
+            String peerUri = (mPeerProfile == null) ? "null" : mPeerProfile.getUriString();
+            log("keepalive: " + mLocalProfile.getUriString() + " --> " + peerUri + ", interval=" + mInterval);
+        }
+        try {
+            sendKeepAlive();
+        } catch (Throwable t) {
+            if (SKA_DBG) {
+                loge("keepalive error: " + mLocalProfile.getUriString(), getRootCause(t));
+            }
+            if (mRunning)
+                SipSessionImpl.this.onError(t);
+        }
+    }
+}

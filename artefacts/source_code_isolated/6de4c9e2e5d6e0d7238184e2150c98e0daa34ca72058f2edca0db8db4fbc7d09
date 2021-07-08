@@ -1,0 +1,12 @@
+public void computeScrollDelta(){
+    if (mDeltaTime == 0) {
+        throw new RuntimeException("Cannot compute scroll delta before calling start()");
+    }
+    final long currentTime = AnimationUtils.currentAnimationTimeMillis();
+    final float value = getValueAt(currentTime);
+    final float scale = interpolateValue(value);
+    final long elapsedSinceDelta = currentTime - mDeltaTime;
+    mDeltaTime = currentTime;
+    mDeltaX = (int) (elapsedSinceDelta * scale * mTargetVelocityX);
+    mDeltaY = (int) (elapsedSinceDelta * scale * mTargetVelocityY);
+}

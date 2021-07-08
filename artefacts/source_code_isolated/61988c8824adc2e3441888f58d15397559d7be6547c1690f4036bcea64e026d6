@@ -1,0 +1,59 @@
+public View bindView(View convertView, ViewGroup parent, RecipientEntry entry, int position, AdapterType type, String constraint, StateListDrawable deleteDrawable){
+    CharSequence[] styledResults = getStyledResults(constraint, entry);
+    CharSequence displayName = styledResults[0];
+    CharSequence destination = styledResults[1];
+    boolean showImage = true;
+    CharSequence destinationType = getDestinationType(entry);
+    final View itemView = reuseOrInflateView(convertView, parent, type);
+    final ViewHolder viewHolder = new ViewHolder(itemView);
+    switch(type) {
+        case BASE_RECIPIENT:
+            if (TextUtils.isEmpty(displayName) || TextUtils.equals(displayName, destination)) {
+                displayName = destination;
+                if (entry.isFirstLevel()) {
+                    destination = null;
+                }
+            }
+            if (!entry.isFirstLevel()) {
+                displayName = null;
+                showImage = false;
+            }
+            if (viewHolder.topDivider != null) {
+                viewHolder.topDivider.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+                MarginLayoutParamsCompat.setMarginStart((MarginLayoutParams) viewHolder.topDivider.getLayoutParams(), mAutocompleteDividerMarginStart);
+            }
+            if (viewHolder.bottomDivider != null) {
+                MarginLayoutParamsCompat.setMarginStart((MarginLayoutParams) viewHolder.bottomDivider.getLayoutParams(), mAutocompleteDividerMarginStart);
+            }
+            break;
+        case RECIPIENT_ALTERNATES:
+            if (position != 0) {
+                displayName = null;
+                showImage = false;
+            }
+            break;
+        case SINGLE_RECIPIENT:
+            if (!PhoneUtil.isPhoneNumber(entry.getDestination())) {
+                destination = Rfc822Tokenizer.tokenize(entry.getDestination())[0].getAddress();
+            }
+            destinationType = null;
+    }
+    bindTextToView(displayName, viewHolder.displayNameView);
+    bindTextToView(destination, viewHolder.destinationView);
+    bindTextToView(destinationType, viewHolder.destinationTypeView);
+    bindIconToView(showImage, entry, viewHolder.imageView, type);
+    bindDrawableToDeleteView(deleteDrawable, entry.getDisplayName(), viewHolder.deleteView);
+    bindIndicatorToView(entry.getIndicatorIconId(), entry.getIndicatorText(), viewHolder.indicatorView);
+    bindPermissionRequestDismissView(viewHolder.permissionRequestDismissView);
+    final int entryType = entry.getEntryType();
+    if (entryType == RecipientEntry.ENTRY_TYPE_PERSON) {
+        setViewVisibility(viewHolder.personViewGroup, View.VISIBLE);
+        setViewVisibility(viewHolder.permissionViewGroup, View.GONE);
+        setViewVisibility(viewHolder.permissionBottomDivider, View.GONE);
+    } else if (entryType == RecipientEntry.ENTRY_TYPE_PERMISSION_REQUEST) {
+        setViewVisibility(viewHolder.personViewGroup, View.GONE);
+        setViewVisibility(viewHolder.permissionViewGroup, View.VISIBLE);
+        setViewVisibility(viewHolder.permissionBottomDivider, View.VISIBLE);
+    }
+    return itemView;
+}

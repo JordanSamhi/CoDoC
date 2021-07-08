@@ -1,0 +1,18 @@
+public List<ScanDetail> getFilteredScanDetailsForOpenUnsavedNetworks(){
+    List<ScanDetail> openUnsavedNetworks = new ArrayList<>();
+    boolean enhancedOpenSupported = isEnhancedOpenSupported();
+    for (ScanDetail scanDetail : mFilteredNetworks) {
+        ScanResult scanResult = scanDetail.getScanResult();
+        if (!ScanResultUtil.isScanResultForOpenNetwork(scanResult)) {
+            continue;
+        }
+        if (ScanResultUtil.isScanResultForOweNetwork(scanResult) && !enhancedOpenSupported) {
+            continue;
+        }
+        if (mWifiConfigManager.getConfiguredNetworkForScanDetailAndCache(scanDetail) != null) {
+            continue;
+        }
+        openUnsavedNetworks.add(scanDetail);
+    }
+    return openUnsavedNetworks;
+}

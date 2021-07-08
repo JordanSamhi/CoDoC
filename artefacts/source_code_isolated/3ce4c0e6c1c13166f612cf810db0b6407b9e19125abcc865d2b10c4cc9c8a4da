@@ -1,0 +1,10 @@
+public IContentObserver releaseContentObserver(){
+    synchronized (mLock) {
+        final Transport oldTransport = mTransport;
+        if (oldTransport != null) {
+            oldTransport.releaseContentObserver();
+            mTransport = null;
+        }
+        return oldTransport;
+    }
+}

@@ -1,0 +1,12 @@
+public String getSelectedTrack(int type){
+    synchronized (mMetadataLock) {
+        if (type == TvTrackInfo.TYPE_AUDIO) {
+            return mSelectedAudioTrackId;
+        } else if (type == TvTrackInfo.TYPE_VIDEO) {
+            return mSelectedVideoTrackId;
+        } else if (type == TvTrackInfo.TYPE_SUBTITLE) {
+            return mSelectedSubtitleTrackId;
+        }
+    }
+    throw new IllegalArgumentException("invalid type: " + type);
+}

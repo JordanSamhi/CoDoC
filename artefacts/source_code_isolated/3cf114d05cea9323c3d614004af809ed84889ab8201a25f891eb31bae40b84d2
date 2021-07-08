@@ -1,0 +1,12 @@
+public synchronized void update(){
+    final boolean isSyncInProgress = !mActiveSyncContexts.isEmpty();
+    if (isSyncInProgress == mLastWasSyncing)
+        return;
+    final long now = SystemClock.elapsedRealtime();
+    if (isSyncInProgress) {
+        mWhenSyncStarted = now;
+    } else {
+        mTimeSpentSyncing += now - mWhenSyncStarted;
+    }
+    mLastWasSyncing = isSyncInProgress;
+}

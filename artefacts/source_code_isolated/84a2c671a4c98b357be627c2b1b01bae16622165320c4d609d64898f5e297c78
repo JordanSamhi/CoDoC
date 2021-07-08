@@ -1,0 +1,16 @@
+public boolean yieldTransaction(long sleepAfterYieldDelayMillis, boolean throwIfUnsafe, CancellationSignal cancellationSignal){
+    if (throwIfUnsafe) {
+        throwIfNoTransaction();
+        throwIfTransactionMarkedSuccessful();
+        throwIfNestedTransaction();
+    } else {
+        if (mTransactionStack == null || mTransactionStack.mMarkedSuccessful || mTransactionStack.mParent != null) {
+            return false;
+        }
+    }
+    assert mConnection != null;
+    if (mTransactionStack.mChildFailed) {
+        return false;
+    }
+    return yieldTransactionUnchecked(sleepAfterYieldDelayMillis, cancellationSignal);
+}

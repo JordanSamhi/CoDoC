@@ -1,0 +1,18 @@
+public Long getAsLong(String key){
+    Object value = mMap.get(key);
+    try {
+        return value != null ? ((Number) value).longValue() : null;
+    } catch (ClassCastException e) {
+        if (value instanceof CharSequence) {
+            try {
+                return Long.valueOf(value.toString());
+            } catch (NumberFormatException e2) {
+                Log.e(TAG, "Cannot parse Long value for " + value + " at key " + key);
+                return null;
+            }
+        } else {
+            Log.e(TAG, "Cannot cast value for " + key + " to a Long: " + value, e);
+            return null;
+        }
+    }
+}

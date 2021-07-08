@@ -1,0 +1,12 @@
+public void registerListCallback(@NonNull @CallbackExecutor Executor executor, @NonNull ListCallback callback){
+    registerListCallback(new ListCallback() {
+
+        public void onItemChanged(@NonNull ProgramSelector.Identifier id) {
+            executor.execute(() -> callback.onItemChanged(id));
+        }
+
+        public void onItemRemoved(@NonNull ProgramSelector.Identifier id) {
+            executor.execute(() -> callback.onItemRemoved(id));
+        }
+    });
+}

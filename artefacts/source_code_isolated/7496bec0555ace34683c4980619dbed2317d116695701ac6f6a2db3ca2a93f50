@@ -1,0 +1,15 @@
+public void onRecordingConfigurationChanged(int event, int riid, int uid, int session, int source, int portId, boolean silenced, int[] recordingInfo, AudioEffect.Descriptor[] clientEffects, AudioEffect.Descriptor[] effects, int activeSource, String packName){
+    final AudioRecordingConfiguration config = createRecordingConfiguration(uid, session, source, recordingInfo, portId, silenced, activeSource, clientEffects, effects);
+    if (source == MediaRecorder.AudioSource.REMOTE_SUBMIX && (event == AudioManager.RECORD_CONFIG_EVENT_START || event == AudioManager.RECORD_CONFIG_EVENT_UPDATE)) {
+        final AudioDeviceInfo device = config.getAudioDevice();
+        if (device != null && AudioSystem.LEGACY_REMOTE_SUBMIX_ADDRESS.equals(device.getAddress())) {
+            mLegacyRemoteSubmixRiid.set(riid);
+            mLegacyRemoteSubmixActive.set(true);
+        }
+    }
+    if (MediaRecorder.isSystemOnlyAudioSource(source)) {
+        sEventLogger.log(new RecordingEvent(event, riid, config).printLog(TAG));
+        return;
+    }
+    dispatchCallbacks(updateSnapshot(event, riid, config));
+}

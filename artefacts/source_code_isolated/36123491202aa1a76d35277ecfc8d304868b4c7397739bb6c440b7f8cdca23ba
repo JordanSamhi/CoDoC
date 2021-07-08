@@ -1,0 +1,16 @@
+public void release(){
+    synchronized (mStreamEventCbLock) {
+        endStreamEventHandling();
+    }
+    try {
+        stop();
+    } catch (IllegalStateException ise) {
+    }
+    baseRelease();
+    native_release();
+    synchronized (mPlayStateLock) {
+        mState = STATE_UNINITIALIZED;
+        mPlayState = PLAYSTATE_STOPPED;
+        mPlayStateLock.notify();
+    }
+}

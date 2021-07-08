@@ -1,0 +1,9 @@
+public KeyValueListingBuilder addPair(String key, ChunkHash hash){
+    checkArgument(key.length() != 0, "Key must have non-zero length");
+    Objects.requireNonNull(hash, "Hash must not be null");
+    KeyValueListingProto.KeyValueEntry entry = new KeyValueListingProto.KeyValueEntry();
+    entry.key = key;
+    entry.hash = hash.getHash();
+    mEntries.add(entry);
+    return this;
+}

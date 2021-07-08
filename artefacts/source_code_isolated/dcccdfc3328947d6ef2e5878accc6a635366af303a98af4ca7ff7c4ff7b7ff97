@@ -1,0 +1,13 @@
+public void close(){
+    synchronized (mLock) {
+        if (mIsClosed) {
+            return;
+        }
+        int res = nativeClose();
+        if (res != Tuner.RESULT_SUCCESS) {
+            TunerUtils.throwExceptionForResult(res, "Failed to close descrambler");
+        } else {
+            mIsClosed = true;
+        }
+    }
+}

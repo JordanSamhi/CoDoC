@@ -1,0 +1,20 @@
+public void tearDownAgentAndKill(ApplicationInfo app){
+    if (app == null) {
+        return;
+    }
+    try {
+        mActivityManager.unbindBackupAgent(app);
+        if (!UserHandle.isCore(app.uid) && !app.packageName.equals("com.android.backupconfirm")) {
+            if (MORE_DEBUG) {
+                Slog.d(TAG, addUserIdToLogMessage(mUserId, "Killing agent host process"));
+            }
+            mActivityManager.killApplicationProcess(app.processName, app.uid);
+        } else {
+            if (MORE_DEBUG) {
+                Slog.d(TAG, addUserIdToLogMessage(mUserId, "Not killing after operation: " + app.processName));
+            }
+        }
+    } catch (RemoteException e) {
+        Slog.d(TAG, addUserIdToLogMessage(mUserId, "Lost app trying to shut down"));
+    }
+}

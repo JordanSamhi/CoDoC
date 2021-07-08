@@ -1,0 +1,13 @@
+public void dataChanged(final String packageName){
+    final HashSet<String> targets = dataChangedTargets(packageName);
+    if (targets == null) {
+        Slog.w(TAG, addUserIdToLogMessage(mUserId, "dataChanged but no participant pkg='" + packageName + "'" + " uid=" + Binder.getCallingUid()));
+        return;
+    }
+    mBackupHandler.post(new Runnable() {
+
+        public void run() {
+            dataChangedImpl(packageName, targets);
+        }
+    });
+}

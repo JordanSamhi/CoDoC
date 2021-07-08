@@ -1,0 +1,17 @@
+public void setModemsConfig(int numOfLiveModems, Message result){
+    IRadioConfig radioConfigProxy = getRadioConfigProxy(result);
+    if (radioConfigProxy != null && mRadioConfigVersion.greaterOrEqual(RADIO_CONFIG_HAL_VERSION_1_1)) {
+        android.hardware.radio.config.V1_1.IRadioConfig radioConfigProxy11 = (android.hardware.radio.config.V1_1.IRadioConfig) radioConfigProxy;
+        RILRequest rr = obtainRequest(RIL_REQUEST_SWITCH_DUAL_SIM_CONFIG, result, mDefaultWorkSource);
+        if (DBG) {
+            logd(rr.serialString() + "> " + requestToString(rr.mRequest) + ", numOfLiveModems = " + numOfLiveModems);
+        }
+        try {
+            ModemsConfig modemsConfig = new ModemsConfig();
+            modemsConfig.numOfLiveModems = (byte) numOfLiveModems;
+            radioConfigProxy11.setModemsConfig(rr.mSerial, modemsConfig);
+        } catch (RemoteException | RuntimeException e) {
+            resetProxyAndRequestList("setModemsConfig", e);
+        }
+    }
+}

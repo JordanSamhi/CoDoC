@@ -1,0 +1,26 @@
+public Action build(){
+    checkContextualActionNullFields();
+    ArrayList<RemoteInput> dataOnlyInputs = new ArrayList<>();
+    RemoteInput[] previousDataInputs = getParcelableArrayFromBundle(mExtras, EXTRA_DATA_ONLY_INPUTS, RemoteInput.class);
+    if (previousDataInputs != null) {
+        for (RemoteInput input : previousDataInputs) {
+            dataOnlyInputs.add(input);
+        }
+    }
+    List<RemoteInput> textInputs = new ArrayList<>();
+    if (mRemoteInputs != null) {
+        for (RemoteInput input : mRemoteInputs) {
+            if (input.isDataOnly()) {
+                dataOnlyInputs.add(input);
+            } else {
+                textInputs.add(input);
+            }
+        }
+    }
+    if (!dataOnlyInputs.isEmpty()) {
+        RemoteInput[] dataInputsArr = dataOnlyInputs.toArray(new RemoteInput[dataOnlyInputs.size()]);
+        mExtras.putParcelableArray(EXTRA_DATA_ONLY_INPUTS, dataInputsArr);
+    }
+    RemoteInput[] textInputsArr = textInputs.isEmpty() ? null : textInputs.toArray(new RemoteInput[textInputs.size()]);
+    return new Action(mIcon, mTitle, mIntent, mExtras, textInputsArr, mAllowGeneratedReplies, mSemanticAction, mIsContextual);
+}

@@ -1,0 +1,11 @@
+public RemoteViews createContentView(boolean increasedHeight){
+    if (mN.contentView != null && useExistingRemoteView()) {
+        return mN.contentView;
+    } else if (mStyle != null) {
+        final RemoteViews styleView = mStyle.makeContentView(increasedHeight);
+        if (styleView != null) {
+            return styleView;
+        }
+    }
+    return applyStandardTemplate(getBaseLayoutResource(), null);
+}

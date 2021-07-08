@@ -1,0 +1,40 @@
+public boolean queueRequest(RequestHolder holder, LegacyRequest legacy, long timeout, TimeUnit unit) throws InterruptedException{
+    CaptureHolder h = new CaptureHolder(holder, legacy);
+    long nanos = unit.toNanos(timeout);
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        if (DEBUG) {
+            Log.d(TAG, "queueRequest  for request " + holder.getRequestId() + " - " + mInFlight + " requests remain in flight.");
+        }
+        if (!(h.needsJpeg || h.needsPreview)) {
+            throw new IllegalStateException("Request must target at least one output surface!");
+        }
+        if (h.needsJpeg) {
+            while (mInFlight > 0) {
+                if (nanos <= 0) {
+                    return false;
+                }
+                nanos = mIsEmpty.awaitNanos(nanos);
+            }
+            mJpegCaptureQueue.add(h);
+            mJpegProduceQueue.add(h);
+        }
+        if (h.needsPreview) {
+            while (mInFlight >= mMaxInFlight) {
+                if (nanos <= 0) {
+                    return false;
+                }
+                nanos = mNotFull.awaitNanos(nanos);
+            }
+            mPreviewCaptureQueue.add(h);
+            mPreviewProduceQueue.add(h);
+            mInFlightPreviews++;
+        }
+        mActiveRequests.add(h);
+        mInFlight++;
+        return true;
+    } finally {
+        lock.unlock();
+    }
+}

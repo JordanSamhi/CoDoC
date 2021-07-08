@@ -1,0 +1,23 @@
+
+     * When enabled, verify that all untrusted SQL conforms to a restricted SQL
+     * grammar. Here are the restrictions applied:
+     * <ul>
+     * <li>In {@code WHERE} and {@code HAVING} clauses: subqueries, raising, and
+     * windowing terms are rejected.
+     * <li>In {@code GROUP BY} clauses: only valid columns are allowed.
+     * <li>In {@code ORDER BY} clauses: only valid columns, collation, and
+     * ordering terms are allowed.
+     * <li>In {@code LIMIT} clauses: only numerical values and offset terms are
+     * allowed.
+     * </ul>
+     * All column references must be valid as defined by
+     * {@link #setProjectionMap(Map)}.
+     * <p>
+     * This enforcement applies to {@link #query}, {@link #update} and
+     * {@link #delete} operations. This enforcement does not apply to trusted
+     * inputs, such as those provided by {@link #appendWhere}. Any enforcement
+     * failures will throw an {@link IllegalArgumentException}.
+     * <p>
+     * This feature is disabled by default on each newly constructed
+     * {@link SQLiteQueryBuilder} and needs to be manually enabled.
+     

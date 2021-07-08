@@ -1,0 +1,10 @@
+public List<PhoneAccountHandle> getPhoneAccountsForPackage(){
+    try {
+        if (isServiceConnected()) {
+            return getTelecomService().getPhoneAccountsForPackage(mContext.getPackageName());
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelecomService#getPhoneAccountsForPackage", e);
+    }
+    return null;
+}

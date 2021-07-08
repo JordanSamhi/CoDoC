@@ -1,0 +1,11 @@
+public void pushTetherStats(){
+    final NetworkStats ifaceDiff = getTetherStats(StatsType.STATS_PER_IFACE).subtract(mIfaceStats);
+    final NetworkStats uidDiff = getTetherStats(StatsType.STATS_PER_UID).subtract(mUidStats);
+    try {
+        notifyStatsUpdated(0, ifaceDiff, uidDiff);
+        mIfaceStats = mIfaceStats.add(ifaceDiff);
+        mUidStats = mUidStats.add(uidDiff);
+    } catch (RuntimeException e) {
+        mLog.e("Cannot report network stats: ", e);
+    }
+}

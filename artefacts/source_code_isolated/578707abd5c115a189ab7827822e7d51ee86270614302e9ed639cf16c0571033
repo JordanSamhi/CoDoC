@@ -1,0 +1,66 @@
+public static Typeface createFromResources(FamilyResourceEntry entry, AssetManager mgr, String path){
+    if (entry instanceof ProviderResourceEntry) {
+        final ProviderResourceEntry providerEntry = (ProviderResourceEntry) entry;
+        List<List<String>> givenCerts = providerEntry.getCerts();
+        List<List<byte[]>> certs = new ArrayList<>();
+        if (givenCerts != null) {
+            for (int i = 0; i < givenCerts.size(); i++) {
+                List<String> certSet = givenCerts.get(i);
+                List<byte[]> byteArraySet = new ArrayList<>();
+                for (int j = 0; j < certSet.size(); j++) {
+                    byteArraySet.add(Base64.decode(certSet.get(j), Base64.DEFAULT));
+                }
+                certs.add(byteArraySet);
+            }
+        }
+        FontRequest request = new FontRequest(providerEntry.getAuthority(), providerEntry.getPackage(), providerEntry.getQuery(), certs);
+        Typeface typeface = FontsContract.getFontSync(request);
+        return typeface == null ? DEFAULT : typeface;
+    }
+    Typeface typeface = findFromCache(mgr, path);
+    if (typeface != null)
+        return typeface;
+    final FontFamilyFilesResourceEntry filesEntry = (FontFamilyFilesResourceEntry) entry;
+    try {
+        FontFamily.Builder familyBuilder = null;
+        for (final FontFileResourceEntry fontFile : filesEntry.getEntries()) {
+            final Font.Builder fontBuilder = new Font.Builder(mgr, fontFile.getFileName(), false, 0).setTtcIndex(fontFile.getTtcIndex()).setFontVariationSettings(fontFile.getVariationSettings());
+            if (fontFile.getWeight() != Typeface.RESOLVE_BY_FONT_TABLE) {
+                fontBuilder.setWeight(fontFile.getWeight());
+            }
+            if (fontFile.getItalic() != Typeface.RESOLVE_BY_FONT_TABLE) {
+                fontBuilder.setSlant(fontFile.getItalic() == FontFileResourceEntry.ITALIC ? FontStyle.FONT_SLANT_ITALIC : FontStyle.FONT_SLANT_UPRIGHT);
+            }
+            if (familyBuilder == null) {
+                familyBuilder = new FontFamily.Builder(fontBuilder.build());
+            } else {
+                familyBuilder.addFont(fontBuilder.build());
+            }
+        }
+        if (familyBuilder == null) {
+            return Typeface.DEFAULT;
+        }
+        final FontFamily family = familyBuilder.build();
+        final FontStyle normal = new FontStyle(FontStyle.FONT_WEIGHT_NORMAL, FontStyle.FONT_SLANT_UPRIGHT);
+        Font bestFont = family.getFont(0);
+        int bestScore = normal.getMatchScore(bestFont.getStyle());
+        for (int i = 1; i < family.getSize(); ++i) {
+            final Font candidate = family.getFont(i);
+            final int score = normal.getMatchScore(candidate.getStyle());
+            if (score < bestScore) {
+                bestFont = candidate;
+                bestScore = score;
+            }
+        }
+        typeface = new Typeface.CustomFallbackBuilder(family).setStyle(bestFont.getStyle()).build();
+    } catch (IllegalArgumentException e) {
+        return null;
+    } catch (IOException e) {
+        typeface = Typeface.DEFAULT;
+    }
+    synchronized (sDynamicCacheLock) {
+        final String key = Builder.createAssetUid(mgr, path, 0, null, RESOLVE_BY_FONT_TABLE, RESOLVE_BY_FONT_TABLE, DEFAULT_FAMILY);
+        sDynamicTypefaceCache.put(key, typeface);
+    }
+    return typeface;
+}

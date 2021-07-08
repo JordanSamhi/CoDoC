@@ -1,0 +1,36 @@
+public static void checkConstrainedHighSpeedSurfaces(Collection<Surface> surfaces, Range<Integer> fpsRange, StreamConfigurationMap config){
+    if (surfaces == null || surfaces.size() == 0 || surfaces.size() > 2) {
+        throw new IllegalArgumentException("Output target surface list must not be null and" + " the size must be 1 or 2");
+    }
+    List<Size> highSpeedSizes = null;
+    if (fpsRange == null) {
+        highSpeedSizes = Arrays.asList(config.getHighSpeedVideoSizes());
+    } else {
+        Range<Integer>[] highSpeedFpsRanges = config.getHighSpeedVideoFpsRanges();
+        if (!Arrays.asList(highSpeedFpsRanges).contains(fpsRange)) {
+            throw new IllegalArgumentException("Fps range " + fpsRange.toString() + " in the" + " request is not a supported high speed fps range " + Arrays.toString(highSpeedFpsRanges));
+        }
+        highSpeedSizes = Arrays.asList(config.getHighSpeedVideoSizesFor(fpsRange));
+    }
+    for (Surface surface : surfaces) {
+        checkHighSpeedSurfaceFormat(surface);
+        Size surfaceSize = SurfaceUtils.getSurfaceSize(surface);
+        if (!highSpeedSizes.contains(surfaceSize)) {
+            throw new IllegalArgumentException("Surface size " + surfaceSize.toString() + " is" + " not part of the high speed supported size list " + Arrays.toString(highSpeedSizes.toArray()));
+        }
+        if (!SurfaceUtils.isSurfaceForPreview(surface) && !SurfaceUtils.isSurfaceForHwVideoEncoder(surface)) {
+            throw new IllegalArgumentException("This output surface is neither preview nor " + "hardware video encoding surface");
+        }
+        if (SurfaceUtils.isSurfaceForPreview(surface) && SurfaceUtils.isSurfaceForHwVideoEncoder(surface)) {
+            throw new IllegalArgumentException("This output surface can not be both preview" + " and hardware video encoding surface");
+        }
+    }
+    if (surfaces.size() == 2) {
+        Iterator<Surface> iterator = surfaces.iterator();
+        boolean isFirstSurfacePreview = SurfaceUtils.isSurfaceForPreview(iterator.next());
+        boolean isSecondSurfacePreview = SurfaceUtils.isSurfaceForPreview(iterator.next());
+        if (isFirstSurfacePreview == isSecondSurfacePreview) {
+            throw new IllegalArgumentException("The 2 output surfaces must have different" + " type");
+        }
+    }
+}

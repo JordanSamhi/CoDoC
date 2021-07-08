@@ -1,0 +1,13 @@
+public void onPhyUpdate(String address, int txPhy, int rxPhy, int status){
+    if (DBG) {
+        Log.d(TAG, "onPhyUpdate() - " + "device=" + address + ", txPHy=" + txPhy + ", rxPHy=" + rxPhy);
+    }
+    BluetoothDevice device = mAdapter.getRemoteDevice(address);
+    if (device == null)
+        return;
+    try {
+        mCallback.onPhyUpdate(device, txPhy, rxPhy, status);
+    } catch (Exception ex) {
+        Log.w(TAG, "Unhandled exception: " + ex);
+    }
+}

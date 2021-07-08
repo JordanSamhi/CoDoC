@@ -1,0 +1,9 @@
+public void onCreatePredictionSessionLocked(@NonNull AppPredictionContext context, @NonNull AppPredictionSessionId sessionId){
+    if (!mSessionInfos.containsKey(sessionId)) {
+        mSessionInfos.put(sessionId, new AppPredictionSessionInfo(sessionId, context, DeviceConfig.getBoolean(NAMESPACE_SYSTEMUI, PREDICT_USING_PEOPLE_SERVICE_PREFIX + context.getUiSurface(), false), this::removeAppPredictionSessionInfo));
+    }
+    final boolean serviceExists = resolveService(sessionId, s -> s.onCreatePredictionSession(context, sessionId), true);
+    if (!serviceExists) {
+        mSessionInfos.remove(sessionId);
+    }
+}

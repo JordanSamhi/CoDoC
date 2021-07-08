@@ -1,0 +1,13 @@
+public boolean isUpToDate(){
+    synchronized (this) {
+        if (!mOpen) {
+            return false;
+        }
+        for (ApkAssets apkAssets : mApkAssets) {
+            if (!apkAssets.isUpToDate()) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

@@ -1,0 +1,21 @@
+public void skipRead(int amount){
+    if (amount < 0) {
+        throw new RuntimeException("skipRead with negative amount=" + amount);
+    }
+    if (amount == 0) {
+        return;
+    }
+    if (amount <= mChunkSize - mReadIndex) {
+        mReadIndex += amount;
+    } else {
+        amount -= mChunkSize - mReadIndex;
+        mReadIndex = amount % mChunkSize;
+        if (mReadIndex == 0) {
+            mReadIndex = mChunkSize;
+            mReadBufIndex += (amount / mChunkSize);
+        } else {
+            mReadBufIndex += 1 + (amount / mChunkSize);
+        }
+        mReadBuffer = mBuffers.get(mReadBufIndex);
+    }
+}

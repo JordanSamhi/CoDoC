@@ -1,0 +1,13 @@
+public synchronized void registerHandler(String iface, int what, Handler handler){
+    SparseArray<Set<Handler>> ifaceHandlers = mHandlerMap.get(iface);
+    if (ifaceHandlers == null) {
+        ifaceHandlers = new SparseArray<>();
+        mHandlerMap.put(iface, ifaceHandlers);
+    }
+    Set<Handler> ifaceWhatHandlers = ifaceHandlers.get(what);
+    if (ifaceWhatHandlers == null) {
+        ifaceWhatHandlers = new ArraySet<>();
+        ifaceHandlers.put(what, ifaceWhatHandlers);
+    }
+    ifaceWhatHandlers.add(handler);
+}

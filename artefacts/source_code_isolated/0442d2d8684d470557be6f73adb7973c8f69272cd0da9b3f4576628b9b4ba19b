@@ -1,0 +1,12 @@
+public Equalizer.Settings getProperties() throws IllegalStateException, IllegalArgumentException, UnsupportedOperationException{
+    byte[] param = new byte[4 + mNumBands * 2];
+    checkStatus(getParameter(PARAM_PROPERTIES, param));
+    Settings settings = new Settings();
+    settings.curPreset = byteArrayToShort(param, 0);
+    settings.numBands = byteArrayToShort(param, 2);
+    settings.bandLevels = new short[mNumBands];
+    for (int i = 0; i < mNumBands; i++) {
+        settings.bandLevels[i] = byteArrayToShort(param, 4 + 2 * i);
+    }
+    return settings;
+}

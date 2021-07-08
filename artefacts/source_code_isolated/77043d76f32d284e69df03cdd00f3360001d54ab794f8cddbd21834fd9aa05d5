@@ -1,0 +1,16 @@
+public BluetoothAudioConfig getAudioConfig(BluetoothDevice device){
+    if (VDBG)
+        log("getAudioConfig(" + device + ")");
+    final IBluetoothA2dpSink service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.getAudioConfig(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+            return null;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return null;
+}

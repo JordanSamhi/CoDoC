@@ -1,0 +1,8 @@
+public long getTimeSinceLastJobRun(String packageName, int userId, long elapsedRealtime){
+    ArrayMap<String, AppUsageHistory> userHistory = getUserHistory(userId);
+    AppUsageHistory appUsageHistory = getPackageHistory(userHistory, packageName, elapsedRealtime, false);
+    if (appUsageHistory == null || appUsageHistory.lastJobRunTime == Long.MIN_VALUE) {
+        return Long.MAX_VALUE;
+    }
+    return getElapsedTime(elapsedRealtime) - appUsageHistory.lastJobRunTime;
+}

@@ -1,0 +1,25 @@
+public boolean startNestedScroll(int axes){
+    if (hasNestedScrollingParent()) {
+        return true;
+    }
+    if (isNestedScrollingEnabled()) {
+        ViewParent p = getParent();
+        View child = this;
+        while (p != null) {
+            try {
+                if (p.onStartNestedScroll(child, this, axes)) {
+                    mNestedScrollingParent = p;
+                    p.onNestedScrollAccepted(child, this, axes);
+                    return true;
+                }
+            } catch (AbstractMethodError e) {
+                Log.e(VIEW_LOG_TAG, "ViewParent " + p + " does not implement interface " + "method onStartNestedScroll", e);
+            }
+            if (p instanceof View) {
+                child = (View) p;
+            }
+            p = p.getParent();
+        }
+    }
+    return false;
+}

@@ -1,0 +1,35 @@
+public void writeTypeToProto(ProtoOutputStream proto, long fieldId, int opType, int serviceType, int opCount, int curState, long curStartTime, long now){
+    if (opCount <= 0) {
+        return;
+    }
+    final long token = proto.start(fieldId);
+    proto.write(PackageServiceOperationStatsProto.OPERATION, opType);
+    proto.write(PackageServiceOperationStatsProto.COUNT, opCount);
+    boolean didCurState = false;
+    final int N = mDurations.getKeyCount();
+    for (int i = 0; i < N; i++) {
+        final int key = mDurations.getKeyAt(i);
+        long time = mDurations.getValue(key);
+        int type = SparseMappingTable.getIdFromKey(key);
+        int memFactor = type / ServiceState.SERVICE_COUNT;
+        type %= ServiceState.SERVICE_COUNT;
+        if (type != serviceType) {
+            continue;
+        }
+        if (curState == memFactor) {
+            didCurState = true;
+            time += now - curStartTime;
+        }
+        final long stateToken = proto.start(PackageServiceOperationStatsProto.STATE_STATS);
+        DumpUtils.printProcStateAdjTagProto(proto, PackageServiceOperationStatsProto.StateStats.SCREEN_STATE, PackageServiceOperationStatsProto.StateStats.MEMORY_STATE, type);
+        proto.write(PackageServiceOperationStatsProto.StateStats.DURATION_MS, time);
+        proto.end(stateToken);
+    }
+    if (!didCurState && curState != STATE_NOTHING) {
+        final long stateToken = proto.start(PackageServiceOperationStatsProto.STATE_STATS);
+        DumpUtils.printProcStateAdjTagProto(proto, PackageServiceOperationStatsProto.StateStats.SCREEN_STATE, PackageServiceOperationStatsProto.StateStats.MEMORY_STATE, curState);
+        proto.write(PackageServiceOperationStatsProto.StateStats.DURATION_MS, now - curStartTime);
+        proto.end(stateToken);
+    }
+    proto.end(token);
+}

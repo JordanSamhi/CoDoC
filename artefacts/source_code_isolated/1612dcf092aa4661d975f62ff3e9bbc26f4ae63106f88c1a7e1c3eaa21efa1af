@@ -1,0 +1,11 @@
+public void sendIntent(Context context, int code, Intent intent, OnFinished onFinished, Handler handler, String requiredPermission) throws SendIntentException{
+    try {
+        String resolvedType = intent != null ? intent.resolveTypeIfNeeded(context.getContentResolver()) : null;
+        int res = ActivityManager.getService().sendIntentSender(mTarget, mWhitelistToken, code, intent, resolvedType, onFinished != null ? new FinishedDispatcher(this, onFinished, handler) : null, requiredPermission, null);
+        if (res < 0) {
+            throw new SendIntentException();
+        }
+    } catch (RemoteException e) {
+        throw new SendIntentException();
+    }
+}

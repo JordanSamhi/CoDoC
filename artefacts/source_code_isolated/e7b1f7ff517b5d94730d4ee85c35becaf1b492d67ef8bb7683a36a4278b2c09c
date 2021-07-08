@@ -1,0 +1,19 @@
+public void dispatchDrawableHotspotChanged(float x, float y){
+    final int count = mChildrenCount;
+    if (count == 0) {
+        return;
+    }
+    final View[] children = mChildren;
+    for (int i = 0; i < count; i++) {
+        final View child = children[i];
+        final boolean nonActionable = !child.isClickable() && !child.isLongClickable();
+        final boolean duplicatesState = (child.mViewFlags & DUPLICATE_PARENT_STATE) != 0;
+        if (nonActionable || duplicatesState) {
+            final float[] point = getTempLocationF();
+            point[0] = x;
+            point[1] = y;
+            transformPointToViewLocal(point, child);
+            child.drawableHotspotChanged(point[0], point[1]);
+        }
+    }
+}

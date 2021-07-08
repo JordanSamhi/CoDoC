@@ -1,0 +1,40 @@
+public void reconfigure(SQLiteDatabaseConfiguration configuration){
+    if (configuration == null) {
+        throw new IllegalArgumentException("configuration must not be null.");
+    }
+    synchronized (mLock) {
+        throwIfClosedLocked();
+        boolean walModeChanged = ((configuration.openFlags ^ mConfiguration.openFlags) & SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING) != 0;
+        if (walModeChanged) {
+            if (!mAcquiredConnections.isEmpty()) {
+                throw new IllegalStateException("Write Ahead Logging (WAL) mode cannot " + "be enabled or disabled while there are transactions in " + "progress.  Finish all transactions and release all active " + "database connections first.");
+            }
+            closeAvailableNonPrimaryConnectionsAndLogExceptionsLocked();
+            assert mAvailableNonPrimaryConnections.isEmpty();
+        }
+        boolean foreignKeyModeChanged = configuration.foreignKeyConstraintsEnabled != mConfiguration.foreignKeyConstraintsEnabled;
+        if (foreignKeyModeChanged) {
+            if (!mAcquiredConnections.isEmpty()) {
+                throw new IllegalStateException("Foreign Key Constraints cannot " + "be enabled or disabled while there are transactions in " + "progress.  Finish all transactions and release all active " + "database connections first.");
+            }
+        }
+        boolean onlyCompatWalChanged = (mConfiguration.openFlags ^ configuration.openFlags) == SQLiteDatabase.ENABLE_LEGACY_COMPATIBILITY_WAL;
+        if (!onlyCompatWalChanged && mConfiguration.openFlags != configuration.openFlags) {
+            if (walModeChanged) {
+                closeAvailableConnectionsAndLogExceptionsLocked();
+            }
+            SQLiteConnection newPrimaryConnection = openConnectionLocked(configuration, true);
+            closeAvailableConnectionsAndLogExceptionsLocked();
+            discardAcquiredConnectionsLocked();
+            mAvailablePrimaryConnection = newPrimaryConnection;
+            mConfiguration.updateParametersFrom(configuration);
+            setMaxConnectionPoolSizeLocked();
+        } else {
+            mConfiguration.updateParametersFrom(configuration);
+            setMaxConnectionPoolSizeLocked();
+            closeExcessConnectionsAndLogExceptionsLocked();
+            reconfigureAllConnectionsLocked();
+        }
+        wakeConnectionWaitersLocked();
+    }
+}

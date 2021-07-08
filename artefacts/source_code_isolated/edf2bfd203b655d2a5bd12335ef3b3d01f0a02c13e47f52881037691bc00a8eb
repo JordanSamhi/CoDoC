@@ -1,0 +1,9 @@
+public void registerTransferCallback(@NonNull @CallbackExecutor Executor executor, @NonNull TransferCallback callback){
+    Objects.requireNonNull(executor, "executor must not be null");
+    Objects.requireNonNull(callback, "callback must not be null");
+    TransferCallbackRecord record = new TransferCallbackRecord(executor, callback);
+    if (!mTransferCallbackRecords.addIfAbsent(record)) {
+        Log.w(TAG, "registerTransferCallback: Ignoring the same callback");
+        return;
+    }
+}

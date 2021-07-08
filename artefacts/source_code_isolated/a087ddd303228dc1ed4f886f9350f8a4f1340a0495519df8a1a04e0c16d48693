@@ -1,0 +1,11 @@
+public void onWirelessChargingStarted(int batteryLevel, @UserIdInt int userId){
+    if (DEBUG) {
+        Slog.d(TAG, "onWirelessChargingStarted");
+    }
+    mSuspendBlocker.acquire();
+    Message msg = mHandler.obtainMessage(MSG_WIRELESS_CHARGING_STARTED);
+    msg.setAsynchronous(true);
+    msg.arg1 = batteryLevel;
+    msg.arg2 = userId;
+    mHandler.sendMessage(msg);
+}

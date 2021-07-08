@@ -1,0 +1,6 @@
+public void disassociate(String deviceMacAddress, String callingPackage) throws RemoteException{
+    checkNotNull(deviceMacAddress);
+    checkCallerIsSystemOr(callingPackage);
+    checkUsesFeature(callingPackage, getCallingUserId());
+    removeAssociation(getCallingUserId(), callingPackage, deviceMacAddress);
+}

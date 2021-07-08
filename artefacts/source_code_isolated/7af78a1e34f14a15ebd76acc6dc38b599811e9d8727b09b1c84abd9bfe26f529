@@ -1,0 +1,15 @@
+public CharSequence getLabelForType(Context context, final String accountType){
+    CharSequence label = null;
+    if (mTypeToAuthDescription.containsKey(accountType)) {
+        try {
+            AuthenticatorDescription desc = mTypeToAuthDescription.get(accountType);
+            Context authContext = context.createPackageContextAsUser(desc.packageName, 0, mUserHandle);
+            label = authContext.getResources().getText(desc.labelId);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "No label name for account type " + accountType);
+        } catch (Resources.NotFoundException e) {
+            Log.w(TAG, "No label icon for account type " + accountType);
+        }
+    }
+    return label;
+}

@@ -1,0 +1,20 @@
+public void onSendMultipartSmsComplete(int result, int[] messageRefs){
+    mSmsSender.disposeConnection(mContext);
+    if (mSmsSender.mTrackers == null) {
+        Rlog.e(TAG, "Unexpected onSendMultipartSmsComplete call with null trackers.");
+        return;
+    }
+    checkCallerIsPhoneOrCarrierApp();
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        for (int i = 0; i < mSmsSender.mTrackers.length; i++) {
+            int messageRef = 0;
+            if (messageRefs != null && messageRefs.length > i) {
+                messageRef = messageRefs[i];
+            }
+            processSendSmsResponse(mSmsSender.mTrackers[i], result, messageRef);
+        }
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

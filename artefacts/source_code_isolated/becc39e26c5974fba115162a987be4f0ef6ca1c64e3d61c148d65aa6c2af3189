@@ -1,0 +1,12 @@
+public void setForwardedInsets(Insets insets){
+    mForwardedInsets = insets;
+    if (!isInitialized()) {
+        return;
+    }
+    try {
+        final IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+        wm.setForwardedInsets(getDisplayId(), mForwardedInsets);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+}

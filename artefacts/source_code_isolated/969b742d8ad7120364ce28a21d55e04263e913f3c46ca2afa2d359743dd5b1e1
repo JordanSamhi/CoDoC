@@ -1,0 +1,41 @@
+public void updateFragmentation(){
+    BufferedReader reader = null;
+    try {
+        reader = new BufferedReader(new FileReader("/proc/pagetypeinfo"));
+        final Matcher matcher = sPageTypeRegex.matcher("");
+        mPageTypeNodes.clear();
+        mPageTypeZones.clear();
+        mPageTypeLabels.clear();
+        mPageTypeSizes.clear();
+        while (true) {
+            final String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            matcher.reset(line);
+            if (matcher.matches()) {
+                final Integer node = Integer.valueOf(matcher.group(1), 10);
+                if (node == null) {
+                    continue;
+                }
+                mPageTypeNodes.add(node);
+                mPageTypeZones.add(matcher.group(2));
+                mPageTypeLabels.add(matcher.group(3));
+                mPageTypeSizes.add(splitAndParseNumbers(matcher.group(4)));
+            }
+        }
+    } catch (IOException ex) {
+        mPageTypeNodes.clear();
+        mPageTypeZones.clear();
+        mPageTypeLabels.clear();
+        mPageTypeSizes.clear();
+        return;
+    } finally {
+        if (reader != null) {
+            try {
+                reader.close();
+            } catch (IOException allHopeIsLost) {
+            }
+        }
+    }
+}

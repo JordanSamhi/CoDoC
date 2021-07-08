@@ -1,0 +1,11 @@
+public long[] getTotalMemUsage(){
+    long[] total = new long[SYS_MEM_USAGE_COUNT];
+    final int N = getKeyCount();
+    for (int i = 0; i < N; i++) {
+        final int key = getKeyAt(i);
+        final long[] addData = getArrayForKey(key);
+        final int addOff = SparseMappingTable.getIndexFromKey(key);
+        SysMemUsageTable.mergeSysMemUsage(total, 0, addData, addOff);
+    }
+    return total;
+}

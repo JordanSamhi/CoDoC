@@ -1,0 +1,24 @@
+public boolean enableService(Activity activity, ComponentName service) throws RuntimeException{
+    if (activity == null || service == null) {
+        throw new NullPointerException("activity or service is null");
+    }
+    if (!activity.isResumed()) {
+        throw new IllegalArgumentException("Activity must be resumed.");
+    }
+    try {
+        return sService.enableNfcFForegroundService(service);
+    } catch (RemoteException e) {
+        recoverService();
+        if (sService == null) {
+            Log.e(TAG, "Failed to recover CardEmulationService.");
+            return false;
+        }
+        try {
+            return sService.enableNfcFForegroundService(service);
+        } catch (RemoteException ee) {
+            Log.e(TAG, "Failed to reach CardEmulationService.");
+            ee.rethrowAsRuntimeException();
+            return false;
+        }
+    }
+}

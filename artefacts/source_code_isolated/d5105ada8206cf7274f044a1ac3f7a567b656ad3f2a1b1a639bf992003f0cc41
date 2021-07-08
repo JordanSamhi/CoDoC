@@ -1,0 +1,6 @@
+public static ImageWriter newInstance(@NonNull Surface surface, @IntRange(from = 1) int maxImages, @Format int format){
+    if (!ImageFormat.isPublicFormat(format) && !PixelFormat.isPublicFormat(format)) {
+        throw new IllegalArgumentException("Invalid format is specified: " + format);
+    }
+    return new ImageWriter(surface, maxImages, format);
+}

@@ -1,0 +1,101 @@
+public void registerTetheringEventCallback(@NonNull Executor executor, @NonNull TetheringEventCallback callback){
+    final String callerPkg = mContext.getOpPackageName();
+    Log.i(TAG, "registerTetheringEventCallback caller:" + callerPkg);
+    synchronized (mTetheringEventCallbacks) {
+        if (mTetheringEventCallbacks.containsKey(callback)) {
+            throw new IllegalArgumentException("callback was already registered.");
+        }
+        final ITetheringEventCallback remoteCallback = new ITetheringEventCallback.Stub() {
+
+            private final HashMap<String, Integer> mErrorStates = new HashMap<>();
+
+            private String[] mLastTetherableInterfaces = null;
+
+            private String[] mLastTetheredInterfaces = null;
+
+            @Override
+            public void onUpstreamChanged(Network network) throws RemoteException {
+                executor.execute(() -> {
+                    callback.onUpstreamChanged(network);
+                });
+            }
+
+            private synchronized void sendErrorCallbacks(final TetherStatesParcel newStates) {
+                for (int i = 0; i < newStates.erroredIfaceList.length; i++) {
+                    final String iface = newStates.erroredIfaceList[i];
+                    final Integer lastError = mErrorStates.get(iface);
+                    final int newError = newStates.lastErrorList[i];
+                    if (newError != TETHER_ERROR_NO_ERROR && !Objects.equals(lastError, newError)) {
+                        callback.onError(iface, newError);
+                    }
+                    mErrorStates.put(iface, newError);
+                }
+            }
+
+            private synchronized void maybeSendTetherableIfacesChangedCallback(final TetherStatesParcel newStates) {
+                if (Arrays.equals(mLastTetherableInterfaces, newStates.availableList))
+                    return;
+                mLastTetherableInterfaces = newStates.availableList.clone();
+                callback.onTetherableInterfacesChanged(Collections.unmodifiableList(Arrays.asList(mLastTetherableInterfaces)));
+            }
+
+            private synchronized void maybeSendTetheredIfacesChangedCallback(final TetherStatesParcel newStates) {
+                if (Arrays.equals(mLastTetheredInterfaces, newStates.tetheredList))
+                    return;
+                mLastTetheredInterfaces = newStates.tetheredList.clone();
+                callback.onTetheredInterfacesChanged(Collections.unmodifiableList(Arrays.asList(mLastTetheredInterfaces)));
+            }
+
+            @Override
+            public void onCallbackStarted(TetheringCallbackStartedParcel parcel) {
+                executor.execute(() -> {
+                    callback.onTetheringSupported(parcel.tetheringSupported);
+                    callback.onUpstreamChanged(parcel.upstreamNetwork);
+                    sendErrorCallbacks(parcel.states);
+                    sendRegexpsChanged(parcel.config);
+                    maybeSendTetherableIfacesChangedCallback(parcel.states);
+                    maybeSendTetheredIfacesChangedCallback(parcel.states);
+                    callback.onClientsChanged(parcel.tetheredClients);
+                    callback.onOffloadStatusChanged(parcel.offloadStatus);
+                });
+            }
+
+            @Override
+            public void onCallbackStopped(int errorCode) {
+                executor.execute(() -> {
+                    throwIfPermissionFailure(errorCode);
+                });
+            }
+
+            private void sendRegexpsChanged(TetheringConfigurationParcel parcel) {
+                callback.onTetherableInterfaceRegexpsChanged(new TetheringInterfaceRegexps(parcel.tetherableBluetoothRegexs, parcel.tetherableUsbRegexs, parcel.tetherableWifiRegexs));
+            }
+
+            @Override
+            public void onConfigurationChanged(TetheringConfigurationParcel config) {
+                executor.execute(() -> sendRegexpsChanged(config));
+            }
+
+            @Override
+            public void onTetherStatesChanged(TetherStatesParcel states) {
+                executor.execute(() -> {
+                    sendErrorCallbacks(states);
+                    maybeSendTetherableIfacesChangedCallback(states);
+                    maybeSendTetheredIfacesChangedCallback(states);
+                });
+            }
+
+            @Override
+            public void onTetherClientsChanged(final List<TetheredClient> clients) {
+                executor.execute(() -> callback.onClientsChanged(clients));
+            }
+
+            @Override
+            public void onOffloadStatusChanged(final int status) {
+                executor.execute(() -> callback.onOffloadStatusChanged(status));
+            }
+        };
+        getConnector(c -> c.registerTetheringEventCallback(remoteCallback, callerPkg));
+        mTetheringEventCallbacks.put(callback, remoteCallback);
+    }
+}

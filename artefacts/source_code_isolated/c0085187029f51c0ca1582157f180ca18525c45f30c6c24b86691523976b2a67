@@ -1,0 +1,10 @@
+public String getString(@Nullable String key){
+    unparcel();
+    final Object o = mMap.get(key);
+    try {
+        return (String) o;
+    } catch (ClassCastException e) {
+        typeWarning(key, o, "String", e);
+        return null;
+    }
+}

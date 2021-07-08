@@ -1,0 +1,21 @@
+public static boolean bundleEquals(@NonNull Bundle bundle1, @NonNull Bundle bundle2){
+    if (bundle1 == bundle2) {
+        return true;
+    }
+    if (bundle1 == null || bundle2 == null) {
+        return false;
+    }
+    if (bundle1.size() != bundle2.size()) {
+        return false;
+    }
+    Set<String> keys = bundle1.keySet();
+    for (String key : keys) {
+        Object value1 = bundle1.get(key);
+        Object value2 = bundle2.get(key);
+        final boolean equal = value1 instanceof Bundle && value2 instanceof Bundle ? bundleEquals((Bundle) value1, (Bundle) value2) : Objects.equals(value1, value2);
+        if (!equal) {
+            return false;
+        }
+    }
+    return true;
+}

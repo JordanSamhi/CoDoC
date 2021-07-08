@@ -1,0 +1,7 @@
+public static ZoomData convertToLegacyZoom(Rect activeArraySize, Rect cropRegion, Float zoomRatio, Size previewSize, Camera.Parameters params){
+    final float FLOAT_EQUAL_THRESHOLD = 0.0001f;
+    if (zoomRatio != null && Math.abs(1.0f - zoomRatio) > FLOAT_EQUAL_THRESHOLD) {
+        return convertZoomRatio(activeArraySize, zoomRatio, previewSize, params);
+    }
+    return convertScalerCropRegion(activeArraySize, cropRegion, previewSize, params);
+}

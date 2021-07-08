@@ -1,0 +1,18 @@
+public static void corkInvalidations(@NonNull String name){
+    synchronized (sCorkLock) {
+        int numberCorks = sCorks.getOrDefault(name, 0);
+        if (DEBUG) {
+            Log.d(TAG, String.format("corking %s: numberCorks=%s", name, numberCorks));
+        }
+        if (numberCorks == 0) {
+            final long nonce = SystemProperties.getLong(name, NONCE_UNSET);
+            if (nonce != NONCE_UNSET && nonce != NONCE_DISABLED) {
+                SystemProperties.set(name, Long.toString(NONCE_UNSET));
+            }
+        }
+        sCorks.put(name, numberCorks + 1);
+        if (DEBUG) {
+            Log.d(TAG, "corked: " + name);
+        }
+    }
+}

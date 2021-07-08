@@ -1,0 +1,15 @@
+public void addNotification(ExpandableNotificationRow row, int childIndex){
+    int newIndex = childIndex < 0 ? mAttachedChildren.size() : childIndex;
+    mAttachedChildren.add(newIndex, row);
+    addView(row);
+    row.setUserLocked(mUserLocked);
+    View divider = inflateDivider();
+    addView(divider);
+    mDividers.add(newIndex, divider);
+    row.setContentTransformationAmount(0, false);
+    ExpandableViewState viewState = row.getViewState();
+    if (viewState != null) {
+        viewState.cancelAnimations(row);
+        row.cancelAppearDrawing();
+    }
+}

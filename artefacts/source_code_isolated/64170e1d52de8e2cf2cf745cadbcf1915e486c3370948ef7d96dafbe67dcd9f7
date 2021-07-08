@@ -1,0 +1,48 @@
+public boolean initiateDataPath(short transactionId, int peerId, int channelRequestType, int channel, byte[] peer, String interfaceName, byte[] pmk, String passphrase, boolean isOutOfBand, byte[] appInfo, Capabilities capabilities){
+    if (mDbg) {
+        Log.v(TAG, "initiateDataPath: transactionId=" + transactionId + ", peerId=" + peerId + ", channelRequestType=" + channelRequestType + ", channel=" + channel + ", peer=" + String.valueOf(HexEncoding.encode(peer)) + ", interfaceName=" + interfaceName + ", pmk=" + ((pmk == null) ? "<null>" : "<*>") + ", passphrase=" + (TextUtils.isEmpty(passphrase) ? "<empty>" : "<*>") + ", isOutOfBand=" + isOutOfBand + ", appInfo.length=" + ((appInfo == null) ? 0 : appInfo.length) + ", capabilities=" + capabilities);
+    }
+    recordTransactionId(transactionId);
+    IWifiNanIface iface = mHal.getWifiNanIface();
+    if (iface == null) {
+        Log.e(TAG, "initiateDataPath: null interface");
+        return false;
+    }
+    if (capabilities == null) {
+        Log.e(TAG, "initiateDataPath: null capabilities");
+        return false;
+    }
+    NanInitiateDataPathRequest req = new NanInitiateDataPathRequest();
+    req.peerId = peerId;
+    copyArray(peer, req.peerDiscMacAddr);
+    req.channelRequestType = channelRequestType;
+    req.channel = channel;
+    req.ifaceName = interfaceName;
+    req.securityConfig.securityType = NanDataPathSecurityType.OPEN;
+    if (pmk != null && pmk.length != 0) {
+        req.securityConfig.cipherType = getStrongestCipherSuiteType(capabilities.supportedCipherSuites);
+        req.securityConfig.securityType = NanDataPathSecurityType.PMK;
+        copyArray(pmk, req.securityConfig.pmk);
+    }
+    if (passphrase != null && passphrase.length() != 0) {
+        req.securityConfig.cipherType = getStrongestCipherSuiteType(capabilities.supportedCipherSuites);
+        req.securityConfig.securityType = NanDataPathSecurityType.PASSPHRASE;
+        convertNativeByteArrayToArrayList(passphrase.getBytes(), req.securityConfig.passphrase);
+    }
+    if (req.securityConfig.securityType != NanDataPathSecurityType.OPEN && isOutOfBand) {
+        convertNativeByteArrayToArrayList(SERVICE_NAME_FOR_OOB_DATA_PATH.getBytes(StandardCharsets.UTF_8), req.serviceNameOutOfBand);
+    }
+    convertNativeByteArrayToArrayList(appInfo, req.appInfo);
+    try {
+        WifiStatus status = iface.initiateDataPathRequest(transactionId, req);
+        if (status.code == WifiStatusCode.SUCCESS) {
+            return true;
+        } else {
+            Log.e(TAG, "initiateDataPath: error: " + statusString(status));
+            return false;
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "initiateDataPath: exception: " + e);
+        return false;
+    }
+}

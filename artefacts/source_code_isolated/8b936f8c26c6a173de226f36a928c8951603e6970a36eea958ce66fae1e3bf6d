@@ -1,0 +1,17 @@
+public synchronized void set(int period, Runnable callback){
+    if (stopped())
+        return;
+    long now = SystemClock.elapsedRealtime();
+    MyEvent event = new MyEvent(period, callback, now);
+    insertEvent(event);
+    if (mEventQueue.first() == event) {
+        if (mEventQueue.size() > 1)
+            cancelAlarm();
+        scheduleNext();
+    }
+    long triggerTime = event.mTriggerTime;
+    if (DBG) {
+        log("set: add event " + event + " scheduled on " + showTime(triggerTime) + " at " + showTime(now) + ", #events=" + mEventQueue.size());
+        printQueue();
+    }
+}

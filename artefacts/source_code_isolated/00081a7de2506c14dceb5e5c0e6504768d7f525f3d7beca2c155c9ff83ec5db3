@@ -1,0 +1,42 @@
+public long getLastOccurence(Time dtstart, Time maxtime, RecurrenceSet recur) throws DateException{
+    long lastTime = -1;
+    boolean hasCount = false;
+    if (recur.rrules != null) {
+        for (EventRecurrence rrule : recur.rrules) {
+            if (rrule.count != 0) {
+                hasCount = true;
+            } else if (rrule.until != null) {
+                mIterator.parse(rrule.until);
+                long untilTime = mIterator.toMillis(false);
+                if (untilTime > lastTime) {
+                    lastTime = untilTime;
+                }
+            }
+        }
+        if (lastTime != -1 && recur.rdates != null) {
+            for (long dt : recur.rdates) {
+                if (dt > lastTime) {
+                    lastTime = dt;
+                }
+            }
+        }
+        if (lastTime != -1 && !hasCount) {
+            return lastTime;
+        }
+    } else if (recur.rdates != null && recur.exrules == null && recur.exdates == null) {
+        for (long dt : recur.rdates) {
+            if (dt > lastTime) {
+                lastTime = dt;
+            }
+        }
+        return lastTime;
+    }
+    if (hasCount || recur.rdates != null || maxtime != null) {
+        long[] dates = expand(dtstart, recur, dtstart.toMillis(false), (maxtime != null) ? maxtime.toMillis(false) : -1);
+        if (dates.length == 0) {
+            return 0;
+        }
+        return dates[dates.length - 1];
+    }
+    return -1;
+}

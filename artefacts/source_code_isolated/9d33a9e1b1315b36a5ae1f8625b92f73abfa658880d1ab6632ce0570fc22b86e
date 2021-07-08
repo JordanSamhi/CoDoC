@@ -1,0 +1,22 @@
+public int getOrAddKey(byte id, int count){
+    assertConsistency();
+    final int idx = binarySearch(id);
+    if (idx >= 0) {
+        return mTable[idx];
+    } else {
+        final ArrayList<long[]> list = mParent.mLongs;
+        int whichArray = list.size() - 1;
+        long[] array = list.get(whichArray);
+        if (mParent.mNextIndex + count > array.length) {
+            array = new long[ARRAY_SIZE];
+            list.add(array);
+            whichArray++;
+            mParent.mNextIndex = 0;
+        }
+        final int key = (whichArray << ARRAY_SHIFT) | (mParent.mNextIndex << INDEX_SHIFT) | (((int) id) << ID_SHIFT);
+        mParent.mNextIndex += count;
+        mTable = GrowingArrayUtils.insert(mTable != null ? mTable : EmptyArray.INT, mSize, ~idx, key);
+        mSize++;
+        return key;
+    }
+}

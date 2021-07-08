@@ -1,0 +1,13 @@
+public static boolean verifyCertFingerprint(@NonNull X509Certificate x509Cert, @NonNull byte[] certSHA256Fingerprint){
+    try {
+        byte[] fingerPrintSha256 = computeHash(x509Cert.getEncoded());
+        if (fingerPrintSha256 == null)
+            return false;
+        if (Arrays.equals(fingerPrintSha256, certSHA256Fingerprint)) {
+            return true;
+        }
+    } catch (Exception e) {
+        Log.e(TAG, "verifyCertFingerprint err:" + e);
+    }
+    return false;
+}

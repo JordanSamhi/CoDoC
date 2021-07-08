@@ -1,0 +1,12 @@
+public SipSession createSipSession(SipProfile localProfile, SipSession.Listener listener) throws SipException{
+    try {
+        checkSipServiceConnection();
+        ISipSession s = mSipService.createSession(localProfile, null, mContext.getOpPackageName());
+        if (s == null) {
+            throw new SipException("Failed to create SipSession; network unavailable?");
+        }
+        return new SipSession(s, listener);
+    } catch (RemoteException e) {
+        throw new SipException("createSipSession()", e);
+    }
+}

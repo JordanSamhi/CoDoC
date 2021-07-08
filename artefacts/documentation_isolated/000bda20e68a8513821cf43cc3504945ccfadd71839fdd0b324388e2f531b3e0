@@ -1,0 +1,34 @@
+
+     * Returns the resource ID of the style or layout against which the specified attribute was
+     * resolved, otherwise returns defValue.
+     *
+     * For example, if you we resolving two attributes {@code android:attribute1} and
+     * {@code android:attribute2} and you were inflating a {@link android.view.View} from
+     * {@code layout/my_layout.xml}:
+     * <pre>
+     *     &lt;View
+     *         style="@style/viewStyle"
+     *         android:layout_width="wrap_content"
+     *         android:layout_height="wrap_content"
+     *         android:attribute1="foo"/&gt;
+     * </pre>
+     *
+     * and {@code @style/viewStyle} is:
+     * <pre>
+     *     &lt;style android:name="viewStyle"&gt;
+     *         &lt;item name="android:attribute2"&gt;bar&lt;item/&gt;
+     *     &lt;style/&gt;
+     * </pre>
+     *
+     * then resolved {@link TypedArray} will have values that return source resource ID of
+     * {@code R.layout.my_layout} for {@code android:attribute1} and {@code R.style.viewStyle} for
+     * {@code android:attribute2}.
+     *
+     * @param index Index of attribute whose source style to retrieve.
+     * @param defaultValue Value to return if the attribute is not defined or
+     *                     not a resource.
+     *
+     * @return Either a style resource ID, layout resource ID, or defaultValue if it was not
+     * resolved in a style or layout.
+     * @throws RuntimeException if the TypedArray has already been recycled.
+     

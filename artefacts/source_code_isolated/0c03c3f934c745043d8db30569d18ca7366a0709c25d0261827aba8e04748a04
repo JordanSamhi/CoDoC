@@ -1,0 +1,14 @@
+public long getDurationMillis(String key, long def){
+    String value = mValues.get(key);
+    if (value != null) {
+        try {
+            if (value.startsWith("P") || value.startsWith("p")) {
+                return Duration.parse(value).toMillis();
+            } else {
+                return Long.parseLong(value);
+            }
+        } catch (NumberFormatException | DateTimeParseException e) {
+        }
+    }
+    return def;
+}

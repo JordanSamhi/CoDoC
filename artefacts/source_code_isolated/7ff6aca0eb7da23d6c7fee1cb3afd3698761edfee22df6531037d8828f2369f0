@@ -1,0 +1,14 @@
+public void unregisterInputConsumer(){
+    if (mInputEventReceiver != null) {
+        try {
+            mWindowManager.destroyInputConsumer(mName, DEFAULT_DISPLAY);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to destroy input consumer", e);
+        }
+        mInputEventReceiver.dispose();
+        mInputEventReceiver = null;
+        if (mRegistrationListener != null) {
+            mRegistrationListener.onRegistrationChanged(false);
+        }
+    }
+}

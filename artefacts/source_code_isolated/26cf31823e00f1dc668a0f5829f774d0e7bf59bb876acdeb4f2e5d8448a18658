@@ -1,0 +1,17 @@
+public static boolean removeListener(@NonNull NsdManager nsdManager, @NonNull NsdManager.DiscoveryListener listener){
+    boolean wasRemoved = false;
+    synchronized (sListeners) {
+        for (DiscoveryListenerSet listeners : sListeners.values()) {
+            synchronized (listeners) {
+                wasRemoved = listeners.subListeners.remove(listener);
+                if (wasRemoved) {
+                    if (listeners.subListeners.isEmpty()) {
+                        nsdManager.stopServiceDiscovery(listeners.mainListener);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    return wasRemoved;
+}

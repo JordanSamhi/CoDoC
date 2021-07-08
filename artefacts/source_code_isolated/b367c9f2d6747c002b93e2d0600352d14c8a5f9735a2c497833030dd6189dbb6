@@ -1,0 +1,20 @@
+public static String[] getResetNativeCategories(){
+    if (!isNativeFlagsResetPerformed()) {
+        return new String[0];
+    }
+    String content = getResetFlagsFileContent();
+    if (TextUtils.isEmpty(content)) {
+        return new String[0];
+    }
+    String[] property_names = content.split(";");
+    HashSet<String> categories = new HashSet<>();
+    for (String property_name : property_names) {
+        String[] segments = property_name.split("\\.");
+        if (segments.length < 3) {
+            log("failed to extract category name from property " + property_name);
+            continue;
+        }
+        categories.add(segments[2]);
+    }
+    return categories.toArray(new String[0]);
+}

@@ -1,0 +1,15 @@
+public boolean setLockCredential(@NonNull LockscreenCredential newCredential, @NonNull LockscreenCredential savedCredential, int userHandle){
+    if (!hasSecureLockScreen()) {
+        throw new UnsupportedOperationException("This operation requires the lock screen feature.");
+    }
+    newCredential.checkLength();
+    try {
+        if (!getLockSettings().setLockCredential(newCredential, savedCredential, userHandle)) {
+            return false;
+        }
+    } catch (RemoteException e) {
+        throw new RuntimeException("Unable to save lock password", e);
+    }
+    onPostPasswordChanged(newCredential, userHandle);
+    return true;
+}

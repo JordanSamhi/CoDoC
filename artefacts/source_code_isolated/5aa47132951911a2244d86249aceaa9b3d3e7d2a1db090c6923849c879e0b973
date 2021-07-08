@@ -1,0 +1,27 @@
+public byte[] startRecoverySessionWithCertPath(@NonNull String sessionId, @NonNull String rootCertificateAlias, @NonNull RecoveryCertPath verifierCertPath, @NonNull byte[] vaultParams, @NonNull byte[] vaultChallenge, @NonNull List<KeyChainProtectionParams> secrets) throws RemoteException{
+    checkRecoverKeyStorePermission();
+    rootCertificateAlias = mTestCertHelper.getDefaultCertificateAliasIfEmpty(rootCertificateAlias);
+    Objects.requireNonNull(sessionId, "invalid session");
+    Objects.requireNonNull(verifierCertPath, "verifierCertPath is null");
+    Objects.requireNonNull(vaultParams, "vaultParams is null");
+    Objects.requireNonNull(vaultChallenge, "vaultChallenge is null");
+    Objects.requireNonNull(secrets, "secrets is null");
+    CertPath certPath;
+    try {
+        certPath = verifierCertPath.getCertPath();
+    } catch (CertificateException e) {
+        throw new ServiceSpecificException(ERROR_BAD_CERTIFICATE_FORMAT, e.getMessage());
+    }
+    try {
+        CertUtils.validateCertPath(mTestCertHelper.getRootCertificate(rootCertificateAlias), certPath);
+    } catch (CertValidationException e) {
+        Log.e(TAG, "Failed to validate the given cert path", e);
+        throw new ServiceSpecificException(ERROR_INVALID_CERTIFICATE, e.getMessage());
+    }
+    byte[] verifierPublicKey = certPath.getCertificates().get(0).getPublicKey().getEncoded();
+    if (verifierPublicKey == null) {
+        Log.e(TAG, "Failed to encode verifierPublicKey");
+        throw new ServiceSpecificException(ERROR_BAD_CERTIFICATE_FORMAT, "Failed to encode verifierPublicKey");
+    }
+    return startRecoverySession(sessionId, verifierPublicKey, vaultParams, vaultChallenge, secrets);
+}

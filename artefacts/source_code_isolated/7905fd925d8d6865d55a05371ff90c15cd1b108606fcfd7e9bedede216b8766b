@@ -1,0 +1,10 @@
+public boolean setApiBlacklistExemptions(List<String> exemptions){
+    synchronized (mLock) {
+        mApiBlacklistExemptions = exemptions;
+        boolean ok = maybeSetApiBlacklistExemptions(primaryZygoteState, true);
+        if (ok) {
+            ok = maybeSetApiBlacklistExemptions(secondaryZygoteState, true);
+        }
+        return ok;
+    }
+}

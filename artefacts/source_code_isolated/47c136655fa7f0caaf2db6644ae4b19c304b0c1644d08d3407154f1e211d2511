@@ -1,0 +1,12 @@
+public float getFraction(@FractionRes int id, int base, int pbase){
+    final TypedValue value = obtainTempTypedValue();
+    try {
+        mResourcesImpl.getValue(id, value, true);
+        if (value.type == TypedValue.TYPE_FRACTION) {
+            return TypedValue.complexToFraction(value.data, base, pbase);
+        }
+        throw new NotFoundException("Resource ID #0x" + Integer.toHexString(id) + " type #0x" + Integer.toHexString(value.type) + " is not valid");
+    } finally {
+        releaseTempTypedValue(value);
+    }
+}

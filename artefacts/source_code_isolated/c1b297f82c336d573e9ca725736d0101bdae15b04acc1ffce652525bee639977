@@ -1,0 +1,10 @@
+public long getValue(int key, int index){
+    assertConsistency();
+    try {
+        final long[] array = mParent.mLongs.get(getArrayFromKey(key));
+        return array[getIndexFromKey(key) + index];
+    } catch (IndexOutOfBoundsException ex) {
+        logOrThrow("key=0x" + Integer.toHexString(key) + " index=" + index + " -- " + dumpInternalState(), ex);
+        return 0;
+    }
+}

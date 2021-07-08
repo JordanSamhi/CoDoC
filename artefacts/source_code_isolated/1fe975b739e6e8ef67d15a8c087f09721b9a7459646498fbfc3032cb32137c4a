@@ -1,0 +1,22 @@
+public void unregisterSync(PeriodicAdvertisingCallback callback){
+    if (callback == null) {
+        throw new IllegalArgumentException("callback can't be null");
+    }
+    IBluetoothGatt gatt;
+    try {
+        gatt = mBluetoothManager.getBluetoothGatt();
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to get Bluetooth gatt - ", e);
+        return;
+    }
+    IPeriodicAdvertisingCallback wrapper = mCallbackWrappers.remove(callback);
+    if (wrapper == null) {
+        throw new IllegalArgumentException("callback was not properly registered");
+    }
+    try {
+        gatt.unregisterSync(wrapper);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Failed to cancel sync creation - ", e);
+        return;
+    }
+}

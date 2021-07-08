@@ -1,0 +1,9 @@
+public void invalidateDrawable(@NonNull Drawable drawable){
+    if (verifyDrawable(drawable)) {
+        final Rect dirty = drawable.getDirtyBounds();
+        final int scrollX = mScrollX;
+        final int scrollY = mScrollY;
+        invalidate(dirty.left + scrollX, dirty.top + scrollY, dirty.right + scrollX, dirty.bottom + scrollY);
+        rebuildOutline();
+    }
+}

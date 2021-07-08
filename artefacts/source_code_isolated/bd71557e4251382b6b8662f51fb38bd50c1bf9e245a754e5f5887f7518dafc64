@@ -1,0 +1,19 @@
+public synchronized boolean provisionVpnProfile(@NonNull String packageName, @NonNull VpnProfile profile, @NonNull KeyStore keyStore){
+    checkNotNull(packageName, "No package name provided");
+    checkNotNull(profile, "No profile provided");
+    checkNotNull(keyStore, "KeyStore missing");
+    verifyCallingUidAndPackage(packageName);
+    enforceNotRestrictedUser();
+    validateRequiredFeatures(profile);
+    if (profile.isRestrictedToTestNetworks) {
+        mContext.enforceCallingPermission(Manifest.permission.MANAGE_TEST_NETWORKS, "Test-mode profiles require the MANAGE_TEST_NETWORKS permission");
+    }
+    final byte[] encodedProfile = profile.encode();
+    if (encodedProfile.length > MAX_VPN_PROFILE_SIZE_BYTES) {
+        throw new IllegalArgumentException("Profile too big");
+    }
+    Binder.withCleanCallingIdentity(() -> {
+        keyStore.put(getProfileNameForPackage(packageName), encodedProfile, Process.SYSTEM_UID, 0);
+    });
+    return isVpnProfilePreConsented(mContext, packageName);
+}

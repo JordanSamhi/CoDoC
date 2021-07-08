@@ -1,0 +1,12 @@
+public void managedProfileInstall() throws Exception{
+    assumeTrue(mHasManagedUserFeature);
+    while (mRunner.keepRunning()) {
+        mRunner.pauseTiming();
+        final int userId = createManagedProfile();
+        mRunner.resumeTiming();
+        installPreexistingApp(userId, DUMMY_PACKAGE_NAME);
+        mRunner.pauseTiming();
+        removeUser(userId);
+        mRunner.resumeTiming();
+    }
+}

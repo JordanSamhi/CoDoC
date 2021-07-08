@@ -1,0 +1,10 @@
+public void disassociate(@NonNull String deviceMacAddress){
+    if (!checkFeaturePresent()) {
+        return;
+    }
+    try {
+        mService.disassociate(deviceMacAddress, getCallingPackage());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public TimeInStateStopwatch createTimeOnBatteryStopwatch(){
+    synchronized (mStopwatchesLock) {
+        final TimeInStateStopwatch stopwatch = new TimeInStateStopwatch();
+        mOnBatteryStopwatches.add(stopwatch);
+        if (!mCharging) {
+            stopwatch.start();
+        }
+        return stopwatch;
+    }
+}

@@ -1,0 +1,12 @@
+public float getCenterX(){
+    final IAccessibilityServiceConnection connection = AccessibilityInteractionClient.getInstance().getConnection(mService.mConnectionId);
+    if (connection != null) {
+        try {
+            return connection.getMagnificationCenterX(mDisplayId);
+        } catch (RemoteException re) {
+            Log.w(LOG_TAG, "Failed to obtain center X", re);
+            re.rethrowFromSystemServer();
+        }
+    }
+    return 0.0f;
+}

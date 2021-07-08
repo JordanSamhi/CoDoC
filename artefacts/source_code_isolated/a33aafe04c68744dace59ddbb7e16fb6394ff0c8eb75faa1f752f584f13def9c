@@ -1,0 +1,17 @@
+public void removeOnActiveSessionsChangedListener(@NonNull OnActiveSessionsChangedListener listener){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener may not be null");
+    }
+    synchronized (mLock) {
+        SessionsChangedWrapper wrapper = mListeners.remove(listener);
+        if (wrapper != null) {
+            try {
+                mService.removeSessionsListener(wrapper.mStub);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Error in removeOnActiveSessionsChangedListener.", e);
+            } finally {
+                wrapper.release();
+            }
+        }
+    }
+}

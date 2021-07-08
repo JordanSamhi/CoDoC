@@ -1,0 +1,16 @@
+public void failWrite(FileOutputStream str){
+    if (str == null) {
+        return;
+    }
+    if (!FileUtils.sync(str)) {
+        Log.e(LOG_TAG, "Failed to sync file output stream");
+    }
+    try {
+        str.close();
+    } catch (IOException e) {
+        Log.e(LOG_TAG, "Failed to close file output stream", e);
+    }
+    if (!mNewName.delete()) {
+        Log.e(LOG_TAG, "Failed to delete new file " + mNewName);
+    }
+}

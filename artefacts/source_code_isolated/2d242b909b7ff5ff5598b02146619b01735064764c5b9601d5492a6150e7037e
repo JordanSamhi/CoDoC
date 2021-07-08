@@ -1,0 +1,10 @@
+public void uninstallAllUserCaCerts(@Nullable ComponentName admin){
+    throwIfParentInstance("uninstallAllUserCaCerts");
+    if (mService != null) {
+        try {
+            mService.uninstallCaCerts(admin, mContext.getPackageName(), new TrustedCertificateStore().userAliases().toArray(new String[0]));
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+}

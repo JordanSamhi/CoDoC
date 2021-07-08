@@ -1,0 +1,7 @@
+public boolean performDismissWithBlockingHelper(boolean fromAccessibility){
+    NotificationBlockingHelperManager manager = Dependency.get(NotificationBlockingHelperManager.class);
+    boolean isBlockingHelperShown = manager.perhapsShowBlockingHelper(this, mMenuRow);
+    Dependency.get(MetricsLogger.class).count(NotificationCounters.NOTIFICATION_DISMISSED, 1);
+    performDismiss(fromAccessibility);
+    return isBlockingHelperShown;
+}

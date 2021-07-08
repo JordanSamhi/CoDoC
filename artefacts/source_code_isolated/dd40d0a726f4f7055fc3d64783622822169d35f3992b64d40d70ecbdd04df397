@@ -1,0 +1,27 @@
+public boolean setUserIdDeviceAffinity(@UserIdInt int userId, @NonNull List<AudioDeviceInfo> devices){
+    Objects.requireNonNull(devices, "Illegal null list of audio devices");
+    synchronized (mLock) {
+        if (mStatus != POLICY_STATUS_REGISTERED) {
+            throw new IllegalStateException("Cannot use unregistered AudioPolicy");
+        }
+        final int[] deviceTypes = new int[devices.size()];
+        final String[] deviceAddresses = new String[devices.size()];
+        int i = 0;
+        for (AudioDeviceInfo device : devices) {
+            if (device == null) {
+                throw new IllegalArgumentException("Illegal null AudioDeviceInfo in setUserIdDeviceAffinity");
+            }
+            deviceTypes[i] = AudioDeviceInfo.convertDeviceTypeToInternalDevice(device.getType());
+            deviceAddresses[i] = device.getAddress();
+            i++;
+        }
+        final IAudioService service = getService();
+        try {
+            final int status = service.setUserIdDeviceAffinity(this.cb(), userId, deviceTypes, deviceAddresses);
+            return (status == AudioManager.SUCCESS);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Dead object in setUserIdDeviceAffinity", e);
+            return false;
+        }
+    }
+}

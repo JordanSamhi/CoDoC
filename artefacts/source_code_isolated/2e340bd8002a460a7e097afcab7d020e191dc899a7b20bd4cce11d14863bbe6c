@@ -1,0 +1,13 @@
+public List<SecurityEvent> retrieveSecurityLogs(@NonNull ComponentName admin){
+    throwIfParentInstance("retrieveSecurityLogs");
+    try {
+        ParceledListSlice<SecurityEvent> list = mService.retrieveSecurityLogs(admin);
+        if (list != null) {
+            return list.getList();
+        } else {
+            return null;
+        }
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

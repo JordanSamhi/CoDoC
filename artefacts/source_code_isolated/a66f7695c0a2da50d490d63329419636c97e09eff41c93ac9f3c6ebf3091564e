@@ -1,0 +1,10 @@
+public void dumpWindowHierarchy(String fileName){
+    Tracer.trace(fileName);
+    AccessibilityNodeInfo root = getAutomatorBridge().getQueryController().getAccessibilityRootNode();
+    if (root != null) {
+        Display display = getAutomatorBridge().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        AccessibilityNodeInfoDumper.dumpWindowToFile(root, new File(new File(Environment.getDataDirectory(), "local/tmp"), fileName), display.getRotation(), size.x, size.y);
+    }
+}

@@ -1,0 +1,22 @@
+
+     * Controls whether or not to force this RenderNode to render to an intermediate buffer.
+     * Internally RenderNode will already promote itself to a composition layer if it's useful
+     * for performance or required for the current combination of {@link #setAlpha(float)} and
+     * {@link #setHasOverlappingRendering(boolean)}.
+     *
+     * <p>The usage of this is instead to allow for either overriding of the internal behavior
+     * if it's measured to be necessary for the particular rendering content in question or, more
+     * usefully, to add a composition effect to the RenderNode via the optional paint parameter.
+     *
+     * <p>Note: When a RenderNode is using a compositing layer it will also result in
+     * clipToBounds=true behavior.
+     *
+     * @param forceToLayer if true this forces the RenderNode to use an intermediate buffer.
+     *                     Default & generally recommended value is false.
+     * @param paint        The blend mode, alpha, and ColorFilter to apply to the compositing layer.
+     *                     Only applies if forceToLayer is true. The paint's alpha is multiplied
+     *                     with {@link #getAlpha()} to resolve the final alpha of the RenderNode.
+     *                     If null then no additional composition effects are applied on top of the
+     *                     composition layer.
+     * @return True if the value changed, false if the new value was the same as the previous value.
+     

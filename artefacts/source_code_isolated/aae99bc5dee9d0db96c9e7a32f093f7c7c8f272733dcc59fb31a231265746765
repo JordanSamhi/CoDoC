@@ -1,0 +1,8 @@
+public boolean logStartedIntentWithProfile(Intent intent, int sourceMetricsCategory, boolean isWorkProfile){
+    if (intent == null) {
+        return false;
+    }
+    final ComponentName cn = intent.getComponent();
+    final String key = cn != null ? cn.flattenToString() : intent.getAction();
+    return logSettingsTileClick(key + (isWorkProfile ? "/work" : "/personal"), sourceMetricsCategory);
+}

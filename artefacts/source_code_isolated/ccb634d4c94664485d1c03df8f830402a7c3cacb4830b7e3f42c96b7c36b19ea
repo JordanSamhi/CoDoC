@@ -1,0 +1,24 @@
+public void systemReady(){
+    mKeyguardDelegate.onSystemReady();
+    mVrManagerInternal = LocalServices.getService(VrManagerInternal.class);
+    if (mVrManagerInternal != null) {
+        mVrManagerInternal.addPersistentVrModeStateListener(mPersistentVrModeListener);
+    }
+    readCameraLensCoverState();
+    updateUiMode();
+    mDefaultDisplayRotation.updateOrientationListener();
+    synchronized (mLock) {
+        mSystemReady = true;
+        mHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                updateSettings();
+            }
+        });
+        if (mSystemBooted) {
+            mKeyguardDelegate.onBootCompleted();
+        }
+    }
+    mAutofillManagerInternal = LocalServices.getService(AutofillManagerInternal.class);
+}

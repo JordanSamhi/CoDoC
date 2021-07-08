@@ -1,0 +1,59 @@
+public boolean directPinShortcut(PinShortcutRequestInner request){
+    final ShortcutInfo original = request.shortcutOriginal;
+    final int appUserId = original.getUserId();
+    final String appPackageName = original.getPackage();
+    final int launcherUserId = request.launcherUserId;
+    final String launcherPackage = request.launcherPackage;
+    final String shortcutId = original.getId();
+    List<ShortcutInfo> changedShortcuts = null;
+    synchronized (mLock) {
+        if (!(mService.isUserUnlockedL(appUserId) && mService.isUserUnlockedL(request.launcherUserId))) {
+            Log.w(TAG, "User is locked now.");
+            return false;
+        }
+        final ShortcutLauncher launcher = mService.getLauncherShortcutsLocked(launcherPackage, appUserId, launcherUserId);
+        launcher.attemptToRestoreIfNeededAndSave();
+        if (launcher.hasPinned(original)) {
+            if (DEBUG) {
+                Slog.d(TAG, "Shortcut " + original + " already pinned.");
+            }
+            return true;
+        }
+        final ShortcutPackage ps = mService.getPackageShortcutsForPublisherLocked(appPackageName, appUserId);
+        final ShortcutInfo current = ps.findShortcutById(shortcutId);
+        try {
+            if (current == null) {
+                mService.validateShortcutForPinRequest(original);
+            } else {
+                validateExistingShortcut(current);
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Unable to pin shortcut: " + e.getMessage());
+            return false;
+        }
+        if (current == null) {
+            if (DEBUG) {
+                Slog.d(TAG, "Temporarily adding " + shortcutId + " as dynamic");
+            }
+            if (original.getActivity() == null) {
+                original.setActivity(mService.getDummyMainActivity(appPackageName));
+            }
+            ps.addOrReplaceDynamicShortcut(original);
+        }
+        if (DEBUG) {
+            Slog.d(TAG, "Pinning " + shortcutId);
+        }
+        launcher.addPinnedShortcut(appPackageName, appUserId, shortcutId, true);
+        if (current == null) {
+            if (DEBUG) {
+                Slog.d(TAG, "Removing " + shortcutId + " as dynamic");
+            }
+            ps.deleteDynamicWithId(shortcutId, false);
+        }
+        ps.adjustRanks();
+        changedShortcuts = Collections.singletonList(ps.findShortcutById(shortcutId));
+    }
+    mService.verifyStates();
+    mService.packageShortcutsChanged(appPackageName, appUserId, changedShortcuts, null);
+    return true;
+}

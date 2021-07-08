@@ -1,0 +1,9 @@
+public static TcpKeepalivePacketData getTcpKeepalivePacket(@NonNull FileDescriptor fd) throws InvalidPacketException, InvalidSocketException{
+    try {
+        final TcpKeepalivePacketDataParcelable tcpDetails = switchToRepairMode(fd);
+        return TcpKeepalivePacketData.tcpKeepalivePacket(tcpDetails);
+    } catch (InvalidPacketException | InvalidSocketException e) {
+        switchOutOfRepairMode(fd);
+        throw e;
+    }
+}

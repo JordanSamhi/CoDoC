@@ -1,0 +1,18 @@
+public String getPropertyName(){
+    String propertyName = null;
+    if (mPropertyName != null) {
+        propertyName = mPropertyName;
+    } else if (mProperty != null) {
+        propertyName = mProperty.getName();
+    } else if (mValues != null && mValues.length > 0) {
+        for (int i = 0; i < mValues.length; ++i) {
+            if (i == 0) {
+                propertyName = "";
+            } else {
+                propertyName += ",";
+            }
+            propertyName += mValues[i].getPropertyName();
+        }
+    }
+    return propertyName;
+}

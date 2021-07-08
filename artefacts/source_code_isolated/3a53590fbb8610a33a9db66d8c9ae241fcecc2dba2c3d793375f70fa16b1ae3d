@@ -1,0 +1,15 @@
+public static int compare(long networkTypeBitmaskL, long networkTypeBitmaskR){
+    final long[] prioritizedNetworkClassBitmasks = new long[] { TelephonyManager.NETWORK_CLASS_BITMASK_5G, TelephonyManager.NETWORK_CLASS_BITMASK_4G, TelephonyManager.NETWORK_CLASS_BITMASK_3G, TelephonyManager.NETWORK_CLASS_BITMASK_2G };
+    long lhsUnique = networkTypeBitmaskL & ~networkTypeBitmaskR;
+    long rhsUnique = networkTypeBitmaskR & ~networkTypeBitmaskL;
+    for (long classBitmask : prioritizedNetworkClassBitmasks) {
+        int result = 0;
+        if ((lhsUnique & classBitmask) != 0)
+            ++result;
+        if ((rhsUnique & classBitmask) != 0)
+            --result;
+        if (result != 0)
+            return result;
+    }
+    return Long.bitCount(networkTypeBitmaskL) - Long.bitCount(networkTypeBitmaskR);
+}

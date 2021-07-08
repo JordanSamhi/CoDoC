@@ -1,0 +1,45 @@
+public void onKeyEvent(KeyEvent event, int nestingLevel){
+    if (!startEvent(event, nestingLevel, EVENT_TYPE_KEY)) {
+        return;
+    }
+    try {
+        ensureMetaStateIsNormalized(event.getMetaState());
+        final int action = event.getAction();
+        final int deviceId = event.getDeviceId();
+        final int source = event.getSource();
+        final int keyCode = event.getKeyCode();
+        switch(action) {
+            case KeyEvent.ACTION_DOWN:
+                {
+                    KeyState state = findKeyState(deviceId, source, keyCode, false);
+                    if (state != null) {
+                        if (state.unhandled) {
+                            state.unhandled = false;
+                        } else if ((mFlags & FLAG_RAW_DEVICE_INPUT) == 0 && event.getRepeatCount() == 0) {
+                            problem("ACTION_DOWN but key is already down and this event " + "is not a key repeat.");
+                        }
+                    } else {
+                        addKeyState(deviceId, source, keyCode);
+                    }
+                    break;
+                }
+            case KeyEvent.ACTION_UP:
+                {
+                    KeyState state = findKeyState(deviceId, source, keyCode, true);
+                    if (state == null) {
+                        problem("ACTION_UP but key was not down.");
+                    } else {
+                        state.recycle();
+                    }
+                    break;
+                }
+            case KeyEvent.ACTION_MULTIPLE:
+                break;
+            default:
+                problem("Invalid action " + KeyEvent.actionToString(action) + " for key event.");
+                break;
+        }
+    } finally {
+        finishEvent();
+    }
+}

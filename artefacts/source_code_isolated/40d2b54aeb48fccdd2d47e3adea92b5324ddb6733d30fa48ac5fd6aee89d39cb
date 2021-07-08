@@ -1,0 +1,6 @@
+public boolean requestFeature(int featureId){
+    final int flag = 1 << featureId;
+    mFeatures |= flag;
+    mLocalFeatures |= mContainer != null ? (flag & ~mContainer.mFeatures) : flag;
+    return (mFeatures & flag) != 0;
+}

@@ -1,0 +1,7 @@
+public void registerWatcher(String name, UiWatcher watcher){
+    Tracer.trace(name, watcher);
+    if (mInWatcherContext) {
+        throw new IllegalStateException("Cannot register new watcher from within another");
+    }
+    mWatchers.put(name, watcher);
+}

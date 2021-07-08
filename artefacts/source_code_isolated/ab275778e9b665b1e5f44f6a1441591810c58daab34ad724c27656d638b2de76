@@ -1,0 +1,23 @@
+public void updateVtDataUsage(ImsCall call, long dataUsage){
+    long oldUsage = 0L;
+    if (mVtDataUsageMap.containsKey(call.uniqueId)) {
+        oldUsage = mVtDataUsageMap.get(call.uniqueId);
+    }
+    long delta = dataUsage - oldUsage;
+    mVtDataUsageMap.put(call.uniqueId, dataUsage);
+    log("updateVtDataUsage: call=" + call + ", delta=" + delta);
+    long currentTime = SystemClock.elapsedRealtime();
+    int isRoaming = mPhone.getServiceState().getDataRoaming() ? 1 : 0;
+    NetworkStats vtDataUsageSnapshot = new NetworkStats(currentTime, 1);
+    vtDataUsageSnapshot = vtDataUsageSnapshot.add(mVtDataUsageSnapshot);
+    vtDataUsageSnapshot.combineValues(new NetworkStats.Entry(NetworkStats.IFACE_VT, -1, NetworkStats.SET_FOREGROUND, NetworkStats.TAG_NONE, NetworkStats.METERED_YES, isRoaming, NetworkStats.DEFAULT_NETWORK_YES, delta / 2, 0, delta / 2, 0, 0));
+    mVtDataUsageSnapshot = vtDataUsageSnapshot;
+    NetworkStats vtDataUsageUidSnapshot = new NetworkStats(currentTime, 1);
+    vtDataUsageUidSnapshot.combineAllValues(mVtDataUsageUidSnapshot);
+    if (mDefaultDialerUid.get() == NetworkStats.UID_ALL) {
+        final TelecomManager telecomManager = (TelecomManager) mPhone.getContext().getSystemService(Context.TELECOM_SERVICE);
+        mDefaultDialerUid.set(getPackageUid(mPhone.getContext(), telecomManager.getDefaultDialerPackage()));
+    }
+    vtDataUsageUidSnapshot.combineValues(new NetworkStats.Entry(NetworkStats.IFACE_VT, mDefaultDialerUid.get(), NetworkStats.SET_FOREGROUND, NetworkStats.TAG_NONE, NetworkStats.METERED_YES, isRoaming, NetworkStats.DEFAULT_NETWORK_YES, delta / 2, 0, delta / 2, 0, 0));
+    mVtDataUsageUidSnapshot = vtDataUsageUidSnapshot;
+}

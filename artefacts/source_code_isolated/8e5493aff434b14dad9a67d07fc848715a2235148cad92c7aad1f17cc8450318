@@ -1,0 +1,15 @@
+public static final boolean isAvailable(String filterName){
+    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+    Class filterClass;
+    try {
+        filterClass = contextClassLoader.loadClass(filterName);
+    } catch (ClassNotFoundException e) {
+        return false;
+    }
+    try {
+        filterClass.asSubclass(Filter.class);
+    } catch (ClassCastException e) {
+        return false;
+    }
+    return true;
+}

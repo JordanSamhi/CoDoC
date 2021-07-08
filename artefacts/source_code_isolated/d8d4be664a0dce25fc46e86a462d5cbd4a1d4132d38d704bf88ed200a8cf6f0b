@@ -1,0 +1,18 @@
+public TranscodingJob enqueueTranscodingRequest(@NonNull TranscodingRequest transcodingRequest, @NonNull @CallbackExecutor Executor listenerExecutor, @NonNull OnTranscodingFinishedListener listener){
+    Log.i(TAG, "enqueueTranscodingRequest called.");
+    Preconditions.checkNotNull(transcodingRequest);
+    Preconditions.checkNotNull(listenerExecutor);
+    Preconditions.checkNotNull(listener);
+    long jobID = native_requestUniqueJobID();
+    if (jobID == ID_INVALID) {
+        return null;
+    }
+    TranscodingJob transcodingJob = new TranscodingJob(jobID, listenerExecutor, listener);
+    mPendingTranscodingJobs.put(jobID, transcodingJob);
+    boolean enqueued = native_enqueueTranscodingRequest(jobID, transcodingRequest, mContext);
+    if (!enqueued) {
+        mPendingTranscodingJobs.remove(jobID);
+        return null;
+    }
+    return transcodingJob;
+}

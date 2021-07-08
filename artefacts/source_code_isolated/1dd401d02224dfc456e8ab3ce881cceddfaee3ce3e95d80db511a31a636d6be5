@@ -1,0 +1,15 @@
+public boolean equalsUids(@NonNull NetworkCapabilities nc){
+    Set<UidRange> comparedUids = nc.mUids;
+    if (null == comparedUids)
+        return null == mUids;
+    if (null == mUids)
+        return false;
+    final Set<UidRange> uids = new ArraySet<>(mUids);
+    for (UidRange range : comparedUids) {
+        if (!uids.contains(range)) {
+            return false;
+        }
+        uids.remove(range);
+    }
+    return uids.isEmpty();
+}

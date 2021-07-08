@@ -1,0 +1,12 @@
+public int setUsbTethering(final boolean enable){
+    final String callerPkg = mContext.getOpPackageName();
+    Log.i(TAG, "setUsbTethering caller:" + callerPkg);
+    final RequestDispatcher dispatcher = new RequestDispatcher();
+    return dispatcher.waitForResult((connector, listener) -> {
+        try {
+            connector.setUsbTethering(enable, callerPkg, listener);
+        } catch (RemoteException e) {
+            throw new IllegalStateException(e);
+        }
+    });
+}

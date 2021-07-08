@@ -1,0 +1,11 @@
+public List<UsageStats> queryUsageStats(int intervalType, long beginTime, long endTime){
+    try {
+        @SuppressWarnings("unchecked")
+        ParceledListSlice<UsageStats> slice = mService.queryUsageStats(intervalType, beginTime, endTime, mContext.getOpPackageName());
+        if (slice != null) {
+            return slice.getList();
+        }
+    } catch (RemoteException e) {
+    }
+    return Collections.emptyList();
+}

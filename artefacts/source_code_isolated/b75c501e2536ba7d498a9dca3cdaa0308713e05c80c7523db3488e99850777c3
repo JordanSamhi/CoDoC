@@ -1,0 +1,28 @@
+public GnssStatus build(){
+    int svCount = mSatellites.size();
+    int[] svidWithFlags = new int[svCount];
+    float[] cn0DbHzs = new float[svCount];
+    float[] elevations = new float[svCount];
+    float[] azimuths = new float[svCount];
+    float[] carrierFrequencies = new float[svCount];
+    float[] basebandCn0DbHzs = new float[svCount];
+    for (int i = 0; i < svidWithFlags.length; i++) {
+        svidWithFlags[i] = mSatellites.get(i).mSvidWithFlags;
+    }
+    for (int i = 0; i < cn0DbHzs.length; i++) {
+        cn0DbHzs[i] = mSatellites.get(i).mCn0DbHz;
+    }
+    for (int i = 0; i < elevations.length; i++) {
+        elevations[i] = mSatellites.get(i).mElevation;
+    }
+    for (int i = 0; i < azimuths.length; i++) {
+        azimuths[i] = mSatellites.get(i).mAzimuth;
+    }
+    for (int i = 0; i < carrierFrequencies.length; i++) {
+        carrierFrequencies[i] = mSatellites.get(i).mCarrierFrequency;
+    }
+    for (int i = 0; i < basebandCn0DbHzs.length; i++) {
+        basebandCn0DbHzs[i] = mSatellites.get(i).mBasebandCn0DbHz;
+    }
+    return wrap(svCount, svidWithFlags, cn0DbHzs, elevations, azimuths, carrierFrequencies, basebandCn0DbHzs);
+}

@@ -1,0 +1,8 @@
+public T get(Key<T> key){
+    Objects.requireNonNull(key, "key must not be null");
+    GetCommand g = sGetCommandMap.get(key);
+    if (g != null) {
+        return g.getValue(this, key);
+    }
+    return getBase(key);
+}

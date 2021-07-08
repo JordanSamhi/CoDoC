@@ -1,0 +1,15 @@
+public boolean sendVendorAtCommand(BluetoothDevice device, int vendorId, String atCommand){
+    if (DBG)
+        log("sendVendorSpecificCommand()");
+    final IBluetoothHeadsetClient service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.sendVendorAtCommand(device, vendorId, atCommand);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return false;
+}

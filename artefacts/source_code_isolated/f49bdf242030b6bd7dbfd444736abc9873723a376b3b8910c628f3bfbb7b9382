@@ -1,0 +1,12 @@
+public boolean canMakeReadOnly(){
+    INfcTag tagService = mTag.getTagService();
+    if (tagService == null) {
+        return false;
+    }
+    try {
+        return tagService.canMakeReadOnly(mNdefType);
+    } catch (RemoteException e) {
+        Log.e(TAG, "NFC service dead", e);
+        return false;
+    }
+}

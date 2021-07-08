@@ -1,0 +1,10 @@
+public static void waitForCountDownNoInterrupt(CountDownLatch countDownLatch, long timeoutMs, String description){
+    try {
+        if (!countDownLatch.await(timeoutMs, TimeUnit.MILLISECONDS)) {
+            throw new IllegalStateException(description + " timed out.");
+        }
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new IllegalStateException(description + " interrupted.");
+    }
+}

@@ -1,0 +1,15 @@
+public void onPaused(boolean paused){
+    synchronized (this) {
+        if (DEBUG)
+            Log.d(TAG, "onPaused: " + paused);
+        if (mStopped) {
+            mStopped = false;
+            mSeeking = true;
+            scheduleNotification(NOTIFY_SEEK, 0);
+        } else {
+            mPausing = paused;
+            mSeeking = false;
+            scheduleNotification(NOTIFY_TIME, 0);
+        }
+    }
+}

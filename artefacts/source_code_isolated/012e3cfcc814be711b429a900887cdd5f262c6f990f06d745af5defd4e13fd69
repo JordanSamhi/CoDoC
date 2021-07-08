@@ -1,0 +1,24 @@
+public void setAgentApp(@NonNull String packageName, @Nullable String agent){
+    synchronized (this) {
+        if (checkCallingPermission(android.Manifest.permission.SET_ACTIVITY_WATCHER) != PackageManager.PERMISSION_GRANTED) {
+            throw new SecurityException("Requires permission " + android.Manifest.permission.SET_ACTIVITY_WATCHER);
+        }
+        if (agent == null) {
+            if (mAppAgentMap != null) {
+                mAppAgentMap.remove(packageName);
+                if (mAppAgentMap.isEmpty()) {
+                    mAppAgentMap = null;
+                }
+            }
+        } else {
+            if (mAppAgentMap == null) {
+                mAppAgentMap = new HashMap<>();
+            }
+            if (mAppAgentMap.size() >= 100) {
+                Slog.e(TAG, "App agent map has too many entries, cannot add " + packageName + "/" + agent);
+                return;
+            }
+            mAppAgentMap.put(packageName, agent);
+        }
+    }
+}

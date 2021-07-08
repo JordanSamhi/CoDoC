@@ -1,0 +1,23 @@
+public void onScannerRegistered(int status, int scannerId){
+    Log.d(TAG, "onScannerRegistered() - status=" + status + " scannerId=" + scannerId + " mScannerId=" + mScannerId);
+    synchronized (this) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            try {
+                if (mScannerId == -1) {
+                    mBluetoothGatt.unregisterScanner(scannerId);
+                } else {
+                    mScannerId = scannerId;
+                    mBluetoothGatt.startScan(mScannerId, mSettings, mFilters, mResultStorages, mOpPackageName, mFeatureId);
+                }
+            } catch (RemoteException e) {
+                Log.e(TAG, "fail to start le scan: " + e);
+                mScannerId = -1;
+            }
+        } else if (status == ScanCallback.SCAN_FAILED_SCANNING_TOO_FREQUENTLY) {
+            mScannerId = -2;
+        } else {
+            mScannerId = -1;
+        }
+        notifyAll();
+    }
+}

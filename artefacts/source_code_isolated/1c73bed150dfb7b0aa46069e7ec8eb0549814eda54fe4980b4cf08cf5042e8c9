@@ -1,0 +1,18 @@
+public QueueRequest getQueueRequest(int index){
+    synchronized (mBufferLock) {
+        if (mBufferMode != BUFFER_MODE_BLOCK) {
+            throw new IllegalStateException("The codec is not configured for block model");
+        }
+        if (index < 0 || index >= mQueueRequests.size()) {
+            throw new IndexOutOfBoundsException("Expected range of index: [0," + (mQueueRequests.size() - 1) + "]; actual: " + index);
+        }
+        QueueRequest request = mQueueRequests.get(index);
+        if (request == null) {
+            throw new IllegalArgumentException("Unavailable index: " + index);
+        }
+        if (!request.isAccessible()) {
+            throw new IllegalArgumentException("The request is stale at index " + index);
+        }
+        return request.clear();
+    }
+}

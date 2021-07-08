@@ -1,0 +1,9 @@
+public void testBackupNow_whenExceptionThrown_restoresCallingIdentity(){
+    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
+    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
+    setUpPowerManager(backupManagerService);
+    ShadowBinder.setCallingUid(1);
+    expectThrows(IllegalArgumentException.class, backupManagerService::backupNow);
+    assertThat(ShadowKeyValueBackupJobException.getCallingUid()).isEqualTo(ShadowBinder.LOCAL_UID);
+    assertThat(Binder.getCallingUid()).isEqualTo(1);
+}

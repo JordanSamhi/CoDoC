@@ -1,0 +1,25 @@
+public void addToWifiUsabilityStatsList(int label, int triggerType, int firmwareAlertCode){
+    synchronized (mLock) {
+        if (mWifiUsabilityStatsEntriesList.isEmpty() || !mScreenOn) {
+            return;
+        }
+        if (label == WifiUsabilityStats.LABEL_GOOD) {
+            if (mWifiUsabilityStatsListGood.isEmpty() || mWifiUsabilityStatsListGood.getLast().stats[mWifiUsabilityStatsListGood.getLast().stats.length - 1].timeStampMs + MIN_WIFI_GOOD_USABILITY_STATS_PERIOD_MS < mWifiUsabilityStatsEntriesList.getLast().timeStampMs) {
+                while (mWifiUsabilityStatsListGood.size() >= MAX_WIFI_USABILITY_STATS_LIST_SIZE_PER_TYPE) {
+                    mWifiUsabilityStatsListGood.remove(mRand.nextInt(mWifiUsabilityStatsListGood.size()));
+                }
+                mWifiUsabilityStatsListGood.add(createWifiUsabilityStatsWithLabel(label, triggerType, firmwareAlertCode));
+            }
+        } else {
+            mScoreBreachLowTimeMillis = -1;
+            if (mWifiUsabilityStatsListBad.isEmpty() || (mWifiUsabilityStatsListBad.getLast().stats[mWifiUsabilityStatsListBad.getLast().stats.length - 1].timeStampMs + MIN_DATA_STALL_WAIT_MS < mWifiUsabilityStatsEntriesList.getLast().timeStampMs)) {
+                while (mWifiUsabilityStatsListBad.size() >= MAX_WIFI_USABILITY_STATS_LIST_SIZE_PER_TYPE) {
+                    mWifiUsabilityStatsListBad.remove(mRand.nextInt(mWifiUsabilityStatsListBad.size()));
+                }
+                mWifiUsabilityStatsListBad.add(createWifiUsabilityStatsWithLabel(label, triggerType, firmwareAlertCode));
+            }
+        }
+        mWifiUsabilityStatsCounter = 0;
+        mWifiUsabilityStatsEntriesList.clear();
+    }
+}

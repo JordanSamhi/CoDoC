@@ -1,0 +1,13 @@
+public void onWakeUp(int reason, String details, int reasonUid, String opPackageName, int opUid){
+    if (DEBUG) {
+        Slog.d(TAG, "onWakeUp: reason=" + PowerManager.wakeReasonToString(reason) + ", details=" + details + ", reasonUid=" + reasonUid + " opPackageName=" + opPackageName + " opUid=" + opUid);
+    }
+    try {
+        mBatteryStats.noteWakeUp(details, reasonUid);
+        if (opPackageName != null) {
+            mAppOps.noteOpNoThrow(AppOpsManager.OP_TURN_SCREEN_ON, opUid, opPackageName);
+        }
+    } catch (RemoteException ex) {
+    }
+    FrameworkStatsLog.write(FrameworkStatsLog.DISPLAY_WAKE_REPORTED, reason);
+}

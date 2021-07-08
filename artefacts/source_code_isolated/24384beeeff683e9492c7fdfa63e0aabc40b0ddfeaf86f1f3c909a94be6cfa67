@@ -1,0 +1,59 @@
+public List<MenuItem> layoutMainPanelItems(List<MenuItem> menuItems, final int toolbarWidth){
+    Objects.requireNonNull(menuItems);
+    int availableWidth = toolbarWidth;
+    final LinkedList<MenuItem> remainingMenuItems = new LinkedList<>();
+    final LinkedList<MenuItem> overflowMenuItems = new LinkedList();
+    for (MenuItem menuItem : menuItems) {
+        if (menuItem.getItemId() != android.R.id.textAssist && menuItem.requiresOverflow()) {
+            overflowMenuItems.add(menuItem);
+        } else {
+            remainingMenuItems.add(menuItem);
+        }
+    }
+    remainingMenuItems.addAll(overflowMenuItems);
+    mMainPanel.removeAllViews();
+    mMainPanel.setPaddingRelative(0, 0, 0, 0);
+    int lastGroupId = -1;
+    boolean isFirstItem = true;
+    while (!remainingMenuItems.isEmpty()) {
+        final MenuItem menuItem = remainingMenuItems.peek();
+        if (!isFirstItem && menuItem.requiresOverflow()) {
+            break;
+        }
+        final boolean showIcon = isFirstItem && menuItem.getItemId() == R.id.textAssist;
+        final View menuItemButton = createMenuItemButton(mContext, menuItem, mIconTextSpacing, showIcon);
+        if (!showIcon && menuItemButton instanceof LinearLayout) {
+            ((LinearLayout) menuItemButton).setGravity(Gravity.CENTER);
+        }
+        if (isFirstItem) {
+            menuItemButton.setPaddingRelative((int) (1.5 * menuItemButton.getPaddingStart()), menuItemButton.getPaddingTop(), menuItemButton.getPaddingEnd(), menuItemButton.getPaddingBottom());
+        }
+        boolean isLastItem = remainingMenuItems.size() == 1;
+        if (isLastItem) {
+            menuItemButton.setPaddingRelative(menuItemButton.getPaddingStart(), menuItemButton.getPaddingTop(), (int) (1.5 * menuItemButton.getPaddingEnd()), menuItemButton.getPaddingBottom());
+        }
+        menuItemButton.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        final int menuItemButtonWidth = Math.min(menuItemButton.getMeasuredWidth(), toolbarWidth);
+        final boolean canFitWithOverflow = menuItemButtonWidth <= availableWidth - mOverflowButtonSize.getWidth();
+        final boolean canFitNoOverflow = isLastItem && menuItemButtonWidth <= availableWidth;
+        if (canFitWithOverflow || canFitNoOverflow) {
+            setButtonTagAndClickListener(menuItemButton, menuItem);
+            menuItemButton.setTooltipText(menuItem.getTooltipText());
+            mMainPanel.addView(menuItemButton);
+            final ViewGroup.LayoutParams params = menuItemButton.getLayoutParams();
+            params.width = menuItemButtonWidth;
+            menuItemButton.setLayoutParams(params);
+            availableWidth -= menuItemButtonWidth;
+            remainingMenuItems.pop();
+        } else {
+            break;
+        }
+        lastGroupId = menuItem.getGroupId();
+        isFirstItem = false;
+    }
+    if (!remainingMenuItems.isEmpty()) {
+        mMainPanel.setPaddingRelative(0, 0, mOverflowButtonSize.getWidth(), 0);
+    }
+    mMainPanelSize = measure(mMainPanel);
+    return remainingMenuItems;
+}

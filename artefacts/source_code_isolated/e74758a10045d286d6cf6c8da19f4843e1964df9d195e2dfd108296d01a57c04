@@ -1,0 +1,8 @@
+public void setControlStatusListener(OnControlStatusChangeListener listener){
+    synchronized (mListenerLock) {
+        mControlChangeStatusListener = listener;
+    }
+    if ((listener != null) && (mNativeEventHandler == null)) {
+        createNativeEventHandler();
+    }
+}

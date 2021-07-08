@@ -1,0 +1,11 @@
+public void openCameraForUid(@NonNull String cameraId, @NonNull final CameraDevice.StateCallback callback, @NonNull Executor executor, int clientUid) throws CameraAccessException{
+    if (cameraId == null) {
+        throw new IllegalArgumentException("cameraId was null");
+    } else if (callback == null) {
+        throw new IllegalArgumentException("callback was null");
+    }
+    if (CameraManagerGlobal.sCameraServiceDisabled) {
+        throw new IllegalArgumentException("No cameras available on device");
+    }
+    openCameraDeviceUserAsync(cameraId, callback, executor, clientUid);
+}

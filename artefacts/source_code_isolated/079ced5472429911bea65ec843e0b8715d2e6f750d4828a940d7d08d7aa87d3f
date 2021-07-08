@@ -1,0 +1,11 @@
+public void unregisterPackageInstallerSessionCallback(@NonNull SessionCallback callback){
+    synchronized (mDelegates) {
+        for (Iterator<SessionCallbackDelegate> i = mDelegates.iterator(); i.hasNext(); ) {
+            final SessionCallbackDelegate delegate = i.next();
+            if (delegate.mCallback == callback) {
+                mPm.getPackageInstaller().unregisterSessionCallback(delegate.mCallback);
+                i.remove();
+            }
+        }
+    }
+}

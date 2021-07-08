@@ -1,0 +1,18 @@
+public static final void writeListXml(List val, String name, XmlSerializer out) throws XmlPullParserException, IOException{
+    if (val == null) {
+        out.startTag(null, "null");
+        out.endTag(null, "null");
+        return;
+    }
+    out.startTag(null, "list");
+    if (name != null) {
+        out.attribute(null, "name", name);
+    }
+    int N = val.size();
+    int i = 0;
+    while (i < N) {
+        writeValueXml(val.get(i), null, out);
+        i++;
+    }
+    out.endTag(null, "list");
+}

@@ -1,0 +1,17 @@
+public boolean isAddressUsable(LinkProperties linkProperties){
+    InetAddress address = linkProperties.getLinkAddresses().get(0).getAddress();
+    DatagramSocket testDatagramSocket = null;
+    try {
+        testDatagramSocket = new DatagramSocket(0, address);
+    } catch (SocketException e) {
+        if (mDbg) {
+            Log.v(TAG, "Can't create socket on address " + address + " -- " + e);
+        }
+        return false;
+    } finally {
+        if (testDatagramSocket != null) {
+            testDatagramSocket.close();
+        }
+    }
+    return true;
+}

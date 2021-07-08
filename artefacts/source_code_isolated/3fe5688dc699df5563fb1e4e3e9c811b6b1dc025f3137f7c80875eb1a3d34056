@@ -1,0 +1,10 @@
+public void unlockCanvasAndPost(Canvas canvas){
+    synchronized (mLock) {
+        checkNotReleasedLocked();
+        if (mHwuiContext != null) {
+            mHwuiContext.unlockAndPost(canvas);
+        } else {
+            unlockSwCanvasAndPost(canvas);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public void unregisterDeviceCallback(DeviceCallback callback){
+    DeviceListener deviceListener = mDeviceListeners.remove(callback);
+    if (deviceListener != null) {
+        try {
+            mService.unregisterListener(mToken, deviceListener);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,39 @@
+public static Bitmap createBitmap(@NonNull Picture source, int width, int height, @NonNull Config config){
+    if (width <= 0 || height <= 0) {
+        throw new IllegalArgumentException("width & height must be > 0");
+    }
+    if (config == null) {
+        throw new IllegalArgumentException("Config must not be null");
+    }
+    source.endRecording();
+    if (source.requiresHardwareAcceleration() && config != Config.HARDWARE) {
+        StrictMode.noteSlowCall("GPU readback");
+    }
+    if (config == Config.HARDWARE || source.requiresHardwareAcceleration()) {
+        final RenderNode node = RenderNode.create("BitmapTemporary", null);
+        node.setLeftTopRightBottom(0, 0, width, height);
+        node.setClipToBounds(false);
+        node.setForceDarkAllowed(false);
+        final RecordingCanvas canvas = node.beginRecording(width, height);
+        if (source.getWidth() != width || source.getHeight() != height) {
+            canvas.scale(width / (float) source.getWidth(), height / (float) source.getHeight());
+        }
+        canvas.drawPicture(source);
+        node.endRecording();
+        Bitmap bitmap = ThreadedRenderer.createHardwareBitmap(node, width, height);
+        if (config != Config.HARDWARE) {
+            bitmap = bitmap.copy(config, false);
+        }
+        return bitmap;
+    } else {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, config);
+        Canvas canvas = new Canvas(bitmap);
+        if (source.getWidth() != width || source.getHeight() != height) {
+            canvas.scale(width / (float) source.getWidth(), height / (float) source.getHeight());
+        }
+        canvas.drawPicture(source);
+        canvas.setBitmap(null);
+        bitmap.setImmutable();
+        return bitmap;
+    }
+}

@@ -1,0 +1,16 @@
+public Bundle startAddAccountSession(final AccountAuthenticatorResponse response, final String accountType, final String authTokenType, final String[] requiredFeatures, final Bundle options) throws NetworkErrorException{
+    new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            Bundle sessionBundle = new Bundle();
+            sessionBundle.putString(KEY_AUTH_TOKEN_TYPE, authTokenType);
+            sessionBundle.putStringArray(KEY_REQUIRED_FEATURES, requiredFeatures);
+            sessionBundle.putBundle(KEY_OPTIONS, options);
+            Bundle result = new Bundle();
+            result.putBundle(AccountManager.KEY_ACCOUNT_SESSION_BUNDLE, sessionBundle);
+            response.onResult(result);
+        }
+    }).start();
+    return null;
+}

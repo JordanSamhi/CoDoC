@@ -1,0 +1,12 @@
+public String getMatchingImsi(int carrierId){
+    int subId = getMatchingSubId(carrierId);
+    if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+        if (requiresImsiEncryption(subId) && !isImsiEncryptionInfoAvailable(subId)) {
+            vlogd("required IMSI encryption information is not available.");
+            return null;
+        }
+        return mTelephonyManager.createForSubscriptionId(subId).getSubscriberId();
+    }
+    vlogd("no active SIM card to match the carrier ID.");
+    return null;
+}

@@ -1,0 +1,10 @@
+public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition, boolean showImeSwitcher){
+    if (!mHideNavBarForKeyboard) {
+        return;
+    }
+    if (mContext.getDisplayId() != displayId) {
+        return;
+    }
+    boolean isKeyboardVisible = (vis & InputMethodService.IME_VISIBLE) != 0;
+    mCarNavigationBarController.setBottomWindowVisibility(isKeyboardVisible ? View.GONE : View.VISIBLE);
+}

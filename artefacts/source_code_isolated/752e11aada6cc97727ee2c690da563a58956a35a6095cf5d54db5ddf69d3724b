@@ -1,0 +1,30 @@
+public AuthenticationResult unwrapTokenBasedSyntheticPassword(IGateKeeperService gatekeeper, long handle, byte[] token, int userId){
+    AuthenticationResult result = new AuthenticationResult();
+    byte[] secdiscardable = loadSecdiscardable(handle, userId);
+    int slotId = loadWeaverSlot(handle, userId);
+    if (slotId != INVALID_WEAVER_SLOT) {
+        if (!isWeaverAvailable()) {
+            Slog.e(TAG, "No weaver service to unwrap token based SP");
+            result.gkResponse = VerifyCredentialResponse.ERROR;
+            return result;
+        }
+        VerifyCredentialResponse response = weaverVerify(slotId, null);
+        if (response.getResponseCode() != VerifyCredentialResponse.RESPONSE_OK || response.getPayload() == null) {
+            Slog.e(TAG, "Failed to retrieve weaver secret when unwrapping token");
+            result.gkResponse = VerifyCredentialResponse.ERROR;
+            return result;
+        }
+        secdiscardable = SyntheticPasswordCrypto.decrypt(response.getPayload(), PERSONALISATION_WEAVER_TOKEN, secdiscardable);
+    }
+    byte[] applicationId = transformUnderSecdiscardable(token, secdiscardable);
+    result.authToken = unwrapSyntheticPasswordBlob(handle, SYNTHETIC_PASSWORD_TOKEN_BASED, applicationId, 0L, userId);
+    if (result.authToken != null) {
+        result.gkResponse = verifyChallenge(gatekeeper, result.authToken, 0L, userId);
+        if (result.gkResponse == null) {
+            result.gkResponse = VerifyCredentialResponse.OK;
+        }
+    } else {
+        result.gkResponse = VerifyCredentialResponse.ERROR;
+    }
+    return result;
+}

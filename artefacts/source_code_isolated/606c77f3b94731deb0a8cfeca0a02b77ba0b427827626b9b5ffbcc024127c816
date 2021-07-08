@@ -1,0 +1,18 @@
+public static DragEvent obtain(int action, float x, float y, Object localState, ClipDescription description, ClipData data, IDragAndDropPermissions dragAndDropPermissions, boolean result){
+    final DragEvent ev;
+    synchronized (gRecyclerLock) {
+        if (gRecyclerTop == null) {
+            ev = new DragEvent();
+            ev.init(action, x, y, description, data, dragAndDropPermissions, localState, result);
+            return ev;
+        }
+        ev = gRecyclerTop;
+        gRecyclerTop = ev.mNext;
+        gRecyclerUsed -= 1;
+    }
+    ev.mRecycledLocation = null;
+    ev.mRecycled = false;
+    ev.mNext = null;
+    ev.init(action, x, y, description, data, dragAndDropPermissions, localState, result);
+    return ev;
+}

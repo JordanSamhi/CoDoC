@@ -1,0 +1,13 @@
+public static void registerContextAwareService(@NonNull String serviceName, @NonNull Class<TServiceClass> serviceWrapperClass, @NonNull ContextAwareServiceProducerWithBinder<TServiceClass> serviceProducer){
+    ensureInitializing("registerContextAwareService");
+    Preconditions.checkStringNotEmpty(serviceName);
+    Objects.requireNonNull(serviceWrapperClass);
+    Objects.requireNonNull(serviceProducer);
+    registerService(serviceName, serviceWrapperClass, new CachedServiceFetcher<TServiceClass>() {
+
+        @Override
+        public TServiceClass createService(ContextImpl ctx) throws ServiceNotFoundException {
+            return serviceProducer.createService(ctx.getOuterContext(), ServiceManager.getServiceOrThrow(serviceName));
+        }
+    });
+}

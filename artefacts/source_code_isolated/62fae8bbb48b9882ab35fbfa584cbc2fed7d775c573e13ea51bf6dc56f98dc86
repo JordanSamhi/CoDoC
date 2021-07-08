@@ -1,0 +1,10 @@
+public static List<VideoEncoderCap> getVideoEncoders(){
+    int nEncoders = native_get_num_video_encoders();
+    if (nEncoders == 0)
+        return null;
+    List<VideoEncoderCap> encoderList = new ArrayList<VideoEncoderCap>();
+    for (int i = 0; i < nEncoders; ++i) {
+        encoderList.add(native_get_video_encoder_cap(i));
+    }
+    return encoderList;
+}

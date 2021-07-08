@@ -1,0 +1,66 @@
+public void startRanging(RttParams[] params, RttListener listener){
+    Log.i(TAG, "Send RTT request to RTT Service");
+    if (!mNewService.isAvailable()) {
+        listener.onFailure(REASON_NOT_AVAILABLE, "");
+        return;
+    }
+    RangingRequest.Builder builder = new RangingRequest.Builder();
+    for (RttParams rttParams : params) {
+        if (rttParams.deviceType != RTT_PEER_TYPE_AP) {
+            listener.onFailure(REASON_INVALID_REQUEST, "Only AP peers are supported");
+            return;
+        }
+        ScanResult reconstructed = new ScanResult();
+        reconstructed.BSSID = rttParams.bssid;
+        if (rttParams.requestType == RTT_TYPE_TWO_SIDED) {
+            reconstructed.setFlag(ScanResult.FLAG_80211mc_RESPONDER);
+        }
+        reconstructed.channelWidth = rttParams.channelWidth;
+        reconstructed.frequency = rttParams.frequency;
+        reconstructed.centerFreq0 = rttParams.centerFreq0;
+        reconstructed.centerFreq1 = rttParams.centerFreq1;
+        builder.addResponder(android.net.wifi.rtt.ResponderConfig.fromScanResult(reconstructed));
+    }
+    try {
+        mNewService.startRanging(builder.build(), mContext.getMainExecutor(), new RangingResultCallback() {
+
+            @Override
+            public void onRangingFailure(int code) {
+                int localCode = REASON_UNSPECIFIED;
+                if (code == STATUS_CODE_FAIL_RTT_NOT_AVAILABLE) {
+                    localCode = REASON_NOT_AVAILABLE;
+                }
+                listener.onFailure(localCode, "");
+            }
+
+            @Override
+            public void onRangingResults(List<RangingResult> results) {
+                RttResult[] legacyResults = new RttResult[results.size()];
+                int i = 0;
+                for (RangingResult result : results) {
+                    legacyResults[i] = new RttResult();
+                    legacyResults[i].status = result.getStatus();
+                    legacyResults[i].bssid = result.getMacAddress().toString();
+                    if (result.getStatus() == RangingResult.STATUS_SUCCESS) {
+                        legacyResults[i].distance = result.getDistanceMm() / 10;
+                        legacyResults[i].distanceStandardDeviation = result.getDistanceStdDevMm() / 10;
+                        legacyResults[i].rssi = result.getRssi() * -2;
+                        legacyResults[i].ts = result.getRangingTimestampMillis() * 1000;
+                        legacyResults[i].measurementFrameNumber = result.getNumAttemptedMeasurements();
+                        legacyResults[i].successMeasurementFrameNumber = result.getNumSuccessfulMeasurements();
+                    } else {
+                        legacyResults[i].ts = SystemClock.elapsedRealtime() * 1000;
+                    }
+                    i++;
+                }
+                listener.onSuccess(legacyResults);
+            }
+        });
+    } catch (IllegalArgumentException e) {
+        Log.e(TAG, "startRanging: invalid arguments - " + e);
+        listener.onFailure(REASON_INVALID_REQUEST, e.getMessage());
+    } catch (SecurityException e) {
+        Log.e(TAG, "startRanging: security exception - " + e);
+        listener.onFailure(REASON_PERMISSION_DENIED, e.getMessage());
+    }
+}

@@ -1,0 +1,11 @@
+public void close(){
+    synchronized (this) {
+        if (mOpen) {
+            mOpen = false;
+            if (mStringBlock != null) {
+                mStringBlock.close();
+            }
+            nativeDestroy(mNativePtr);
+        }
+    }
+}

@@ -1,0 +1,18 @@
+public void clearSpans(){
+    for (int i = mSpanCount - 1; i >= 0; i--) {
+        Object what = mSpans[i];
+        int ostart = mSpanStarts[i];
+        int oend = mSpanEnds[i];
+        if (ostart > mGapStart)
+            ostart -= mGapLength;
+        if (oend > mGapStart)
+            oend -= mGapLength;
+        mSpanCount = i;
+        mSpans[i] = null;
+        sendSpanRemoved(what, ostart, oend);
+    }
+    if (mIndexOfSpan != null) {
+        mIndexOfSpan.clear();
+    }
+    mSpanInsertCount = 0;
+}

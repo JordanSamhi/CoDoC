@@ -1,0 +1,14 @@
+public void removeUidsInRange(int startUid, int endUid){
+    if (endUid < startUid) {
+        Slog.e(mTag, "start UID " + startUid + " > end UID " + endUid);
+        return;
+    }
+    mLastTimes.put(startUid, null);
+    mLastTimes.put(endUid, null);
+    int firstIndex = mLastTimes.indexOfKey(startUid);
+    int lastIndex = mLastTimes.indexOfKey(endUid);
+    mLastTimes.removeAtRange(firstIndex, lastIndex - firstIndex + 1);
+    if (mBpfTimesAvailable) {
+        mBpfReader.removeUidsInRange(startUid, endUid);
+    }
+}

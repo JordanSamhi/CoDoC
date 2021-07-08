@@ -1,0 +1,18 @@
+public void clearBssidBlocklistForSsid(@NonNull String ssid){
+    int prevSize = mBssidStatusMap.size();
+    mBssidStatusMap.entrySet().removeIf(e -> {
+        BssidStatus status = e.getValue();
+        if (status.ssid == null) {
+            return false;
+        }
+        if (status.ssid.equals(ssid)) {
+            mBssidStatusHistoryLogger.add(status, "clearBssidBlocklistForSsid");
+            return true;
+        }
+        return false;
+    });
+    int diff = prevSize - mBssidStatusMap.size();
+    if (diff > 0) {
+        localLog(TAG + " clearBssidBlocklistForSsid: SSID=" + ssid + ", num BSSIDs cleared=" + diff);
+    }
+}

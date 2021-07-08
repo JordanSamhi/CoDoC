@@ -1,0 +1,16 @@
+public static int getNavigationBarSize(Resources res, int navBarSide, boolean landscape, int uiMode){
+    final boolean carMode = (uiMode & UI_MODE_TYPE_MASK) == UI_MODE_TYPE_CAR;
+    if (carMode) {
+        if (navBarSide == NAV_BAR_BOTTOM) {
+            return res.getDimensionPixelSize(landscape ? R.dimen.navigation_bar_height_landscape_car_mode : R.dimen.navigation_bar_height_car_mode);
+        } else {
+            return res.getDimensionPixelSize(R.dimen.navigation_bar_width_car_mode);
+        }
+    } else {
+        if (navBarSide == NAV_BAR_BOTTOM) {
+            return res.getDimensionPixelSize(landscape ? R.dimen.navigation_bar_height_landscape : R.dimen.navigation_bar_height);
+        } else {
+            return res.getDimensionPixelSize(R.dimen.navigation_bar_width);
+        }
+    }
+}

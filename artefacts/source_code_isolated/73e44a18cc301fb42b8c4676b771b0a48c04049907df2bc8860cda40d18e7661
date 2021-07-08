@@ -1,0 +1,31 @@
+public void writeCarrierIdMatchingEvent(int phoneId, int version, int cid, String unknownMcmnc, String unknownGid1, CarrierResolver.CarrierMatchingRule simInfo){
+    final CarrierIdMatching carrierIdMatching = new CarrierIdMatching();
+    final CarrierIdMatchingResult carrierIdMatchingResult = new CarrierIdMatchingResult();
+    if (cid != TelephonyManager.UNKNOWN_CARRIER_ID) {
+        carrierIdMatchingResult.carrierId = cid;
+        if (unknownGid1 != null) {
+            carrierIdMatchingResult.unknownMccmnc = unknownMcmnc;
+            carrierIdMatchingResult.unknownGid1 = unknownGid1;
+        }
+    } else {
+        if (unknownMcmnc != null) {
+            carrierIdMatchingResult.unknownMccmnc = unknownMcmnc;
+        }
+    }
+    carrierIdMatchingResult.mccmnc = TelephonyUtils.emptyIfNull(simInfo.mccMnc);
+    carrierIdMatchingResult.spn = TelephonyUtils.emptyIfNull(simInfo.spn);
+    carrierIdMatchingResult.pnn = TelephonyUtils.emptyIfNull(simInfo.plmn);
+    carrierIdMatchingResult.gid1 = TelephonyUtils.emptyIfNull(simInfo.gid1);
+    carrierIdMatchingResult.gid2 = TelephonyUtils.emptyIfNull(simInfo.gid2);
+    carrierIdMatchingResult.imsiPrefix = TelephonyUtils.emptyIfNull(simInfo.imsiPrefixPattern);
+    carrierIdMatchingResult.iccidPrefix = TelephonyUtils.emptyIfNull(simInfo.iccidPrefix);
+    carrierIdMatchingResult.preferApn = TelephonyUtils.emptyIfNull(simInfo.apn);
+    if (simInfo.privilegeAccessRule != null) {
+        carrierIdMatchingResult.privilegeAccessRule = simInfo.privilegeAccessRule.stream().toArray(String[]::new);
+    }
+    carrierIdMatching.cidTableVersion = version;
+    carrierIdMatching.result = carrierIdMatchingResult;
+    TelephonyEvent event = new TelephonyEventBuilder(phoneId).setCarrierIdMatching(carrierIdMatching).build();
+    mLastCarrierId.put(phoneId, carrierIdMatching);
+    addTelephonyEvent(event);
+}

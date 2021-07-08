@@ -1,0 +1,14 @@
+public final boolean sendInputEvent(int seq, InputEvent event){
+    if (event == null) {
+        throw new IllegalArgumentException("event must not be null");
+    }
+    if (mSenderPtr == 0) {
+        Log.w(TAG, "Attempted to send an input event but the input event " + "sender has already been disposed.");
+        return false;
+    }
+    if (event instanceof KeyEvent) {
+        return nativeSendKeyEvent(mSenderPtr, seq, (KeyEvent) event);
+    } else {
+        return nativeSendMotionEvent(mSenderPtr, seq, (MotionEvent) event);
+    }
+}

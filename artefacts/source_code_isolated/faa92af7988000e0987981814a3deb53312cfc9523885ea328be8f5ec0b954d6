@@ -1,0 +1,12 @@
+public void setDimmed(boolean dimmed, boolean animate){
+    dimmed &= onKeyguard();
+    mAmbientState.setDimmed(dimmed);
+    if (animate && mAnimationsEnabled) {
+        mDimmedNeedsAnimation = true;
+        mNeedsAnimation = true;
+        animateDimmed(dimmed);
+    } else {
+        setDimAmount(dimmed ? 1.0f : 0.0f);
+    }
+    requestChildrenUpdate();
+}

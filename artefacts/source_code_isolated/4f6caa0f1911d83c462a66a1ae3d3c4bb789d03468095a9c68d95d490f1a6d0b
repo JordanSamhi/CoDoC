@@ -1,0 +1,29 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    pw.println();
+    pw.println("Dump of " + TAG);
+    pw.println("Settings:");
+    for (Map.Entry<String, Object> entry : mSettings.entrySet()) {
+        pw.print(entry.getKey());
+        pw.print("=");
+        pw.println(entry.getValue());
+    }
+    if (mCachedMigrationData == null)
+        return;
+    pw.println("Migration data:");
+    pw.print(WIFI_P2P_DEVICE_NAME.key);
+    pw.print("=");
+    pw.println(mCachedMigrationData.getP2pDeviceName());
+    pw.print(WIFI_P2P_PENDING_FACTORY_RESET.key);
+    pw.print("=");
+    pw.println(mCachedMigrationData.isP2pFactoryResetPending());
+    pw.print(WIFI_SCAN_ALWAYS_AVAILABLE.key);
+    pw.print("=");
+    pw.println(mCachedMigrationData.isScanAlwaysAvailable());
+    pw.print(WIFI_SCAN_THROTTLE_ENABLED.key);
+    pw.print("=");
+    pw.println(mCachedMigrationData.isScanThrottleEnabled());
+    pw.print(WIFI_VERBOSE_LOGGING_ENABLED.key);
+    pw.print("=");
+    pw.println(mCachedMigrationData.isVerboseLoggingEnabled());
+    pw.println();
+}

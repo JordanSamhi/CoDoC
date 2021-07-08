@@ -1,0 +1,16 @@
+public void stopOffloadControl(){
+    if (mOffloadControl != null) {
+        try {
+            mOffloadControl.stopOffload((boolean success, String errMsg) -> {
+                if (!success)
+                    mLog.e("stopOffload failed: " + errMsg);
+            });
+        } catch (RemoteException e) {
+            mLog.e("failed to stopOffload: " + e);
+        }
+    }
+    mOffloadControl = null;
+    mTetheringOffloadCallback = null;
+    mControlCallback = null;
+    mLog.log("stopOffloadControl()");
+}

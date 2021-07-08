@@ -1,0 +1,17 @@
+public boolean inverse(){
+    Matrix4f result = new Matrix4f();
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            result.mMat[4 * i + j] = computeCofactor(i, j);
+        }
+    }
+    float det = mMat[0] * result.mMat[0] + mMat[4] * result.mMat[1] + mMat[8] * result.mMat[2] + mMat[12] * result.mMat[3];
+    if (Math.abs(det) < 1e-6) {
+        return false;
+    }
+    det = 1.0f / det;
+    for (int i = 0; i < 16; ++i) {
+        mMat[i] = result.mMat[i] * det;
+    }
+    return true;
+}

@@ -1,0 +1,42 @@
+public boolean primaryIsTrailingPrevious(int offset){
+    int line = getLineForOffset(offset);
+    int lineStart = getLineStart(line);
+    int lineEnd = getLineEnd(line);
+    int[] runs = getLineDirections(line).mDirections;
+    int levelAt = -1;
+    for (int i = 0; i < runs.length; i += 2) {
+        int start = lineStart + runs[i];
+        int limit = start + (runs[i + 1] & RUN_LENGTH_MASK);
+        if (limit > lineEnd) {
+            limit = lineEnd;
+        }
+        if (offset >= start && offset < limit) {
+            if (offset > start) {
+                return false;
+            }
+            levelAt = (runs[i + 1] >>> RUN_LEVEL_SHIFT) & RUN_LEVEL_MASK;
+            break;
+        }
+    }
+    if (levelAt == -1) {
+        levelAt = getParagraphDirection(line) == 1 ? 0 : 1;
+    }
+    int levelBefore = -1;
+    if (offset == lineStart) {
+        levelBefore = getParagraphDirection(line) == 1 ? 0 : 1;
+    } else {
+        offset -= 1;
+        for (int i = 0; i < runs.length; i += 2) {
+            int start = lineStart + runs[i];
+            int limit = start + (runs[i + 1] & RUN_LENGTH_MASK);
+            if (limit > lineEnd) {
+                limit = lineEnd;
+            }
+            if (offset >= start && offset < limit) {
+                levelBefore = (runs[i + 1] >>> RUN_LEVEL_SHIFT) & RUN_LEVEL_MASK;
+                break;
+            }
+        }
+    }
+    return levelBefore < levelAt;
+}

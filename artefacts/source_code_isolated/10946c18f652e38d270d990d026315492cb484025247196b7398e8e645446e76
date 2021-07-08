@@ -1,0 +1,21 @@
+public static DisplayCutout calculateDisplayCutoutForRotation(DisplayCutout cutout, int rotation, int displayWidth, int displayHeight){
+    if (cutout == null || cutout == DisplayCutout.NO_CUTOUT) {
+        return null;
+    }
+    final Insets waterfallInsets = RotationUtils.rotateInsets(cutout.getWaterfallInsets(), rotation);
+    if (rotation == ROTATION_0) {
+        return computeSafeInsets(cutout, displayWidth, displayHeight);
+    }
+    final boolean rotated = (rotation == ROTATION_90 || rotation == ROTATION_270);
+    Rect[] cutoutRects = cutout.getBoundingRectsAll();
+    final Rect[] newBounds = new Rect[cutoutRects.length];
+    final Rect displayBounds = new Rect(0, 0, displayWidth, displayHeight);
+    for (int i = 0; i < cutoutRects.length; ++i) {
+        final Rect rect = new Rect(cutoutRects[i]);
+        if (!rect.isEmpty()) {
+            rotateBounds(rect, displayBounds, rotation);
+        }
+        newBounds[getBoundIndexFromRotation(i, rotation)] = rect;
+    }
+    return computeSafeInsets(DisplayCutout.fromBoundsAndWaterfall(newBounds, waterfallInsets), rotated ? displayHeight : displayWidth, rotated ? displayWidth : displayHeight);
+}

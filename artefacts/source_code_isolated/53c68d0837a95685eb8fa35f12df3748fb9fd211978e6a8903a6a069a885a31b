@@ -1,0 +1,12 @@
+public String read(){
+    try {
+        int numRead = mReceiveStream.read(mReadBuffer, 0, READ_BUFFER_SIZE);
+        if (numRead < 0) {
+            return null;
+        }
+        return new String(mReadBuffer, 0, numRead);
+    } catch (IOException e) {
+        Log.w(this, "Exception encountered when reading from InputStreamReader: %s", e);
+        return null;
+    }
+}

@@ -1,0 +1,25 @@
+public void reverseTransition(int duration){
+    final long time = SystemClock.uptimeMillis();
+    if (time - mStartTimeMillis > mDuration) {
+        if (mTo == 0) {
+            mFrom = 0;
+            mTo = 255;
+            mAlpha = 0;
+            mReverse = false;
+        } else {
+            mFrom = 255;
+            mTo = 0;
+            mAlpha = 255;
+            mReverse = true;
+        }
+        mDuration = mOriginalDuration = duration;
+        mTransitionState = TRANSITION_STARTING;
+        invalidateSelf();
+        return;
+    }
+    mReverse = !mReverse;
+    mFrom = mAlpha;
+    mTo = mReverse ? 0 : 255;
+    mDuration = (int) (mReverse ? time - mStartTimeMillis : mOriginalDuration - (time - mStartTimeMillis));
+    mTransitionState = TRANSITION_STARTING;
+}

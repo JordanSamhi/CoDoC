@@ -1,0 +1,33 @@
+
+         * Sets the channel position mask.
+         * The channel position mask specifies the association between audio samples in a frame
+         * with named endpoint channels. The samples in the frame correspond to the
+         * named set bits in the channel position mask, in ascending bit order.
+         * See {@link #setChannelIndexMask(int)} to specify channels
+         * based on endpoint numbered channels. This <a href="#channelPositionMask>description of
+         * channel position masks</a> covers the concept in more details.
+         * @param channelMask describes the configuration of the audio channels.
+         *    <p> For output, the channelMask can be an OR-ed combination of
+         *    channel position masks, e.g.
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_RIGHT},
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_CENTER},
+         *    {@link AudioFormat#CHANNEL_OUT_LOW_FREQUENCY}
+         *    {@link AudioFormat#CHANNEL_OUT_BACK_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_BACK_RIGHT},
+         *    {@link AudioFormat#CHANNEL_OUT_BACK_CENTER},
+         *    {@link AudioFormat#CHANNEL_OUT_SIDE_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_SIDE_RIGHT}.
+         *    <p> For a valid {@link AudioTrack} channel position mask,
+         *    the following conditions apply:
+         *    <br> (1) at most eight channel positions may be used;
+         *    <br> (2) right/left pairs should be matched.
+         *    <p> For input or {@link AudioRecord}, the mask should be
+         *    {@link AudioFormat#CHANNEL_IN_MONO} or
+         *    {@link AudioFormat#CHANNEL_IN_STEREO}.  {@link AudioFormat#CHANNEL_IN_MONO} is
+         *    guaranteed to work on all devices.
+         * @return the same <code>Builder</code> instance.
+         * @throws IllegalArgumentException if the channel mask is invalid or
+         *    if both channel index mask and channel position mask
+         *    are specified but do not have the same channel count.
+         

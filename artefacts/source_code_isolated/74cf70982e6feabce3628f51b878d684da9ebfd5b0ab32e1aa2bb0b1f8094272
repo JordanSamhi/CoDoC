@@ -1,0 +1,29 @@
+public synchronized void cancel(Runnable callback){
+    if (stopped() || mEventQueue.isEmpty())
+        return;
+    if (DBG)
+        log("cancel:" + callback);
+    MyEvent firstEvent = mEventQueue.first();
+    for (Iterator<MyEvent> iter = mEventQueue.iterator(); iter.hasNext(); ) {
+        MyEvent event = iter.next();
+        if (event.mCallback == callback) {
+            iter.remove();
+            if (DBG)
+                log("    cancel found:" + event);
+        }
+    }
+    if (mEventQueue.isEmpty()) {
+        cancelAlarm();
+    } else if (mEventQueue.first() != firstEvent) {
+        cancelAlarm();
+        firstEvent = mEventQueue.first();
+        firstEvent.mPeriod = firstEvent.mMaxPeriod;
+        firstEvent.mTriggerTime = firstEvent.mLastTriggerTime + firstEvent.mPeriod;
+        recalculatePeriods();
+        scheduleNext();
+    }
+    if (DBG) {
+        log("cancel: X");
+        printQueue();
+    }
+}

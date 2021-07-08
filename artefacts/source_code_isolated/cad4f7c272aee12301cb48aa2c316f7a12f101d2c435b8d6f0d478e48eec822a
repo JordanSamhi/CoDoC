@@ -1,0 +1,26 @@
+public void removeBucketsBefore(long cutoff){
+    int i;
+    for (i = 0; i < bucketCount; i++) {
+        final long curStart = bucketStart[i];
+        final long curEnd = curStart + bucketDuration;
+        if (curEnd > cutoff)
+            break;
+    }
+    if (i > 0) {
+        final int length = bucketStart.length;
+        bucketStart = Arrays.copyOfRange(bucketStart, i, length);
+        if (activeTime != null)
+            activeTime = Arrays.copyOfRange(activeTime, i, length);
+        if (rxBytes != null)
+            rxBytes = Arrays.copyOfRange(rxBytes, i, length);
+        if (rxPackets != null)
+            rxPackets = Arrays.copyOfRange(rxPackets, i, length);
+        if (txBytes != null)
+            txBytes = Arrays.copyOfRange(txBytes, i, length);
+        if (txPackets != null)
+            txPackets = Arrays.copyOfRange(txPackets, i, length);
+        if (operations != null)
+            operations = Arrays.copyOfRange(operations, i, length);
+        bucketCount -= i;
+    }
+}

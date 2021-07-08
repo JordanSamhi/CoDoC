@@ -1,0 +1,24 @@
+public void startSocketMonitor(@NonNull final FileDescriptor fd, @NonNull final KeepaliveInfo ki, final int slot) throws IllegalArgumentException, InvalidSocketException{
+    synchronized (mListeners) {
+        if (null != mListeners.get(slot)) {
+            throw new IllegalArgumentException("This slot is already taken");
+        }
+        for (int i = 0; i < mListeners.size(); ++i) {
+            if (fd.equals(mListeners.valueAt(i))) {
+                Log.e(TAG, "This fd is already registered.");
+                throw new InvalidSocketException(ERROR_INVALID_SOCKET);
+            }
+        }
+        mFdHandlerQueue.addOnFileDescriptorEventListener(fd, FD_EVENTS, (readyFd, events) -> {
+            final int reason;
+            if (0 != (events & EVENT_ERROR)) {
+                reason = ERROR_INVALID_SOCKET;
+            } else {
+                reason = DATA_RECEIVED;
+            }
+            ki.onFileDescriptorInitiatedStop(reason);
+            return 0;
+        });
+        mListeners.put(slot, fd);
+    }
+}

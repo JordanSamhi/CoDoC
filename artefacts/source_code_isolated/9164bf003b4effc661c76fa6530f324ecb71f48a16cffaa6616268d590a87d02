@@ -1,0 +1,46 @@
+public boolean deleteSurroundingTextInCodePoints(int beforeLength, int afterLength){
+    if (DEBUG)
+        Log.v(TAG, "deleteSurroundingText " + beforeLength + " / " + afterLength);
+    final Editable content = getEditable();
+    if (content == null)
+        return false;
+    beginBatchEdit();
+    int a = Selection.getSelectionStart(content);
+    int b = Selection.getSelectionEnd(content);
+    if (a > b) {
+        int tmp = a;
+        a = b;
+        b = tmp;
+    }
+    int ca = getComposingSpanStart(content);
+    int cb = getComposingSpanEnd(content);
+    if (cb < ca) {
+        int tmp = ca;
+        ca = cb;
+        cb = tmp;
+    }
+    if (ca != -1 && cb != -1) {
+        if (ca < a)
+            a = ca;
+        if (cb > b)
+            b = cb;
+    }
+    if (a >= 0 && b >= 0) {
+        final int start = findIndexBackward(content, a, Math.max(beforeLength, 0));
+        if (start != INVALID_INDEX) {
+            final int end = findIndexForward(content, b, Math.max(afterLength, 0));
+            if (end != INVALID_INDEX) {
+                final int numDeleteBefore = a - start;
+                if (numDeleteBefore > 0) {
+                    content.delete(start, a);
+                }
+                final int numDeleteAfter = end - b;
+                if (numDeleteAfter > 0) {
+                    content.delete(b - numDeleteBefore, end - numDeleteBefore);
+                }
+            }
+        }
+    }
+    endBatchEdit();
+    return true;
+}

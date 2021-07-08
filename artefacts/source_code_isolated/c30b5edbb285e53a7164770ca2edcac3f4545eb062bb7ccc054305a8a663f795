@@ -1,0 +1,10 @@
+public boolean setRadio(boolean turnOn){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.setRadio(turnOn);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#setRadio", e);
+    }
+    return false;
+}

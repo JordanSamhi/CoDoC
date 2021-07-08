@@ -1,0 +1,25 @@
+public void openBluetoothDevice(BluetoothDevice bluetoothDevice, OnDeviceOpenedListener listener, Handler handler){
+    final OnDeviceOpenedListener listenerF = listener;
+    final Handler handlerF = handler;
+    IMidiDeviceOpenCallback callback = new IMidiDeviceOpenCallback.Stub() {
+
+        @Override
+        public void onDeviceOpened(IMidiDeviceServer server, IBinder deviceToken) {
+            MidiDevice device = null;
+            if (server != null) {
+                try {
+                    MidiDeviceInfo deviceInfo = server.getDeviceInfo();
+                    device = new MidiDevice(deviceInfo, server, mService, mToken, deviceToken);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "remote exception in getDeviceInfo()");
+                }
+            }
+            sendOpenDeviceResponse(device, listenerF, handlerF);
+        }
+    };
+    try {
+        mService.openBluetoothDevice(mToken, bluetoothDevice, callback);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

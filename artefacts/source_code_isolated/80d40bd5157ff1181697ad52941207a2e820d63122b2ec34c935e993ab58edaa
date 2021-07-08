@@ -1,0 +1,27 @@
+public static CallerInfoAsyncQuery startQuery(int token, Context context, String number, OnQueryCompleteListener listener, Object cookie, int subId){
+    if (DBG) {
+        Log.d(LOG_TAG, "##### CallerInfoAsyncQuery startQuery()... #####");
+        Log.d(LOG_TAG, "- number: " + "xxxxxxx");
+        Log.d(LOG_TAG, "- cookie: " + cookie);
+    }
+    final Uri contactRef = PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI.buildUpon().appendPath(number).appendQueryParameter(PhoneLookup.QUERY_PARAMETER_SIP_ADDRESS, String.valueOf(PhoneNumberUtils.isUriNumber(number))).build();
+    if (DBG) {
+        Log.d(LOG_TAG, "==> contactRef: " + sanitizeUriToString(contactRef));
+    }
+    CallerInfoAsyncQuery c = new CallerInfoAsyncQuery();
+    c.allocate(context, contactRef);
+    CookieWrapper cw = new CookieWrapper();
+    cw.listener = listener;
+    cw.cookie = cookie;
+    cw.number = number;
+    cw.subId = subId;
+    if (PhoneNumberUtils.isLocalEmergencyNumber(context, number)) {
+        cw.event = EVENT_EMERGENCY_NUMBER;
+    } else if (PhoneNumberUtils.isVoiceMailNumber(context, subId, number)) {
+        cw.event = EVENT_VOICEMAIL_NUMBER;
+    } else {
+        cw.event = EVENT_NEW_QUERY;
+    }
+    c.mHandler.startQuery(token, cw, contactRef, null, null, null, null);
+    return c;
+}

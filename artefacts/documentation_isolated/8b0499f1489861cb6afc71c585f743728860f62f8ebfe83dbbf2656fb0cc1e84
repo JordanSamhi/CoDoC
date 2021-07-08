@@ -1,0 +1,18 @@
+
+     * Clears the current device owner. The caller must be the device owner. This function should be
+     * used cautiously as once it is called it cannot be undone. The device owner can only be set as
+     * a part of device setup, before it completes.
+     * <p>
+     * While some policies previously set by the device owner will be cleared by this method, it is
+     * a best-effort process and some other policies will still remain in place after the device
+     * owner is cleared.
+     *
+     * @param packageName The package name of the device owner.
+     * @throws SecurityException if the caller is not in {@code packageName} or {@code packageName}
+     *             does not own the current device owner component.
+     *
+     * @deprecated This method is expected to be used for testing purposes only. The device owner
+     * will lose control of the device and its data after calling it. In order to protect any
+     * sensitive data that remains on the device, it is advised that the device owner factory resets
+     * the device instead of calling this method. See {@link #wipeData(int)}.
+     

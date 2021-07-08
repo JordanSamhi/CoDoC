@@ -1,0 +1,32 @@
+public boolean initialize(){
+    synchronized (mLock) {
+        if (mVerboseLoggingEnabled) {
+            Log.i(TAG, "Registering IHostapd service ready callback.");
+        }
+        mIHostapd = null;
+        if (mIServiceManager != null) {
+            return true;
+        }
+        try {
+            mIServiceManager = getServiceManagerMockable();
+            if (mIServiceManager == null) {
+                Log.e(TAG, "Failed to get HIDL Service Manager");
+                return false;
+            }
+            if (!linkToServiceManagerDeath()) {
+                return false;
+            }
+            if (!mIServiceManager.registerForNotifications(IHostapd.kInterfaceName, "", mServiceNotificationCallback)) {
+                Log.e(TAG, "Failed to register for notifications to " + IHostapd.kInterfaceName);
+                mIServiceManager = null;
+                return false;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Exception while trying to register a listener for IHostapd service: " + e);
+            hostapdServiceDiedHandler(mDeathRecipientCookie);
+            mIServiceManager = null;
+            return false;
+        }
+        return true;
+    }
+}

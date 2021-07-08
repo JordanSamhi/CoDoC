@@ -1,0 +1,26 @@
+
+     * Reads audio data from the audio hardware for recording into a short array.
+     * The format specified in the AudioRecord constructor should be
+     * {@link AudioFormat#ENCODING_PCM_16BIT} to correspond to the data in the array.
+     * @param audioData the array to which the recorded audio data is written.
+     * @param offsetInShorts index in audioData from which the data is written expressed in shorts.
+     *        Must not be negative, or cause the data access to go out of bounds of the array.
+     * @param sizeInShorts the number of requested shorts.
+     *        Must not be negative, or cause the data access to go out of bounds of the array.
+     * @param readMode one of {@link #READ_BLOCKING}, {@link #READ_NON_BLOCKING}.
+     *     <br>With {@link #READ_BLOCKING}, the read will block until all the requested data
+     *     is read.
+     *     <br>With {@link #READ_NON_BLOCKING}, the read will return immediately after
+     *     reading as much audio data as possible without blocking.
+     * @return zero or the positive number of shorts that were read, or one of the following
+     *    error codes. The number of shorts will be a multiple of the channel count not to exceed
+     *    sizeInShorts.
+     * <ul>
+     * <li>{@link #ERROR_INVALID_OPERATION} if the object isn't properly initialized</li>
+     * <li>{@link #ERROR_BAD_VALUE} if the parameters don't resolve to valid data and indexes</li>
+     * <li>{@link #ERROR_DEAD_OBJECT} if the object is not valid anymore and
+     *    needs to be recreated. The dead object error code is not returned if some data was
+     *    successfully transferred. In this case, the error is returned at the next read()</li>
+     * <li>{@link #ERROR} in case of other error</li>
+     * </ul>
+     

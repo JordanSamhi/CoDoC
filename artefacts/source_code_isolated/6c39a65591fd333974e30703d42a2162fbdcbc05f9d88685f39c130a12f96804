@@ -1,0 +1,8 @@
+public static ActivityInfo findBestActivity(PackageManager packageManager, Intent intent){
+    List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivities(intent, EUICC_QUERY_FLAGS);
+    ActivityInfo bestComponent = (ActivityInfo) findBestComponent(packageManager, resolveInfoList);
+    if (bestComponent == null) {
+        Log.w(TAG, "No valid component found for intent: " + intent);
+    }
+    return bestComponent;
+}

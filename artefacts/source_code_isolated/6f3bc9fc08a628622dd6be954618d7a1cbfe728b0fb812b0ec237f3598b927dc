@@ -1,0 +1,7 @@
+public long getCachedSizeKb(){
+    long kReclaimable = mInfos[Debug.MEMINFO_KRECLAIMABLE];
+    if (kReclaimable == 0) {
+        kReclaimable = mInfos[Debug.MEMINFO_SLAB_RECLAIMABLE];
+    }
+    return mInfos[Debug.MEMINFO_BUFFERS] + kReclaimable + mInfos[Debug.MEMINFO_CACHED] - mInfos[Debug.MEMINFO_MAPPED];
+}

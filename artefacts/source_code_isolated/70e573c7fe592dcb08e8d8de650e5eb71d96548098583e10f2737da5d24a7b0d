@@ -1,0 +1,8 @@
+public void getRestoreData(ParcelFileDescriptor output) throws IOException, EncryptedRestoreException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, ShortBufferException, InvalidKeyException{
+    File encryptedFile = new File(mTemporaryFolder, ENCRYPTED_FILE_NAME);
+    try {
+        downloadDecryptAndWriteBackup(encryptedFile, output);
+    } finally {
+        encryptedFile.delete();
+    }
+}

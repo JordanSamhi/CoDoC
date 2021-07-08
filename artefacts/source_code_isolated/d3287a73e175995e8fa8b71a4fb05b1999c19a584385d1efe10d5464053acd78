@@ -1,0 +1,44 @@
+public final ServiceInfo findService(int userId, IPackageManager ipm, AppBindingConstants constants){
+    synchronized (mLock) {
+        mTargetPackages.put(userId, null);
+        mTargetServices.put(userId, null);
+        mLastMessages.put(userId, null);
+        if (!isEnabled(constants)) {
+            final String message = "feature disabled";
+            mLastMessages.put(userId, message);
+            Slog.i(TAG, getAppDescription() + " " + message);
+            return null;
+        }
+        final String targetPackage = getTargetPackage(userId);
+        if (DEBUG) {
+            Slog.d(TAG, getAppDescription() + " package=" + targetPackage);
+        }
+        if (targetPackage == null) {
+            final String message = "Target package not found";
+            mLastMessages.put(userId, message);
+            Slog.w(TAG, getAppDescription() + " u" + userId + " " + message);
+            return null;
+        }
+        mTargetPackages.put(userId, targetPackage);
+        final StringBuilder errorMessage = new StringBuilder();
+        final ServiceInfo service = AppBindingUtils.findService(targetPackage, userId, getServiceAction(), getServicePermission(), getServiceClass(), ipm, errorMessage);
+        if (service == null) {
+            final String message = errorMessage.toString();
+            mLastMessages.put(userId, message);
+            if (DEBUG) {
+                Slog.w(TAG, getAppDescription() + " package " + targetPackage + " u" + userId + " " + message);
+            }
+            return null;
+        }
+        final String error = validateService(service);
+        if (error != null) {
+            mLastMessages.put(userId, error);
+            Log.e(TAG, error);
+            return null;
+        }
+        final String message = "Valid service found";
+        mLastMessages.put(userId, message);
+        mTargetServices.put(userId, service);
+        return service;
+    }
+}

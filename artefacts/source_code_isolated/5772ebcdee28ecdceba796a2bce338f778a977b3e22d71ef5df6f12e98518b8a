@@ -1,0 +1,13 @@
+public void updateStrengths(){
+    final Map<Integer, Integer> idToStrength = getIdToStrengthMap();
+    if (idToStrength == null) {
+        return;
+    }
+    for (BiometricService.AuthenticatorWrapper authenticator : mService.mAuthenticators) {
+        final int id = authenticator.id;
+        if (idToStrength.containsKey(id)) {
+            final int newStrength = idToStrength.get(id);
+            authenticator.updateStrength(newStrength);
+        }
+    }
+}

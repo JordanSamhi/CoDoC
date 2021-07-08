@@ -1,0 +1,10 @@
+public void stopPolling(){
+    if (!mPollingStarted)
+        return;
+    if (mHandler.hasCallbacks(mScheduledPollingTask)) {
+        mHandler.removeCallbacks(mScheduledPollingTask);
+    }
+    updateForwardedStatsFromNetd();
+    mPollingStarted = false;
+    mLog.i("Polling stopped");
+}

@@ -1,0 +1,18 @@
+public static AndroidKeyStorePublicKey getAndroidKeyStorePublicKey(@NonNull String alias, int uid, @NonNull @KeyProperties.KeyAlgorithmEnum String keyAlgorithm, @NonNull byte[] x509EncodedForm){
+    PublicKey publicKey;
+    try {
+        KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm);
+        publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(x509EncodedForm));
+    } catch (NoSuchAlgorithmException e) {
+        throw new ProviderException("Failed to obtain " + keyAlgorithm + " KeyFactory", e);
+    } catch (InvalidKeySpecException e) {
+        throw new ProviderException("Invalid X.509 encoding of public key", e);
+    }
+    if (KeyProperties.KEY_ALGORITHM_EC.equalsIgnoreCase(keyAlgorithm)) {
+        return new AndroidKeyStoreECPublicKey(alias, uid, (ECPublicKey) publicKey);
+    } else if (KeyProperties.KEY_ALGORITHM_RSA.equalsIgnoreCase(keyAlgorithm)) {
+        return new AndroidKeyStoreRSAPublicKey(alias, uid, (RSAPublicKey) publicKey);
+    } else {
+        throw new ProviderException("Unsupported Android Keystore public key algorithm: " + keyAlgorithm);
+    }
+}

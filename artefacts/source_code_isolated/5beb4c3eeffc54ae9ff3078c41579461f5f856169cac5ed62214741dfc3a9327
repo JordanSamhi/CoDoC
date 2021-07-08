@@ -1,0 +1,8 @@
+public void removePositionUpdateListener(@NonNull PositionUpdateListener listener){
+    CompositePositionUpdateListener comp = mCompositePositionUpdateListener;
+    if (comp != null) {
+        comp = comp.without(listener);
+        mCompositePositionUpdateListener = comp;
+        nRequestPositionUpdates(mNativeRenderNode, comp);
+    }
+}

@@ -1,0 +1,23 @@
+public void tetherOffloadRuleAdd(@NonNull final IpServer ipServer, @NonNull final Ipv6ForwardingRule rule){
+    if (!mIsBpfEnabled)
+        return;
+    try {
+        mNetd.tetherOffloadRuleAdd(rule.toTetherOffloadRuleParcel());
+    } catch (RemoteException | ServiceSpecificException e) {
+        mLog.e("Could not add IPv6 forwarding rule: ", e);
+        return;
+    }
+    if (!mIpv6ForwardingRules.containsKey(ipServer)) {
+        mIpv6ForwardingRules.put(ipServer, new LinkedHashMap<Inet6Address, Ipv6ForwardingRule>());
+    }
+    LinkedHashMap<Inet6Address, Ipv6ForwardingRule> rules = mIpv6ForwardingRules.get(ipServer);
+    final int upstreamIfindex = rule.upstreamIfindex;
+    if (!isAnyRuleOnUpstream(upstreamIfindex)) {
+        boolean success = updateDataLimit(upstreamIfindex);
+        if (!success) {
+            final String iface = mInterfaceNames.get(upstreamIfindex);
+            mLog.e("Setting data limit for " + iface + " failed.");
+        }
+    }
+    rules.put(rule.address, rule);
+}

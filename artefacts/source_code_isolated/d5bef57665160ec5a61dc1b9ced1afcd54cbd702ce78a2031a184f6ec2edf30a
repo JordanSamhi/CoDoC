@@ -1,0 +1,8 @@
+public void queryNanoApps(int contextHubId, IContextHubTransactionCallback transactionCallback) throws RemoteException{
+    checkPermissions();
+    if (!checkHalProxyAndContextHubId(contextHubId, transactionCallback, ContextHubTransaction.TYPE_QUERY_NANOAPPS)) {
+        return;
+    }
+    ContextHubServiceTransaction transaction = mTransactionManager.createQueryTransaction(contextHubId, transactionCallback);
+    mTransactionManager.addTransaction(transaction);
+}

@@ -1,0 +1,14 @@
+public boolean disableCellBroadcastRange(int startMessageId, int endMessageId, @android.telephony.SmsCbMessage.MessageFormat int ranType){
+    boolean success = false;
+    if (endMessageId < startMessageId) {
+        throw new IllegalArgumentException("endMessageId < startMessageId");
+    }
+    try {
+        ISms iSms = getISmsService();
+        if (iSms != null) {
+            success = iSms.disableCellBroadcastRangeForSubscriber(getSubscriptionId(), startMessageId, endMessageId, ranType);
+        }
+    } catch (RemoteException ex) {
+    }
+    return success;
+}

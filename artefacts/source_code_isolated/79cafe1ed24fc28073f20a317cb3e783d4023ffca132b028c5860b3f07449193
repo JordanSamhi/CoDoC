@@ -1,0 +1,18 @@
+public void addChooserTargetRankingScore(List<AppTarget> targets){
+    Log.i(TAG, "addChooserTargetRankingScore " + targets.size() + " targets score.");
+    for (AppTarget target : targets) {
+        if (target.getShortcutInfo() == null) {
+            continue;
+        }
+        ShortcutInfo shortcutInfo = target.getShortcutInfo();
+        if (!shortcutInfo.getId().equals(ChooserActivity.CHOOSER_TARGET) || shortcutInfo.getActivity() == null) {
+            continue;
+        }
+        ComponentName componentName = shortcutInfo.getActivity();
+        if (!mChooserTargetScores.containsKey(componentName)) {
+            mChooserTargetScores.put(componentName, new HashMap<>());
+        }
+        mChooserTargetScores.get(componentName).put(shortcutInfo.getShortLabel().toString(), target.getRank());
+    }
+    mChooserTargetScores.keySet().forEach(key -> rankTargetsWithinComponent(key));
+}

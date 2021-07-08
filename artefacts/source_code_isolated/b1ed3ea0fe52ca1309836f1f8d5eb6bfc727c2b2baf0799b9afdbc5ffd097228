@@ -1,0 +1,64 @@
+public int finishPostLayoutPolicyLw(){
+    int changes = 0;
+    boolean topIsFullscreen = false;
+    if (!mShowingDream) {
+        mDreamingLockscreen = mService.mPolicy.isKeyguardShowingAndNotOccluded();
+    }
+    if (mStatusBar != null) {
+        if (DEBUG_LAYOUT)
+            Slog.i(TAG, "force=" + mForceStatusBar + " top=" + mTopFullscreenOpaqueWindowState);
+        final boolean forceShowStatusBar = (mStatusBar.getAttrs().privateFlags & PRIVATE_FLAG_FORCE_SHOW_STATUS_BAR) != 0;
+        final boolean notificationShadeForcesShowingNavigation = mNotificationShade != null && (mNotificationShade.getAttrs().privateFlags & PRIVATE_FLAG_STATUS_FORCE_SHOW_NAVIGATION) != 0;
+        boolean topAppHidesStatusBar = topAppHidesStatusBar();
+        if (mForceStatusBar || forceShowStatusBar) {
+            if (DEBUG_LAYOUT)
+                Slog.v(TAG, "Showing status bar: forced");
+            if (mStatusBarController.setBarShowingLw(true)) {
+                changes |= FINISH_LAYOUT_REDO_LAYOUT;
+            }
+            topIsFullscreen = mTopIsFullscreen && mStatusBar.isAnimatingLw();
+            if (notificationShadeForcesShowingNavigation && mStatusBarController.isTransientShowing()) {
+                mStatusBarController.updateVisibilityLw(false, mLastSystemUiFlags, mLastSystemUiFlags);
+            }
+        } else if (mTopFullscreenOpaqueWindowState != null) {
+            topIsFullscreen = topAppHidesStatusBar;
+            if (mStatusBarController.isTransientShowing()) {
+                if (mStatusBarController.setBarShowingLw(true)) {
+                    changes |= FINISH_LAYOUT_REDO_LAYOUT;
+                }
+            } else if (topIsFullscreen && !mDisplayContent.getDefaultTaskDisplayArea().isStackVisible(WINDOWING_MODE_SPLIT_SCREEN_PRIMARY)) {
+                if (DEBUG_LAYOUT)
+                    Slog.v(TAG, "** HIDING status bar");
+                if (mStatusBarController.setBarShowingLw(false)) {
+                    changes |= FINISH_LAYOUT_REDO_LAYOUT;
+                } else {
+                    if (DEBUG_LAYOUT)
+                        Slog.v(TAG, "Status bar already hiding");
+                }
+            } else {
+                if (DEBUG_LAYOUT)
+                    Slog.v(TAG, "** SHOWING status bar: top is not fullscreen");
+                if (mStatusBarController.setBarShowingLw(true)) {
+                    changes |= FINISH_LAYOUT_REDO_LAYOUT;
+                }
+                topAppHidesStatusBar = false;
+            }
+        }
+        mStatusBarController.setTopAppHidesStatusBar(topAppHidesStatusBar);
+    }
+    if (mTopIsFullscreen != topIsFullscreen) {
+        if (!topIsFullscreen) {
+            changes |= FINISH_LAYOUT_REDO_LAYOUT;
+        }
+        mTopIsFullscreen = topIsFullscreen;
+    }
+    if ((updateSystemUiVisibilityLw() & SYSTEM_UI_CHANGING_LAYOUT) != 0) {
+        changes |= FINISH_LAYOUT_REDO_LAYOUT;
+    }
+    if (mShowingDream != mLastShowingDream) {
+        mLastShowingDream = mShowingDream;
+        mService.notifyShowingDreamChanged();
+    }
+    mService.mPolicy.setAllowLockscreenWhenOn(getDisplayId(), mAllowLockscreenWhenOn);
+    return changes;
+}

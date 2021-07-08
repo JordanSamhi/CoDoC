@@ -1,0 +1,10 @@
+public int getRadioPowerState(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getRadioPowerState(getSlotIndex(), mContext.getOpPackageName(), mContext.getAttributionTag());
+        }
+    } catch (RemoteException ex) {
+    }
+    return RADIO_POWER_UNAVAILABLE;
+}

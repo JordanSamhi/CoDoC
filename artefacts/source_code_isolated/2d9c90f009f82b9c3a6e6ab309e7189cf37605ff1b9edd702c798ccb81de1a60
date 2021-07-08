@@ -1,0 +1,15 @@
+public Pair<RequestHolder, Long> jpegProduced(){
+    final ReentrantLock lock = this.mLock;
+    lock.lock();
+    try {
+        CaptureHolder h = mJpegProduceQueue.poll();
+        if (h == null) {
+            Log.w(TAG, "jpegProduced called with no jpeg request on queue!");
+            return null;
+        }
+        h.setJpegProduced();
+        return new Pair<>(h.mRequest, h.mTimestamp);
+    } finally {
+        lock.unlock();
+    }
+}

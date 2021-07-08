@@ -1,0 +1,38 @@
+public boolean arrowScroll(int direction){
+    View currentFocused = findFocus();
+    if (currentFocused == this)
+        currentFocused = null;
+    View nextFocused = FocusFinder.getInstance().findNextFocus(this, currentFocused, direction);
+    final int maxJump = getMaxScrollAmount();
+    if (nextFocused != null && isWithinDeltaOfScreen(nextFocused, maxJump, getHeight())) {
+        nextFocused.getDrawingRect(mTempRect);
+        offsetDescendantRectToMyCoords(nextFocused, mTempRect);
+        int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(mTempRect);
+        doScrollY(scrollDelta);
+        nextFocused.requestFocus(direction);
+    } else {
+        int scrollDelta = maxJump;
+        if (direction == View.FOCUS_UP && getScrollY() < scrollDelta) {
+            scrollDelta = getScrollY();
+        } else if (direction == View.FOCUS_DOWN) {
+            if (getChildCount() > 0) {
+                int daBottom = getChildAt(0).getBottom();
+                int screenBottom = getScrollY() + getHeight() - mPaddingBottom;
+                if (daBottom - screenBottom < maxJump) {
+                    scrollDelta = daBottom - screenBottom;
+                }
+            }
+        }
+        if (scrollDelta == 0) {
+            return false;
+        }
+        doScrollY(direction == View.FOCUS_DOWN ? scrollDelta : -scrollDelta);
+    }
+    if (currentFocused != null && currentFocused.isFocused() && isOffScreen(currentFocused)) {
+        final int descendantFocusability = getDescendantFocusability();
+        setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        requestFocus();
+        setDescendantFocusability(descendantFocusability);
+    }
+    return true;
+}

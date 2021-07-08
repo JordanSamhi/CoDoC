@@ -1,0 +1,16 @@
+public void showDropDown(){
+    buildImeCompletions();
+    if (mPopup.getAnchorView() == null) {
+        if (mDropDownAnchorId != View.NO_ID) {
+            mPopup.setAnchorView(getRootView().findViewById(mDropDownAnchorId));
+        } else {
+            mPopup.setAnchorView(this);
+        }
+    }
+    if (!isPopupShowing()) {
+        mPopup.setInputMethodMode(ListPopupWindow.INPUT_METHOD_NEEDED);
+        mPopup.setListItemExpandMax(EXPAND_MAX);
+    }
+    mPopup.show();
+    mPopup.getListView().setOverScrollMode(View.OVER_SCROLL_ALWAYS);
+}

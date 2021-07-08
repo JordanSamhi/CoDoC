@@ -1,0 +1,11 @@
+public void resurrectLocked(){
+    final RemoteContentCaptureService remoteService = mService.mRemoteService;
+    if (remoteService == null) {
+        Slog.w(TAG, "destroyLocked(: no remote service");
+        return;
+    }
+    if (mService.isVerbose()) {
+        Slog.v(TAG, "resurrecting " + mActivityToken + " on " + remoteService);
+    }
+    remoteService.onSessionStarted(new ContentCaptureContext(mContentCaptureContext, ContentCaptureContext.FLAG_RECONNECTED), mId, mUid, mSessionStateReceiver, STATE_ACTIVE | STATE_SERVICE_RESURRECTED);
+}

@@ -1,0 +1,9 @@
+public boolean throttle(float value){
+    if (mLastTime != -1 && (tooSoon(value) || tooClose(value))) {
+        return true;
+    }
+    computeThresholds(value);
+    mLastTime = System.currentTimeMillis();
+    mLastValue = value;
+    return false;
+}

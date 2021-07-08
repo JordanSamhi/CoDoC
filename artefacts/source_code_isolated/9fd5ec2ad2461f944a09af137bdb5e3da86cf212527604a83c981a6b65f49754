@@ -1,0 +1,27 @@
+public static Allocation createCubemapFromBitmap(RenderScript rs, Bitmap b, MipmapControl mips, int usage){
+    rs.validate();
+    int height = b.getHeight();
+    int width = b.getWidth();
+    if (width % 6 != 0) {
+        throw new RSIllegalArgumentException("Cubemap height must be multiple of 6");
+    }
+    if (width / 6 != height) {
+        throw new RSIllegalArgumentException("Only square cube map faces supported");
+    }
+    boolean isPow2 = (height & (height - 1)) == 0;
+    if (!isPow2) {
+        throw new RSIllegalArgumentException("Only power of 2 cube faces supported");
+    }
+    Element e = elementFromBitmap(rs, b);
+    Type.Builder tb = new Type.Builder(rs, e);
+    tb.setX(height);
+    tb.setY(height);
+    tb.setFaces(true);
+    tb.setMipmaps(mips == MipmapControl.MIPMAP_FULL);
+    Type t = tb.create();
+    long id = rs.nAllocationCubeCreateFromBitmap(t.getID(rs), mips.mID, b, usage);
+    if (id == 0) {
+        throw new RSRuntimeException("Load failed for bitmap " + b + " element " + e);
+    }
+    return new Allocation(id, rs, t, true, usage, mips);
+}

@@ -1,0 +1,12 @@
+public void startIntentSender(IntentSender intentSender, Intent intent){
+    synchronized (mLock) {
+        if (mDestroyed) {
+            Slog.w(TAG, "Call to Session#startIntentSender() rejected - session: " + id + " destroyed");
+            return;
+        }
+        if (intent == null) {
+            removeSelfLocked();
+        }
+    }
+    mHandler.sendMessage(obtainMessage(Session::doStartIntentSender, this, intentSender, intent));
+}

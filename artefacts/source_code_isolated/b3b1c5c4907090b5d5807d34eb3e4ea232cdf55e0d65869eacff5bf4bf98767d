@@ -1,0 +1,16 @@
+public void reset(){
+    synchronized (mLock) {
+        mEntries.clear();
+    }
+    synchronized (mHashCollisionEntry) {
+        mHashCollisionEntry.reset();
+    }
+    synchronized (mOverflowEntry) {
+        mOverflowEntry.reset();
+    }
+    mStartCurrentTime = System.currentTimeMillis();
+    mStartElapsedTime = SystemClock.elapsedRealtime();
+    if (mBatteryStopwatch != null) {
+        mBatteryStopwatch.reset();
+    }
+}

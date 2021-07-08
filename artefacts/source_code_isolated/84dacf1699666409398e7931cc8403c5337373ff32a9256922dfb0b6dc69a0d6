@@ -1,0 +1,26 @@
+public void hideSoftInput(int flags, ResultReceiver resultReceiver){
+    if (DEBUG)
+        Log.v(TAG, "hideSoftInput()");
+    if (getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R && !mSystemCallingHideSoftInput) {
+        Log.e(TAG, "IME shouldn't call hideSoftInput on itself." + " Use requestHideSelf(int) itself");
+        return;
+    }
+    final boolean wasVisible = mIsPreRendered ? mDecorViewVisible && mWindowVisible : isInputViewShown();
+    applyVisibilityInInsetsConsumerIfNecessary(false);
+    if (mIsPreRendered) {
+        if (DEBUG) {
+            Log.v(TAG, "Making IME window invisible");
+        }
+        setImeWindowStatus(IME_ACTIVE | IME_INVISIBLE, mBackDisposition);
+        onPreRenderedWindowVisibilityChanged(false);
+    } else {
+        mShowInputFlags = 0;
+        mShowInputRequested = false;
+        doHideWindow();
+    }
+    final boolean isVisible = mIsPreRendered ? mDecorViewVisible && mWindowVisible : isInputViewShown();
+    final boolean visibilityChanged = isVisible != wasVisible;
+    if (resultReceiver != null) {
+        resultReceiver.send(visibilityChanged ? InputMethodManager.RESULT_HIDDEN : (wasVisible ? InputMethodManager.RESULT_UNCHANGED_SHOWN : InputMethodManager.RESULT_UNCHANGED_HIDDEN), null);
+    }
+}

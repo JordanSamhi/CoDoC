@@ -1,0 +1,10 @@
+public void layoutMenuItems(List<MenuItem> menuItems, MenuItem.OnMenuItemClickListener menuItemClickListener, int suggestedWidth){
+    mOnMenuItemClickListener = menuItemClickListener;
+    cancelOverflowAnimations();
+    clearPanels();
+    menuItems = layoutMainPanelItems(menuItems, getAdjustedToolbarWidth(suggestedWidth));
+    if (!menuItems.isEmpty()) {
+        layoutOverflowPanelItems(menuItems);
+    }
+    updatePopupSize();
+}

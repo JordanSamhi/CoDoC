@@ -1,0 +1,11 @@
+public void setRemoteInputActive(@NonNull NotificationEntry entry, boolean remoteInputActive){
+    HeadsUpEntryPhone headsUpEntry = getHeadsUpEntryPhone(entry.getKey());
+    if (headsUpEntry != null && headsUpEntry.remoteInputActive != remoteInputActive) {
+        headsUpEntry.remoteInputActive = remoteInputActive;
+        if (remoteInputActive) {
+            headsUpEntry.removeAutoRemovalCallbacks();
+        } else {
+            headsUpEntry.updateEntry(false);
+        }
+    }
+}

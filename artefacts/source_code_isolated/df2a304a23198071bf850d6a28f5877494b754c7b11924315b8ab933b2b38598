@@ -1,0 +1,11 @@
+public long simpleQueryForLong(){
+    acquireReference();
+    try {
+        return getSession().executeForLong(getSql(), getBindArgs(), getConnectionFlags(), null);
+    } catch (SQLiteDatabaseCorruptException ex) {
+        onCorruption();
+        throw ex;
+    } finally {
+        releaseReference();
+    }
+}

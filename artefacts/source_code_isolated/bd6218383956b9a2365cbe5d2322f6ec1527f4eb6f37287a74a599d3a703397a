@@ -1,0 +1,11 @@
+public void registerConnectivityDiagnosticsCallback(@NonNull NetworkRequest request, @NonNull Executor e, @NonNull ConnectivityDiagnosticsCallback callback){
+    final ConnectivityDiagnosticsBinder binder = new ConnectivityDiagnosticsBinder(callback, e);
+    if (sCallbacks.putIfAbsent(callback, binder) != null) {
+        throw new IllegalArgumentException("Callback is currently registered");
+    }
+    try {
+        mService.registerConnectivityDiagnosticsCallback(binder, request, mContext.getOpPackageName());
+    } catch (RemoteException exception) {
+        exception.rethrowFromSystemServer();
+    }
+}

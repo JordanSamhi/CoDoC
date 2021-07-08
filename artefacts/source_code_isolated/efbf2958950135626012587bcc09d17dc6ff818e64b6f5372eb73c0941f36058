@@ -1,0 +1,14 @@
+public void registerScanResultsCallback(@NonNull IScanResultsCallback callback){
+    if (callback == null) {
+        throw new IllegalArgumentException("callback must not be null");
+    }
+    enforceAccessPermission();
+    if (mVerboseLoggingEnabled) {
+        mLog.info("registerScanResultsCallback uid=%").c(Binder.getCallingUid()).flush();
+    }
+    mWifiThreadRunner.post(() -> {
+        if (!mWifiInjector.getScanRequestProxy().registerScanResultsCallback(callback)) {
+            Log.e(TAG, "registerScanResultsCallback: Failed to register callback");
+        }
+    });
+}

@@ -1,0 +1,10 @@
+public void dump(DualDumpOutputStream dump, String idName, long id){
+    long token = dump.start(idName, id);
+    synchronized (mLock) {
+        dump.write("is_simulation_active", UsbPortManagerProto.IS_SIMULATION_ACTIVE, !mSimulatedPorts.isEmpty());
+        for (PortInfo portInfo : mPorts.values()) {
+            portInfo.dump(dump, "usb_ports", UsbPortManagerProto.USB_PORTS);
+        }
+    }
+    dump.end(token);
+}

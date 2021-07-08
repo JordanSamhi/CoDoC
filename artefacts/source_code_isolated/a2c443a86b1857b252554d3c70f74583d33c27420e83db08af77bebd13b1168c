@@ -1,0 +1,9 @@
+public List<Integer> getAvailableChannels(int band){
+    try {
+        Bundle bundle = mService.getAvailableChannels(band, mContext.getOpPackageName(), mContext.getAttributionTag());
+        List<Integer> channels = bundle.getIntegerArrayList(GET_AVAILABLE_CHANNELS_EXTRA);
+        return channels == null ? new ArrayList<>() : channels;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

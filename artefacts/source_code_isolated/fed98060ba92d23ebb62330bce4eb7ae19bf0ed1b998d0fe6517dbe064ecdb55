@@ -1,0 +1,20 @@
+public void start(Handler handler){
+    mHandler = handler;
+    mHalDeviceManager.initialize();
+    mHalDeviceManager.registerStatusListener(new HalDeviceManager.ManagerStatusListener() {
+
+        @Override
+        public void onStatusChanged() {
+            if (mDbg)
+                Log.v(TAG, "onStatusChanged");
+            if (mHalDeviceManager.isStarted()) {
+                mHalDeviceManager.registerInterfaceAvailableForRequestListener(IfaceType.NAN, mInterfaceAvailableForRequestListener, mHandler);
+            } else {
+                awareIsDown();
+            }
+        }
+    }, mHandler);
+    if (mHalDeviceManager.isStarted()) {
+        mHalDeviceManager.registerInterfaceAvailableForRequestListener(IfaceType.NAN, mInterfaceAvailableForRequestListener, mHandler);
+    }
+}

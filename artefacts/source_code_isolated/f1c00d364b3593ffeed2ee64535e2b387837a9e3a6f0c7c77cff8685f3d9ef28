@@ -1,0 +1,17 @@
+public void onWindowFocusChanged(boolean hasWindowFocus){
+    if (!hasWindowFocus) {
+        if (isPressed()) {
+            setPressed(false);
+        }
+        mPrivateFlags3 &= ~PFLAG3_FINGER_DOWN;
+        if ((mPrivateFlags & PFLAG_FOCUSED) != 0) {
+            notifyFocusChangeToImeFocusController(false);
+        }
+        removeLongPressCallback();
+        removeTapCallback();
+        onFocusLost();
+    } else if ((mPrivateFlags & PFLAG_FOCUSED) != 0) {
+        notifyFocusChangeToImeFocusController(true);
+    }
+    refreshDrawableState();
+}

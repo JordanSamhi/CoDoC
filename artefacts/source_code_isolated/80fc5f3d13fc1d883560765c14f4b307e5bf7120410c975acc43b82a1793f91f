@@ -1,0 +1,11 @@
+public boolean checkLocationAccess(CallerIdentity callerIdentity){
+    synchronized (this) {
+        Preconditions.checkState(mAppOps != null);
+    }
+    long identity = Binder.clearCallingIdentity();
+    try {
+        return mAppOps.checkOpNoThrow(CallerIdentity.asAppOp(callerIdentity.permissionLevel), callerIdentity.uid, callerIdentity.packageName) == AppOpsManager.MODE_ALLOWED;
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

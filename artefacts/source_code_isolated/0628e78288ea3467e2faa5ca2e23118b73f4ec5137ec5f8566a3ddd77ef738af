@@ -1,0 +1,15 @@
+public void showScreenshotActionsNotification(GlobalScreenshot.SavedImageData actionData){
+    mNotificationBuilder.addAction(actionData.shareAction);
+    mNotificationBuilder.addAction(actionData.editAction);
+    mNotificationBuilder.addAction(actionData.deleteAction);
+    for (Notification.Action smartAction : actionData.smartActions) {
+        mNotificationBuilder.addAction(smartAction);
+    }
+    Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+    launchIntent.setDataAndType(actionData.uri, "image/png");
+    launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+    final long now = System.currentTimeMillis();
+    mPublicNotificationBuilder.setContentTitle(mResources.getString(R.string.screenshot_saved_title)).setContentText(mResources.getString(R.string.screenshot_saved_text)).setContentIntent(PendingIntent.getActivity(mContext, 0, launchIntent, 0)).setWhen(now).setAutoCancel(true).setColor(mContext.getColor(com.android.internal.R.color.system_notification_accent_color));
+    mNotificationBuilder.setContentTitle(mResources.getString(R.string.screenshot_saved_title)).setContentText(mResources.getString(R.string.screenshot_saved_text)).setContentIntent(PendingIntent.getActivity(mContext, 0, launchIntent, 0)).setWhen(now).setAutoCancel(true).setColor(mContext.getColor(com.android.internal.R.color.system_notification_accent_color)).setPublicVersion(mPublicNotificationBuilder.build()).setFlag(Notification.FLAG_NO_CLEAR, false);
+    mNotificationManager.notify(SystemMessageProto.SystemMessage.NOTE_GLOBAL_SCREENSHOT, mNotificationBuilder.build());
+}

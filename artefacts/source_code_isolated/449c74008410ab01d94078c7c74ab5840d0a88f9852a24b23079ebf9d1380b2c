@@ -1,0 +1,9 @@
+public static ComponentInfo findBestComponent(PackageManager packageManager){
+    Intent intent = new Intent(EuiccService.EUICC_SERVICE_INTERFACE);
+    List<ResolveInfo> resolveInfoList = packageManager.queryIntentServices(intent, EUICC_QUERY_FLAGS);
+    ComponentInfo bestComponent = findBestComponent(packageManager, resolveInfoList);
+    if (bestComponent == null) {
+        Log.w(TAG, "No valid EuiccService implementation found");
+    }
+    return bestComponent;
+}

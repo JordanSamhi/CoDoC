@@ -1,0 +1,10 @@
+public boolean supplyPin(String pin){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null)
+            return telephony.supplyPinForSubscriber(getSubId(), pin);
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#supplyPinForSubscriber", e);
+    }
+    return false;
+}

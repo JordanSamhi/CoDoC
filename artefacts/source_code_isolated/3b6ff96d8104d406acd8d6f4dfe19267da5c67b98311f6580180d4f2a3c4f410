@@ -1,0 +1,11 @@
+public void changeVideoQuality(int videoQuality){
+    if (mVideoCallbacks != null) {
+        for (IVideoCallback callback : mVideoCallbacks.values()) {
+            try {
+                callback.changeVideoQuality(videoQuality);
+            } catch (RemoteException ignored) {
+                Log.w(this, "changeVideoQuality callback failed", ignored);
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+public void takePersistableUriPermission(Uri uri, final int modeFlags, @Nullable String toPackage, int userId){
+    final int uid;
+    if (toPackage != null) {
+        mAmInternal.enforceCallingPermission(FORCE_PERSISTABLE_URI_PERMISSIONS, "takePersistableUriPermission");
+        uid = mPmInternal.getPackageUidInternal(toPackage, 0, userId);
+    } else {
+        enforceNotIsolatedCaller("takePersistableUriPermission");
+        uid = Binder.getCallingUid();
+    }
+    Preconditions.checkFlagsArgument(modeFlags, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    synchronized (mLock) {
+        boolean persistChanged = false;
+        UriPermission exactPerm = findUriPermissionLocked(uid, new GrantUri(userId, uri, 0));
+        UriPermission prefixPerm = findUriPermissionLocked(uid, new GrantUri(userId, uri, FLAG_GRANT_PREFIX_URI_PERMISSION));
+        final boolean exactValid = (exactPerm != null) && ((modeFlags & exactPerm.persistableModeFlags) == modeFlags);
+        final boolean prefixValid = (prefixPerm != null) && ((modeFlags & prefixPerm.persistableModeFlags) == modeFlags);
+        if (!(exactValid || prefixValid)) {
+            throw new SecurityException("No persistable permission grants found for UID " + uid + " and Uri " + uri.toSafeString());
+        }
+        if (exactValid) {
+            persistChanged |= exactPerm.takePersistableModes(modeFlags);
+        }
+        if (prefixValid) {
+            persistChanged |= prefixPerm.takePersistableModes(modeFlags);
+        }
+        persistChanged |= maybePrunePersistedUriGrantsLocked(uid);
+        if (persistChanged) {
+            schedulePersistUriGrants();
+        }
+    }
+}

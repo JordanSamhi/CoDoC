@@ -1,0 +1,8 @@
+public boolean removeSuggestionConfiguredNetwork(@NonNull String configKey){
+    WifiConfiguration config = getInternalConfiguredNetwork(configKey);
+    if (config != null && config.ephemeral && config.fromWifiNetworkSuggestion) {
+        Log.d(TAG, "Removing suggestion network config " + config.getKey());
+        return removeNetwork(config.networkId, config.creatorUid, config.creatorName);
+    }
+    return false;
+}

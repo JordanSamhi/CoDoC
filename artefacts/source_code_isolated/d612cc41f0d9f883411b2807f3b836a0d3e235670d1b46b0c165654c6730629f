@@ -1,0 +1,14 @@
+public int getHistoryCountForKeyForTests(@Nullable K key){
+    if (mMap == null) {
+        return 0;
+    }
+    ReferenceWithHistory<V> valueHolder = mMap.get(key);
+    if (valueHolder == null) {
+        return 0;
+    } else if (valueHolder.getHistoryCount() == 0) {
+        Log.w(TAG, "getValuesSizeForKeyForTests(\"" + key + "\") was unexpectedly empty");
+        return 0;
+    } else {
+        return valueHolder.getHistoryCount();
+    }
+}

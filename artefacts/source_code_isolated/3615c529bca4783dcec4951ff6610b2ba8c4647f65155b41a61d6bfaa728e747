@@ -1,0 +1,20 @@
+public synchronized void apply(){
+    if (mApplied) {
+        Log.e(TAG, "Can't apply a previously applied MetadataEditor");
+        return;
+    }
+    synchronized (mCacheLock) {
+        mMetadata = new Bundle(mEditorMetadata);
+        mMetadata.putLong(String.valueOf(KEY_EDITABLE_MASK), mEditableKeys);
+        if ((mOriginalArtwork != null) && (!mOriginalArtwork.equals(mEditorArtwork))) {
+            mOriginalArtwork.recycle();
+        }
+        mOriginalArtwork = mEditorArtwork;
+        mEditorArtwork = null;
+        if (mSession != null && mMetadataBuilder != null) {
+            mMediaMetadata = mMetadataBuilder.build();
+            mSession.setMetadata(mMediaMetadata);
+        }
+        mApplied = true;
+    }
+}

@@ -1,0 +1,11 @@
+public int getCardIdForDefaultEuicc(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony == null) {
+            return UNINITIALIZED_CARD_ID;
+        }
+        return telephony.getCardIdForDefaultEuicc(mSubId, mContext.getOpPackageName());
+    } catch (RemoteException e) {
+        return UNINITIALIZED_CARD_ID;
+    }
+}

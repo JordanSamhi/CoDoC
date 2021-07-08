@@ -1,0 +1,44 @@
+public void calculateAndReportScore(){
+    if (mWifiConnectedNetworkScorerHolder != null) {
+        return;
+    }
+    if (mWifiInfo.getRssi() == mWifiInfo.INVALID_RSSI) {
+        Log.d(TAG, "Not reporting score because RSSI is invalid");
+        return;
+    }
+    int score;
+    long millis = mClock.getWallClockMillis();
+    mVelocityBasedConnectedScore.updateUsingWifiInfo(mWifiInfo, millis);
+    int s2 = mVelocityBasedConnectedScore.generateScore();
+    score = s2;
+    if (mWifiInfo.getScore() > ConnectedScore.WIFI_TRANSITION_SCORE && score <= ConnectedScore.WIFI_TRANSITION_SCORE && mWifiInfo.getSuccessfulTxPacketsPerSecond() >= mScoringParams.getYippeeSkippyPacketsPerSecond() && mWifiInfo.getSuccessfulRxPacketsPerSecond() >= mScoringParams.getYippeeSkippyPacketsPerSecond()) {
+        score = ConnectedScore.WIFI_TRANSITION_SCORE + 1;
+    }
+    if (mWifiInfo.getScore() > ConnectedScore.WIFI_TRANSITION_SCORE && score <= ConnectedScore.WIFI_TRANSITION_SCORE) {
+        int entry = mScoringParams.getEntryRssi(mWifiInfo.getFrequency());
+        if (mVelocityBasedConnectedScore.getFilteredRssi() >= entry || mWifiInfo.getRssi() >= entry) {
+            score = ConnectedScore.WIFI_TRANSITION_SCORE + 1;
+        }
+    }
+    if (mWifiInfo.getScore() >= ConnectedScore.WIFI_TRANSITION_SCORE && score < ConnectedScore.WIFI_TRANSITION_SCORE) {
+        mLastDownwardBreachTimeMillis = millis;
+    } else if (mWifiInfo.getScore() < ConnectedScore.WIFI_TRANSITION_SCORE && score >= ConnectedScore.WIFI_TRANSITION_SCORE) {
+        long elapsedMillis = millis - mLastDownwardBreachTimeMillis;
+        if (elapsedMillis < MIN_TIME_TO_KEEP_BELOW_TRANSITION_SCORE_MILLIS) {
+            score = mWifiInfo.getScore();
+        }
+    }
+    if (score > ConnectedScore.WIFI_MAX_SCORE) {
+        score = ConnectedScore.WIFI_MAX_SCORE;
+    }
+    if (score < 0) {
+        score = 0;
+    }
+    if (score != mWifiInfo.getScore()) {
+        if (mNetworkAgent != null) {
+            mNetworkAgent.sendNetworkScore(score);
+        }
+    }
+    updateWifiMetrics(millis, s2, score);
+    mScore = score;
+}

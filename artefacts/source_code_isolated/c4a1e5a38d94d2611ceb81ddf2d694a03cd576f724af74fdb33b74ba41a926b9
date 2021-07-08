@@ -1,0 +1,14 @@
+public View getView(int position, View convertView, ViewGroup parent){
+    try {
+        return super.getView(position, convertView, parent);
+    } catch (RuntimeException e) {
+        Log.w(LOG_TAG, "Search suggestions cursor threw exception.", e);
+        View v = newView(mContext, mCursor, parent);
+        if (v != null) {
+            ChildViewCache views = (ChildViewCache) v.getTag();
+            TextView tv = views.mText1;
+            tv.setText(e.toString());
+        }
+        return v;
+    }
+}

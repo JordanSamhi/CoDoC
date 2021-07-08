@@ -1,0 +1,16 @@
+public int getConnectionPolicy(@NonNull BluetoothDevice device){
+    if (VDBG)
+        log("getConnectionPolicy(" + device + ")");
+    final IBluetoothHeadset service = mService;
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.getConnectionPolicy(device);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return BluetoothProfile.CONNECTION_POLICY_FORBIDDEN;
+        }
+    }
+    if (service == null)
+        Log.w(TAG, "Proxy not attached to service");
+    return BluetoothProfile.CONNECTION_POLICY_FORBIDDEN;
+}

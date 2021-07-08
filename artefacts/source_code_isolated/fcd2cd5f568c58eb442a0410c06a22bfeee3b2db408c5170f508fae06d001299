@@ -1,0 +1,12 @@
+public void setColor(@Nullable ColorStateList color){
+    this.color = color;
+    if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+        final ProgressBar bar = peekProgressBar();
+        if (bar != null) {
+            bar.setIndeterminateTintList(color);
+            if (Build.VERSION.SDK_INT >= VERSION_CODES.M || color != null) {
+                bar.setProgressBackgroundTintList(color);
+            }
+        }
+    }
+}

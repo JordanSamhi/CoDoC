@@ -1,0 +1,7 @@
+public boolean isScanThrottleEnabled(){
+    enforceAccessPermission();
+    if (mVerboseLoggingEnabled) {
+        mLog.info("isScanThrottleEnabled uid=%").c(Binder.getCallingUid()).flush();
+    }
+    return mWifiThreadRunner.call(() -> mScanRequestProxy.isScanThrottleEnabled(), true);
+}

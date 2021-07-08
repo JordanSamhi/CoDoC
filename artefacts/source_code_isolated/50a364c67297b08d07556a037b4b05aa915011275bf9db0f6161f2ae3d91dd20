@@ -1,0 +1,14 @@
+public void pause() throws IllegalStateException{
+    if (mState != STATE_INITIALIZED) {
+        throw new IllegalStateException("pause() called on uninitialized AudioTrack.");
+    }
+    synchronized (mPlayStateLock) {
+        native_pause();
+        basePause();
+        if (mPlayState == PLAYSTATE_STOPPING) {
+            mPlayState = PLAYSTATE_PAUSED_STOPPING;
+        } else {
+            mPlayState = PLAYSTATE_PAUSED;
+        }
+    }
+}

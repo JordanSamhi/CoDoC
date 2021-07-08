@@ -1,0 +1,16 @@
+public void setMatchOrder(int... matches){
+    if (matches == null || matches.length == 0) {
+        mMatchOrder = DEFAULT_MATCH_ORDER;
+    } else {
+        for (int i = 0; i < matches.length; i++) {
+            int match = matches[i];
+            if (!isValidMatch(match)) {
+                throw new IllegalArgumentException("matches contains invalid value");
+            }
+            if (alreadyContains(matches, i)) {
+                throw new IllegalArgumentException("matches contains a duplicate value");
+            }
+        }
+        mMatchOrder = matches.clone();
+    }
+}

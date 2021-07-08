@@ -1,0 +1,15 @@
+public void onPlaybackStateChanged(MediaSessionRecordImpl record, boolean shouldUpdatePriority){
+    if (shouldUpdatePriority) {
+        mSessions.remove(record);
+        mSessions.add(0, record);
+        clearCache(record.getUserId());
+    } else if (record.checkPlaybackActiveState(false)) {
+        mCachedVolumeDefault = null;
+    }
+    if (mMediaButtonSession != null && mMediaButtonSession.getUid() == record.getUid()) {
+        MediaSessionRecordImpl newMediaButtonSession = findMediaButtonSession(mMediaButtonSession.getUid());
+        if (newMediaButtonSession != mMediaButtonSession && (newMediaButtonSession.getSessionPolicies() & SESSION_POLICY_IGNORE_BUTTON_SESSION) == 0) {
+            updateMediaButtonSession(newMediaButtonSession);
+        }
+    }
+}

@@ -1,0 +1,27 @@
+public static ScanData[] filterResultsForSettings(ChannelHelper channelHelper, ScanData[] scanDatas, ScanSettings settings, int scheduledBucket){
+    List<ScanData> filteredScanDatas = new ArrayList<>(scanDatas.length);
+    List<ScanResult> filteredResults = new ArrayList<>();
+    for (ScanData scanData : scanDatas) {
+        if (isBucketMaybeScanned(scheduledBucket, scanData.getBucketsScanned())) {
+            filteredResults.clear();
+            for (ScanResult scanResult : scanData.getResults()) {
+                if (channelHelper.settingsContainChannel(settings, scanResult.frequency)) {
+                    filteredResults.add(scanResult);
+                }
+                if (settings.numBssidsPerScan > 0 && filteredResults.size() >= settings.numBssidsPerScan) {
+                    break;
+                }
+            }
+            if (filteredResults.size() == scanData.getResults().length) {
+                filteredScanDatas.add(scanData);
+            } else if (filteredResults.size() > 0 || isBucketDefinitlyScanned(scheduledBucket, scanData.getBucketsScanned())) {
+                filteredScanDatas.add(new ScanData(scanData.getId(), scanData.getFlags(), 0, scanData.getBandScanned(), filteredResults.toArray(new ScanResult[filteredResults.size()])));
+            }
+        }
+    }
+    if (filteredScanDatas.size() == 0) {
+        return null;
+    } else {
+        return filteredScanDatas.toArray(new ScanData[filteredScanDatas.size()]);
+    }
+}

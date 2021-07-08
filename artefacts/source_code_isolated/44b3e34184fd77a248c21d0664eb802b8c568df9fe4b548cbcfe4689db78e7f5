@@ -1,0 +1,13 @@
+public byte[] toByteArray(){
+    try {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream stream = new ObjectOutputStream(byteArrayOutputStream);
+        SerializationDataContainer container = new SerializationDataContainer(this);
+        stream.writeObject(container);
+        stream.flush();
+        return byteArrayOutputStream.toByteArray();
+    } catch (IOException e) {
+        Log.e(LOG_TAG, "Got IOException trying to serialize opaque data");
+        return null;
+    }
+}

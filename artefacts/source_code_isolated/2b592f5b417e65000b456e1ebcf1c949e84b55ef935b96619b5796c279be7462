@@ -1,0 +1,16 @@
+public boolean readBoolean(long fieldId) throws IOException{
+    assertFreshData();
+    assertFieldNumber(fieldId);
+    checkPacked(fieldId);
+    boolean value;
+    switch((int) ((fieldId & FIELD_TYPE_MASK) >>> FIELD_TYPE_SHIFT)) {
+        case (int) (FIELD_TYPE_BOOL >>> FIELD_TYPE_SHIFT):
+            assertWireType(WIRE_TYPE_VARINT);
+            value = readVarint() != 0;
+            break;
+        default:
+            throw new IllegalArgumentException("Requested field id (" + getFieldIdString(fieldId) + ") is not an boolean" + dumpDebugData());
+    }
+    mState &= ~STATE_STARTED_FIELD_READ;
+    return value;
+}

@@ -1,0 +1,11 @@
+public static void addPeriodicSync(Account account, String authority, Bundle extras, long pollFrequency){
+    validateSyncExtrasBundle(extras);
+    if (invalidPeriodicExtras(extras)) {
+        throw new IllegalArgumentException("illegal extras were set");
+    }
+    try {
+        getContentService().addPeriodicSync(account, authority, extras, pollFrequency);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

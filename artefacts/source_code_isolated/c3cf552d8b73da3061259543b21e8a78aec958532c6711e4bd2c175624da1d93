@@ -1,0 +1,14 @@
+public void sendText(String destAddr, String scAddr, String text, PendingIntent sentIntent, PendingIntent deliveryIntent, Uri messageUri, String callingPkg, boolean persistMessage, int priority, boolean expectMore, int validityPeriod, boolean isForVvm, long messageId){
+    Rlog.d(TAG, "sendText id: " + messageId);
+    SmsMessageBase.SubmitPduBase pdu = getSubmitPdu(scAddr, destAddr, text, (deliveryIntent != null), null, priority, validityPeriod);
+    if (pdu != null) {
+        HashMap map = getSmsTrackerMap(destAddr, scAddr, text, pdu);
+        SmsTracker tracker = getSmsTracker(callingPkg, map, sentIntent, deliveryIntent, getFormat(), messageUri, expectMore, text, true, persistMessage, priority, validityPeriod, isForVvm, messageId);
+        if (!sendSmsByCarrierApp(false, tracker)) {
+            sendSubmitPdu(tracker);
+        }
+    } else {
+        Rlog.e(TAG, "SmsDispatcher.sendText(): getSubmitPdu() returned null" + " id: " + messageId);
+        triggerSentIntentForFailure(sentIntent);
+    }
+}

@@ -1,0 +1,9 @@
+public static int copyNativeBinaries(Handle handle, File sharedLibraryDir, String abi){
+    for (long apkHandle : handle.apkHandles) {
+        int res = nativeCopyNativeBinaries(apkHandle, sharedLibraryDir.getPath(), abi, handle.extractNativeLibs, handle.debuggable);
+        if (res != INSTALL_SUCCEEDED) {
+            return res;
+        }
+    }
+    return INSTALL_SUCCEEDED;
+}

@@ -1,0 +1,11 @@
+public static int logDataTypesToBitMask(List<Integer> types){
+    if (types.size() > 16) {
+        throw new BitmaskConversionException("Too many log call parameters " + "- max 16 parameters supported");
+    }
+    int mask = 0;
+    for (int i = 0; i < types.size(); i++) {
+        int x = types.get(i);
+        mask = mask | (x << (i * TYPE_WIDTH));
+    }
+    return mask;
+}

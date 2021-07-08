@@ -1,0 +1,24 @@
+public void logCn0(float[] cn0s, int numSv, float[] svCarrierFreqs){
+    logCn0L5(numSv, cn0s, svCarrierFreqs);
+    if (numSv == 0 || cn0s == null || cn0s.length == 0 || cn0s.length < numSv) {
+        if (numSv == 0) {
+            mGnssPowerMetrics.reportSignalQuality(null, 0);
+        }
+        return;
+    }
+    float[] cn0Array = Arrays.copyOf(cn0s, numSv);
+    Arrays.sort(cn0Array);
+    mGnssPowerMetrics.reportSignalQuality(cn0Array, numSv);
+    if (numSv < 4) {
+        return;
+    }
+    if (cn0Array[numSv - 4] > 0.0) {
+        double top4AvgCn0 = 0.0;
+        for (int i = numSv - 4; i < numSv; i++) {
+            top4AvgCn0 += (double) cn0Array[i];
+        }
+        top4AvgCn0 /= 4;
+        mTopFourAverageCn0Statistics.addItem(top4AvgCn0);
+        mTopFourAverageCn0DbmHzReportsStatistics.addItem(top4AvgCn0 * 1000);
+    }
+}

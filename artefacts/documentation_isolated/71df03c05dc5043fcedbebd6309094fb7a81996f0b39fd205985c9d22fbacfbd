@@ -1,0 +1,15 @@
+
+         * Called when a media is transferred between two different routing controllers.
+         * This can happen by calling {@link #transferTo(MediaRoute2Info)}.
+         * <p> Override this to start playback with {@code newController}. You may want to get
+         * the status of the media that is being played with {@code oldController} and resume it
+         * continuously with {@code newController}.
+         * After this is called, any callbacks with {@code oldController} will not be invoked
+         * unless {@code oldController} is the {@link #getSystemController() system controller}.
+         * You need to {@link RoutingController#release() release} {@code oldController} before
+         * playing the media with {@code newController}.
+         *
+         * @param oldController the previous controller that controlled routing
+         * @param newController the new controller to control routing
+         * @see #transferTo(MediaRoute2Info)
+         

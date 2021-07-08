@@ -1,0 +1,14 @@
+public void setScrollContainer(boolean isScrollContainer){
+    if (isScrollContainer) {
+        if (mAttachInfo != null && (mPrivateFlags & PFLAG_SCROLL_CONTAINER_ADDED) == 0) {
+            mAttachInfo.mScrollContainers.add(this);
+            mPrivateFlags |= PFLAG_SCROLL_CONTAINER_ADDED;
+        }
+        mPrivateFlags |= PFLAG_SCROLL_CONTAINER;
+    } else {
+        if ((mPrivateFlags & PFLAG_SCROLL_CONTAINER_ADDED) != 0) {
+            mAttachInfo.mScrollContainers.remove(this);
+        }
+        mPrivateFlags &= ~(PFLAG_SCROLL_CONTAINER | PFLAG_SCROLL_CONTAINER_ADDED);
+    }
+}

@@ -1,0 +1,29 @@
+public void setThumb(Drawable thumb){
+    final boolean needUpdate;
+    if (mThumb != null && thumb != mThumb) {
+        mThumb.setCallback(null);
+        needUpdate = true;
+    } else {
+        needUpdate = false;
+    }
+    if (thumb != null) {
+        thumb.setCallback(this);
+        if (canResolveLayoutDirection()) {
+            thumb.setLayoutDirection(getLayoutDirection());
+        }
+        mThumbOffset = thumb.getIntrinsicWidth() / 2;
+        if (needUpdate && (thumb.getIntrinsicWidth() != mThumb.getIntrinsicWidth() || thumb.getIntrinsicHeight() != mThumb.getIntrinsicHeight())) {
+            requestLayout();
+        }
+    }
+    mThumb = thumb;
+    applyThumbTint();
+    invalidate();
+    if (needUpdate) {
+        updateThumbAndTrackPos(getWidth(), getHeight());
+        if (thumb != null && thumb.isStateful()) {
+            int[] state = getDrawableState();
+            thumb.setState(state);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public void notifyViewExited(@NonNull View view, int virtualId){
+    if (sVerbose)
+        Log.v(TAG, "notifyViewExited(" + view.getAutofillId() + ", " + virtualId);
+    if (!hasAutofillFeature()) {
+        return;
+    }
+    synchronized (mLock) {
+        notifyViewExitedLocked(view, virtualId);
+    }
+}

@@ -1,0 +1,13 @@
+public boolean setProfileOwner(@NonNull ComponentName admin, @Deprecated String ownerName, int userHandle) throws IllegalArgumentException{
+    if (mService != null) {
+        try {
+            if (ownerName == null) {
+                ownerName = "";
+            }
+            return mService.setProfileOwner(admin, ownerName, userHandle);
+        } catch (RemoteException re) {
+            throw re.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

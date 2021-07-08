@@ -1,0 +1,7 @@
+public synchronized void stopVpnProfile(@NonNull String packageName){
+    checkNotNull(packageName, "No package name provided");
+    enforceNotRestrictedUser();
+    if (isCurrentIkev2VpnLocked(packageName)) {
+        prepareInternal(VpnConfig.LEGACY_VPN);
+    }
+}

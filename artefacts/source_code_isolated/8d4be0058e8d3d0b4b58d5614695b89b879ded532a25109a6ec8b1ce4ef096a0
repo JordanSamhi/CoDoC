@@ -1,0 +1,17 @@
+public void getDisplayContextsWithErrorDialogs(List<Context> displayContexts){
+    if (displayContexts == null) {
+        return;
+    }
+    synchronized (mAtm.mGlobalLock) {
+        final RootWindowContainer root = mAtm.mWindowManager.mRoot;
+        root.getDisplayContextsWithNonToastVisibleWindows(mPid, displayContexts);
+        for (int i = mActivities.size() - 1; i >= 0; --i) {
+            final ActivityRecord r = mActivities.get(i);
+            final int displayId = r.getDisplayId();
+            final Context c = root.getDisplayUiContext(displayId);
+            if (r.mVisibleRequested && !displayContexts.contains(c)) {
+                displayContexts.add(c);
+            }
+        }
+    }
+}

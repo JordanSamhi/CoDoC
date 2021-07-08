@@ -1,0 +1,12 @@
+public long getmtime(String key, int uid){
+    try {
+        final long millis = mBinder.getmtime(key, uid);
+        if (millis == -1L) {
+            return -1L;
+        }
+        return millis * 1000L;
+    } catch (RemoteException e) {
+        Log.w(TAG, "Cannot connect to keystore", e);
+        return -1L;
+    }
+}

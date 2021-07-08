@@ -1,0 +1,16 @@
+public Builder setRemoteInputHistory(CharSequence[] text){
+    if (text == null) {
+        mN.extras.putCharSequenceArray(EXTRA_REMOTE_INPUT_HISTORY, null);
+    } else {
+        final int itemCount = Math.min(MAX_REPLY_HISTORY, text.length);
+        CharSequence[] safe = new CharSequence[itemCount];
+        RemoteInputHistoryItem[] items = new RemoteInputHistoryItem[itemCount];
+        for (int i = 0; i < itemCount; i++) {
+            safe[i] = safeCharSequence(text[i]);
+            items[i] = new RemoteInputHistoryItem(text[i]);
+        }
+        mN.extras.putCharSequenceArray(EXTRA_REMOTE_INPUT_HISTORY, safe);
+        mN.extras.putParcelableArray(EXTRA_REMOTE_INPUT_HISTORY_ITEMS, items);
+    }
+    return this;
+}

@@ -1,0 +1,34 @@
+public void onUpdateExtractingViews(EditorInfo ei){
+    if (!isExtractViewShown()) {
+        return;
+    }
+    if (mExtractAccessories == null) {
+        return;
+    }
+    final boolean hasAction = ei.actionLabel != null || ((ei.imeOptions & EditorInfo.IME_MASK_ACTION) != EditorInfo.IME_ACTION_NONE && (ei.imeOptions & EditorInfo.IME_FLAG_NO_ACCESSORY_ACTION) == 0 && ei.inputType != InputType.TYPE_NULL);
+    if (hasAction) {
+        mExtractAccessories.setVisibility(View.VISIBLE);
+        if (mExtractAction != null) {
+            if (mExtractAction instanceof ImageButton) {
+                ((ImageButton) mExtractAction).setImageResource(getIconForImeAction(ei.imeOptions));
+                if (ei.actionLabel != null) {
+                    mExtractAction.setContentDescription(ei.actionLabel);
+                } else {
+                    mExtractAction.setContentDescription(getTextForImeAction(ei.imeOptions));
+                }
+            } else {
+                if (ei.actionLabel != null) {
+                    ((TextView) mExtractAction).setText(ei.actionLabel);
+                } else {
+                    ((TextView) mExtractAction).setText(getTextForImeAction(ei.imeOptions));
+                }
+            }
+            mExtractAction.setOnClickListener(mActionClickListener);
+        }
+    } else {
+        mExtractAccessories.setVisibility(View.GONE);
+        if (mExtractAction != null) {
+            mExtractAction.setOnClickListener(null);
+        }
+    }
+}

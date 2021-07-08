@@ -1,0 +1,17 @@
+public long getAllowedNetworkTypesForReason(@AllowedNetworkTypesReason int reason){
+    if (reason != ALLOWED_NETWORK_TYPES_REASON_POWER) {
+        throw new IllegalArgumentException("invalid AllowedNetworkTypesReason.");
+    }
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            return telephony.getAllowedNetworkTypesForReason(getSubId(), reason);
+        } else {
+            throw new IllegalStateException("telephony service is null.");
+        }
+    } catch (RemoteException ex) {
+        Rlog.e(TAG, "getAllowedNetworkTypesForReason RemoteException", ex);
+        ex.rethrowFromSystemServer();
+    }
+    return -1;
+}

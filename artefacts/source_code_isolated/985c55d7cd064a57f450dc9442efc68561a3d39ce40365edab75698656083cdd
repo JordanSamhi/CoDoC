@@ -1,0 +1,21 @@
+public ParcelFileDescriptor executeShellCommand(String command){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    warnIfBetterCommand(command);
+    ParcelFileDescriptor source = null;
+    ParcelFileDescriptor sink = null;
+    try {
+        ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
+        source = pipe[0];
+        sink = pipe[1];
+        mUiAutomationConnection.executeShellCommand(command, sink, null);
+    } catch (IOException ioe) {
+        Log.e(LOG_TAG, "Error executing shell command!", ioe);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error executing shell command!", re);
+    } finally {
+        IoUtils.closeQuietly(sink);
+    }
+    return source;
+}

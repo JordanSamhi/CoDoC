@@ -1,0 +1,10 @@
+public void handleWifiDisabled(){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Wifi Disabled in state=" + mState);
+    }
+    if (mState == STATE_INIT) {
+        Log.w(TAG, "Wifi Disable unhandled in state=" + mState);
+        return;
+    }
+    resetStateMachineForFailure(ProvisioningCallback.OSU_FAILURE_AP_CONNECTION);
+}

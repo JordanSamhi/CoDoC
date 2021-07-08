@@ -1,0 +1,14 @@
+public WindowContentFrameStats getWindowContentFrameStats(int windowId){
+    synchronized (mLock) {
+        throwIfNotConnectedLocked();
+    }
+    try {
+        if (DEBUG) {
+            Log.i(LOG_TAG, "Getting content frame stats for window: " + windowId);
+        }
+        return mUiAutomationConnection.getWindowContentFrameStats(windowId);
+    } catch (RemoteException re) {
+        Log.e(LOG_TAG, "Error getting window content frame stats!", re);
+    }
+    return null;
+}

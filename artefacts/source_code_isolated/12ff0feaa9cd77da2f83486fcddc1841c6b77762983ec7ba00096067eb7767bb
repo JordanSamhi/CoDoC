@@ -1,0 +1,10 @@
+public void startConference(@NonNull List<Uri> participants, @NonNull Bundle extras){
+    ITelecomService service = getTelecomService();
+    if (service != null) {
+        try {
+            service.startConference(participants, extras, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error calling ITelecomService#placeCall", e);
+        }
+    }
+}

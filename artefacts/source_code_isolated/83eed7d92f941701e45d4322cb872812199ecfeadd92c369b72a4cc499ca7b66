@@ -1,0 +1,7 @@
+public void init(){
+    mAtm = (ActivityTaskManagerService) ActivityTaskManager.getService();
+    LaunchParamsController controller = mAtm.mStackSupervisor.getLaunchParamsController();
+    controller.registerModifier(this);
+    mDisplayManager = mContext.getSystemService(DisplayManager.class);
+    mDisplayManager.registerDisplayListener(mDisplayListener, new Handler(Looper.getMainLooper()));
+}

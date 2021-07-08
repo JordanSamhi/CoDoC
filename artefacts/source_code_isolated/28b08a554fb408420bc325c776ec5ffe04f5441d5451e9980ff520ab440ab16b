@@ -1,0 +1,18 @@
+public void notifyBoundsChanged(){
+    super.notifyBoundsChanged();
+    if (DEBUG) {
+        log("notifyBoundsChanged: screenBounds=" + mHost.getScreenBounds());
+    }
+    if (mTaskToken == null) {
+        mPendingNotifyBoundsChanged = true;
+        return;
+    }
+    mPendingNotifyBoundsChanged = false;
+    Rect screenBounds = mHost.getScreenBounds();
+    if (screenBounds.left < 0 || screenBounds.top < 0) {
+        screenBounds.offsetTo(0, 0);
+    }
+    WindowContainerTransaction wct = new WindowContainerTransaction();
+    wct.setBounds(mTaskToken, screenBounds);
+    WindowOrganizer.applyTransaction(wct);
+}

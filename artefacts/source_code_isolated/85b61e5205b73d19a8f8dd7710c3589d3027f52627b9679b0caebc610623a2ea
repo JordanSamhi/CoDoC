@@ -1,0 +1,23 @@
+public void getRegistrationState(@NonNull @CallbackExecutor Executor executor, @NonNull @ImsRegistrationState Consumer<Integer> stateCallback){
+    if (stateCallback == null) {
+        throw new IllegalArgumentException("Must include a non-null callback.");
+    }
+    if (executor == null) {
+        throw new IllegalArgumentException("Must include a non-null Executor.");
+    }
+    ITelephony iTelephony = getITelephony();
+    if (iTelephony == null) {
+        throw new RuntimeException("Could not find Telephony Service.");
+    }
+    try {
+        iTelephony.getImsMmTelRegistrationState(mSubId, new IIntegerConsumer.Stub() {
+
+            @Override
+            public void accept(int result) {
+                executor.execute(() -> stateCallback.accept(result));
+            }
+        });
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

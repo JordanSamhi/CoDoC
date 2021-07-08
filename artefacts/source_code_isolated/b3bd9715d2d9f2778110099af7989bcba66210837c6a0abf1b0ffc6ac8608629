@@ -1,0 +1,24 @@
+public void addListener(@Nullable IProgressListener listener){
+    if (listener == null)
+        return;
+    synchronized (this) {
+        mListeners.register(listener);
+        switch(mState) {
+            case STATE_INIT:
+                break;
+            case STATE_STARTED:
+                try {
+                    listener.onStarted(mId, null);
+                    listener.onProgress(mId, mProgress, mExtras);
+                } catch (RemoteException ignored) {
+                }
+                break;
+            case STATE_FINISHED:
+                try {
+                    listener.onFinished(mId, null);
+                } catch (RemoteException ignored) {
+                }
+                break;
+        }
+    }
+}

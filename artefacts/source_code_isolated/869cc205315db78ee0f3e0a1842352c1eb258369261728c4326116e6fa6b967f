@@ -1,0 +1,8 @@
+public WifiScoreCardProto.Signal getEventStatistics(WifiScoreCardProto.Event event){
+    if (mPerBssid == null)
+        return null;
+    WifiScoreCard.PerSignal perSignal = mPerBssid.lookupSignal(event, getFrequency());
+    if (perSignal == null)
+        return null;
+    return perSignal.toSignal();
+}

@@ -1,0 +1,24 @@
+public byte[] getPreferredActivityBackup(int userId){
+    if (Binder.getCallingUid() != Process.SYSTEM_UID) {
+        throw new SecurityException("Only the system may call getPreferredActivityBackup()");
+    }
+    ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
+    try {
+        final XmlSerializer serializer = new FastXmlSerializer();
+        serializer.setOutput(dataStream, StandardCharsets.UTF_8.name());
+        serializer.startDocument(null, true);
+        serializer.startTag(null, TAG_PREFERRED_BACKUP);
+        synchronized (mLock) {
+            mSettings.writePreferredActivitiesLPr(serializer, userId, true);
+        }
+        serializer.endTag(null, TAG_PREFERRED_BACKUP);
+        serializer.endDocument();
+        serializer.flush();
+    } catch (Exception e) {
+        if (DEBUG_BACKUP) {
+            Slog.e(TAG, "Unable to write preferred activities for backup", e);
+        }
+        return null;
+    }
+    return dataStream.toByteArray();
+}

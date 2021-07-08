@@ -1,0 +1,25 @@
+public TvInputInfo build(){
+    ComponentName componentName = new ComponentName(mResolveInfo.serviceInfo.packageName, mResolveInfo.serviceInfo.name);
+    String id;
+    int type;
+    boolean isHardwareInput = false;
+    boolean isConnectedToHdmiSwitch = false;
+    @HdmiAddressRelativePosition
+    int hdmiConnectionRelativePosition = HdmiUtils.HDMI_RELATIVE_POSITION_UNKNOWN;
+    if (mHdmiDeviceInfo != null) {
+        id = generateInputId(componentName, mHdmiDeviceInfo);
+        type = TYPE_HDMI;
+        isHardwareInput = true;
+        hdmiConnectionRelativePosition = getRelativePosition(mContext, mHdmiDeviceInfo);
+        isConnectedToHdmiSwitch = hdmiConnectionRelativePosition != HdmiUtils.HDMI_RELATIVE_POSITION_DIRECTLY_BELOW;
+    } else if (mTvInputHardwareInfo != null) {
+        id = generateInputId(componentName, mTvInputHardwareInfo);
+        type = sHardwareTypeToTvInputType.get(mTvInputHardwareInfo.getType(), TYPE_TUNER);
+        isHardwareInput = true;
+    } else {
+        id = generateInputId(componentName);
+        type = TYPE_TUNER;
+    }
+    parseServiceMetadata(type);
+    return new TvInputInfo(mResolveInfo, id, type, isHardwareInput, mLabel, mLabelResId, mIcon, mIconStandby, mIconDisconnected, mSetupActivity, mCanRecord == null ? false : mCanRecord, mTunerCount == null ? 0 : mTunerCount, mHdmiDeviceInfo, isConnectedToHdmiSwitch, hdmiConnectionRelativePosition, mParentId, mExtras);
+}

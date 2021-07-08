@@ -1,0 +1,8 @@
+public void addNotifyStatusChangedCallbackIfAvailable(FeatureConnection.IFeatureUpdate c) throws android.telephony.ims.ImsException{
+    if (!mRcsFeatureConnection.isBinderAlive()) {
+        throw new android.telephony.ims.ImsException("Can not connect to service.", android.telephony.ims.ImsException.CODE_ERROR_SERVICE_UNAVAILABLE);
+    }
+    if (c != null) {
+        mStatusCallbacks.add(c);
+    }
+}

@@ -1,0 +1,11 @@
+public void setCursorVisible(boolean visible){
+    if (visible && mEditor == null)
+        return;
+    createEditorIfNeeded();
+    if (mEditor.mCursorVisible != visible) {
+        mEditor.mCursorVisible = visible;
+        invalidate();
+        mEditor.makeBlink();
+        mEditor.prepareCursorControllers();
+    }
+}

@@ -1,0 +1,12 @@
+public V get(@Nullable Object key){
+    if (mMap == null) {
+        return null;
+    }
+    ReferenceWithHistory<V> valueHolder = mMap.get(key);
+    if (valueHolder == null) {
+        return null;
+    } else if (valueHolder.getHistoryCount() == 0) {
+        Log.w(TAG, "History for \"" + key + "\" was unexpectedly empty");
+    }
+    return valueHolder.get();
+}

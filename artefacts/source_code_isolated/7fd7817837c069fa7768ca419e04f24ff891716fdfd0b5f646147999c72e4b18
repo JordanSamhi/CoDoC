@@ -1,0 +1,9 @@
+public boolean dispatchGenericMotionEvent(MotionEvent event){
+    if (!mInteractive) {
+        if (mDebug)
+            Slog.v(TAG, "Waking up on genericMotionEvent");
+        wakeUp();
+        return true;
+    }
+    return mWindow.superDispatchGenericMotionEvent(event);
+}

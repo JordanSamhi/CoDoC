@@ -1,0 +1,48 @@
+
+     * Finishes the session started by {@link #startAddAccountSession} or
+     * {@link #startUpdateCredentialsSession}. This will either add the account
+     * to AccountManager or update the local credentials stored.
+     * <p>
+     * This method may be called from any thread, but the returned
+     * {@link AccountManagerFuture} must not be used on the main thread.
+     *
+     * @param sessionBundle a {@link Bundle} created by {@link #startAddAccountSession} or
+     *            {@link #startUpdateCredentialsSession}
+     * @param activity The {@link Activity} context to use for launching a new
+     *            authenticator-defined sub-Activity to prompt the user to
+     *            create an account or reauthenticate existing account; used
+     *            only to call startActivity(); if null, the prompt will not
+     *            be launched directly, but the necessary {@link Intent} will
+     *            be returned to the caller instead
+     * @param callback Callback to invoke when the request completes, null for
+     *            no callback
+     * @param handler {@link Handler} identifying the callback thread, null for
+     *            the main thread
+     * @return An {@link AccountManagerFuture} which resolves to a Bundle with
+     *         these fields if an activity was supplied and an account was added
+     *         to device or local credentials were updated::
+     *         <ul>
+     *         <li>{@link #KEY_ACCOUNT_NAME} - the name of the account created
+     *         <li>{@link #KEY_ACCOUNT_TYPE} - the type of the account
+     *         <li>{@link #KEY_ACCOUNT_STATUS_TOKEN} - optional, token to check
+     *         status of the account
+     *         </ul>
+     *         If no activity was specified and additional information is needed
+     *         from user, the returned Bundle may contains only
+     *         {@link #KEY_INTENT} with the {@link Intent} needed to launch the
+     *         actual account creation process. If an error occurred,
+     *         {@link AccountManagerFuture#getResult()} throws:
+     *         <ul>
+     *         <li>{@link AuthenticatorException} if no authenticator was
+     *         registered for this account type or the authenticator failed to
+     *         respond
+     *         <li>{@link OperationCanceledException} if the operation was
+     *         canceled for any reason, including the user canceling the
+     *         creation process or adding accounts (of this type) has been
+     *         disabled by policy
+     *         <li>{@link IOException} if the authenticator experienced an I/O
+     *         problem creating a new account, usually because of network
+     *         trouble
+     *         </ul>
+     * @see #startAddAccountSession and #startUpdateCredentialsSession
+     

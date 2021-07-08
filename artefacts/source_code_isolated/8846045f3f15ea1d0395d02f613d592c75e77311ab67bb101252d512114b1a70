@@ -1,0 +1,22 @@
+public boolean connectionDisconnected(ImsPhoneConnection conn){
+    if (mState != State.DISCONNECTED) {
+        boolean hasOnlyDisconnectedConnections = true;
+        ArrayList<Connection> connections = getConnections();
+        for (Connection cn : connections) {
+            if (cn.getState() != State.DISCONNECTED) {
+                hasOnlyDisconnectedConnections = false;
+                break;
+            }
+        }
+        if (hasOnlyDisconnectedConnections) {
+            synchronized (this) {
+                mState = State.DISCONNECTED;
+            }
+            if (VDBG) {
+                Rlog.v(LOG_TAG, "connectionDisconnected : " + mCallContext + " state = " + mState);
+            }
+            return true;
+        }
+    }
+    return false;
+}

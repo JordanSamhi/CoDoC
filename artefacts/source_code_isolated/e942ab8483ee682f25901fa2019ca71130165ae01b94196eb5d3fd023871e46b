@@ -1,0 +1,23 @@
+public String[] computeProjection(@Nullable String[] projectionIn){
+    if (!ArrayUtils.isEmpty(projectionIn)) {
+        String[] projectionOut = new String[projectionIn.length];
+        for (int i = 0; i < projectionIn.length; i++) {
+            projectionOut[i] = computeSingleProjectionOrThrow(projectionIn[i]);
+        }
+        return projectionOut;
+    } else if (mProjectionMap != null) {
+        Set<Entry<String, String>> entrySet = mProjectionMap.entrySet();
+        String[] projection = new String[entrySet.size()];
+        Iterator<Entry<String, String>> entryIter = entrySet.iterator();
+        int i = 0;
+        while (entryIter.hasNext()) {
+            Entry<String, String> entry = entryIter.next();
+            if (entry.getKey().equals(BaseColumns._COUNT)) {
+                continue;
+            }
+            projection[i++] = entry.getValue();
+        }
+        return projection;
+    }
+    return null;
+}

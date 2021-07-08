@@ -1,0 +1,8 @@
+public void testAcknowledgeAdbBackupOrRestore_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    IFullBackupRestoreObserver observer = mock(IFullBackupRestoreObserver.class);
+    backupManagerService.acknowledgeAdbBackupOrRestore(mUserTwoId, 0, true, "currentPassword", "encryptionPassword", observer);
+    verify(mUserOneService, never()).acknowledgeAdbBackupOrRestore(0, true, "currentPassword", "encryptionPassword", observer);
+}

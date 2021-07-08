@@ -1,0 +1,32 @@
+public T getLoaderResultSynchronously(final Loader<T> loader){
+    final ArrayBlockingQueue<T> queue = new ArrayBlockingQueue<T>(1);
+    final OnLoadCompleteListener<T> listener = new OnLoadCompleteListener<T>() {
+
+        @Override
+        public void onLoadComplete(Loader<T> completedLoader, T data) {
+            completedLoader.unregisterListener(this);
+            completedLoader.stopLoading();
+            completedLoader.reset();
+            queue.add(data);
+        }
+    };
+    final Handler mainThreadHandler = new Handler(Looper.getMainLooper()) {
+
+        @Override
+        public void handleMessage(Message msg) {
+            loader.registerListener(0, listener);
+            loader.startLoading();
+        }
+    };
+    mainThreadHandler.sendEmptyMessage(0);
+    T result;
+    while (true) {
+        try {
+            result = queue.take();
+            break;
+        } catch (InterruptedException e) {
+            throw new RuntimeException("waiting thread interrupted", e);
+        }
+    }
+    return result;
+}

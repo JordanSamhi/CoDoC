@@ -1,0 +1,13 @@
+public int getHistoryUsedSize(){
+    int ret = 0;
+    for (int i = 0; i < mFileNumbers.size() - 1; i++) {
+        ret += getFile(mFileNumbers.get(i)).getBaseFile().length();
+    }
+    ret += mHistoryBuffer.dataSize();
+    if (mHistoryParcels != null) {
+        for (int i = 0; i < mHistoryParcels.size(); i++) {
+            ret += mHistoryParcels.get(i).dataSize();
+        }
+    }
+    return ret;
+}

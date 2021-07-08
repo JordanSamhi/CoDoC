@@ -1,0 +1,9 @@
+public Builder setWpa3Passphrase(@NonNull String passphrase){
+    checkNotNull(passphrase);
+    final CharsetEncoder asciiEncoder = StandardCharsets.US_ASCII.newEncoder();
+    if (!asciiEncoder.canEncode(passphrase)) {
+        throw new IllegalArgumentException("passphrase not ASCII encodable");
+    }
+    mWpa3SaePassphrase = passphrase;
+    return this;
+}

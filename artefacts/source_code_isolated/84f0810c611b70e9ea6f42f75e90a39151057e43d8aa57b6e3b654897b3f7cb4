@@ -1,0 +1,15 @@
+public boolean dispatchKeyEvent(KeyEvent event){
+    onUserInteraction();
+    final int keyCode = event.getKeyCode();
+    if (keyCode == KeyEvent.KEYCODE_MENU && mActionBar != null && mActionBar.onMenuKeyEvent(event)) {
+        return true;
+    }
+    Window win = getWindow();
+    if (win.superDispatchKeyEvent(event)) {
+        return true;
+    }
+    View decor = mDecor;
+    if (decor == null)
+        decor = win.getDecorView();
+    return event.dispatch(this, decor != null ? decor.getKeyDispatcherState() : null, this);
+}

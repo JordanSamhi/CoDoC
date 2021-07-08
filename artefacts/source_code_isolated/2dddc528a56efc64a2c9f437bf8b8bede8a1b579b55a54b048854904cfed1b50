@@ -1,0 +1,11 @@
+public final void notifyVoiceMessageCountUpdate(int count){
+    IImsMmTelListener listener = getListener();
+    if (listener == null) {
+        throw new IllegalStateException("Session is not available.");
+    }
+    try {
+        listener.onVoiceMessageCountUpdate(count);
+    } catch (RemoteException e) {
+        throw new RuntimeException(e);
+    }
+}

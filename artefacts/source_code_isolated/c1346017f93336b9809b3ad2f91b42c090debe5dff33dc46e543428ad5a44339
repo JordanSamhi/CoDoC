@@ -1,0 +1,11 @@
+public void open(MmTelFeature.Listener listener) throws ImsException{
+    checkAndThrowExceptionIfServiceUnavailable();
+    if (listener == null) {
+        throw new NullPointerException("listener can't be null");
+    }
+    try {
+        mMmTelFeatureConnection.openConnection(listener);
+    } catch (RemoteException e) {
+        throw new ImsException("open()", e, ImsReasonInfo.CODE_LOCAL_IMS_SERVICE_DOWN);
+    }
+}

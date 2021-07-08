@@ -1,0 +1,19 @@
+public boolean removeAllEphemeralOrPasspointConfiguredNetworks(){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Removing all passpoint or ephemeral configured networks");
+    }
+    boolean didRemove = false;
+    WifiConfiguration[] copiedConfigs = mConfiguredNetworks.valuesForAllUsers().toArray(new WifiConfiguration[0]);
+    for (WifiConfiguration config : copiedConfigs) {
+        if (config.isPasspoint()) {
+            Log.d(TAG, "Removing passpoint network config " + config.getKey());
+            removeNetwork(config.networkId, config.creatorUid, config.creatorName);
+            didRemove = true;
+        } else if (config.ephemeral) {
+            Log.d(TAG, "Removing ephemeral network config " + config.getKey());
+            removeNetwork(config.networkId, config.creatorUid, config.creatorName);
+            didRemove = true;
+        }
+    }
+    return didRemove;
+}

@@ -1,0 +1,11 @@
+public boolean setPermittedInputMethods(@NonNull ComponentName admin, List<String> packageNames){
+    throwIfParentInstance("setPermittedInputMethods");
+    if (mService != null) {
+        try {
+            return mService.setPermittedInputMethods(admin, packageNames);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return false;
+}

@@ -1,0 +1,27 @@
+
+     * Verify the cryptographic signature of a system update package
+     * before installing it.  Note that the package is also verified
+     * separately by the installer once the device is rebooted into
+     * the recovery system.  This function will return only if the
+     * package was successfully verified; otherwise it will throw an
+     * exception.
+     *
+     * Verification of a package can take significant time, so this
+     * function should not be called from a UI thread.  Interrupting
+     * the thread while this function is in progress will result in a
+     * SecurityException being thrown (and the thread's interrupt flag
+     * will be cleared).
+     *
+     * @param packageFile  the package to be verified
+     * @param listener     an object to receive periodic progress
+     * updates as verification proceeds.  May be null.
+     * @param deviceCertsZipFile  the zip file of certificates whose
+     * public keys we will accept.  Verification succeeds if the
+     * package is signed by the private key corresponding to any
+     * public key in this file.  May be null to use the system default
+     * file (currently "/system/etc/security/otacerts.zip").
+     *
+     * @throws IOException if there were any errors reading the
+     * package or certs files.
+     * @throws GeneralSecurityException if verification failed
+     

@@ -1,0 +1,15 @@
+public void skipTarPadding(long size) throws IOException{
+    long partial = (size + 512) % 512;
+    if (partial > 0) {
+        final int needed = 512 - (int) partial;
+        if (MORE_DEBUG) {
+            Slog.i(TAG, "Skipping tar padding: " + needed + " bytes");
+        }
+        byte[] buffer = new byte[needed];
+        if (readExactly(mInputStream, buffer, 0, needed) == needed) {
+            mBytesReadListener.onBytesRead(needed);
+        } else {
+            throw new IOException("Unexpected EOF in padding");
+        }
+    }
+}

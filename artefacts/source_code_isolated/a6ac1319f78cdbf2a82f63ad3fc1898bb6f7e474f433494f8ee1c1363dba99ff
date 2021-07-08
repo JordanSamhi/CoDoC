@@ -1,0 +1,10 @@
+public final boolean stopSelfResult(int startId){
+    if (mActivityManager == null) {
+        return false;
+    }
+    try {
+        return mActivityManager.stopServiceToken(new ComponentName(this, mClassName), mToken, startId);
+    } catch (RemoteException ex) {
+    }
+    return false;
+}

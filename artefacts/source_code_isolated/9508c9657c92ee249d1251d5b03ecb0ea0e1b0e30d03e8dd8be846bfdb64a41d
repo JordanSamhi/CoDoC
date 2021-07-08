@@ -1,0 +1,10 @@
+public void setOutput(Allocation aout){
+    mOut = aout;
+    if (mOut.getType().getElement() != Element.U32(mRS) && mOut.getType().getElement() != Element.U32_2(mRS) && mOut.getType().getElement() != Element.U32_3(mRS) && mOut.getType().getElement() != Element.U32_4(mRS) && mOut.getType().getElement() != Element.I32(mRS) && mOut.getType().getElement() != Element.I32_2(mRS) && mOut.getType().getElement() != Element.I32_3(mRS) && mOut.getType().getElement() != Element.I32_4(mRS)) {
+        throw new RSIllegalArgumentException("Output type must be U32 or I32.");
+    }
+    if ((mOut.getType().getX() != 256) || (mOut.getType().getY() != 0) || mOut.getType().hasMipmaps() || (mOut.getType().getYuv() != 0)) {
+        throw new RSIllegalArgumentException("Output must be 1D, 256 elements.");
+    }
+    setVar(1, aout);
+}

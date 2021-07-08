@@ -1,0 +1,7 @@
+public static boolean shouldLogUserspaceRebootEvent(){
+    if (!PowerManager.isRebootingUserspaceSupportedImpl()) {
+        Slog.wtf(TAG, "Userspace reboot is not supported.");
+        return false;
+    }
+    return SystemProperties.getBoolean(USERSPACE_REBOOT_SHOULD_LOG_PROPERTY, false);
+}

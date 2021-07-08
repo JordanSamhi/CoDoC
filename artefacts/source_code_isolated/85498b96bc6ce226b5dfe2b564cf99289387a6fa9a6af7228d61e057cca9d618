@@ -1,0 +1,10 @@
+public boolean isApplicationOnIcc(IccCardApplicationStatus.AppType type){
+    synchronized (mLock) {
+        for (int i = 0; i < mUiccApplications.length; i++) {
+            if (mUiccApplications[i] != null && mUiccApplications[i].getType() == type) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

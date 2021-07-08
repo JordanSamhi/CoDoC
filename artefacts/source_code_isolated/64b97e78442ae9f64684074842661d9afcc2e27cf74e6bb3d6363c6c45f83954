@@ -1,0 +1,12 @@
+public static boolean isValidScheduleConditionId(Uri conditionId, boolean allowNever){
+    ScheduleInfo info;
+    try {
+        info = tryParseScheduleConditionId(conditionId);
+    } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+        return false;
+    }
+    if (info == null || (!allowNever && (info.days == null || info.days.length == 0))) {
+        return false;
+    }
+    return true;
+}

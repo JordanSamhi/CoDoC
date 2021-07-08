@@ -1,0 +1,8 @@
+public void postOnAnimation(Runnable action){
+    final AttachInfo attachInfo = mAttachInfo;
+    if (attachInfo != null) {
+        attachInfo.mViewRootImpl.mChoreographer.postCallback(Choreographer.CALLBACK_ANIMATION, action, null);
+    } else {
+        getRunQueue().post(action);
+    }
+}

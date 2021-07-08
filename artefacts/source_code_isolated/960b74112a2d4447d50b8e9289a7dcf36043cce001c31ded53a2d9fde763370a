@@ -1,0 +1,6 @@
+public Transaction setBufferSize(@NonNull SurfaceControl sc, @IntRange(from = 0) int w, @IntRange(from = 0) int h){
+    checkPreconditions(sc);
+    mResizedSurfaces.put(sc, new Point(w, h));
+    nativeSetSize(mNativeObject, sc.mNativeObject, w, h);
+    return this;
+}

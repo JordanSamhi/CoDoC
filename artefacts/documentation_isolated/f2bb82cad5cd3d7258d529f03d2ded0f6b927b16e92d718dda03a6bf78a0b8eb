@@ -1,0 +1,22 @@
+
+     * Set the allowed network types of the device and
+     * provide the reason triggering the allowed network change.
+     * This can be called for following reasons
+     * <ol>
+     * <li>Allowed network types control by power manager
+     * {@link #ALLOWED_NETWORK_TYPES_REASON_POWER}
+     * </ol>
+     * This API will result in allowing an intersection of allowed network types for all reasons,
+     * including the configuration done through {@link setAllowedNetworkTypes}.
+     * While this API and {@link setAllowedNetworkTypes} is controlling allowed network types
+     * on device, user preference will still be set through {@link #setPreferredNetworkTypeBitmask}.
+     * Thus resultant network type configured on modem will be an intersection of the network types
+     * from setAllowedNetworkTypesForReason, {@link setAllowedNetworkTypes}
+     * and {@link #setPreferredNetworkTypeBitmask}.
+     *
+     * @param reason the reason the allowed network type change is taking place
+     * @param allowedNetworkTypes The bitmask of allowed network types.
+     * @throws IllegalStateException if the Telephony process is not currently available.
+     * @throws IllegalArgumentException if invalid AllowedNetworkTypesReason is passed.
+     * @hide
+     

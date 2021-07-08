@@ -1,0 +1,26 @@
+public boolean notifyKeyEventLocked(KeyEvent event, int policyFlags, List<? extends KeyEventFilter> keyEventFilters){
+    PendingKeyEvent pendingKeyEvent = null;
+    KeyEvent localClone = KeyEvent.obtain(event);
+    for (int i = 0; i < keyEventFilters.size(); i++) {
+        KeyEventFilter keyEventFilter = keyEventFilters.get(i);
+        if (keyEventFilter.onKeyEvent(localClone, localClone.getSequenceNumber())) {
+            if (pendingKeyEvent == null) {
+                pendingKeyEvent = obtainPendingEventLocked(localClone, policyFlags);
+            }
+            ArrayList<PendingKeyEvent> pendingEventList = mPendingEventsMap.get(keyEventFilter);
+            if (pendingEventList == null) {
+                pendingEventList = new ArrayList<>();
+                mPendingEventsMap.put(keyEventFilter, pendingEventList);
+            }
+            pendingEventList.add(pendingKeyEvent);
+            pendingKeyEvent.referenceCount++;
+        }
+    }
+    if (pendingKeyEvent == null) {
+        localClone.recycle();
+        return false;
+    }
+    Message message = mKeyEventTimeoutHandler.obtainMessage(MSG_ON_KEY_EVENT_TIMEOUT, pendingKeyEvent);
+    mKeyEventTimeoutHandler.sendMessageDelayed(message, ON_KEY_EVENT_TIMEOUT_MILLIS);
+    return true;
+}

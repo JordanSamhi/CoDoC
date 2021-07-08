@@ -1,0 +1,8 @@
+public static ScreenshotGraphicBuffer captureLayersExcluding(SurfaceControl layer, Rect sourceCrop, float frameScale, int format, SurfaceControl[] exclude){
+    final IBinder displayToken = SurfaceControl.getInternalDisplayToken();
+    long[] nativeExcludeObjects = new long[exclude.length];
+    for (int i = 0; i < exclude.length; i++) {
+        nativeExcludeObjects[i] = exclude[i].mNativeObject;
+    }
+    return nativeCaptureLayers(displayToken, layer.mNativeObject, sourceCrop, frameScale, nativeExcludeObjects, PixelFormat.RGBA_8888);
+}

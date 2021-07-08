@@ -1,0 +1,7 @@
+public Directions getDirections(@IntRange(from = 0) int start, @IntRange(from = 0) int end){
+    if (mLtrWithoutBidi) {
+        return Layout.DIRS_ALL_LEFT_TO_RIGHT;
+    }
+    final int length = end - start;
+    return AndroidBidi.directions(mParaDir, mLevels.getRawArray(), start, mCopiedBuffer, start, length);
+}

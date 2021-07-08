@@ -1,0 +1,25 @@
+
+     * Called by a profile owner of a managed profile to set the packages that are allowed to use
+     * a {@link android.service.notification.NotificationListenerService} in the primary user to
+     * see notifications from the managed profile. By default all packages are permitted by this
+     * policy. When zero or more packages have been added, notification listeners installed on the
+     * primary user that are not in the list and are not part of the system won't receive events
+     * for managed profile notifications.
+     * <p>
+     * Calling with a {@code null} value for the list disables the restriction so that all
+     * notification listener services be used. Calling with an empty list disables all but the
+     * system's own notification listeners. System notification listener services are always
+     * available to the user.
+     * <p>
+     * If a device or profile owner want to stop notification listeners in their user from seeing
+     * that user's notifications they should prevent that service from running instead (e.g. via
+     * {@link #setApplicationHidden(ComponentName, String, boolean)})
+     *
+     * @param admin Which {@link DeviceAdminReceiver} this request is associated with.
+     * @param packageList List of package names to whitelist
+     * @return true if setting the restriction succeeded. It will fail if called outside a managed
+     * profile
+     * @throws SecurityException if {@code admin} is not a profile owner.
+     *
+     * @see android.service.notification.NotificationListenerService
+     

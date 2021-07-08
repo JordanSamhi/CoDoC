@@ -1,0 +1,33 @@
+public void onConfigurationChanged(){
+    final DisplayRotation displayRotation = mDisplayContent.getDisplayRotation();
+    final Resources res = getCurrentUserResources();
+    final int portraitRotation = displayRotation.getPortraitRotation();
+    final int upsideDownRotation = displayRotation.getUpsideDownRotation();
+    final int landscapeRotation = displayRotation.getLandscapeRotation();
+    final int seascapeRotation = displayRotation.getSeascapeRotation();
+    final int uiMode = mService.mPolicy.getUiMode();
+    if (hasStatusBar()) {
+        mStatusBarHeightForRotation[portraitRotation] = mStatusBarHeightForRotation[upsideDownRotation] = res.getDimensionPixelSize(R.dimen.status_bar_height_portrait);
+        mStatusBarHeightForRotation[landscapeRotation] = mStatusBarHeightForRotation[seascapeRotation] = res.getDimensionPixelSize(R.dimen.status_bar_height_landscape);
+    } else {
+        mStatusBarHeightForRotation[portraitRotation] = mStatusBarHeightForRotation[upsideDownRotation] = mStatusBarHeightForRotation[landscapeRotation] = mStatusBarHeightForRotation[seascapeRotation] = 0;
+    }
+    mNavigationBarHeightForRotationDefault[portraitRotation] = mNavigationBarHeightForRotationDefault[upsideDownRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_height);
+    mNavigationBarHeightForRotationDefault[landscapeRotation] = mNavigationBarHeightForRotationDefault[seascapeRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_height_landscape);
+    mNavigationBarFrameHeightForRotationDefault[portraitRotation] = mNavigationBarFrameHeightForRotationDefault[upsideDownRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_frame_height);
+    mNavigationBarFrameHeightForRotationDefault[landscapeRotation] = mNavigationBarFrameHeightForRotationDefault[seascapeRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_frame_height_landscape);
+    mNavigationBarWidthForRotationDefault[portraitRotation] = mNavigationBarWidthForRotationDefault[upsideDownRotation] = mNavigationBarWidthForRotationDefault[landscapeRotation] = mNavigationBarWidthForRotationDefault[seascapeRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_width);
+    if (ALTERNATE_CAR_MODE_NAV_SIZE) {
+        mNavigationBarHeightForRotationInCarMode[portraitRotation] = mNavigationBarHeightForRotationInCarMode[upsideDownRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_height_car_mode);
+        mNavigationBarHeightForRotationInCarMode[landscapeRotation] = mNavigationBarHeightForRotationInCarMode[seascapeRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_height_landscape_car_mode);
+        mNavigationBarWidthForRotationInCarMode[portraitRotation] = mNavigationBarWidthForRotationInCarMode[upsideDownRotation] = mNavigationBarWidthForRotationInCarMode[landscapeRotation] = mNavigationBarWidthForRotationInCarMode[seascapeRotation] = res.getDimensionPixelSize(R.dimen.navigation_bar_width_car_mode);
+    }
+    mNavBarOpacityMode = res.getInteger(R.integer.config_navBarOpacityMode);
+    mLeftGestureInset = mGestureNavigationSettingsObserver.getLeftSensitivity(res);
+    mRightGestureInset = mGestureNavigationSettingsObserver.getRightSensitivity(res);
+    mNavButtonForcedVisible = mGestureNavigationSettingsObserver.areNavigationButtonForcedVisible();
+    mNavigationBarLetsThroughTaps = res.getBoolean(R.bool.config_navBarTapThrough);
+    mNavigationBarAlwaysShowOnSideGesture = res.getBoolean(R.bool.config_navBarAlwaysShowOnSideEdgeGesture);
+    mBottomGestureAdditionalInset = res.getDimensionPixelSize(R.dimen.navigation_bar_gesture_height) - getNavigationBarFrameHeight(portraitRotation, uiMode);
+    updateConfigurationAndScreenSizeDependentBehaviors();
+}

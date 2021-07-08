@@ -1,0 +1,9 @@
+public void completeWork(@NonNull JobWorkItem work){
+    try {
+        if (!getCallback().completeWork(getJobId(), work.getWorkId())) {
+            throw new IllegalArgumentException("Given work is not active: " + work);
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

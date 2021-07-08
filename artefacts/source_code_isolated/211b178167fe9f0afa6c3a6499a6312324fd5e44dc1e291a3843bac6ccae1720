@@ -1,0 +1,9 @@
+public void incrementScanReturnEntry(int scanReturnCode, int countToAdd){
+    synchronized (mLock) {
+        if (DBG)
+            Log.v(TAG, "incrementScanReturnEntry " + returnCodeToString(scanReturnCode));
+        int entry = mScanReturnEntries.get(scanReturnCode);
+        entry += countToAdd;
+        mScanReturnEntries.put(scanReturnCode, entry);
+    }
+}

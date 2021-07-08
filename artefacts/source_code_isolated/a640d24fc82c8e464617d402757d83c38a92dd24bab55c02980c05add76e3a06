@@ -1,0 +1,11 @@
+public final void dispatchOnDraw(){
+    if (mOnDrawListeners != null) {
+        mInDispatchOnDraw = true;
+        final ArrayList<OnDrawListener> listeners = mOnDrawListeners;
+        int numListeners = listeners.size();
+        for (int i = 0; i < numListeners; ++i) {
+            listeners.get(i).onDraw();
+        }
+        mInDispatchOnDraw = false;
+    }
+}

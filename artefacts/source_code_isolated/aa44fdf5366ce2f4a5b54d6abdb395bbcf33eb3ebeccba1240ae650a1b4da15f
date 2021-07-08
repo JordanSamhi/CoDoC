@@ -1,0 +1,24 @@
+public boolean startWpsPinKeypad(String groupIfName, String pin){
+    if (TextUtils.isEmpty(groupIfName) || TextUtils.isEmpty(pin))
+        return false;
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("startWpsPinKeypad"))
+            return false;
+        if (groupIfName == null) {
+            Log.e(TAG, "Group name required when requesting WPS KEYPAD.");
+            return false;
+        }
+        if (pin == null) {
+            Log.e(TAG, "PIN required when requesting WPS KEYPAD.");
+            return false;
+        }
+        SupplicantResult<Void> result = new SupplicantResult("startWpsPinKeypad(" + groupIfName + ", " + pin + ")");
+        try {
+            result.setResult(mISupplicantP2pIface.startWpsPinKeypad(groupIfName, pin));
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+        }
+        return result.isSuccess();
+    }
+}

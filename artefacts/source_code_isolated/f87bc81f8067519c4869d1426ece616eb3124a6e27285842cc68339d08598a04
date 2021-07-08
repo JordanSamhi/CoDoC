@@ -1,0 +1,9 @@
+public static int insert(Context context, List<Voicemail> voicemails){
+    ContentResolver contentResolver = context.getContentResolver();
+    int count = voicemails.size();
+    for (int i = 0; i < count; i++) {
+        ContentValues contentValues = getContentValues(voicemails.get(i));
+        contentResolver.insert(buildSourceUri(context.getPackageName()), contentValues);
+    }
+    return count;
+}

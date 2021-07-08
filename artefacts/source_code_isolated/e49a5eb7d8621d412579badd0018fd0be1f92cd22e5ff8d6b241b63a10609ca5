@@ -1,0 +1,11 @@
+public void requestEmbeddedSubscriptionInfoListRefresh(){
+    int cardId = TelephonyManager.from(mContext).getCardIdForDefaultEuicc();
+    try {
+        ISub iSub = TelephonyManager.getSubscriptionService();
+        if (iSub != null) {
+            iSub.requestEmbeddedSubscriptionInfoListRefresh(cardId);
+        }
+    } catch (RemoteException ex) {
+        logd("requestEmbeddedSubscriptionInfoListFresh for card = " + cardId + " failed.");
+    }
+}

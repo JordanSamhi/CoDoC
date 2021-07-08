@@ -1,0 +1,10 @@
+public static boolean setStrings(@NonNull ContentResolver resolver, @NonNull String namespace, @NonNull Map<String, String> keyValues) throws DeviceConfig.BadConfigException{
+    HashMap<String, String> compositeKeyValueMap = new HashMap<>(keyValues.keySet().size());
+    for (Map.Entry<String, String> entry : keyValues.entrySet()) {
+        compositeKeyValueMap.put(createCompositeName(namespace, entry.getKey()), entry.getValue());
+    }
+    if (!sNameValueCache.setStringsForPrefix(resolver, createPrefix(namespace), compositeKeyValueMap)) {
+        throw new DeviceConfig.BadConfigException();
+    }
+    return true;
+}

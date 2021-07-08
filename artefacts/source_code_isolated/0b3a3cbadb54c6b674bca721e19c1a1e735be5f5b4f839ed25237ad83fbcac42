@@ -1,0 +1,15 @@
+public void onReceiveSessionModifyResponse(int status, VideoProfile requestProfile, VideoProfile responseProfile){
+    if (status == android.telecom.Connection.VideoProvider.SESSION_MODIFY_REQUEST_SUCCESS && mShouldIgnoreVideoStateChanges) {
+        int currentVideoState = getVideoState();
+        int newVideoState = responseProfile.getVideoState();
+        int changedBits = currentVideoState ^ newVideoState;
+        changedBits &= VideoProfile.STATE_BIDIRECTIONAL;
+        if (changedBits == 0) {
+            return;
+        }
+        currentVideoState &= ~(changedBits & currentVideoState);
+        currentVideoState |= changedBits & newVideoState;
+        Rlog.d(LOG_TAG, "onReceiveSessionModifyResponse : received " + VideoProfile.videoStateToString(requestProfile.getVideoState()) + " / " + VideoProfile.videoStateToString(responseProfile.getVideoState()) + " while paused ; sending new videoState = " + VideoProfile.videoStateToString(currentVideoState));
+        setVideoState(currentVideoState);
+    }
+}

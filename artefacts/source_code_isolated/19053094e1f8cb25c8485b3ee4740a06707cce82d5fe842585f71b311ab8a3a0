@@ -1,0 +1,23 @@
+public boolean getScreenCaptureDisabled(ComponentName who, int userHandle, boolean parent){
+    if (!mHasFeature) {
+        return false;
+    }
+    synchronized (getLockObject()) {
+        if (parent) {
+            final ActiveAdmin ap = getActiveAdminForCallerLocked(who, DeviceAdminInfo.USES_POLICY_ORGANIZATION_OWNED_PROFILE_OWNER, parent);
+            enforceProfileOwnerOfOrganizationOwnedDevice(ap);
+        }
+        if (who != null) {
+            ActiveAdmin admin = getActiveAdminUncheckedLocked(who, userHandle, parent);
+            return (admin != null) && admin.disableScreenCapture;
+        }
+        final int affectedUserId = parent ? getProfileParentId(userHandle) : userHandle;
+        List<ActiveAdmin> admins = getActiveAdminsForAffectedUserLocked(affectedUserId);
+        for (ActiveAdmin admin : admins) {
+            if (admin.disableScreenCapture) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

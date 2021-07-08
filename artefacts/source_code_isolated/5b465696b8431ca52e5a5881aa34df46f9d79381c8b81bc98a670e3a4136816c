@@ -1,0 +1,14 @@
+public void setBouncerShowing(boolean bouncerShowing){
+    mBouncerShowing = bouncerShowing;
+    mKeyguardBypassController.setBouncerShowing(bouncerShowing);
+    mPulseExpansionHandler.setBouncerShowing(bouncerShowing);
+    mLockscreenLockIconController.setBouncerShowingScrimmed(isBouncerShowingScrimmed());
+    if (mStatusBarView != null)
+        mStatusBarView.setBouncerShowing(bouncerShowing);
+    updateHideIconsForBouncer(true);
+    mCommandQueue.recomputeDisableFlags(mDisplayId, true);
+    updateScrimController();
+    if (!mBouncerShowing) {
+        updatePanelExpansionForKeyguard();
+    }
+}

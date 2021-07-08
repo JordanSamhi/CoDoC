@@ -1,0 +1,44 @@
+public void unbindBackupAgent(ApplicationInfo appInfo){
+    if (DEBUG_BACKUP) {
+        Slog.v(TAG_BACKUP, "unbindBackupAgent: " + appInfo + " appInfo.uid = " + appInfo.uid + " callingUid = " + Binder.getCallingUid() + " uid = " + Process.myUid());
+    }
+    enforceCallingPermission("android.permission.CONFIRM_FULL_BACKUP", "unbindBackupAgent");
+    if (appInfo == null) {
+        Slog.w(TAG, "unbind backup agent for null app");
+        return;
+    }
+    int oldBackupUid;
+    final int userId = UserHandle.getUserId(appInfo.uid);
+    synchronized (this) {
+        final BackupRecord backupTarget = mBackupTargets.get(userId);
+        String backupAppName = backupTarget == null ? null : backupTarget.appInfo.packageName;
+        try {
+            if (backupAppName == null) {
+                Slog.w(TAG, "Unbinding backup agent with no active backup");
+                return;
+            }
+            if (!backupAppName.equals(appInfo.packageName)) {
+                Slog.e(TAG, "Unbind of " + appInfo + " but is not the current backup target");
+                return;
+            }
+            final ProcessRecord proc = backupTarget.app;
+            updateOomAdjLocked(proc, true, OomAdjuster.OOM_ADJ_REASON_NONE);
+            proc.inFullBackup = false;
+            oldBackupUid = backupTarget != null ? backupTarget.appInfo.uid : -1;
+            if (proc.thread != null) {
+                try {
+                    proc.thread.scheduleDestroyBackupAgent(appInfo, compatibilityInfoForPackage(appInfo), userId);
+                } catch (Exception e) {
+                    Slog.e(TAG, "Exception when unbinding backup agent:");
+                    e.printStackTrace();
+                }
+            }
+        } finally {
+            mBackupTargets.delete(userId);
+        }
+    }
+    if (oldBackupUid != -1) {
+        JobSchedulerInternal js = LocalServices.getService(JobSchedulerInternal.class);
+        js.removeBackingUpUid(oldBackupUid);
+    }
+}

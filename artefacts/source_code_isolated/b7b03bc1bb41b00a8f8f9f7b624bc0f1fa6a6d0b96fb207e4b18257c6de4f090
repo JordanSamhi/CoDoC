@@ -1,0 +1,14 @@
+public void setFactory(Factory<T> factory){
+    if (mFactorySet) {
+        throw new IllegalStateException("" + "A factory has already been set on this inflater");
+    }
+    if (factory == null) {
+        throw new NullPointerException("Given factory can not be null");
+    }
+    mFactorySet = true;
+    if (mFactory == null) {
+        mFactory = factory;
+    } else {
+        mFactory = new FactoryMerger<T>(factory, mFactory);
+    }
+}

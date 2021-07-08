@@ -1,0 +1,18 @@
+public void addOnMediaKeyEventDispatchedListener(@NonNull @CallbackExecutor Executor executor, @NonNull OnMediaKeyEventDispatchedListener listener){
+    if (executor == null) {
+        throw new NullPointerException("executor shouldn't be null");
+    }
+    if (listener == null) {
+        throw new NullPointerException("listener shouldn't be null");
+    }
+    synchronized (mLock) {
+        try {
+            mOnMediaKeyEventDispatchedListeners.put(listener, executor);
+            if (mOnMediaKeyEventDispatchedListeners.size() == 1) {
+                mService.addOnMediaKeyEventDispatchedListener(mOnMediaKeyEventDispatchedListenerStub);
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to set media key listener", e);
+        }
+    }
+}

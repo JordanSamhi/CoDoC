@@ -1,0 +1,10 @@
+public void onServiceConnected(ComponentName name, final IBinder service){
+    mHandler.post(() -> {
+        mConnected = true;
+        if (mCurrentDream == DreamRecord.this && mService == null) {
+            attach(IDreamService.Stub.asInterface(service));
+        } else {
+            releaseWakeLockIfNeeded();
+        }
+    });
+}

@@ -1,0 +1,41 @@
+public int update(@NonNull SQLiteDatabase db, @NonNull ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs){
+    Objects.requireNonNull(mTables, "No tables defined");
+    Objects.requireNonNull(db, "No database defined");
+    Objects.requireNonNull(values, "No values defined");
+    final String sql;
+    final String unwrappedSql = buildUpdate(values, selection);
+    if (isStrictColumns()) {
+        enforceStrictColumns(values);
+    }
+    if (isStrictGrammar()) {
+        enforceStrictGrammar(selection, null, null, null, null);
+    }
+    if (isStrict()) {
+        db.validateSql(unwrappedSql, null);
+        final String wrappedSql = buildUpdate(values, wrap(selection));
+        sql = wrappedSql;
+    } else {
+        sql = unwrappedSql;
+    }
+    if (selectionArgs == null) {
+        selectionArgs = EmptyArray.STRING;
+    }
+    final ArrayMap<String, Object> rawValues = values.getValues();
+    final int valuesLength = rawValues.size();
+    final Object[] sqlArgs = new Object[valuesLength + selectionArgs.length];
+    for (int i = 0; i < sqlArgs.length; i++) {
+        if (i < valuesLength) {
+            sqlArgs[i] = rawValues.valueAt(i);
+        } else {
+            sqlArgs[i] = selectionArgs[i - valuesLength];
+        }
+    }
+    if (Log.isLoggable(TAG, Log.DEBUG)) {
+        if (Build.IS_DEBUGGABLE) {
+            Log.d(TAG, sql + " with args " + Arrays.toString(sqlArgs));
+        } else {
+            Log.d(TAG, sql);
+        }
+    }
+    return DatabaseUtils.executeUpdateDelete(db, sql, sqlArgs);
+}

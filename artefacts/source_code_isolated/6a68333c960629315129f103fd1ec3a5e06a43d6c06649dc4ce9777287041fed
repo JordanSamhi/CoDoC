@@ -1,0 +1,15 @@
+public static List<String> getInstalledDialerApplications(Context context, int userId){
+    PackageManager packageManager = context.getPackageManager();
+    Intent intent = new Intent(Intent.ACTION_DIAL);
+    List<ResolveInfo> resolveInfoList = packageManager.queryIntentActivitiesAsUser(intent, 0, userId);
+    List<String> packageNames = new ArrayList<>();
+    for (ResolveInfo resolveInfo : resolveInfoList) {
+        final ActivityInfo activityInfo = resolveInfo.activityInfo;
+        if (activityInfo != null && !packageNames.contains(activityInfo.packageName) && resolveInfo.targetUserId == UserHandle.USER_CURRENT) {
+            packageNames.add(activityInfo.packageName);
+        }
+    }
+    final Intent dialIntentWithTelScheme = new Intent(Intent.ACTION_DIAL);
+    dialIntentWithTelScheme.setData(Uri.fromParts(PhoneAccount.SCHEME_TEL, "", null));
+    return filterByIntent(context, packageNames, dialIntentWithTelScheme, userId);
+}

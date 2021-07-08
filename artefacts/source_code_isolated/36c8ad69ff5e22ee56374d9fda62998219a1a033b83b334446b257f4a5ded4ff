@@ -1,0 +1,13 @@
+public void removeKeyboardLayoutForInputDevice(InputDeviceIdentifier identifier, String keyboardLayoutDescriptor){
+    if (identifier == null) {
+        throw new IllegalArgumentException("inputDeviceDescriptor must not be null");
+    }
+    if (keyboardLayoutDescriptor == null) {
+        throw new IllegalArgumentException("keyboardLayoutDescriptor must not be null");
+    }
+    try {
+        mIm.removeKeyboardLayoutForInputDevice(identifier, keyboardLayoutDescriptor);
+    } catch (RemoteException ex) {
+        throw ex.rethrowFromSystemServer();
+    }
+}

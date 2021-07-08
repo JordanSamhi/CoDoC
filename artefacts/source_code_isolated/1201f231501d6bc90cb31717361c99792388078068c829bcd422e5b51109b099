@@ -1,0 +1,12 @@
+public List<CaptureRequest.Key<?>> getAvailableCaptureRequestKeys(){
+    if (mAvailableRequestKeys == null) {
+        Object crKey = CaptureRequest.Key.class;
+        Class<CaptureRequest.Key<?>> crKeyTyped = (Class<CaptureRequest.Key<?>>) crKey;
+        int[] filterTags = get(REQUEST_AVAILABLE_REQUEST_KEYS);
+        if (filterTags == null) {
+            throw new AssertionError("android.request.availableRequestKeys must be non-null " + "in the characteristics");
+        }
+        mAvailableRequestKeys = getAvailableKeyList(CaptureRequest.class, crKeyTyped, filterTags, true);
+    }
+    return mAvailableRequestKeys;
+}

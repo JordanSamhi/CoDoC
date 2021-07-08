@@ -1,0 +1,81 @@
+public void addTimedTextSource(FileDescriptor fd, long offset, long length, String mime) throws IllegalArgumentException, IllegalStateException{
+    if (!availableMimeTypeForExternalSource(mime)) {
+        throw new IllegalArgumentException("Illegal mimeType for timed text source: " + mime);
+    }
+    final FileDescriptor dupedFd;
+    try {
+        dupedFd = Os.dup(fd);
+    } catch (ErrnoException ex) {
+        Log.e(TAG, ex.getMessage(), ex);
+        throw new RuntimeException(ex);
+    }
+    final MediaFormat fFormat = new MediaFormat();
+    fFormat.setString(MediaFormat.KEY_MIME, mime);
+    fFormat.setInteger(MediaFormat.KEY_IS_TIMED_TEXT, 1);
+    if (mSubtitleController == null) {
+        setSubtitleAnchor();
+    }
+    if (!mSubtitleController.hasRendererFor(fFormat)) {
+        Context context = ActivityThread.currentApplication();
+        mSubtitleController.registerRenderer(new SRTRenderer(context, mEventHandler));
+    }
+    final SubtitleTrack track = mSubtitleController.addTrack(fFormat);
+    synchronized (mIndexTrackPairs) {
+        mIndexTrackPairs.add(Pair.<Integer, SubtitleTrack>create(null, track));
+    }
+    getMediaTimeProvider();
+    final long offset2 = offset;
+    final long length2 = length;
+    final HandlerThread thread = new HandlerThread("TimedTextReadThread", Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_MORE_FAVORABLE);
+    thread.start();
+    Handler handler = new Handler(thread.getLooper());
+    handler.post(new Runnable() {
+
+        private int addTrack() {
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            try {
+                Os.lseek(dupedFd, offset2, OsConstants.SEEK_SET);
+                byte[] buffer = new byte[4096];
+                for (long total = 0; total < length2; ) {
+                    int bytesToRead = (int) Math.min(buffer.length, length2 - total);
+                    int bytes = IoBridge.read(dupedFd, buffer, 0, bytesToRead);
+                    if (bytes < 0) {
+                        break;
+                    } else {
+                        bos.write(buffer, 0, bytes);
+                        total += bytes;
+                    }
+                }
+                synchronized (mTimeProviderLock) {
+                    if (mTimeProvider != null) {
+                        Handler h = mTimeProvider.mEventHandler;
+                        int what = TimeProvider.NOTIFY;
+                        int arg1 = TimeProvider.NOTIFY_TRACK_DATA;
+                        Pair<SubtitleTrack, byte[]> trackData = Pair.create(track, bos.toByteArray());
+                        Message m = h.obtainMessage(what, arg1, 0, trackData);
+                        h.sendMessage(m);
+                    }
+                }
+                return MEDIA_INFO_EXTERNAL_METADATA_UPDATE;
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
+                return MEDIA_INFO_TIMED_TEXT_ERROR;
+            } finally {
+                try {
+                    Os.close(dupedFd);
+                } catch (ErrnoException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+        }
+
+        public void run() {
+            int res = addTrack();
+            if (mEventHandler != null) {
+                Message m = mEventHandler.obtainMessage(MEDIA_INFO, res, 0, null);
+                mEventHandler.sendMessage(m);
+            }
+            thread.getLooper().quitSafely();
+        }
+    });
+}

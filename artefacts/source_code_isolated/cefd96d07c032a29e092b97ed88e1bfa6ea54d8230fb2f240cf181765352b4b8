@@ -1,0 +1,19 @@
+public void requestDefaultSmdpAddress(String cardId, @CallbackExecutor Executor executor, ResultCallback<String> callback){
+    try {
+        getIEuiccCardController().getDefaultSmdpAddress(mContext.getOpPackageName(), cardId, new IGetDefaultSmdpAddressCallback.Stub() {
+
+            @Override
+            public void onComplete(int resultCode, String address) {
+                final long token = Binder.clearCallingIdentity();
+                try {
+                    executor.execute(() -> callback.onComplete(resultCode, address));
+                } finally {
+                    Binder.restoreCallingIdentity(token);
+                }
+            }
+        });
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling getDefaultSmdpAddress", e);
+        throw e.rethrowFromSystemServer();
+    }
+}

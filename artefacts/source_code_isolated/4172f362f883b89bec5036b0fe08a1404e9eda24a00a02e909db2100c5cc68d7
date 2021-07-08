@@ -1,0 +1,20 @@
+public void reportDigit(int digit){
+    if (intermediateDigit == null) {
+        intermediateDigit = digit;
+        new Handler().postDelayed(new Runnable() {
+
+            public void run() {
+                if (intermediateDigit != null) {
+                    mCallBack.singleDigitFinal(intermediateDigit);
+                    intermediateDigit = null;
+                }
+            }
+        }, timeoutInMillis);
+        if (!mCallBack.singleDigitIntermediate(digit)) {
+            intermediateDigit = null;
+            mCallBack.singleDigitFinal(digit);
+        }
+    } else if (mCallBack.twoDigitsFinal(intermediateDigit, digit)) {
+        intermediateDigit = null;
+    }
+}

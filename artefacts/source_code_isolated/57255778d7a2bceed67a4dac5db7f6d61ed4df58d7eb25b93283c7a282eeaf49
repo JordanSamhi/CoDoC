@@ -1,0 +1,7 @@
+public void load_doesNotLoadAKeyForAnotherSecondary() throws Exception{
+    String packageName = "com.android.example";
+    SecretKey packageKey = generateAesKey();
+    mTertiaryKeyStore.save(packageName, packageKey);
+    TertiaryKeyStore managerWithOtherSecondaryKey = TertiaryKeyStore.newInstance(mApplication, new RecoverableKeyStoreSecondaryKey("myNewSecondaryKeyAlias", generateAesKey()));
+    assertFalse(managerWithOtherSecondaryKey.load(packageName).isPresent());
+}

@@ -1,0 +1,25 @@
+public void authenticateServer(String matchingId, byte[] serverSigned1, byte[] serverSignature1, byte[] euiccCiPkIdToBeUsed, byte[] serverCertificate, AsyncResultCallback<byte[]> callback, Handler handler){
+    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> {
+        byte[] imeiBytes = getDeviceId();
+        byte[] tacBytes = new byte[4];
+        System.arraycopy(imeiBytes, 0, tacBytes, 0, 4);
+        Asn1Node.Builder devCapsBuilder = Asn1Node.newBuilder(Tags.TAG_CTX_COMP_1);
+        String[] devCapsStrings = getResources().getStringArray(com.android.internal.R.array.config_telephonyEuiccDeviceCapabilities);
+        if (devCapsStrings != null) {
+            for (String devCapItem : devCapsStrings) {
+                addDeviceCapability(devCapsBuilder, devCapItem);
+            }
+        } else {
+            if (DBG)
+                logd("No device capabilities set.");
+        }
+        Asn1Node.Builder ctxParams1Builder = Asn1Node.newBuilder(Tags.TAG_CTX_COMP_0).addChildAsString(Tags.TAG_CTX_0, matchingId).addChild(Asn1Node.newBuilder(Tags.TAG_CTX_COMP_1).addChildAsBytes(Tags.TAG_CTX_0, tacBytes).addChild(devCapsBuilder).addChildAsBytes(Tags.TAG_CTX_2, imeiBytes));
+        requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_AUTHENTICATE_SERVER).addChild(new Asn1Decoder(serverSigned1).nextNode()).addChild(new Asn1Decoder(serverSignature1).nextNode()).addChild(new Asn1Decoder(euiccCiPkIdToBeUsed).nextNode()).addChild(new Asn1Decoder(serverCertificate).nextNode()).addChild(ctxParams1Builder).build().toHex());
+    }), response -> {
+        Asn1Node root = parseResponse(response);
+        if (root.hasChild(Tags.TAG_CTX_COMP_1, Tags.TAG_UNI_2)) {
+            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_AUTHENTICATE_SERVER, root.getChild(Tags.TAG_CTX_COMP_1, Tags.TAG_UNI_2).asInteger());
+        }
+        return root.toBytes();
+    }, callback, handler);
+}

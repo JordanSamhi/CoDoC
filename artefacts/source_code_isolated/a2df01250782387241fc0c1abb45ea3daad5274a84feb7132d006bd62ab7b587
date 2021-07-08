@@ -1,0 +1,10 @@
+public String getFactoryMacAddress(){
+    MacAddress macAddress = mWifiNative.getFactoryMacAddress(mInterfaceName);
+    if (macAddress != null) {
+        return macAddress.toString();
+    }
+    if (!isConnectedMacRandomizationEnabled()) {
+        return mWifiNative.getMacAddress(mInterfaceName);
+    }
+    return null;
+}

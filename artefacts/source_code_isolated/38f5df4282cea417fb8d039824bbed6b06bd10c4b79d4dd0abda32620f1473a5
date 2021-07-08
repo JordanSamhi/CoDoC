@@ -1,0 +1,15 @@
+public boolean p2pGroupAdd(WifiP2pConfig config, boolean join){
+    int freq = 0;
+    switch(config.groupOwnerBand) {
+        case WifiP2pConfig.GROUP_OWNER_BAND_2GHZ:
+            freq = 2;
+            break;
+        case WifiP2pConfig.GROUP_OWNER_BAND_5GHZ:
+            freq = 5;
+            break;
+        default:
+            freq = config.groupOwnerBand;
+    }
+    abortWifiRunningScanIfNeeded(join);
+    return mSupplicantP2pIfaceHal.groupAdd(config.networkName, config.passphrase, (config.netId == WifiP2pGroup.NETWORK_ID_PERSISTENT), freq, config.deviceAddress, join);
+}

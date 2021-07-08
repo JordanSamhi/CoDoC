@@ -1,0 +1,17 @@
+public void updateCallForward(int action, int condition, String number, int serviceClass, int timeSeconds, Message result){
+    if (DBG) {
+        log("updateCallForward :: Ut=" + miUt + ", action=" + action + ", condition=" + condition + ", number=" + Rlog.pii(TAG, number) + ", serviceClass=" + serviceClass + ", timeSeconds=" + timeSeconds);
+    }
+    synchronized (mLockObj) {
+        try {
+            int id = miUt.updateCallForward(action, condition, number, serviceClass, timeSeconds);
+            if (id < 0) {
+                sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+                return;
+            }
+            mPendingCmds.put(Integer.valueOf(id), result);
+        } catch (RemoteException e) {
+            sendFailureReport(result, new ImsReasonInfo(ImsReasonInfo.CODE_UT_SERVICE_UNAVAILABLE, 0));
+        }
+    }
+}

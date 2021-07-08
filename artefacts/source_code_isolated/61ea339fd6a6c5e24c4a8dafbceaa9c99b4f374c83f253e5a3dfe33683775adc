@@ -1,0 +1,5 @@
+public synchronized void writeImsServiceSendSms(int phoneId, String format, @ImsSmsImplBase.SendStatusResult int resultCode){
+    InProgressSmsSession smsSession = startNewSmsSessionIfNeeded(phoneId);
+    smsSession.addEvent(new SmsSessionEventBuilder(SmsSession.Event.Type.SMS_SEND).setTech(SmsSession.Event.Tech.SMS_IMS).setImsServiceErrno(resultCode).setFormat(convertSmsFormat(format)));
+    smsSession.increaseExpectedResponse();
+}

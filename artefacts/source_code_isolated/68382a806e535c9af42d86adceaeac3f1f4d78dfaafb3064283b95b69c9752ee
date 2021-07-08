@@ -1,0 +1,58 @@
+public static boolean wipeEuiccData(Context context, final String packageName){
+    ContentResolver cr = context.getContentResolver();
+    if (Settings.Global.getInt(cr, Settings.Global.EUICC_PROVISIONED, 0) == 0) {
+        Log.d(TAG, "Skipping eUICC wipe/retain as it is not provisioned");
+        return true;
+    }
+    EuiccManager euiccManager = (EuiccManager) context.getSystemService(Context.EUICC_SERVICE);
+    if (euiccManager != null && euiccManager.isEnabled()) {
+        CountDownLatch euiccFactoryResetLatch = new CountDownLatch(1);
+        final AtomicBoolean wipingSucceeded = new AtomicBoolean(false);
+        BroadcastReceiver euiccWipeFinishReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (ACTION_EUICC_FACTORY_RESET.equals(intent.getAction())) {
+                    if (getResultCode() != EuiccManager.EMBEDDED_SUBSCRIPTION_RESULT_OK) {
+                        int detailedCode = intent.getIntExtra(EuiccManager.EXTRA_EMBEDDED_SUBSCRIPTION_DETAILED_CODE, 0);
+                        Log.e(TAG, "Error wiping euicc data, Detailed code = " + detailedCode);
+                    } else {
+                        Log.d(TAG, "Successfully wiped euicc data.");
+                        wipingSucceeded.set(true);
+                    }
+                    euiccFactoryResetLatch.countDown();
+                }
+            }
+        };
+        Intent intent = new Intent(ACTION_EUICC_FACTORY_RESET);
+        intent.setPackage(packageName);
+        PendingIntent callbackIntent = PendingIntent.getBroadcastAsUser(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT, UserHandle.SYSTEM);
+        IntentFilter filterConsent = new IntentFilter();
+        filterConsent.addAction(ACTION_EUICC_FACTORY_RESET);
+        HandlerThread euiccHandlerThread = new HandlerThread("euiccWipeFinishReceiverThread");
+        euiccHandlerThread.start();
+        Handler euiccHandler = new Handler(euiccHandlerThread.getLooper());
+        context.getApplicationContext().registerReceiver(euiccWipeFinishReceiver, filterConsent, null, euiccHandler);
+        euiccManager.eraseSubscriptions(callbackIntent);
+        try {
+            long waitingTimeMillis = Settings.Global.getLong(context.getContentResolver(), Settings.Global.EUICC_FACTORY_RESET_TIMEOUT_MILLIS, DEFAULT_EUICC_FACTORY_RESET_TIMEOUT_MILLIS);
+            if (waitingTimeMillis < MIN_EUICC_FACTORY_RESET_TIMEOUT_MILLIS) {
+                waitingTimeMillis = MIN_EUICC_FACTORY_RESET_TIMEOUT_MILLIS;
+            } else if (waitingTimeMillis > MAX_EUICC_FACTORY_RESET_TIMEOUT_MILLIS) {
+                waitingTimeMillis = MAX_EUICC_FACTORY_RESET_TIMEOUT_MILLIS;
+            }
+            if (!euiccFactoryResetLatch.await(waitingTimeMillis, TimeUnit.MILLISECONDS)) {
+                Log.e(TAG, "Timeout wiping eUICC data.");
+                return false;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.e(TAG, "Wiping eUICC data interrupted", e);
+            return false;
+        } finally {
+            context.getApplicationContext().unregisterReceiver(euiccWipeFinishReceiver);
+        }
+        return wipingSucceeded.get();
+    }
+    return false;
+}

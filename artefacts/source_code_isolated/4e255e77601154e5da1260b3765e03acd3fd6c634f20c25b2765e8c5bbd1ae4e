@@ -1,0 +1,13 @@
+public ContextHubClient createClient(@NonNull ContextHubInfo hubInfo, @NonNull PendingIntent pendingIntent, long nanoAppId){
+    Objects.requireNonNull(pendingIntent);
+    Objects.requireNonNull(hubInfo);
+    ContextHubClient client = new ContextHubClient(hubInfo, true);
+    IContextHubClient clientProxy;
+    try {
+        clientProxy = mService.createPendingIntentClient(hubInfo.getId(), pendingIntent, nanoAppId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    client.setClientProxy(clientProxy);
+    return client;
+}

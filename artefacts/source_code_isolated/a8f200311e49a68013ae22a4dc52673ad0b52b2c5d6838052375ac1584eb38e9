@@ -1,0 +1,9 @@
+public void handleNetworkValidationSuccess(@NonNull String bssid, @NonNull String ssid){
+    mWifiScoreCard.resetBssidBlocklistStreak(ssid, bssid, REASON_NETWORK_VALIDATION_FAILURE);
+    BssidStatus status = mBssidStatusMap.get(bssid);
+    if (status == null) {
+        return;
+    }
+    status.failureCount[REASON_NETWORK_VALIDATION_FAILURE] = 0;
+    status.removeFromBlocklist();
+}

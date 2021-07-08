@@ -1,0 +1,14 @@
+public byte[] start(@NonNull String rootCertificateAlias, @NonNull CertPath verifierCertPath, @NonNull byte[] vaultParams, @NonNull byte[] vaultChallenge, @NonNull List<KeyChainProtectionParams> secrets) throws CertificateException, InternalRecoveryServiceException{
+    RecoveryCertPath recoveryCertPath = RecoveryCertPath.createRecoveryCertPath(verifierCertPath);
+    try {
+        byte[] recoveryClaim = mRecoveryController.getBinder().startRecoverySessionWithCertPath(mSessionId, rootCertificateAlias, recoveryCertPath, vaultParams, vaultChallenge, secrets);
+        return recoveryClaim;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    } catch (ServiceSpecificException e) {
+        if (e.errorCode == RecoveryController.ERROR_BAD_CERTIFICATE_FORMAT || e.errorCode == RecoveryController.ERROR_INVALID_CERTIFICATE) {
+            throw new CertificateException("Invalid certificate for recovery session", e);
+        }
+        throw mRecoveryController.wrapUnexpectedServiceSpecificException(e);
+    }
+}

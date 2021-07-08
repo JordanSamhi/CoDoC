@@ -1,0 +1,8 @@
+public NetworkScan requestNetworkScan(NetworkScanRequest request, Executor executor, TelephonyScanManager.NetworkScanCallback callback){
+    synchronized (this) {
+        if (mTelephonyScanManager == null) {
+            mTelephonyScanManager = new TelephonyScanManager();
+        }
+    }
+    return mTelephonyScanManager.requestNetworkScan(getSubId(), request, executor, callback, getOpPackageName(), getAttributionTag());
+}

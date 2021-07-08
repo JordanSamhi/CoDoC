@@ -1,0 +1,12 @@
+public static int convertBearerBitmaskToNetworkTypeBitmask(int bearerBitmask){
+    if (bearerBitmask == 0) {
+        return 0;
+    }
+    int networkTypeBitmask = 0;
+    for (int bearerInt = 0; bearerInt < NEXT_RIL_RADIO_TECHNOLOGY; bearerInt++) {
+        if (bitmaskHasTech(bearerBitmask, bearerInt)) {
+            networkTypeBitmask |= getBitmaskForTech(rilRadioTechnologyToNetworkType(bearerInt));
+        }
+    }
+    return networkTypeBitmask;
+}

@@ -1,0 +1,10 @@
+public void setFactoryResetProtectionPolicy(@NonNull ComponentName admin, @Nullable FactoryResetProtectionPolicy policy){
+    throwIfParentInstance("setFactoryResetProtectionPolicy");
+    if (mService != null) {
+        try {
+            mService.setFactoryResetProtectionPolicy(admin, policy);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

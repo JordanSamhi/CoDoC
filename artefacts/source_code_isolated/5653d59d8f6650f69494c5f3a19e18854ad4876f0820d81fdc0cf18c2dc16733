@@ -1,0 +1,5 @@
+public final void registerContentObserver(@NonNull Uri uri, boolean notifyForDescendants, @NonNull ContentObserver observer){
+    Objects.requireNonNull(uri, "uri");
+    Objects.requireNonNull(observer, "observer");
+    registerContentObserver(ContentProvider.getUriWithoutUserId(uri), notifyForDescendants, observer, ContentProvider.getUserIdFromUri(uri, mContext.getUserId()));
+}

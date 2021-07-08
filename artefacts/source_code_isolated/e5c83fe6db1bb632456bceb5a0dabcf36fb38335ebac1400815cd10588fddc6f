@@ -1,0 +1,20 @@
+public boolean checkCanAccessWifiDirect(String pkgName, @Nullable String featureId, int uid, boolean needLocationModeEnabled){
+    try {
+        checkPackage(uid, pkgName);
+    } catch (SecurityException se) {
+        Log.e(TAG, "Package check exception - " + se);
+        return false;
+    }
+    if (checkNetworkSettingsPermission(uid)) {
+        return true;
+    }
+    if (needLocationModeEnabled && !isLocationModeEnabled()) {
+        Log.e(TAG, "Location mode is disabled for the device");
+        return false;
+    }
+    if (!checkCallersLocationPermission(pkgName, featureId, uid, false, null)) {
+        Log.e(TAG, "UID " + uid + " has no location permission");
+        return false;
+    }
+    return true;
+}

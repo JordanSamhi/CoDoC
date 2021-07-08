@@ -1,0 +1,16 @@
+public void put(TextTrackCue cue){
+    final int cueCount = mRegionCueBoxes.size();
+    for (int i = 0; i < cueCount; i++) {
+        final CueLayout cueBox = mRegionCueBoxes.get(i);
+        if (cueBox.getCue() == cue) {
+            cueBox.update();
+            return;
+        }
+    }
+    final CueLayout cueBox = new CueLayout(getContext(), cue, mCaptionStyle, mFontSize);
+    mRegionCueBoxes.add(cueBox);
+    addView(cueBox, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    if (getChildCount() > mRegion.mLines) {
+        removeViewAt(0);
+    }
+}

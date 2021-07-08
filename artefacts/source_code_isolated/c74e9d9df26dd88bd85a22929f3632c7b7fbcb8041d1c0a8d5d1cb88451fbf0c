@@ -1,0 +1,19 @@
+public void addOnSession2TokensChangedListener(int userId, @NonNull OnSession2TokensChangedListener listener, @Nullable Handler handler){
+    if (listener == null) {
+        throw new IllegalArgumentException("listener shouldn't be null");
+    }
+    synchronized (mLock) {
+        if (mSession2TokensListeners.get(listener) != null) {
+            Log.w(TAG, "Attempted to add session listener twice, ignoring.");
+            return;
+        }
+        Session2TokensChangedWrapper wrapper = new Session2TokensChangedWrapper(listener, handler);
+        try {
+            mService.addSession2TokensListener(wrapper.getStub(), userId);
+            mSession2TokensListeners.put(listener, wrapper);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error in addSessionTokensListener.", e);
+            e.rethrowFromSystemServer();
+        }
+    }
+}

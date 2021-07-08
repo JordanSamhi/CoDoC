@@ -1,0 +1,10 @@
+public void setGlobalSetting(@NonNull ComponentName admin, String setting, String value){
+    throwIfParentInstance("setGlobalSetting");
+    if (mService != null) {
+        try {
+            mService.setGlobalSetting(admin, setting, value);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,8 @@
+public void onSensorPrivacyChanged(boolean enabled){
+    synchronized (mLock) {
+        mSensorPrivacyEnabled = enabled;
+        for (OnSensorPrivacyChangedListener listener : mListeners) {
+            notifyListenerLocked(listener);
+        }
+    }
+}

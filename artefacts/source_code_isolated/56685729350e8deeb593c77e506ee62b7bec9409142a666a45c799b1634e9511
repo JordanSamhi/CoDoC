@@ -1,0 +1,138 @@
+public boolean bringPointIntoView(int offset){
+    if (isLayoutRequested()) {
+        mDeferScroll = offset;
+        return false;
+    }
+    boolean changed = false;
+    Layout layout = isShowingHint() ? mHintLayout : mLayout;
+    if (layout == null)
+        return changed;
+    int line = layout.getLineForOffset(offset);
+    int grav;
+    switch(layout.getParagraphAlignment(line)) {
+        case ALIGN_LEFT:
+            grav = 1;
+            break;
+        case ALIGN_RIGHT:
+            grav = -1;
+            break;
+        case ALIGN_NORMAL:
+            grav = layout.getParagraphDirection(line);
+            break;
+        case ALIGN_OPPOSITE:
+            grav = -layout.getParagraphDirection(line);
+            break;
+        case ALIGN_CENTER:
+        default:
+            grav = 0;
+            break;
+    }
+    final boolean clamped = grav > 0;
+    final int x = (int) layout.getPrimaryHorizontal(offset, clamped);
+    final int top = layout.getLineTop(line);
+    final int bottom = layout.getLineTop(line + 1);
+    int left = (int) Math.floor(layout.getLineLeft(line));
+    int right = (int) Math.ceil(layout.getLineRight(line));
+    int ht = layout.getHeight();
+    int hspace = mRight - mLeft - getCompoundPaddingLeft() - getCompoundPaddingRight();
+    int vspace = mBottom - mTop - getExtendedPaddingTop() - getExtendedPaddingBottom();
+    if (!mHorizontallyScrolling && right - left > hspace && right > x) {
+        right = Math.max(x, left + hspace);
+    }
+    int hslack = (bottom - top) / 2;
+    int vslack = hslack;
+    if (vslack > vspace / 4) {
+        vslack = vspace / 4;
+    }
+    if (hslack > hspace / 4) {
+        hslack = hspace / 4;
+    }
+    int hs = mScrollX;
+    int vs = mScrollY;
+    if (top - vs < vslack) {
+        vs = top - vslack;
+    }
+    if (bottom - vs > vspace - vslack) {
+        vs = bottom - (vspace - vslack);
+    }
+    if (ht - vs < vspace) {
+        vs = ht - vspace;
+    }
+    if (0 - vs > 0) {
+        vs = 0;
+    }
+    if (grav != 0) {
+        if (x - hs < hslack) {
+            hs = x - hslack;
+        }
+        if (x - hs > hspace - hslack) {
+            hs = x - (hspace - hslack);
+        }
+    }
+    if (grav < 0) {
+        if (left - hs > 0) {
+            hs = left;
+        }
+        if (right - hs < hspace) {
+            hs = right - hspace;
+        }
+    } else if (grav > 0) {
+        if (right - hs < hspace) {
+            hs = right - hspace;
+        }
+        if (left - hs > 0) {
+            hs = left;
+        }
+    } else {
+        if (right - left <= hspace) {
+            hs = left - (hspace - (right - left)) / 2;
+        } else if (x > right - hslack) {
+            hs = right - hspace;
+        } else if (x < left + hslack) {
+            hs = left;
+        } else if (left > hs) {
+            hs = left;
+        } else if (right < hs + hspace) {
+            hs = right - hspace;
+        } else {
+            if (x - hs < hslack) {
+                hs = x - hslack;
+            }
+            if (x - hs > hspace - hslack) {
+                hs = x - (hspace - hslack);
+            }
+        }
+    }
+    if (hs != mScrollX || vs != mScrollY) {
+        if (mScroller == null) {
+            scrollTo(hs, vs);
+        } else {
+            long duration = AnimationUtils.currentAnimationTimeMillis() - mLastScroll;
+            int dx = hs - mScrollX;
+            int dy = vs - mScrollY;
+            if (duration > ANIMATED_SCROLL_GAP) {
+                mScroller.startScroll(mScrollX, mScrollY, dx, dy);
+                awakenScrollBars(mScroller.getDuration());
+                invalidate();
+            } else {
+                if (!mScroller.isFinished()) {
+                    mScroller.abortAnimation();
+                }
+                scrollBy(dx, dy);
+            }
+            mLastScroll = AnimationUtils.currentAnimationTimeMillis();
+        }
+        changed = true;
+    }
+    if (isFocused()) {
+        if (mTempRect == null)
+            mTempRect = new Rect();
+        mTempRect.set(x - 2, top, x + 2, bottom);
+        getInterestingRect(mTempRect, line);
+        mTempRect.offset(mScrollX, mScrollY);
+        if (requestRectangleOnScreen(mTempRect)) {
+            changed = true;
+        }
+    }
+    return changed;
+}

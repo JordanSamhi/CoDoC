@@ -1,0 +1,12 @@
+public void removeSessionAndWait(String sessionId) throws ExternalStorageServiceException{
+    Session session = removeSession(sessionId);
+    if (session == null) {
+        Slog.i(TAG, "No session found for id: " + sessionId);
+        return;
+    }
+    Slog.i(TAG, "Waiting for session end " + session + " ...");
+    prepareRemote();
+    synchronized (mLock) {
+        mActiveConnection.endSessionLocked(session);
+    }
+}

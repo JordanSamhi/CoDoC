@@ -1,0 +1,31 @@
+public void updateState(AmbientState ambientState){
+    ExpandableView lastView = ambientState.getLastVisibleBackgroundChild();
+    ShelfState viewState = (ShelfState) getViewState();
+    if (mShowNotificationShelf && lastView != null) {
+        float maxShelfEnd = ambientState.getInnerHeight() + ambientState.getTopPadding() + ambientState.getStackTranslation();
+        ExpandableViewState lastViewState = lastView.getViewState();
+        float viewEnd = lastViewState.yTranslation + lastViewState.height;
+        viewState.copyFrom(lastViewState);
+        viewState.height = getIntrinsicHeight();
+        viewState.yTranslation = Math.max(Math.min(viewEnd, maxShelfEnd) - viewState.height, getFullyClosedTranslation());
+        viewState.zTranslation = ambientState.getBaseZHeight();
+        float openedAmount = (viewState.yTranslation - getFullyClosedTranslation()) / (getIntrinsicHeight() * 2 + mCutoutHeight);
+        openedAmount = Math.min(1.0f, openedAmount);
+        viewState.openedAmount = openedAmount;
+        viewState.clipTopAmount = 0;
+        viewState.alpha = 1;
+        viewState.belowSpeedBump = mAmbientState.getSpeedBumpIndex() == 0;
+        viewState.hideSensitive = false;
+        viewState.xTranslation = getTranslationX();
+        if (mNotGoneIndex != -1) {
+            viewState.notGoneIndex = Math.min(viewState.notGoneIndex, mNotGoneIndex);
+        }
+        viewState.hasItemsInStableShelf = lastViewState.inShelf;
+        viewState.hidden = !mAmbientState.isShadeExpanded() || mAmbientState.isQsCustomizerShowing();
+        viewState.maxShelfEnd = maxShelfEnd;
+    } else {
+        viewState.hidden = true;
+        viewState.location = ExpandableViewState.LOCATION_GONE;
+        viewState.hasItemsInStableShelf = false;
+    }
+}

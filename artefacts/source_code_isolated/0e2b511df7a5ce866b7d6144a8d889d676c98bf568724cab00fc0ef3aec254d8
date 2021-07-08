@@ -1,0 +1,8 @@
+public final String getCallingPackage(){
+    final Pair<String, String> pkg = mCallingPackage.get();
+    if (pkg != null) {
+        mTransport.mAppOpsManager.checkPackage(Binder.getCallingUid(), pkg.first);
+        return pkg.first;
+    }
+    return null;
+}

@@ -1,0 +1,5 @@
+public synchronized void writeRilSendSms(int phoneId, int rilSerial, int tech, int format){
+    InProgressSmsSession smsSession = startNewSmsSessionIfNeeded(phoneId);
+    smsSession.addEvent(new SmsSessionEventBuilder(SmsSession.Event.Type.SMS_SEND).setTech(tech).setRilRequestId(rilSerial).setFormat(format));
+    smsSession.increaseExpectedResponse();
+}

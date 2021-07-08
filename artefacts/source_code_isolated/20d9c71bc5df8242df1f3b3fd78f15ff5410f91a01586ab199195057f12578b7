@@ -1,0 +1,14 @@
+public void setOnCompleteListener(@NonNull ContextHubTransaction.OnCompleteListener<T> listener, @NonNull @CallbackExecutor Executor executor){
+    synchronized (this) {
+        Objects.requireNonNull(listener, "OnCompleteListener cannot be null");
+        Objects.requireNonNull(executor, "Executor cannot be null");
+        if (mListener != null) {
+            throw new IllegalStateException("Cannot set ContextHubTransaction listener multiple times");
+        }
+        mListener = listener;
+        mExecutor = executor;
+        if (mDoneSignal.getCount() == 0) {
+            mExecutor.execute(() -> mListener.onComplete(this, mResponse));
+        }
+    }
+}

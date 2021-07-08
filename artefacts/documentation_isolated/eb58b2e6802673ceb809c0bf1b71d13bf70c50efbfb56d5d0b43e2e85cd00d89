@@ -1,0 +1,38 @@
+
+     * Adds a file to the downloads database system, so it could appear in Downloads App
+     * (and thus become eligible for management by the Downloads App).
+     * <p>
+     * It is helpful to make the file scannable by MediaScanner by setting the param
+     * isMediaScannerScannable to true. It makes the file visible in media managing
+     * applications such as Gallery App, which could be a useful purpose of using this API.
+     *
+     * <p> For applications targeting {@link android.os.Build.VERSION_CODES#Q} or above,
+     * {@code path} must be within directories owned by the application
+     * {e.g. {@link Context#getExternalFilesDir(String)}} or if the application is running under
+     * the legacy storage model (see
+     * {@link android.R.styleable#AndroidManifestApplication_requestLegacyExternalStorage
+     * android:requestLegacyExternalStorage}), {@code path} can also be within the top-level
+     * Downloads directory (as returned by
+     * {@link Environment#getExternalStoragePublicDirectory(String)} with
+     * {@link Environment#DIRECTORY_DOWNLOADS}).
+     *
+     * @param title the title that would appear for this file in Downloads App.
+     * @param description the description that would appear for this file in Downloads App.
+     * @param isMediaScannerScannable true if the file is to be scanned by MediaScanner. Files
+     * scanned by MediaScanner appear in the applications used to view media (for example,
+     * Gallery app).
+     * @param mimeType mimetype of the file.
+     * @param path absolute pathname to the file. The file should be world-readable, so that it can
+     * be managed by the Downloads App and any other app that is used to read it (for example,
+     * Gallery app to display the file, if the file contents represent a video/image).
+     * @param length length of the downloaded file
+     * @param showNotification true if a notification is to be sent, false otherwise
+     * @param uri the original HTTP URI of the download
+     * @param referer the HTTP Referer for the download
+     * @return  an ID for the download entry added to the downloads app, unique across the system
+     * This ID is used to make future calls related to this download.
+     *
+     * @deprecated Apps should instead contribute files to
+     * {@link android.provider.MediaStore.Downloads} collection to make them available to user
+     * as part of Downloads.
+     

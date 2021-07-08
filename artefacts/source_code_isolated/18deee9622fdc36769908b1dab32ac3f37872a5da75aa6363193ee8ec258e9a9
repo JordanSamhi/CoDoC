@@ -1,0 +1,56 @@
+public void parseSms(){
+    if (mEnvelope.teleService == SmsEnvelope.TELESERVICE_MWI) {
+        mBearerData = new BearerData();
+        if (mEnvelope.bearerData != null) {
+            mBearerData.numberOfMessages = 0x000000FF & mEnvelope.bearerData[0];
+        }
+        if (VDBG) {
+            Rlog.d(LOG_TAG, "parseSms: get MWI " + Integer.toString(mBearerData.numberOfMessages));
+        }
+        return;
+    }
+    mBearerData = BearerData.decode(mEnvelope.bearerData);
+    if (Rlog.isLoggable(LOGGABLE_TAG, Log.VERBOSE)) {
+        Rlog.d(LOG_TAG, "MT raw BearerData = '" + HexDump.toHexString(mEnvelope.bearerData) + "'");
+        Rlog.d(LOG_TAG, "MT (decoded) BearerData = " + mBearerData);
+    }
+    mMessageRef = mBearerData.messageId;
+    if (mBearerData.userData != null) {
+        mUserData = mBearerData.userData.payload;
+        mUserDataHeader = mBearerData.userData.userDataHeader;
+        mMessageBody = mBearerData.userData.payloadStr;
+    }
+    if (mOriginatingAddress != null) {
+        decodeSmsDisplayAddress(mOriginatingAddress);
+        if (VDBG)
+            Rlog.v(LOG_TAG, "SMS originating address: " + mOriginatingAddress.address);
+    }
+    if (mRecipientAddress != null) {
+        decodeSmsDisplayAddress(mRecipientAddress);
+        if (VDBG)
+            Rlog.v(LOG_TAG, "SMS destination address: " + mRecipientAddress.address);
+    }
+    if (mBearerData.msgCenterTimeStamp != null) {
+        mScTimeMillis = mBearerData.msgCenterTimeStamp.toMillis();
+    }
+    if (VDBG)
+        Rlog.d(LOG_TAG, "SMS SC timestamp: " + mScTimeMillis);
+    if (mBearerData.messageType == BearerData.MESSAGE_TYPE_DELIVERY_ACK) {
+        if (!mBearerData.messageStatusSet) {
+            Rlog.d(LOG_TAG, "DELIVERY_ACK message without msgStatus (" + (mUserData == null ? "also missing" : "does have") + " userData).");
+            status = (BearerData.ERROR_NONE << 8) | BearerData.STATUS_DELIVERED;
+        } else {
+            status = mBearerData.errorClass << 8;
+            status |= mBearerData.messageStatus;
+        }
+    } else if (mBearerData.messageType != BearerData.MESSAGE_TYPE_DELIVER && mBearerData.messageType != BearerData.MESSAGE_TYPE_SUBMIT) {
+        throw new RuntimeException("Unsupported message type: " + mBearerData.messageType);
+    }
+    if (mMessageBody != null) {
+        if (VDBG)
+            Rlog.v(LOG_TAG, "SMS message body: '" + mMessageBody + "'");
+        parseMessageBody();
+    } else if ((mUserData != null) && VDBG) {
+        Rlog.v(LOG_TAG, "SMS payload: '" + IccUtils.bytesToHexString(mUserData) + "'");
+    }
+}

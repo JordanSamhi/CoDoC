@@ -1,0 +1,32 @@
+public SubmitInfo submitRequestList(CaptureRequest[] requestList, boolean repeating){
+    if (requestList == null || requestList.length == 0) {
+        Log.e(TAG, "submitRequestList - Empty/null requests are not allowed");
+        throw new ServiceSpecificException(BAD_VALUE, "submitRequestList - Empty/null requests are not allowed");
+    }
+    List<Long> surfaceIds;
+    try {
+        surfaceIds = (mConfiguredSurfaces == null) ? new ArrayList<Long>() : getSurfaceIds(mConfiguredSurfaces);
+    } catch (BufferQueueAbandonedException e) {
+        throw new ServiceSpecificException(BAD_VALUE, "submitRequestList - configured surface is abandoned.");
+    }
+    for (CaptureRequest request : requestList) {
+        if (request.getTargets().isEmpty()) {
+            Log.e(TAG, "submitRequestList - " + "Each request must have at least one Surface target");
+            throw new ServiceSpecificException(BAD_VALUE, "submitRequestList - " + "Each request must have at least one Surface target");
+        }
+        for (Surface surface : request.getTargets()) {
+            if (surface == null) {
+                Log.e(TAG, "submitRequestList - Null Surface targets are not allowed");
+                throw new ServiceSpecificException(BAD_VALUE, "submitRequestList - Null Surface targets are not allowed");
+            } else if (mConfiguredSurfaces == null) {
+                Log.e(TAG, "submitRequestList - must configure " + " device with valid surfaces before submitting requests");
+                throw new ServiceSpecificException(INVALID_OPERATION, "submitRequestList - must configure " + " device with valid surfaces before submitting requests");
+            } else if (!containsSurfaceId(surface, surfaceIds)) {
+                Log.e(TAG, "submitRequestList - cannot use a surface that wasn't configured");
+                throw new ServiceSpecificException(BAD_VALUE, "submitRequestList - cannot use a surface that wasn't configured");
+            }
+        }
+    }
+    mIdle.close();
+    return mRequestThreadManager.submitCaptureRequests(requestList, repeating);
+}

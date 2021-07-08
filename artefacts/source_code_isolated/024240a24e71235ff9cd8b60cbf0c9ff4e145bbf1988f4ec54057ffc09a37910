@@ -1,0 +1,10 @@
+public SipSession getSessionFor(Intent incomingCallIntent) throws SipException{
+    try {
+        checkSipServiceConnection();
+        String callId = getCallId(incomingCallIntent);
+        ISipSession s = mSipService.getPendingSession(callId, mContext.getOpPackageName());
+        return ((s == null) ? null : new SipSession(s));
+    } catch (RemoteException e) {
+        throw new SipException("getSessionFor()", e);
+    }
+}

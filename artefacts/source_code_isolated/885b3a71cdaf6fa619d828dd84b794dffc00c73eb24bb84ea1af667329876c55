@@ -1,0 +1,7 @@
+public static AccessibilityNodeInfo obtain(){
+    AccessibilityNodeInfo info = sPool.acquire();
+    if (sNumInstancesInUse != null) {
+        sNumInstancesInUse.incrementAndGet();
+    }
+    return (info != null) ? info : new AccessibilityNodeInfo();
+}

@@ -1,0 +1,11 @@
+public List<Integer> getSupportedPreviewFormats(){
+    String str = get(KEY_PREVIEW_FORMAT + SUPPORTED_VALUES_SUFFIX);
+    ArrayList<Integer> formats = new ArrayList<Integer>();
+    for (String s : split(str)) {
+        int f = pixelFormatForCameraFormat(s);
+        if (f == ImageFormat.UNKNOWN)
+            continue;
+        formats.add(f);
+    }
+    return formats;
+}

@@ -1,0 +1,9 @@
+public void updateUsingWifiInfo(WifiInfo wifiInfo, long millis){
+    int frequency = wifiInfo.getFrequency();
+    if (frequency != mFrequency) {
+        mLastMillis = 0;
+        mFrequency = frequency;
+    }
+    updateUsingRssi(wifiInfo.getRssi(), millis, mDefaultRssiStandardDeviation);
+    adjustThreshold(wifiInfo);
+}

@@ -1,0 +1,36 @@
+public PasspointMatch match(Map<ANQPElementType, ANQPElement> anqpElements, RoamingConsortium roamingConsortiumFromAp){
+    String matchingSimImsi = null;
+    if (mConfig.getCredential().getSimCredential() != null) {
+        matchingSimImsi = getMatchingSimImsi();
+        if (TextUtils.isEmpty(matchingSimImsi)) {
+            if (mVerboseLoggingEnabled) {
+                Log.d(TAG, "No SIM card with IMSI " + mConfig.getCredential().getSimCredential().getImsi() + " is installed, final match: " + PasspointMatch.None);
+            }
+            return PasspointMatch.None;
+        }
+    }
+    PasspointMatch providerMatch = matchFqdnAndRcoi(anqpElements, roamingConsortiumFromAp, matchingSimImsi);
+    if (providerMatch == PasspointMatch.None && ANQPMatcher.matchThreeGPPNetwork((ThreeGPPNetworkElement) anqpElements.get(ANQPElementType.ANQP3GPPNetwork), mImsiParameter, matchingSimImsi)) {
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "Final RoamingProvider match with " + anqpElements.get(ANQPElementType.ANQP3GPPNetwork));
+        }
+        return PasspointMatch.RoamingProvider;
+    }
+    boolean realmMatch = ANQPMatcher.matchNAIRealm((NAIRealmElement) anqpElements.get(ANQPElementType.ANQPNAIRealm), mConfig.getCredential().getRealm());
+    if (!realmMatch) {
+        if (mVerboseLoggingEnabled) {
+            Log.d(TAG, "No NAI realm match, final match: " + providerMatch);
+        }
+        return providerMatch;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "NAI realm match with " + mConfig.getCredential().getRealm());
+    }
+    if (providerMatch == PasspointMatch.None) {
+        providerMatch = PasspointMatch.RoamingProvider;
+    }
+    if (mVerboseLoggingEnabled) {
+        Log.d(TAG, "Final match: " + providerMatch);
+    }
+    return providerMatch;
+}

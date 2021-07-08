@@ -1,0 +1,11 @@
+public static void rebootSafeMode(final Context context, boolean confirm){
+    UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
+    if (um.hasUserRestriction(UserManager.DISALLOW_SAFE_BOOT)) {
+        return;
+    }
+    mReboot = true;
+    mRebootSafeMode = true;
+    mRebootHasProgressBar = false;
+    mReason = null;
+    shutdownInner(context, confirm);
+}

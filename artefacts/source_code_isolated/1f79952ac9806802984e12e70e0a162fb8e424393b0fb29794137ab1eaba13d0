@@ -1,0 +1,48 @@
+public void setVisible(boolean visible){
+    if (visible) {
+        if (mOwnerView.getWindowToken() == null) {
+            if (!mHandler.hasMessages(MSG_POST_SET_VISIBLE)) {
+                mHandler.sendEmptyMessage(MSG_POST_SET_VISIBLE);
+            }
+            return;
+        }
+        dismissControlsDelayed(ZOOM_CONTROLS_TIMEOUT);
+    }
+    if (mIsVisible == visible) {
+        return;
+    }
+    mIsVisible = visible;
+    if (visible) {
+        if (mContainerLayoutParams.token == null) {
+            mContainerLayoutParams.token = mOwnerView.getWindowToken();
+        }
+        mWindowManager.addView(mContainer, mContainerLayoutParams);
+        if (mPostedVisibleInitializer == null) {
+            mPostedVisibleInitializer = new Runnable() {
+
+                public void run() {
+                    refreshPositioningVariables();
+                    if (mCallback != null) {
+                        mCallback.onVisibilityChanged(true);
+                    }
+                }
+            };
+        }
+        mHandler.post(mPostedVisibleInitializer);
+        mContext.registerReceiver(mConfigurationChangedReceiver, mConfigurationChangedFilter);
+        mOwnerView.setOnTouchListener(this);
+        mReleaseTouchListenerOnUp = false;
+    } else {
+        if (mTouchTargetView != null) {
+            mReleaseTouchListenerOnUp = true;
+        } else {
+            mOwnerView.setOnTouchListener(null);
+        }
+        mContext.unregisterReceiver(mConfigurationChangedReceiver);
+        mWindowManager.removeViewImmediate(mContainer);
+        mHandler.removeCallbacks(mPostedVisibleInitializer);
+        if (mCallback != null) {
+            mCallback.onVisibilityChanged(false);
+        }
+    }
+}

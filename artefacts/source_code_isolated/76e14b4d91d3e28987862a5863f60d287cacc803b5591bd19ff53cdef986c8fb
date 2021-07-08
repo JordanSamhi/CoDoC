@@ -1,0 +1,11 @@
+public int checkAudioOp(int op, int stream, int uid, String packageName){
+    try {
+        final int mode = mService.checkAudioOperation(op, stream, uid, packageName);
+        if (mode == MODE_ERRORED) {
+            throw new SecurityException(buildSecurityExceptionMsg(op, uid, packageName));
+        }
+        return mode;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

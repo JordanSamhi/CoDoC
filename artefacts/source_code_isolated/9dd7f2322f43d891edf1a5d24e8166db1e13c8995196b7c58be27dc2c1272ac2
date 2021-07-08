@@ -1,0 +1,15 @@
+public boolean isDeviceColorManaged(){
+    final Parcel data = Parcel.obtain();
+    final Parcel reply = Parcel.obtain();
+    data.writeInterfaceToken("android.ui.ISurfaceComposer");
+    try {
+        sFlinger.transact(SURFACE_FLINGER_TRANSACTION_QUERY_COLOR_MANAGED, data, reply, 0);
+        return reply.readBoolean();
+    } catch (RemoteException ex) {
+        Slog.e(TAG, "Failed to query wide color support", ex);
+    } finally {
+        data.recycle();
+        reply.recycle();
+    }
+    return false;
+}

@@ -1,0 +1,19 @@
+public boolean notifyCharacteristicChanged(BluetoothDevice device, BluetoothGattCharacteristic characteristic, boolean confirm){
+    if (VDBG)
+        Log.d(TAG, "notifyCharacteristicChanged() - device: " + device.getAddress());
+    if (mService == null || mServerIf == 0)
+        return false;
+    BluetoothGattService service = characteristic.getService();
+    if (service == null)
+        return false;
+    if (characteristic.getValue() == null) {
+        throw new IllegalArgumentException("Chracteristic value is empty. Use " + "BluetoothGattCharacteristic#setvalue to update");
+    }
+    try {
+        mService.sendNotification(mServerIf, device.getAddress(), characteristic.getInstanceId(), confirm, characteristic.getValue());
+    } catch (RemoteException e) {
+        Log.e(TAG, "", e);
+        return false;
+    }
+    return true;
+}

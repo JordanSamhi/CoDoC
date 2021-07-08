@@ -1,0 +1,29 @@
+public void pullPackageChannelPreferencesStats(List<StatsEvent> events){
+    synchronized (mPackagePreferences) {
+        int totalChannelsPulled = 0;
+        for (int i = 0; i < mPackagePreferences.size(); i++) {
+            if (totalChannelsPulled > NOTIFICATION_CHANNEL_PULL_LIMIT) {
+                break;
+            }
+            final PackagePreferences r = mPackagePreferences.valueAt(i);
+            for (NotificationChannel channel : r.channels.values()) {
+                if (++totalChannelsPulled > NOTIFICATION_CHANNEL_PULL_LIMIT) {
+                    break;
+                }
+                SysUiStatsEvent.Builder event = mStatsEventBuilderFactory.newBuilder().setAtomId(PACKAGE_NOTIFICATION_CHANNEL_PREFERENCES);
+                event.writeInt(r.uid);
+                event.addBooleanAnnotation(ANNOTATION_ID_IS_UID, true);
+                event.writeString(channel.getId());
+                event.writeString(channel.getName().toString());
+                event.writeString(channel.getDescription());
+                event.writeInt(channel.getImportance());
+                event.writeInt(channel.getUserLockedFields());
+                event.writeBoolean(channel.isDeleted());
+                event.writeBoolean(channel.getConversationId() != null);
+                event.writeBoolean(channel.isDemoted());
+                event.writeBoolean(channel.isImportantConversation());
+                events.add(event.build());
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public static MultiSimSettingController init(Context context, SubscriptionController sc){
+    synchronized (MultiSimSettingController.class) {
+        if (sInstance == null) {
+            sInstance = new MultiSimSettingController(context, sc);
+        } else {
+            Log.wtf(LOG_TAG, "init() called multiple times!  sInstance = " + sInstance);
+        }
+        return sInstance;
+    }
+}

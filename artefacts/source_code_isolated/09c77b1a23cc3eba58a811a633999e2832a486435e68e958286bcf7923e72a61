@@ -1,0 +1,16 @@
+public Drawable loadIcon(@NonNull Context context, int state){
+    if (state == TvInputManager.INPUT_STATE_CONNECTED) {
+        return loadIcon(context);
+    } else if (state == TvInputManager.INPUT_STATE_CONNECTED_STANDBY) {
+        if (mIconStandby != null) {
+            return mIconStandby.loadDrawable(context);
+        }
+    } else if (state == TvInputManager.INPUT_STATE_DISCONNECTED) {
+        if (mIconDisconnected != null) {
+            return mIconDisconnected.loadDrawable(context);
+        }
+    } else {
+        throw new IllegalArgumentException("Unknown state: " + state);
+    }
+    return null;
+}

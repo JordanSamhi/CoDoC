@@ -1,0 +1,26 @@
+
+         * Notify any registered observers that the <code>itemCount</code> items starting at
+         * position <code>positionStart</code> have changed. An optional payload can be
+         * passed to each changed item.
+         *
+         * <p>This is an item change event, not a structural change event. It indicates that any
+         * reflection of the data in the given position range is out of date and should be updated.
+         * The items in the given range retain the same identity.
+         * </p>
+         *
+         * <p>
+         * Client can optionally pass a payload for partial change. These payloads will be merged
+         * and may be passed to adapter's {@link #onBindViewHolder(ViewHolder, int, List)} if the
+         * item is already represented by a ViewHolder and it will be rebound to the same
+         * ViewHolder. A notifyItemRangeChanged() with null payload will clear all existing
+         * payloads on that item and prevent future payload until
+         * {@link #onBindViewHolder(ViewHolder, int, List)} is called. Adapter should not assume
+         * that the payload will always be passed to onBindViewHolder(), e.g. when the view is not
+         * attached, the payload will be simply dropped.
+         *
+         * @param positionStart Position of the first item that has changed
+         * @param itemCount Number of items that have changed
+         * @param payload  Optional parameter, use null to identify a "full" update
+         *
+         * @see #notifyItemChanged(int)
+         

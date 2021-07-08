@@ -1,0 +1,11 @@
+public void setInputMethod(String id){
+    final IInputMethodPrivilegedOperations ops = mOps.getAndWarnIfNull();
+    if (ops == null) {
+        return;
+    }
+    try {
+        ops.setInputMethod(id);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

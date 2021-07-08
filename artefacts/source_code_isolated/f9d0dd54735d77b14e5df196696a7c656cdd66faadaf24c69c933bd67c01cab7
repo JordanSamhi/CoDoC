@@ -1,0 +1,8 @@
+public List<String> getHeldRolesFromController(@NonNull String packageName){
+    Preconditions.checkStringNotEmpty(packageName, "packageName cannot be null or empty");
+    try {
+        return mService.getHeldRolesFromController(packageName);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

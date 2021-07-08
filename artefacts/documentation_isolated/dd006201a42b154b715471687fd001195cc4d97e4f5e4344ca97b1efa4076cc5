@@ -1,0 +1,31 @@
+
+     * Open a raw file descriptor to access (potentially type transformed)
+     * data from a "content:" URI.  This interacts with the underlying
+     * {@link ContentProvider#openTypedAssetFile} method of the provider
+     * associated with the given URI, to retrieve retrieve any appropriate
+     * data stream for the data stored there.
+     *
+     * <p>Unlike {@link #openAssetFileDescriptor}, this function only works
+     * with "content:" URIs, because content providers are the only facility
+     * with an associated MIME type to ensure that the returned data stream
+     * is of the desired type.
+     *
+     * <p>All text/* streams are encoded in UTF-8.
+     *
+     * @param uri The desired URI to open.
+     * @param mimeType The desired MIME type of the returned data.  This can
+     * be a pattern such as *&#47;*, which will allow the content provider to
+     * select a type, though there is no way for you to determine what type
+     * it is returning.
+     * @param opts Additional provider-dependent options.
+     * @param cancellationSignal A signal to cancel the operation in progress,
+     *         or null if none. If the operation is canceled, then
+     *         {@link OperationCanceledException} will be thrown.
+     * @return Returns a new ParcelFileDescriptor from which you can read the
+     * data stream from the provider or {@code null} if the provider recently crashed.
+     * Note that this may be a pipe, meaning you can't seek in it.  The only seek you
+     * should do is if the AssetFileDescriptor contains an offset, to move to that offset before
+     * reading.  You own this descriptor and are responsible for closing it when done.
+     * @throws FileNotFoundException Throws FileNotFoundException of no
+     * data of the desired type exists under the URI.
+     

@@ -1,0 +1,35 @@
+public void show(boolean resetSecuritySelection, boolean isScrimmed){
+    final int keyguardUserId = KeyguardUpdateMonitor.getCurrentUser();
+    if (keyguardUserId == UserHandle.USER_SYSTEM && UserManager.isSplitSystemUser()) {
+        return;
+    }
+    ensureView();
+    mIsScrimmed = isScrimmed;
+    if (isScrimmed) {
+        setExpansion(EXPANSION_VISIBLE);
+    }
+    if (resetSecuritySelection) {
+        showPrimarySecurityScreen();
+    }
+    if (mRoot.getVisibility() == View.VISIBLE || mShowingSoon) {
+        return;
+    }
+    final int activeUserId = KeyguardUpdateMonitor.getCurrentUser();
+    final boolean isSystemUser = UserManager.isSplitSystemUser() && activeUserId == UserHandle.USER_SYSTEM;
+    final boolean allowDismissKeyguard = !isSystemUser && activeUserId == keyguardUserId;
+    if (allowDismissKeyguard && mKeyguardView.dismiss(activeUserId)) {
+        return;
+    }
+    if (!allowDismissKeyguard) {
+        Log.w(TAG, "User can't dismiss keyguard: " + activeUserId + " != " + keyguardUserId);
+    }
+    mShowingSoon = true;
+    DejankUtils.removeCallbacks(mResetRunnable);
+    if (mKeyguardStateController.isFaceAuthEnabled() && !needsFullscreenBouncer() && !mKeyguardUpdateMonitor.userNeedsStrongAuth() && !mKeyguardBypassController.getBypassEnabled()) {
+        mHandler.postDelayed(mShowRunnable, BOUNCER_FACE_DELAY);
+    } else {
+        DejankUtils.postAfterTraversal(mShowRunnable);
+    }
+    mCallback.onBouncerVisiblityChanged(true);
+    mExpansionCallback.onStartingToShow();
+}

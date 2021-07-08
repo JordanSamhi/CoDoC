@@ -1,0 +1,41 @@
+public static Intent parseIntent(@NonNull Resources resources, @NonNull XmlPullParser parser, AttributeSet attrs) throws XmlPullParserException, IOException{
+    Intent intent = new Intent();
+    TypedArray sa = resources.obtainAttributes(attrs, com.android.internal.R.styleable.Intent);
+    intent.setAction(sa.getString(com.android.internal.R.styleable.Intent_action));
+    String data = sa.getString(com.android.internal.R.styleable.Intent_data);
+    String mimeType = sa.getString(com.android.internal.R.styleable.Intent_mimeType);
+    intent.setDataAndType(data != null ? Uri.parse(data) : null, mimeType);
+    intent.setIdentifier(sa.getString(com.android.internal.R.styleable.Intent_identifier));
+    String packageName = sa.getString(com.android.internal.R.styleable.Intent_targetPackage);
+    String className = sa.getString(com.android.internal.R.styleable.Intent_targetClass);
+    if (packageName != null && className != null) {
+        intent.setComponent(new ComponentName(packageName, className));
+    }
+    sa.recycle();
+    int outerDepth = parser.getDepth();
+    int type;
+    while ((type = parser.next()) != XmlPullParser.END_DOCUMENT && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
+        if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
+            continue;
+        }
+        String nodeName = parser.getName();
+        if (nodeName.equals(TAG_CATEGORIES)) {
+            sa = resources.obtainAttributes(attrs, com.android.internal.R.styleable.IntentCategory);
+            String cat = sa.getString(com.android.internal.R.styleable.IntentCategory_name);
+            sa.recycle();
+            if (cat != null) {
+                intent.addCategory(cat);
+            }
+            XmlUtils.skipCurrentTag(parser);
+        } else if (nodeName.equals(TAG_EXTRA)) {
+            if (intent.mExtras == null) {
+                intent.mExtras = new Bundle();
+            }
+            resources.parseBundleExtra(TAG_EXTRA, attrs, intent.mExtras);
+            XmlUtils.skipCurrentTag(parser);
+        } else {
+            XmlUtils.skipCurrentTag(parser);
+        }
+    }
+    return intent;
+}

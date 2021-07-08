@@ -1,0 +1,12 @@
+public void setImageResource(@DrawableRes int resId){
+    final int oldWidth = mDrawableWidth;
+    final int oldHeight = mDrawableHeight;
+    updateDrawable(null);
+    mResource = resId;
+    mUri = null;
+    resolveUri();
+    if (oldWidth != mDrawableWidth || oldHeight != mDrawableHeight) {
+        requestLayout();
+    }
+    invalidate();
+}

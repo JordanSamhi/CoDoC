@@ -1,0 +1,18 @@
+public void makeCall(SipProfile peerProfile, SipSession sipSession, int timeout) throws SipException{
+    if (DBG)
+        log("makeCall: " + peerProfile + " session=" + sipSession + " timeout=" + timeout);
+    if (!SipManager.isVoipSupported(mContext)) {
+        throw new SipException("VOIP API is not supported");
+    }
+    synchronized (mLock) {
+        mSipSession = sipSession;
+        try {
+            mAudioStream = new AudioStream(InetAddress.getByName(getLocalIp()));
+            sipSession.setListener(createListener());
+            sipSession.makeCall(peerProfile, createOffer().encode(), timeout);
+        } catch (IOException e) {
+            loge("makeCall:", e);
+            throw new SipException("makeCall()", e);
+        }
+    }
+}

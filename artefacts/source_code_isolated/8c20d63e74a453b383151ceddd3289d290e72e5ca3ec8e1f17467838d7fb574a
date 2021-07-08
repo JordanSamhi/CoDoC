@@ -1,0 +1,20 @@
+public void dump(FileDescriptor fd, PrintWriter pw, String[] args){
+    pw.println("Dump of WifiConfigStore");
+    pw.println("WifiConfigStore - Store File Begin ----");
+    Stream.of(mSharedStores, mUserStores).flatMap(List::stream).forEach((storeFile) -> {
+        pw.print("Name: " + storeFile.mFileName);
+        pw.print(", File Id: " + storeFile.mFileId);
+        pw.println(", Credentials encrypted: " + (storeFile.getEncryptionUtil() != null));
+    });
+    pw.println("WifiConfigStore - Store Data Begin ----");
+    for (StoreData storeData : mStoreDataList) {
+        pw.print("StoreData =>");
+        pw.print(" ");
+        pw.print("Name: " + storeData.getName());
+        pw.print(", ");
+        pw.print("File Id: " + storeData.getStoreFileId());
+        pw.print(", ");
+        pw.println("File Name: " + STORE_ID_TO_FILE_NAME.get(storeData.getStoreFileId()));
+    }
+    pw.println("WifiConfigStore - Store Data End ----");
+}

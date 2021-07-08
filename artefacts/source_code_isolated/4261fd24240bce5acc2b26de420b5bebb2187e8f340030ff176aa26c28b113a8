@@ -1,0 +1,11 @@
+public List<ListItem> makeListItems(){
+    List<ResolveInfo> list = onQueryPackageManager(mIntent);
+    onSortResultList(list);
+    ArrayList<ListItem> result = new ArrayList<ListItem>(list.size());
+    int listSize = list.size();
+    for (int i = 0; i < listSize; i++) {
+        ResolveInfo resolveInfo = list.get(i);
+        result.add(new ListItem(mPackageManager, resolveInfo, null));
+    }
+    return result;
+}

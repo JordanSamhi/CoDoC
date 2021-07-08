@@ -1,0 +1,16 @@
+public static byte[] convertPinToBytes(String pin){
+    if (pin == null) {
+        return null;
+    }
+    byte[] pinBytes;
+    try {
+        pinBytes = pin.getBytes("UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+        Log.e(TAG, "UTF-8 not supported?!?");
+        return null;
+    }
+    if (pinBytes.length <= 0 || pinBytes.length > 16) {
+        return null;
+    }
+    return pinBytes;
+}

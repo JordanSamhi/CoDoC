@@ -1,0 +1,11 @@
+public void onUserUnlocked(int userId){
+    synchronized (mLock) {
+        UserData userData = mUserDataArray.get(userId);
+        if (userData == null) {
+            userData = new UserData(userId, mScheduledExecutor);
+            mUserDataArray.put(userId, userData);
+        }
+        userData.setUserUnlocked();
+    }
+    mScheduledExecutor.execute(() -> setupUser(userId));
+}

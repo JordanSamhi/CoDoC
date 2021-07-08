@@ -1,0 +1,13 @@
+public static BaseMap fromByteBuffer(ByteBuffer buffer){
+    DataPackage dataPackage = DATA_PACKAGES.get(AUDIO_METADATA_OBJ_TYPE_BASEMAP);
+    if (dataPackage == null) {
+        Log.e(TAG, "Cannot find DataPackage for BaseMap");
+        return null;
+    }
+    try {
+        return (BaseMap) dataPackage.unpack(buffer);
+    } catch (BufferUnderflowException e) {
+        Log.e(TAG, "No enough data to unpack");
+    }
+    return null;
+}

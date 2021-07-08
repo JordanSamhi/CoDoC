@@ -1,0 +1,14 @@
+public void setEventListener(OnJetEventListener listener, Handler handler){
+    synchronized (mEventListenerLock) {
+        mJetEventListener = listener;
+        if (listener != null) {
+            if (handler != null) {
+                mEventHandler = new NativeEventHandler(this, handler.getLooper());
+            } else {
+                mEventHandler = new NativeEventHandler(this, mInitializationLooper);
+            }
+        } else {
+            mEventHandler = null;
+        }
+    }
+}

@@ -1,0 +1,15 @@
+public boolean setWpsSerialNumber(@NonNull String ifaceName, String serialNumber){
+    synchronized (mLock) {
+        final String methodStr = "setWpsSerialNumber";
+        ISupplicantStaIface iface = checkSupplicantStaIfaceAndLogFailure(ifaceName, methodStr);
+        if (iface == null)
+            return false;
+        try {
+            SupplicantStatus status = iface.setWpsSerialNumber(serialNumber);
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

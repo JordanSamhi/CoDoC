@@ -1,0 +1,9 @@
+public Builder putRating(@RatingKey String key, Rating value){
+    if (METADATA_KEYS_TYPE.containsKey(key)) {
+        if (METADATA_KEYS_TYPE.get(key) != METADATA_TYPE_RATING) {
+            throw new IllegalArgumentException("The " + key + " key cannot be used to put a Rating");
+        }
+    }
+    mBundle.putParcelable(key, value);
+    return this;
+}

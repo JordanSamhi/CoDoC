@@ -1,0 +1,27 @@
+
+     * Get the package name of the next application with data in the backup store, plus
+     * a description of the structure of the restored archive: either TYPE_KEY_VALUE for
+     * an original-API key/value dataset, or TYPE_FULL_STREAM for a tarball-type archive stream.
+     *
+     * <p>If the package name in the returned RestoreDescription object is the singleton
+     * {@link RestoreDescription#NO_MORE_PACKAGES}, it indicates that no further data is available
+     * in the current restore session: all packages described in startRestore() have been
+     * processed.
+     *
+     * <p>If this method returns {@code null}, it means that a transport-level error has
+     * occurred and the entire restore operation should be abandoned.
+     *
+     * <p class="note">The OS may call {@link #nextRestorePackage()} multiple times
+     * before calling either {@link #getRestoreData(ParcelFileDescriptor) getRestoreData()}
+     * or {@link #getNextFullRestoreDataChunk(ParcelFileDescriptor) getNextFullRestoreDataChunk()}.
+     * It does this when it has determined that it needs to skip restore of one or more
+     * packages.  The transport should not actually transfer any restore data for
+     * the given package in response to {@link #nextRestorePackage()}, but rather wait
+     * for an explicit request before doing so.
+     *
+     * @return A RestoreDescription object containing the name of one of the packages
+     *   supplied to {@link #startRestore} plus an indicator of the data type of that
+     *   restore data; or {@link RestoreDescription#NO_MORE_PACKAGES} to indicate that
+     *   no more packages can be restored in this session; or {@code null} to indicate
+     *   a transport-level error.
+     

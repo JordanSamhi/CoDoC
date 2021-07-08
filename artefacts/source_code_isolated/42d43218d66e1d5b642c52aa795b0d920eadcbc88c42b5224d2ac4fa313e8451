@@ -1,0 +1,12 @@
+public boolean isHardwareDetected(){
+    if (mService != null) {
+        try {
+            return mService.isHardwareDetected(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    } else {
+        Log.w(TAG, "isFaceHardwareDetected(): Service not connected!");
+    }
+    return false;
+}

@@ -1,0 +1,15 @@
+public void addOnSubscriptionsChangedListener(@NonNull SubscriptionManager.OnSubscriptionsChangedListener listener, @NonNull Executor executor){
+    IOnSubscriptionsChangedListener callback = new IOnSubscriptionsChangedListener.Stub() {
+
+        @Override
+        public void onSubscriptionsChanged() {
+            Log.d(TAG, "onSubscriptionsChangedListener callback received.");
+            executor.execute(() -> listener.onSubscriptionsChanged());
+        }
+    };
+    mSubscriptionChangedListenerMap.put(listener, callback);
+    try {
+        sRegistry.addOnSubscriptionsChangedListener(mContext.getOpPackageName(), mContext.getAttributionTag(), callback);
+    } catch (RemoteException ex) {
+    }
+}

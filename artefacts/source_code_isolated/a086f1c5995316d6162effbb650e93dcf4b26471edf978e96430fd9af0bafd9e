@@ -1,0 +1,18 @@
+public HashResult hashString(Context context, String tag, String clearText, int saltExpirationDays){
+    if (saltExpirationDays == -1 || context == null || TextUtils.isEmpty(clearText) || TextUtils.isEmpty(tag)) {
+        return null;
+    }
+    populateSaltValues(context, tag, saltExpirationDays);
+    String hashText = mHashes.get(clearText);
+    if (hashText != null) {
+        return new HashResult(hashText, mSaltGen);
+    }
+    mDigester.reset();
+    mDigester.update(mSalt);
+    mDigester.update(clearText.getBytes(UTF_8));
+    byte[] bytes = mDigester.digest();
+    int len = Math.min(HASH_LENGTH, bytes.length);
+    hashText = Base64.encodeToString(bytes, 0, len, Base64.NO_PADDING | Base64.NO_WRAP);
+    mHashes.put(clearText, hashText);
+    return new HashResult(hashText, mSaltGen);
+}

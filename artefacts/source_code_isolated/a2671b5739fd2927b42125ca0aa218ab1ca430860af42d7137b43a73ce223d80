@@ -1,0 +1,80 @@
+public List<String> queryApps(int flags, boolean systemAppsOnly, UserHandle user){
+    boolean nonLaunchableApps = (flags & GET_NON_LAUNCHABLE_APPS) > 0;
+    boolean interactAcrossUsers = (flags & GET_APPS_WITH_INTERACT_ACROSS_USERS_PERM) > 0;
+    boolean imes = (flags & GET_IMES) > 0;
+    boolean requiredForSystemUser = (flags & GET_REQUIRED_FOR_SYSTEM_USER) > 0;
+    if (mAllApps == null) {
+        mAllApps = getAllApps(user.getIdentifier());
+    }
+    List<String> result = new ArrayList<>();
+    if (flags == 0) {
+        final int allAppsSize = mAllApps.size();
+        for (int i = 0; i < allAppsSize; i++) {
+            final ApplicationInfo appInfo = mAllApps.get(i);
+            if (systemAppsOnly && !appInfo.isSystemApp()) {
+                continue;
+            }
+            result.add(appInfo.packageName);
+        }
+        return result;
+    }
+    if (nonLaunchableApps) {
+        Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
+        final List<ResolveInfo> resolveInfos = queryIntentActivitiesAsUser(intent, user.getIdentifier());
+        ArraySet<String> appsWithLaunchers = new ArraySet<>();
+        final int resolveInfosSize = resolveInfos.size();
+        for (int i = 0; i < resolveInfosSize; i++) {
+            appsWithLaunchers.add(resolveInfos.get(i).activityInfo.packageName);
+        }
+        final int allAppsSize = mAllApps.size();
+        for (int i = 0; i < allAppsSize; i++) {
+            final ApplicationInfo appInfo = mAllApps.get(i);
+            if (systemAppsOnly && !appInfo.isSystemApp()) {
+                continue;
+            }
+            final String packageName = appInfo.packageName;
+            if (!appsWithLaunchers.contains(packageName)) {
+                result.add(packageName);
+            }
+        }
+    }
+    if (interactAcrossUsers) {
+        final List<PackageInfo> packagesHoldingPermissions = getPackagesHoldingPermission(Manifest.permission.INTERACT_ACROSS_USERS, user.getIdentifier());
+        final int packagesHoldingPermissionsSize = packagesHoldingPermissions.size();
+        for (int i = 0; i < packagesHoldingPermissionsSize; i++) {
+            PackageInfo packageInfo = packagesHoldingPermissions.get(i);
+            if (systemAppsOnly && !packageInfo.applicationInfo.isSystemApp()) {
+                continue;
+            }
+            if (!result.contains(packageInfo.packageName)) {
+                result.add(packageInfo.packageName);
+            }
+        }
+    }
+    if (imes) {
+        final List<ResolveInfo> resolveInfos = queryIntentServicesAsUser(new Intent(InputMethod.SERVICE_INTERFACE), user.getIdentifier());
+        final int resolveInfosSize = resolveInfos.size();
+        for (int i = 0; i < resolveInfosSize; i++) {
+            ServiceInfo serviceInfo = resolveInfos.get(i).serviceInfo;
+            if (systemAppsOnly && !serviceInfo.applicationInfo.isSystemApp()) {
+                continue;
+            }
+            if (!result.contains(serviceInfo.packageName)) {
+                result.add(serviceInfo.packageName);
+            }
+        }
+    }
+    if (requiredForSystemUser) {
+        final int allAppsSize = mAllApps.size();
+        for (int i = 0; i < allAppsSize; i++) {
+            final ApplicationInfo appInfo = mAllApps.get(i);
+            if (systemAppsOnly && !appInfo.isSystemApp()) {
+                continue;
+            }
+            if (appInfo.isRequiredForSystemUser()) {
+                result.add(appInfo.packageName);
+            }
+        }
+    }
+    return result;
+}

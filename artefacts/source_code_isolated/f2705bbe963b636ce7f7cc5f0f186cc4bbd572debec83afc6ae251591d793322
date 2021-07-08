@@ -1,0 +1,39 @@
+public static boolean isCallingPackageAllowedToPerformAppOpsProtectedOperation(Context context, int uid, String callingPackage, boolean throwException, int appOpsOpCode, String[] permissions, boolean makeNote){
+    if (callingPackage == null) {
+        return false;
+    }
+    AppOpsManager appOpsMgr = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+    int mode = AppOpsManager.MODE_DEFAULT;
+    if (makeNote) {
+        mode = appOpsMgr.noteOpNoThrow(appOpsOpCode, uid, callingPackage);
+    } else {
+        mode = appOpsMgr.checkOpNoThrow(appOpsOpCode, uid, callingPackage);
+    }
+    switch(mode) {
+        case AppOpsManager.MODE_ALLOWED:
+            return true;
+        case AppOpsManager.MODE_DEFAULT:
+            for (String permission : permissions) {
+                if (context.checkCallingOrSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
+                    return true;
+                }
+            }
+        default:
+            if (!throwException) {
+                return false;
+            }
+    }
+    StringBuilder exceptionMessage = new StringBuilder();
+    exceptionMessage.append(callingPackage);
+    exceptionMessage.append(" was not granted ");
+    if (permissions.length > 1) {
+        exceptionMessage.append(" either of these permissions: ");
+    } else {
+        exceptionMessage.append(" this permission: ");
+    }
+    for (int i = 0; i < permissions.length; i++) {
+        exceptionMessage.append(permissions[i]);
+        exceptionMessage.append((i == permissions.length - 1) ? "." : ", ");
+    }
+    throw new SecurityException(exceptionMessage.toString());
+}

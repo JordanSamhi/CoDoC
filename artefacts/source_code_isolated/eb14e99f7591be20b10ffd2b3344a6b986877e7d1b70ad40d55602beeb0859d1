@@ -1,0 +1,19 @@
+public static void logEventAsync(boolean userUnlocked, Executor executor){
+    if (!PowerManager.isRebootingUserspaceSupportedImpl()) {
+        Slog.wtf(TAG, "Userspace reboot is not supported.");
+        return;
+    }
+    final int outcome = computeOutcome();
+    final long durationMillis;
+    if (outcome == USERSPACE_REBOOT_REPORTED__OUTCOME__SUCCESS) {
+        durationMillis = SystemProperties.getLong(USERSPACE_REBOOT_LAST_FINISHED_PROPERTY, 0) - SystemProperties.getLong(USERSPACE_REBOOT_LAST_STARTED_PROPERTY, 0);
+    } else {
+        durationMillis = 0;
+    }
+    final int encryptionState = userUnlocked ? USERSPACE_REBOOT_REPORTED__USER_ENCRYPTION_STATE__UNLOCKED : USERSPACE_REBOOT_REPORTED__USER_ENCRYPTION_STATE__LOCKED;
+    executor.execute(() -> {
+        Slog.i(TAG, "Logging UserspaceRebootReported atom: { outcome: " + outcome + " durationMillis: " + durationMillis + " encryptionState: " + encryptionState + " }");
+        FrameworkStatsLog.write(FrameworkStatsLog.USERSPACE_REBOOT_REPORTED, outcome, durationMillis, encryptionState);
+        SystemProperties.set(USERSPACE_REBOOT_SHOULD_LOG_PROPERTY, "");
+    });
+}

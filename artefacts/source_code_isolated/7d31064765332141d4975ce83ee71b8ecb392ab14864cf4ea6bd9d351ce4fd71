@@ -1,0 +1,21 @@
+public void onUidStateChanged(@AppOpsManager.UidState int newState){
+    if (mInProgressEvents == null) {
+        return;
+    }
+    int numInProgressEvents = mInProgressEvents.size();
+    for (int i = 0; i < numInProgressEvents; i++) {
+        InProgressStartOpEvent event = mInProgressEvents.valueAt(i);
+        if (event.getUidState() != newState) {
+            try {
+                int numPreviousUnfinishedStarts = event.numUnfinishedStarts;
+                event.numUnfinishedStarts = 1;
+                finished(event.getClientId(), false);
+                started(event.getClientId(), newState, false);
+                event.numUnfinishedStarts += numPreviousUnfinishedStarts - 1;
+            } catch (RemoteException e) {
+                if (DEBUG)
+                    Slog.e(TAG, "Cannot switch to new uidState " + newState);
+            }
+        }
+    }
+}

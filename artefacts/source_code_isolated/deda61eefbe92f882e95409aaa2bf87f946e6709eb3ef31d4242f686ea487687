@@ -1,0 +1,7 @@
+public void getAllKeys_withMatchingKeys_doesNotReturnKeysWrappedWithOtherAlias() throws Exception{
+    mTertiaryKeysTable.addKey(generateTertiaryKey(SECONDARY_ALIAS, PACKAGE_NAME));
+    mTertiaryKeysTable.addKey(generateTertiaryKey("somekey", "generic.package.two"));
+    Map<String, TertiaryKey> keysByPackageName = mTertiaryKeysTable.getAllKeys(SECONDARY_ALIAS);
+    assertThat(keysByPackageName).hasSize(1);
+    assertThat(keysByPackageName).containsKey(PACKAGE_NAME);
+}

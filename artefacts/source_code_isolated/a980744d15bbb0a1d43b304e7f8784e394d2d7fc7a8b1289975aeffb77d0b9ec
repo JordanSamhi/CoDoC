@@ -1,0 +1,16 @@
+public ImsEcbm getEcbmInterface() throws ImsException{
+    if (mEcbm != null && mEcbm.isBinderAlive()) {
+        return mEcbm;
+    }
+    checkAndThrowExceptionIfServiceUnavailable();
+    try {
+        IImsEcbm iEcbm = mMmTelFeatureConnection.getEcbmInterface();
+        if (iEcbm == null) {
+            throw new ImsException("getEcbmInterface()", ImsReasonInfo.CODE_ECBM_NOT_SUPPORTED);
+        }
+        mEcbm = new ImsEcbm(iEcbm);
+    } catch (RemoteException e) {
+        throw new ImsException("getEcbmInterface()", e, ImsReasonInfo.CODE_LOCAL_IMS_SERVICE_DOWN);
+    }
+    return mEcbm;
+}

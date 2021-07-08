@@ -1,0 +1,15 @@
+public ClassLoader getClassLoader(ApplicationInfo appInfo){
+    if (!isDebuggable && !isPluginPackageWhitelisted(appInfo.packageName)) {
+        Log.w(TAG, "Cannot get class loader for non-whitelisted plugin. Src:" + appInfo.sourceDir + ", pkg: " + appInfo.packageName);
+        return null;
+    }
+    if (mClassLoaders.containsKey(appInfo.packageName)) {
+        return mClassLoaders.get(appInfo.packageName);
+    }
+    List<String> zipPaths = new ArrayList<>();
+    List<String> libPaths = new ArrayList<>();
+    LoadedApk.makePaths(null, true, appInfo, zipPaths, libPaths);
+    ClassLoader classLoader = new PathClassLoader(TextUtils.join(File.pathSeparator, zipPaths), TextUtils.join(File.pathSeparator, libPaths), getParentClassLoader());
+    mClassLoaders.put(appInfo.packageName, classLoader);
+    return classLoader;
+}

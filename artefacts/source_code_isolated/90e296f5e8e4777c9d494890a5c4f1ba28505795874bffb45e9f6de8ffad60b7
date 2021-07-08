@@ -1,0 +1,21 @@
+public static void addTargets(Transition transition, ArrayList<View> views){
+    if (transition == null) {
+        return;
+    }
+    if (transition instanceof TransitionSet) {
+        TransitionSet set = (TransitionSet) transition;
+        int numTransitions = set.getTransitionCount();
+        for (int i = 0; i < numTransitions; i++) {
+            Transition child = set.getTransitionAt(i);
+            addTargets(child, views);
+        }
+    } else if (!hasSimpleTarget(transition)) {
+        List<View> targets = transition.getTargets();
+        if (isNullOrEmpty(targets)) {
+            int numViews = views.size();
+            for (int i = 0; i < numViews; i++) {
+                transition.addTarget(views.get(i));
+            }
+        }
+    }
+}

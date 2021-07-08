@@ -1,0 +1,21 @@
+public static void drawSmallRectangleShadow(Graphics2D gc, int x, int y, int width, int height){
+    assert Shadow2BottomLeft != null;
+    assert Shadow2TopRight != null;
+    assert Shadow2BottomRight.getWidth(null) == SMALL_SHADOW_SIZE;
+    assert Shadow2BottomRight.getHeight(null) == SMALL_SHADOW_SIZE;
+    int blWidth = Shadow2BottomLeft.getWidth(null);
+    int trHeight = Shadow2TopRight.getHeight(null);
+    if (width < blWidth) {
+        return;
+    }
+    if (height < trHeight) {
+        return;
+    }
+    gc.drawImage(Shadow2BottomLeft, x - Shadow2BottomLeft.getWidth(null), y + height, null);
+    gc.drawImage(Shadow2BottomRight, x + width, y + height, null);
+    gc.drawImage(Shadow2TopRight, x + width, y, null);
+    gc.drawImage(Shadow2TopLeft, x - Shadow2TopLeft.getWidth(null), y, null);
+    gc.drawImage(Shadow2Bottom, x, y + height, x + width, y + height + Shadow2Bottom.getHeight(null), 0, 0, Shadow2Bottom.getWidth(null), Shadow2Bottom.getHeight(null), null);
+    gc.drawImage(Shadow2Right, x + width, y + Shadow2TopRight.getHeight(null), x + width + Shadow2Right.getWidth(null), y + height, 0, 0, Shadow2Right.getWidth(null), Shadow2Right.getHeight(null), null);
+    gc.drawImage(Shadow2Left, x - Shadow2Left.getWidth(null), y + Shadow2TopLeft.getHeight(null), x, y + height, 0, 0, Shadow2Left.getWidth(null), Shadow2Left.getHeight(null), null);
+}

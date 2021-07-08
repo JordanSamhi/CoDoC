@@ -1,0 +1,40 @@
+public String toDebugString(){
+    StringBuffer sb = new StringBuffer();
+    if (fullSyncRequested) {
+        sb.append("f1");
+    }
+    if (partialSyncUnavailable) {
+        sb.append("r1");
+    }
+    if (hasHardError()) {
+        sb.append("X1");
+    }
+    if (stats.numParseExceptions > 0) {
+        sb.append("e").append(stats.numParseExceptions);
+    }
+    if (stats.numConflictDetectedExceptions > 0) {
+        sb.append("c").append(stats.numConflictDetectedExceptions);
+    }
+    if (stats.numAuthExceptions > 0) {
+        sb.append("a").append(stats.numAuthExceptions);
+    }
+    if (tooManyDeletions) {
+        sb.append("D1");
+    }
+    if (tooManyRetries) {
+        sb.append("R1");
+    }
+    if (databaseError) {
+        sb.append("b1");
+    }
+    if (hasSoftError()) {
+        sb.append("x1");
+    }
+    if (syncAlreadyInProgress) {
+        sb.append("l1");
+    }
+    if (stats.numIoExceptions > 0) {
+        sb.append("I").append(stats.numIoExceptions);
+    }
+    return sb.toString();
+}

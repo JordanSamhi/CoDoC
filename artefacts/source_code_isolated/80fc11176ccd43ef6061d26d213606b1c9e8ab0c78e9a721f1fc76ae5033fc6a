@@ -1,0 +1,11 @@
+public static void logoutCurrentUser(){
+    int currentUser = ActivityManager.getCurrentUser();
+    if (currentUser != UserHandle.USER_SYSTEM) {
+        try {
+            getService().switchUser(UserHandle.USER_SYSTEM);
+            getService().stopUser(currentUser, false, null);
+        } catch (RemoteException e) {
+            e.rethrowFromSystemServer();
+        }
+    }
+}

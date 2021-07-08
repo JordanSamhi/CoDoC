@@ -1,0 +1,31 @@
+public void updateRailData(long index, String railName, String subSystemName, long timestampSinceBootMs, long energyUsedSinceBootuWs){
+    if (!(subSystemName.equals(WIFI_SUBSYSTEM) || subSystemName.equals(CELLULAR_SUBSYSTEM))) {
+        return;
+    }
+    RailInfoData node = mRailInfoData.get(index);
+    if (node == null) {
+        mRailInfoData.put(index, new RailInfoData(index, railName, subSystemName, timestampSinceBootMs, energyUsedSinceBootuWs));
+        if (subSystemName.equals(WIFI_SUBSYSTEM)) {
+            mWifiTotalEnergyUseduWs += energyUsedSinceBootuWs;
+            return;
+        }
+        if (subSystemName.equals(CELLULAR_SUBSYSTEM)) {
+            mCellularTotalEnergyUseduWs += energyUsedSinceBootuWs;
+        }
+        return;
+    }
+    long timeSinceLastLogMs = timestampSinceBootMs - node.timestampSinceBootMs;
+    long energyUsedSinceLastLoguWs = energyUsedSinceBootuWs - node.energyUsedSinceBootuWs;
+    if (timeSinceLastLogMs < 0 || energyUsedSinceLastLoguWs < 0) {
+        energyUsedSinceLastLoguWs = node.energyUsedSinceBootuWs;
+    }
+    node.timestampSinceBootMs = timestampSinceBootMs;
+    node.energyUsedSinceBootuWs = energyUsedSinceBootuWs;
+    if (subSystemName.equals(WIFI_SUBSYSTEM)) {
+        mWifiTotalEnergyUseduWs += energyUsedSinceLastLoguWs;
+        return;
+    }
+    if (subSystemName.equals(CELLULAR_SUBSYSTEM)) {
+        mCellularTotalEnergyUseduWs += energyUsedSinceLastLoguWs;
+    }
+}

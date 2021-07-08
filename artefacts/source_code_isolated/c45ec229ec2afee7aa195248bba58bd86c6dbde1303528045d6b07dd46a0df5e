@@ -1,0 +1,23 @@
+public String getDeviceAddress(){
+    synchronized (mLock) {
+        if (!checkSupplicantP2pIfaceAndLogFailure("getDeviceAddress"))
+            return null;
+        SupplicantResult<String> result = new SupplicantResult("getDeviceAddress()");
+        try {
+            mISupplicantP2pIface.getDeviceAddress((SupplicantStatus status, byte[] address) -> {
+                String parsedAddress = null;
+                try {
+                    parsedAddress = NativeUtil.macAddressFromByteArray(address);
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not process reported address.", e);
+                }
+                result.setResult(status, parsedAddress);
+            });
+        } catch (RemoteException e) {
+            Log.e(TAG, "ISupplicantP2pIface exception: " + e);
+            supplicantServiceDiedHandler();
+            return null;
+        }
+        return result.getResult();
+    }
+}

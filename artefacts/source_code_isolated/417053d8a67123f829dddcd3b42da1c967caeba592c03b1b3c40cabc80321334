@@ -1,0 +1,10 @@
+public static boolean isBootUp(Context context){
+    int bootCount = Settings.Global.getInt(context.getContentResolver(), Settings.Global.BOOT_COUNT, -1);
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    int lastBootCount = sp.getInt(KEY_LAST_BOOT_COUNT, -1);
+    if (bootCount == -1 || lastBootCount == -1 || bootCount != lastBootCount) {
+        sp.edit().putInt(KEY_LAST_BOOT_COUNT, bootCount).apply();
+        return true;
+    }
+    return false;
+}

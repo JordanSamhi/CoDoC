@@ -1,0 +1,10 @@
+public boolean addGpsStatusListener(GpsStatus.Listener listener){
+    if (Compatibility.isChangeEnabled(GPS_STATUS_USAGE)) {
+        throw new UnsupportedOperationException("GpsStatus APIs not supported, please use GnssStatus APIs instead");
+    }
+    try {
+        return mGnssStatusListenerManager.addListener(listener, new HandlerExecutor(new Handler()));
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

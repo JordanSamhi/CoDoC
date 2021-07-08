@@ -1,0 +1,17 @@
+public void onUserActivity(int event, int uid){
+    if (DEBUG) {
+        Slog.d(TAG, "onUserActivity: event=" + event + ", uid=" + uid);
+    }
+    try {
+        mBatteryStats.noteUserActivity(uid, event);
+    } catch (RemoteException ex) {
+    }
+    synchronized (mLock) {
+        if (!mUserActivityPending) {
+            mUserActivityPending = true;
+            Message msg = mHandler.obtainMessage(MSG_USER_ACTIVITY);
+            msg.setAsynchronous(true);
+            mHandler.sendMessage(msg);
+        }
+    }
+}

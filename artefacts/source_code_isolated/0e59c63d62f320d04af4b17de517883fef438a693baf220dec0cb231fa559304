@@ -1,0 +1,14 @@
+public static DigitsKeyListener getInstance(@Nullable Locale locale, boolean sign, boolean decimal){
+    final int kind = (sign ? SIGN : 0) | (decimal ? DECIMAL : 0);
+    synchronized (sLocaleCacheLock) {
+        DigitsKeyListener[] cachedValue = sLocaleInstanceCache.get(locale);
+        if (cachedValue != null && cachedValue[kind] != null) {
+            return cachedValue[kind];
+        }
+        if (cachedValue == null) {
+            cachedValue = new DigitsKeyListener[4];
+            sLocaleInstanceCache.put(locale, cachedValue);
+        }
+        return cachedValue[kind] = new DigitsKeyListener(locale, sign, decimal);
+    }
+}

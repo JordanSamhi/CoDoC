@@ -1,0 +1,16 @@
+public boolean setActiveDevice(@Nullable BluetoothDevice device){
+    if (DBG)
+        log("setActiveDevice(" + device + ")");
+    try {
+        final IBluetoothA2dp service = getService();
+        if (service != null && isEnabled() && ((device == null) || isValidDevice(device))) {
+            return service.setActiveDevice(device);
+        }
+        if (service == null)
+            Log.w(TAG, "Proxy not attached to service");
+        return false;
+    } catch (RemoteException e) {
+        Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+        return false;
+    }
+}

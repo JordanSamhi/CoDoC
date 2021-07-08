@@ -1,0 +1,15 @@
+public void updateTracker(long frameNumber, CaptureResult result, boolean partial, int requestType){
+    if (!partial) {
+        updateTracker(frameNumber, false, requestType);
+        return;
+    }
+    if (result == null) {
+        return;
+    }
+    List<CaptureResult> partials = mPartialResults.get(frameNumber);
+    if (partials == null) {
+        partials = new ArrayList<>();
+        mPartialResults.put(frameNumber, partials);
+    }
+    partials.add(result);
+}

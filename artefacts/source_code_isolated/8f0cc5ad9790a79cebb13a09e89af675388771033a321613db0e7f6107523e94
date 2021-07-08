@@ -1,0 +1,20 @@
+public void unbind(String caller){
+    synchronized (mStateLock) {
+        checkStateIntegrityLocked();
+        log(Priority.DEBUG, caller, "Unbind requested (was " + stateToString(mState) + ")");
+        switch(mState) {
+            case State.UNUSABLE:
+            case State.IDLE:
+                break;
+            case State.BOUND_AND_CONNECTING:
+                setStateLocked(State.IDLE, null);
+                mContext.unbindService(mConnection);
+                notifyListenersAndClearLocked(null);
+                break;
+            case State.CONNECTED:
+                setStateLocked(State.IDLE, null);
+                mContext.unbindService(mConnection);
+                break;
+        }
+    }
+}

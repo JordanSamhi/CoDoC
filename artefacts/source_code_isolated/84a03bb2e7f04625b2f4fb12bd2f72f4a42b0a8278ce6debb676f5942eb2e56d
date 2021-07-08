@@ -1,0 +1,9 @@
+public void getImsRegistrationTech(Consumer<Integer> callback){
+    try {
+        int tech = mRcsFeatureConnection.getRegistrationTech();
+        callback.accept(tech);
+    } catch (RemoteException e) {
+        loge("getImsRegistrationTech error: ", e);
+        callback.accept(ImsRegistrationImplBase.REGISTRATION_TECH_NONE);
+    }
+}

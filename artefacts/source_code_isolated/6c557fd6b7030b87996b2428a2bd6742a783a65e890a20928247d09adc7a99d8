@@ -1,0 +1,9 @@
+public boolean stopRecognition(){
+    int status = STATUS_OK;
+    try {
+        status = mSoundTriggerService.stopRecognition(new ParcelUuid(mSoundModelId), mRecognitionCallback);
+    } catch (RemoteException e) {
+        return false;
+    }
+    return status == STATUS_OK;
+}

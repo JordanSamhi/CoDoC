@@ -1,0 +1,43 @@
+public void draw(Canvas canvas){
+    final Rect bounds = getBounds();
+    if (bounds.isEmpty()) {
+        return;
+    }
+    pauseInvalidate();
+    if (!mIsCompatibilityMode) {
+        canvas.save();
+        canvas.clipPath(mClipPath);
+    }
+    super.draw(canvas);
+    canvas.drawColor(mScrimColor);
+    float left = bounds.left + mBorderWidth / 2;
+    float top = bounds.top + mBorderWidth / 2;
+    float right = bounds.right - mBorderWidth / 2;
+    float bottom = bounds.bottom - mBorderWidth / 2;
+    RectF flapCornerRectF = sRectF;
+    flapCornerRectF.set(0, 0, mCornerFlapSide + mCornerRoundRadius, mCornerFlapSide + mCornerRoundRadius);
+    if (mTopLeftCornerStyle == CORNER_STYLE_FLAP) {
+        flapCornerRectF.offsetTo(left, top);
+        canvas.drawRoundRect(flapCornerRectF, mCornerRoundRadius, mCornerRoundRadius, mFlapPaint);
+    }
+    if (mTopRightCornerStyle == CORNER_STYLE_FLAP) {
+        flapCornerRectF.offsetTo(right - mCornerFlapSide, top);
+        canvas.drawRoundRect(flapCornerRectF, mCornerRoundRadius, mCornerRoundRadius, mFlapPaint);
+    }
+    if (mBottomRightCornerStyle == CORNER_STYLE_FLAP) {
+        flapCornerRectF.offsetTo(right - mCornerFlapSide, bottom - mCornerFlapSide);
+        canvas.drawRoundRect(flapCornerRectF, mCornerRoundRadius, mCornerRoundRadius, mFlapPaint);
+    }
+    if (mBottomLeftCornerStyle == CORNER_STYLE_FLAP) {
+        flapCornerRectF.offsetTo(left, bottom - mCornerFlapSide);
+        canvas.drawRoundRect(flapCornerRectF, mCornerRoundRadius, mCornerRoundRadius, mFlapPaint);
+    }
+    if (!mIsCompatibilityMode) {
+        canvas.restore();
+    }
+    if (mIsCompatibilityMode) {
+        drawFakeCornersForCompatibilityMode(canvas);
+    }
+    canvas.drawPath(mClipPath, mBorderPaint);
+    resumeInvalidate();
+}

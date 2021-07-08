@@ -1,0 +1,24 @@
+public void dump(PrintWriter pw){
+    synchronized (mLock) {
+        pw.println("---Easy Connect/DPP metrics---");
+        pw.println("mWifiDppLogProto.numDppConfiguratorInitiatorRequests=" + mWifiDppLogProto.numDppConfiguratorInitiatorRequests);
+        pw.println("mWifiDppLogProto.numDppEnrolleeInitiatorRequests=" + mWifiDppLogProto.numDppEnrolleeInitiatorRequests);
+        pw.println("mWifiDppLogProto.numDppEnrolleeSuccess=" + mWifiDppLogProto.numDppEnrolleeSuccess);
+        pw.println("mWifiDppLogProto.numDppR1CapableEnrolleeResponderDevices=" + mWifiDppLogProto.numDppR1CapableEnrolleeResponderDevices);
+        pw.println("mWifiDppLogProto.numDppR2CapableEnrolleeResponderDevices=" + mWifiDppLogProto.numDppR2CapableEnrolleeResponderDevices);
+        pw.println("mWifiDppLogProto.numDppR2EnrolleeResponderIncompatibleConfiguration=" + mWifiDppLogProto.numDppR2EnrolleeResponderIncompatibleConfiguration);
+        if (mHistogramDppFailureCode.size() > 0) {
+            pw.println("mHistogramDppFailureCode=");
+            pw.println(mHistogramDppFailureCode);
+        }
+        if (mHistogramDppConfiguratorSuccessCode.size() > 0) {
+            pw.println("mHistogramDppConfiguratorSuccessCode=");
+            pw.println(mHistogramDppConfiguratorSuccessCode);
+        }
+        if (mHistogramDppOperationTime.numNonEmptyBuckets() > 0) {
+            pw.println("mHistogramDppOperationTime=");
+            pw.println(mHistogramDppOperationTime);
+        }
+        pw.println("---End of Easy Connect/DPP metrics---");
+    }
+}

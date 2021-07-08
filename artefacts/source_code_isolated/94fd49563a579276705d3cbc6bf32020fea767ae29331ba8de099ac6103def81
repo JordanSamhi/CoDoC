@@ -1,0 +1,21 @@
+public static List<PasswordValidationError> validatePasswordMetrics(PasswordMetrics adminMetrics, int minComplexity, boolean isPin, PasswordMetrics actualMetrics){
+    final ComplexityBucket bucket = ComplexityBucket.forComplexity(minComplexity);
+    if (actualMetrics.credType < adminMetrics.credType || !bucket.allowsCredType(actualMetrics.credType)) {
+        return Collections.singletonList(new PasswordValidationError(WEAK_CREDENTIAL_TYPE, 0));
+    }
+    if (actualMetrics.credType != CREDENTIAL_TYPE_PASSWORD) {
+        return Collections.emptyList();
+    }
+    if (isPin && actualMetrics.nonNumeric > 0) {
+        return Collections.singletonList(new PasswordValidationError(CONTAINS_INVALID_CHARACTERS, 0));
+    }
+    final ArrayList<PasswordValidationError> result = new ArrayList<>();
+    if (actualMetrics.length > MAX_PASSWORD_LENGTH) {
+        result.add(new PasswordValidationError(TOO_LONG, MAX_PASSWORD_LENGTH));
+    }
+    final PasswordMetrics minMetrics = applyComplexity(adminMetrics, isPin, bucket);
+    minMetrics.length = Math.min(MAX_PASSWORD_LENGTH, Math.max(minMetrics.length, MIN_LOCK_PASSWORD_SIZE));
+    minMetrics.removeOverlapping();
+    comparePasswordMetrics(minMetrics, actualMetrics, result);
+    return result;
+}

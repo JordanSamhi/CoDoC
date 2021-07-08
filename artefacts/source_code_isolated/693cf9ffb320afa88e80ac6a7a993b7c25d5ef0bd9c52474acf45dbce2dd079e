@@ -1,0 +1,11 @@
+public static TextEncodingDetails calculateLength(CharSequence messageBody, boolean use7bitOnly, boolean isEntireMsg){
+    CharSequence newMsgBody = null;
+    Resources r = Resources.getSystem();
+    if (r.getBoolean(com.android.internal.R.bool.config_sms_force_7bit_encoding)) {
+        newMsgBody = Sms7BitEncodingTranslator.translate(messageBody, true);
+    }
+    if (TextUtils.isEmpty(newMsgBody)) {
+        newMsgBody = messageBody;
+    }
+    return BearerData.calcTextEncodingDetails(newMsgBody, use7bitOnly, isEntireMsg);
+}

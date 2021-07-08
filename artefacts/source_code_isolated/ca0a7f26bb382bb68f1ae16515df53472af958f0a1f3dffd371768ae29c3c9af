@@ -1,0 +1,7 @@
+public void testGetDestinationString_onUnknownUser_doesNotPropagateCall() throws Exception{
+    BackupManagerService backupManagerService = createService();
+    registerUser(backupManagerService, mUserOneId, mUserOneService);
+    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
+    backupManagerService.getDestinationString(mUserTwoId, TEST_TRANSPORT);
+    verify(mUserOneService, never()).getDestinationString(TEST_TRANSPORT);
+}

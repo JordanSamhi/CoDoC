@@ -1,0 +1,13 @@
+public static boolean isAccessibleToUser(int uid, int callerUid, @NetworkStatsAccess.Level int accessLevel){
+    switch(accessLevel) {
+        case NetworkStatsAccess.Level.DEVICE:
+            return true;
+        case NetworkStatsAccess.Level.DEVICESUMMARY:
+            return uid == android.os.Process.SYSTEM_UID || uid == UID_REMOVED || uid == UID_TETHERING || uid == UID_ALL || UserHandle.getUserId(uid) == UserHandle.getUserId(callerUid);
+        case NetworkStatsAccess.Level.USER:
+            return uid == android.os.Process.SYSTEM_UID || uid == UID_REMOVED || uid == UID_TETHERING || UserHandle.getUserId(uid) == UserHandle.getUserId(callerUid);
+        case NetworkStatsAccess.Level.DEFAULT:
+        default:
+            return uid == callerUid;
+    }
+}

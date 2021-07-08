@@ -1,0 +1,26 @@
+public void validate(){
+    final int N = mSize;
+    if (N <= 1) {
+        return;
+    }
+    int basehash = mHashes[0];
+    int basei = 0;
+    for (int i = 1; i < N; i++) {
+        int hash = mHashes[i];
+        if (hash != basehash) {
+            basehash = hash;
+            basei = i;
+            continue;
+        }
+        final Object cur = mArray[i << 1];
+        for (int j = i - 1; j >= basei; j--) {
+            final Object prev = mArray[j << 1];
+            if (cur == prev) {
+                throw new IllegalArgumentException("Duplicate key in ArrayMap: " + cur);
+            }
+            if (cur != null && prev != null && cur.equals(prev)) {
+                throw new IllegalArgumentException("Duplicate key in ArrayMap: " + cur);
+            }
+        }
+    }
+}

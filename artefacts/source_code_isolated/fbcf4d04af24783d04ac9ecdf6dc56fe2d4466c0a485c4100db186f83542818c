@@ -1,0 +1,81 @@
+public void handleMessage(Message msg){
+    switch(msg.what) {
+        case SHOW:
+            handleShow((Bundle) msg.obj);
+            break;
+        case HIDE:
+            handleHide();
+            break;
+        case RESET:
+            handleReset();
+            break;
+        case VERIFY_UNLOCK:
+            Trace.beginSection("KeyguardViewMediator#handleMessage VERIFY_UNLOCK");
+            handleVerifyUnlock();
+            Trace.endSection();
+            break;
+        case NOTIFY_STARTED_GOING_TO_SLEEP:
+            handleNotifyStartedGoingToSleep();
+            break;
+        case NOTIFY_FINISHED_GOING_TO_SLEEP:
+            handleNotifyFinishedGoingToSleep();
+            break;
+        case NOTIFY_SCREEN_TURNING_ON:
+            Trace.beginSection("KeyguardViewMediator#handleMessage NOTIFY_SCREEN_TURNING_ON");
+            handleNotifyScreenTurningOn((IKeyguardDrawnCallback) msg.obj);
+            Trace.endSection();
+            break;
+        case NOTIFY_SCREEN_TURNED_ON:
+            Trace.beginSection("KeyguardViewMediator#handleMessage NOTIFY_SCREEN_TURNED_ON");
+            handleNotifyScreenTurnedOn();
+            Trace.endSection();
+            break;
+        case NOTIFY_SCREEN_TURNED_OFF:
+            handleNotifyScreenTurnedOff();
+            break;
+        case NOTIFY_STARTED_WAKING_UP:
+            Trace.beginSection("KeyguardViewMediator#handleMessage NOTIFY_STARTED_WAKING_UP");
+            handleNotifyStartedWakingUp();
+            Trace.endSection();
+            break;
+        case KEYGUARD_DONE:
+            Trace.beginSection("KeyguardViewMediator#handleMessage KEYGUARD_DONE");
+            handleKeyguardDone();
+            Trace.endSection();
+            break;
+        case KEYGUARD_DONE_DRAWING:
+            Trace.beginSection("KeyguardViewMediator#handleMessage KEYGUARD_DONE_DRAWING");
+            handleKeyguardDoneDrawing();
+            Trace.endSection();
+            break;
+        case SET_OCCLUDED:
+            Trace.beginSection("KeyguardViewMediator#handleMessage SET_OCCLUDED");
+            handleSetOccluded(msg.arg1 != 0, msg.arg2 != 0);
+            Trace.endSection();
+            break;
+        case KEYGUARD_TIMEOUT:
+            synchronized (KeyguardViewMediator.this) {
+                doKeyguardLocked((Bundle) msg.obj);
+            }
+            break;
+        case DISMISS:
+            final DismissMessage message = (DismissMessage) msg.obj;
+            handleDismiss(message.getCallback(), message.getMessage());
+            break;
+        case START_KEYGUARD_EXIT_ANIM:
+            Trace.beginSection("KeyguardViewMediator#handleMessage START_KEYGUARD_EXIT_ANIM");
+            StartKeyguardExitAnimParams params = (StartKeyguardExitAnimParams) msg.obj;
+            handleStartKeyguardExitAnimation(params.startTime, params.fadeoutDuration);
+            mFalsingManager.onSuccessfulUnlock();
+            Trace.endSection();
+            break;
+        case KEYGUARD_DONE_PENDING_TIMEOUT:
+            Trace.beginSection("KeyguardViewMediator#handleMessage" + " KEYGUARD_DONE_PENDING_TIMEOUT");
+            Log.w(TAG, "Timeout while waiting for activity drawn!");
+            Trace.endSection();
+            break;
+        case SYSTEM_READY:
+            handleSystemReady();
+            break;
+    }
+}

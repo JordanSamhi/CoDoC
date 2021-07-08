@@ -1,0 +1,15 @@
+public void grantImplicitAccess(int recipientUid, int visibleUid){
+    if (recipientUid != visibleUid) {
+        if (mImplicitlyQueryable.add(recipientUid, visibleUid) && DEBUG_LOGGING) {
+            Slog.i(TAG, "implicit access granted: " + recipientUid + " -> " + visibleUid);
+        }
+        if (mShouldFilterCache != null) {
+            SparseBooleanArray visibleUids = mShouldFilterCache.get(recipientUid);
+            if (visibleUids == null) {
+                visibleUids = new SparseBooleanArray();
+                mShouldFilterCache.put(recipientUid, visibleUids);
+            }
+            visibleUids.put(visibleUid, false);
+        }
+    }
+}

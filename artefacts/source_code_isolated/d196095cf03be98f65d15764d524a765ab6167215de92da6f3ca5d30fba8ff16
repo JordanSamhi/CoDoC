@@ -1,0 +1,15 @@
+public Builder setAuthentication(@NonNull AutofillId[] ids, @Nullable IntentSender authentication, @Nullable RemoteViews presentation, @Nullable InlinePresentation inlinePresentation){
+    throwIfDestroyed();
+    throwIfDisableAutofillCalled();
+    if (mHeader != null || mFooter != null) {
+        throw new IllegalStateException("Already called #setHeader() or #setFooter()");
+    }
+    if (authentication == null ^ (presentation == null && inlinePresentation == null)) {
+        throw new IllegalArgumentException("authentication and presentation " + "(dropdown or inline), must be both non-null or null");
+    }
+    mAuthentication = authentication;
+    mPresentation = presentation;
+    mInlinePresentation = inlinePresentation;
+    mAuthenticationIds = assertValid(ids);
+    return this;
+}

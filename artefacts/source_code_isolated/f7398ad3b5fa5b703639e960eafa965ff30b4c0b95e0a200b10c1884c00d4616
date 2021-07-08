@@ -1,0 +1,11 @@
+public boolean toGlobalMotionEvent(MotionEvent ev){
+    final AttachInfo info = mAttachInfo;
+    if (info == null) {
+        return false;
+    }
+    final Matrix m = info.mTmpMatrix;
+    m.set(Matrix.IDENTITY_MATRIX);
+    transformMatrixToGlobal(m);
+    ev.transform(m);
+    return true;
+}

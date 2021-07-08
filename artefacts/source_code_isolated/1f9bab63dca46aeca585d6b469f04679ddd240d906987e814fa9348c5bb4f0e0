@@ -1,0 +1,8 @@
+public IContextHubClient createPendingIntentClient(int contextHubId, PendingIntent pendingIntent, long nanoAppId) throws RemoteException{
+    checkPermissions();
+    if (!isValidContextHubId(contextHubId)) {
+        throw new IllegalArgumentException("Invalid context hub ID " + contextHubId);
+    }
+    ContextHubInfo contextHubInfo = mContextHubIdToInfoMap.get(contextHubId);
+    return mClientManager.registerClient(contextHubInfo, pendingIntent, nanoAppId);
+}

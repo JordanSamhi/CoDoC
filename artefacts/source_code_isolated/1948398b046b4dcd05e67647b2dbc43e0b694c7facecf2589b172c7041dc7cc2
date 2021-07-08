@@ -1,0 +1,10 @@
+public SipAudioCall makeAudioCall(String localProfileUri, String peerProfileUri, SipAudioCall.Listener listener, int timeout) throws SipException{
+    if (!isVoipSupported(mContext)) {
+        throw new SipException("VOIP API is not supported");
+    }
+    try {
+        return makeAudioCall(new SipProfile.Builder(localProfileUri).build(), new SipProfile.Builder(peerProfileUri).build(), listener, timeout);
+    } catch (ParseException e) {
+        throw new SipException("build SipProfile", e);
+    }
+}

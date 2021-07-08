@@ -1,0 +1,34 @@
+
+     * Sets the app-op for {@link android.Manifest.permission#INTERACT_ACROSS_PROFILES} that is
+     * configurable by users in Settings. This configures it for the profile group of the calling
+     * package.
+     *
+     * <p>Before calling, check {@link #canConfigureInteractAcrossProfiles(String)} and do not call
+     * if it is {@code false}. If presenting a user interface, do not allow the user to configure
+     * the app-op in that case.
+     *
+     * <p>The underlying app-op {@link android.app.AppOpsManager#OP_INTERACT_ACROSS_PROFILES} should
+     * never be set directly. This method ensures that the app-op is kept in sync for the app across
+     * each user in the profile group and that those apps are sent a broadcast when their ability to
+     * interact across profiles changes.
+     *
+     * <p>This method should be used directly whenever a user's action results in a change in an
+     * app's ability to interact across profiles, as defined by the return value of {@link
+     * #canInteractAcrossProfiles()}. This includes user consent changes in Settings or during
+     * provisioning.
+     *
+     * <p>If other changes could have affected the app's ability to interact across profiles, as
+     * defined by the return value of {@link #canInteractAcrossProfiles()}, such as changes to the
+     * admin or OEM consent whitelists, then {@link #resetInteractAcrossProfilesAppOps(Collection,
+     * Set)} should be used.
+     *
+     * <p>If the caller does not have the {@link android.Manifest.permission
+     * #CONFIGURE_INTERACT_ACROSS_PROFILES} permission, then they must have the permissions that
+     * would have been required to call {@link android.app.AppOpsManager#setMode(int, int, String,
+     * int)}, which includes {@link android.Manifest.permission#MANAGE_APP_OPS_MODES}.
+     *
+     * <p>Also requires either {@link android.Manifest.permission#INTERACT_ACROSS_USERS} or {@link
+     * android.Manifest.permission#INTERACT_ACROSS_USERS_FULL}.
+     *
+     * @hide
+     

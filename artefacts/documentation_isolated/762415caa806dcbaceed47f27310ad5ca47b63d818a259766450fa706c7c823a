@@ -1,0 +1,14 @@
+
+     * Protect a socket from VPN connections. After protecting, data sent
+     * through this socket will go directly to the underlying network,
+     * so its traffic will not be forwarded through the VPN.
+     * This method is useful if some connections need to be kept
+     * outside of VPN. For example, a VPN tunnel should protect itself if its
+     * destination is covered by VPN routes. Otherwise its outgoing packets
+     * will be sent back to the VPN interface and cause an infinite loop. This
+     * method will fail if the application is not prepared or is revoked.
+     *
+     * <p class="note">The socket is NOT closed by this method.
+     *
+     * @return {@code true} on success.
+     

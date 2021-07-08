@@ -1,0 +1,35 @@
+
+     * Return documents that match the given query under the requested
+     * root. The returned documents should be sorted by relevance in descending
+     * order. How documents are matched against the query string is an
+     * implementation detail left to each provider, but it's suggested that at
+     * least {@link Document#COLUMN_DISPLAY_NAME} be matched in a
+     * case-insensitive fashion.
+     * <p>
+     * If your provider is cloud-based, and you have some data cached or pinned
+     * locally, you may return the local data immediately, setting
+     * {@link DocumentsContract#EXTRA_LOADING} on the Cursor to indicate that
+     * you are still fetching additional data. Then, when the network data is
+     * available, you can send a change notification to trigger a requery and
+     * return the complete contents.
+     * <p>
+     * To support change notifications, you must
+     * {@link Cursor#setNotificationUri(ContentResolver, Uri)} with a relevant
+     * Uri, such as {@link DocumentsContract#buildSearchDocumentsUri(String,
+     * String, String)}. Then you can call {@link ContentResolver#notifyChange(Uri,
+     * android.database.ContentObserver, boolean)} with that Uri to send change
+     * notifications.
+     *
+     * @param rootId the root to search under.
+     * @param query string to match documents against.
+     * @param projection list of {@link Document} columns to put into the
+     *            cursor. If {@code null} all supported columns should be
+     *            included.
+     * @throws AuthenticationRequiredException If authentication is required from
+     *            the user (such as login credentials), but it is not guaranteed
+     *            that the client will handle this properly.
+     *
+     * @see DocumentsContract#EXTRA_LOADING
+     * @see DocumentsContract#EXTRA_INFO
+     * @see DocumentsContract#EXTRA_ERROR
+     

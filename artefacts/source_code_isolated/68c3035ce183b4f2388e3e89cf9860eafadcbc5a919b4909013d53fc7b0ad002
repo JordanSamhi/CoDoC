@@ -1,0 +1,21 @@
+public static void onMultiSimConfigChanged(Context context, int activeModemCount){
+    synchronized (sLockProxyPhones) {
+        int prevActiveModemCount = sPhones.length;
+        if (prevActiveModemCount == activeModemCount)
+            return;
+        if (prevActiveModemCount > activeModemCount)
+            return;
+        sPhones = copyOf(sPhones, activeModemCount);
+        sCommandsInterfaces = copyOf(sCommandsInterfaces, activeModemCount);
+        sTelephonyNetworkFactories = copyOf(sTelephonyNetworkFactories, activeModemCount);
+        int cdmaSubscription = CdmaSubscriptionSourceManager.getDefault(context);
+        for (int i = prevActiveModemCount; i < activeModemCount; i++) {
+            sCommandsInterfaces[i] = new RIL(context, RILConstants.PREFERRED_NETWORK_MODE, cdmaSubscription, i);
+            sPhones[i] = createPhone(context, i);
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY_IMS)) {
+                sPhones[i].createImsPhone();
+            }
+            sTelephonyNetworkFactories[i] = new TelephonyNetworkFactory(Looper.myLooper(), sPhones[i]);
+        }
+    }
+}

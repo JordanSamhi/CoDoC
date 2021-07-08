@@ -1,0 +1,20 @@
+public Preference findPreference(CharSequence key){
+    if (TextUtils.equals(getKey(), key)) {
+        return this;
+    }
+    final int preferenceCount = getPreferenceCount();
+    for (int i = 0; i < preferenceCount; i++) {
+        final Preference preference = getPreference(i);
+        final String curKey = preference.getKey();
+        if (curKey != null && curKey.equals(key)) {
+            return preference;
+        }
+        if (preference instanceof PreferenceGroup) {
+            final Preference returnedPreference = ((PreferenceGroup) preference).findPreference(key);
+            if (returnedPreference != null) {
+                return returnedPreference;
+            }
+        }
+    }
+    return null;
+}

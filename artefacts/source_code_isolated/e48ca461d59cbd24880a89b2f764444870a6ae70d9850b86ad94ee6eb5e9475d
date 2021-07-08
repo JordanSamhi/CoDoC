@@ -1,0 +1,39 @@
+public VCardBuilder appendSipAddresses(final List<ContentValues> contentValuesList){
+    final boolean useXProperty;
+    if (mIsV30OrV40) {
+        useXProperty = false;
+    } else if (mUsesDefactProperty) {
+        useXProperty = true;
+    } else {
+        return this;
+    }
+    if (contentValuesList != null) {
+        for (ContentValues contentValues : contentValuesList) {
+            String sipAddress = contentValues.getAsString(SipAddress.SIP_ADDRESS);
+            if (TextUtils.isEmpty(sipAddress)) {
+                continue;
+            }
+            if (useXProperty) {
+                if (sipAddress.startsWith("sip:")) {
+                    if (sipAddress.length() == 4) {
+                        continue;
+                    }
+                    sipAddress = sipAddress.substring(4);
+                }
+                appendLineWithCharsetAndQPDetection(VCardConstants.PROPERTY_X_SIP, sipAddress);
+            } else {
+                if (!sipAddress.startsWith("sip:")) {
+                    sipAddress = "sip:" + sipAddress;
+                }
+                final String propertyName;
+                if (VCardConfig.isVersion40(mVCardType)) {
+                    propertyName = VCardConstants.PROPERTY_TEL;
+                } else {
+                    propertyName = VCardConstants.PROPERTY_IMPP;
+                }
+                appendLineWithCharsetAndQPDetection(propertyName, sipAddress);
+            }
+        }
+    }
+    return this;
+}

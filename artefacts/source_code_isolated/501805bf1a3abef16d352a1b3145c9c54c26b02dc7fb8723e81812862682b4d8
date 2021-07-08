@@ -1,0 +1,15 @@
+public boolean registerGnssBatchedLocationCallback(long periodNanos, boolean wakeOnFifoFull, @NonNull BatchedLocationCallback callback, @Nullable Handler handler){
+    if (handler == null) {
+        handler = new Handler();
+    }
+    synchronized (mBatchedLocationCallbackManager) {
+        try {
+            if (mBatchedLocationCallbackManager.addListener(callback, handler)) {
+                return mService.startGnssBatch(periodNanos, wakeOnFifoFull, mContext.getPackageName(), mContext.getAttributionTag());
+            }
+            return false;
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

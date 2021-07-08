@@ -1,0 +1,14 @@
+public void setScrollIndicators(@ScrollIndicators int indicators, @ScrollIndicators int mask){
+    mask <<= SCROLL_INDICATORS_TO_PFLAGS3_LSHIFT;
+    mask &= SCROLL_INDICATORS_PFLAG3_MASK;
+    indicators <<= SCROLL_INDICATORS_TO_PFLAGS3_LSHIFT;
+    indicators &= mask;
+    final int updatedFlags = indicators | (mPrivateFlags3 & ~mask);
+    if (mPrivateFlags3 != updatedFlags) {
+        mPrivateFlags3 = updatedFlags;
+        if (indicators != 0) {
+            initializeScrollIndicatorsInternal();
+        }
+        invalidate();
+    }
+}

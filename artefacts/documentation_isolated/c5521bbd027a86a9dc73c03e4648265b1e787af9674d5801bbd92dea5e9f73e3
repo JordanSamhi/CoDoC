@@ -1,0 +1,24 @@
+
+     * Adds an {@link OnAccountsUpdateListener} to this instance of the {@link AccountManager}. This
+     * listener will be notified whenever user or AbstractAcccountAuthenticator made changes to
+     * accounts of given types related to the caller -
+     * either list of accounts returned by {@link #getAccounts()}
+     * was changed, or new account was added for which user can grant access to the caller.
+     * <p>
+     * As long as this listener is present, the AccountManager instance will not be
+     * garbage-collected, and neither will the {@link Context} used to retrieve it, which may be a
+     * large Activity instance. To avoid memory leaks, you must remove this listener before then.
+     * Normally listeners are added in an Activity or Service's {@link Activity#onCreate} and
+     * removed in {@link Activity#onDestroy}.
+     * <p>
+     * It is safe to call this method from the main thread.
+     *
+     * @param listener The listener to send notifications to
+     * @param handler {@link Handler} identifying the thread to use for notifications, null for the
+     *        main thread
+     * @param updateImmediately If true, the listener will be invoked (on the handler thread) right
+     *        away with the current account list
+     * @param accountTypes If set, only changes to accounts of given types will be reported.
+     * @throws IllegalArgumentException if listener is null
+     * @throws IllegalStateException if listener was already added
+     

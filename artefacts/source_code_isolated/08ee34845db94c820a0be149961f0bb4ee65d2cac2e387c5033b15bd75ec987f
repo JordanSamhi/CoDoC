@@ -1,0 +1,11 @@
+public List<String> getDelegatePackages(@NonNull ComponentName admin, @NonNull String delegationScope){
+    throwIfParentInstance("getDelegatePackages");
+    if (mService != null) {
+        try {
+            return mService.getDelegatePackages(admin, delegationScope);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    return null;
+}

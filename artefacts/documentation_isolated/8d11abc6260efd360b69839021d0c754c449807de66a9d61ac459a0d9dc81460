@@ -1,0 +1,23 @@
+
+     * Called to get information about the children of a media item.
+     * <p>
+     * Implementations must call {@link Result#sendResult result.sendResult}
+     * with the list of children. If loading the children will be an expensive
+     * operation that should be performed on another thread,
+     * {@link Result#detach result.detach} may be called before returning from
+     * this function, and then {@link Result#sendResult result.sendResult}
+     * called when the loading is complete.
+     * </p><p>
+     * In case the media item does not have any children, call {@link Result#sendResult}
+     * with an empty list. When the given {@code parentId} is invalid, implementations must
+     * call {@link Result#sendResult result.sendResult} with {@code null}, which will invoke
+     * {@link MediaBrowser.SubscriptionCallback#onError}.
+     * </p>
+     *
+     * @param parentId The id of the parent media item whose children are to be
+     *            queried.
+     * @param result The Result to send the list of children to.
+     * @param options The bundle of service-specific arguments sent from the media
+     *            browser. The information returned through the result should be
+     *            affected by the contents of this bundle.
+     

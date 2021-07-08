@@ -1,0 +1,14 @@
+public static SecretKey unwrap(SecretKey secondaryKey, WrappedKeyProto.WrappedKey wrappedKey) throws InvalidKeyException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException{
+    if (wrappedKey.wrapAlgorithm != WrappedKeyProto.WrappedKey.AES_256_GCM) {
+        throw new InvalidKeyException(String.format(Locale.US, "Could not unwrap key wrapped with %s algorithm", wrappedKey.wrapAlgorithm));
+    }
+    if (wrappedKey.metadata == null) {
+        throw new InvalidKeyException("Metadata missing from wrapped tertiary key.");
+    }
+    if (wrappedKey.metadata.type != WrappedKeyProto.KeyMetadata.AES_256_GCM) {
+        throw new InvalidKeyException(String.format(Locale.US, "Wrapped key was unexpected %s algorithm. Only support" + " AES/GCM/NoPadding.", wrappedKey.metadata.type));
+    }
+    Cipher cipher = getCipher();
+    cipher.init(Cipher.UNWRAP_MODE, secondaryKey, new GCMParameterSpec(GCM_TAG_LENGTH_BITS, wrappedKey.nonce));
+    return (SecretKey) cipher.unwrap(wrappedKey.key, KEY_ALGORITHM, Cipher.SECRET_KEY);
+}

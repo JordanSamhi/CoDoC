@@ -1,0 +1,10 @@
+public void unregisterTrustListener(final TrustListener trustListener){
+    ITrustListener iTrustListener = mTrustListeners.remove(trustListener);
+    if (iTrustListener != null) {
+        try {
+            mService.unregisterTrustListener(iTrustListener);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

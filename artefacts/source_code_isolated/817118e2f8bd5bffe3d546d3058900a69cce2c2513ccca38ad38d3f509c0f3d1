@@ -1,0 +1,10 @@
+public static synchronized void disableCarrierAppsUntilPrivileged(String callingPackage, TelephonyManager telephonyManager, int userId, Context context){
+    if (DEBUG) {
+        Log.d(TAG, "disableCarrierAppsUntilPrivileged");
+    }
+    SystemConfigManager config = context.getSystemService(SystemConfigManager.class);
+    Set<String> systemCarrierAppsDisabledUntilUsed = config.getDisabledUntilUsedPreinstalledCarrierApps();
+    Map<String, List<CarrierAssociatedAppEntry>> systemCarrierAssociatedAppsDisabledUntilUsed = config.getDisabledUntilUsedPreinstalledCarrierAssociatedAppEntries();
+    ContentResolver contentResolver = getContentResolverForUser(context, userId);
+    disableCarrierAppsUntilPrivileged(callingPackage, telephonyManager, contentResolver, userId, systemCarrierAppsDisabledUntilUsed, systemCarrierAssociatedAppsDisabledUntilUsed, context);
+}

@@ -1,0 +1,14 @@
+public boolean sendMessage(BluetoothDevice device, Uri[] contacts, String message, PendingIntent sentIntent, PendingIntent deliveredIntent){
+    if (DBG)
+        Log.d(TAG, "sendMessage(" + device + ", " + contacts + ", " + message);
+    final IBluetoothMapClient service = getService();
+    if (service != null && isEnabled() && isValidDevice(device)) {
+        try {
+            return service.sendMessage(device, contacts, message, sentIntent, deliveredIntent);
+        } catch (RemoteException e) {
+            Log.e(TAG, Log.getStackTraceString(new Throwable()));
+            return false;
+        }
+    }
+    return false;
+}

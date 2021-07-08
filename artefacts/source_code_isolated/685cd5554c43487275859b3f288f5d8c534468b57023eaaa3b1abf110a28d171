@@ -1,0 +1,14 @@
+public boolean sendNetworkEapSimUmtsAuthFailure(){
+    synchronized (mLock) {
+        final String methodStr = "sendNetworkEapSimUmtsAuthFailure";
+        if (!checkISupplicantStaNetworkAndLogFailure(methodStr))
+            return false;
+        try {
+            SupplicantStatus status = mISupplicantStaNetwork.sendNetworkEapSimUmtsAuthFailure();
+            return checkStatusAndLogFailure(status, methodStr);
+        } catch (RemoteException e) {
+            handleRemoteException(e, methodStr);
+            return false;
+        }
+    }
+}

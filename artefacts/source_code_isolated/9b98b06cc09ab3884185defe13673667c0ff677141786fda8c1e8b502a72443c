@@ -1,0 +1,18 @@
+public int read(@NonNull float[] audioData, int offsetInFloats, int sizeInFloats, @ReadMode int readMode){
+    if (mState == STATE_UNINITIALIZED) {
+        Log.e(TAG, "AudioRecord.read() called in invalid state STATE_UNINITIALIZED");
+        return ERROR_INVALID_OPERATION;
+    }
+    if (mAudioFormat != AudioFormat.ENCODING_PCM_FLOAT) {
+        Log.e(TAG, "AudioRecord.read(float[] ...) requires format ENCODING_PCM_FLOAT");
+        return ERROR_INVALID_OPERATION;
+    }
+    if ((readMode != READ_BLOCKING) && (readMode != READ_NON_BLOCKING)) {
+        Log.e(TAG, "AudioRecord.read() called with invalid blocking mode");
+        return ERROR_BAD_VALUE;
+    }
+    if ((audioData == null) || (offsetInFloats < 0) || (sizeInFloats < 0) || (offsetInFloats + sizeInFloats < 0) || (offsetInFloats + sizeInFloats > audioData.length)) {
+        return ERROR_BAD_VALUE;
+    }
+    return native_read_in_float_array(audioData, offsetInFloats, sizeInFloats, readMode == READ_BLOCKING);
+}

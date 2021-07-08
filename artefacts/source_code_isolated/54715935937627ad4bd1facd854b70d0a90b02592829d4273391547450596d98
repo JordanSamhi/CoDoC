@@ -1,0 +1,19 @@
+public boolean updateNetworkAfterConnect(int networkId){
+    if (mVerboseLoggingEnabled) {
+        Log.v(TAG, "Update network after connect for " + networkId);
+    }
+    WifiConfiguration config = getInternalConfiguredNetwork(networkId);
+    if (config == null) {
+        return false;
+    }
+    if (!config.isPasspoint() && (config.fromWifiNetworkSuggestion || !config.ephemeral)) {
+        mLruConnectionTracker.addNetwork(config);
+    }
+    config.lastConnected = mClock.getWallClockMillis();
+    config.numAssociation++;
+    config.getNetworkSelectionStatus().clearDisableReasonCounter();
+    config.getNetworkSelectionStatus().setHasEverConnected(true);
+    setNetworkStatus(config, WifiConfiguration.Status.CURRENT);
+    saveToStore(false);
+    return true;
+}

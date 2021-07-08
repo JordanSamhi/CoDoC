@@ -1,0 +1,8 @@
+public boolean setBackupPassword(String currentPassword, String newPassword){
+    int userId = binderGetCallingUserId();
+    if (!isUserReadyForBackup(userId)) {
+        return false;
+    }
+    UserBackupManagerService userBackupManagerService = getServiceForUserIfCallerHasPermission(UserHandle.USER_SYSTEM, "setBackupPassword()");
+    return userBackupManagerService != null && userBackupManagerService.setBackupPassword(currentPassword, newPassword);
+}

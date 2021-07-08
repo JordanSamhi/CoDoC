@@ -1,0 +1,8 @@
+public static void localLog(String key, String log){
+    synchronized (sLocalLogs) {
+        if (sLocalLogs.containsKey(key) == false) {
+            throw new IllegalArgumentException("key " + key + " not found");
+        }
+        sLocalLogs.get(key).log(log);
+    }
+}

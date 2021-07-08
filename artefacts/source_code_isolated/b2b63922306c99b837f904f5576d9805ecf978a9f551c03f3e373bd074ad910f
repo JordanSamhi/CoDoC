@@ -1,0 +1,35 @@
+public void updateExternalStorageFileQuotaType(@NonNull File path, @QuotaType int quotaType) throws IOException{
+    long projectId;
+    final String filePath = path.getCanonicalPath();
+    final StorageVolume volume = getStorageVolume(path);
+    if (volume == null) {
+        Log.w(TAG, "Failed to update quota type for " + filePath);
+        return;
+    }
+    if (!volume.isEmulated()) {
+        return;
+    }
+    final int userId = volume.getOwner().getIdentifier();
+    if (userId < 0) {
+        throw new IllegalStateException("Failed to update quota type for " + filePath);
+    }
+    switch(quotaType) {
+        case QUOTA_TYPE_MEDIA_NONE:
+            projectId = getProjectIdForUser(userId, PROJECT_ID_EXT_DEFAULT);
+            break;
+        case QUOTA_TYPE_MEDIA_AUDIO:
+            projectId = getProjectIdForUser(userId, PROJECT_ID_EXT_MEDIA_AUDIO);
+            break;
+        case QUOTA_TYPE_MEDIA_VIDEO:
+            projectId = getProjectIdForUser(userId, PROJECT_ID_EXT_MEDIA_VIDEO);
+            break;
+        case QUOTA_TYPE_MEDIA_IMAGE:
+            projectId = getProjectIdForUser(userId, PROJECT_ID_EXT_MEDIA_IMAGE);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid quota type: " + quotaType);
+    }
+    if (!setQuotaProjectId(filePath, projectId)) {
+        throw new IOException("Failed to update quota type for " + filePath);
+    }
+}

@@ -1,0 +1,196 @@
+public void setupExpandedStatusBar(){
+    mStackScrollLayout = mView.findViewById(R.id.notification_stack_scroller);
+    TunerService.Tunable tunable = (key, newValue) -> {
+        AmbientDisplayConfiguration configuration = new AmbientDisplayConfiguration(mView.getContext());
+        switch(key) {
+            case Settings.Secure.DOZE_DOUBLE_TAP_GESTURE:
+                mDoubleTapEnabled = configuration.doubleTapGestureEnabled(UserHandle.USER_CURRENT);
+                break;
+            case Settings.Secure.DOZE_TAP_SCREEN_GESTURE:
+                mSingleTapEnabled = configuration.tapGestureEnabled(UserHandle.USER_CURRENT);
+        }
+    };
+    mTunerService.addTunable(tunable, Settings.Secure.DOZE_DOUBLE_TAP_GESTURE, Settings.Secure.DOZE_TAP_SCREEN_GESTURE);
+    GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            if (mSingleTapEnabled && !mDockManager.isDocked()) {
+                mService.wakeUpIfDozing(SystemClock.uptimeMillis(), mView, "SINGLE_TAP");
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            if (mDoubleTapEnabled || mSingleTapEnabled) {
+                mService.wakeUpIfDozing(SystemClock.uptimeMillis(), mView, "DOUBLE_TAP");
+                return true;
+            }
+            return false;
+        }
+    };
+    mGestureDetector = new GestureDetector(mView.getContext(), gestureListener);
+    mView.setInteractionEventHandler(new NotificationShadeWindowView.InteractionEventHandler() {
+
+        @Override
+        public Boolean handleDispatchTouchEvent(MotionEvent ev) {
+            boolean isDown = ev.getActionMasked() == MotionEvent.ACTION_DOWN;
+            boolean isUp = ev.getActionMasked() == MotionEvent.ACTION_UP;
+            boolean isCancel = ev.getActionMasked() == MotionEvent.ACTION_CANCEL;
+            boolean expandingBelowNotch = mExpandingBelowNotch;
+            if (isUp || isCancel) {
+                mExpandingBelowNotch = false;
+            }
+            if (!isCancel && mService.shouldIgnoreTouch()) {
+                return false;
+            }
+            if (isDown && mNotificationPanelViewController.isFullyCollapsed()) {
+                mNotificationPanelViewController.startExpandLatencyTracking();
+            }
+            if (isDown) {
+                setTouchActive(true);
+                mTouchCancelled = false;
+            } else if (ev.getActionMasked() == MotionEvent.ACTION_UP || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                setTouchActive(false);
+            }
+            if (mTouchCancelled || mExpandAnimationRunning || mExpandAnimationPending) {
+                return false;
+            }
+            mFalsingManager.onTouchEvent(ev, mView.getWidth(), mView.getHeight());
+            mGestureDetector.onTouchEvent(ev);
+            if (mBrightnessMirror != null && mBrightnessMirror.getVisibility() == View.VISIBLE) {
+                if (ev.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+                    return false;
+                }
+            }
+            if (isDown) {
+                mStackScrollLayout.closeControlsIfOutsideTouch(ev);
+            }
+            if (mStatusBarStateController.isDozing()) {
+                mService.mDozeScrimController.extendPulse();
+            }
+            if (isDown && ev.getY() >= mView.getBottom()) {
+                mExpandingBelowNotch = true;
+                expandingBelowNotch = true;
+            }
+            if (expandingBelowNotch) {
+                return mStatusBarView.dispatchTouchEvent(ev);
+            }
+            if (!mIsTrackingBarGesture && isDown && mNotificationPanelViewController.isFullyCollapsed()) {
+                float x = ev.getRawX();
+                float y = ev.getRawY();
+                if (isIntersecting(mStatusBarView, x, y)) {
+                    if (mService.isSameStatusBarState(WINDOW_STATE_SHOWING)) {
+                        mIsTrackingBarGesture = true;
+                        return mStatusBarView.dispatchTouchEvent(ev);
+                    } else {
+                        return true;
+                    }
+                }
+            } else if (mIsTrackingBarGesture) {
+                final boolean sendToNotification = mStatusBarView.dispatchTouchEvent(ev);
+                if (isUp || isCancel) {
+                    mIsTrackingBarGesture = false;
+                }
+                return sendToNotification;
+            }
+            return null;
+        }
+
+        @Override
+        public boolean shouldInterceptTouchEvent(MotionEvent ev) {
+            if (mStatusBarStateController.isDozing() && !mService.isPulsing() && !mDockManager.isDocked()) {
+                return true;
+            }
+            boolean intercept = false;
+            if (mNotificationPanelViewController.isFullyExpanded() && mDragDownHelper.isDragDownEnabled() && !mService.isBouncerShowing() && !mStatusBarStateController.isDozing()) {
+                intercept = mDragDownHelper.onInterceptTouchEvent(ev);
+            }
+            return intercept;
+        }
+
+        @Override
+        public void didIntercept(MotionEvent ev) {
+            MotionEvent cancellation = MotionEvent.obtain(ev);
+            cancellation.setAction(MotionEvent.ACTION_CANCEL);
+            mStackScrollLayout.onInterceptTouchEvent(cancellation);
+            mNotificationPanelViewController.getView().onInterceptTouchEvent(cancellation);
+            cancellation.recycle();
+        }
+
+        @Override
+        public boolean handleTouchEvent(MotionEvent ev) {
+            boolean handled = false;
+            if (mStatusBarStateController.isDozing()) {
+                handled = !mService.isPulsing();
+            }
+            if ((mDragDownHelper.isDragDownEnabled() && !handled) || mDragDownHelper.isDraggingDown()) {
+                handled = mDragDownHelper.onTouchEvent(ev);
+            }
+            return handled;
+        }
+
+        @Override
+        public void didNotHandleTouchEvent(MotionEvent ev) {
+            final int action = ev.getActionMasked();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mService.setInteracting(StatusBarManager.WINDOW_STATUS_BAR, false);
+            }
+        }
+
+        @Override
+        public boolean interceptMediaKey(KeyEvent event) {
+            return mService.interceptMediaKey(event);
+        }
+
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+            switch(event.getKeyCode()) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (!down) {
+                        mService.onBackPressed();
+                    }
+                    return true;
+                case KeyEvent.KEYCODE_MENU:
+                    if (!down) {
+                        return mService.onMenuPressed();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_SPACE:
+                    if (!down) {
+                        return mService.onSpacePressed();
+                    }
+                    break;
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    if (mStatusBarStateController.isDozing()) {
+                        MediaSessionLegacyHelper.getHelper(mView.getContext()).sendVolumeKeyEvent(event, AudioManager.USE_DEFAULT_STREAM_TYPE, true);
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+    });
+    mView.setOnHierarchyChangeListener(new ViewGroup.OnHierarchyChangeListener() {
+
+        @Override
+        public void onChildViewAdded(View parent, View child) {
+            if (child.getId() == R.id.brightness_mirror) {
+                mBrightnessMirror = child;
+            }
+        }
+
+        @Override
+        public void onChildViewRemoved(View parent, View child) {
+        }
+    });
+    ExpandHelper.Callback expandHelperCallback = mStackScrollLayout.getExpandHelperCallback();
+    DragDownHelper.DragDownCallback dragDownCallback = mStackScrollLayout.getDragDownCallback();
+    setDragDownHelper(new DragDownHelper(mView.getContext(), mView, expandHelperCallback, dragDownCallback, mFalsingManager));
+    mDepthController.setRoot(mView);
+    mNotificationPanelViewController.addExpansionListener(mDepthController);
+}

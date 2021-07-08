@@ -1,0 +1,14 @@
+public String getImsServiceConfiguration(int slotId, boolean isCarrierService, @ImsFeature.FeatureType int featureType){
+    if (slotId < 0 || slotId >= mNumSlots) {
+        Log.w(TAG, "getImsServiceConfiguration: invalid slotId!");
+        return "";
+    }
+    LinkedBlockingQueue<String> result = new LinkedBlockingQueue<>(1);
+    mHandler.post(() -> result.offer(isCarrierService ? getCarrierConfiguredPackageName(slotId, featureType) : getDeviceConfiguration(featureType)));
+    try {
+        return result.poll(GET_IMS_SERVICE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+        Log.w(TAG, "getImsServiceConfiguration: exception=" + e.getMessage());
+        return null;
+    }
+}

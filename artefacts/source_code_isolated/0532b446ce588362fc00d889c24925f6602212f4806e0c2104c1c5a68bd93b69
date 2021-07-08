@@ -1,0 +1,9 @@
+public void onAvailable(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities, @NonNull LinkProperties linkProperties, boolean blocked){
+    onAvailable(network);
+    if (!networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED)) {
+        onNetworkSuspended(network);
+    }
+    onCapabilitiesChanged(network, networkCapabilities);
+    onLinkPropertiesChanged(network, linkProperties);
+    onBlockedStatusChanged(network, blocked);
+}

@@ -1,0 +1,9 @@
+public static Activity createCanvasActivity(@StyleRes int theme) throws IllegalAccessException, InstantiationException{
+    final Context context = InstrumentationRegistry.getTargetContext();
+    final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+    final Intent intent = new Intent(context, DrawingTestActivity.class);
+    final Activity activity = instrumentation.newActivity(DrawingTestActivity.class, context, null, new Application(), intent, new ActivityInfo(), "", null, null, null);
+    instrumentation.callActivityOnCreate(activity, null);
+    activity.setTheme(theme);
+    return activity;
+}

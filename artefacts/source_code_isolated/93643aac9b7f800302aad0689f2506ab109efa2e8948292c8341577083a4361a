@@ -1,0 +1,11 @@
+public void shutdownAllRadios(){
+    try {
+        ITelephony telephony = getITelephony();
+        if (telephony != null) {
+            telephony.shutdownMobileRadios();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "Error calling ITelephony#shutdownAllRadios", e);
+        e.rethrowAsRuntimeException();
+    }
+}

@@ -1,0 +1,13 @@
+public static CollectionItemInfo obtain(int rowIndex, int rowSpan, int columnIndex, int columnSpan, boolean heading, boolean selected){
+    final CollectionItemInfo info = sPool.acquire();
+    if (info == null) {
+        return new CollectionItemInfo(rowIndex, rowSpan, columnIndex, columnSpan, heading, selected);
+    }
+    info.mRowIndex = rowIndex;
+    info.mRowSpan = rowSpan;
+    info.mColumnIndex = columnIndex;
+    info.mColumnSpan = columnSpan;
+    info.mHeading = heading;
+    info.mSelected = selected;
+    return info;
+}

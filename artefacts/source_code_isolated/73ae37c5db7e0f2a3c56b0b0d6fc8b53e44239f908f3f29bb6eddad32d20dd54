@@ -1,0 +1,17 @@
+public final void putExtras(@NonNull Bundle extras){
+    checkImmutable();
+    if (extras == null) {
+        return;
+    }
+    Bundle listenerExtras;
+    synchronized (mExtrasLock) {
+        if (mExtras == null) {
+            mExtras = new Bundle();
+        }
+        mExtras.putAll(extras);
+        listenerExtras = new Bundle(mExtras);
+    }
+    for (Listener l : mListeners) {
+        l.onExtrasChanged(this, new Bundle(listenerExtras));
+    }
+}

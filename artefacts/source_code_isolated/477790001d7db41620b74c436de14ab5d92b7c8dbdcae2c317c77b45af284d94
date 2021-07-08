@@ -1,0 +1,14 @@
+public boolean setIoCapability(@IoCapability int capability){
+    if (getState() != STATE_ON)
+        return false;
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null)
+            return mService.setIoCapability(capability);
+    } catch (RemoteException e) {
+        Log.e(TAG, e.getMessage(), e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return false;
+}

@@ -1,0 +1,18 @@
+public void setLayerType(@LayerType int layerType, @Nullable Paint paint){
+    if (layerType < LAYER_TYPE_NONE || layerType > LAYER_TYPE_HARDWARE) {
+        throw new IllegalArgumentException("Layer type can only be one of: LAYER_TYPE_NONE, " + "LAYER_TYPE_SOFTWARE or LAYER_TYPE_HARDWARE");
+    }
+    boolean typeChanged = mRenderNode.setLayerType(layerType);
+    if (!typeChanged) {
+        setLayerPaint(paint);
+        return;
+    }
+    if (layerType != LAYER_TYPE_SOFTWARE) {
+        destroyDrawingCache();
+    }
+    mLayerType = layerType;
+    mLayerPaint = mLayerType == LAYER_TYPE_NONE ? null : paint;
+    mRenderNode.setLayerPaint(mLayerPaint);
+    invalidateParentCaches();
+    invalidate(true);
+}

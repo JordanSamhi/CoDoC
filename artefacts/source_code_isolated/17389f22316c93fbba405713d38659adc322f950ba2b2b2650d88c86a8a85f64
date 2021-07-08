@@ -1,0 +1,10 @@
+public void sendTimestamp(IBinder token, long timestamp) throws RuntimeException{
+    Objects.requireNonNull(token);
+    if (DEBUG_KEYS)
+        Log.d(TAG, "sendTimestamp() token: " + token + ", timestamp: " + timestamp);
+    try {
+        mRemoteServiceInput.sendTimestamp(token, timestamp);
+    } catch (RemoteException re) {
+        throw re.rethrowFromSystemServer();
+    }
+}

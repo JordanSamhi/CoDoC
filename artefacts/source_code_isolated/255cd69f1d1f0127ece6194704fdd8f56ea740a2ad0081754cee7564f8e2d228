@@ -1,0 +1,16 @@
+public static SourceStampVerificationResult verify(String apkFile){
+    StrictJarFile apkJar = null;
+    try (RandomAccessFile apk = new RandomAccessFile(apkFile, "r")) {
+        apkJar = new StrictJarFile(apkFile, false, false);
+        byte[] sourceStampCertificateDigest = getSourceStampCertificateDigest(apkJar);
+        if (sourceStampCertificateDigest == null) {
+            return SourceStampVerificationResult.notPresent();
+        }
+        byte[] manifestBytes = getManifestBytes(apkJar);
+        return verify(apk, sourceStampCertificateDigest, manifestBytes);
+    } catch (IOException e) {
+        return SourceStampVerificationResult.notPresent();
+    } finally {
+        closeApkJar(apkJar);
+    }
+}

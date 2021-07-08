@@ -1,0 +1,23 @@
+public void resetBackupState(File stateFileDir){
+    synchronized (mQueueLock) {
+        mProcessedPackagesJournal.reset();
+        mCurrentToken = 0;
+        writeRestoreTokens();
+        for (File sf : stateFileDir.listFiles()) {
+            if (!sf.getName().equals(INIT_SENTINEL_FILE_NAME)) {
+                sf.delete();
+            }
+        }
+    }
+    synchronized (mBackupParticipants) {
+        final int numParticipants = mBackupParticipants.size();
+        for (int i = 0; i < numParticipants; i++) {
+            HashSet<String> participants = mBackupParticipants.valueAt(i);
+            if (participants != null) {
+                for (String packageName : participants) {
+                    dataChangedImpl(packageName);
+                }
+            }
+        }
+    }
+}

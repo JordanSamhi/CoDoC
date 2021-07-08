@@ -1,0 +1,19 @@
+public void rawQuery(@Nullable Network network, @NonNull String domain, @QueryClass int nsClass, @QueryType int nsType, @QueryFlag int flags, @NonNull @CallbackExecutor Executor executor, @Nullable CancellationSignal cancellationSignal, @NonNull Callback<? super byte[]> callback){
+    if (cancellationSignal != null && cancellationSignal.isCanceled()) {
+        return;
+    }
+    final Object lock = new Object();
+    final FileDescriptor queryfd;
+    try {
+        queryfd = resNetworkQuery((network != null) ? network.getNetIdForResolv() : NETID_UNSET, domain, nsClass, nsType, flags);
+    } catch (ErrnoException e) {
+        executor.execute(() -> callback.onError(new DnsException(ERROR_SYSTEM, e)));
+        return;
+    }
+    synchronized (lock) {
+        registerFDListener(executor, queryfd, callback, cancellationSignal, lock);
+        if (cancellationSignal == null)
+            return;
+        addCancellationSignal(cancellationSignal, queryfd, lock);
+    }
+}

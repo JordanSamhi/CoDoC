@@ -1,0 +1,17 @@
+public boolean isReachable(@NonNull InetAddress ip){
+    final List<RouteInfo> allRoutes = getAllRoutes();
+    final RouteInfo bestRoute = RouteInfo.selectBestRoute(allRoutes, ip);
+    if (bestRoute == null) {
+        return false;
+    }
+    if (ip instanceof Inet4Address) {
+        return hasIpv4AddressOnInterface(bestRoute.getInterface());
+    } else if (ip instanceof Inet6Address) {
+        if (ip.isLinkLocalAddress()) {
+            return (((Inet6Address) ip).getScopeId() != 0);
+        } else {
+            return (!bestRoute.hasGateway() || hasGlobalIpv6Address());
+        }
+    }
+    return false;
+}

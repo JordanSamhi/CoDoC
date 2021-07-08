@@ -1,0 +1,28 @@
+public static LocationRequest createFromDeprecatedCriteria(@NonNull Criteria criteria, long minTime, float minDistance, boolean singleShot){
+    Preconditions.checkArgument(criteria != null, "invalid null criteria");
+    if (minTime < 0)
+        minTime = 0;
+    if (minDistance < 0)
+        minDistance = 0;
+    int quality;
+    switch(criteria.getAccuracy()) {
+        case Criteria.ACCURACY_COARSE:
+            quality = ACCURACY_BLOCK;
+            break;
+        case Criteria.ACCURACY_FINE:
+            quality = ACCURACY_FINE;
+            break;
+        default:
+            {
+                if (criteria.getPowerRequirement() == Criteria.POWER_HIGH) {
+                    quality = POWER_HIGH;
+                } else {
+                    quality = POWER_LOW;
+                }
+            }
+    }
+    LocationRequest request = new LocationRequest().setQuality(quality).setInterval(minTime).setFastestInterval(minTime).setSmallestDisplacement(minDistance);
+    if (singleShot)
+        request.setNumUpdates(1);
+    return request;
+}

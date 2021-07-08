@@ -1,0 +1,11 @@
+public void barringInfoChanged(int indicationType, android.hardware.radio.V1_5.CellIdentity cellIdentity, ArrayList<android.hardware.radio.V1_5.BarringInfo> barringInfos){
+    mRil.processIndication(indicationType);
+    if (cellIdentity == null || barringInfos == null) {
+        AnomalyReporter.reportAnomaly(UUID.fromString("645b16bb-c930-4c1c-9c5d-568696542e05"), "Invalid barringInfoChanged indication");
+        mRil.riljLoge("Invalid barringInfoChanged indication");
+        return;
+    }
+    CellIdentity ci = CellIdentity.create(cellIdentity);
+    BarringInfo cbi = BarringInfo.create(cellIdentity, barringInfos);
+    mRil.mBarringInfoChangedRegistrants.notifyRegistrants(new AsyncResult(null, cbi, null));
+}

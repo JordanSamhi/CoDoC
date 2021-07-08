@@ -1,0 +1,30 @@
+public IBackupTransport connect(String caller){
+    Preconditions.checkState(!Looper.getMainLooper().isCurrentThread(), "Can't call connect() on main thread");
+    IBackupTransport transport = mTransport;
+    if (transport != null) {
+        log(Priority.DEBUG, caller, "Sync connect: reusing transport");
+        return transport;
+    }
+    synchronized (mStateLock) {
+        if (mState == State.UNUSABLE) {
+            log(Priority.WARN, caller, "Sync connect: UNUSABLE client");
+            return null;
+        }
+    }
+    CompletableFuture<IBackupTransport> transportFuture = new CompletableFuture<>();
+    TransportConnectionListener requestListener = (requestedTransport, transportClient) -> transportFuture.complete(requestedTransport);
+    long requestTime = SystemClock.elapsedRealtime();
+    log(Priority.DEBUG, caller, "Sync connect: calling async");
+    connectAsync(requestListener, caller);
+    try {
+        transport = transportFuture.get();
+        long time = SystemClock.elapsedRealtime() - requestTime;
+        mTransportStats.registerConnectionTime(mTransportComponent, time);
+        log(Priority.DEBUG, caller, String.format(Locale.US, "Connect took %d ms", time));
+        return transport;
+    } catch (InterruptedException | ExecutionException e) {
+        String error = e.getClass().getSimpleName();
+        log(Priority.ERROR, caller, error + " while waiting for transport: " + e.getMessage());
+        return null;
+    }
+}

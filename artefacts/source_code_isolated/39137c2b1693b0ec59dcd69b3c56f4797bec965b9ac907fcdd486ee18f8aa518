@@ -1,0 +1,17 @@
+public static NetworkTemplate getMobileTemplate(Context context, int subId){
+    final TelephonyManager telephonyManager = context.getSystemService(TelephonyManager.class);
+    final int mobileDefaultSubId = telephonyManager.getSubscriptionId();
+    final SubscriptionManager subscriptionManager = context.getSystemService(SubscriptionManager.class);
+    final List<SubscriptionInfo> subInfoList = subscriptionManager.getAvailableSubscriptionInfoList();
+    if (subInfoList == null) {
+        Log.i(TAG, "Subscription is not inited: " + subId);
+        return getMobileTemplateForSubId(telephonyManager, mobileDefaultSubId);
+    }
+    for (SubscriptionInfo subInfo : subInfoList) {
+        if ((subInfo != null) && (subInfo.getSubscriptionId() == subId)) {
+            return getNormalizedMobileTemplate(telephonyManager, subId);
+        }
+    }
+    Log.i(TAG, "Subscription is not active: " + subId);
+    return getMobileTemplateForSubId(telephonyManager, mobileDefaultSubId);
+}

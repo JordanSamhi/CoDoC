@@ -1,0 +1,26 @@
+public static String buildVerificationRootHashString(@NonNull String baseFilename, @Nullable String[] splitFilenameArray){
+    final StringBuilder sb = new StringBuilder();
+    final String baseFilePath = baseFilename.substring(baseFilename.lastIndexOf(File.separator) + 1);
+    sb.append(baseFilePath).append(":");
+    final byte[] baseRootHash = getRootHash(baseFilename);
+    if (baseRootHash == null) {
+        sb.append("0");
+    } else {
+        sb.append(HexDump.toHexString(baseRootHash));
+    }
+    if (splitFilenameArray == null || splitFilenameArray.length == 0) {
+        return sb.toString();
+    }
+    for (int i = splitFilenameArray.length - 1; i >= 0; i--) {
+        final String splitFilename = splitFilenameArray[i];
+        final String splitFilePath = splitFilename.substring(splitFilename.lastIndexOf(File.separator) + 1);
+        final byte[] splitRootHash = getRootHash(splitFilename);
+        sb.append(";").append(splitFilePath).append(":");
+        if (splitRootHash == null) {
+            sb.append("0");
+        } else {
+            sb.append(HexDump.toHexString(splitRootHash));
+        }
+    }
+    return sb.toString();
+}

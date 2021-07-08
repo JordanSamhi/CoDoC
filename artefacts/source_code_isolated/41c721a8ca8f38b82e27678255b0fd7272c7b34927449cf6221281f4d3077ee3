@@ -1,0 +1,16 @@
+public int getLeMaximumAdvertisingDataLength(){
+    if (!getLeAccess()) {
+        return 0;
+    }
+    try {
+        mServiceLock.readLock().lock();
+        if (mService != null) {
+            return mService.getLeMaximumAdvertisingDataLength();
+        }
+    } catch (RemoteException e) {
+        Log.e(TAG, "failed to get getLeMaximumAdvertisingDataLength, error: ", e);
+    } finally {
+        mServiceLock.readLock().unlock();
+    }
+    return 0;
+}

@@ -1,0 +1,11 @@
+public String getBadgedContentDescription(ActivityInfo info, int userId, ActivityManager.TaskDescription td){
+    String activityLabel;
+    if (td != null && td.getLabel() != null) {
+        activityLabel = td.getLabel();
+    } else {
+        activityLabel = info.loadLabel(mPackageManager).toString();
+    }
+    String applicationLabel = info.applicationInfo.loadLabel(mPackageManager).toString();
+    String badgedApplicationLabel = getBadgedLabel(applicationLabel, userId);
+    return applicationLabel.equals(activityLabel) ? badgedApplicationLabel : badgedApplicationLabel + " " + activityLabel;
+}

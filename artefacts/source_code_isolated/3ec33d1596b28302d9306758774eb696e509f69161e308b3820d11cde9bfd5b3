@@ -1,0 +1,12 @@
+public boolean startProvisioning(ProvisioningConfiguration prov){
+    final long token = Binder.clearCallingIdentity();
+    try {
+        mIpClient.startProvisioning(prov.toStableParcelable());
+        return true;
+    } catch (RemoteException e) {
+        log("Error starting IpClient provisioning", e);
+        return false;
+    } finally {
+        Binder.restoreCallingIdentity(token);
+    }
+}

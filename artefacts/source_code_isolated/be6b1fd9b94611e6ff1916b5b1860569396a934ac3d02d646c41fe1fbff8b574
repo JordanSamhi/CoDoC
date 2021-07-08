@@ -1,0 +1,11 @@
+public boolean add(@NonNull E element){
+    Objects.requireNonNull(element);
+    if (size() == mMaxSize) {
+        E removed = mDelegate.remove();
+        if (mOnEntryEvictedListener != null) {
+            mOnEntryEvictedListener.onEntryEvicted(removed);
+        }
+    }
+    mDelegate.add(element);
+    return true;
+}

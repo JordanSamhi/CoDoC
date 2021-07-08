@@ -1,0 +1,10 @@
+public RuntimeAppOpAccessMessage collectRuntimeAppOpAccessMessage(){
+    mContext.enforcePermission(android.Manifest.permission.GET_APP_OPS_STATS, Binder.getCallingPid(), Binder.getCallingUid(), null);
+    RuntimeAppOpAccessMessage result;
+    synchronized (this) {
+        result = mCollectedRuntimePermissionMessage;
+        mCollectedRuntimePermissionMessage = null;
+    }
+    mHandler.sendMessage(PooledLambda.obtainMessage(AppOpsService::getPackageListAndResample, this));
+    return result;
+}
