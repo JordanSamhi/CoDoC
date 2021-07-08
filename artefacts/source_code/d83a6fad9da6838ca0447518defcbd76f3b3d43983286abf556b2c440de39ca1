@@ -1,9 +1,0 @@
-public long setMaximumSize(long numBytes){
-    long pageSize = getPageSize();
-    long numPages = numBytes / pageSize;
-    if ((numBytes % pageSize) != 0) {
-        numPages++;
-    }
-    long newPageCount = DatabaseUtils.longForQuery(this, "PRAGMA max_page_count = " + numPages, null);
-    return newPageCount * pageSize;
-}

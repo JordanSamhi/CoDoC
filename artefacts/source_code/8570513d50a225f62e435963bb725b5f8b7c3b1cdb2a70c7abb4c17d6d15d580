@@ -1,8 +1,0 @@
-public static IconInfo parse(ByteBuffer payload){
-    int width = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
-    int height = (int) ByteBufferReader.readInteger(payload, ByteOrder.LITTLE_ENDIAN, 2) & 0xFFFF;
-    String language = ByteBufferReader.readString(payload, LANGUAGE_CODE_LENGTH, StandardCharsets.US_ASCII).trim();
-    String iconType = ByteBufferReader.readStringWithByteLength(payload, StandardCharsets.US_ASCII);
-    String fileName = ByteBufferReader.readStringWithByteLength(payload, StandardCharsets.UTF_8);
-    return new IconInfo(width, height, language, iconType, fileName);
-}

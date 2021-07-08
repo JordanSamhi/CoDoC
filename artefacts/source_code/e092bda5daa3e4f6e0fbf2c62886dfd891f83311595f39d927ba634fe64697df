@@ -1,9 +1,0 @@
-public void registerStaIfaceAvailabilityListener(@NonNull WifiNative.InterfaceAvailableForRequestListener listener){
-    synchronized (sLock) {
-        Preconditions.checkState(mStaIfaceAvailableForRequestListener == null);
-        mStaIfaceAvailableForRequestListener = (isAvailable) -> listener.onAvailabilityChanged(isAvailable);
-        if (mHalDeviceManager.isStarted()) {
-            mHalDeviceManager.registerInterfaceAvailableForRequestListener(IfaceType.STA, mStaIfaceAvailableForRequestListener, mHalEventHandler);
-        }
-    }
-}

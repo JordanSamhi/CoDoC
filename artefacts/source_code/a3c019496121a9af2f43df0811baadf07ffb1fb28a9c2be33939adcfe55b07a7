@@ -1,8 +1,0 @@
-public void DTBMV(@Uplo int Uplo, @Transpose int TransA, @Diag int Diag, int K, Allocation A, Allocation X, int incX){
-    if (K < 0) {
-        throw new RSRuntimeException("K must be greater than or equal to 0");
-    }
-    validateTRMV(Element.F64(mRS), Uplo, TransA, Diag, A, X, incX);
-    int N = A.getType().getY();
-    mRS.nScriptIntrinsicBLAS_Double(getID(mRS), RsBlas_dtbmv, TransA, 0, 0, Uplo, Diag, 0, N, K, 0, A.getID(mRS), X.getID(mRS), 0, 0, incX, 0, 0, 0);
-}

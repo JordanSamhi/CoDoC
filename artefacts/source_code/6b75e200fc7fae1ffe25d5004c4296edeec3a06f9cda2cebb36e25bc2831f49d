@@ -1,9 +1,0 @@
-public SocketKeepalive createSocketKeepalive(@NonNull Network network, @NonNull Socket socket, @NonNull Executor executor, @NonNull Callback callback){
-    ParcelFileDescriptor dup;
-    try {
-        dup = ParcelFileDescriptor.fromSocket(socket);
-    } catch (UncheckedIOException ignored) {
-        dup = new ParcelFileDescriptor(new FileDescriptor());
-    }
-    return new TcpSocketKeepalive(mService, network, dup, executor, callback);
-}

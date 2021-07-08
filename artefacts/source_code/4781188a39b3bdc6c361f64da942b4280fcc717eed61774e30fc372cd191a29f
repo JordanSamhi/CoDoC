@@ -1,8 +1,0 @@
-public void keepaliveStatus(int indicationType, android.hardware.radio.V1_1.KeepaliveStatus halStatus){
-    mRil.processIndication(indicationType);
-    if (RIL.RILJ_LOGD) {
-        mRil.unsljLogRet(RIL_UNSOL_KEEPALIVE_STATUS, "handle=" + halStatus.sessionHandle + " code=" + halStatus.code);
-    }
-    KeepaliveStatus ks = new KeepaliveStatus(halStatus.sessionHandle, halStatus.code);
-    mRil.mNattKeepaliveStatusRegistrants.notifyRegistrants(new AsyncResult(null, ks, null));
-}

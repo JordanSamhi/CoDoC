@@ -1,9 +1,0 @@
-public Cursor rawQueryWithFactory(CursorFactory cursorFactory, String sql, String[] selectionArgs, String editTable, CancellationSignal cancellationSignal){
-    acquireReference();
-    try {
-        SQLiteCursorDriver driver = new SQLiteDirectCursorDriver(this, sql, editTable, cancellationSignal);
-        return driver.query(cursorFactory != null ? cursorFactory : mCursorFactory, selectionArgs);
-    } finally {
-        releaseReference();
-    }
-}

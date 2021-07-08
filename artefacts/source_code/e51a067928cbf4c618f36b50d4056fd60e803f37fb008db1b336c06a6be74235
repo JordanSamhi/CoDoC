@@ -1,9 +1,0 @@
-public CancellationSignal reapplyAsync(Context context, View v, Executor executor, OnViewAppliedListener listener, OnClickHandler handler){
-    RemoteViews rvToApply = getRemoteViewsToApply(context);
-    if (hasLandscapeAndPortraitLayouts()) {
-        if ((Integer) v.getTag(R.id.widget_frame) != rvToApply.getLayoutId()) {
-            throw new RuntimeException("Attempting to re-apply RemoteViews to a view that" + " that does not share the same root layout id.");
-        }
-    }
-    return new AsyncApplyTask(rvToApply, (ViewGroup) v.getParent(), context, listener, handler, v).startTaskOnExecutor(executor);
-}

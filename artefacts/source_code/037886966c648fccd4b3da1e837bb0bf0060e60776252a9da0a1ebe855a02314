@@ -1,9 +1,0 @@
-public void testAdbRestore_withPermission_propagatesForNonCallingUser() throws Exception{
-    BackupManagerService backupManagerService = createSystemRegisteredService();
-    registerUser(backupManagerService, mUserOneId, mUserOneService);
-    registerUser(backupManagerService, mUserTwoId, mUserTwoService);
-    ParcelFileDescriptor parcelFileDescriptor = getFileDescriptorForAdbTest();
-    setCallerAndGrantInteractUserPermission(mUserOneId, true);
-    backupManagerService.adbRestore(mUserTwoId, parcelFileDescriptor);
-    verify(mUserTwoService).adbRestore(parcelFileDescriptor);
-}

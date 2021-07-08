@@ -1,8 +1,0 @@
-public void testInitializeTransports_onUnknownUser_doesNotPropagateCall() throws Exception{
-    BackupManagerService backupManagerService = createService();
-    registerUser(backupManagerService, mUserOneId, mUserOneService);
-    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
-    String[] transports = { TEST_TRANSPORT };
-    backupManagerService.initializeTransports(mUserTwoId, transports, null);
-    verify(mUserOneService, never()).initializeTransports(transports, null);
-}

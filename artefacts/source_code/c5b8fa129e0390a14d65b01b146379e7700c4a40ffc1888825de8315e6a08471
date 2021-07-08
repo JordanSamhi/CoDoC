@@ -1,9 +1,0 @@
-public static AndroidFuture<R> receiveBytes(ThrowingConsumer<ParcelFileDescriptor> ipc, ThrowingFunction<InputStream, R> read){
-    return new RemoteStream<R, InputStream>(ipc, read, AsyncTask.THREAD_POOL_EXECUTOR, true) {
-
-        @Override
-        protected InputStream createStream(ParcelFileDescriptor fd) {
-            return new ParcelFileDescriptor.AutoCloseInputStream(fd);
-        }
-    };
-}

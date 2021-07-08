@@ -1,8 +1,0 @@
-public boolean addGnssMeasurementsListener(@Nullable GnssRequest request, IGnssMeasurementsListener listener, String packageName, @Nullable String featureId){
-    if (request != null && request.isFullTracking()) {
-        mContext.enforceCallingOrSelfPermission(android.Manifest.permission.LOCATION_HARDWARE, null);
-    }
-    synchronized (mGnssMeasurementsListeners) {
-        return addGnssDataListenerLocked(request, listener, packageName, featureId, mGnssMeasurementsProvider, mGnssMeasurementsListeners, this::removeGnssMeasurementsListener);
-    }
-}

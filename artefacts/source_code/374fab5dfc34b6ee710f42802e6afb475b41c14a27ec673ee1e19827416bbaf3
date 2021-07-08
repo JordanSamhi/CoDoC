@@ -1,9 +1,0 @@
-public void addTestProvider(@NonNull String provider, boolean requiresNetwork, boolean requiresSatellite, boolean requiresCell, boolean hasMonetaryCost, boolean supportsAltitude, boolean supportsSpeed, boolean supportsBearing, int powerRequirement, int accuracy){
-    Preconditions.checkArgument(provider != null, "invalid null provider");
-    ProviderProperties properties = new ProviderProperties(requiresNetwork, requiresSatellite, requiresCell, hasMonetaryCost, supportsAltitude, supportsSpeed, supportsBearing, powerRequirement, accuracy);
-    try {
-        mService.addTestProvider(provider, properties, mContext.getOpPackageName(), mContext.getAttributionTag());
-    } catch (RemoteException e) {
-        throw e.rethrowFromSystemServer();
-    }
-}

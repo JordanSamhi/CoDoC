@@ -1,9 +1,0 @@
-public UserHandle createProfile(@NonNull String name, @NonNull String userType, @NonNull Set<String> disallowedPackages) throws UserOperationException{
-    try {
-        return mService.createProfileForUserWithThrow(name, userType, 0, mUserId, disallowedPackages.toArray(new String[disallowedPackages.size()])).getUserHandle();
-    } catch (ServiceSpecificException e) {
-        return returnNullOrThrowUserOperationException(e, mContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.R);
-    } catch (RemoteException re) {
-        throw re.rethrowFromSystemServer();
-    }
-}

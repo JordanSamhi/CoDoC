@@ -1,9 +1,0 @@
-public void startPostponedEnterTransition(){
-    if (mFragmentManager == null || mFragmentManager.mHost == null) {
-        ensureAnimationInfo().mEnterTransitionPostponed = false;
-    } else if (Looper.myLooper() != mFragmentManager.mHost.getHandler().getLooper()) {
-        mFragmentManager.mHost.getHandler().postAtFrontOfQueue(this::callStartTransitionListener);
-    } else {
-        callStartTransitionListener();
-    }
-}

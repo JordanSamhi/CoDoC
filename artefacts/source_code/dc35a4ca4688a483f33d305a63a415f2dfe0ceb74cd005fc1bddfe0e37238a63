@@ -1,9 +1,0 @@
-public static Network fromNetworkHandle(long networkHandle){
-    if (networkHandle == 0) {
-        throw new IllegalArgumentException("Network.fromNetworkHandle refusing to instantiate NETID_UNSET Network.");
-    }
-    if ((networkHandle & ((1L << HANDLE_MAGIC_SIZE) - 1)) != HANDLE_MAGIC || networkHandle < 0) {
-        throw new IllegalArgumentException("Value passed to fromNetworkHandle() is not a network handle.");
-    }
-    return new Network((int) (networkHandle >> HANDLE_MAGIC_SIZE));
-}

@@ -1,8 +1,0 @@
-public void isApplicationVisibleForRole(@NonNull String roleName, @NonNull String packageName, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
-    AndroidFuture<Bundle> operation = mRemoteService.postAsync(service -> {
-        AndroidFuture<Bundle> future = new AndroidFuture<>();
-        service.isApplicationVisibleForRole(roleName, packageName, new RemoteCallback(future::complete));
-        return future;
-    });
-    propagateCallback(operation, "isApplicationVisibleForRole", executor, callback);
-}

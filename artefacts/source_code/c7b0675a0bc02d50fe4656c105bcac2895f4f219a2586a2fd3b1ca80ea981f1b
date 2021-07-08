@@ -1,9 +1,0 @@
-public long getLockoutAttemptDeadline(int userId){
-    final long deadline = mLockoutDeadlines.get(userId, 0L);
-    final long now = SystemClock.elapsedRealtime();
-    if (deadline < now && deadline != 0) {
-        mLockoutDeadlines.put(userId, 0);
-        return 0L;
-    }
-    return deadline;
-}

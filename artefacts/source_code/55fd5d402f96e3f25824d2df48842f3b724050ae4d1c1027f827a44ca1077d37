@@ -1,6 +1,0 @@
-public static byte[] thmEncryptRecoveryKey(PublicKey publicKey, byte[] lockScreenHash, byte[] vaultParams, SecretKey recoveryKey) throws NoSuchAlgorithmException, InvalidKeyException{
-    byte[] encryptedRecoveryKey = locallyEncryptRecoveryKey(lockScreenHash, recoveryKey);
-    byte[] thmKfHash = calculateThmKfHash(lockScreenHash);
-    byte[] header = concat(THM_ENCRYPTED_RECOVERY_KEY_HEADER, vaultParams);
-    return SecureBox.encrypt(publicKey, thmKfHash, header, encryptedRecoveryKey);
-}

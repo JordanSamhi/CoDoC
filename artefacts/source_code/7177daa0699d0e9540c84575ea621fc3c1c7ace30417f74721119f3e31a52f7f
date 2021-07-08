@@ -1,8 +1,0 @@
-public Notification createOnboardingNotification(){
-    CharSequence title = mContext.getText(R.string.wifi_wakeup_onboarding_title);
-    CharSequence content = mContext.getText(R.string.wifi_wakeup_onboarding_subtext);
-    CharSequence disableText = mContext.getText(R.string.wifi_wakeup_onboarding_action_disable);
-    int color = mContext.getResources().getColor(android.R.color.system_notification_accent_color, mContext.getTheme());
-    final Notification.Action disableAction = new Notification.Action.Builder(null, disableText, getPrivateBroadcast(ACTION_TURN_OFF_WIFI_WAKE)).build();
-    return mFrameworkFacade.makeNotificationBuilder(mContext, WifiService.NOTIFICATION_NETWORK_STATUS).setSmallIcon(Icon.createWithResource(mContext.getWifiOverlayApkPkgName(), R.drawable.ic_wifi_settings)).setTicker(title).setContentTitle(title).setContentText(content).setContentIntent(getPrivateBroadcast(ACTION_OPEN_WIFI_PREFERENCES)).setDeleteIntent(getPrivateBroadcast(ACTION_DISMISS_NOTIFICATION)).addAction(disableAction).setShowWhen(false).setLocalOnly(true).setColor(color).build();
-}

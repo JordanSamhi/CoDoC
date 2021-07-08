@@ -1,8 +1,0 @@
-public static void logEvent(@Nullable VersionedPackage logPackage, int type, int rollbackReason, @NonNull String failingPackageName){
-    Slog.i(TAG, "Watchdog event occurred with type: " + rollbackTypeToString(type) + " logPackage: " + logPackage + " rollbackReason: " + rollbackReasonToString(rollbackReason) + " failedPackageName: " + failingPackageName);
-    if (logPackage != null) {
-        FrameworkStatsLog.write(FrameworkStatsLog.WATCHDOG_ROLLBACK_OCCURRED, type, logPackage.getPackageName(), logPackage.getVersionCode(), rollbackReason, failingPackageName, new byte[] {});
-    } else {
-        FrameworkStatsLog.write(FrameworkStatsLog.WATCHDOG_ROLLBACK_OCCURRED, type, "", 0, rollbackReason, failingPackageName, new byte[] {});
-    }
-}

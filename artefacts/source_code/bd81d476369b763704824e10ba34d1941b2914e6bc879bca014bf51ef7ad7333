@@ -1,9 +1,0 @@
-public SQLiteConnection acquireConnection(String sql, int connectionFlags, CancellationSignal cancellationSignal){
-    SQLiteConnection con = waitForConnection(sql, connectionFlags, cancellationSignal);
-    synchronized (mLock) {
-        if (mIdleConnectionHandler != null) {
-            mIdleConnectionHandler.connectionAcquired(con);
-        }
-    }
-    return con;
-}

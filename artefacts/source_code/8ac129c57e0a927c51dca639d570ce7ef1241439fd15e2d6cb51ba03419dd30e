@@ -1,9 +1,0 @@
-public void testSelectTransportAsync_onRegisteredUser_callsMethodForUser() throws Exception{
-    BackupManagerService backupManagerService = createService();
-    registerUser(backupManagerService, mUserOneId, mUserOneService);
-    setCallerAndGrantInteractUserPermission(mUserOneId, false);
-    TransportData transport = backupTransport();
-    ISelectBackupTransportCallback callback = mock(ISelectBackupTransportCallback.class);
-    backupManagerService.selectBackupTransportAsync(mUserOneId, transport.getTransportComponent(), callback);
-    verify(mUserOneService).selectBackupTransportAsync(transport.getTransportComponent(), callback);
-}

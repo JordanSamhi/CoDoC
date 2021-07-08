@@ -1,9 +1,0 @@
-public static ResourcesProvider loadFromSplit(@NonNull Context context, @NonNull String splitName) throws IOException{
-    ApplicationInfo appInfo = context.getApplicationInfo();
-    int splitIndex = ArrayUtils.indexOf(appInfo.splitNames, splitName);
-    if (splitIndex < 0) {
-        throw new IllegalArgumentException("Split " + splitName + " not found");
-    }
-    String splitPath = appInfo.getSplitCodePaths()[splitIndex];
-    return new ResourcesProvider(ApkAssets.loadFromPath(splitPath, ApkAssets.PROPERTY_LOADER, null));
-}

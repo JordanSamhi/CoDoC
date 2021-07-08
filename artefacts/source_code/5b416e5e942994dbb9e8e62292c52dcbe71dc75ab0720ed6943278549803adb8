@@ -1,8 +1,0 @@
-public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable Bundle queryArgs, @Nullable CancellationSignal cancellationSignal){
-    queryArgs = queryArgs != null ? queryArgs : Bundle.EMPTY;
-    String sortClause = queryArgs.getString(ContentResolver.QUERY_ARG_SQL_SORT_ORDER);
-    if (sortClause == null && queryArgs.containsKey(ContentResolver.QUERY_ARG_SORT_COLUMNS)) {
-        sortClause = ContentResolver.createSqlSortClause(queryArgs);
-    }
-    return query(uri, projection, queryArgs.getString(ContentResolver.QUERY_ARG_SQL_SELECTION), queryArgs.getStringArray(ContentResolver.QUERY_ARG_SQL_SELECTION_ARGS), sortClause, cancellationSignal);
-}

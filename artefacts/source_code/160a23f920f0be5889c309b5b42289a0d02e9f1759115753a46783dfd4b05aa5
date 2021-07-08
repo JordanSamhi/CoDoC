@@ -1,9 +1,0 @@
-public void testBackupNow_clearsCallingIdentityForJobScheduler(){
-    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    setUpPowerManager(backupManagerService);
-    ShadowBinder.setCallingUid(1);
-    backupManagerService.backupNow();
-    assertThat(ShadowKeyValueBackupJob.getCallingUid()).isEqualTo(ShadowBinder.LOCAL_UID);
-    assertThat(Binder.getCallingUid()).isEqualTo(1);
-}

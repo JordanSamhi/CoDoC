@@ -1,9 +1,0 @@
-public ParsedOverlayInfo parseOverlayManifest(File overlayApk){
-    try {
-        final PackageParser.ApkLite apkLite = PackageParser.parseApkLite(overlayApk, 0);
-        return apkLite.targetPackageName == null ? null : new ParsedOverlayInfo(apkLite.packageName, apkLite.targetPackageName, apkLite.targetSdkVersion, apkLite.overlayIsStatic, apkLite.overlayPriority, new File(apkLite.codePath));
-    } catch (PackageParser.PackageParserException e) {
-        Log.w(TAG, "Got exception loading overlay.", e);
-        return null;
-    }
-}

@@ -1,9 +1,0 @@
-public void testUpdateTransportAttributes_whenTransportUidEqualsCallingUid_callsTransportManager() throws Exception{
-    setUpForUpdateTransportAttributes();
-    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
-    Intent configurationIntent = new Intent();
-    Intent dataManagementIntent = new Intent();
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    backupManagerService.updateTransportAttributes(mTransportUid, mTransportComponent, mTransportName, configurationIntent, "currentDestinationString", dataManagementIntent, "dataManagementLabel");
-    verify(mTransportManager).updateTransportAttributes(eq(mTransportComponent), eq(mTransportName), eq(configurationIntent), eq("currentDestinationString"), eq(dataManagementIntent), eq("dataManagementLabel"));
-}

@@ -1,9 +1,0 @@
-public void registerForPhysicalChannelConfig(Handler h, int what, Object obj){
-    checkCorrectThread(h);
-    Registrant registrant = new Registrant(h, what, obj);
-    mPhysicalChannelConfigRegistrants.add(registrant);
-    List<PhysicalChannelConfig> physicalChannelConfigs = getPhysicalChannelConfigList();
-    if (physicalChannelConfigs != null) {
-        registrant.notifyRegistrant(new AsyncResult(null, physicalChannelConfigs, null));
-    }
-}

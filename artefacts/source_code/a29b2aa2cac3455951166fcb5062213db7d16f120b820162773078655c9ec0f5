@@ -1,8 +1,0 @@
-public static float[] chromaticAdaptation(@NonNull Adaptation adaptation, @NonNull @Size(min = 2, max = 3) float[] srcWhitePoint, @NonNull @Size(min = 2, max = 3) float[] dstWhitePoint){
-    float[] srcXyz = srcWhitePoint.length == 3 ? Arrays.copyOf(srcWhitePoint, 3) : xyYToXyz(srcWhitePoint);
-    float[] dstXyz = dstWhitePoint.length == 3 ? Arrays.copyOf(dstWhitePoint, 3) : xyYToXyz(dstWhitePoint);
-    if (compare(srcXyz, dstXyz)) {
-        return new float[] { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f };
-    }
-    return chromaticAdaptation(adaptation.mTransform, srcXyz, dstXyz);
-}

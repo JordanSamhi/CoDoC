@@ -1,8 +1,0 @@
-public static long copy(@NonNull InputStream in, @NonNull OutputStream out, @Nullable CancellationSignal signal, @Nullable Executor executor, @Nullable ProgressListener listener) throws IOException{
-    if (sEnableCopyOptimizations) {
-        if (in instanceof FileInputStream && out instanceof FileOutputStream) {
-            return copy(((FileInputStream) in).getFD(), ((FileOutputStream) out).getFD(), signal, executor, listener);
-        }
-    }
-    return copyInternalUserspace(in, out, signal, executor, listener);
-}

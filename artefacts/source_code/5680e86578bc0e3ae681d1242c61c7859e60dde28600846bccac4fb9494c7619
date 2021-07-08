@@ -1,9 +1,0 @@
-public static Builder getDefaultBuilder(ApplicationInfo info){
-    Builder builder = new Builder().setHstsEnforced(DEFAULT_HSTS_ENFORCED).addCertificatesEntryRef(new CertificatesEntryRef(SystemCertificateSource.getInstance(), false));
-    final boolean cleartextTrafficPermitted = info.targetSdkVersion < Build.VERSION_CODES.P && !info.isInstantApp();
-    builder.setCleartextTrafficPermitted(cleartextTrafficPermitted);
-    if (info.targetSdkVersion <= Build.VERSION_CODES.M && !info.isPrivilegedApp()) {
-        builder.addCertificatesEntryRef(new CertificatesEntryRef(UserCertificateSource.getInstance(), false));
-    }
-    return builder;
-}

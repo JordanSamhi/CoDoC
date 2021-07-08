@@ -1,9 +1,0 @@
-public final void notifyViewsDisappeared(@NonNull AutofillId hostId, @NonNull long[] virtualIds){
-    Preconditions.checkArgument(hostId.isNonVirtual(), "hostId cannot be virtual: %s", hostId);
-    Preconditions.checkArgument(!ArrayUtils.isEmpty(virtualIds), "virtual ids cannot be empty");
-    if (!isContentCaptureEnabled())
-        return;
-    for (long id : virtualIds) {
-        internalNotifyViewDisappeared(new AutofillId(hostId, id, mId));
-    }
-}

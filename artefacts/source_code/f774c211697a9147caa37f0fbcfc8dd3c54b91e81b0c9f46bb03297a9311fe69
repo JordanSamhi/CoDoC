@@ -1,9 +1,0 @@
-public static int standbyBucketForPackage(String packageName, int userId, long elapsedNow){
-    UsageStatsManagerInternal usageStats = LocalServices.getService(UsageStatsManagerInternal.class);
-    int bucket = usageStats != null ? usageStats.getAppStandbyBucket(packageName, userId, elapsedNow) : 0;
-    bucket = standbyBucketToBucketIndex(bucket);
-    if (DEBUG_STANDBY) {
-        Slog.v(TAG, packageName + "/" + userId + " standby bucket index: " + bucket);
-    }
-    return bucket;
-}

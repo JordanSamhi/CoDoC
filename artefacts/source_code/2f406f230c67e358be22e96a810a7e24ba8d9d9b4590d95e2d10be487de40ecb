@@ -1,9 +1,0 @@
-public void setConfigurationAndWait(Collection<Pair<Surface, Size>> surfaces, CaptureCollector collector){
-    checkNotNull(collector, "collector must not be null");
-    Handler handler = mGLHandlerThread.getHandler();
-    final ConditionVariable condition = new ConditionVariable(false);
-    ConfigureHolder configure = new ConfigureHolder(condition, surfaces, collector);
-    Message m = handler.obtainMessage(MSG_NEW_CONFIGURATION, 0, 0, configure);
-    handler.sendMessage(m);
-    condition.block();
-}

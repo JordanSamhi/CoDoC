@@ -1,8 +1,0 @@
-public void isApplicationQualifiedForRole(@NonNull String roleName, @NonNull String packageName, @NonNull @CallbackExecutor Executor executor, @NonNull Consumer<Boolean> callback){
-    AndroidFuture<Bundle> operation = mRemoteService.postAsync(service -> {
-        AndroidFuture<Bundle> future = new AndroidFuture<>();
-        service.isApplicationQualifiedForRole(roleName, packageName, new RemoteCallback(future::complete));
-        return future;
-    });
-    propagateCallback(operation, "isApplicationQualifiedForRole", executor, callback);
-}

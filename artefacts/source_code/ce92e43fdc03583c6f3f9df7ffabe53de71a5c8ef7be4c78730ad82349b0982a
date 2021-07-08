@@ -1,9 +1,0 @@
-public void writeSetPreferredNetworkType(int phoneId, int networkType){
-    TelephonySettings s = new TelephonySettings();
-    s.preferredNetworkMode = networkType + 1;
-    if (mLastSettings.get(phoneId) != null && Arrays.equals(TelephonySettings.toByteArray(mLastSettings.get(phoneId)), TelephonySettings.toByteArray(s))) {
-        return;
-    }
-    mLastSettings.put(phoneId, s);
-    addTelephonyEvent(new TelephonyEventBuilder(phoneId).setSettings(s).build());
-}

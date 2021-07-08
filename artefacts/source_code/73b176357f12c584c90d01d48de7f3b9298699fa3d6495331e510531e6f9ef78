@@ -1,9 +1,0 @@
-public void adjustStreamVolume(int streamType, int direction, int flags, String callingPackage){
-    if ((streamType == AudioManager.STREAM_ACCESSIBILITY) && !canChangeAccessibilityVolume()) {
-        Log.w(TAG, "Trying to call adjustStreamVolume() for a11y without" + "CHANGE_ACCESSIBILITY_VOLUME / callingPackage=" + callingPackage);
-        return;
-    }
-    final boolean hasModifyAudioSettings = mContext.checkCallingPermission(Manifest.permission.MODIFY_AUDIO_SETTINGS) == PackageManager.PERMISSION_GRANTED;
-    sVolumeLogger.log(new VolumeEvent(VolumeEvent.VOL_ADJUST_STREAM_VOL, streamType, direction, flags, callingPackage));
-    adjustStreamVolume(streamType, direction, flags, callingPackage, callingPackage, Binder.getCallingUid(), hasModifyAudioSettings, VOL_ADJUST_NORMAL);
-}

@@ -1,9 +1,0 @@
-public static Signature bounce(CertificateFactory cf, Signature s) throws CertificateException{
-    final InputStream is = new ByteArrayInputStream(s.mSignature);
-    final X509Certificate cert = (X509Certificate) cf.generateCertificate(is);
-    final Signature sPrime = new Signature(cert.getEncoded());
-    if (Math.abs(sPrime.mSignature.length - s.mSignature.length) > 2) {
-        throw new CertificateException("Bounced cert length looks fishy; before " + s.mSignature.length + ", after " + sPrime.mSignature.length);
-    }
-    return sPrime;
-}

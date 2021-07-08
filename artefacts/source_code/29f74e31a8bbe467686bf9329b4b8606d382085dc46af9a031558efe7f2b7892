@@ -1,7 +1,0 @@
-public void testFilterAppsEligibleForBackup_withoutPermission() throws Exception{
-    mShadowContext.denyPermissions(android.Manifest.permission.BACKUP);
-    setUpCurrentTransport(mTransportManager, mTransport);
-    registerPackages(PACKAGE_1, PACKAGE_2);
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    expectThrows(SecurityException.class, () -> backupManagerService.filterAppsEligibleForBackup(new String[] { PACKAGE_1, PACKAGE_2 }));
-}

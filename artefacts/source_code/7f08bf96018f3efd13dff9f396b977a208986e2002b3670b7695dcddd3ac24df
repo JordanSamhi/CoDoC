@@ -1,8 +1,0 @@
-public void setRecoveryStatus(@NonNull String alias, int status) throws RemoteException{
-    checkRecoverKeyStorePermission();
-    Objects.requireNonNull(alias, "alias is null");
-    long updatedRows = mDatabase.setRecoveryStatus(Binder.getCallingUid(), alias, status);
-    if (updatedRows < 0) {
-        throw new ServiceSpecificException(ERROR_SERVICE_INTERNAL_ERROR, "Failed to set the key recovery status in the local DB.");
-    }
-}

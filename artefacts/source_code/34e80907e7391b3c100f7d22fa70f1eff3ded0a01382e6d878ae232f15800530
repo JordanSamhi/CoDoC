@@ -1,6 +1,0 @@
-public ChunksMetadataProto.ChunkListing performNonIncrementalBackup(SecretKey tertiaryKey, WrappedKeyProto.WrappedKey wrappedTertiaryKey, @Nullable byte[] fingerprintMixerSalt) throws IOException, GeneralSecurityException{
-    ChunksMetadataProto.ChunkListing newChunkListing = performBackup(tertiaryKey, fingerprintMixerSalt, BackupFileBuilder.createForNonIncremental(mBackupDataOutput), new HashSet<>());
-    throwIfCancelled();
-    newChunkListing.documentId = mCryptoBackupServer.uploadNonIncrementalBackup(mPackageName, mBackupDataOutput.toByteArray(), wrappedTertiaryKey);
-    return newChunkListing;
-}

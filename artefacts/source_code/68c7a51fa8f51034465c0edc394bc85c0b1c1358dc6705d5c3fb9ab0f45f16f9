@@ -1,9 +1,0 @@
-public synchronized void addEvent(long timestamp, SmsSessionEventBuilder builder){
-    if (events.size() >= MAX_EVENTS) {
-        events.removeFirst();
-        mEventsDropped = true;
-    }
-    builder.setDelay(TelephonyMetrics.toPrivacyFuzzedTimeInterval(mLastElapsedTimeMs, timestamp));
-    events.add(builder.build());
-    mLastElapsedTimeMs = timestamp;
-}

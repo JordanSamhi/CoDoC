@@ -1,9 +1,0 @@
-public void CGBMV(@Transpose int TransA, int KL, int KU, Float2 alpha, Allocation A, Allocation X, int incX, Float2 beta, Allocation Y, int incY){
-    validateGEMV(Element.F32_2(mRS), TransA, A, X, incX, Y, incY);
-    if (KL < 0 || KU < 0) {
-        throw new RSRuntimeException("KL and KU must be greater than or equal to 0");
-    }
-    int M = A.getType().getY();
-    int N = A.getType().getX();
-    mRS.nScriptIntrinsicBLAS_Complex(getID(mRS), RsBlas_cgbmv, TransA, 0, 0, 0, 0, M, N, 0, alpha.x, alpha.y, A.getID(mRS), X.getID(mRS), beta.x, beta.y, Y.getID(mRS), incX, incY, KL, KU);
-}

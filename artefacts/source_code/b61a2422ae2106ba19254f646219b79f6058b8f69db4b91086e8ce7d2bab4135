@@ -1,3 +1,0 @@
-public void cancelSession(byte[] transactionId, @EuiccCardManager.CancelReason int reason, AsyncResultCallback<byte[]> callback, Handler handler){
-    sendApdu(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_CANCEL_SESSION).addChildAsBytes(Tags.TAG_CTX_0, transactionId).addChildAsInteger(Tags.TAG_CTX_1, reason).build().toHex())), (byte[] response) -> parseResponseAndCheckSimpleError(response, EuiccCardErrorException.OPERATION_CANCEL_SESSION).toBytes(), callback, handler);
-}

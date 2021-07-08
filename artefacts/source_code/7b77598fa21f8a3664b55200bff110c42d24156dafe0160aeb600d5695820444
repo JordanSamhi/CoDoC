@@ -1,9 +1,0 @@
-public void testRunTask_whenNoDataToBackupOnFirstBackup_doesNotUpdateCurrentToken() throws Exception{
-    TransportMock transportMock = setUpInitializedTransport(mTransport);
-    mBackupManagerService.setCurrentToken(0L);
-    when(transportMock.transport.getCurrentRestoreSet()).thenReturn(1234L);
-    setUpAgent(PACKAGE_1);
-    KeyValueBackupTask task = createKeyValueBackupTask(transportMock, true, PACKAGE_1);
-    runTask(task);
-    assertThat(mBackupManagerService.getCurrentToken()).isEqualTo(0L);
-}

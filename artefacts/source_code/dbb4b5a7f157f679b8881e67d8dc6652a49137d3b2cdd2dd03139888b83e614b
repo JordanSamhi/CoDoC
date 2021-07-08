@@ -1,9 +1,0 @@
-public void registerForNetworkLocked(Handler h, int what, Object obj){
-    synchronized (mLock) {
-        Registrant r = new Registrant(h, what, obj);
-        mNetworkLockedRegistrants.add(r);
-        if (getState() == IccCardConstants.State.NETWORK_LOCKED) {
-            r.notifyRegistrant(new AsyncResult(null, mUiccApplication.getPersoSubState().ordinal(), null));
-        }
-    }
-}

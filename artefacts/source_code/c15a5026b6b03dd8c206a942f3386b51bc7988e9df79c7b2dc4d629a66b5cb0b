@@ -1,9 +1,0 @@
-public boolean shouldUseLowPriorityView(NotificationEntry entry){
-    boolean isGroupChild;
-    if (mFeatureFlags.isNewNotifPipelineRenderingEnabled()) {
-        isGroupChild = (entry.getParent() != GroupEntry.ROOT_ENTRY);
-    } else {
-        isGroupChild = mGroupManager.isChildInGroupWithSummary(entry.getSbn());
-    }
-    return entry.isAmbient() && !isGroupChild;
-}

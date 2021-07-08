@@ -1,9 +1,0 @@
-public void allocateBytes(@NonNull UUID storageUuid, @BytesLong long bytes, @RequiresPermission @AllocateFlags int flags) throws IOException{
-    try {
-        mStorageManager.allocateBytes(convert(storageUuid), bytes, flags, mContext.getOpPackageName());
-    } catch (ParcelableException e) {
-        e.maybeRethrow(IOException.class);
-    } catch (RemoteException e) {
-        throw e.rethrowFromSystemServer();
-    }
-}

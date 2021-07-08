@@ -1,9 +1,0 @@
-public void setAncestralSerialNumber(long ancestralSerialNumber){
-    mContext.enforceCallingPermission(android.Manifest.permission.BACKUP, "setAncestralSerialNumber");
-    Slog.v(TAG, addUserIdToLogMessage(mUserId, "Setting ancestral work profile id to " + ancestralSerialNumber));
-    try (RandomAccessFile af = getAncestralSerialNumberFile()) {
-        af.writeLong(ancestralSerialNumber);
-    } catch (IOException e) {
-        Slog.w(TAG, addUserIdToLogMessage(mUserId, "Unable to write to work profile serial mapping file:"), e);
-    }
-}

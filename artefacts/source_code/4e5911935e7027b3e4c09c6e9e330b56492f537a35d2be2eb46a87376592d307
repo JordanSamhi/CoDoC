@@ -1,9 +1,0 @@
-public void takePersistableUriPermission(@NonNull String toPackage, @NonNull Uri uri, @Intent.AccessUriMode int modeFlags){
-    Objects.requireNonNull(toPackage, "toPackage");
-    Objects.requireNonNull(uri, "uri");
-    try {
-        UriGrantsManager.getService().takePersistableUriPermission(ContentProvider.getUriWithoutUserId(uri), modeFlags, toPackage, resolveUserId(uri));
-    } catch (RemoteException e) {
-        throw e.rethrowFromSystemServer();
-    }
-}

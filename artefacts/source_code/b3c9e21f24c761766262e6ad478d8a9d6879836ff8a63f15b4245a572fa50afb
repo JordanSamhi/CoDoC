@@ -1,9 +1,0 @@
-public Location getLastKnownLocation(@NonNull String provider){
-    Preconditions.checkArgument(provider != null, "invalid null provider");
-    LocationRequest request = LocationRequest.createFromDeprecatedProvider(provider, 0, 0, true);
-    try {
-        return mService.getLastLocation(request, mContext.getPackageName(), mContext.getAttributionTag());
-    } catch (RemoteException e) {
-        throw e.rethrowFromSystemServer();
-    }
-}

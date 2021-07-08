@@ -1,9 +1,0 @@
-public void testSelectBackupTransportAsync_onUnknownUser_doesNotPropagateCall() throws Exception{
-    BackupManagerService backupManagerService = createService();
-    registerUser(backupManagerService, mUserOneId, mUserOneService);
-    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
-    TransportData transport = backupTransport();
-    ISelectBackupTransportCallback callback = mock(ISelectBackupTransportCallback.class);
-    backupManagerService.selectBackupTransportAsync(mUserTwoId, transport.getTransportComponent(), callback);
-    verify(mUserOneService, never()).selectBackupTransportAsync(transport.getTransportComponent(), callback);
-}

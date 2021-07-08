@@ -1,7 +1,0 @@
-public void chunkify_withInputStreamReturningZeroAvailability_returnsChunks() throws Exception{
-    byte[] input = (SMALL_CHUNK + CHUNK_BOUNDARY + CHUNK_2).getBytes(UTF_8);
-    ZeroAvailabilityInputStream zeroAvailabilityInputStream = new ZeroAvailabilityInputStream(input);
-    ArrayList<String> result = new ArrayList<>();
-    mChunker.chunkify(zeroAvailabilityInputStream, (chunk) -> result.add(new String(chunk, UTF_8)));
-    assertThat(result).containsExactly(SMALL_CHUNK + CHUNK_BOUNDARY + CHUNK_2).inOrder();
-}
