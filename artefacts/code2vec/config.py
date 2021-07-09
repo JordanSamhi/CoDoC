@@ -41,6 +41,8 @@ class Config:
                             help="path to store logs into. if not given logs are not saved to file.")
         parser.add_argument('-tb', '--tensorboard', dest='use_tensorboard', action='store_true',
                             help='use tensorboard during training')
+        parser.add_argument('-o', '--output_path', dest='output_path', metavar="OUTPUT_PATH",
+                            help='Output path')
         return parser
 
     def set_defaults(self):
@@ -69,6 +71,7 @@ class Config:
         self.DROPOUT_KEEP_RATE = 0.75
         self.SEPARATE_OOV_AND_PAD = False
 
+
     def load_from_args(self):
         args = self.arguments_parser().parse_args()
         # Automatically filled, do not edit:
@@ -85,6 +88,9 @@ class Config:
         self.LOGS_PATH = args.logs_path
         self.DL_FRAMEWORK = 'tensorflow' if not args.dl_framework else args.dl_framework
         self.USE_TENSORBOARD = args.use_tensorboard
+
+        #Added parameters
+        self.OUTPUT_PATH = args.output_path
 
     def __init__(self, set_defaults: bool = False, load_from_args: bool = False, verify: bool = False):
         self.NUM_TRAIN_EPOCHS: int = 0
