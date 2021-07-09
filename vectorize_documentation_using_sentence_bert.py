@@ -16,7 +16,8 @@ def load_doc_content(folder: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("USAGE: python3 vectorize_documentation.py documentation_folder output_folder")
+        print("USAGE: python3 vectorize_documentation.py "
+              "documentation_folder output_folder")
         sys.exit(1)
     documentation_folder = sys.argv[1]
     output_folder = sys.argv[2]
