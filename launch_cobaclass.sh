@@ -28,7 +28,6 @@ then
     read -sp "Path of the output folder: " OUTPUT_PATH
 fi
 
-echo $OUTPUT_PATH
 if [[ $OUTPUT_PATH == /* ]]
 then
     FULL_OUTPUT_PATH=$OUTPUT_PATH
@@ -45,8 +44,10 @@ OUTPUT_PATH_DOCUMENTATION=$FULL_OUTPUT_PATH/documentation/
 OUTPUT_PATH_SOURCE=$FULL_OUTPUT_PATH/source_code/
 
 print_info "Extracting methods source code and documentation..."
+cp -r $SOURCE_CODE_PATH src/main/resources/
 java -jar target/CoBaClaSS-0.0.1-SNAPSHOT-jar-with-dependencies.jar -s $SOURCE_CODE_PATH -o $FULL_OUTPUT_PATH -c -d
 check_return $? "Something went wrong while executing CoBaClaSS." "Source code and documentation extracted successfully in $FULL_OUTPUT_PATH."
+rm -rf src/main/resources/$(basename $SOURCE_CODE_PATH)
 
 print_info "Generating vectors from documentation"
 python3 vectorize_documentation_using_sentence_bert.py $OUTPUT_PATH_DOCUMENTATION $FULL_OUTPUT_PATH
