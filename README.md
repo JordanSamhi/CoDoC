@@ -86,6 +86,13 @@ python3 code2vector_infer.py -o OUTPUT
 
 Vectors will be available in OUTPUT/source_code_vectors.txt
 
+### Run everything at once
+
+If you want to launch everything at once, you can just use this script:
+<pre>
+./launch_cobaclass.sh -s PATH_TO_ANDROID_SOURCE -o OUTPUT_PATH
+</pre>
+
 ## Built With
 
 * [Maven](https://maven.apache.org/) - Dependency Management
