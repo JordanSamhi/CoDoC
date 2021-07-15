@@ -69,6 +69,7 @@ import org.javatuples.Triplet;
 public class CommandLineOptions {
 
 	private static final Triplet<String, String, String> SOURCE = new Triplet<String, String, String>("source", "s", "Source folder");
+	private static final Triplet<String, String, String> ANDROID_JAR = new Triplet<String, String, String>("android_jar", "a", "Android jar path");
 	private static final Triplet<String, String, String> OUTPUT = new Triplet<String, String, String>("output", "o", "Destination folder for files");
 	private static final Triplet<String, String, String> SOURCE_CODE = new Triplet<String, String, String>("code", "c", "Extract source code");
 	private static final Triplet<String, String, String> DOCUMENTATION = new Triplet<String, String, String>("documentation", "d", "Extract documentation");
@@ -131,6 +132,14 @@ public class CommandLineOptions {
 				.required(true)
 				.build();
 		
+		final Option android_jar = Option.builder(ANDROID_JAR.getValue1())
+				.longOpt(ANDROID_JAR.getValue0())
+				.desc(ANDROID_JAR.getValue2())
+				.hasArg(true)
+				.argName(ANDROID_JAR.getValue0())
+				.required(true)
+				.build();
+
 		final Option output = Option.builder(OUTPUT.getValue1())
 				.longOpt(OUTPUT.getValue0())
 				.desc(OUTPUT.getValue2())
@@ -168,6 +177,7 @@ public class CommandLineOptions {
 		this.options.addOption(output);
 		this.options.addOption(documentation);
 		this.options.addOption(source_code);
+		this.options.addOption(android_jar);
 
 		for(Option o : this.firstOptions.getOptions()) {
 			this.options.addOption(o);
@@ -182,6 +192,10 @@ public class CommandLineOptions {
 		return cmdLine.getOptionValue(OUTPUT.getValue0());
 	}
 	
+	public String getAndroidJar() {
+		return cmdLine.getOptionValue(ANDROID_JAR.getValue0());
+	}
+
 	public boolean hasOutput() {
 		return this.cmdLine.hasOption(OUTPUT.getValue1());
 	}
