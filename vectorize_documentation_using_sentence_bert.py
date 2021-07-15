@@ -29,5 +29,5 @@ if __name__ == "__main__":
     docs_embeddings = model.encode(DOCS)
     with open(f"{output_folder}/documentation_vectors.txt", "w") as doc_vec:
         for i in range(0, len(DOCS)):
-            res = f"{SHAS[i]};{' '.join(str(f) for f in docs_embeddings[i])}"
+            res = f"{SHAS[i]},{' '.join(str(f) for f in docs_embeddings[i])}"
             doc_vec.write(f"{res}\n")
