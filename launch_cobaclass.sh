@@ -2,12 +2,13 @@
 
 . lib/lib.sh --source-only
 
-while getopts s:o: option
+while getopts s:o:a: option
 do
     case "${option}"
         in
         s) SOURCE_CODE_PATH=${OPTARG};;
         o) OUTPUT_PATH=${OPTARG};;
+        a) ANDROID_JAR_PATH=${OPTARG};;
     esac
 done
 
@@ -24,6 +25,10 @@ fi
 if [ -z "$OUTPUT_PATH" ]
 then
     read -sp "Path of the output folder: " OUTPUT_PATH
+fi
+if [ -z "$ANDROID_JAR_PATH" ]
+then
+    read -sp "Path of the android jar: " ANDROID_JAR_PATH
 fi
 
 if [[ $OUTPUT_PATH == /* ]]
@@ -43,7 +48,7 @@ OUTPUT_PATH_SOURCE=$FULL_OUTPUT_PATH/source_code/
 
 print_info "Extracting methods source code and documentation..."
 cp -r $SOURCE_CODE_PATH src/main/resources/
-java -jar target/CoBaClaSS-0.0.1-SNAPSHOT-jar-with-dependencies.jar -s $SOURCE_CODE_PATH -o $FULL_OUTPUT_PATH -c -d
+java -jar target/CoBaClaSS-0.0.1-SNAPSHOT-jar-with-dependencies.jar -s $SOURCE_CODE_PATH -o $FULL_OUTPUT_PATH -c -d -a $ANDROID_JAR_PATH
 check_return $? "Something went wrong while executing CoBaClaSS." "Source code and documentation extracted successfully in $FULL_OUTPUT_PATH."
 rm -rf src/main/resources/$(basename $SOURCE_CODE_PATH)
 
