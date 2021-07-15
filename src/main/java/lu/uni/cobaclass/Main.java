@@ -1,13 +1,25 @@
 package lu.uni.cobaclass;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import lu.uni.cobaclass.utils.CommandLineOptions;
 import lu.uni.cobaclass.utils.Constants;
 import lu.uni.cobaclass.utils.Utils;
+import soot.G;
+import soot.PackManager;
+import soot.Scene;
+import soot.SceneTransformer;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Transform;
+import soot.options.Options;
+import soot.util.Chain;
 
 /*-
  * #%L
@@ -39,21 +51,45 @@ public class Main {
 		System.out.println(String.format("%s v1.0 started on %s\n", Constants.TOOL_NAME, new Date()));
 		CommandLineOptions.v().parseArgs(args);
 		String source_folder = CommandLineOptions.v().getSource();
-		String[] split = source_folder.split("/");
-		Constants.CURRENT_SOURCE_CODE_FOLDER = split[split.length - 1];
-		
-		SourceCodeExtractor sce = new SourceCodeExtractor(source_folder);
-		File file = new File(source_folder);
-		List<File> javaFiles = new ArrayList<File>();
-		Utils.getJavaFilesPaths(file, javaFiles);
-		String filePath = null;
-		for(File f: javaFiles) {
-			if(f.getPath().contains("android/")) {
-				filePath = f.getAbsolutePath();
-				sce.parseClass(filePath);
-				sce.extractAllMethodsSourceCode();
-			}
-		}
-		sce.writeSha256ToSootMethodNameFile();
+		String android_jar = CommandLineOptions.v().getAndroidJar();
+
+		initializeSoot(android_jar);
+		PackManager.v().getPack("wjtp").add(
+				new Transform("wjtp.myTransform", new SceneTransformer() {
+					protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
+						Chain<SootClass> classes = Scene.v().getClasses();
+						String javaFilePath = null;
+						SourceCodeExtractor sce = new SourceCodeExtractor(source_folder);
+						for(SootClass sc: classes) {
+							if(sc.isPublic()) {
+								javaFilePath = String.format("%s/%s", source_folder, Utils.sootClassNameToJavaPath(sc.getName()));
+								Path path = Paths.get(javaFilePath);
+								if(Files.exists(path)) {
+									sce.parseClass(javaFilePath);
+									for(SootMethod sm: sc.getMethods()) {
+										if(sm.isPublic() && sm.isConcrete() && !sm.isConstructor()) {
+											sce.extractMethodArtefacts(sm);
+										}
+									}
+								}
+							}
+						}
+						sce.dump();
+					}
+				}));
+
+		PackManager.v().runPacks();
+	}
+
+	private static void initializeSoot(String jar) {
+		G.reset();
+		Options.v().setPhaseOption("cg", "enabled:false");
+		Options.v().set_allow_phantom_refs(true);
+		Options.v().set_output_format(Options.output_format_none);
+		Options.v().set_whole_program(true);
+		List<String> dirs = new ArrayList<String>();
+		dirs.add(jar);
+		Options.v().set_process_dir(dirs);
+		Scene.v().loadNecessaryClasses();
 	}
 }

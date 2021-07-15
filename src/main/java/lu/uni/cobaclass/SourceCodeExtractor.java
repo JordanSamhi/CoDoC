@@ -3,15 +3,16 @@ package lu.uni.cobaclass;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
+import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
@@ -22,6 +23,8 @@ import com.github.javaparser.utils.SourceRoot;
 import lu.uni.cobaclass.utils.CommandLineOptions;
 import lu.uni.cobaclass.utils.Constants;
 import lu.uni.cobaclass.utils.Utils;
+import soot.SootClass;
+import soot.SootMethod;
 
 /*-
  * #%L
@@ -53,75 +56,110 @@ public class SourceCodeExtractor {
 	private String pathToSourceRootFolder;
 	private SourceRoot sourceRoot;
 	private CompilationUnit cu;
-	private Map<String, String> methodToSourceCode;
-	private String currentClass;
+	private Map<SootMethod, String> methodToSourceCode;
+	private Map<SootMethod, String> methodToDocumentation;
 	private CombinedTypeSolver combinedTypeSolver;
-	private Map<String, String> sha256ToSootMethodName;
-	private String destination;
+	private Map<SootMethod, String> sha256ToSootMethodName;
+	private List<SootMethod> methodsWithNoDocumentation;
 
 	public SourceCodeExtractor(String pathToSourceRootFolder) {
 		this.pathToSourceRootFolder = pathToSourceRootFolder;
 		this.sourceRoot = new SourceRoot(CodeGenerationUtils.mavenModuleRoot(SourceCodeExtractor.class).resolve(this.pathToSourceRootFolder));
-		this.methodToSourceCode = new HashMap<String, String>();
-		combinedTypeSolver = new CombinedTypeSolver();
-		combinedTypeSolver.add(new ReflectionTypeSolver());
-		combinedTypeSolver.add(new JavaParserTypeSolver(new File(String.format("%s/src/main/resources/%s", System.getProperty("user.dir"), Constants.CURRENT_SOURCE_CODE_FOLDER))));
-		sha256ToSootMethodName = new HashMap<String, String>();
+		this.methodToSourceCode = new HashMap<SootMethod, String>();
+		this.methodToDocumentation = new HashMap<SootMethod, String>();
+		this.combinedTypeSolver = new CombinedTypeSolver();
+		this.combinedTypeSolver.add(new ReflectionTypeSolver());
+		this.methodsWithNoDocumentation = new ArrayList<SootMethod>();
+		combinedTypeSolver.add(new JavaParserTypeSolver(new File(CommandLineOptions.v().getSource())));
+		this.sha256ToSootMethodName = new HashMap<SootMethod, String>();
 	}
 
 	public void parseClass(String className) {
-		String clazz = className;
-		if(!className.contains(".java")) {
-			clazz = String.format("%s.java", className);
-		}
-		this.currentClass = clazz;
 		this.cu = this.sourceRoot.parse("", className);
 	}
 
-	public String extractMethodSourceCode(final String methodName) {
-		if(this.cu == null) {
-			throw new ExceptionInInitializerError("Compilation Unit not initialized, please run parseClass before.");
-		}
-		String sourceCode = cu.accept(new GenericVisitorAdapter<String, Void>() {
-			public String visit(MethodDeclaration md, Void arg) {
-				String sourceCode = null;
-				if(Utils.removeLessAndGreaterSigns(md.getDeclarationAsString(false, false, false)).equals(methodName)) {
-					sourceCode = md.toString();
-				}
-				return sourceCode;
-			}
-		}, null);
-		return sourceCode;
-	}
-
-	public void extractAllMethodsSourceCode() {
+	public void extractMethodArtefacts(SootMethod sm) {
 		if(this.cu == null) {
 			throw new ExceptionInInitializerError("Compilation Unit not initialized, please run parseClass before.");
 		}
 		cu.accept(new VoidVisitorAdapter<Void>() {
 			public void visit(MethodDeclaration md, Void arg) {
-				if(isPublic(md) && md.getComment().isPresent() && md.getBody().isPresent()) {
-					String sootClassName = Utils.toSootClassName(Utils.fullPathToClassName(currentClass), md, combinedTypeSolver);
-					String sha256SootClassName = DigestUtils.sha256Hex(sootClassName);
-					sha256ToSootMethodName.put(sha256SootClassName, sootClassName);
-					StringBuilder source_code = new StringBuilder();
-					source_code.append(md.getDeclarationAsString(true, true, true));
-					source_code.append(md.getBody().get());
-					methodToSourceCode.put(sootClassName, source_code.toString());
-					if(CommandLineOptions.v().hasOutput()) {
-						destination = CommandLineOptions.v().getOutput();
-					}else {
-						destination = String.format("%s/cobaclass_output/", System.getProperty("user.dir"));
-					}
-					if(CommandLineOptions.v().hasSourceCode()) {
-						writeInFile(destination, "source_code", sha256SootClassName, source_code.toString());
-					}
-					if(CommandLineOptions.v().hasDocumentation()) {
-						writeInFile(destination, "documentation", sha256SootClassName, md.getComment().get().getContent());
+				if(Utils.sootMethodEqualsNormalMethod(sm, md)) {
+					if(md.getBody().isPresent()) {
+						StringBuilder source_code = new StringBuilder();
+						source_code.append(md.getDeclarationAsString(true, true, true));
+						source_code.append(md.getBody().get());
+						methodToSourceCode.put(sm, source_code.toString());
+						String sha256SootSignature = DigestUtils.sha256Hex(sm.getSignature());
+						sha256ToSootMethodName.put(sm, sha256SootSignature);
+						if(md.getComment().isPresent()) {
+							methodToDocumentation.put(sm, md.getComment().get().getContent());
+						}else {
+							if(hasOverride(md)) {
+								methodsWithNoDocumentation.add(sm);
+							}
+						}
 					}
 				}
 			}
 		}, null);
+	}
+
+	public void dump() {
+		String parentDocumentation = null;
+		for(SootMethod sm: this.methodsWithNoDocumentation) {
+			if(!this.methodToDocumentation.containsKey(sm)) {
+				parentDocumentation = getParentDocumentation(sm);
+				if(parentDocumentation != null) {
+					this.methodToDocumentation.put(sm, parentDocumentation);
+				}
+			}
+		}
+		String destination = null;
+		if(CommandLineOptions.v().hasOutput()) {
+			destination = CommandLineOptions.v().getOutput();
+		}else {
+			destination = Constants.DEFAULT_OUTPUT;
+		}
+		if(CommandLineOptions.v().hasDocumentation()) {
+			for (Map.Entry<SootMethod, String> entry : this.methodToDocumentation.entrySet()) {
+				writeInFile(destination, "documentation", this.sha256ToSootMethodName.get(entry.getKey()), entry.getValue());
+			}
+		}
+		if(CommandLineOptions.v().hasSourceCode()) {
+			for (Map.Entry<SootMethod, String> entry : this.methodToSourceCode.entrySet()) {
+				if(this.methodToDocumentation.containsKey(entry.getKey())){
+					writeInFile(destination, "source_code", this.sha256ToSootMethodName.get(entry.getKey()), entry.getValue());
+				}
+			}
+		}
+		this.writeSha256ToSootMethodNameFile(destination);
+	}
+
+	private String getParentDocumentation(SootMethod sm) {
+		String subsig = sm.getSubSignature();
+		SootClass parentClass = sm.getDeclaringClass().getSuperclass();
+		SootMethod parentMethod = parentClass.getMethodUnsafe(subsig);
+		while(parentMethod == null) {
+			if(!parentClass.hasSuperclass()) {
+				break;
+			}
+			parentClass = parentClass.getSuperclass();
+			parentMethod = parentClass.getMethodUnsafe(subsig);
+		}
+		if(parentMethod != null && methodToDocumentation.containsKey(parentMethod)) {
+			return methodToDocumentation.get(parentMethod);
+		}
+		return null;
+	}
+
+	private boolean hasOverride(MethodDeclaration md) {
+		for(AnnotationExpr ae: md.getAnnotations()) {
+			if(ae.getNameAsString().equals("Override")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void writeInFile(String destination, String folder, String filename, String content) {
@@ -145,22 +183,15 @@ public class SourceCodeExtractor {
 		}
 	}
 
-	private boolean isPublic(MethodDeclaration md) {
-		for(Modifier m: md.getModifiers()) {
-			if(m.getKeyword().asString().equals(Constants.PUBLIC)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public void writeSha256ToSootMethodNameFile() {
-		File f = new File(String.format("%s/%s.txt", this.destination, "sha256ToSootMethodName"));
+	public void writeSha256ToSootMethodNameFile(String destination) {
+		File f = new File(String.format("%s/%s.txt", destination, "sha256ToSootMethodName"));
 		try {
 			if (f.createNewFile()) {
 				FileWriter fw = new FileWriter(f);
-				for (Map.Entry<String, String> entry : this.sha256ToSootMethodName.entrySet()) {
-				    fw.write(String.format("%s|||%s\n", entry.getKey(), entry.getValue()));
+				for (Map.Entry<SootMethod, String> entry : this.sha256ToSootMethodName.entrySet()) {
+					if(this.methodToDocumentation.containsKey(entry.getKey()) && this.methodToSourceCode.containsKey(entry.getKey())) {
+						fw.write(String.format("%s|||%s\n", entry.getKey().getSignature(), entry.getValue()));
+					}
 				}
 				fw.close();
 			} else {
