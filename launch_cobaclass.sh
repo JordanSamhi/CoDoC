@@ -2,8 +2,6 @@
 
 . lib/lib.sh --source-only
 
-if test -f "target/CoBaClaSS-0.0.1-SNAPSHOT.jaer"; then echo 1;fi
-
 while getopts s:o: option
 do
     case "${option}"
