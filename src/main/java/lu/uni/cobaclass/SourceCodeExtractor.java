@@ -144,6 +144,9 @@ public class SourceCodeExtractor {
 
 	private String getParentDocumentation(SootMethod sm) {
 		String subsig = sm.getSubSignature();
+		if(!sm.getDeclaringClass().hasSuperclass()) {
+			return null;
+		}
 		SootClass parentClass = sm.getDeclaringClass().getSuperclass();
 		SootMethod parentMethod = parentClass.getMethodUnsafe(subsig);
 		while(parentMethod == null) {
@@ -158,6 +161,8 @@ public class SourceCodeExtractor {
 				return methodToDocumentation.get(parentMethod);
 			}else if(this.abstractMethodToDocumentation.containsKey(parentMethod)){
 				return abstractMethodToDocumentation.get(parentMethod);
+			}else {
+				return getParentDocumentation(parentMethod);
 			}
 		}
 		return null;
