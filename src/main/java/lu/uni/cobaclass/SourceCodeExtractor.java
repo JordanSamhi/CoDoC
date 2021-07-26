@@ -58,6 +58,7 @@ public class SourceCodeExtractor {
 	private CompilationUnit cu;
 	private Map<SootMethod, String> methodToSourceCode;
 	private Map<SootMethod, String> methodToDocumentation;
+	private Map<SootMethod, String> abstractMethodToDocumentation;
 	private CombinedTypeSolver combinedTypeSolver;
 	private Map<SootMethod, String> sha256ToSootMethodName;
 	private List<SootMethod> methodsWithNoDocumentation;
@@ -67,6 +68,7 @@ public class SourceCodeExtractor {
 		this.sourceRoot = new SourceRoot(CodeGenerationUtils.mavenModuleRoot(SourceCodeExtractor.class).resolve(this.pathToSourceRootFolder));
 		this.methodToSourceCode = new HashMap<SootMethod, String>();
 		this.methodToDocumentation = new HashMap<SootMethod, String>();
+		this.abstractMethodToDocumentation = new HashMap<SootMethod, String>();
 		this.combinedTypeSolver = new CombinedTypeSolver();
 		this.combinedTypeSolver.add(new ReflectionTypeSolver());
 		this.methodsWithNoDocumentation = new ArrayList<SootMethod>();
@@ -98,6 +100,10 @@ public class SourceCodeExtractor {
 							if(hasOverride(md)) {
 								methodsWithNoDocumentation.add(sm);
 							}
+						}
+					}else {
+						if(md.getComment().isPresent()) {
+							abstractMethodToDocumentation.put(sm, md.getComment().get().getContent());
 						}
 					}
 				}
@@ -147,8 +153,12 @@ public class SourceCodeExtractor {
 			parentClass = parentClass.getSuperclass();
 			parentMethod = parentClass.getMethodUnsafe(subsig);
 		}
-		if(parentMethod != null && methodToDocumentation.containsKey(parentMethod)) {
-			return methodToDocumentation.get(parentMethod);
+		if(parentMethod != null) {
+			if(this.methodToDocumentation.containsKey(parentMethod)){
+				return methodToDocumentation.get(parentMethod);
+			}else if(this.abstractMethodToDocumentation.containsKey(parentMethod)){
+				return abstractMethodToDocumentation.get(parentMethod);
+			}
 		}
 		return null;
 	}

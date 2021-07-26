@@ -67,7 +67,7 @@ public class Main {
 								if(Files.exists(path)) {
 									sce.parseClass(javaFilePath);
 									for(SootMethod sm: sc.getMethods()) {
-										if(sm.isPublic() && sm.isConcrete() && !sm.isConstructor()) {
+										if(sm.isPublic() && !sm.isConstructor()) {
 											sce.extractMethodArtefacts(sm);
 										}
 									}
