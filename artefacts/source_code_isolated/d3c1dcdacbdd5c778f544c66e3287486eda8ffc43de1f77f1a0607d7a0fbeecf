@@ -1,0 +1,48 @@
+public static synchronized SocketFactory getDefault(){
+    if (defaultSocketFactory != null && lastVersion == Security.getVersion()) {
+        return defaultSocketFactory;
+    }
+    lastVersion = Security.getVersion();
+    SSLSocketFactory previousDefaultSocketFactory = defaultSocketFactory;
+    defaultSocketFactory = null;
+    String clsName = getSecurityProperty("ssl.SocketFactory.provider");
+    if (clsName != null) {
+        if (previousDefaultSocketFactory != null && clsName.equals(previousDefaultSocketFactory.getClass().getName())) {
+            defaultSocketFactory = previousDefaultSocketFactory;
+            return defaultSocketFactory;
+        }
+        log("setting up default SSLSocketFactory");
+        try {
+            Class<?> cls = null;
+            try {
+                cls = Class.forName(clsName);
+            } catch (ClassNotFoundException e) {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                if (cl == null) {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+                if (cl != null) {
+                    cls = Class.forName(clsName, true, cl);
+                }
+            }
+            log("class " + clsName + " is loaded");
+            SSLSocketFactory fac = (SSLSocketFactory) cls.newInstance();
+            log("instantiated an instance of class " + clsName);
+            defaultSocketFactory = fac;
+            return fac;
+        } catch (Exception e) {
+            log("SSLSocketFactory instantiation failed: " + e.toString());
+        }
+    }
+    try {
+        SSLContext context = SSLContext.getDefault();
+        if (context != null) {
+            defaultSocketFactory = context.getSocketFactory();
+        } else {
+            defaultSocketFactory = new DefaultSSLSocketFactory(new IllegalStateException("No factory found."));
+        }
+        return defaultSocketFactory;
+    } catch (NoSuchAlgorithmException e) {
+        return new DefaultSSLSocketFactory(e);
+    }
+}

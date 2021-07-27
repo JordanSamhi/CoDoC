@@ -1,0 +1,35 @@
+
+     * Creates a new directory. The check for the existence of the file and the
+     * creation of the directory if it does not exist are a single operation
+     * that is atomic with respect to all other filesystem activities that might
+     * affect the directory. The {@link #createDirectories createDirectories}
+     * method should be used where it is required to create all nonexistent
+     * parent directories first.
+     *
+     * <p> The {@code attrs} parameter is optional {@link FileAttribute
+     * file-attributes} to set atomically when creating the directory. Each
+     * attribute is identified by its {@link FileAttribute#name name}. If more
+     * than one attribute of the same name is included in the array then all but
+     * the last occurrence is ignored.
+     *
+     * @param   dir
+     *          the directory to create
+     * @param   attrs
+     *          an optional list of file attributes to set atomically when
+     *          creating the directory
+     *
+     * @return  the directory
+     *
+     * @throws  UnsupportedOperationException
+     *          if the array contains an attribute that cannot be set atomically
+     *          when creating the directory
+     * @throws  FileAlreadyExistsException
+     *          if a directory could not otherwise be created because a file of
+     *          that name already exists <i>(optional specific exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs or the parent directory does not exist
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method is invoked to check write access to the new directory.
+     

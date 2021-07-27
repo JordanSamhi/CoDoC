@@ -1,0 +1,17 @@
+public int hashCode(){
+    int hashCode = 17;
+    for (int i = 0; i < METADATA_KEYS_TYPE.size(); i++) {
+        String key = METADATA_KEYS_TYPE.keyAt(i);
+        switch(METADATA_KEYS_TYPE.valueAt(i)) {
+            case METADATA_TYPE_TEXT:
+                hashCode = 31 * hashCode + Objects.hash(getString(key));
+                break;
+            case METADATA_TYPE_LONG:
+                hashCode = 31 * hashCode + Long.hashCode(getLong(key));
+                break;
+            default:
+                break;
+        }
+    }
+    return hashCode;
+}

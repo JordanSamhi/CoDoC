@@ -1,0 +1,10 @@
+public BigDecimal scaleByPowerOfTen(int n){
+    long newScale = scale - (long) n;
+    if (bitLength < 64) {
+        if (smallValue == 0) {
+            return zeroScaledBy(newScale);
+        }
+        return valueOf(smallValue, safeLongToInt(newScale));
+    }
+    return new BigDecimal(getUnscaledValue(), safeLongToInt(newScale));
+}

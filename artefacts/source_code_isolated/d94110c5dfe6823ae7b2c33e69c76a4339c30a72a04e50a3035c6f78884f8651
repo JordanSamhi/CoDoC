@@ -1,0 +1,5 @@
+public synchronized int getTrafficClass() throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    return ((Integer) (getImpl().getOption(SocketOptions.IP_TOS))).intValue();
+}

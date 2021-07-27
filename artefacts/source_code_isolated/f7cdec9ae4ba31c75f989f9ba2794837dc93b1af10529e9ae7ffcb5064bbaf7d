@@ -1,0 +1,10 @@
+public void pause(){
+    if (Looper.myLooper() == null) {
+        throw new AndroidRuntimeException("Animators may only be run on Looper threads");
+    }
+    boolean previouslyPaused = mPaused;
+    super.pause();
+    if (!previouslyPaused && mPaused) {
+        mPauseTime = -1;
+    }
+}

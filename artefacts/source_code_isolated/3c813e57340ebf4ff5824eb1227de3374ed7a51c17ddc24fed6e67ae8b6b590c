@@ -1,0 +1,55 @@
+public void read(InputStream is) throws IOException{
+    FastInputStream fis = new FastInputStream(is);
+    byte[] lbuf = new byte[512];
+    attr.read(fis, lbuf);
+    int ecount = 0, acount = 0;
+    int asize = 2;
+    int len;
+    String name = null;
+    boolean skipEmptyLines = true;
+    byte[] lastline = null;
+    while ((len = fis.readLine(lbuf)) != -1) {
+        if (lbuf[--len] != '\n') {
+            throw new IOException("manifest line too long");
+        }
+        if (len > 0 && lbuf[len - 1] == '\r') {
+            --len;
+        }
+        if (len == 0 && skipEmptyLines) {
+            continue;
+        }
+        skipEmptyLines = false;
+        if (name == null) {
+            name = parseName(lbuf, len);
+            if (name == null) {
+                throw new IOException("invalid manifest format");
+            }
+            if (fis.peek() == ' ') {
+                lastline = new byte[len - 6];
+                System.arraycopy(lbuf, 6, lastline, 0, len - 6);
+                continue;
+            }
+        } else {
+            byte[] buf = new byte[lastline.length + len - 1];
+            System.arraycopy(lastline, 0, buf, 0, lastline.length);
+            System.arraycopy(lbuf, 1, buf, lastline.length, len - 1);
+            if (fis.peek() == ' ') {
+                lastline = buf;
+                continue;
+            }
+            name = new String(buf, 0, buf.length, "UTF8");
+            lastline = null;
+        }
+        Attributes attr = getAttributes(name);
+        if (attr == null) {
+            attr = new Attributes(asize);
+            entries.put(name, attr);
+        }
+        attr.read(fis, lbuf);
+        ecount++;
+        acount += attr.size();
+        asize = Math.max(2, acount / ecount);
+        name = null;
+        skipEmptyLines = true;
+    }
+}

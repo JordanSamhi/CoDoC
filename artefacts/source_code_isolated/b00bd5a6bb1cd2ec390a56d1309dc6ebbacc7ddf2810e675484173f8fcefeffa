@@ -1,0 +1,13 @@
+public Drawable mutate(){
+    if (!mMutated && super.mutate() == this) {
+        mState = mutateConstantState();
+        if (mDrawable != null) {
+            mDrawable.mutate();
+        }
+        if (mState != null) {
+            mState.mDrawableState = mDrawable != null ? mDrawable.getConstantState() : null;
+        }
+        mMutated = true;
+    }
+    return this;
+}

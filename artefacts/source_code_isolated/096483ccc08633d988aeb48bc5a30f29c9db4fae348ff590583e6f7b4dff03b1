@@ -1,0 +1,48 @@
+public static ZoneOffset of(String offsetId){
+    Objects.requireNonNull(offsetId, "offsetId");
+    ZoneOffset offset = ID_CACHE.get(offsetId);
+    if (offset != null) {
+        return offset;
+    }
+    final int hours, minutes, seconds;
+    switch(offsetId.length()) {
+        case 2:
+            offsetId = offsetId.charAt(0) + "0" + offsetId.charAt(1);
+        case 3:
+            hours = parseNumber(offsetId, 1, false);
+            minutes = 0;
+            seconds = 0;
+            break;
+        case 5:
+            hours = parseNumber(offsetId, 1, false);
+            minutes = parseNumber(offsetId, 3, false);
+            seconds = 0;
+            break;
+        case 6:
+            hours = parseNumber(offsetId, 1, false);
+            minutes = parseNumber(offsetId, 4, true);
+            seconds = 0;
+            break;
+        case 7:
+            hours = parseNumber(offsetId, 1, false);
+            minutes = parseNumber(offsetId, 3, false);
+            seconds = parseNumber(offsetId, 5, false);
+            break;
+        case 9:
+            hours = parseNumber(offsetId, 1, false);
+            minutes = parseNumber(offsetId, 4, true);
+            seconds = parseNumber(offsetId, 7, true);
+            break;
+        default:
+            throw new DateTimeException("Invalid ID for ZoneOffset, invalid format: " + offsetId);
+    }
+    char first = offsetId.charAt(0);
+    if (first != '+' && first != '-') {
+        throw new DateTimeException("Invalid ID for ZoneOffset, plus/minus not found when expected: " + offsetId);
+    }
+    if (first == '-') {
+        return ofHoursMinutesSeconds(-hours, -minutes, -seconds);
+    } else {
+        return ofHoursMinutesSeconds(hours, minutes, seconds);
+    }
+}

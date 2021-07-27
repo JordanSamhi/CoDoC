@@ -1,0 +1,13 @@
+public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfo(info);
+    info.setClassName(ViewPager.class.getName());
+    info.setScrollable(canScroll());
+    if (canScrollHorizontally(1)) {
+        info.addAction(AccessibilityAction.ACTION_SCROLL_FORWARD);
+        info.addAction(AccessibilityAction.ACTION_SCROLL_RIGHT);
+    }
+    if (canScrollHorizontally(-1)) {
+        info.addAction(AccessibilityAction.ACTION_SCROLL_BACKWARD);
+        info.addAction(AccessibilityAction.ACTION_SCROLL_LEFT);
+    }
+}

@@ -1,0 +1,11 @@
+public final long skip(long n) throws IOException{
+    ensureOpen();
+    long pos = nativeAssetSeek(mAssetNativePtr, 0, 0);
+    if ((pos + n) > mLength) {
+        n = mLength - pos;
+    }
+    if (n > 0) {
+        nativeAssetSeek(mAssetNativePtr, n, 0);
+    }
+    return n;
+}

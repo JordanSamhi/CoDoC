@@ -1,0 +1,13 @@
+public void draw(@NonNull Canvas canvas, CharSequence text, @IntRange(from = 0) int start, @IntRange(from = 0) int end, float x, int top, int y, int bottom, @NonNull Paint paint){
+    Drawable b = getCachedDrawable();
+    canvas.save();
+    int transY = bottom - b.getBounds().bottom;
+    if (mVerticalAlignment == ALIGN_BASELINE) {
+        transY -= paint.getFontMetricsInt().descent;
+    } else if (mVerticalAlignment == ALIGN_CENTER) {
+        transY = top + (bottom - top) / 2 - b.getBounds().height() / 2;
+    }
+    canvas.translate(x, transY);
+    b.draw(canvas);
+    canvas.restore();
+}

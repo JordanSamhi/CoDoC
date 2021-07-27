@@ -1,0 +1,17 @@
+public void calculateRemaining(BatterySipper app, BatteryStats stats, long rawRealtimeUs, long rawUptimeUs, int statsType){
+    final BatteryStats.ControllerActivityCounter counter = stats.getBluetoothControllerActivity();
+    final long idleTimeMs = counter.getIdleTimeCounter().getCountLocked(statsType);
+    final long txTimeMs = counter.getTxTimeCounters()[0].getCountLocked(statsType);
+    final long rxTimeMs = counter.getRxTimeCounter().getCountLocked(statsType);
+    final long totalTimeMs = idleTimeMs + txTimeMs + rxTimeMs;
+    double powerMah = counter.getPowerCounter().getCountLocked(statsType) / (double) (1000 * 60 * 60);
+    if (powerMah == 0) {
+        powerMah = ((idleTimeMs * mIdleMa) + (rxTimeMs * mRxMa) + (txTimeMs * mTxMa)) / (1000 * 60 * 60);
+    }
+    powerMah = Math.max(0, powerMah - mAppTotalPowerMah);
+    if (DEBUG && powerMah != 0) {
+        Log.d(TAG, "Bluetooth active: time=" + (totalTimeMs) + " power=" + BatteryStatsHelper.makemAh(powerMah));
+    }
+    app.bluetoothPowerMah = powerMah;
+    app.bluetoothRunningTimeMs = Math.max(0, totalTimeMs - mAppTotalTimeMs);
+}

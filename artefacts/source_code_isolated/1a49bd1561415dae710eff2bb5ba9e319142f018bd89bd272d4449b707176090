@@ -1,0 +1,11 @@
+public static Locale forLanguageTag(String languageTag){
+    LanguageTag tag = LanguageTag.parse(languageTag, null);
+    InternalLocaleBuilder bldr = new InternalLocaleBuilder();
+    bldr.setLanguageTag(tag);
+    BaseLocale base = bldr.getBaseLocale();
+    LocaleExtensions exts = bldr.getLocaleExtensions();
+    if (exts == null && base.getVariant().length() > 0) {
+        exts = getCompatibilityExtensions(base.getLanguage(), base.getScript(), base.getRegion(), base.getVariant());
+    }
+    return getInstance(base, exts);
+}

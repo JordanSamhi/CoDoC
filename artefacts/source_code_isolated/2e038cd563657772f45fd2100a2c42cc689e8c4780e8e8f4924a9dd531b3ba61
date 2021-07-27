@@ -1,0 +1,27 @@
+public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event){
+    KeyEvent down = KeyEvent.changeAction(event, KeyEvent.ACTION_DOWN);
+    final int which = doKeyDown(keyCode, down, event);
+    if (which == KEY_EVENT_NOT_HANDLED) {
+        return super.onKeyMultiple(keyCode, repeatCount, event);
+    }
+    if (which == KEY_EVENT_HANDLED) {
+        return true;
+    }
+    repeatCount--;
+    KeyEvent up = KeyEvent.changeAction(event, KeyEvent.ACTION_UP);
+    if (which == KEY_DOWN_HANDLED_BY_KEY_LISTENER) {
+        mEditor.mKeyListener.onKeyUp(this, (Editable) mText, keyCode, up);
+        while (--repeatCount > 0) {
+            mEditor.mKeyListener.onKeyDown(this, (Editable) mText, keyCode, down);
+            mEditor.mKeyListener.onKeyUp(this, (Editable) mText, keyCode, up);
+        }
+        hideErrorIfUnchanged();
+    } else if (which == KEY_DOWN_HANDLED_BY_MOVEMENT_METHOD) {
+        mMovement.onKeyUp(this, mSpannable, keyCode, up);
+        while (--repeatCount > 0) {
+            mMovement.onKeyDown(this, mSpannable, keyCode, down);
+            mMovement.onKeyUp(this, mSpannable, keyCode, up);
+        }
+    }
+    return true;
+}

@@ -1,0 +1,9 @@
+public void write(int c) throws IOException{
+    synchronized (lock) {
+        if (writeBuffer == null) {
+            writeBuffer = new char[WRITE_BUFFER_SIZE];
+        }
+        writeBuffer[0] = (char) c;
+        write(writeBuffer, 0, 1);
+    }
+}

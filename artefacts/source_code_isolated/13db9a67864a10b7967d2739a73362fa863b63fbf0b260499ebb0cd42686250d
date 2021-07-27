@@ -1,0 +1,39 @@
+public void send(DatagramPacket p, byte ttl) throws IOException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    checkAddress(p.getAddress(), "send");
+    synchronized (ttlLock) {
+        synchronized (p) {
+            if (connectState == ST_NOT_CONNECTED) {
+                SecurityManager security = System.getSecurityManager();
+                if (security != null) {
+                    if (p.getAddress().isMulticastAddress()) {
+                        security.checkMulticast(p.getAddress(), ttl);
+                    } else {
+                        security.checkConnect(p.getAddress().getHostAddress(), p.getPort());
+                    }
+                }
+            } else {
+                InetAddress packetAddress = null;
+                packetAddress = p.getAddress();
+                if (packetAddress == null) {
+                    p.setAddress(connectedAddress);
+                    p.setPort(connectedPort);
+                } else if ((!packetAddress.equals(connectedAddress)) || p.getPort() != connectedPort) {
+                    throw new SecurityException("connected address and packet address" + " differ");
+                }
+            }
+            byte dttl = getTTL();
+            try {
+                if (ttl != dttl) {
+                    getImpl().setTTL(ttl);
+                }
+                getImpl().send(p);
+            } finally {
+                if (ttl != dttl) {
+                    getImpl().setTTL(dttl);
+                }
+            }
+        }
+    }
+}

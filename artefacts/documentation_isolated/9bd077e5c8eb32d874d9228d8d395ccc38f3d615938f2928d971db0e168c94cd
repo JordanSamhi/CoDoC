@@ -1,0 +1,74 @@
+
+     * Starts a new process using the attributes of this process builder.
+     *
+     * <p>The new process will
+     * invoke the command and arguments given by {@link #command()},
+     * in a working directory as given by {@link #directory()},
+     * with a process environment as given by {@link #environment()}.
+     *
+     * <p>This method checks that the command is a valid operating
+     * system command.  Which commands are valid is system-dependent,
+     * but at the very least the command must be a non-empty list of
+     * non-null strings.
+     *
+     * <p>A minimal set of system dependent environment variables may
+     * be required to start a process on some operating systems.
+     * As a result, the subprocess may inherit additional environment variable
+     * settings beyond those in the process builder's {@link #environment()}.
+     *
+     * <p>If there is a security manager, its
+     * {@link SecurityManager#checkExec checkExec}
+     * method is called with the first component of this object's
+     * {@code command} array as its argument. This may result in
+     * a {@link SecurityException} being thrown.
+     *
+     * <p>Starting an operating system process is highly system-dependent.
+     * Among the many things that can go wrong are:
+     * <ul>
+     * <li>The operating system program file was not found.
+     * <li>Access to the program file was denied.
+     * <li>The working directory does not exist.
+     * </ul>
+     *
+     * <p>In such cases an exception will be thrown.  The exact nature
+     * of the exception is system-dependent, but it will always be a
+     * subclass of {@link IOException}.
+     *
+     * <p>Subsequent modifications to this process builder will not
+     * affect the returned {@link Process}.
+     *
+     * @return a new {@link Process} object for managing the subprocess
+     *
+     * @throws NullPointerException
+     *         if an element of the command list is null
+     *
+     * @throws IndexOutOfBoundsException
+     *         if the command is an empty list (has size {@code 0})
+     *
+     * @throws SecurityException
+     *         if a security manager exists and
+     *         <ul>
+     *
+     *         <li>its
+     *         {@link SecurityManager#checkExec checkExec}
+     *         method doesn't allow creation of the subprocess, or
+     *
+     *         <li>the standard input to the subprocess was
+     *         {@linkplain #redirectInput redirected from a file}
+     *         and the security manager's
+     *         {@link SecurityManager#checkRead checkRead} method
+     *         denies read access to the file, or
+     *
+     *         <li>the standard output or standard error of the
+     *         subprocess was
+     *         {@linkplain #redirectOutput redirected to a file}
+     *         and the security manager's
+     *         {@link SecurityManager#checkWrite checkWrite} method
+     *         denies write access to the file
+     *
+     *         </ul>
+     *
+     * @throws IOException if an I/O error occurs
+     *
+     * @see Runtime#exec(String[], String[], java.io.File)
+     

@@ -1,0 +1,7 @@
+public Temporal adjustInto(Temporal temporal){
+    if (Chronology.from(temporal).equals(IsoChronology.INSTANCE) == false) {
+        throw new DateTimeException("Adjustment only supported on ISO date-time");
+    }
+    temporal = temporal.with(MONTH_OF_YEAR, month);
+    return temporal.with(DAY_OF_MONTH, Math.min(temporal.range(DAY_OF_MONTH).getMaximum(), day));
+}

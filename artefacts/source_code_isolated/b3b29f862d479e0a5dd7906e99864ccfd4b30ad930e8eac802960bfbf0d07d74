@@ -1,0 +1,18 @@
+public void clear(){
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        for (Node<E> f = first; f != null; ) {
+            f.item = null;
+            Node<E> n = f.next;
+            f.prev = null;
+            f.next = null;
+            f = n;
+        }
+        first = last = null;
+        count = 0;
+        notFull.signalAll();
+    } finally {
+        lock.unlock();
+    }
+}

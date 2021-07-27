@@ -1,0 +1,36 @@
+
+         * Produces a method handle for a static method.
+         * The type of the method handle will be that of the method.
+         * (Since static methods do not take receivers, there is no
+         * additional receiver argument inserted into the method handle type,
+         * as there would be with {@link #findVirtual findVirtual} or {@link #findSpecial findSpecial}.)
+         * The method and all its argument types must be accessible to the lookup object.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p>
+         * If the returned method handle is invoked, the method's class will
+         * be initialized, if it has not already been initialized.
+         * <p><b>Example:</b>
+         * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle MH_asList = publicLookup().findStatic(Arrays.class,
+  "asList", methodType(List.class, Object[].class));
+assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
+         * }</pre></blockquote>
+         * @param refc the class from which the method is accessed
+         * @param name the name of the method
+         * @param type the type of the method
+         * @return the desired method handle
+         * @throws NoSuchMethodException if the method does not exist
+         * @throws IllegalAccessException if access checking fails,
+         *                                or if the method is not {@code static},
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @exception SecurityException if a security manager is present and it
+         *                              <a href="MethodHandles.Lookup.html#secmgr">refuses access</a>
+         * @throws NullPointerException if any argument is null
+         

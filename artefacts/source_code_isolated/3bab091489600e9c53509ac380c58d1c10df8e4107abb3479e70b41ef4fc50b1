@@ -1,0 +1,14 @@
+public static ZonedDateTime ofStrict(LocalDateTime localDateTime, ZoneOffset offset, ZoneId zone){
+    Objects.requireNonNull(localDateTime, "localDateTime");
+    Objects.requireNonNull(offset, "offset");
+    Objects.requireNonNull(zone, "zone");
+    ZoneRules rules = zone.getRules();
+    if (rules.isValidOffset(localDateTime, offset) == false) {
+        ZoneOffsetTransition trans = rules.getTransition(localDateTime);
+        if (trans != null && trans.isGap()) {
+            throw new DateTimeException("LocalDateTime '" + localDateTime + "' does not exist in zone '" + zone + "' due to a gap in the local time-line, typically caused by daylight savings");
+        }
+        throw new DateTimeException("ZoneOffset '" + offset + "' is not valid for LocalDateTime '" + localDateTime + "' in zone '" + zone + "'");
+    }
+    return new ZonedDateTime(localDateTime, offset, zone);
+}

@@ -1,0 +1,7 @@
+public static void parallelSort(double[] a){
+    int n = a.length, p, g;
+    if (n <= MIN_ARRAY_SORT_GRAN || (p = ForkJoinPool.getCommonPoolParallelism()) == 1)
+        DualPivotQuicksort.sort(a, 0, n - 1, null, 0, 0);
+    else
+        new ArraysParallelSortHelpers.FJDouble.Sorter(null, a, new double[n], 0, n, 0, ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ? MIN_ARRAY_SORT_GRAN : g).invoke();
+}

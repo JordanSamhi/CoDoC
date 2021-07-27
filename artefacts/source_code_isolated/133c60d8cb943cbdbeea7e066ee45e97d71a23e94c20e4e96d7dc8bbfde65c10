@@ -1,3 +1,7 @@
-public boolean isDeviceColorManaged(){
-    return mManager.isDeviceColorManaged();
+ boolean isDeviceColorManaged(){
+    try {
+        return mCdm.isDeviceColorManaged();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

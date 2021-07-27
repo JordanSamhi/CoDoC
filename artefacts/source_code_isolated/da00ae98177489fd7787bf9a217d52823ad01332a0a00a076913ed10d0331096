@@ -1,0 +1,7 @@
+public ZoneOffset getOffset(LocalDateTime localDateTime){
+    Object info = getOffsetInfo(localDateTime);
+    if (info instanceof ZoneOffsetTransition) {
+        return ((ZoneOffsetTransition) info).getOffsetBefore();
+    }
+    return (ZoneOffset) info;
+}

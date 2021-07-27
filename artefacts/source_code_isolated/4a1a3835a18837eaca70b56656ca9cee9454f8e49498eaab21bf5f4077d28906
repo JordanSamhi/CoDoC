@@ -1,0 +1,15 @@
+public LocalTime plusNanos(long nanosToAdd){
+    if (nanosToAdd == 0) {
+        return this;
+    }
+    long nofd = toNanoOfDay();
+    long newNofd = ((nanosToAdd % NANOS_PER_DAY) + nofd + NANOS_PER_DAY) % NANOS_PER_DAY;
+    if (nofd == newNofd) {
+        return this;
+    }
+    int newHour = (int) (newNofd / NANOS_PER_HOUR);
+    int newMinute = (int) ((newNofd / NANOS_PER_MINUTE) % MINUTES_PER_HOUR);
+    int newSecond = (int) ((newNofd / NANOS_PER_SECOND) % SECONDS_PER_MINUTE);
+    int newNano = (int) (newNofd % NANOS_PER_SECOND);
+    return create(newHour, newMinute, newSecond, newNano);
+}

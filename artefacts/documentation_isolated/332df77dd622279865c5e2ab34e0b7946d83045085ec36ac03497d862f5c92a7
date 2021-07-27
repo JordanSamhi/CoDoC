@@ -1,0 +1,32 @@
+
+     * Sets the subjectKeyIdentifier criterion. The
+     * {@code X509Certificate} must contain a SubjectKeyIdentifier
+     * extension for which the contents of the extension
+     * matches the specified criterion value.
+     * If the criterion value is {@code null}, no
+     * subjectKeyIdentifier check will be done.
+     * <p>
+     * If {@code subjectKeyID} is not {@code null}, it
+     * should contain a single DER encoded value corresponding to the contents
+     * of the extension value (not including the object identifier,
+     * criticality setting, and encapsulating OCTET STRING)
+     * for a SubjectKeyIdentifier extension.
+     * The ASN.1 notation for this structure follows.
+     *
+     * <pre>{@code
+     * SubjectKeyIdentifier ::= KeyIdentifier
+     *
+     * KeyIdentifier ::= OCTET STRING
+     * }</pre>
+     * <p>
+     * Since the format of subject key identifiers is not mandated by
+     * any standard, subject key identifiers are not parsed by the
+     * {@code X509CertSelector}. Instead, the values are compared using
+     * a byte-by-byte comparison.
+     * <p>
+     * Note that the byte array supplied here is cloned to protect against
+     * subsequent modifications.
+     *
+     * @param subjectKeyID the subject key identifier (or {@code null})
+     * @see #getSubjectKeyIdentifier
+     

@@ -1,0 +1,30 @@
+public final void init(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException{
+    if (serviceIterator == null) {
+        spi.engineInit(params, random);
+        return;
+    }
+    Exception failure = null;
+    KeyGeneratorSpi mySpi = spi;
+    do {
+        try {
+            mySpi.engineInit(params, random);
+            initType = I_PARAMS;
+            initKeySize = 0;
+            initParams = params;
+            initRandom = random;
+            return;
+        } catch (Exception e) {
+            if (failure == null) {
+                failure = e;
+            }
+            mySpi = nextSpi(mySpi, false);
+        }
+    } while (mySpi != null);
+    if (failure instanceof InvalidAlgorithmParameterException) {
+        throw (InvalidAlgorithmParameterException) failure;
+    }
+    if (failure instanceof RuntimeException) {
+        throw (RuntimeException) failure;
+    }
+    throw new InvalidAlgorithmParameterException("init() failed", failure);
+}

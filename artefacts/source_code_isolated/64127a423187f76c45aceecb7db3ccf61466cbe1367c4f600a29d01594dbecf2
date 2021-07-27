@@ -1,0 +1,11 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    VisibilityInfo visInfo = getVisibilityChangeInfo(startValues, endValues);
+    if (visInfo.visibilityChange && (visInfo.startParent != null || visInfo.endParent != null)) {
+        if (visInfo.fadeIn) {
+            return onAppear(sceneRoot, startValues, visInfo.startVisibility, endValues, visInfo.endVisibility);
+        } else {
+            return onDisappear(sceneRoot, startValues, visInfo.startVisibility, endValues, visInfo.endVisibility);
+        }
+    }
+    return null;
+}

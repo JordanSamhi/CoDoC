@@ -1,0 +1,33 @@
+public int getOffset(int era, int year, int month, int day, int dayOfWeek, int millis){
+    if (era != GregorianCalendar.AD && era != GregorianCalendar.BC) {
+        throw new IllegalArgumentException("Illegal era " + era);
+    }
+    int y = year;
+    if (era == GregorianCalendar.BC) {
+        y = 1 - y;
+    }
+    if (y >= 292278994) {
+        y = 2800 + y % 2800;
+    } else if (y <= -292269054) {
+        y = (int) CalendarUtils.mod((long) y, 28);
+    }
+    int m = month + 1;
+    BaseCalendar cal = gcal;
+    BaseCalendar.Date cdate = (BaseCalendar.Date) cal.newCalendarDate(TimeZone.NO_TIMEZONE);
+    cdate.setDate(y, m, day);
+    long time = cal.getTime(cdate);
+    time += millis - rawOffset;
+    if (time < GregorianCalendar.DEFAULT_GREGORIAN_CUTOVER) {
+        cal = (BaseCalendar) CalendarSystem.forName("julian");
+        cdate = (BaseCalendar.Date) cal.newCalendarDate(TimeZone.NO_TIMEZONE);
+        cdate.setNormalizedDate(y, m, day);
+        time = cal.getTime(cdate) + millis - rawOffset;
+    }
+    if ((cdate.getNormalizedYear() != y) || (cdate.getMonth() != m) || (cdate.getDayOfMonth() != day) || (dayOfWeek < Calendar.SUNDAY || dayOfWeek > Calendar.SATURDAY) || (millis < 0 || millis >= (24 * 60 * 60 * 1000))) {
+        throw new IllegalArgumentException();
+    }
+    if (!useDaylight || year < startYear || era != GregorianCalendar.CE) {
+        return rawOffset;
+    }
+    return getOffset(cal, cdate, y, time);
+}

@@ -1,0 +1,8 @@
+public static LocalTime now(Clock clock){
+    Objects.requireNonNull(clock, "clock");
+    final Instant now = clock.instant();
+    ZoneOffset offset = clock.getZone().getRules().getOffset(now);
+    long localSecond = now.getEpochSecond() + offset.getTotalSeconds();
+    int secsOfDay = (int) Math.floorMod(localSecond, SECONDS_PER_DAY);
+    return ofNanoOfDay(secsOfDay * NANOS_PER_SECOND + now.getNano());
+}

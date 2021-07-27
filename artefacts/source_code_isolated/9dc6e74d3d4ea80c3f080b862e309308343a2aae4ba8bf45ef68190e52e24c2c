@@ -1,0 +1,10 @@
+public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex){
+    if (!isEnabled()) {
+        return null;
+    }
+    final int degrees = getDegreesFromXY(event.getX(), event.getY(), false);
+    if (degrees != -1) {
+        return PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND);
+    }
+    return super.onResolvePointerIcon(event, pointerIndex);
+}

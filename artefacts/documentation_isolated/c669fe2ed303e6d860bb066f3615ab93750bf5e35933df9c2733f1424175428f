@@ -1,0 +1,49 @@
+
+     * Opens a directory, returning a {@link DirectoryStream} to iterate over
+     * the entries in the directory. The elements returned by the directory
+     * stream's {@link DirectoryStream#iterator iterator} are of type {@code
+     * Path}, each one representing an entry in the directory. The {@code Path}
+     * objects are obtained as if by {@link Path#resolve(Path) resolving} the
+     * name of the directory entry against {@code dir}. The entries returned by
+     * the iterator are filtered by matching the {@code String} representation
+     * of their file names against the given <em>globbing</em> pattern.
+     *
+     * <p> For example, suppose we want to iterate over the files ending with
+     * ".java" in a directory:
+     * <pre>
+     *     Path dir = ...
+     *     try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(dir, "*.java")) {
+     *         :
+     *     }
+     * </pre>
+     *
+     * <p> The globbing pattern is specified by the {@link
+     * FileSystem#getPathMatcher getPathMatcher} method.
+     *
+     * <p> When not using the try-with-resources construct, then directory
+     * stream's {@code close} method should be invoked after iteration is
+     * completed so as to free any resources held for the open directory.
+     *
+     * <p> When an implementation supports operations on entries in the
+     * directory that execute in a race-free manner then the returned directory
+     * stream is a {@link SecureDirectoryStream}.
+     *
+     * @param   dir
+     *          the path to the directory
+     * @param   glob
+     *          the glob pattern
+     *
+     * @return  a new and open {@code DirectoryStream} object
+     *
+     * @throws  java.util.regex.PatternSyntaxException
+     *          if the pattern is invalid
+     * @throws  NotDirectoryException
+     *          if the file could not otherwise be opened because it is not
+     *          a directory <i>(optional specific exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkRead(String) checkRead}
+     *          method is invoked to check read access to the directory.
+     

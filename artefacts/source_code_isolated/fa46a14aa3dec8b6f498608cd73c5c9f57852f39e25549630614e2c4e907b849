@@ -1,0 +1,9 @@
+public final void setKeyEntry(String alias, Key key, char[] password, Certificate[] chain) throws KeyStoreException{
+    if (!initialized) {
+        throw new KeyStoreException("Uninitialized keystore");
+    }
+    if ((key instanceof PrivateKey) && (chain == null || chain.length == 0)) {
+        throw new IllegalArgumentException("Private key must be " + "accompanied by certificate " + "chain");
+    }
+    keyStoreSpi.engineSetKeyEntry(alias, key, password, chain);
+}

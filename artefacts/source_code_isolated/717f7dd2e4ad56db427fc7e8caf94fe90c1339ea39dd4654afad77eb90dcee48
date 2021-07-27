@@ -1,0 +1,22 @@
+public boolean remove(Object o){
+    if (o != null) {
+        Node<E> next, pred = null;
+        for (Node<E> p = first(); p != null; pred = p, p = next) {
+            boolean removed = false;
+            E item = p.item;
+            if (item != null) {
+                if (!o.equals(item)) {
+                    next = succ(p);
+                    continue;
+                }
+                removed = casItem(p, item, null);
+            }
+            next = succ(p);
+            if (pred != null && next != null)
+                casNext(pred, p, next);
+            if (removed)
+                return true;
+        }
+    }
+    return false;
+}

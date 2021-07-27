@@ -1,0 +1,24 @@
+public final IBinder onBind(@NonNull Intent intent){
+    BaseBundle.setShouldDefuse(true);
+    if (SERVICE_INTERFACE.equals(intent.getAction())) {
+        return new IInlineSuggestionRenderService.Stub() {
+
+            @Override
+            public void renderSuggestion(@NonNull IInlineSuggestionUiCallback callback, @NonNull InlinePresentation presentation, int width, int height, @Nullable IBinder hostInputToken, int displayId, int userId, int sessionId) {
+                mMainHandler.sendMessage(obtainMessage(InlineSuggestionRenderService::handleRenderSuggestion, InlineSuggestionRenderService.this, callback, presentation, width, height, hostInputToken, displayId, userId, sessionId));
+            }
+
+            @Override
+            public void getInlineSuggestionsRendererInfo(@NonNull RemoteCallback callback) {
+                mMainHandler.sendMessage(obtainMessage(InlineSuggestionRenderService::handleGetInlineSuggestionsRendererInfo, InlineSuggestionRenderService.this, callback));
+            }
+
+            @Override
+            public void destroySuggestionViews(int userId, int sessionId) {
+                mMainHandler.sendMessage(obtainMessage(InlineSuggestionRenderService::handleDestroySuggestionViews, InlineSuggestionRenderService.this, userId, sessionId));
+            }
+        }.asBinder();
+    }
+    Log.w(TAG, "Tried to bind to wrong intent (should be " + SERVICE_INTERFACE + ": " + intent);
+    return null;
+}

@@ -1,0 +1,71 @@
+
+     * Makes an <em>array-collecting</em> method handle, which accepts a given number of trailing
+     * positional arguments and collects them into an array argument.
+     * The new method handle adapts, as its <i>target</i>,
+     * the current method handle.  The type of the adapter will be
+     * the same as the type of the target, except that a single trailing
+     * parameter (usually of type {@code arrayType}) is replaced by
+     * {@code arrayLength} parameters whose type is element type of {@code arrayType}.
+     * <p>
+     * If the array type differs from the final argument type on the original target,
+     * the original target is adapted to take the array type directly,
+     * as if by a call to {@link #asType asType}.
+     * <p>
+     * When called, the adapter replaces its trailing {@code arrayLength}
+     * arguments by a single new array of type {@code arrayType}, whose elements
+     * comprise (in order) the replaced arguments.
+     * Finally the target is called.
+     * What the target eventually returns is returned unchanged by the adapter.
+     * <p>
+     * (The array may also be a shared constant when {@code arrayLength} is zero.)
+     * <p>
+     * (<em>Note:</em> The {@code arrayType} is often identical to the last
+     * parameter type of the original target.
+     * It is an explicit argument for symmetry with {@code asSpreader}, and also
+     * to allow the target to use a simple {@code Object} as its last parameter type.)
+     * <p>
+     * In order to create a collecting adapter which is not restricted to a particular
+     * number of collected arguments, use {@link #asVarargsCollector asVarargsCollector} instead.
+     * <p>
+     * Here are some examples of array-collecting method handles:
+     * <blockquote><pre>{@code
+MethodHandle deepToString = publicLookup()
+  .findStatic(Arrays.class, "deepToString", methodType(String.class, Object[].class));
+assertEquals("[won]",   (String) deepToString.invokeExact(new Object[]{"won"}));
+MethodHandle ts1 = deepToString.asCollector(Object[].class, 1);
+assertEquals(methodType(String.class, Object.class), ts1.type());
+//assertEquals("[won]", (String) ts1.invokeExact(         new Object[]{"won"})); //FAIL
+assertEquals("[[won]]", (String) ts1.invokeExact((Object) new Object[]{"won"}));
+// arrayType can be a subtype of Object[]
+MethodHandle ts2 = deepToString.asCollector(String[].class, 2);
+assertEquals(methodType(String.class, String.class, String.class), ts2.type());
+assertEquals("[two, too]", (String) ts2.invokeExact("two", "too"));
+MethodHandle ts0 = deepToString.asCollector(Object[].class, 0);
+assertEquals("[]", (String) ts0.invokeExact());
+// collectors can be nested, Lisp-style
+MethodHandle ts22 = deepToString.asCollector(Object[].class, 3).asCollector(String[].class, 2);
+assertEquals("[A, B, [C, D]]", ((String) ts22.invokeExact((Object)'A', (Object)"B", "C", "D")));
+// arrayType can be any primitive array type
+MethodHandle bytesToString = publicLookup()
+  .findStatic(Arrays.class, "toString", methodType(String.class, byte[].class))
+  .asCollector(byte[].class, 3);
+assertEquals("[1, 2, 3]", (String) bytesToString.invokeExact((byte)1, (byte)2, (byte)3));
+MethodHandle longsToString = publicLookup()
+  .findStatic(Arrays.class, "toString", methodType(String.class, long[].class))
+  .asCollector(long[].class, 1);
+assertEquals("[123]", (String) longsToString.invokeExact((long)123));
+     * }</pre></blockquote>
+     * @param arrayType often {@code Object[]}, the type of the array argument which will collect the arguments
+     * @param arrayLength the number of arguments to collect into a new array argument
+     * @return a new method handle which collects some trailing argument
+     *         into an array, before calling the original method handle
+     * @throws NullPointerException if {@code arrayType} is a null reference
+     * @throws IllegalArgumentException if {@code arrayType} is not an array type
+     *         or {@code arrayType} is not assignable to this method handle's trailing parameter type,
+     *         or {@code arrayLength} is not a legal array size,
+     *         or the resulting method handle's type would have
+     *         <a href="MethodHandle.html#maxarity">too many parameters</a>
+     * @throws WrongMethodTypeException if the implied {@code asType} call fails
+     * @see #asSpreader
+     * @see #asVarargsCollector
+     

@@ -1,0 +1,10 @@
+public static WeekFields of(DayOfWeek firstDayOfWeek, int minimalDaysInFirstWeek){
+    String key = firstDayOfWeek.toString() + minimalDaysInFirstWeek;
+    WeekFields rules = CACHE.get(key);
+    if (rules == null) {
+        rules = new WeekFields(firstDayOfWeek, minimalDaysInFirstWeek);
+        CACHE.putIfAbsent(key, rules);
+        rules = CACHE.get(key);
+    }
+    return rules;
+}

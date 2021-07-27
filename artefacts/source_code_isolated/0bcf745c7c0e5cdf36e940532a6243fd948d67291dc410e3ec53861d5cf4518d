@@ -1,0 +1,24 @@
+public static boolean disjoint(Collection<?> c1, Collection<?> c2){
+    Collection<?> contains = c2;
+    Collection<?> iterate = c1;
+    if (c1 instanceof Set) {
+        iterate = c2;
+        contains = c1;
+    } else if (!(c2 instanceof Set)) {
+        int c1size = c1.size();
+        int c2size = c2.size();
+        if (c1size == 0 || c2size == 0) {
+            return true;
+        }
+        if (c1size > c2size) {
+            iterate = c2;
+            contains = c1;
+        }
+    }
+    for (Object e : iterate) {
+        if (contains.contains(e)) {
+            return false;
+        }
+    }
+    return true;
+}

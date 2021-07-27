@@ -1,0 +1,16 @@
+public long toMillis(){
+    if (unit != null) {
+        return unit.toMillis(value);
+    } else {
+        long secs = instant.getEpochSecond();
+        int nanos = instant.getNano();
+        long r = secs * 1000;
+        long ax = Math.abs(secs);
+        if (((ax | 1000) >>> 31 != 0)) {
+            if ((r / 1000) != secs) {
+                return (secs < 0) ? Long.MIN_VALUE : Long.MAX_VALUE;
+            }
+        }
+        return r + nanos / 1000_000;
+    }
+}

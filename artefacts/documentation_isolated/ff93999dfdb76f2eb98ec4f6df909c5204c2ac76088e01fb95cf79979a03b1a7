@@ -1,0 +1,34 @@
+
+     * Subtracts this period from the specified temporal object.
+     * <p>
+     * This returns a temporal object of the same observable type as the input
+     * with this period subtracted.
+     * If the temporal has a chronology, it must be the ISO chronology.
+     * <p>
+     * In most cases, it is clearer to reverse the calling pattern by using
+     * {@link Temporal#minus(TemporalAmount)}.
+     * <pre>
+     *   // these two lines are equivalent, but the second approach is recommended
+     *   dateTime = thisPeriod.subtractFrom(dateTime);
+     *   dateTime = dateTime.minus(thisPeriod);
+     * </pre>
+     * <p>
+     * The calculation operates as follows.
+     * First, the chronology of the temporal is checked to ensure it is ISO chronology or null.
+     * Second, if the months are zero, the years are subtracted if non-zero, otherwise
+     * the combination of years and months is subtracted if non-zero.
+     * Finally, any days are subtracted.
+     * <p>
+     * This approach ensures that a partial period can be subtracted from a partial date.
+     * For example, a period of years and/or months can be subtracted from a {@code YearMonth},
+     * but a period including days cannot.
+     * The approach also subtracts years and months together when necessary, which ensures
+     * correct behaviour at the end of the month.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param temporal  the temporal object to adjust, not null
+     * @return an object of the same type with the adjustment made, not null
+     * @throws DateTimeException if unable to subtract
+     * @throws ArithmeticException if numeric overflow occurs
+     

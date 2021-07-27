@@ -1,0 +1,29 @@
+
+     * Grant permission to access a specific Uri to another package, regardless
+     * of whether that package has general permission to access the Uri's
+     * content provider.  This can be used to grant specific, temporary
+     * permissions, typically in response to user interaction (such as the
+     * user opening an attachment that you would like someone else to
+     * display).
+     *
+     * <p>Normally you should use {@link Intent#FLAG_GRANT_READ_URI_PERMISSION
+     * Intent.FLAG_GRANT_READ_URI_PERMISSION} or
+     * {@link Intent#FLAG_GRANT_WRITE_URI_PERMISSION
+     * Intent.FLAG_GRANT_WRITE_URI_PERMISSION} with the Intent being used to
+     * start an activity instead of this function directly.  If you use this
+     * function directly, you should be sure to call
+     * {@link #revokeUriPermission} when the target should no longer be allowed
+     * to access it.
+     *
+     * <p>To succeed, the content provider owning the Uri must have set the
+     * {@link android.R.styleable#AndroidManifestProvider_grantUriPermissions
+     * grantUriPermissions} attribute in its manifest or included the
+     * {@link android.R.styleable#AndroidManifestGrantUriPermission
+     * &lt;grant-uri-permissions&gt;} tag.
+     *
+     * @param toPackage The package you would like to allow to access the Uri.
+     * @param uri The Uri you would like to grant access to.
+     * @param modeFlags The desired access modes.
+     *
+     * @see #revokeUriPermission
+     

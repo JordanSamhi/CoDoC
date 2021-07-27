@@ -1,0 +1,44 @@
+public Set<K> keySet(){
+    Set<K> ks = keySet;
+    if (ks == null) {
+        ks = new AbstractSet<K>() {
+
+            public Iterator<K> iterator() {
+                return new Iterator<K>() {
+
+                    private Iterator<Entry<K, V>> i = entrySet().iterator();
+
+                    public boolean hasNext() {
+                        return i.hasNext();
+                    }
+
+                    public K next() {
+                        return i.next().getKey();
+                    }
+
+                    public void remove() {
+                        i.remove();
+                    }
+                };
+            }
+
+            public int size() {
+                return AbstractMap.this.size();
+            }
+
+            public boolean isEmpty() {
+                return AbstractMap.this.isEmpty();
+            }
+
+            public void clear() {
+                AbstractMap.this.clear();
+            }
+
+            public boolean contains(Object k) {
+                return AbstractMap.this.containsKey(k);
+            }
+        };
+        keySet = ks;
+    }
+    return ks;
+}

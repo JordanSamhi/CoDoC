@@ -1,0 +1,31 @@
+
+    * Retrieves the unique {@link java.io.Reader Reader} object associated
+    * with this console.
+    * <p>
+    * This method is intended to be used by sophisticated applications, for
+    * example, a {@link java.util.Scanner} object which utilizes the rich
+    * parsing/scanning functionality provided by the <tt>Scanner</tt>:
+    * <blockquote><pre>
+    * Console con = System.console();
+    * if (con != null) {
+    *     Scanner sc = new Scanner(con.reader());
+    *     ...
+    * }
+    * </pre></blockquote>
+    * <p>
+    * For simple applications requiring only line-oriented reading, use
+    * <tt>{@link #readLine}</tt>.
+    * <p>
+    * The bulk read operations {@link java.io.Reader#read(char[]) read(char[]) },
+    * {@link java.io.Reader#read(char[], int, int) read(char[], int, int) } and
+    * {@link java.io.Reader#read(java.nio.CharBuffer) read(java.nio.CharBuffer)}
+    * on the returned object will not read in characters beyond the line
+    * bound for each invocation, even if the destination buffer has space for
+    * more characters. The {@code Reader}'s {@code read} methods may block if a
+    * line bound has not been entered or reached on the console's input device.
+    * A line bound is considered to be any one of a line feed (<tt>'\n'</tt>),
+    * a carriage return (<tt>'\r'</tt>), a carriage return followed immediately
+    * by a linefeed, or an end of stream.
+    *
+    * @return  The reader associated with this console
+    

@@ -1,0 +1,8 @@
+public ListIterator<E> listIterator(int index){
+    synchronized (l.lock) {
+        checkForComodification();
+        if (index < 0 || index > size)
+            throw new IndexOutOfBoundsException(outOfBounds(index, size));
+        return new COWSubListIterator<E>(l, index, offset, size);
+    }
+}

@@ -1,0 +1,22 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("ApplicationExitInfo(timestamp=");
+    sb.append(new SimpleDateFormat().format(new Date(mTimestamp)));
+    sb.append(" pid=").append(mPid);
+    sb.append(" realUid=").append(mRealUid);
+    sb.append(" packageUid=").append(mPackageUid);
+    sb.append(" definingUid=").append(mDefiningUid);
+    sb.append(" user=").append(UserHandle.getUserId(mPackageUid));
+    sb.append(" process=").append(mProcessName);
+    sb.append(" reason=").append(mReason).append(" (").append(reasonCodeToString(mReason)).append(")");
+    sb.append(" status=").append(mStatus);
+    sb.append(" importance=").append(mImportance);
+    sb.append(" pss=");
+    DebugUtils.sizeValueToString(mPss << 10, sb);
+    sb.append(" rss=");
+    DebugUtils.sizeValueToString(mRss << 10, sb);
+    sb.append(" description=").append(mDescription);
+    sb.append(" state=").append(ArrayUtils.isEmpty(mState) ? "empty" : Integer.toString(mState.length) + " bytes");
+    sb.append(" trace=").append(mTraceFile);
+    return sb.toString();
+}

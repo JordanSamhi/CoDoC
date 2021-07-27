@@ -1,0 +1,13 @@
+public boolean dispatchTouchEvent(MotionEvent event){
+    if (super.dispatchTouchEvent(event)) {
+        return true;
+    }
+    if (DEBUG)
+        Log.d(TAG, "dispatchTouchEvent(" + event + ")");
+    if (mSession == null) {
+        return false;
+    }
+    InputEvent copiedEvent = event.copy();
+    int ret = mSession.dispatchInputEvent(copiedEvent, copiedEvent, mFinishedInputEventCallback, mHandler);
+    return ret != Session.DISPATCH_NOT_HANDLED;
+}

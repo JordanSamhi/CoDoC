@@ -1,0 +1,17 @@
+public static long UTC(int year, int month, int date, int hrs, int min, int sec){
+    int y = year + 1900;
+    if (month >= 12) {
+        y += month / 12;
+        month %= 12;
+    } else if (month < 0) {
+        y += CalendarUtils.floorDivide(month, 12);
+        month = CalendarUtils.mod(month, 12);
+    }
+    int m = month + 1;
+    BaseCalendar cal = getCalendarSystem(y);
+    BaseCalendar.Date udate = (BaseCalendar.Date) cal.newCalendarDate(null);
+    udate.setNormalizedDate(y, m, date).setTimeOfDay(hrs, min, sec, 0);
+    Date d = new Date(0);
+    d.normalize(udate);
+    return d.fastTime;
+}

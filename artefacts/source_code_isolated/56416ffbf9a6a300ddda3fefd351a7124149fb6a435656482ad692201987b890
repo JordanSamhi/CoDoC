@@ -1,0 +1,27 @@
+public void onActivityCreated(Bundle savedInstanceState){
+    super.onActivityCreated(savedInstanceState);
+    if (!mShowsDialog) {
+        return;
+    }
+    View view = getView();
+    if (view != null) {
+        if (view.getParent() != null) {
+            throw new IllegalStateException("DialogFragment can not be attached to a container view");
+        }
+        mDialog.setContentView(view);
+    }
+    final Activity activity = getActivity();
+    if (activity != null) {
+        mDialog.setOwnerActivity(activity);
+    }
+    mDialog.setCancelable(mCancelable);
+    if (!mDialog.takeCancelAndDismissListeners("DialogFragment", this, this)) {
+        throw new IllegalStateException("You can not set Dialog's OnCancelListener or OnDismissListener");
+    }
+    if (savedInstanceState != null) {
+        Bundle dialogState = savedInstanceState.getBundle(SAVED_DIALOG_STATE_TAG);
+        if (dialogState != null) {
+            mDialog.onRestoreInstanceState(dialogState);
+        }
+    }
+}

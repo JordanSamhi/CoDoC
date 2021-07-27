@@ -1,0 +1,38 @@
+public int getResponseCode() throws IOException{
+    if (responseCode != -1) {
+        return responseCode;
+    }
+    Exception exc = null;
+    try {
+        getInputStream();
+    } catch (Exception e) {
+        exc = e;
+    }
+    String statusLine = getHeaderField(0);
+    if (statusLine == null) {
+        if (exc != null) {
+            if (exc instanceof RuntimeException)
+                throw (RuntimeException) exc;
+            else
+                throw (IOException) exc;
+        }
+        return -1;
+    }
+    if (statusLine.startsWith("HTTP/1.")) {
+        int codePos = statusLine.indexOf(' ');
+        if (codePos > 0) {
+            int phrasePos = statusLine.indexOf(' ', codePos + 1);
+            if (phrasePos > 0 && phrasePos < statusLine.length()) {
+                responseMessage = statusLine.substring(phrasePos + 1);
+            }
+            if (phrasePos < 0)
+                phrasePos = statusLine.length();
+            try {
+                responseCode = Integer.parseInt(statusLine.substring(codePos + 1, phrasePos));
+                return responseCode;
+            } catch (NumberFormatException e) {
+            }
+        }
+    }
+    return -1;
+}

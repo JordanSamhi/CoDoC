@@ -1,0 +1,19 @@
+public static Set<Currency> getAvailableCurrencies(){
+    synchronized (Currency.class) {
+        if (available == null) {
+            available = new HashSet<>();
+            Set<android.icu.util.Currency> icuAvailableCurrencies = android.icu.util.Currency.getAvailableCurrencies();
+            for (android.icu.util.Currency icuCurrency : icuAvailableCurrencies) {
+                Currency currency = getInstance(icuCurrency.getCurrencyCode());
+                if (currency == null) {
+                    currency = new Currency(icuCurrency);
+                    instances.put(currency.currencyCode, currency);
+                }
+                available.add(currency);
+            }
+        }
+    }
+    @SuppressWarnings("unchecked")
+    Set<Currency> result = (Set<Currency>) available.clone();
+    return result;
+}

@@ -1,0 +1,11 @@
+public void mark(int readAheadLimit) throws IOException{
+    if (readAheadLimit < 0) {
+        throw new IllegalArgumentException("Read-ahead limit < 0");
+    }
+    synchronized (lock) {
+        ensureOpen();
+        this.readAheadLimit = readAheadLimit;
+        markedChar = nextChar;
+        markedSkipLF = skipLF;
+    }
+}

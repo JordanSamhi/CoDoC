@@ -1,0 +1,9 @@
+public static String getLocalizedDateTimePattern(FormatStyle dateStyle, FormatStyle timeStyle, Chronology chrono, Locale locale){
+    Objects.requireNonNull(locale, "locale");
+    Objects.requireNonNull(chrono, "chrono");
+    if (dateStyle == null && timeStyle == null) {
+        throw new IllegalArgumentException("Either dateStyle or timeStyle must be non-null");
+    }
+    String pattern = Calendar.getDateTimeFormatString(ULocale.forLocale(locale), chrono.getCalendarType(), convertStyle(dateStyle), convertStyle(timeStyle));
+    return pattern;
+}

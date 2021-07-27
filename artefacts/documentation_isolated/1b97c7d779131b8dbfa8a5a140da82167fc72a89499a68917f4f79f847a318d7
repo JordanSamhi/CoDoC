@@ -1,0 +1,54 @@
+
+     * Returns absolute path to application-specific directory on the primary
+     * shared/external storage device where the application can place cache
+     * files it owns. These files are internal to the application, and not
+     * typically visible to the user as media.
+     * <p>
+     * This is like {@link #getCacheDir()} in that these files will be deleted
+     * when the application is uninstalled, however there are some important
+     * differences:
+     * <ul>
+     * <li>The platform does not always monitor the space available in shared
+     * storage, and thus may not automatically delete these files. Apps should
+     * always manage the maximum space used in this location. Currently the only
+     * time files here will be deleted by the platform is when running on
+     * {@link android.os.Build.VERSION_CODES#JELLY_BEAN_MR1} or later and
+     * {@link Environment#isExternalStorageEmulated(File)} returns true.
+     * <li>Shared storage may not always be available, since removable media can
+     * be ejected by the user. Media state can be checked using
+     * {@link Environment#getExternalStorageState(File)}.
+     * <li>There is no security enforced with these files. For example, any
+     * application holding
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} can write to
+     * these files.
+     * </ul>
+     * <p>
+     * If a shared storage device is emulated (as determined by
+     * {@link Environment#isExternalStorageEmulated(File)}), its contents are
+     * backed by a private user data partition, which means there is little
+     * benefit to storing data here instead of the private directory returned by
+     * {@link #getCacheDir()}.
+     * <p>
+     * Starting in {@link android.os.Build.VERSION_CODES#KITKAT}, no permissions
+     * are required to read or write to the returned path; it's always
+     * accessible to the calling app. This only applies to paths generated for
+     * package name of the calling application. To access paths belonging to
+     * other packages,
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} and/or
+     * {@link android.Manifest.permission#READ_EXTERNAL_STORAGE} are required.
+     * <p>
+     * On devices with multiple users (as described by {@link UserManager}),
+     * each user has their own isolated shared storage. Applications only have
+     * access to the shared storage for the user they're running as.
+     * <p>
+     * The returned path may change over time if different shared storage media
+     * is inserted, so only relative paths should be persisted.
+     *
+     * @return the absolute path to application-specific directory. May return
+     *         {@code null} if shared storage is not currently available.
+     * @see #getCacheDir
+     * @see #getExternalCacheDirs()
+     * @see Environment#getExternalStorageState(File)
+     * @see Environment#isExternalStorageEmulated(File)
+     * @see Environment#isExternalStorageRemovable(File)
+     

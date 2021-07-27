@@ -1,3 +1,9 @@
 public void queueEvent(Runnable r){
-    mGLThread.queueEvent(r);
+    if (r == null) {
+        throw new IllegalArgumentException("r must not be null");
+    }
+    synchronized (sGLThreadManager) {
+        mEventQueue.add(r);
+        sGLThreadManager.notifyAll();
+    }
 }

@@ -1,0 +1,18 @@
+public ZonedDateTime with(TemporalAdjuster adjuster){
+    if (adjuster instanceof LocalDate) {
+        return resolveLocal(LocalDateTime.of((LocalDate) adjuster, dateTime.toLocalTime()));
+    } else if (adjuster instanceof LocalTime) {
+        return resolveLocal(LocalDateTime.of(dateTime.toLocalDate(), (LocalTime) adjuster));
+    } else if (adjuster instanceof LocalDateTime) {
+        return resolveLocal((LocalDateTime) adjuster);
+    } else if (adjuster instanceof OffsetDateTime) {
+        OffsetDateTime odt = (OffsetDateTime) adjuster;
+        return ofLocal(odt.toLocalDateTime(), zone, odt.getOffset());
+    } else if (adjuster instanceof Instant) {
+        Instant instant = (Instant) adjuster;
+        return create(instant.getEpochSecond(), instant.getNano(), zone);
+    } else if (adjuster instanceof ZoneOffset) {
+        return resolveOffset((ZoneOffset) adjuster);
+    }
+    return (ZonedDateTime) adjuster.adjustInto(this);
+}

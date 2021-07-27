@@ -1,0 +1,15 @@
+public int getBaseline(){
+    View child = null;
+    if (getChildCount() > 0) {
+        child = getChildAt(0);
+    } else if (mAdapter != null && mAdapter.getCount() > 0) {
+        child = makeView(0, false);
+        mRecycler.put(0, child);
+    }
+    if (child != null) {
+        final int childBaseline = child.getBaseline();
+        return childBaseline >= 0 ? child.getTop() + childBaseline : -1;
+    } else {
+        return -1;
+    }
+}

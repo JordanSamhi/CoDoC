@@ -1,0 +1,17 @@
+public void getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin){
+    if (srcBegin < 0) {
+        throw new StringIndexOutOfBoundsException(this, srcBegin);
+    }
+    if (srcEnd > length()) {
+        throw new StringIndexOutOfBoundsException(this, srcEnd);
+    }
+    if (srcBegin > srcEnd) {
+        throw new StringIndexOutOfBoundsException(this, srcEnd - srcBegin);
+    }
+    int j = dstBegin;
+    int n = srcEnd;
+    int i = srcBegin;
+    while (i < n) {
+        dst[j++] = (byte) charAt(i++);
+    }
+}

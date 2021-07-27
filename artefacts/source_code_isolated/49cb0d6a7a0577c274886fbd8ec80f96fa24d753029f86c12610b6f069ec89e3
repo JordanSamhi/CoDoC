@@ -1,0 +1,17 @@
+public int hashCode(){
+    int hashCode = 0;
+    synchronized (principals) {
+        Iterator<Principal> pIterator = principals.iterator();
+        while (pIterator.hasNext()) {
+            Principal p = pIterator.next();
+            hashCode ^= p.hashCode();
+        }
+    }
+    synchronized (pubCredentials) {
+        Iterator<Object> pubCIterator = pubCredentials.iterator();
+        while (pubCIterator.hasNext()) {
+            hashCode ^= getCredHashCode(pubCIterator.next());
+        }
+    }
+    return hashCode;
+}

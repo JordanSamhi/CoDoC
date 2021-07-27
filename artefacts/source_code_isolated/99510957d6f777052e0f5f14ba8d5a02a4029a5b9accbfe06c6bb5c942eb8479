@@ -1,0 +1,20 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    if (isEnabled()) {
+        int increment = mKeyProgressIncrement;
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+            case KeyEvent.KEYCODE_MINUS:
+                increment = -increment;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_PLUS:
+            case KeyEvent.KEYCODE_EQUALS:
+                increment = isLayoutRtl() ? -increment : increment;
+                if (setProgressInternal(getProgress() + increment, true, true)) {
+                    onKeyChange();
+                    return true;
+                }
+                break;
+        }
+    }
+    return super.onKeyDown(keyCode, event);
+}

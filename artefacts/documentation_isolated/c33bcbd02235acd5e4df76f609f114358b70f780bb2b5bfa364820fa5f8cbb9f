@@ -1,0 +1,43 @@
+
+     * Makes a method handle which adapts a target method handle,
+     * by running it inside an exception handler.
+     * If the target returns normally, the adapter returns that value.
+     * If an exception matching the specified type is thrown, the fallback
+     * handle is called instead on the exception, plus the original arguments.
+     * <p>
+     * The target and handler must have the same corresponding
+     * argument and return types, except that handler may omit trailing arguments
+     * (similarly to the predicate in {@link #guardWithTest guardWithTest}).
+     * Also, the handler must have an extra leading parameter of {@code exType} or a supertype.
+     * <p> Here is pseudocode for the resulting adapter:
+     * <blockquote><pre>{@code
+     * T target(A..., B...);
+     * T handler(ExType, A...);
+     * T adapter(A... a, B... b) {
+     *   try {
+     *     return target(a..., b...);
+     *   } catch (ExType ex) {
+     *     return handler(ex, a...);
+     *   }
+     * }
+     * }</pre></blockquote>
+     * Note that the saved arguments ({@code a...} in the pseudocode) cannot
+     * be modified by execution of the target, and so are passed unchanged
+     * from the caller to the handler, if the handler is invoked.
+     * <p>
+     * The target and handler must return the same type, even if the handler
+     * always throws.  (This might happen, for instance, because the handler
+     * is simulating a {@code finally} clause).
+     * To create such a throwing handler, compose the handler creation logic
+     * with {@link #throwException throwException},
+     * in order to create a method handle of the correct return type.
+     * @param target method handle to call
+     * @param exType the type of exception which the handler will catch
+     * @param handler method handle to call if a matching exception is thrown
+     * @return method handle which incorporates the specified try/catch logic
+     * @throws NullPointerException if any argument is null
+     * @throws IllegalArgumentException if {@code handler} does not accept
+     *          the given exception type, or if the method handle types do
+     *          not match in their return types and their
+     *          corresponding parameters
+     

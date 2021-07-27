@@ -1,0 +1,24 @@
+public static double nextDouble(double d, boolean positive){
+    if (Double.isNaN(d)) {
+        return d;
+    }
+    if (d == 0.0) {
+        double smallestPositiveDouble = Double.longBitsToDouble(1L);
+        if (positive) {
+            return smallestPositiveDouble;
+        } else {
+            return -smallestPositiveDouble;
+        }
+    }
+    long bits = Double.doubleToLongBits(d);
+    long magnitude = bits & ~SIGN;
+    if ((bits > 0) == positive) {
+        if (magnitude != POSITIVEINFINITY) {
+            magnitude += 1;
+        }
+    } else {
+        magnitude -= 1;
+    }
+    long signbit = bits & SIGN;
+    return Double.longBitsToDouble(magnitude | signbit);
+}

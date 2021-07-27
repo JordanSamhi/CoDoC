@@ -1,0 +1,45 @@
+
+     * Puts the package in a suspended state, where attempts at starting activities are denied.
+     *
+     * <p>It doesn't remove the data or the actual package file. The application's notifications
+     * will be hidden, any of its started activities will be stopped and it will not be able to
+     * show toasts or system alert windows or ring the device.
+     *
+     * <p>When the user tries to launch a suspended app, a system dialog with the given
+     * {@code dialogMessage} will be shown instead. Since the message is supplied to the system as
+     * a {@link String}, the caller needs to take care of localization as needed.
+     * The dialog message can optionally contain a placeholder for the name of the suspended app.
+     * The system uses {@link String#format(Locale, String, Object...) String.format} to insert the
+     * app name into the message, so an example format string could be {@code "The app %1$s is
+     * currently suspended"}. This makes it easier for callers to provide a single message which
+     * works for all the packages being suspended in a single call.
+     *
+     * <p>The package must already be installed. If the package is uninstalled while suspended
+     * the package will no longer be suspended. </p>
+     *
+     * <p>Optionally, the suspending app can provide extra information in the form of
+     * {@link PersistableBundle} objects to be shared with the apps being suspended and the
+     * launcher to support customization that they might need to handle the suspended state.
+     *
+     * <p>The caller must hold {@link Manifest.permission#SUSPEND_APPS} to use this API.
+     *
+     * @param packageNames The names of the packages to set the suspended status.
+     * @param suspended If set to {@code true}, the packages will be suspended, if set to
+     * {@code false}, the packages will be unsuspended.
+     * @param appExtras An optional {@link PersistableBundle} that the suspending app can provide
+     *                  which will be shared with the apps being suspended. Ignored if
+     *                  {@code suspended} is false.
+     * @param launcherExtras An optional {@link PersistableBundle} that the suspending app can
+     *                       provide which will be shared with the launcher. Ignored if
+     *                       {@code suspended} is false.
+     * @param dialogMessage The message to be displayed to the user, when they try to launch a
+     *                      suspended app.
+     *
+     * @return an array of package names for which the suspended status could not be set as
+     * requested in this method. Returns {@code null} if {@code packageNames} was {@code null}.
+     *
+     * @deprecated use {@link #setPackagesSuspended(String[], boolean, PersistableBundle,
+     * PersistableBundle, android.content.pm.SuspendDialogInfo)} instead.
+     *
+     * @hide
+     

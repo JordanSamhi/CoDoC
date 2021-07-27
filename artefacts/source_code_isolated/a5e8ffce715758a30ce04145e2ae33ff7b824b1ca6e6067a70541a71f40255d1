@@ -1,0 +1,4 @@
+public static Comparator<T> comparingDouble(ToDoubleFunction<? super T> keyExtractor){
+    Objects.requireNonNull(keyExtractor);
+    return (Comparator<T> & Serializable) (c1, c2) -> Double.compare(keyExtractor.applyAsDouble(c1), keyExtractor.applyAsDouble(c2));
+}

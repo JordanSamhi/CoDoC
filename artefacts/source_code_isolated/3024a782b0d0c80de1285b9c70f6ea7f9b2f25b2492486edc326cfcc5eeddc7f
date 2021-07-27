@@ -1,0 +1,33 @@
+public static Object get(Object array, int index) throws IllegalArgumentException, ArrayIndexOutOfBoundsException{
+    if (array instanceof Object[]) {
+        return ((Object[]) array)[index];
+    }
+    if (array instanceof boolean[]) {
+        return ((boolean[]) array)[index] ? Boolean.TRUE : Boolean.FALSE;
+    }
+    if (array instanceof byte[]) {
+        return Byte.valueOf(((byte[]) array)[index]);
+    }
+    if (array instanceof char[]) {
+        return Character.valueOf(((char[]) array)[index]);
+    }
+    if (array instanceof short[]) {
+        return Short.valueOf(((short[]) array)[index]);
+    }
+    if (array instanceof int[]) {
+        return Integer.valueOf(((int[]) array)[index]);
+    }
+    if (array instanceof long[]) {
+        return Long.valueOf(((long[]) array)[index]);
+    }
+    if (array instanceof float[]) {
+        return new Float(((float[]) array)[index]);
+    }
+    if (array instanceof double[]) {
+        return new Double(((double[]) array)[index]);
+    }
+    if (array == null) {
+        throw new NullPointerException("array == null");
+    }
+    throw notAnArray(array);
+}

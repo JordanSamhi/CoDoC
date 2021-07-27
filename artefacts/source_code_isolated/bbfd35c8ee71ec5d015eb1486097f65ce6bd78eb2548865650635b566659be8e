@@ -1,0 +1,27 @@
+public ValueRange range(ChronoField field){
+    switch(field) {
+        case ALIGNED_DAY_OF_WEEK_IN_MONTH:
+        case ALIGNED_DAY_OF_WEEK_IN_YEAR:
+        case ALIGNED_WEEK_OF_MONTH:
+        case ALIGNED_WEEK_OF_YEAR:
+            throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+        case YEAR_OF_ERA:
+            {
+                Calendar jcal = createCalendar();
+                int startYear = getCurrentEra().getPrivateEra().getSinceDate().getYear();
+                return ValueRange.of(1, jcal.getGreatestMinimum(Calendar.YEAR), jcal.getLeastMaximum(Calendar.YEAR) + 1, Year.MAX_VALUE - startYear);
+            }
+        case DAY_OF_YEAR:
+            {
+                Calendar jcal = createCalendar();
+                int fieldIndex = Calendar.DAY_OF_YEAR;
+                return ValueRange.of(jcal.getMinimum(fieldIndex), jcal.getGreatestMinimum(fieldIndex), jcal.getLeastMaximum(fieldIndex), jcal.getMaximum(fieldIndex));
+            }
+        case YEAR:
+            return ValueRange.of(JapaneseDate.MEIJI_6_ISODATE.getYear(), Year.MAX_VALUE);
+        case ERA:
+            return ValueRange.of(JapaneseEra.MEIJI.getValue(), getCurrentEra().getValue());
+        default:
+            return field.range();
+    }
+}

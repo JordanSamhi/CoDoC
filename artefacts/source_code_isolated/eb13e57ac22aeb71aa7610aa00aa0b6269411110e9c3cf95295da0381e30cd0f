@@ -1,0 +1,10 @@
+public boolean delete(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkDelete(path);
+    }
+    if (isInvalid()) {
+        return false;
+    }
+    return fs.delete(this);
+}

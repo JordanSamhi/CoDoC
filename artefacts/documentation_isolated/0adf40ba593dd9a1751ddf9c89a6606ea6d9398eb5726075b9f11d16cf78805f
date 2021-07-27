@@ -1,0 +1,52 @@
+
+     * Returns a copy of this date-time with the specified field set to a new value.
+     * <p>
+     * This returns a {@code ZonedDateTime}, based on this one, with the value
+     * for the specified field changed.
+     * This can be used to change any supported field, such as the year, month or day-of-month.
+     * If it is not possible to set the value, because the field is not supported or for
+     * some other reason, an exception is thrown.
+     * <p>
+     * In some cases, changing the specified field can cause the resulting date-time to become invalid,
+     * such as changing the month from 31st January to February would make the day-of-month invalid.
+     * In cases like this, the field is responsible for resolving the date. Typically it will choose
+     * the previous valid date, which would be the last valid day of February in this example.
+     * <p>
+     * If the field is a {@link ChronoField} then the adjustment is implemented here.
+     * <p>
+     * The {@code INSTANT_SECONDS} field will return a date-time with the specified instant.
+     * The zone and nano-of-second are unchanged.
+     * The result will have an offset derived from the new instant and original zone.
+     * If the new instant value is outside the valid range then a {@code DateTimeException} will be thrown.
+     * <p>
+     * The {@code OFFSET_SECONDS} field will typically be ignored.
+     * The offset of a {@code ZonedDateTime} is controlled primarily by the time-zone.
+     * As such, changing the offset does not generally make sense, because there is only
+     * one valid offset for the local date-time and zone.
+     * If the zoned date-time is in a daylight savings overlap, then the offset is used
+     * to switch between the two valid offsets. In all other cases, the offset is ignored.
+     * If the new offset value is outside the valid range then a {@code DateTimeException} will be thrown.
+     * <p>
+     * The other {@link #isSupported(TemporalField) supported fields} will behave as per
+     * the matching method on {@link LocalDateTime#with(TemporalField, long) LocalDateTime}.
+     * The zone is not part of the calculation and will be unchanged.
+     * When converting back to {@code ZonedDateTime}, if the local date-time is in an overlap,
+     * then the offset will be retained if possible, otherwise the earlier offset will be used.
+     * If in a gap, the local date-time will be adjusted forward by the length of the gap.
+     * <p>
+     * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
+     * <p>
+     * If the field is not a {@code ChronoField}, then the result of this method
+     * is obtained by invoking {@code TemporalField.adjustInto(Temporal, long)}
+     * passing {@code this} as the argument. In this case, the field determines
+     * whether and how to adjust the instant.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param field  the field to set in the result, not null
+     * @param newValue  the new value of the field in the result
+     * @return a {@code ZonedDateTime} based on {@code this} with the specified field set, not null
+     * @throws DateTimeException if the field cannot be set
+     * @throws UnsupportedTemporalTypeException if the field is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

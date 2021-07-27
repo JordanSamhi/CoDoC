@@ -1,0 +1,10 @@
+public static KeyStore getInstance(String type) throws KeyStoreException{
+    try {
+        Object[] objs = Security.getImpl(type, "KeyStore", (String) null);
+        return new KeyStore((KeyStoreSpi) objs[0], (Provider) objs[1], type);
+    } catch (NoSuchAlgorithmException nsae) {
+        throw new KeyStoreException(type + " not found", nsae);
+    } catch (NoSuchProviderException nspe) {
+        throw new KeyStoreException(type + " not found", nspe);
+    }
+}

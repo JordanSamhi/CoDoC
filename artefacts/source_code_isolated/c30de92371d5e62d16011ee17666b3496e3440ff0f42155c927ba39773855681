@@ -1,0 +1,8 @@
+public List<ProviderInfo> queryContentProviders(String processName, int uid, int flags, String metaDataKey){
+    try {
+        ParceledListSlice<ProviderInfo> slice = mPM.queryContentProviders(processName, uid, updateFlagsForComponent(flags, UserHandle.getUserId(uid), null), metaDataKey);
+        return slice != null ? slice.getList() : Collections.<ProviderInfo>emptyList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

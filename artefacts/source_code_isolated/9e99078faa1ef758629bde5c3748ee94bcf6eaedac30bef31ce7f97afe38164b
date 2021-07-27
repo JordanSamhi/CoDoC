@@ -1,0 +1,10 @@
+public void dispatchWindowInsetsAnimationEnd(@NonNull WindowInsetsAnimation animation){
+    super.dispatchWindowInsetsAnimationEnd(animation);
+    if (mInsetsAnimationDispatchMode == DISPATCH_MODE_STOP) {
+        return;
+    }
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+        getChildAt(i).dispatchWindowInsetsAnimationEnd(animation);
+    }
+}

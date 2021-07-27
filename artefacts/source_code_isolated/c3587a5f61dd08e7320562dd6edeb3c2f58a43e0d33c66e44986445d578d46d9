@@ -1,0 +1,21 @@
+public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+    if (mParentLocale == null) {
+        inflater.inflate(R.menu.language_selection_list, menu);
+        final MenuItem searchMenuItem = menu.findItem(R.id.locale_search_menu);
+        mSearchView = (SearchView) searchMenuItem.getActionView();
+        mSearchView.setQueryHint(getText(R.string.search_language_hint));
+        mSearchView.setOnQueryTextListener(this);
+        if (!TextUtils.isEmpty(mPreviousSearch)) {
+            searchMenuItem.expandActionView();
+            mSearchView.setIconified(false);
+            mSearchView.setActivated(true);
+            if (mPreviousSearchHadFocus) {
+                mSearchView.requestFocus();
+            }
+            mSearchView.setQuery(mPreviousSearch, true);
+        } else {
+            mSearchView.setQuery(null, false);
+        }
+        getListView().setSelectionFromTop(mFirstVisiblePosition, mTopDistance);
+    }
+}

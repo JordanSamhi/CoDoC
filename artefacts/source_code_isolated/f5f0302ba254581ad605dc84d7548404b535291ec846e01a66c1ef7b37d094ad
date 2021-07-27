@@ -1,0 +1,12 @@
+public File[] listFiles(FileFilter filter){
+    String[] ss = list();
+    if (ss == null)
+        return null;
+    ArrayList<File> files = new ArrayList<>();
+    for (String s : ss) {
+        File f = new File(s, this);
+        if ((filter == null) || filter.accept(f))
+            files.add(f);
+    }
+    return files.toArray(new File[files.size()]);
+}

@@ -1,0 +1,9 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        if (field == OFFSET_SECONDS) {
+            return offset.getTotalSeconds();
+        }
+        return time.getLong(field);
+    }
+    return field.getFrom(this);
+}

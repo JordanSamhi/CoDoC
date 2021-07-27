@@ -1,0 +1,12 @@
+public ActivityInfo getActivityInfo(ComponentName className, int flags) throws NameNotFoundException{
+    final int userId = getUserId();
+    try {
+        ActivityInfo ai = mPM.getActivityInfo(className, updateFlagsForComponent(flags, userId, null), userId);
+        if (ai != null) {
+            return ai;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(className.toString());
+}

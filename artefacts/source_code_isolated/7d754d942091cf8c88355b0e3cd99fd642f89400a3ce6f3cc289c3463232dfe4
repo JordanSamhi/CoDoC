@@ -1,0 +1,10 @@
+public void onConfigurationChanged(Configuration newConfig){
+    super.onConfigurationChanged(newConfig);
+    mMultiProfilePagerAdapter.getActiveListAdapter().handlePackagesChanged();
+    if (isIntentPicker() && shouldShowTabs() && !useLayoutWithDefault()) {
+        updateIntentPickerPaddings();
+    }
+    if (mSystemWindowInsets != null) {
+        mResolverDrawerLayout.setPadding(mSystemWindowInsets.left, mSystemWindowInsets.top, mSystemWindowInsets.right, 0);
+    }
+}

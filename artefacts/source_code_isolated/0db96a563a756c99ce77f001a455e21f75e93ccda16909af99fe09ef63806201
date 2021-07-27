@@ -1,0 +1,12 @@
+public ProviderInfo getProviderInfo(ComponentName className, int flags) throws NameNotFoundException{
+    final int userId = getUserId();
+    try {
+        ProviderInfo pi = mPM.getProviderInfo(className, updateFlagsForComponent(flags, userId, null), userId);
+        if (pi != null) {
+            return pi;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(className.toString());
+}

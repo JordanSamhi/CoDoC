@@ -1,2 +1,7 @@
-public void onSuggestedReplySent(@NonNull String key, @NonNull CharSequence reply, @Source int source){
+public void onSuggestedReplySent(String key, CharSequence reply, int source){
+    SomeArgs args = SomeArgs.obtain();
+    args.arg1 = key;
+    args.arg2 = reply;
+    args.argi2 = source;
+    mHandler.obtainMessage(MyHandler.MSG_ON_SUGGESTED_REPLY_SENT, args).sendToTarget();
 }

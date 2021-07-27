@@ -1,0 +1,13 @@
+public Class<?> forClass(){
+    if (cl == null) {
+        return null;
+    }
+    requireInitialized();
+    if (System.getSecurityManager() != null) {
+        Class<?> caller = Reflection.getCallerClass();
+        if (ReflectUtil.needsPackageAccessCheck(caller.getClassLoader(), cl.getClassLoader())) {
+            ReflectUtil.checkPackageAccess(cl);
+        }
+    }
+    return cl;
+}

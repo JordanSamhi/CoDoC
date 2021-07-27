@@ -1,0 +1,39 @@
+
+     * Writes an "unshared" object to the ObjectOutputStream.  This method is
+     * identical to writeObject, except that it always writes the given object
+     * as a new, unique object in the stream (as opposed to a back-reference
+     * pointing to a previously serialized instance).  Specifically:
+     * <ul>
+     *   <li>An object written via writeUnshared is always serialized in the
+     *       same manner as a newly appearing object (an object that has not
+     *       been written to the stream yet), regardless of whether or not the
+     *       object has been written previously.
+     *
+     *   <li>If writeObject is used to write an object that has been previously
+     *       written with writeUnshared, the previous writeUnshared operation
+     *       is treated as if it were a write of a separate object.  In other
+     *       words, ObjectOutputStream will never generate back-references to
+     *       object data written by calls to writeUnshared.
+     * </ul>
+     * While writing an object via writeUnshared does not in itself guarantee a
+     * unique reference to the object when it is deserialized, it allows a
+     * single object to be defined multiple times in a stream, so that multiple
+     * calls to readUnshared by the receiver will not conflict.  Note that the
+     * rules described above only apply to the base-level object written with
+     * writeUnshared, and not to any transitively referenced sub-objects in the
+     * object graph to be serialized.
+     *
+     * <p>ObjectOutputStream subclasses which override this method can only be
+     * constructed in security contexts possessing the
+     * "enableSubclassImplementation" SerializablePermission; any attempt to
+     * instantiate such a subclass without this permission will cause a
+     * SecurityException to be thrown.
+     *
+     * @param   obj object to write to stream
+     * @throws  NotSerializableException if an object in the graph to be
+     *          serialized does not implement the Serializable interface
+     * @throws  InvalidClassException if a problem exists with the class of an
+     *          object to be serialized
+     * @throws  IOException if an I/O error occurs during serialization
+     * @since 1.4
+     

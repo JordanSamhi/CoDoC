@@ -1,0 +1,14 @@
+public boolean equals(Object obj){
+    if (this == obj)
+        return true;
+    if (obj == null || getClass() != obj.getClass())
+        return false;
+    DateFormatSymbols that = (DateFormatSymbols) obj;
+    if (!(Arrays.equals(eras, that.eras) && Arrays.equals(months, that.months) && Arrays.equals(shortMonths, that.shortMonths) && Arrays.equals(tinyMonths, that.tinyMonths) && Arrays.equals(weekdays, that.weekdays) && Arrays.equals(shortWeekdays, that.shortWeekdays) && Arrays.equals(tinyWeekdays, that.tinyWeekdays) && Arrays.equals(standAloneMonths, that.standAloneMonths) && Arrays.equals(shortStandAloneMonths, that.shortStandAloneMonths) && Arrays.equals(tinyStandAloneMonths, that.tinyStandAloneMonths) && Arrays.equals(standAloneWeekdays, that.standAloneWeekdays) && Arrays.equals(shortStandAloneWeekdays, that.shortStandAloneWeekdays) && Arrays.equals(tinyStandAloneWeekdays, that.tinyStandAloneWeekdays) && Arrays.equals(ampms, that.ampms) && ((localPatternChars != null && localPatternChars.equals(that.localPatternChars)) || (localPatternChars == null && that.localPatternChars == null)))) {
+        return false;
+    }
+    if (!isZoneStringsSet && !that.isZoneStringsSet && Objects.equals(locale, that.locale)) {
+        return true;
+    }
+    return Arrays.deepEquals(getZoneStringsWrapper(), that.getZoneStringsWrapper());
+}

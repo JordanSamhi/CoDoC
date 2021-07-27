@@ -1,0 +1,26 @@
+
+         * Makes a <a href="MethodHandleInfo.html#directmh">direct method handle</a>
+         * to <i>m</i>, if the lookup class has permission.
+         * If <i>m</i> is non-static, the receiver argument is treated as an initial argument.
+         * If <i>m</i> is virtual, overriding is respected on every call.
+         * Unlike the Core Reflection API, exceptions are <em>not</em> wrapped.
+         * The type of the method handle will be that of the method,
+         * with the receiver type prepended (but only if it is non-static).
+         * If the method's {@code accessible} flag is not set,
+         * access checking is performed immediately on behalf of the lookup class.
+         * If <i>m</i> is not public, do not share the resulting handle with untrusted parties.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p>
+         * If <i>m</i> is static, and
+         * if the returned method handle is invoked, the method's class will
+         * be initialized, if it has not already been initialized.
+         * @param m the reflected method
+         * @return a method handle which can invoke the reflected method
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @throws NullPointerException if the argument is null
+         

@@ -1,0 +1,14 @@
+public static MethodHandle explicitCastArguments(MethodHandle target, MethodType newType){
+    explicitCastArgumentsChecks(target, newType);
+    MethodType oldType = target.type();
+    if (oldType == newType)
+        return target;
+    if (oldType.explicitCastEquivalentToAsType(newType)) {
+        if (Transformers.Transformer.class.isAssignableFrom(target.getClass())) {
+            return new Transformers.ExplicitCastArguments(target.asFixedArity(), newType);
+        } else {
+            return target.asFixedArity().asType(newType);
+        }
+    }
+    return new Transformers.ExplicitCastArguments(target, newType);
+}

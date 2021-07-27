@@ -1,0 +1,12 @@
+public void calculateRemaining(BatterySipper app, BatteryStats stats, long rawRealtimeUs, long rawUptimeUs, int statsType){
+    long wakeTimeMillis = stats.getBatteryUptime(rawUptimeUs) / 1000;
+    wakeTimeMillis -= mTotalAppWakelockTimeMs + (stats.getScreenOnTime(rawRealtimeUs, statsType) / 1000);
+    if (wakeTimeMillis > 0) {
+        final double power = (wakeTimeMillis * mPowerWakelock) / (1000 * 60 * 60);
+        if (DEBUG) {
+            Log.d(TAG, "OS wakeLockTime " + wakeTimeMillis + " power " + BatteryStatsHelper.makemAh(power));
+        }
+        app.wakeLockTimeMs += wakeTimeMillis;
+        app.wakeLockPowerMah += power;
+    }
+}

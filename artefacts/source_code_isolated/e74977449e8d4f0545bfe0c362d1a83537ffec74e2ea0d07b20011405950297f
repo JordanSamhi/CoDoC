@@ -1,0 +1,11 @@
+public long getTotalSpace(){
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(new RuntimePermission("getFileSystemAttributes"));
+        sm.checkRead(path);
+    }
+    if (isInvalid()) {
+        return 0L;
+    }
+    return fs.getSpace(this, FileSystem.SPACE_TOTAL);
+}

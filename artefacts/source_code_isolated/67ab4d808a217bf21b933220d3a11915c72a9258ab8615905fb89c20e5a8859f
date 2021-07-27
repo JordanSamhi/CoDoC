@@ -1,0 +1,31 @@
+public long skip(long n) throws IOException{
+    if (n < 0L) {
+        throw new IllegalArgumentException("skip value is negative");
+    }
+    synchronized (lock) {
+        ensureOpen();
+        long r = n;
+        while (r > 0) {
+            if (nextChar >= nChars)
+                fill();
+            if (nextChar >= nChars)
+                break;
+            if (skipLF) {
+                skipLF = false;
+                if (cb[nextChar] == '\n') {
+                    nextChar++;
+                }
+            }
+            long d = nChars - nextChar;
+            if (r <= d) {
+                nextChar += r;
+                r = 0;
+                break;
+            } else {
+                r -= d;
+                nextChar = nChars;
+            }
+        }
+        return n - r;
+    }
+}

@@ -1,0 +1,13 @@
+public int read(byte[] buffer, int offset, int count) throws IOException{
+    if (mRemaining >= 0) {
+        if (mRemaining == 0)
+            return -1;
+        if (count > mRemaining)
+            count = (int) mRemaining;
+        int res = super.read(buffer, offset, count);
+        if (res >= 0)
+            mRemaining -= res;
+        return res;
+    }
+    return super.read(buffer, offset, count);
+}

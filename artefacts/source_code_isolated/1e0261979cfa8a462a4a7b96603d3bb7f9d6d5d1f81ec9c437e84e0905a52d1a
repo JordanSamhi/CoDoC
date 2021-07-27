@@ -1,0 +1,8 @@
+public static Stream<T> concat(Stream<? extends T> a, Stream<? extends T> b){
+    Objects.requireNonNull(a);
+    Objects.requireNonNull(b);
+    @SuppressWarnings("unchecked")
+    Spliterator<T> split = new Streams.ConcatSpliterator.OfRef<>((Spliterator<T>) a.spliterator(), (Spliterator<T>) b.spliterator());
+    Stream<T> stream = StreamSupport.stream(split, a.isParallel() || b.isParallel());
+    return stream.onClose(Streams.composedClose(a, b));
+}

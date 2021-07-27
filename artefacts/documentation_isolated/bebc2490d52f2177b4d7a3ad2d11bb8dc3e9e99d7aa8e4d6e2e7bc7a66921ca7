@@ -1,0 +1,35 @@
+
+     * Deletes a file if it exists.
+     *
+     * <p> As with the {@link #delete(Path) delete(Path)} method, an
+     * implementation may need to examine the file to determine if the file is a
+     * directory. Consequently this method may not be atomic with respect to
+     * other file system operations.  If the file is a symbolic link, then the
+     * symbolic link itself, not the final target of the link, is deleted.
+     *
+     * <p> If the file is a directory then the directory must be empty. In some
+     * implementations a directory has entries for special files or links that
+     * are created when the directory is created. In such implementations a
+     * directory is considered empty when only the special entries exist.
+     *
+     * <p> On some operating systems it may not be possible to remove a file when
+     * it is open and in use by this Java virtual machine or other programs.
+     *
+     * @param   path
+     *          the path to the file to delete
+     *
+     * @return  {@code true} if the file was deleted by this method; {@code
+     *          false} if the file could not be deleted because it did not
+     *          exist
+     *
+     * @throws  DirectoryNotEmptyException
+     *          if the file is a directory and could not otherwise be deleted
+     *          because the directory is not empty <i>(optional specific
+     *          exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkDelete(String)} method
+     *          is invoked to check delete access to the file.
+     

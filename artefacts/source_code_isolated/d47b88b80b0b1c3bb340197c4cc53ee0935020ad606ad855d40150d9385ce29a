@@ -1,0 +1,23 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder(128);
+    DebugUtils.buildShortClassTag(this, sb);
+    if (mVisualPrompt != null && mVoicePrompts != null && mVoicePrompts.length == 1 && mVisualPrompt.equals(mVoicePrompts[0])) {
+        sb.append(" ");
+        sb.append(mVisualPrompt);
+    } else {
+        if (mVisualPrompt != null) {
+            sb.append(" visual=");
+            sb.append(mVisualPrompt);
+        }
+        if (mVoicePrompts != null) {
+            sb.append(", voice=");
+            for (int i = 0; i < mVoicePrompts.length; i++) {
+                if (i > 0)
+                    sb.append(" | ");
+                sb.append(mVoicePrompts[i]);
+            }
+        }
+    }
+    sb.append('}');
+    return sb.toString();
+}

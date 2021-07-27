@@ -1,0 +1,16 @@
+public int captureSingleRequest(CaptureRequest request, Executor executor, CaptureCallback callback) throws CameraAccessException{
+    if (executor == null) {
+        throw new IllegalArgumentException("executor must not be null");
+    } else if (callback == null) {
+        throw new IllegalArgumentException("callback must not be null");
+    }
+    checkCaptureRequest(request);
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        executor = CameraDeviceImpl.checkExecutor(executor, callback);
+        if (DEBUG) {
+            Log.v(TAG, mIdString + "capture - request " + request + ", callback " + callback + " executor " + executor);
+        }
+        return addPendingSequence(mDeviceImpl.capture(request, createCaptureCallbackProxyWithExecutor(executor, callback), mDeviceExecutor));
+    }
+}

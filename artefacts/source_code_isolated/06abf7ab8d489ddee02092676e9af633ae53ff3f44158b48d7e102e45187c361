@@ -1,0 +1,17 @@
+public void inflate(@NonNull Resources r, @NonNull XmlPullParser parser, @NonNull AttributeSet attrs, @Nullable Theme theme) throws XmlPullParserException, IOException{
+    super.inflate(r, parser, attrs, theme);
+    final LayerState state = mLayerState;
+    if (state == null) {
+        return;
+    }
+    final int deviceDensity = Drawable.resolveDensity(r, 0);
+    state.setDensity(deviceDensity);
+    state.mSrcDensityOverride = mSrcDensityOverride;
+    state.mSourceDrawableId = Resources.getAttributeSetSourceResId(attrs);
+    final ChildDrawable[] array = state.mChildren;
+    for (int i = 0; i < state.mChildren.length; i++) {
+        final ChildDrawable layer = array[i];
+        layer.setDensity(deviceDensity);
+    }
+    inflateLayers(r, parser, attrs, theme);
+}

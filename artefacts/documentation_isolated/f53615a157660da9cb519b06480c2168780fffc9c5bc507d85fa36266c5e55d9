@@ -1,0 +1,18 @@
+
+     * A lenient query for the {@code ZoneId}, falling back to the {@code ZoneOffset}.
+     * <p>
+     * This queries a {@code TemporalAccessor} for the zone.
+     * It first tries to obtain the zone, using {@link #zoneId()}.
+     * If that is not found it tries to obtain the {@link #offset()}.
+     * Thus a {@link java.time.ZonedDateTime} will return the result of {@code getZone()},
+     * while an {@link java.time.OffsetDateTime} will return the result of {@code getOffset()}.
+     * <p>
+     * In most cases, applications should use this query rather than {@code #zoneId()}.
+     * <p>
+     * The method {@link ZoneId#from(TemporalAccessor)} can be used as a
+     * {@code TemporalQuery} via a method reference, {@code ZoneId::from}.
+     * That method is equivalent to this query, except that it throws an
+     * exception if a zone cannot be obtained.
+     *
+     * @return a query that can obtain the zone ID or offset of a temporal, not null
+     

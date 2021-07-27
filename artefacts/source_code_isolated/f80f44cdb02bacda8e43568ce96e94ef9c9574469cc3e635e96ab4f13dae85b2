@@ -1,0 +1,37 @@
+public static Path createDirectories(Path dir, FileAttribute<?>... attrs) throws IOException{
+    try {
+        createAndCheckIsDirectory(dir, attrs);
+        return dir;
+    } catch (FileAlreadyExistsException x) {
+        throw x;
+    } catch (IOException x) {
+    }
+    SecurityException se = null;
+    try {
+        dir = dir.toAbsolutePath();
+    } catch (SecurityException x) {
+        se = x;
+    }
+    Path parent = dir.getParent();
+    while (parent != null) {
+        try {
+            provider(parent).checkAccess(parent);
+            break;
+        } catch (NoSuchFileException x) {
+        }
+        parent = parent.getParent();
+    }
+    if (parent == null) {
+        if (se == null) {
+            throw new FileSystemException(dir.toString(), null, "Unable to determine if root directory exists");
+        } else {
+            throw se;
+        }
+    }
+    Path child = parent;
+    for (Path name : parent.relativize(dir)) {
+        child = child.resolve(name);
+        createAndCheckIsDirectory(child, attrs);
+    }
+    return dir;
+}

@@ -1,0 +1,59 @@
+public final IBinder onBind(Intent intent){
+    return new IPrintService.Stub() {
+
+        @Override
+        public void createPrinterDiscoverySession() {
+            mHandler.sendEmptyMessage(ServiceHandler.MSG_CREATE_PRINTER_DISCOVERY_SESSION);
+        }
+
+        @Override
+        public void destroyPrinterDiscoverySession() {
+            mHandler.sendEmptyMessage(ServiceHandler.MSG_DESTROY_PRINTER_DISCOVERY_SESSION);
+        }
+
+        @Override
+        public void startPrinterDiscovery(List<PrinterId> priorityList) {
+            mHandler.obtainMessage(ServiceHandler.MSG_START_PRINTER_DISCOVERY, priorityList).sendToTarget();
+        }
+
+        @Override
+        public void stopPrinterDiscovery() {
+            mHandler.sendEmptyMessage(ServiceHandler.MSG_STOP_PRINTER_DISCOVERY);
+        }
+
+        @Override
+        public void validatePrinters(List<PrinterId> printerIds) {
+            mHandler.obtainMessage(ServiceHandler.MSG_VALIDATE_PRINTERS, printerIds).sendToTarget();
+        }
+
+        @Override
+        public void startPrinterStateTracking(PrinterId printerId) {
+            mHandler.obtainMessage(ServiceHandler.MSG_START_PRINTER_STATE_TRACKING, printerId).sendToTarget();
+        }
+
+        @Override
+        public void requestCustomPrinterIcon(PrinterId printerId) {
+            mHandler.obtainMessage(ServiceHandler.MSG_REQUEST_CUSTOM_PRINTER_ICON, printerId).sendToTarget();
+        }
+
+        @Override
+        public void stopPrinterStateTracking(PrinterId printerId) {
+            mHandler.obtainMessage(ServiceHandler.MSG_STOP_PRINTER_STATE_TRACKING, printerId).sendToTarget();
+        }
+
+        @Override
+        public void setClient(IPrintServiceClient client) {
+            mHandler.obtainMessage(ServiceHandler.MSG_SET_CLIENT, client).sendToTarget();
+        }
+
+        @Override
+        public void requestCancelPrintJob(PrintJobInfo printJobInfo) {
+            mHandler.obtainMessage(ServiceHandler.MSG_ON_REQUEST_CANCEL_PRINTJOB, printJobInfo).sendToTarget();
+        }
+
+        @Override
+        public void onPrintJobQueued(PrintJobInfo printJobInfo) {
+            mHandler.obtainMessage(ServiceHandler.MSG_ON_PRINTJOB_QUEUED, printJobInfo).sendToTarget();
+        }
+    };
+}

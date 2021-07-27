@@ -1,0 +1,32 @@
+public void scrollBy(int x, int y){
+    int[] selectorIndices = mSelectorIndices;
+    int startScrollOffset = mCurrentScrollOffset;
+    if (!mWrapSelectorWheel && y > 0 && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] <= mMinValue) {
+        mCurrentScrollOffset = mInitialScrollOffset;
+        return;
+    }
+    if (!mWrapSelectorWheel && y < 0 && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] >= mMaxValue) {
+        mCurrentScrollOffset = mInitialScrollOffset;
+        return;
+    }
+    mCurrentScrollOffset += y;
+    while (mCurrentScrollOffset - mInitialScrollOffset > mSelectorTextGapHeight) {
+        mCurrentScrollOffset -= mSelectorElementHeight;
+        decrementSelectorIndices(selectorIndices);
+        setValueInternal(selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX], true);
+        if (!mWrapSelectorWheel && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] <= mMinValue) {
+            mCurrentScrollOffset = mInitialScrollOffset;
+        }
+    }
+    while (mCurrentScrollOffset - mInitialScrollOffset < -mSelectorTextGapHeight) {
+        mCurrentScrollOffset += mSelectorElementHeight;
+        incrementSelectorIndices(selectorIndices);
+        setValueInternal(selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX], true);
+        if (!mWrapSelectorWheel && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] >= mMaxValue) {
+            mCurrentScrollOffset = mInitialScrollOffset;
+        }
+    }
+    if (startScrollOffset != mCurrentScrollOffset) {
+        onScrollChanged(0, mCurrentScrollOffset, 0, startScrollOffset);
+    }
+}

@@ -1,0 +1,10 @@
+public static UUID randomUUID(){
+    SecureRandom ng = Holder.numberGenerator;
+    byte[] randomBytes = new byte[16];
+    ng.nextBytes(randomBytes);
+    randomBytes[6] &= 0x0f;
+    randomBytes[6] |= 0x40;
+    randomBytes[8] &= 0x3f;
+    randomBytes[8] |= 0x80;
+    return new UUID(randomBytes);
+}

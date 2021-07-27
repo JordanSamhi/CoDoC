@@ -1,0 +1,11 @@
+public boolean hasNext(){
+    ensureOpen();
+    saveState();
+    while (!sourceClosed) {
+        if (hasTokenInBuffer())
+            return revertState(true);
+        readInput();
+    }
+    boolean result = hasTokenInBuffer();
+    return revertState(result);
+}

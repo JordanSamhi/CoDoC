@@ -1,0 +1,16 @@
+public void setStrategy(int strategy){
+    switch(strategy) {
+        case DEFAULT_STRATEGY:
+        case FILTERED:
+        case HUFFMAN_ONLY:
+            break;
+        default:
+            throw new IllegalArgumentException();
+    }
+    synchronized (zsRef) {
+        if (this.strategy != strategy) {
+            this.strategy = strategy;
+            setParams = true;
+        }
+    }
+}

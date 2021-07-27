@@ -1,0 +1,10 @@
+public void logp(Level level, String sourceClass, String sourceMethod, String msg, Throwable thrown){
+    if (!isLoggable(level)) {
+        return;
+    }
+    LogRecord lr = new LogRecord(level, msg);
+    lr.setSourceClassName(sourceClass);
+    lr.setSourceMethodName(sourceMethod);
+    lr.setThrown(thrown);
+    doLog(lr);
+}

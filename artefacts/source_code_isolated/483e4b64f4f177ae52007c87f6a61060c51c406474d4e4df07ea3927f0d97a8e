@@ -1,0 +1,16 @@
+public void formatTo(TemporalAccessor temporal, Appendable appendable){
+    Objects.requireNonNull(temporal, "temporal");
+    Objects.requireNonNull(appendable, "appendable");
+    try {
+        DateTimePrintContext context = new DateTimePrintContext(temporal, this);
+        if (appendable instanceof StringBuilder) {
+            printerParser.format(context, (StringBuilder) appendable);
+        } else {
+            StringBuilder buf = new StringBuilder(32);
+            printerParser.format(context, buf);
+            appendable.append(buf);
+        }
+    } catch (IOException ex) {
+        throw new DateTimeException(ex.getMessage(), ex);
+    }
+}

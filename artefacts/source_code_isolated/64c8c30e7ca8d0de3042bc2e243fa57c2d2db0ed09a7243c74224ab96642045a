@@ -1,0 +1,8 @@
+public long getLong(TemporalField field){
+    if (field == DAY_OF_WEEK) {
+        return getValue();
+    } else if (field instanceof ChronoField) {
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return field.getFrom(this);
+}

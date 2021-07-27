@@ -1,0 +1,10 @@
+public boolean setExecutable(boolean executable, boolean ownerOnly){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkWrite(path);
+    }
+    if (isInvalid()) {
+        return false;
+    }
+    return fs.setPermission(this, FileSystem.ACCESS_EXECUTE, executable, ownerOnly);
+}

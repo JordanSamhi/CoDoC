@@ -1,0 +1,37 @@
+public boolean dispatchKeyEvent(KeyEvent event){
+    final boolean handled = super.dispatchKeyEvent(event);
+    if (!handled && (event.getAction() == KeyEvent.ACTION_DOWN) && (mCurrentView != null) && (mCurrentView.isRootNamespace()) && (mCurrentView.hasFocus())) {
+        int keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_UP;
+        int directionShouldChangeFocus = View.FOCUS_UP;
+        int soundEffect = SoundEffectConstants.NAVIGATION_UP;
+        switch(getTabWidgetLocation()) {
+            case TABWIDGET_LOCATION_LEFT:
+                keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_LEFT;
+                directionShouldChangeFocus = View.FOCUS_LEFT;
+                soundEffect = SoundEffectConstants.NAVIGATION_LEFT;
+                break;
+            case TABWIDGET_LOCATION_RIGHT:
+                keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_RIGHT;
+                directionShouldChangeFocus = View.FOCUS_RIGHT;
+                soundEffect = SoundEffectConstants.NAVIGATION_RIGHT;
+                break;
+            case TABWIDGET_LOCATION_BOTTOM:
+                keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_DOWN;
+                directionShouldChangeFocus = View.FOCUS_DOWN;
+                soundEffect = SoundEffectConstants.NAVIGATION_DOWN;
+                break;
+            case TABWIDGET_LOCATION_TOP:
+            default:
+                keyCodeShouldChangeFocus = KeyEvent.KEYCODE_DPAD_UP;
+                directionShouldChangeFocus = View.FOCUS_UP;
+                soundEffect = SoundEffectConstants.NAVIGATION_UP;
+                break;
+        }
+        if (event.getKeyCode() == keyCodeShouldChangeFocus && mCurrentView.findFocus().focusSearch(directionShouldChangeFocus) == null) {
+            mTabWidget.getChildTabViewAt(mCurrentTab).requestFocus();
+            playSoundEffect(soundEffect);
+            return true;
+        }
+    }
+    return handled;
+}

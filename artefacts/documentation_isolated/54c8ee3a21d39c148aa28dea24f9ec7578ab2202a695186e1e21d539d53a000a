@@ -1,0 +1,39 @@
+
+     * Continues a multiple-part encryption or decryption operation
+     * (depending on how this cipher was initialized), processing another data
+     * part.
+     *
+     * <p>The first <code>inputLen</code> bytes in the <code>input</code>
+     * buffer, starting at <code>inputOffset</code> inclusive, are processed,
+     * and the result is stored in the <code>output</code> buffer, starting at
+     * <code>outputOffset</code> inclusive.
+     *
+     * <p>If the <code>output</code> buffer is too small to hold the result,
+     * a <code>ShortBufferException</code> is thrown. In this case, repeat this
+     * call with a larger output buffer. Use
+     * {@link #getOutputSize(int) getOutputSize} to determine how big
+     * the output buffer should be.
+     *
+     * <p>If <code>inputLen</code> is zero, this method returns
+     * a length of zero.
+     *
+     * <p>Note: this method should be copy-safe, which means the
+     * <code>input</code> and <code>output</code> buffers can reference
+     * the same byte array and no unprocessed input data is overwritten
+     * when the result is copied into the output buffer.
+     *
+     * @param input the input buffer
+     * @param inputOffset the offset in <code>input</code> where the input
+     * starts
+     * @param inputLen the input length
+     * @param output the buffer for the result
+     * @param outputOffset the offset in <code>output</code> where the result
+     * is stored
+     *
+     * @return the number of bytes stored in <code>output</code>
+     *
+     * @exception IllegalStateException if this cipher is in a wrong state
+     * (e.g., has not been initialized)
+     * @exception ShortBufferException if the given output buffer is too small
+     * to hold the result
+     

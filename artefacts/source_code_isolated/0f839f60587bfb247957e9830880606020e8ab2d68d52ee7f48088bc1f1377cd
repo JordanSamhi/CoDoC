@@ -1,0 +1,6 @@
+public static long doubleToLongBits(double value){
+    long result = doubleToRawLongBits(value);
+    if (((result & DoubleConsts.EXP_BIT_MASK) == DoubleConsts.EXP_BIT_MASK) && (result & DoubleConsts.SIGNIF_BIT_MASK) != 0L)
+        result = 0x7ff8000000000000L;
+    return result;
+}

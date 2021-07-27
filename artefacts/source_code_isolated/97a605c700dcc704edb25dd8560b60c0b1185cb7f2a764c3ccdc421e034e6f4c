@@ -1,0 +1,10 @@
+public long lastModified(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkRead(path);
+    }
+    if (isInvalid()) {
+        return 0L;
+    }
+    return fs.getLastModifiedTime(this);
+}

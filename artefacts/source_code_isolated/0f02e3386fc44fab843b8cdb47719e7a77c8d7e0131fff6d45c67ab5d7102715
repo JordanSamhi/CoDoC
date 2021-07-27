@@ -1,0 +1,12 @@
+public OffsetDateTime with(TemporalAdjuster adjuster){
+    if (adjuster instanceof LocalDate || adjuster instanceof LocalTime || adjuster instanceof LocalDateTime) {
+        return with(dateTime.with(adjuster), offset);
+    } else if (adjuster instanceof Instant) {
+        return ofInstant((Instant) adjuster, offset);
+    } else if (adjuster instanceof ZoneOffset) {
+        return with(dateTime, (ZoneOffset) adjuster);
+    } else if (adjuster instanceof OffsetDateTime) {
+        return (OffsetDateTime) adjuster;
+    }
+    return (OffsetDateTime) adjuster.adjustInto(this);
+}

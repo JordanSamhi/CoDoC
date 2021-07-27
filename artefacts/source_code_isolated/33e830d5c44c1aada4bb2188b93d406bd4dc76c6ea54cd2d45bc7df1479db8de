@@ -1,0 +1,18 @@
+public Scanner skip(Pattern pattern){
+    ensureOpen();
+    if (pattern == null)
+        throw new NullPointerException();
+    clearCaches();
+    while (true) {
+        String token = matchPatternInBuffer(pattern);
+        if (token != null) {
+            matchValid = true;
+            position = matcher.end();
+            return this;
+        }
+        if (needInput)
+            readInput();
+        else
+            throw new NoSuchElementException();
+    }
+}

@@ -1,0 +1,28 @@
+public InetAddress getInterface() throws SocketException{
+    if (isClosed()) {
+        throw new SocketException("Socket is closed");
+    }
+    synchronized (infLock) {
+        InetAddress ia = (InetAddress) getImpl().getOption(SocketOptions.IP_MULTICAST_IF);
+        if (infAddress == null) {
+            return ia;
+        }
+        if (ia.equals(infAddress)) {
+            return ia;
+        }
+        try {
+            NetworkInterface ni = NetworkInterface.getByInetAddress(ia);
+            Enumeration<InetAddress> addrs = ni.getInetAddresses();
+            while (addrs.hasMoreElements()) {
+                InetAddress addr = addrs.nextElement();
+                if (addr.equals(infAddress)) {
+                    return infAddress;
+                }
+            }
+            infAddress = null;
+            return ia;
+        } catch (Exception e) {
+            return ia;
+        }
+    }
+}

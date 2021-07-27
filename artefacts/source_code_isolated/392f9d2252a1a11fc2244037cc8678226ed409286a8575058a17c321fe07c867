@@ -1,0 +1,8 @@
+public static String clearProperty(String key){
+    checkKey(key);
+    SecurityManager sm = getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(new PropertyPermission(key, "write"));
+    }
+    return (String) props.remove(key);
+}

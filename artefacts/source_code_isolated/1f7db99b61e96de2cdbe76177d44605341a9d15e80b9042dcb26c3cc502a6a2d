@@ -1,0 +1,19 @@
+public String getDisplayVariant(Locale inLocale){
+    String variantCode = baseLocale.getVariant();
+    if (variantCode.isEmpty()) {
+        return "";
+    }
+    try {
+        normalizeAndValidateVariant(variantCode);
+    } catch (IllformedLocaleException ilfe) {
+        return variantCode;
+    }
+    String result = LocaleNative.getDisplayVariant(this, inLocale);
+    if (result == null) {
+        result = LocaleNative.getDisplayVariant(this, Locale.getDefault());
+    }
+    if (result.isEmpty()) {
+        return variantCode;
+    }
+    return result;
+}

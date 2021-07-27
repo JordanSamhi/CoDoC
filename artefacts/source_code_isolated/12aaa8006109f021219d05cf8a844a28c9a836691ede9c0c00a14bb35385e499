@@ -1,0 +1,21 @@
+public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed){
+    if (!consumed && Math.abs(velocityY) > mMinFlingVelocity) {
+        if (getShowAtTop()) {
+            if (isDismissable() && velocityY > 0) {
+                abortAnimation();
+                dismiss();
+            } else {
+                smoothScrollTo(velocityY < 0 ? mCollapsibleHeight : 0, velocityY);
+            }
+        } else {
+            if (isDismissable() && velocityY < 0 && mCollapseOffset > mCollapsibleHeight) {
+                smoothScrollTo(mCollapsibleHeight + mUncollapsibleHeight, velocityY);
+                mDismissOnScrollerFinished = true;
+            } else {
+                smoothScrollTo(velocityY > 0 ? 0 : mCollapsibleHeight, velocityY);
+            }
+        }
+        return true;
+    }
+    return false;
+}

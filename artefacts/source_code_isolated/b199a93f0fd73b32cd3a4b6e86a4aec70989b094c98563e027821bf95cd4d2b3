@@ -1,0 +1,15 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    ListMenuItemView selectedItem = (ListMenuItemView) getSelectedView();
+    if (selectedItem != null && keyCode == mAdvanceKey) {
+        if (selectedItem.isEnabled() && selectedItem.getItemData().hasSubMenu()) {
+            performItemClick(selectedItem, getSelectedItemPosition(), getSelectedItemId());
+        }
+        return true;
+    } else if (selectedItem != null && keyCode == mRetreatKey) {
+        setSelectedPositionInt(INVALID_POSITION);
+        setNextSelectedPositionInt(INVALID_POSITION);
+        ((MenuAdapter) getAdapter()).getAdapterMenu().close(false);
+        return true;
+    }
+    return super.onKeyDown(keyCode, event);
+}

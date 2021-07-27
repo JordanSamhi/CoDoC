@@ -1,3 +1,7 @@
-public int getNightDisplayColorTemperature(){
-    return mManager.getNightDisplayColorTemperature();
+ int getNightDisplayColorTemperature(){
+    try {
+        return mCdm.getNightDisplayColorTemperature();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

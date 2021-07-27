@@ -1,0 +1,7 @@
+public ValueRange range(TemporalField field){
+    if (field instanceof ChronoField) {
+        ChronoField f = (ChronoField) field;
+        return (f.isTimeBased() ? time.range(field) : date.range(field));
+    }
+    return field.rangeRefinedBy(this);
+}

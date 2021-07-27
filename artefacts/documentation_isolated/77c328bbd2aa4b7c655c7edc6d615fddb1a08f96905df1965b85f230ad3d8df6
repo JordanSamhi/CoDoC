@@ -1,0 +1,46 @@
+
+     * Returns a synchronized (thread-safe) navigable map backed by the
+     * specified navigable map.  In order to guarantee serial access, it is
+     * critical that <strong>all</strong> access to the backing navigable map is
+     * accomplished through the returned navigable map (or its views).<p>
+     *
+     * It is imperative that the user manually synchronize on the returned
+     * navigable map when iterating over any of its collection views, or the
+     * collections views of any of its {@code subMap}, {@code headMap} or
+     * {@code tailMap} views.
+     * <pre>
+     *  NavigableMap m = Collections.synchronizedNavigableMap(new TreeMap());
+     *      ...
+     *  Set s = m.keySet();  // Needn't be in synchronized block
+     *      ...
+     *  synchronized (m) {  // Synchronizing on m, not s!
+     *      Iterator i = s.iterator(); // Must be in synchronized block
+     *      while (i.hasNext())
+     *          foo(i.next());
+     *  }
+     * </pre>
+     * or:
+     * <pre>
+     *  NavigableMap m = Collections.synchronizedNavigableMap(new TreeMap());
+     *  NavigableMap m2 = m.subMap(foo, true, bar, false);
+     *      ...
+     *  Set s2 = m2.keySet();  // Needn't be in synchronized block
+     *      ...
+     *  synchronized (m) {  // Synchronizing on m, not m2 or s2!
+     *      Iterator i = s.iterator(); // Must be in synchronized block
+     *      while (i.hasNext())
+     *          foo(i.next());
+     *  }
+     * </pre>
+     * Failure to follow this advice may result in non-deterministic behavior.
+     *
+     * <p>The returned navigable map will be serializable if the specified
+     * navigable map is serializable.
+     *
+     * @param <K> the class of the map keys
+     * @param <V> the class of the map values
+     * @param  m the navigable map to be "wrapped" in a synchronized navigable
+     *              map
+     * @return a synchronized view of the specified navigable map.
+     * @since 1.8
+     

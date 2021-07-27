@@ -1,0 +1,12 @@
+public long nextLong(long bound){
+    if (bound <= 0)
+        throw new IllegalArgumentException(BAD_BOUND);
+    long r = mix64(nextSeed());
+    long m = bound - 1;
+    if ((bound & m) == 0L)
+        r &= m;
+    else {
+        for (long u = r >>> 1; u + m - (r = u % bound) < 0L; u = mix64(nextSeed()) >>> 1) ;
+    }
+    return r;
+}

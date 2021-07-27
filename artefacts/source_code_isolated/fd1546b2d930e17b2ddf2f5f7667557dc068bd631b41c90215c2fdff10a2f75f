@@ -1,0 +1,32 @@
+public BigDecimal subtract(BigDecimal subtrahend){
+    int diffScale = this.scale - subtrahend.scale;
+    if (this.isZero()) {
+        if (diffScale <= 0) {
+            return subtrahend.negate();
+        }
+        if (subtrahend.isZero()) {
+            return this;
+        }
+    } else if (subtrahend.isZero()) {
+        if (diffScale >= 0) {
+            return this;
+        }
+    }
+    if (diffScale == 0) {
+        if (Math.max(this.bitLength, subtrahend.bitLength) + 1 < 64) {
+            return valueOf(this.smallValue - subtrahend.smallValue, this.scale);
+        }
+        return new BigDecimal(this.getUnscaledValue().subtract(subtrahend.getUnscaledValue()), this.scale);
+    } else if (diffScale > 0) {
+        if (diffScale < MathUtils.LONG_POWERS_OF_TEN.length && Math.max(this.bitLength, subtrahend.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[diffScale]) + 1 < 64) {
+            return valueOf(this.smallValue - subtrahend.smallValue * MathUtils.LONG_POWERS_OF_TEN[diffScale], this.scale);
+        }
+        return new BigDecimal(this.getUnscaledValue().subtract(Multiplication.multiplyByTenPow(subtrahend.getUnscaledValue(), diffScale)), this.scale);
+    } else {
+        diffScale = -diffScale;
+        if (diffScale < MathUtils.LONG_POWERS_OF_TEN.length && Math.max(this.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[diffScale], subtrahend.bitLength) + 1 < 64) {
+            return valueOf(this.smallValue * MathUtils.LONG_POWERS_OF_TEN[diffScale] - subtrahend.smallValue, subtrahend.scale);
+        }
+        return new BigDecimal(Multiplication.multiplyByTenPow(this.getUnscaledValue(), diffScale).subtract(subtrahend.getUnscaledValue()), subtrahend.scale);
+    }
+}

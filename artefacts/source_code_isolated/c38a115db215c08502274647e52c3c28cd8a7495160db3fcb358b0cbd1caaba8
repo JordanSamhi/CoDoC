@@ -1,0 +1,10 @@
+public static JapaneseDate of(JapaneseEra era, int yearOfEra, int month, int dayOfMonth){
+    Objects.requireNonNull(era, "era");
+    LocalGregorianCalendar.Date jdate = JapaneseChronology.JCAL.newCalendarDate(null);
+    jdate.setEra(era.getPrivateEra()).setDate(yearOfEra, month, dayOfMonth);
+    if (!JapaneseChronology.JCAL.validate(jdate)) {
+        throw new DateTimeException("year, month, and day not valid for Era");
+    }
+    LocalDate date = LocalDate.of(jdate.getNormalizedYear(), month, dayOfMonth);
+    return new JapaneseDate(era, yearOfEra, date);
+}

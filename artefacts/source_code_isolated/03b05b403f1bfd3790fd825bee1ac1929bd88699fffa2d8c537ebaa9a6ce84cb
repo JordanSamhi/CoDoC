@@ -1,0 +1,14 @@
+public void write(ObjectOutput out) throws IOException{
+    if (ObjectOutputStream.this != out) {
+        throw new IllegalArgumentException("wrong stream");
+    }
+    out.write(primVals, 0, primVals.length);
+    ObjectStreamField[] fields = desc.getFields(false);
+    int numPrimFields = fields.length - objVals.length;
+    for (int i = 0; i < objVals.length; i++) {
+        if (fields[numPrimFields + i].isUnshared()) {
+            throw new IOException("cannot write unshared object");
+        }
+        out.writeObject(objVals[i]);
+    }
+}

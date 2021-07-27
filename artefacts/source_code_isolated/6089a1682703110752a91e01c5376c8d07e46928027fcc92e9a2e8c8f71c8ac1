@@ -1,0 +1,13 @@
+public Principal getLocalPrincipal(){
+    Principal principal;
+    try {
+        principal = session.getLocalPrincipal();
+    } catch (AbstractMethodError e) {
+        principal = null;
+        Certificate[] certs = getLocalCertificates();
+        if (certs != null) {
+            principal = ((X509Certificate) certs[0]).getSubjectX500Principal();
+        }
+    }
+    return principal;
+}

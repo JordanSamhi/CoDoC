@@ -1,0 +1,11 @@
+public final void updateAAD(ByteBuffer src){
+    checkCipherState();
+    if (src == null) {
+        throw new IllegalArgumentException("src ByteBuffer is null");
+    }
+    updateProviderIfNeeded();
+    if (src.remaining() == 0) {
+        return;
+    }
+    spi.engineUpdateAAD(src);
+}

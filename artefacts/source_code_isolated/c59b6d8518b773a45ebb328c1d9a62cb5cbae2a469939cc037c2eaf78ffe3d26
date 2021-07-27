@@ -1,0 +1,9 @@
+public void addPropertyChangeListener(PropertyChangeListener l) throws SecurityException{
+    PropertyChangeListener listener = Objects.requireNonNull(l);
+    checkPermission();
+    synchronized (listenerMap) {
+        Integer value = listenerMap.get(listener);
+        value = (value == null) ? 1 : (value + 1);
+        listenerMap.put(listener, value);
+    }
+}

@@ -1,0 +1,12 @@
+public void getPackageSizeInfoAsUser(String packageName, int userHandle, IPackageStatsObserver observer){
+    final String msg = "Shame on you for calling the hidden API " + "getPackageSizeInfoAsUser(). Shame!";
+    if (mContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O) {
+        throw new UnsupportedOperationException(msg);
+    } else if (observer != null) {
+        Log.d(TAG, msg);
+        try {
+            observer.onGetStatsCompleted(null, false);
+        } catch (RemoteException ignored) {
+        }
+    }
+}

@@ -1,0 +1,9 @@
+public String[] getCameraIdList(){
+    String[] cameraIds = null;
+    synchronized (mLock) {
+        connectCameraServiceLocked();
+        cameraIds = extractCameraIdListLocked();
+    }
+    sortCameraIds(cameraIds);
+    return cameraIds;
+}

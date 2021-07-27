@@ -1,0 +1,10 @@
+public void writeUnshared(Object obj) throws IOException{
+    try {
+        writeObject0(obj, true);
+    } catch (IOException ex) {
+        if (depth == 0) {
+            writeFatalException(ex);
+        }
+        throw ex;
+    }
+}

@@ -1,0 +1,16 @@
+public String next(){
+    ensureOpen();
+    clearCaches();
+    while (true) {
+        String token = getCompleteTokenInBuffer(null);
+        if (token != null) {
+            matchValid = true;
+            skipped = false;
+            return token;
+        }
+        if (needInput)
+            readInput();
+        else
+            throwFor();
+    }
+}

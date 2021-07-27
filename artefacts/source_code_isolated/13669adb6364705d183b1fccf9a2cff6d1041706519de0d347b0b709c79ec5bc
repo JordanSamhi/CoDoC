@@ -1,0 +1,16 @@
+public void onVisibilityAggregated(boolean isVisible){
+    super.onVisibilityAggregated(isVisible);
+    if (isVisible != mAggregatedIsVisible) {
+        mAggregatedIsVisible = isVisible;
+        if (mIndeterminate) {
+            if (isVisible) {
+                startAnimation();
+            } else {
+                stopAnimation();
+            }
+        }
+        if (mCurrentDrawable != null) {
+            mCurrentDrawable.setVisible(isVisible, false);
+        }
+    }
+}

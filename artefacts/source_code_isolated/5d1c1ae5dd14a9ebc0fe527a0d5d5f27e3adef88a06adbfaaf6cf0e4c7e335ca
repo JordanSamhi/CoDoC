@@ -1,0 +1,9 @@
+public void purgeResources(){
+    super.purgeResources();
+    if (mPicture != null && mPicture.isMutable() && mPicture.getAllocationByteCount() >= MIN_ASHMEM_BITMAP_SIZE) {
+        mPicture = mPicture.createAshmemBitmap();
+    }
+    if (mBigLargeIcon != null) {
+        mBigLargeIcon.convertToAshmem();
+    }
+}

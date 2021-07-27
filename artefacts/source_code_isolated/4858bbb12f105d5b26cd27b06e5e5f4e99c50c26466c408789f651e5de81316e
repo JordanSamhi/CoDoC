@@ -1,0 +1,12 @@
+public void computeScroll(){
+    super.computeScroll();
+    if (mScroller.computeScrollOffset()) {
+        final boolean keepGoing = !mScroller.isFinished();
+        performDrag(mScroller.getCurrY() - mCollapseOffset);
+        if (keepGoing) {
+            postInvalidateOnAnimation();
+        } else if (mDismissOnScrollerFinished && mOnDismissedListener != null) {
+            dismiss();
+        }
+    }
+}

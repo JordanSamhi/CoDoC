@@ -1,0 +1,15 @@
+public Key engineGetKey(String alias, char[] password) throws NoSuchAlgorithmException, UnrecoverableKeyException{
+    String userKeyAlias = Credentials.USER_PRIVATE_KEY + alias;
+    AndroidKeyStoreKey key;
+    if (!mKeyStore.contains(userKeyAlias, mUid)) {
+        userKeyAlias = Credentials.USER_SECRET_KEY + alias;
+        if (!mKeyStore.contains(userKeyAlias, mUid))
+            return null;
+    }
+    try {
+        key = AndroidKeyStoreProvider.loadAndroidKeyStoreKeyFromKeystore(mKeyStore, userKeyAlias, mUid);
+    } catch (KeyPermanentlyInvalidatedException e) {
+        throw new UnrecoverableKeyException(e.getMessage());
+    }
+    return key;
+}

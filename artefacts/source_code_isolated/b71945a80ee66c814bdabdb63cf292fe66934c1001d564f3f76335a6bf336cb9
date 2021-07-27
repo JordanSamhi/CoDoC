@@ -1,0 +1,19 @@
+public static Duration between(Temporal startInclusive, Temporal endExclusive){
+    try {
+        return ofNanos(startInclusive.until(endExclusive, NANOS));
+    } catch (DateTimeException | ArithmeticException ex) {
+        long secs = startInclusive.until(endExclusive, SECONDS);
+        long nanos;
+        try {
+            nanos = endExclusive.getLong(NANO_OF_SECOND) - startInclusive.getLong(NANO_OF_SECOND);
+            if (secs > 0 && nanos < 0) {
+                secs++;
+            } else if (secs < 0 && nanos > 0) {
+                secs--;
+            }
+        } catch (DateTimeException ex2) {
+            nanos = 0;
+        }
+        return ofSeconds(secs, nanos);
+    }
+}

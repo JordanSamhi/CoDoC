@@ -1,0 +1,29 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null || endValues == null) {
+        return null;
+    }
+    final View view = endValues.view;
+    Drawable startBackground = (Drawable) startValues.values.get(PROPNAME_BACKGROUND);
+    Drawable endBackground = (Drawable) endValues.values.get(PROPNAME_BACKGROUND);
+    boolean changed = false;
+    if (startBackground instanceof ColorDrawable && endBackground instanceof ColorDrawable) {
+        ColorDrawable startColor = (ColorDrawable) startBackground;
+        ColorDrawable endColor = (ColorDrawable) endBackground;
+        if (startColor.getColor() != endColor.getColor()) {
+            endColor.setColor(startColor.getColor());
+            changed = true;
+            return ObjectAnimator.ofArgb(endBackground, "color", startColor.getColor(), endColor.getColor());
+        }
+    }
+    if (view instanceof TextView) {
+        TextView textView = (TextView) view;
+        int start = (Integer) startValues.values.get(PROPNAME_TEXT_COLOR);
+        int end = (Integer) endValues.values.get(PROPNAME_TEXT_COLOR);
+        if (start != end) {
+            textView.setTextColor(end);
+            changed = true;
+            return ObjectAnimator.ofArgb(textView, "textColor", start, end);
+        }
+    }
+    return null;
+}

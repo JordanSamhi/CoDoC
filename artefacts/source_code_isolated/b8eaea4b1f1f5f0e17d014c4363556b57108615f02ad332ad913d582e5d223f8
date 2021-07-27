@@ -1,0 +1,8 @@
+public void setTimeToLive(int ttl) throws IOException{
+    if (ttl < 0 || ttl > 255) {
+        throw new IllegalArgumentException("ttl out of range");
+    }
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    getImpl().setTimeToLive(ttl);
+}

@@ -1,0 +1,7 @@
+public boolean get(int bitIndex){
+    if (bitIndex < 0)
+        throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
+    checkInvariants();
+    int wordIndex = wordIndex(bitIndex);
+    return (wordIndex < wordsInUse) && ((words[wordIndex] & (1L << bitIndex)) != 0);
+}

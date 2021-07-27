@@ -1,0 +1,20 @@
+public float interpolate(float x){
+    final int n = mX.length;
+    if (Float.isNaN(x)) {
+        return x;
+    }
+    if (x <= mX[0]) {
+        return mY[0];
+    }
+    if (x >= mX[n - 1]) {
+        return mY[n - 1];
+    }
+    int i = 0;
+    while (x >= mX[i + 1]) {
+        i += 1;
+        if (x == mX[i]) {
+            return mY[i];
+        }
+    }
+    return mY[i] + mM[i] * (x - mX[i]);
+}

@@ -1,0 +1,11 @@
+public List<IntentFilter> getAllIntentFilters(String packageName){
+    try {
+        ParceledListSlice<IntentFilter> parceledList = mPM.getAllIntentFilters(packageName);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

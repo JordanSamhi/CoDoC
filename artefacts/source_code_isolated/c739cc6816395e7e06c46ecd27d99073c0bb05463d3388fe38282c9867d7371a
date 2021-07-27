@@ -1,0 +1,9 @@
+public void allowCoreThreadTimeOut(boolean value){
+    if (value && keepAliveTime <= 0)
+        throw new IllegalArgumentException("Core threads must have nonzero keep alive times");
+    if (value != allowCoreThreadTimeOut) {
+        allowCoreThreadTimeOut = value;
+        if (value)
+            interruptIdleWorkers();
+    }
+}

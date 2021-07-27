@@ -1,0 +1,142 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null || endValues == null || !(startValues.view instanceof TextView) || !(endValues.view instanceof TextView)) {
+        return null;
+    }
+    final TextView view = (TextView) endValues.view;
+    Map<String, Object> startVals = startValues.values;
+    Map<String, Object> endVals = endValues.values;
+    final CharSequence startText = startVals.get(PROPNAME_TEXT) != null ? (CharSequence) startVals.get(PROPNAME_TEXT) : "";
+    final CharSequence endText = endVals.get(PROPNAME_TEXT) != null ? (CharSequence) endVals.get(PROPNAME_TEXT) : "";
+    final int startSelectionStart, startSelectionEnd, endSelectionStart, endSelectionEnd;
+    if (view instanceof EditText) {
+        startSelectionStart = startVals.get(PROPNAME_TEXT_SELECTION_START) != null ? (Integer) startVals.get(PROPNAME_TEXT_SELECTION_START) : -1;
+        startSelectionEnd = startVals.get(PROPNAME_TEXT_SELECTION_END) != null ? (Integer) startVals.get(PROPNAME_TEXT_SELECTION_END) : startSelectionStart;
+        endSelectionStart = endVals.get(PROPNAME_TEXT_SELECTION_START) != null ? (Integer) endVals.get(PROPNAME_TEXT_SELECTION_START) : -1;
+        endSelectionEnd = endVals.get(PROPNAME_TEXT_SELECTION_END) != null ? (Integer) endVals.get(PROPNAME_TEXT_SELECTION_END) : endSelectionStart;
+    } else {
+        startSelectionStart = startSelectionEnd = endSelectionStart = endSelectionEnd = -1;
+    }
+    if (!startText.equals(endText)) {
+        final int startColor;
+        final int endColor;
+        if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+            view.setText(startText);
+            if (view instanceof EditText) {
+                setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
+            }
+        }
+        Animator anim;
+        if (mChangeBehavior == CHANGE_BEHAVIOR_KEEP) {
+            startColor = endColor = 0;
+            anim = ValueAnimator.ofFloat(0, 1);
+            anim.addListener(new AnimatorListenerAdapter() {
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (startText.equals(view.getText())) {
+                        view.setText(endText);
+                        if (view instanceof EditText) {
+                            setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
+                        }
+                    }
+                }
+            });
+        } else {
+            startColor = (Integer) startVals.get(PROPNAME_TEXT_COLOR);
+            endColor = (Integer) endVals.get(PROPNAME_TEXT_COLOR);
+            ValueAnimator outAnim = null, inAnim = null;
+            if (mChangeBehavior == CHANGE_BEHAVIOR_OUT_IN || mChangeBehavior == CHANGE_BEHAVIOR_OUT) {
+                outAnim = ValueAnimator.ofInt(Color.alpha(startColor), 0);
+                outAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int currAlpha = (Integer) animation.getAnimatedValue();
+                        view.setTextColor(currAlpha << 24 | startColor & 0xffffff);
+                    }
+                });
+                outAnim.addListener(new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (startText.equals(view.getText())) {
+                            view.setText(endText);
+                            if (view instanceof EditText) {
+                                setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
+                            }
+                        }
+                        view.setTextColor(endColor);
+                    }
+                });
+            }
+            if (mChangeBehavior == CHANGE_BEHAVIOR_OUT_IN || mChangeBehavior == CHANGE_BEHAVIOR_IN) {
+                inAnim = ValueAnimator.ofInt(0, Color.alpha(endColor));
+                inAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int currAlpha = (Integer) animation.getAnimatedValue();
+                        view.setTextColor(currAlpha << 24 | endColor & 0xffffff);
+                    }
+                });
+                inAnim.addListener(new AnimatorListenerAdapter() {
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        view.setTextColor(endColor);
+                    }
+                });
+            }
+            if (outAnim != null && inAnim != null) {
+                anim = new AnimatorSet();
+                ((AnimatorSet) anim).playSequentially(outAnim, inAnim);
+            } else if (outAnim != null) {
+                anim = outAnim;
+            } else {
+                anim = inAnim;
+            }
+        }
+        TransitionListener transitionListener = new TransitionListenerAdapter() {
+
+            int mPausedColor = 0;
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+                if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+                    view.setText(endText);
+                    if (view instanceof EditText) {
+                        setSelection(((EditText) view), endSelectionStart, endSelectionEnd);
+                    }
+                }
+                if (mChangeBehavior > CHANGE_BEHAVIOR_KEEP) {
+                    mPausedColor = view.getCurrentTextColor();
+                    view.setTextColor(endColor);
+                }
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+                if (mChangeBehavior != CHANGE_BEHAVIOR_IN) {
+                    view.setText(startText);
+                    if (view instanceof EditText) {
+                        setSelection(((EditText) view), startSelectionStart, startSelectionEnd);
+                    }
+                }
+                if (mChangeBehavior > CHANGE_BEHAVIOR_KEEP) {
+                    view.setTextColor(mPausedColor);
+                }
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                transition.removeListener(this);
+            }
+        };
+        addListener(transitionListener);
+        if (DBG) {
+            Log.d(LOG_TAG, "createAnimator returning " + anim);
+        }
+        return anim;
+    }
+    return null;
+}

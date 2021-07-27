@@ -1,0 +1,21 @@
+public int getLeastMaximum(int field){
+    switch(field) {
+        case MONTH:
+        case DAY_OF_MONTH:
+        case DAY_OF_YEAR:
+        case WEEK_OF_YEAR:
+        case WEEK_OF_MONTH:
+        case DAY_OF_WEEK_IN_MONTH:
+        case YEAR:
+            {
+                GregorianCalendar gc = (GregorianCalendar) clone();
+                gc.setLenient(true);
+                gc.setTimeInMillis(gregorianCutover);
+                int v1 = gc.getActualMaximum(field);
+                gc.setTimeInMillis(gregorianCutover - 1);
+                int v2 = gc.getActualMaximum(field);
+                return Math.min(LEAST_MAX_VALUES[field], Math.min(v1, v2));
+            }
+    }
+    return LEAST_MAX_VALUES[field];
+}

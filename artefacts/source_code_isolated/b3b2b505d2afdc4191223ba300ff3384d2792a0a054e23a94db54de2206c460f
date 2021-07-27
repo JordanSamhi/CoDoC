@@ -1,0 +1,8 @@
+public static int getInt(ContentResolver cr, String name) throws SettingNotFoundException{
+    String v = getString(cr, name);
+    try {
+        return Integer.parseInt(v);
+    } catch (NumberFormatException e) {
+        throw new SettingNotFoundException(name);
+    }
+}

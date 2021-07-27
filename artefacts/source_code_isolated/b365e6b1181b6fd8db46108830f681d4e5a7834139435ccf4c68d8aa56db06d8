@@ -1,0 +1,19 @@
+public static Currency getInstance(Locale locale){
+    String country = locale.getCountry();
+    if (country == null) {
+        throw new NullPointerException();
+    }
+    android.icu.util.Currency icuInstance = android.icu.util.Currency.getInstance(locale);
+    String variant = locale.getVariant();
+    if (!variant.isEmpty() && (variant.equals("EURO") || variant.equals("HK") || variant.equals("PREEURO"))) {
+        country = country + "_" + variant;
+    }
+    String currencyCode = ICU.getCurrencyCode(country);
+    if (currencyCode == null) {
+        throw new IllegalArgumentException("Unsupported ISO 3166 country: " + locale);
+    }
+    if (icuInstance == null || icuInstance.getCurrencyCode().equals("XXX")) {
+        return null;
+    }
+    return getInstance(currencyCode);
+}

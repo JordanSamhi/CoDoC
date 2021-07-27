@@ -1,0 +1,10 @@
+public void setIssuerNames(Collection<?> names) throws IOException{
+    if (names == null || names.size() == 0) {
+        issuerNames = null;
+        issuerX500Principals = null;
+    } else {
+        HashSet<Object> tempNames = cloneAndCheckIssuerNames(names);
+        issuerX500Principals = parseIssuerNames(tempNames);
+        issuerNames = tempNames;
+    }
+}

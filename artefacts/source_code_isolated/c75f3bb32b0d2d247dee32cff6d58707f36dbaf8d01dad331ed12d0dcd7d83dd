@@ -1,3 +1,7 @@
-public boolean isDisplayWhiteBalanceEnabled(){
-    return mManager.isDisplayWhiteBalanceEnabled();
+ boolean isDisplayWhiteBalanceEnabled(){
+    try {
+        return mCdm.isDisplayWhiteBalanceEnabled();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

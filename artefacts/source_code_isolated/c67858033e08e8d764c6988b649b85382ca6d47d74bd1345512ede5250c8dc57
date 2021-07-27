@@ -1,0 +1,8 @@
+public MethodHandle asFixedArity(){
+    MethodHandle mh = this;
+    if (mh.isVarargsCollector()) {
+        mh = ((Transformers.VarargsCollector) mh).asFixedArity();
+    }
+    assert (!mh.isVarargsCollector());
+    return mh;
+}

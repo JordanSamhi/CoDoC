@@ -1,0 +1,43 @@
+public String toString(){
+    final String format = "   %-29s = %s\n";
+    final String formatWithUncertainty = "   %-29s = %-25s   %-40s = %s\n";
+    StringBuilder builder = new StringBuilder("GnssMeasurement:\n");
+    builder.append(String.format(format, "Svid", mSvid));
+    builder.append(String.format(format, "ConstellationType", mConstellationType));
+    builder.append(String.format(format, "TimeOffsetNanos", mTimeOffsetNanos));
+    builder.append(String.format(format, "State", getStateString()));
+    builder.append(String.format(formatWithUncertainty, "ReceivedSvTimeNanos", mReceivedSvTimeNanos, "ReceivedSvTimeUncertaintyNanos", mReceivedSvTimeUncertaintyNanos));
+    builder.append(String.format(format, "Cn0DbHz", mCn0DbHz));
+    if (hasBasebandCn0DbHz()) {
+        builder.append(String.format(format, "BasebandCn0DbHz", mBasebandCn0DbHz));
+    }
+    builder.append(String.format(formatWithUncertainty, "PseudorangeRateMetersPerSecond", mPseudorangeRateMetersPerSecond, "PseudorangeRateUncertaintyMetersPerSecond", mPseudorangeRateUncertaintyMetersPerSecond));
+    builder.append(String.format(format, "AccumulatedDeltaRangeState", getAccumulatedDeltaRangeStateString()));
+    builder.append(String.format(formatWithUncertainty, "AccumulatedDeltaRangeMeters", mAccumulatedDeltaRangeMeters, "AccumulatedDeltaRangeUncertaintyMeters", mAccumulatedDeltaRangeUncertaintyMeters));
+    if (hasCarrierFrequencyHz()) {
+        builder.append(String.format(format, "CarrierFrequencyHz", mCarrierFrequencyHz));
+    }
+    if (hasCarrierCycles()) {
+        builder.append(String.format(format, "CarrierCycles", mCarrierCycles));
+    }
+    if (hasCarrierPhase() || hasCarrierPhaseUncertainty()) {
+        builder.append(String.format(formatWithUncertainty, "CarrierPhase", hasCarrierPhase() ? mCarrierPhase : null, "CarrierPhaseUncertainty", hasCarrierPhaseUncertainty() ? mCarrierPhaseUncertainty : null));
+    }
+    builder.append(String.format(format, "MultipathIndicator", getMultipathIndicatorString()));
+    if (hasSnrInDb()) {
+        builder.append(String.format(format, "SnrInDb", mSnrInDb));
+    }
+    if (hasAutomaticGainControlLevelDb()) {
+        builder.append(String.format(format, "AgcLevelDb", mAutomaticGainControlLevelInDb));
+    }
+    if (hasCodeType()) {
+        builder.append(String.format(format, "CodeType", mCodeType));
+    }
+    if (hasFullInterSignalBiasNanos() || hasFullInterSignalBiasUncertaintyNanos()) {
+        builder.append(String.format(formatWithUncertainty, "InterSignalBiasNs", hasFullInterSignalBiasNanos() ? mFullInterSignalBiasNanos : null, "InterSignalBiasUncertaintyNs", hasFullInterSignalBiasUncertaintyNanos() ? mFullInterSignalBiasUncertaintyNanos : null));
+    }
+    if (hasSatelliteInterSignalBiasNanos() || hasSatelliteInterSignalBiasUncertaintyNanos()) {
+        builder.append(String.format(formatWithUncertainty, "SatelliteInterSignalBiasNs", hasSatelliteInterSignalBiasNanos() ? mSatelliteInterSignalBiasNanos : null, "SatelliteInterSignalBiasUncertaintyNs", hasSatelliteInterSignalBiasUncertaintyNanos() ? mSatelliteInterSignalBiasUncertaintyNanos : null));
+    }
+    return builder.toString();
+}

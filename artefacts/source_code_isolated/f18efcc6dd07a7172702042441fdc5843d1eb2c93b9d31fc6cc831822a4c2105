@@ -1,0 +1,18 @@
+public static UnicodeBlock of(int codePoint){
+    if (!isValidCodePoint(codePoint)) {
+        throw new IllegalArgumentException();
+    }
+    int top, bottom, current;
+    bottom = 0;
+    top = blockStarts.length;
+    current = top / 2;
+    while (top - bottom > 1) {
+        if (codePoint >= blockStarts[current]) {
+            bottom = current;
+        } else {
+            top = current;
+        }
+        current = (top + bottom) / 2;
+    }
+    return blocks[current];
+}

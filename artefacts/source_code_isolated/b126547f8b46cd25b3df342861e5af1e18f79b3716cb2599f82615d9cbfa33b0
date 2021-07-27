@@ -1,0 +1,17 @@
+public boolean addAll(Collection<? extends E> c){
+    Object[] cs = (c.getClass() == CopyOnWriteArrayList.class) ? ((CopyOnWriteArrayList<?>) c).getArray() : c.toArray();
+    if (cs.length == 0)
+        return false;
+    synchronized (lock) {
+        Object[] elements = getArray();
+        int len = elements.length;
+        if (len == 0 && cs.getClass() == Object[].class)
+            setArray(cs);
+        else {
+            Object[] newElements = Arrays.copyOf(elements, len + cs.length);
+            System.arraycopy(cs, 0, newElements, len, cs.length);
+            setArray(newElements);
+        }
+        return true;
+    }
+}

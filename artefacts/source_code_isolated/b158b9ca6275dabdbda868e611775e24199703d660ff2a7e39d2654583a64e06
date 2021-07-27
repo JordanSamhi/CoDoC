@@ -1,0 +1,23 @@
+public ByteBuffer decode(ByteBuffer buffer){
+    int pos0 = buffer.position();
+    try {
+        byte[] src;
+        int sp, sl;
+        if (buffer.hasArray()) {
+            src = buffer.array();
+            sp = buffer.arrayOffset() + buffer.position();
+            sl = buffer.arrayOffset() + buffer.limit();
+            buffer.position(buffer.limit());
+        } else {
+            src = new byte[buffer.remaining()];
+            buffer.get(src);
+            sp = 0;
+            sl = src.length;
+        }
+        byte[] dst = new byte[outLength(src, sp, sl)];
+        return ByteBuffer.wrap(dst, 0, decode0(src, sp, sl, dst));
+    } catch (IllegalArgumentException iae) {
+        buffer.position(pos0);
+        throw iae;
+    }
+}

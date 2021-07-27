@@ -1,0 +1,14 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        switch((ChronoField) field) {
+            case YEAR_OF_ERA:
+                return (year < 1 ? 1 - year : year);
+            case YEAR:
+                return year;
+            case ERA:
+                return (year < 1 ? 0 : 1);
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return field.getFrom(this);
+}

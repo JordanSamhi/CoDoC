@@ -1,0 +1,30 @@
+
+     * The application is being asked to write any data changed since the last
+     * time it performed a backup operation. The state data recorded during the
+     * last backup pass is provided in the <code>oldState</code> file
+     * descriptor. If <code>oldState</code> is <code>null</code>, no old state
+     * is available and the application should perform a full backup. In both
+     * cases, a representation of the final backup state after this pass should
+     * be written to the file pointed to by the file descriptor wrapped in
+     * <code>newState</code>.
+     * <p>
+     * Each entity written to the {@link android.app.backup.BackupDataOutput}
+     * <code>data</code> stream will be transmitted
+     * over the current backup transport and stored in the remote data set under
+     * the key supplied as part of the entity.  Writing an entity with a negative
+     * data size instructs the transport to delete whatever entity currently exists
+     * under that key from the remote data set.
+     *
+     * @param oldState An open, read-only ParcelFileDescriptor pointing to the
+     *            last backup state provided by the application. May be
+     *            <code>null</code>, in which case no prior state is being
+     *            provided and the application should perform a full backup.
+     * @param data A structured wrapper around an open, read/write
+     *            file descriptor pointing to the backup data destination.
+     *            Typically the application will use backup helper classes to
+     *            write to this file.
+     * @param newState An open, read/write ParcelFileDescriptor pointing to an
+     *            empty file. The application should record the final backup
+     *            state here after writing the requested data to the <code>data</code>
+     *            output stream.
+     

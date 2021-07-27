@@ -1,0 +1,6 @@
+public synchronized boolean getReuseAddress() throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    Object o = getImpl().getOption(SocketOptions.SO_REUSEADDR);
+    return ((Boolean) o).booleanValue();
+}

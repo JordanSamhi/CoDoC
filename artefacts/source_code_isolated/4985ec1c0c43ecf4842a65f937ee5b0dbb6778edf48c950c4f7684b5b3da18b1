@@ -1,0 +1,17 @@
+public boolean onKeyUp(int keyCode, KeyEvent event){
+    if (KeyEvent.isConfirmKey(keyCode)) {
+        if (!isEnabled()) {
+            return true;
+        }
+        if (isClickable() && isPressed() && mSelectedPosition >= 0 && mAdapter != null && mSelectedPosition < mAdapter.getCount()) {
+            final View view = getChildAt(mSelectedPosition - mFirstPosition);
+            if (view != null) {
+                performItemClick(view, mSelectedPosition, mSelectedRowId);
+                view.setPressed(false);
+            }
+            setPressed(false);
+            return true;
+        }
+    }
+    return super.onKeyUp(keyCode, event);
+}

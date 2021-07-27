@@ -1,0 +1,22 @@
+public String toString(){
+    BaseCalendar.Date date = normalize();
+    StringBuilder sb = new StringBuilder(28);
+    int index = date.getDayOfWeek();
+    if (index == BaseCalendar.SUNDAY) {
+        index = 8;
+    }
+    convertToAbbr(sb, wtb[index]).append(' ');
+    convertToAbbr(sb, wtb[date.getMonth() - 1 + 2 + 7]).append(' ');
+    CalendarUtils.sprintf0d(sb, date.getDayOfMonth(), 2).append(' ');
+    CalendarUtils.sprintf0d(sb, date.getHours(), 2).append(':');
+    CalendarUtils.sprintf0d(sb, date.getMinutes(), 2).append(':');
+    CalendarUtils.sprintf0d(sb, date.getSeconds(), 2).append(' ');
+    TimeZone zi = date.getZone();
+    if (zi != null) {
+        sb.append(zi.getDisplayName(date.isDaylightTime(), TimeZone.SHORT, Locale.US));
+    } else {
+        sb.append("GMT");
+    }
+    sb.append(' ').append(date.getYear());
+    return sb.toString();
+}

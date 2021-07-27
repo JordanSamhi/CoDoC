@@ -1,0 +1,11 @@
+public WindowInsets dispatchWindowInsetsAnimationProgress(@NonNull WindowInsets insets, @NonNull List<WindowInsetsAnimation> runningAnimations){
+    insets = super.dispatchWindowInsetsAnimationProgress(insets, runningAnimations);
+    if (mInsetsAnimationDispatchMode == DISPATCH_MODE_STOP) {
+        return insets;
+    }
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+        getChildAt(i).dispatchWindowInsetsAnimationProgress(insets, runningAnimations);
+    }
+    return insets;
+}

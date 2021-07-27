@@ -1,0 +1,17 @@
+public boolean equals(Object rhs){
+    if (!(rhs instanceof BarringInfo))
+        return false;
+    BarringInfo bi = (BarringInfo) rhs;
+    if (hashCode() != bi.hashCode())
+        return false;
+    if (mBarringServiceInfos.size() != bi.mBarringServiceInfos.size())
+        return false;
+    for (int i = 0; i < mBarringServiceInfos.size(); i++) {
+        if (mBarringServiceInfos.keyAt(i) != bi.mBarringServiceInfos.keyAt(i))
+            return false;
+        if (!Objects.equals(mBarringServiceInfos.valueAt(i), bi.mBarringServiceInfos.valueAt(i))) {
+            return false;
+        }
+    }
+    return true;
+}

@@ -1,0 +1,16 @@
+public Year with(TemporalField field, long newValue){
+    if (field instanceof ChronoField) {
+        ChronoField f = (ChronoField) field;
+        f.checkValidValue(newValue);
+        switch(f) {
+            case YEAR_OF_ERA:
+                return Year.of((int) (year < 1 ? 1 - newValue : newValue));
+            case YEAR:
+                return Year.of((int) newValue);
+            case ERA:
+                return (getLong(ERA) == newValue ? this : Year.of(1 - year));
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return field.adjustInto(this, newValue);
+}

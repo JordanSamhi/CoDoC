@@ -1,0 +1,8 @@
+public MonthDay with(Month month){
+    Objects.requireNonNull(month, "month");
+    if (month.getValue() == this.month) {
+        return this;
+    }
+    int day = Math.min(this.day, month.maxLength());
+    return new MonthDay(month.getValue(), day);
+}

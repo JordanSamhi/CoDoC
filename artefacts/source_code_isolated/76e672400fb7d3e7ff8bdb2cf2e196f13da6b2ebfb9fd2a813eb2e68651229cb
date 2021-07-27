@@ -1,0 +1,18 @@
+public boolean dispatchKeyEvent(KeyEvent event){
+    if (mInputEventConsistencyVerifier != null) {
+        mInputEventConsistencyVerifier.onKeyEvent(event, 1);
+    }
+    if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
+        if (super.dispatchKeyEvent(event)) {
+            return true;
+        }
+    } else if (mFocused != null && (mFocused.mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
+        if (mFocused.dispatchKeyEvent(event)) {
+            return true;
+        }
+    }
+    if (mInputEventConsistencyVerifier != null) {
+        mInputEventConsistencyVerifier.onUnhandledEvent(event, 1);
+    }
+    return false;
+}

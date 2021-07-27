@@ -1,0 +1,40 @@
+
+     * A query that provides access to the excess days that were parsed.
+     * <p>
+     * This returns a singleton {@linkplain TemporalQuery query} that provides
+     * access to additional information from the parse. The query always returns
+     * a non-null period, with a zero period returned instead of null.
+     * <p>
+     * There are two situations where this query may return a non-zero period.
+     * <ul>
+     * <li>If the {@code ResolverStyle} is {@code LENIENT} and a time is parsed
+     *  without a date, then the complete result of the parse consists of a
+     *  {@code LocalTime} and an excess {@code Period} in days.
+     *
+     * <li>If the {@code ResolverStyle} is {@code SMART} and a time is parsed
+     *  without a date where the time is 24:00:00, then the complete result of
+     *  the parse consists of a {@code LocalTime} of 00:00:00 and an excess
+     *  {@code Period} of one day.
+     * </ul>
+     * <p>
+     * In both cases, if a complete {@code ChronoLocalDateTime} or {@code Instant}
+     * is parsed, then the excess days are added to the date part.
+     * As a result, this query will return a zero period.
+     * <p>
+     * The {@code SMART} behaviour handles the common "end of day" 24:00 value.
+     * Processing in {@code LENIENT} mode also produces the same result:
+     * <pre>
+     *  Text to parse        Parsed object                         Excess days
+     *  "2012-12-03T00:00"   LocalDateTime.of(2012, 12, 3, 0, 0)   ZERO
+     *  "2012-12-03T24:00"   LocalDateTime.of(2012, 12, 4, 0, 0)   ZERO
+     *  "00:00"              LocalTime.of(0, 0)                    ZERO
+     *  "24:00"              LocalTime.of(0, 0)                    Period.ofDays(1)
+     * </pre>
+     * The query can be used as follows:
+     * <pre>
+     *  TemporalAccessor parsed = formatter.parse(str);
+     *  LocalTime time = parsed.query(LocalTime::from);
+     *  Period extraDays = parsed.query(DateTimeFormatter.parsedExcessDays());
+     * </pre>
+     * @return a query that provides access to the excess days that were parsed
+     

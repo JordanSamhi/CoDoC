@@ -1,0 +1,12 @@
+public boolean setVisible(boolean visible, boolean restart){
+    final boolean changed = super.setVisible(visible, restart);
+    if (!visible) {
+        clearHotspots();
+    } else if (changed) {
+        if (mRippleActive) {
+            tryRippleEnter();
+        }
+        jumpToCurrentState();
+    }
+    return changed;
+}

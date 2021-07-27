@@ -1,0 +1,26 @@
+public String toString(){
+    if (mKeys == null || mCoordinates == null || mFlagsArray == null) {
+        return "SparseRectFArray{}";
+    }
+    final StringBuilder sb = new StringBuilder();
+    sb.append("SparseRectFArray{");
+    for (int i = 0; i < mKeys.length; i++) {
+        if (i != 0) {
+            sb.append(", ");
+        }
+        final int baseIndex = i * 4;
+        sb.append(mKeys[i]);
+        sb.append(":[");
+        sb.append(mCoordinates[baseIndex + 0]);
+        sb.append(",");
+        sb.append(mCoordinates[baseIndex + 1]);
+        sb.append("],[");
+        sb.append(mCoordinates[baseIndex + 2]);
+        sb.append(",");
+        sb.append(mCoordinates[baseIndex + 3]);
+        sb.append("]:flagsArray=");
+        sb.append(mFlagsArray[i]);
+    }
+    sb.append("}");
+    return sb.toString();
+}

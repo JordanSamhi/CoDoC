@@ -1,0 +1,8 @@
+public boolean setAutoRevokeWhitelisted(@NonNull String packageName, boolean whitelisted){
+    try {
+        final int userId = getUserId();
+        return mPermissionManager.setAutoRevokeWhitelisted(packageName, whitelisted, userId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,0 +1,10 @@
+public static LocalTime ofNanoOfDay(long nanoOfDay){
+    NANO_OF_DAY.checkValidValue(nanoOfDay);
+    int hours = (int) (nanoOfDay / NANOS_PER_HOUR);
+    nanoOfDay -= hours * NANOS_PER_HOUR;
+    int minutes = (int) (nanoOfDay / NANOS_PER_MINUTE);
+    nanoOfDay -= minutes * NANOS_PER_MINUTE;
+    int seconds = (int) (nanoOfDay / NANOS_PER_SECOND);
+    nanoOfDay -= seconds * NANOS_PER_SECOND;
+    return create(hours, minutes, seconds, (int) nanoOfDay);
+}

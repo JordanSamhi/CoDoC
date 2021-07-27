@@ -1,0 +1,31 @@
+public BigDecimal add(BigDecimal augend, MathContext mc){
+    BigDecimal larger;
+    BigDecimal smaller;
+    BigInteger tempBI;
+    long diffScale = (long) this.scale - augend.scale;
+    int largerSignum;
+    if ((augend.isZero()) || (this.isZero()) || (mc.getPrecision() == 0)) {
+        return add(augend).round(mc);
+    }
+    if (this.approxPrecision() < diffScale - 1) {
+        larger = augend;
+        smaller = this;
+    } else if (augend.approxPrecision() < -diffScale - 1) {
+        larger = this;
+        smaller = augend;
+    } else {
+        return add(augend).round(mc);
+    }
+    if (mc.getPrecision() >= larger.approxPrecision()) {
+        return add(augend).round(mc);
+    }
+    largerSignum = larger.signum();
+    if (largerSignum == smaller.signum()) {
+        tempBI = Multiplication.multiplyByPositiveInt(larger.getUnscaledValue(), 10).add(BigInteger.valueOf(largerSignum));
+    } else {
+        tempBI = larger.getUnscaledValue().subtract(BigInteger.valueOf(largerSignum));
+        tempBI = Multiplication.multiplyByPositiveInt(tempBI, 10).add(BigInteger.valueOf(largerSignum * 9));
+    }
+    larger = new BigDecimal(tempBI, larger.scale + 1);
+    return larger.round(mc);
+}

@@ -1,0 +1,53 @@
+public void draw(Canvas canvas){
+    final NinePatchState state = mNinePatchState;
+    Rect bounds = getBounds();
+    int restoreToCount = -1;
+    final boolean clearColorFilter;
+    if (mBlendModeFilter != null && getPaint().getColorFilter() == null) {
+        mPaint.setColorFilter(mBlendModeFilter);
+        clearColorFilter = true;
+    } else {
+        clearColorFilter = false;
+    }
+    final int restoreAlpha;
+    if (state.mBaseAlpha != 1.0f) {
+        restoreAlpha = getPaint().getAlpha();
+        mPaint.setAlpha((int) (restoreAlpha * state.mBaseAlpha + 0.5f));
+    } else {
+        restoreAlpha = -1;
+    }
+    final boolean needsDensityScaling = canvas.getDensity() == 0 && Bitmap.DENSITY_NONE != state.mNinePatch.getDensity();
+    if (needsDensityScaling) {
+        restoreToCount = restoreToCount >= 0 ? restoreToCount : canvas.save();
+        final float scale = mTargetDensity / (float) state.mNinePatch.getDensity();
+        final float px = bounds.left;
+        final float py = bounds.top;
+        canvas.scale(scale, scale, px, py);
+        if (mTempRect == null) {
+            mTempRect = new Rect();
+        }
+        final Rect scaledBounds = mTempRect;
+        scaledBounds.left = bounds.left;
+        scaledBounds.top = bounds.top;
+        scaledBounds.right = bounds.left + Math.round(bounds.width() / scale);
+        scaledBounds.bottom = bounds.top + Math.round(bounds.height() / scale);
+        bounds = scaledBounds;
+    }
+    final boolean needsMirroring = needsMirroring();
+    if (needsMirroring) {
+        restoreToCount = restoreToCount >= 0 ? restoreToCount : canvas.save();
+        final float cx = (bounds.left + bounds.right) / 2.0f;
+        final float cy = (bounds.top + bounds.bottom) / 2.0f;
+        canvas.scale(-1.0f, 1.0f, cx, cy);
+    }
+    state.mNinePatch.draw(canvas, bounds, mPaint);
+    if (restoreToCount >= 0) {
+        canvas.restoreToCount(restoreToCount);
+    }
+    if (clearColorFilter) {
+        mPaint.setColorFilter(null);
+    }
+    if (restoreAlpha >= 0) {
+        mPaint.setAlpha(restoreAlpha);
+    }
+}

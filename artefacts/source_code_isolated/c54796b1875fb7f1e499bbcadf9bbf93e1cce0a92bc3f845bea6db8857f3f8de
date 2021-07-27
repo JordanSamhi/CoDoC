@@ -1,0 +1,18 @@
+public boolean canApplyTheme(){
+    final int N = mNumChildren;
+    final Drawable[] drawables = mDrawables;
+    for (int i = 0; i < N; i++) {
+        final Drawable d = drawables[i];
+        if (d != null) {
+            if (d.canApplyTheme()) {
+                return true;
+            }
+        } else {
+            final ConstantState future = mDrawableFutures.get(i);
+            if (future != null && future.canApplyTheme()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

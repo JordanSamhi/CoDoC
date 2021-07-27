@@ -1,0 +1,36 @@
+public Socket connectSocket(final Socket sock, final String host, final int port, final InetAddress localAddress, int localPort, final HttpParams params) throws IOException{
+    if (host == null) {
+        throw new IllegalArgumentException("Target host may not be null.");
+    }
+    if (params == null) {
+        throw new IllegalArgumentException("Parameters may not be null.");
+    }
+    SSLSocket sslsock = (SSLSocket) ((sock != null) ? sock : createSocket());
+    if ((localAddress != null) || (localPort > 0)) {
+        if (localPort < 0)
+            localPort = 0;
+        InetSocketAddress isa = new InetSocketAddress(localAddress, localPort);
+        sslsock.bind(isa);
+    }
+    int connTimeout = HttpConnectionParams.getConnectionTimeout(params);
+    int soTimeout = HttpConnectionParams.getSoTimeout(params);
+    InetSocketAddress remoteAddress;
+    if (this.nameResolver != null) {
+        remoteAddress = new InetSocketAddress(this.nameResolver.resolve(host), port);
+    } else {
+        remoteAddress = new InetSocketAddress(host, port);
+    }
+    sslsock.connect(remoteAddress, connTimeout);
+    sslsock.setSoTimeout(soTimeout);
+    try {
+        sslsock.startHandshake();
+        hostnameVerifier.verify(host, sslsock);
+    } catch (IOException iox) {
+        try {
+            sslsock.close();
+        } catch (Exception x) {
+        }
+        throw iox;
+    }
+    return sslsock;
+}

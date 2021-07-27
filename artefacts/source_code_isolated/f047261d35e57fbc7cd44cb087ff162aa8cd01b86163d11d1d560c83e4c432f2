@@ -1,0 +1,18 @@
+public void defaultReadObject() throws IOException, ClassNotFoundException{
+    SerialCallbackContext ctx = curContext;
+    if (ctx == null) {
+        throw new NotActiveException("not in call to readObject");
+    }
+    Object curObj = ctx.getObj();
+    ObjectStreamClass curDesc = ctx.getDesc();
+    bin.setBlockDataMode(false);
+    defaultReadFields(curObj, curDesc);
+    bin.setBlockDataMode(true);
+    if (!curDesc.hasWriteObjectData()) {
+        defaultDataEnd = true;
+    }
+    ClassNotFoundException ex = handles.lookupException(passHandle);
+    if (ex != null) {
+        throw ex;
+    }
+}

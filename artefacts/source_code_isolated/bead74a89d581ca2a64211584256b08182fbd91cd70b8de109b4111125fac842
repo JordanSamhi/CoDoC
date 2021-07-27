@@ -1,0 +1,33 @@
+public boolean awaitQuiescence(long timeout, TimeUnit unit){
+    long nanos = unit.toNanos(timeout);
+    ForkJoinWorkerThread wt;
+    Thread thread = Thread.currentThread();
+    if ((thread instanceof ForkJoinWorkerThread) && (wt = (ForkJoinWorkerThread) thread).pool == this) {
+        helpQuiescePool(wt.workQueue);
+        return true;
+    }
+    long startTime = System.nanoTime();
+    WorkQueue[] ws;
+    int r = 0, wl;
+    boolean found = true;
+    while (!isQuiescent() && (ws = workQueues) != null && (wl = ws.length) > 0) {
+        if (!found) {
+            if ((System.nanoTime() - startTime) > nanos)
+                return false;
+            Thread.yield();
+        }
+        found = false;
+        for (int m = wl - 1, j = (m + 1) << 2; j >= 0; --j) {
+            ForkJoinTask<?> t;
+            WorkQueue q;
+            int b, k;
+            if ((k = r++ & m) <= m && k >= 0 && (q = ws[k]) != null && (b = q.base) - q.top < 0) {
+                found = true;
+                if ((t = q.pollAt(b)) != null)
+                    t.doExec();
+                break;
+            }
+        }
+    }
+    return true;
+}

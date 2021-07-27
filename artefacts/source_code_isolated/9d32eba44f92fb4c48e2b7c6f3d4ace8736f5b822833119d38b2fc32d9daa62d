@@ -1,0 +1,10 @@
+public void setTarget(@Nullable Object target){
+    final Object oldTarget = getTarget();
+    if (oldTarget != target) {
+        if (isStarted()) {
+            cancel();
+        }
+        mTarget = target == null ? null : new WeakReference<Object>(target);
+        mInitialized = false;
+    }
+}

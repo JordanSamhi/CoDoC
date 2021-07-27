@@ -1,0 +1,10 @@
+ ValueRange range(TemporalField field){
+    if (field instanceof ChronoField) {
+        if (isSupported(field)) {
+            return field.range();
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    Objects.requireNonNull(field, "field");
+    return field.rangeRefinedBy(this);
+}

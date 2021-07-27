@@ -1,0 +1,23 @@
+public int getActualMaximum(int field){
+    int fieldValue = getLeastMaximum(field);
+    int endValue = getMaximum(field);
+    if (fieldValue == endValue) {
+        return fieldValue;
+    }
+    Calendar work = (Calendar) this.clone();
+    work.setLenient(true);
+    if (field == WEEK_OF_YEAR || field == WEEK_OF_MONTH) {
+        work.set(DAY_OF_WEEK, firstDayOfWeek);
+    }
+    int result = fieldValue;
+    do {
+        work.set(field, fieldValue);
+        if (work.get(field) != fieldValue) {
+            break;
+        } else {
+            result = fieldValue;
+            fieldValue++;
+        }
+    } while (fieldValue <= endValue);
+    return result;
+}

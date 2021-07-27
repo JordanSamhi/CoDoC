@@ -1,0 +1,9 @@
+public final void update(ByteBuffer data) throws SignatureException{
+    if ((state != SIGN) && (state != VERIFY)) {
+        throw new SignatureException("object not initialized for " + "signature or verification");
+    }
+    if (data == null) {
+        throw new NullPointerException();
+    }
+    engineUpdate(data);
+}

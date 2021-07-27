@@ -1,0 +1,28 @@
+public int read(byte[] b, int off, int len) throws IOException{
+    ensureOpen();
+    if (b == null) {
+        throw new NullPointerException();
+    } else if (off < 0 || len < 0 || len > b.length - off) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+    int avail = buf.length - pos;
+    if (avail > 0) {
+        if (len < avail) {
+            avail = len;
+        }
+        System.arraycopy(buf, pos, b, off, avail);
+        pos += avail;
+        off += avail;
+        len -= avail;
+    }
+    if (len > 0) {
+        len = super.read(b, off, len);
+        if (len == -1) {
+            return avail == 0 ? -1 : avail;
+        }
+        return avail + len;
+    }
+    return avail;
+}

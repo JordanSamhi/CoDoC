@@ -1,0 +1,18 @@
+
+     * If the calling process of an IPC you are handling has not been
+     * granted a particular permission, throw a {@link
+     * SecurityException}.  This is basically the same as calling
+     * {@link #enforcePermission(String, int, int, String)} with the
+     * pid and uid returned by {@link android.os.Binder#getCallingPid}
+     * and {@link android.os.Binder#getCallingUid}.  One important
+     * difference is that if you are not currently processing an IPC,
+     * this function will always throw the SecurityException.  This is
+     * done to protect against accidentally leaking permissions; you
+     * can use {@link #enforceCallingOrSelfPermission} to avoid this
+     * protection.
+     *
+     * @param permission The name of the permission being checked.
+     * @param message A message to include in the exception if it is thrown.
+     *
+     * @see #checkCallingPermission(String)
+     

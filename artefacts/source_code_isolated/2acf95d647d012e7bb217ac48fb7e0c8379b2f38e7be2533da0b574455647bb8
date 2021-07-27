@@ -1,0 +1,16 @@
+public ZipEntry getEntry(String name){
+    if (name == null) {
+        throw new NullPointerException("name");
+    }
+    long jzentry = 0;
+    synchronized (this) {
+        ensureOpen();
+        jzentry = getEntry(jzfile, zc.getBytes(name), true);
+        if (jzentry != 0) {
+            ZipEntry ze = getZipEntry(name, jzentry);
+            freeEntry(jzfile, jzentry);
+            return ze;
+        }
+    }
+    return null;
+}

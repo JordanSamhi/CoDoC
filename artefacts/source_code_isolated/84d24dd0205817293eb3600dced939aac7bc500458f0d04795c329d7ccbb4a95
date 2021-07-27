@@ -1,0 +1,12 @@
+public void run(){
+    mTid = Process.myTid();
+    Looper.prepare();
+    synchronized (this) {
+        mLooper = Looper.myLooper();
+        notifyAll();
+    }
+    Process.setThreadPriority(mPriority);
+    onLooperPrepared();
+    Looper.loop();
+    mTid = -1;
+}

@@ -1,0 +1,9 @@
+public synchronized boolean addAll(Collection<? extends E> c){
+    modCount++;
+    Object[] a = c.toArray();
+    int numNew = a.length;
+    ensureCapacityHelper(elementCount + numNew);
+    System.arraycopy(a, 0, elementData, elementCount, numNew);
+    elementCount += numNew;
+    return numNew != 0;
+}

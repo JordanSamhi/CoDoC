@@ -1,0 +1,19 @@
+public final void drawBitmap(@NonNull Bitmap bitmap, @Nullable Rect src, @NonNull Rect dst, @Nullable Paint paint){
+    if (dst == null) {
+        throw new NullPointerException();
+    }
+    throwIfCannotDraw(bitmap);
+    final long nativePaint = paint == null ? 0 : paint.getNativeInstance();
+    int left, top, right, bottom;
+    if (src == null) {
+        left = top = 0;
+        right = bitmap.getWidth();
+        bottom = bitmap.getHeight();
+    } else {
+        left = src.left;
+        right = src.right;
+        top = src.top;
+        bottom = src.bottom;
+    }
+    nDrawBitmap(mNativeCanvasWrapper, bitmap.getNativeInstance(), left, top, right, bottom, dst.left, dst.top, dst.right, dst.bottom, nativePaint, mScreenDensity, bitmap.mDensity);
+}

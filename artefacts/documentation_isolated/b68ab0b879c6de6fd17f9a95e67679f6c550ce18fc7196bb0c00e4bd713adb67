@@ -1,0 +1,23 @@
+
+     * Gets the rules for the zone ID.
+     * <p>
+     * This returns the latest available rules for the zone ID.
+     * <p>
+     * This method relies on time-zone data provider files that are configured.
+     * These are loaded using a {@code ServiceLoader}.
+     * <p>
+     * The caching flag is designed to allow provider implementations to
+     * prevent the rules being cached in {@code ZoneId}.
+     * Under normal circumstances, the caching of zone rules is highly desirable
+     * as it will provide greater performance. However, there is a use case where
+     * the caching would not be desirable, see {@link #provideRules}.
+     *
+     * @param zoneId the zone ID as defined by {@code ZoneId}, not null
+     * @param forCaching whether the rules are being queried for caching,
+     * true if the returned rules will be cached by {@code ZoneId},
+     * false if they will be returned to the user without being cached in {@code ZoneId}
+     * @return the rules, null if {@code forCaching} is true and this
+     * is a dynamic provider that wants to prevent caching in {@code ZoneId},
+     * otherwise not null
+     * @throws ZoneRulesException if rules cannot be obtained for the zone ID
+     

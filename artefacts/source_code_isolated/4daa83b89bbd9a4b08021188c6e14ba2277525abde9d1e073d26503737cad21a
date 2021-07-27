@@ -1,0 +1,24 @@
+public Animator onAppear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues){
+    if (endValues == null) {
+        return null;
+    }
+    final Rect endBounds = (Rect) endValues.values.get(PROPNAME_BOUNDS);
+    final Rect startBounds = getEpicenterOrCenter(endBounds);
+    final float startX = startBounds.centerX() - endBounds.centerX();
+    final float startY = startBounds.centerY() - endBounds.centerY();
+    final float startZ = 0 - (float) endValues.values.get(PROPNAME_Z);
+    view.setTranslationX(startX);
+    view.setTranslationY(startY);
+    view.setTranslationZ(startZ);
+    final float endX = (float) endValues.values.get(PROPNAME_TRANSLATE_X);
+    final float endY = (float) endValues.values.get(PROPNAME_TRANSLATE_Y);
+    final float endZ = (float) endValues.values.get(PROPNAME_TRANSLATE_Z);
+    final Rect endClip = getBestRect(endValues);
+    final Rect startClip = getEpicenterOrCenter(endClip);
+    view.setClipBounds(startClip);
+    final State startStateX = new State(startClip.left, startClip.right, startX);
+    final State endStateX = new State(endClip.left, endClip.right, endX);
+    final State startStateY = new State(startClip.top, startClip.bottom, startY);
+    final State endStateY = new State(endClip.top, endClip.bottom, endY);
+    return createRectAnimator(view, startStateX, startStateY, startZ, endStateX, endStateY, endZ, endValues, mInterpolatorX, mInterpolatorY, mInterpolatorZ);
+}

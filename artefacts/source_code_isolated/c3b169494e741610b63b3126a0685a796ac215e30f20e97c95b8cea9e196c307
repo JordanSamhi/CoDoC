@@ -1,0 +1,13 @@
+public String toString(){
+    StringJoiner j = new StringJoiner(", ", "{", "}");
+    j.add("netId=" + netId);
+    for (int t : BitUtils.unpackBits(transports)) {
+        j.add(NetworkCapabilities.transportNameOf(t));
+    }
+    j.add(String.format("dns avg=%dms max=%dms err=%.1f%% tot=%d", (int) dnsLatencies.average(), (int) dnsLatencies.max, 100 * dnsErrorRate.average(), dnsErrorRate.count));
+    j.add(String.format("connect avg=%dms max=%dms err=%.1f%% tot=%d", (int) connectLatencies.average(), (int) connectLatencies.max, 100 * connectErrorRate.average(), connectErrorRate.count));
+    j.add(String.format("tcp avg_loss=%.1f%% total_sent=%d total_lost=%d", 100 * tcpLossRate.average(), tcpLossRate.count, (int) tcpLossRate.sum));
+    j.add(String.format("tcp rtt=%dms", (int) (roundTripTimeUs.average() / 1000)));
+    j.add(String.format("tcp sent-ack_diff=%dms", (int) sentAckTimeDiffenceMs.average()));
+    return j.toString();
+}

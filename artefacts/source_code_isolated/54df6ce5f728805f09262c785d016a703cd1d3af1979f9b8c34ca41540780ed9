@@ -1,0 +1,13 @@
+public final void drawVertices(@NonNull VertexMode mode, int vertexCount, @NonNull float[] verts, int vertOffset, @Nullable float[] texs, int texOffset, @Nullable int[] colors, int colorOffset, @Nullable short[] indices, int indexOffset, int indexCount, @NonNull Paint paint){
+    checkRange(verts.length, vertOffset, vertexCount);
+    if (texs != null) {
+        checkRange(texs.length, texOffset, vertexCount);
+    }
+    if (colors != null) {
+        checkRange(colors.length, colorOffset, vertexCount / 2);
+    }
+    if (indices != null) {
+        checkRange(indices.length, indexOffset, indexCount);
+    }
+    nDrawVertices(mNativeCanvasWrapper, mode.nativeInt, vertexCount, verts, vertOffset, texs, texOffset, colors, colorOffset, indices, indexOffset, indexCount, paint.getNativeInstance());
+}

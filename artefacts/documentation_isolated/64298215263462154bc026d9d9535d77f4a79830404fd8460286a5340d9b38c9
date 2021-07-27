@@ -1,0 +1,28 @@
+
+     * Compares this date to another date, including the chronology.
+     * <p>
+     * The comparison is based first on the underlying time-line date, then
+     * on the chronology.
+     * It is "consistent with equals", as defined by {@link Comparable}.
+     * <p>
+     * For example, the following is the comparator order:
+     * <ol>
+     * <li>{@code 2012-12-03 (ISO)}</li>
+     * <li>{@code 2012-12-04 (ISO)}</li>
+     * <li>{@code 2555-12-04 (ThaiBuddhist)}</li>
+     * <li>{@code 2012-12-05 (ISO)}</li>
+     * </ol>
+     * Values #2 and #3 represent the same date on the time-line.
+     * When two values represent the same date, the chronology ID is compared to distinguish them.
+     * This step is needed to make the ordering "consistent with equals".
+     * <p>
+     * If all the date objects being compared are in the same chronology, then the
+     * additional chronology stage is not required and only the local date is used.
+     * To compare the dates of two {@code TemporalAccessor} instances, including dates
+     * in two different chronologies, use {@link ChronoField#EPOCH_DAY} as a comparator.
+     * <p>
+     * This default implementation performs the comparison defined above.
+     *
+     * @param other  the other date to compare to, not null
+     * @return the comparator value, negative if less, positive if greater
+     

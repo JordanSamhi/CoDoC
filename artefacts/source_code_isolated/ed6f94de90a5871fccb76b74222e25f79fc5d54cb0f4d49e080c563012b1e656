@@ -1,0 +1,11 @@
+public boolean onTextContextMenuItem(int id){
+    if (id == android.R.id.selectAll || id == android.R.id.replaceText) {
+        return super.onTextContextMenuItem(id);
+    }
+    if (mIME != null && mIME.onExtractTextContextMenuItem(id)) {
+        if (id == android.R.id.copy || id == android.R.id.paste)
+            stopTextActionMode();
+        return true;
+    }
+    return super.onTextContextMenuItem(id);
+}

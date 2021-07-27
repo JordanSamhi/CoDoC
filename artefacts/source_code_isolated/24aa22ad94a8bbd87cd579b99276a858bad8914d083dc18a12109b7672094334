@@ -1,0 +1,15 @@
+public InetAddress getInetAddress(){
+    if (!isBound())
+        return null;
+    try {
+        InetAddress in = getImpl().getInetAddress();
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null)
+            sm.checkConnect(in.getHostAddress(), -1);
+        return in;
+    } catch (SecurityException e) {
+        return InetAddress.getLoopbackAddress();
+    } catch (SocketException e) {
+    }
+    return null;
+}

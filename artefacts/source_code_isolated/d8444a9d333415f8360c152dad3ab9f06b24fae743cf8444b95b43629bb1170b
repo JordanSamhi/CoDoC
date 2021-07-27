@@ -1,0 +1,9 @@
+public final void setElevation(float elevation){
+    mElevation = elevation;
+    final WindowManager.LayoutParams attrs = getAttributes();
+    if (mDecor != null) {
+        mDecor.setElevation(elevation);
+        attrs.setSurfaceInsets(mDecor, true, false);
+    }
+    dispatchWindowAttributesChanged(attrs);
+}

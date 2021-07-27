@@ -1,0 +1,14 @@
+public void onCreate(Bundle savedInstanceState){
+    super.onCreate(savedInstanceState);
+    setHasOptionsMenu(true);
+    if (mLocaleList == null) {
+        returnToParentFrame();
+        return;
+    }
+    final boolean countryMode = mParentLocale != null;
+    final Locale sortingLocale = countryMode ? mParentLocale.getLocale() : Locale.getDefault();
+    mAdapter = new SuggestedLocaleAdapter(mLocaleList, countryMode);
+    final LocaleHelper.LocaleInfoComparator comp = new LocaleHelper.LocaleInfoComparator(sortingLocale, countryMode);
+    mAdapter.sort(comp);
+    setListAdapter(mAdapter);
+}

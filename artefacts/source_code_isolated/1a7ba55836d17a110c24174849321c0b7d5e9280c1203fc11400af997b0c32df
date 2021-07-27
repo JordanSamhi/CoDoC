@@ -1,0 +1,25 @@
+public static Collector<T, ?, M> groupingBy(Function<? super T, ? extends K> classifier, Supplier<M> mapFactory, Collector<? super T, A, D> downstream){
+    Supplier<A> downstreamSupplier = downstream.supplier();
+    BiConsumer<A, ? super T> downstreamAccumulator = downstream.accumulator();
+    BiConsumer<Map<K, A>, T> accumulator = (m, t) -> {
+        K key = Objects.requireNonNull(classifier.apply(t), "element cannot be mapped to a null key");
+        A container = m.computeIfAbsent(key, k -> downstreamSupplier.get());
+        downstreamAccumulator.accept(container, t);
+    };
+    BinaryOperator<Map<K, A>> merger = Collectors.<K, A, Map<K, A>>mapMerger(downstream.combiner());
+    @SuppressWarnings("unchecked")
+    Supplier<Map<K, A>> mangledFactory = (Supplier<Map<K, A>>) mapFactory;
+    if (downstream.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+        return new CollectorImpl<>(mangledFactory, accumulator, merger, CH_ID);
+    } else {
+        @SuppressWarnings("unchecked")
+        Function<A, A> downstreamFinisher = (Function<A, A>) downstream.finisher();
+        Function<Map<K, A>, M> finisher = intermediate -> {
+            intermediate.replaceAll((k, v) -> downstreamFinisher.apply(v));
+            @SuppressWarnings("unchecked")
+            M castResult = (M) intermediate;
+            return castResult;
+        };
+        return new CollectorImpl<>(mangledFactory, accumulator, merger, finisher, CH_NOID);
+    }
+}

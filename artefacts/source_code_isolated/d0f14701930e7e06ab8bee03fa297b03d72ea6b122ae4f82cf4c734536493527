@@ -1,0 +1,8 @@
+public static Duration from(TemporalAmount amount){
+    Objects.requireNonNull(amount, "amount");
+    Duration duration = ZERO;
+    for (TemporalUnit unit : amount.getUnits()) {
+        duration = duration.plus(amount.get(unit), unit);
+    }
+    return duration;
+}

@@ -1,0 +1,8 @@
+public static int getIntForUser(ContentResolver cr, String name, int def, int userHandle){
+    String v = getStringForUser(cr, name, userHandle);
+    try {
+        return v != null ? Integer.parseInt(v) : def;
+    } catch (NumberFormatException e) {
+        return def;
+    }
+}

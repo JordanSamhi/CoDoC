@@ -1,0 +1,32 @@
+public static void set(Object array, int index, Object value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException{
+    if (!array.getClass().isArray()) {
+        throw notAnArray(array);
+    }
+    if (array instanceof Object[]) {
+        if (value != null && !array.getClass().getComponentType().isInstance(value)) {
+            throw incompatibleType(array);
+        }
+        ((Object[]) array)[index] = value;
+    } else {
+        if (value == null) {
+            throw new IllegalArgumentException("Primitive array can't take null values.");
+        }
+        if (value instanceof Boolean) {
+            setBoolean(array, index, ((Boolean) value).booleanValue());
+        } else if (value instanceof Byte) {
+            setByte(array, index, ((Byte) value).byteValue());
+        } else if (value instanceof Character) {
+            setChar(array, index, ((Character) value).charValue());
+        } else if (value instanceof Short) {
+            setShort(array, index, ((Short) value).shortValue());
+        } else if (value instanceof Integer) {
+            setInt(array, index, ((Integer) value).intValue());
+        } else if (value instanceof Long) {
+            setLong(array, index, ((Long) value).longValue());
+        } else if (value instanceof Float) {
+            setFloat(array, index, ((Float) value).floatValue());
+        } else if (value instanceof Double) {
+            setDouble(array, index, ((Double) value).doubleValue());
+        }
+    }
+}

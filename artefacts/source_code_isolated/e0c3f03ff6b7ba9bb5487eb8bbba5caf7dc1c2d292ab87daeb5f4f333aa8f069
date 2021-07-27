@@ -1,0 +1,9 @@
+public final CountedCompleter<?> nextComplete(){
+    CountedCompleter<?> p;
+    if ((p = completer) != null)
+        return p.firstComplete();
+    else {
+        quietlyComplete();
+        return null;
+    }
+}

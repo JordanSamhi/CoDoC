@@ -1,0 +1,20 @@
+public String next(Pattern pattern){
+    ensureOpen();
+    if (pattern == null)
+        throw new NullPointerException();
+    if (hasNextPattern == pattern)
+        return getCachedResult();
+    clearCaches();
+    while (true) {
+        String token = getCompleteTokenInBuffer(pattern);
+        if (token != null) {
+            matchValid = true;
+            skipped = false;
+            return token;
+        }
+        if (needInput)
+            readInput();
+        else
+            throwFor();
+    }
+}

@@ -1,0 +1,9 @@
+public int compareTo(ByteBuffer that){
+    int n = this.position() + Math.min(this.remaining(), that.remaining());
+    for (int i = this.position(), j = that.position(); i < n; i++, j++) {
+        int cmp = compare(this.get(i), that.get(j));
+        if (cmp != 0)
+            return cmp;
+    }
+    return this.remaining() - that.remaining();
+}

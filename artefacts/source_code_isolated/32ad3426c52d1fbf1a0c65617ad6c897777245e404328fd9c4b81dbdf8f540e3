@@ -1,0 +1,12 @@
+public void setInternationalCurrencySymbol(String currencyCode){
+    intlCurrencySymbol = currencyCode;
+    currency = null;
+    if (currencyCode != null) {
+        try {
+            currency = Currency.getInstance(currencyCode);
+            currencySymbol = currency.getSymbol(locale);
+        } catch (IllegalArgumentException e) {
+        }
+    }
+    cachedIcuDFS = null;
+}

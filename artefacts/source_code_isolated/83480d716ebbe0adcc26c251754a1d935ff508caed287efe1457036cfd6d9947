@@ -1,0 +1,13 @@
+public long[] getScreenOffCpuFreqTimes(int which, int procState){
+    if (which < 0 || which >= NUM_PROCESS_STATE) {
+        return null;
+    }
+    if (mProcStateScreenOffTimeMs == null) {
+        return null;
+    }
+    if (!mBsi.mPerProcStateCpuTimesAvailable) {
+        mProcStateScreenOffTimeMs = null;
+        return null;
+    }
+    return nullIfAllZeros(mProcStateScreenOffTimeMs[procState], which);
+}

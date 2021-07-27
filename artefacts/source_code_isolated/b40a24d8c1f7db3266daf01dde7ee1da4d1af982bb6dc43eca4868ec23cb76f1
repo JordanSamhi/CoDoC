@@ -1,0 +1,21 @@
+public long skip(long n) throws IOException{
+    if (n < 0) {
+        throw new IllegalArgumentException("negative skip length");
+    }
+    ensureOpen();
+    int max = (int) Math.min(n, Integer.MAX_VALUE);
+    int total = 0;
+    while (total < max) {
+        int len = max - total;
+        if (len > tmpbuf.length) {
+            len = tmpbuf.length;
+        }
+        len = read(tmpbuf, 0, len);
+        if (len == -1) {
+            entryEOF = true;
+            break;
+        }
+        total += len;
+    }
+    return total;
+}

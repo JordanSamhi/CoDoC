@@ -1,0 +1,9 @@
+public static final String getDefaultType(){
+    String cpbtype = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        public String run() {
+            return Security.getProperty(CPB_TYPE);
+        }
+    });
+    return (cpbtype == null) ? "PKIX" : cpbtype;
+}

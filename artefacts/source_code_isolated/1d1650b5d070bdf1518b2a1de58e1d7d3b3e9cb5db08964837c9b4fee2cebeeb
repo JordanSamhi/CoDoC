@@ -1,0 +1,19 @@
+public boolean isLeapYear(int year){
+    if ((year & 3) != 0) {
+        return false;
+    }
+    if (year > gregorianCutoverYear) {
+        return (year % 100 != 0) || (year % 400 == 0);
+    }
+    if (year < gregorianCutoverYearJulian) {
+        return true;
+    }
+    boolean gregorian;
+    if (gregorianCutoverYear == gregorianCutoverYearJulian) {
+        BaseCalendar.Date d = getCalendarDate(gregorianCutoverDate);
+        gregorian = d.getMonth() < BaseCalendar.MARCH;
+    } else {
+        gregorian = year == gregorianCutoverYear;
+    }
+    return gregorian ? (year % 100 != 0) || (year % 400 == 0) : true;
+}

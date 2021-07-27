@@ -1,0 +1,10 @@
+public int hashCode(){
+    int retval = 0;
+    for (int i = 1; i < this.key.length; i++) {
+        retval += this.key[i] * i;
+    }
+    if (this.algorithm.equalsIgnoreCase("TripleDES"))
+        return (retval ^= "desede".hashCode());
+    else
+        return (retval ^= this.algorithm.toLowerCase(Locale.ENGLISH).hashCode());
+}

@@ -1,0 +1,13 @@
+public boolean hasNextFloat(){
+    setRadix(10);
+    boolean result = hasNext(floatPattern());
+    if (result) {
+        try {
+            String s = processFloatToken(hasNextResult);
+            typeCache = Float.valueOf(Float.parseFloat(s));
+        } catch (NumberFormatException nfe) {
+            result = false;
+        }
+    }
+    return result;
+}

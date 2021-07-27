@@ -1,0 +1,16 @@
+public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass){
+    if (annotationClass == null) {
+        throw new NullPointerException("annotationClass == null");
+    }
+    if (isDeclaredAnnotationPresent(annotationClass)) {
+        return true;
+    }
+    if (annotationClass.isDeclaredAnnotationPresent(Inherited.class)) {
+        for (Class<?> sup = getSuperclass(); sup != null; sup = sup.getSuperclass()) {
+            if (sup.isDeclaredAnnotationPresent(annotationClass)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

@@ -1,0 +1,13 @@
+public DateTimeFormatterBuilder optionalEnd(){
+    if (active.parent == null) {
+        throw new IllegalStateException("Cannot call optionalEnd() as there was no previous call to optionalStart()");
+    }
+    if (active.printerParsers.size() > 0) {
+        CompositePrinterParser cpp = new CompositePrinterParser(active.printerParsers, active.optional);
+        active = active.parent;
+        appendInternal(cpp);
+    } else {
+        active = active.parent;
+    }
+    return this;
+}

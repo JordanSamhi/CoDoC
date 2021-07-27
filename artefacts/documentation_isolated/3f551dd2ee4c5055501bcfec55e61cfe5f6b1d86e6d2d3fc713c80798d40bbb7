@@ -1,0 +1,25 @@
+
+     * Adapts a {@code Collector} accepting elements of type {@code U} to one
+     * accepting elements of type {@code T} by applying a mapping function to
+     * each input element before accumulation.
+     *
+     * @apiNote
+     * The {@code mapping()} collectors are most useful when used in a
+     * multi-level reduction, such as downstream of a {@code groupingBy} or
+     * {@code partitioningBy}.  For example, given a stream of
+     * {@code Person}, to accumulate the set of last names in each city:
+     * <pre>{@code
+     *     Map<City, Set<String>> lastNamesByCity
+     *         = people.stream().collect(groupingBy(Person::getCity,
+     *                                              mapping(Person::getLastName, toSet())));
+     * }</pre>
+     *
+     * @param <T> the type of the input elements
+     * @param <U> type of elements accepted by downstream collector
+     * @param <A> intermediate accumulation type of the downstream collector
+     * @param <R> result type of collector
+     * @param mapper a function to be applied to the input elements
+     * @param downstream a collector which will accept mapped values
+     * @return a collector which applies the mapping function to the input
+     * elements and provides the mapped results to the downstream collector
+     

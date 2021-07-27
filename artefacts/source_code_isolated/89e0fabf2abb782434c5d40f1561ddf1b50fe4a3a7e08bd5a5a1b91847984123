@@ -1,0 +1,49 @@
+public void getFocusedRect(Rect r){
+    if (mLayout == null) {
+        super.getFocusedRect(r);
+        return;
+    }
+    int selEnd = getSelectionEnd();
+    if (selEnd < 0) {
+        super.getFocusedRect(r);
+        return;
+    }
+    int selStart = getSelectionStart();
+    if (selStart < 0 || selStart >= selEnd) {
+        int line = mLayout.getLineForOffset(selEnd);
+        r.top = mLayout.getLineTop(line);
+        r.bottom = mLayout.getLineBottom(line);
+        r.left = (int) mLayout.getPrimaryHorizontal(selEnd) - 2;
+        r.right = r.left + 4;
+    } else {
+        int lineStart = mLayout.getLineForOffset(selStart);
+        int lineEnd = mLayout.getLineForOffset(selEnd);
+        r.top = mLayout.getLineTop(lineStart);
+        r.bottom = mLayout.getLineBottom(lineEnd);
+        if (lineStart == lineEnd) {
+            r.left = (int) mLayout.getPrimaryHorizontal(selStart);
+            r.right = (int) mLayout.getPrimaryHorizontal(selEnd);
+        } else {
+            if (mHighlightPathBogus) {
+                if (mHighlightPath == null)
+                    mHighlightPath = new Path();
+                mHighlightPath.reset();
+                mLayout.getSelectionPath(selStart, selEnd, mHighlightPath);
+                mHighlightPathBogus = false;
+            }
+            synchronized (TEMP_RECTF) {
+                mHighlightPath.computeBounds(TEMP_RECTF, true);
+                r.left = (int) TEMP_RECTF.left - 1;
+                r.right = (int) TEMP_RECTF.right + 1;
+            }
+        }
+    }
+    int paddingLeft = getCompoundPaddingLeft();
+    int paddingTop = getExtendedPaddingTop();
+    if ((mGravity & Gravity.VERTICAL_GRAVITY_MASK) != Gravity.TOP) {
+        paddingTop += getVerticalOffset(false);
+    }
+    r.offset(paddingLeft, paddingTop);
+    int paddingBottom = getExtendedPaddingBottom();
+    r.bottom += paddingBottom;
+}

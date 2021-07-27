@@ -1,0 +1,55 @@
+
+     * Rotates the elements in the specified list by the specified distance.
+     * After calling this method, the element at index <tt>i</tt> will be
+     * the element previously at index <tt>(i - distance)</tt> mod
+     * <tt>list.size()</tt>, for all values of <tt>i</tt> between <tt>0</tt>
+     * and <tt>list.size()-1</tt>, inclusive.  (This method has no effect on
+     * the size of the list.)
+     *
+     * <p>For example, suppose <tt>list</tt> comprises<tt> [t, a, n, k, s]</tt>.
+     * After invoking <tt>Collections.rotate(list, 1)</tt> (or
+     * <tt>Collections.rotate(list, -4)</tt>), <tt>list</tt> will comprise
+     * <tt>[s, t, a, n, k]</tt>.
+     *
+     * <p>Note that this method can usefully be applied to sublists to
+     * move one or more elements within a list while preserving the
+     * order of the remaining elements.  For example, the following idiom
+     * moves the element at index <tt>j</tt> forward to position
+     * <tt>k</tt> (which must be greater than or equal to <tt>j</tt>):
+     * <pre>
+     *     Collections.rotate(list.subList(j, k+1), -1);
+     * </pre>
+     * To make this concrete, suppose <tt>list</tt> comprises
+     * <tt>[a, b, c, d, e]</tt>.  To move the element at index <tt>1</tt>
+     * (<tt>b</tt>) forward two positions, perform the following invocation:
+     * <pre>
+     *     Collections.rotate(l.subList(1, 4), -1);
+     * </pre>
+     * The resulting list is <tt>[a, c, d, b, e]</tt>.
+     *
+     * <p>To move more than one element forward, increase the absolute value
+     * of the rotation distance.  To move elements backward, use a positive
+     * shift distance.
+     *
+     * <p>If the specified list is small or implements the {@link
+     * RandomAccess} interface, this implementation exchanges the first
+     * element into the location it should go, and then repeatedly exchanges
+     * the displaced element into the location it should go until a displaced
+     * element is swapped into the first element.  If necessary, the process
+     * is repeated on the second and successive elements, until the rotation
+     * is complete.  If the specified list is large and doesn't implement the
+     * <tt>RandomAccess</tt> interface, this implementation breaks the
+     * list into two sublist views around index <tt>-distance mod size</tt>.
+     * Then the {@link #reverse(List)} method is invoked on each sublist view,
+     * and finally it is invoked on the entire list.  For a more complete
+     * description of both algorithms, see Section 2.3 of Jon Bentley's
+     * <i>Programming Pearls</i> (Addison-Wesley, 1986).
+     *
+     * @param list the list to be rotated.
+     * @param distance the distance to rotate the list.  There are no
+     *        constraints on this value; it may be zero, negative, or
+     *        greater than <tt>list.size()</tt>.
+     * @throws UnsupportedOperationException if the specified list or
+     *         its list-iterator does not support the <tt>set</tt> operation.
+     * @since 1.4
+     

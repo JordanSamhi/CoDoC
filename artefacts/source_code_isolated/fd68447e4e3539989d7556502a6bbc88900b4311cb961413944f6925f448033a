@@ -1,0 +1,11 @@
+public WindowInsets dispatchApplyWindowInsets(WindowInsets insets){
+    insets = super.dispatchApplyWindowInsets(insets);
+    if (insets.isConsumed()) {
+        return insets;
+    }
+    if (View.sBrokenInsetsDispatch) {
+        return brokenDispatchApplyWindowInsets(insets);
+    } else {
+        return newDispatchApplyWindowInsets(insets);
+    }
+}

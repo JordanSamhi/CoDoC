@@ -1,0 +1,14 @@
+public boolean canApplyTheme(){
+    if (mThemeAttrs != null || super.canApplyTheme()) {
+        return true;
+    }
+    final ChildDrawable[] array = mChildren;
+    final int N = mNumChildren;
+    for (int i = 0; i < N; i++) {
+        final ChildDrawable layer = array[i];
+        if (layer.canApplyTheme()) {
+            return true;
+        }
+    }
+    return false;
+}

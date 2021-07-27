@@ -1,0 +1,12 @@
+public Set<String> getWhitelistedRestrictedPermissions(@NonNull String packageName, @PermissionWhitelistFlags int flags){
+    try {
+        final int userId = getUserId();
+        final List<String> whitelist = mPermissionManager.getWhitelistedRestrictedPermissions(packageName, flags, userId);
+        if (whitelist != null) {
+            return new ArraySet<>(whitelist);
+        }
+        return Collections.emptySet();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

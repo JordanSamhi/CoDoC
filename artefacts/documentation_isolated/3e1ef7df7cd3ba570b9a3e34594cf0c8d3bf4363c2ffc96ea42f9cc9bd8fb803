@@ -1,0 +1,40 @@
+
+     * Terminates the currently running Java virtual machine by initiating its
+     * shutdown sequence.  This method never returns normally.  The argument
+     * serves as a status code; by convention, a nonzero status code indicates
+     * abnormal termination.
+     *
+     * <p> The virtual machine's shutdown sequence consists of two phases.  In
+     * the first phase all registered {@link #addShutdownHook shutdown hooks},
+     * if any, are started in some unspecified order and allowed to run
+     * concurrently until they finish.  In the second phase all uninvoked
+     * finalizers are run if {@link #runFinalizersOnExit finalization-on-exit}
+     * has been enabled.  Once this is done the virtual machine {@link #halt
+     * halts}.
+     *
+     * <p> If this method is invoked after the virtual machine has begun its
+     * shutdown sequence then if shutdown hooks are being run this method will
+     * block indefinitely.  If shutdown hooks have already been run and on-exit
+     * finalization has been enabled then this method halts the virtual machine
+     * with the given status code if the status is nonzero; otherwise, it
+     * blocks indefinitely.
+     *
+     * <p> The <tt>{@link System#exit(int) System.exit}</tt> method is the
+     * conventional and convenient means of invoking this method. <p>
+     *
+     * @param  status
+     *         Termination status.  By convention, a nonzero status code
+     *         indicates abnormal termination.
+     *
+     * @throws SecurityException
+     *         If a security manager is present and its <tt>{@link
+     *         SecurityManager#checkExit checkExit}</tt> method does not permit
+     *         exiting with the specified status
+     *
+     * @see java.lang.SecurityException
+     * @see java.lang.SecurityManager#checkExit(int)
+     * @see #addShutdownHook
+     * @see #removeShutdownHook
+     * @see #runFinalizersOnExit
+     * @see #halt(int)
+     

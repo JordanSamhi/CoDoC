@@ -1,0 +1,42 @@
+
+     * Decodes a {@code String} into a {@code Byte}.
+     * Accepts decimal, hexadecimal, and octal numbers given by
+     * the following grammar:
+     *
+     * <blockquote>
+     * <dl>
+     * <dt><i>DecodableString:</i>
+     * <dd><i>Sign<sub>opt</sub> DecimalNumeral</i>
+     * <dd><i>Sign<sub>opt</sub></i> {@code 0x} <i>HexDigits</i>
+     * <dd><i>Sign<sub>opt</sub></i> {@code 0X} <i>HexDigits</i>
+     * <dd><i>Sign<sub>opt</sub></i> {@code #} <i>HexDigits</i>
+     * <dd><i>Sign<sub>opt</sub></i> {@code 0} <i>OctalDigits</i>
+     *
+     * <dt><i>Sign:</i>
+     * <dd>{@code -}
+     * <dd>{@code +}
+     * </dl>
+     * </blockquote>
+     *
+     * <i>DecimalNumeral</i>, <i>HexDigits</i>, and <i>OctalDigits</i>
+     * are as defined in section 3.10.1 of
+     * <cite>The Java&trade; Language Specification</cite>,
+     * except that underscores are not accepted between digits.
+     *
+     * <p>The sequence of characters following an optional
+     * sign and/or radix specifier ("{@code 0x}", "{@code 0X}",
+     * "{@code #}", or leading zero) is parsed as by the {@code
+     * Byte.parseByte} method with the indicated radix (10, 16, or 8).
+     * This sequence of characters must represent a positive value or
+     * a {@link NumberFormatException} will be thrown.  The result is
+     * negated if first character of the specified {@code String} is
+     * the minus sign.  No whitespace characters are permitted in the
+     * {@code String}.
+     *
+     * @param     nm the {@code String} to decode.
+     * @return   a {@code Byte} object holding the {@code byte}
+     *          value represented by {@code nm}
+     * @throws  NumberFormatException  if the {@code String} does not
+     *            contain a parsable {@code byte}.
+     * @see java.lang.Byte#parseByte(java.lang.String, int)
+     

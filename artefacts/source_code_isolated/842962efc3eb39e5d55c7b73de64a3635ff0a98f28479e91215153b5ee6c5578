@@ -1,0 +1,47 @@
+public String toString(){
+    StringBuilder description = new StringBuilder();
+    description.append("Input Device ").append(mId).append(": ").append(mName).append("\n");
+    description.append("  Descriptor: ").append(mDescriptor).append("\n");
+    description.append("  Generation: ").append(mGeneration).append("\n");
+    description.append("  Location: ").append(mIsExternal ? "external" : "built-in").append("\n");
+    description.append("  Keyboard Type: ");
+    switch(mKeyboardType) {
+        case KEYBOARD_TYPE_NONE:
+            description.append("none");
+            break;
+        case KEYBOARD_TYPE_NON_ALPHABETIC:
+            description.append("non-alphabetic");
+            break;
+        case KEYBOARD_TYPE_ALPHABETIC:
+            description.append("alphabetic");
+            break;
+    }
+    description.append("\n");
+    description.append("  Has Vibrator: ").append(mHasVibrator).append("\n");
+    description.append("  Has mic: ").append(mHasMicrophone).append("\n");
+    description.append("  Sources: 0x").append(Integer.toHexString(mSources)).append(" (");
+    appendSourceDescriptionIfApplicable(description, SOURCE_KEYBOARD, "keyboard");
+    appendSourceDescriptionIfApplicable(description, SOURCE_DPAD, "dpad");
+    appendSourceDescriptionIfApplicable(description, SOURCE_TOUCHSCREEN, "touchscreen");
+    appendSourceDescriptionIfApplicable(description, SOURCE_MOUSE, "mouse");
+    appendSourceDescriptionIfApplicable(description, SOURCE_STYLUS, "stylus");
+    appendSourceDescriptionIfApplicable(description, SOURCE_TRACKBALL, "trackball");
+    appendSourceDescriptionIfApplicable(description, SOURCE_MOUSE_RELATIVE, "mouse_relative");
+    appendSourceDescriptionIfApplicable(description, SOURCE_TOUCHPAD, "touchpad");
+    appendSourceDescriptionIfApplicable(description, SOURCE_JOYSTICK, "joystick");
+    appendSourceDescriptionIfApplicable(description, SOURCE_GAMEPAD, "gamepad");
+    description.append(" )\n");
+    final int numAxes = mMotionRanges.size();
+    for (int i = 0; i < numAxes; i++) {
+        MotionRange range = mMotionRanges.get(i);
+        description.append("    ").append(MotionEvent.axisToString(range.mAxis));
+        description.append(": source=0x").append(Integer.toHexString(range.mSource));
+        description.append(" min=").append(range.mMin);
+        description.append(" max=").append(range.mMax);
+        description.append(" flat=").append(range.mFlat);
+        description.append(" fuzz=").append(range.mFuzz);
+        description.append(" resolution=").append(range.mResolution);
+        description.append("\n");
+    }
+    return description.toString();
+}

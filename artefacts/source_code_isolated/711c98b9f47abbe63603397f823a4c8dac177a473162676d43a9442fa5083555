@@ -1,0 +1,8 @@
+public static LocalTime from(TemporalAccessor temporal){
+    Objects.requireNonNull(temporal, "temporal");
+    LocalTime time = temporal.query(TemporalQueries.localTime());
+    if (time == null) {
+        throw new DateTimeException("Unable to obtain LocalTime from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName());
+    }
+    return time;
+}

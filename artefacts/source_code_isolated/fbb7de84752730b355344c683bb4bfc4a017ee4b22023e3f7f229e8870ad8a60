@@ -1,0 +1,21 @@
+public static double nextAfter(double start, double direction){
+    if (Double.isNaN(start) || Double.isNaN(direction)) {
+        return start + direction;
+    } else if (start == direction) {
+        return direction;
+    } else {
+        long transducer = Double.doubleToRawLongBits(start + 0.0d);
+        if (direction > start) {
+            transducer = transducer + (transducer >= 0L ? 1L : -1L);
+        } else {
+            assert direction < start;
+            if (transducer > 0L)
+                --transducer;
+            else if (transducer < 0L)
+                ++transducer;
+            else
+                transducer = DoubleConsts.SIGN_BIT_MASK | 1L;
+        }
+        return Double.longBitsToDouble(transducer);
+    }
+}

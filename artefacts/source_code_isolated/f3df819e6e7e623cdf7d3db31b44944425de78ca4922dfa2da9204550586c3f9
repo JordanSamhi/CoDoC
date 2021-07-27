@@ -1,0 +1,18 @@
+public static OffsetDateTime from(TemporalAccessor temporal){
+    if (temporal instanceof OffsetDateTime) {
+        return (OffsetDateTime) temporal;
+    }
+    try {
+        ZoneOffset offset = ZoneOffset.from(temporal);
+        LocalDate date = temporal.query(TemporalQueries.localDate());
+        LocalTime time = temporal.query(TemporalQueries.localTime());
+        if (date != null && time != null) {
+            return OffsetDateTime.of(date, time, offset);
+        } else {
+            Instant instant = Instant.from(temporal);
+            return OffsetDateTime.ofInstant(instant, offset);
+        }
+    } catch (DateTimeException ex) {
+        throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName(), ex);
+    }
+}

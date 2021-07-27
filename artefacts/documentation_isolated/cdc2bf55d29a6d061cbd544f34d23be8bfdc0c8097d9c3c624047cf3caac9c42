@@ -1,0 +1,39 @@
+
+     * Flushes this decoder.
+     *
+     * <p> Some decoders maintain internal state and may need to write some
+     * final characters to the output buffer once the overall input sequence has
+     * been read.
+     *
+     * <p> Any additional output is written to the output buffer beginning at
+     * its current position.  At most {@link Buffer#remaining out.remaining()}
+     * characters will be written.  The buffer's position will be advanced
+     * appropriately, but its mark and limit will not be modified.
+     *
+     * <p> If this method completes successfully then it returns {@link
+     * CoderResult#UNDERFLOW}.  If there is insufficient room in the output
+     * buffer then it returns {@link CoderResult#OVERFLOW}.  If this happens
+     * then this method must be invoked again, with an output buffer that has
+     * more room, in order to complete the current <a href="#steps">decoding
+     * operation</a>.
+     *
+     * <p> If this decoder has already been flushed then invoking this method
+     * has no effect.
+     *
+     * <p> This method invokes the {@link #implFlush implFlush} method to
+     * perform the actual flushing operation.  </p>
+     *
+     * @param  out
+     *         The output character buffer
+     *
+     * @return  A coder-result object, either {@link CoderResult#UNDERFLOW} or
+     *          {@link CoderResult#OVERFLOW}
+     *
+     * @throws  IllegalStateException
+     *          If the previous step of the current decoding operation was an
+     *          invocation neither of the {@link #flush flush} method nor of
+     *          the three-argument {@link
+     *          #decode(ByteBuffer,CharBuffer,boolean) decode} method
+     *          with a value of <tt>true</tt> for the <tt>endOfInput</tt>
+     *          parameter
+     

@@ -1,0 +1,9 @@
+public static MethodHandle constant(Class<?> type, Object value){
+    if (type.isPrimitive()) {
+        if (type == void.class)
+            throw newIllegalArgumentException("void type");
+        Wrapper w = Wrapper.forPrimitiveType(type);
+        value = w.convert(value, type);
+    }
+    return new Transformers.Constant(type, value);
+}

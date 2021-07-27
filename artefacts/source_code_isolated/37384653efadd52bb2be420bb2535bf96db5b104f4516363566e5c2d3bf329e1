@@ -1,0 +1,27 @@
+public boolean onHoverEvent(@NonNull MotionEvent ev){
+    final int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_HOVER_EXIT && mResolveHoverRunnable == null) {
+        mResolveHoverRunnable = new ResolveHoverRunnable();
+        mResolveHoverRunnable.post();
+    }
+    final boolean handled = super.onHoverEvent(ev);
+    if (action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_MOVE) {
+        final int position = pointToPosition((int) ev.getX(), (int) ev.getY());
+        if (position != INVALID_POSITION && position != mSelectedPosition) {
+            final View hoveredItem = getChildAt(position - getFirstVisiblePosition());
+            if (hoveredItem.isEnabled()) {
+                requestFocus();
+                positionSelector(position, hoveredItem);
+                setSelectedPositionInt(position);
+                setNextSelectedPositionInt(position);
+            }
+            updateSelectorState();
+        }
+    } else {
+        if (!super.shouldShowSelector()) {
+            setSelectedPositionInt(INVALID_POSITION);
+            setNextSelectedPositionInt(INVALID_POSITION);
+        }
+    }
+    return handled;
+}

@@ -1,0 +1,21 @@
+public void handleTopResumedActivityChanged(IBinder token, boolean onTop, String reason){
+    ActivityClientRecord r = mActivities.get(token);
+    if (r == null || r.activity == null) {
+        Slog.w(TAG, "Not found target activity to report position change for token: " + token);
+        return;
+    }
+    if (DEBUG_ORDER) {
+        Slog.d(TAG, "Received position change to top: " + onTop + " for activity: " + r);
+    }
+    if (r.isTopResumedActivity == onTop) {
+        throw new IllegalStateException("Activity top position already set to onTop=" + onTop);
+    }
+    r.isTopResumedActivity = onTop;
+    if (r.getLifecycleState() == ON_RESUME) {
+        reportTopResumedActivityChanged(r, onTop, "topStateChangedWhenResumed");
+    } else {
+        if (DEBUG_ORDER) {
+            Slog.d(TAG, "Won't deliver top position change in state=" + r.getLifecycleState());
+        }
+    }
+}

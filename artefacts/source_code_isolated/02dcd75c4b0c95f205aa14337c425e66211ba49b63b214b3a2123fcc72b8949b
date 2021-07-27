@@ -1,0 +1,13 @@
+public boolean clearMetaKeyStates(int states){
+    final Editable content = getEditable();
+    if (content == null)
+        return false;
+    KeyListener kl = mTextView.getKeyListener();
+    if (kl != null) {
+        try {
+            kl.clearMetaKeyState(mTextView, content, states);
+        } catch (AbstractMethodError e) {
+        }
+    }
+    return true;
+}

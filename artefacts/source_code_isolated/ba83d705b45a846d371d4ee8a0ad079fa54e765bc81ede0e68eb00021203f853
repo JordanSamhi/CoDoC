@@ -1,0 +1,30 @@
+public String toString(){
+    final StringBuilder string = new StringBuilder("ContentCaptureEvent[type=").append(getTypeAsString(mType));
+    string.append(", session=").append(mSessionId);
+    if (mType == TYPE_SESSION_STARTED && mParentSessionId != NO_SESSION_ID) {
+        string.append(", parent=").append(mParentSessionId);
+    }
+    if (mId != null) {
+        string.append(", id=").append(mId);
+    }
+    if (mIds != null) {
+        string.append(", ids=").append(mIds);
+    }
+    if (mNode != null) {
+        final String className = mNode.getClassName();
+        if (mNode != null) {
+            string.append(", class=").append(className);
+        }
+        string.append(", id=").append(mNode.getAutofillId());
+    }
+    if (mText != null) {
+        string.append(", text=").append(getSanitizedString(mText));
+    }
+    if (mClientContext != null) {
+        string.append(", context=").append(mClientContext);
+    }
+    if (mInsets != null) {
+        string.append(", insets=").append(mInsets);
+    }
+    return string.append(']').toString();
+}

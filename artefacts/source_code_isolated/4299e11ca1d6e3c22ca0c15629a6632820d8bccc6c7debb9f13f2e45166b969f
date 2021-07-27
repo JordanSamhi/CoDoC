@@ -1,0 +1,14 @@
+public static Integer getInteger(String nm, Integer val){
+    String v = null;
+    try {
+        v = System.getProperty(nm);
+    } catch (IllegalArgumentException | NullPointerException e) {
+    }
+    if (v != null) {
+        try {
+            return Integer.decode(v);
+        } catch (NumberFormatException e) {
+        }
+    }
+    return val;
+}

@@ -1,0 +1,9 @@
+public void writeChars(String s) throws IOException{
+    int endoff = s.length();
+    for (int off = 0; off < endoff; ) {
+        int csize = Math.min(endoff - off, CHAR_BUF_SIZE);
+        s.getChars(off, off + csize, cbuf, 0);
+        writeChars(cbuf, 0, csize);
+        off += csize;
+    }
+}

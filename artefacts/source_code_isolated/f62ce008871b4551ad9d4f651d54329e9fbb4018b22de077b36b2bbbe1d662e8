@@ -1,0 +1,8 @@
+public X509CRLEntry getRevokedCertificate(X509Certificate certificate){
+    X500Principal certIssuer = certificate.getIssuerX500Principal();
+    X500Principal crlIssuer = getIssuerX500Principal();
+    if (certIssuer.equals(crlIssuer) == false) {
+        return null;
+    }
+    return getRevokedCertificate(certificate.getSerialNumber());
+}

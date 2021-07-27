@@ -1,0 +1,10 @@
+public boolean dispatchKeyEvent(KeyEvent event){
+    boolean handled = super.dispatchKeyEvent(event);
+    if (!handled) {
+        View focused = getFocusedChild();
+        if (focused != null && event.getAction() == KeyEvent.ACTION_DOWN) {
+            handled = onKeyDown(event.getKeyCode(), event);
+        }
+    }
+    return handled;
+}

@@ -1,0 +1,7 @@
+public PackageInfo getPackageInfoAsUser(String packageName, int flags, int userId) throws NameNotFoundException{
+    PackageInfo pi = getPackageInfoAsUserCached(packageName, updateFlagsForPackage(flags, userId), userId);
+    if (pi == null) {
+        throw new NameNotFoundException(packageName);
+    }
+    return pi;
+}

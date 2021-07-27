@@ -1,3 +1,16 @@
 public int getWidth(){
-    return mWidth;
+    throwISEIfImageIsInvalid();
+    int width;
+    switch(getFormat()) {
+        case ImageFormat.JPEG:
+        case ImageFormat.DEPTH_POINT_CLOUD:
+        case ImageFormat.RAW_PRIVATE:
+        case ImageFormat.DEPTH_JPEG:
+        case ImageFormat.HEIC:
+            width = ImageReader.this.getWidth();
+            break;
+        default:
+            width = nativeGetWidth();
+    }
+    return width;
 }

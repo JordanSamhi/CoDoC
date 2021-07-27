@@ -1,25 +1,5 @@
 public void writeToParcel(Parcel dest, int flags){
-    dest.writeInt(inputType);
-    dest.writeInt(imeOptions);
-    dest.writeString(privateImeOptions);
-    TextUtils.writeToParcel(actionLabel, dest, flags);
-    dest.writeInt(actionId);
-    dest.writeInt(initialSelStart);
-    dest.writeInt(initialSelEnd);
-    dest.writeInt(initialCapsMode);
-    TextUtils.writeToParcel(hintText, dest, flags);
-    TextUtils.writeToParcel(label, dest, flags);
-    dest.writeString(packageName);
-    dest.writeParcelable(autofillId, flags);
-    dest.writeInt(fieldId);
-    dest.writeString(fieldName);
-    dest.writeBundle(extras);
-    mInitialSurroundingText.writeToParcel(dest, flags);
-    if (hintLocales != null) {
-        hintLocales.writeToParcel(dest, flags);
-    } else {
-        LocaleList.getEmptyLocaleList().writeToParcel(dest, flags);
-    }
-    dest.writeStringArray(contentMimeTypes);
-    UserHandle.writeToParcel(targetInputMethodUser, dest);
+    TextUtils.writeToParcel(mSurroundingText, dest, flags);
+    dest.writeInt(mSelectionHead);
+    dest.writeInt(mSelectionEnd);
 }

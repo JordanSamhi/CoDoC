@@ -1,0 +1,24 @@
+
+         * Produces a method handle for a reflected constructor.
+         * The type of the method handle will be that of the constructor,
+         * with the return type changed to the declaring class.
+         * The method handle will perform a {@code newInstance} operation,
+         * creating a new instance of the constructor's class on the
+         * arguments passed to the method handle.
+         * <p>
+         * If the constructor's {@code accessible} flag is not set,
+         * access checking is performed immediately on behalf of the lookup class.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the constructor's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p>
+         * If the returned method handle is invoked, the constructor's class will
+         * be initialized, if it has not already been initialized.
+         * @param c the reflected constructor
+         * @return a method handle which can invoke the reflected constructor
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @throws NullPointerException if the argument is null
+         

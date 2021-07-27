@@ -1,0 +1,16 @@
+public int skipBytes(int n) throws IOException{
+    long pos;
+    long len;
+    long newpos;
+    if (n <= 0) {
+        return 0;
+    }
+    pos = getFilePointer();
+    len = length();
+    newpos = pos + n;
+    if (newpos > len) {
+        newpos = len;
+    }
+    seek(newpos);
+    return (int) (newpos - pos);
+}

@@ -1,0 +1,46 @@
+public String toLanguageTag(){
+    if (languageTag != null) {
+        return languageTag;
+    }
+    LanguageTag tag = LanguageTag.parseLocale(baseLocale, localeExtensions);
+    StringBuilder buf = new StringBuilder();
+    String subtag = tag.getLanguage();
+    if (subtag.length() > 0) {
+        buf.append(LanguageTag.canonicalizeLanguage(subtag));
+    }
+    subtag = tag.getScript();
+    if (subtag.length() > 0) {
+        buf.append(LanguageTag.SEP);
+        buf.append(LanguageTag.canonicalizeScript(subtag));
+    }
+    subtag = tag.getRegion();
+    if (subtag.length() > 0) {
+        buf.append(LanguageTag.SEP);
+        buf.append(LanguageTag.canonicalizeRegion(subtag));
+    }
+    List<String> subtags = tag.getVariants();
+    for (String s : subtags) {
+        buf.append(LanguageTag.SEP);
+        buf.append(s);
+    }
+    subtags = tag.getExtensions();
+    for (String s : subtags) {
+        buf.append(LanguageTag.SEP);
+        buf.append(LanguageTag.canonicalizeExtension(s));
+    }
+    subtag = tag.getPrivateuse();
+    if (subtag.length() > 0) {
+        if (buf.length() > 0) {
+            buf.append(LanguageTag.SEP);
+        }
+        buf.append(LanguageTag.PRIVATEUSE).append(LanguageTag.SEP);
+        buf.append(subtag);
+    }
+    String langTag = buf.toString();
+    synchronized (this) {
+        if (languageTag == null) {
+            languageTag = langTag;
+        }
+    }
+    return languageTag;
+}

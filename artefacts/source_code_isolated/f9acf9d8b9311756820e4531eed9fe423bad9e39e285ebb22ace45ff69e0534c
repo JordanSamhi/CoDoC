@@ -1,0 +1,15 @@
+public static Signature getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException{
+    if (algorithm.equalsIgnoreCase(RSA_SIGNATURE)) {
+        if ((provider == null) || (provider.length() == 0)) {
+            throw new IllegalArgumentException("missing provider");
+        }
+        Provider p = Security.getProvider(provider);
+        if (p == null) {
+            throw new NoSuchProviderException("no such provider: " + provider);
+        }
+        return getInstanceRSA(p);
+    }
+    Providers.checkBouncyCastleDeprecation(provider, "Signature", algorithm);
+    Instance instance = GetInstance.getInstance("Signature", SignatureSpi.class, algorithm, provider);
+    return getInstance(instance, algorithm);
+}

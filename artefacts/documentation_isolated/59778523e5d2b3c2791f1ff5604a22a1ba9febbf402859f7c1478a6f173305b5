@@ -1,0 +1,30 @@
+
+     * Parses the text using this formatter, providing control over the text position.
+     * <p>
+     * This parses the text without requiring the parse to start from the beginning
+     * of the string or finish at the end.
+     * The result of this method is {@code TemporalAccessor} which has been resolved,
+     * applying basic validation checks to help ensure a valid date-time.
+     * <p>
+     * The text will be parsed from the specified start {@code ParsePosition}.
+     * The entire length of the text does not have to be parsed, the {@code ParsePosition}
+     * will be updated with the index at the end of parsing.
+     * <p>
+     * The operation of this method is slightly different to similar methods using
+     * {@code ParsePosition} on {@code java.text.Format}. That class will return
+     * errors using the error index on the {@code ParsePosition}. By contrast, this
+     * method will throw a {@link DateTimeParseException} if an error occurs, with
+     * the exception containing the error index.
+     * This change in behavior is necessary due to the increased complexity of
+     * parsing and resolving dates/times in this API.
+     * <p>
+     * If the formatter parses the same field more than once with different values,
+     * the result will be an error.
+     *
+     * @param text  the text to parse, not null
+     * @param position  the position to parse from, updated with length parsed
+     *  and the index of any error, not null
+     * @return the parsed temporal object, not null
+     * @throws DateTimeParseException if unable to parse the requested result
+     * @throws IndexOutOfBoundsException if the position is invalid
+     

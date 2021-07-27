@@ -1,0 +1,72 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    boolean handled = false;
+    switch(keyCode) {
+        case KeyEvent.KEYCODE_DPAD_UP:
+        case KeyEvent.KEYCODE_DPAD_DOWN:
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+        case KeyEvent.KEYCODE_ENTER:
+        case KeyEvent.KEYCODE_DPAD_CENTER:
+            break;
+        case KeyEvent.KEYCODE_DEL:
+            switch(mMode) {
+                case DIGITS_AND_LETTERS:
+                    handled = mDigits.onKeyDown(keyCode, event);
+                    handled &= mLetters.onKeyDown(keyCode, event);
+                    break;
+                case DIGITS_AND_LETTERS_NO_DIGITS:
+                    handled = mLetters.onKeyDown(keyCode, event);
+                    if (mLetters.getText().length() == mDigits.getText().length()) {
+                        setMode(DIGITS_AND_LETTERS);
+                    }
+                    break;
+                case DIGITS_AND_LETTERS_NO_LETTERS:
+                    if (mDigits.getText().length() == mLetters.getText().length()) {
+                        mLetters.onKeyDown(keyCode, event);
+                        setMode(DIGITS_AND_LETTERS);
+                    }
+                    handled = mDigits.onKeyDown(keyCode, event);
+                    break;
+                case DIGITS_ONLY:
+                    handled = mDigits.onKeyDown(keyCode, event);
+                    break;
+                case LETTERS_ONLY:
+                    handled = mLetters.onKeyDown(keyCode, event);
+                    break;
+            }
+            break;
+        default:
+            switch(mMode) {
+                case DIGITS_AND_LETTERS:
+                    handled = mLetters.onKeyDown(keyCode, event);
+                    if (KeyEvent.isModifierKey(keyCode)) {
+                        mDigits.onKeyDown(keyCode, event);
+                        handled = true;
+                        break;
+                    }
+                    boolean isPrint = event.isPrintingKey();
+                    if (isPrint || keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_TAB) {
+                        char c = event.getMatch(DialerKeyListener.CHARACTERS);
+                        if (c != 0) {
+                            handled &= mDigits.onKeyDown(keyCode, event);
+                        } else {
+                            setMode(DIGITS_AND_LETTERS_NO_DIGITS);
+                        }
+                    }
+                    break;
+                case DIGITS_AND_LETTERS_NO_LETTERS:
+                case DIGITS_ONLY:
+                    handled = mDigits.onKeyDown(keyCode, event);
+                    break;
+                case DIGITS_AND_LETTERS_NO_DIGITS:
+                case LETTERS_ONLY:
+                    handled = mLetters.onKeyDown(keyCode, event);
+                    break;
+            }
+    }
+    if (!handled) {
+        return super.onKeyDown(keyCode, event);
+    } else {
+        return true;
+    }
+}

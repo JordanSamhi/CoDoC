@@ -1,0 +1,7 @@
+public static Path setPosixFilePermissions(Path path, Set<PosixFilePermission> perms) throws IOException{
+    PosixFileAttributeView view = getFileAttributeView(path, PosixFileAttributeView.class);
+    if (view == null)
+        throw new UnsupportedOperationException();
+    view.setPermissions(perms);
+    return path;
+}

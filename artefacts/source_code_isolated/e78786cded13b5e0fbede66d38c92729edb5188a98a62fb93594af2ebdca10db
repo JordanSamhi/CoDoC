@@ -1,0 +1,21 @@
+public final SecretKey translateKey(SecretKey key) throws InvalidKeyException{
+    if (serviceIterator == null) {
+        return spi.engineTranslateKey(key);
+    }
+    Exception failure = null;
+    SecretKeyFactorySpi mySpi = spi;
+    do {
+        try {
+            return mySpi.engineTranslateKey(key);
+        } catch (Exception e) {
+            if (failure == null) {
+                failure = e;
+            }
+            mySpi = nextSpi(mySpi);
+        }
+    } while (mySpi != null);
+    if (failure instanceof InvalidKeyException) {
+        throw (InvalidKeyException) failure;
+    }
+    throw new InvalidKeyException("Could not translate key", failure);
+}

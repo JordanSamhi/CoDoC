@@ -1,0 +1,10 @@
+public SubtitleTrack createTrack(MediaFormat format){
+    if (mRender && mRenderingWidget == null) {
+        mRenderingWidget = new WebVttRenderingWidget(mContext);
+    }
+    if (mRender) {
+        return new SRTTrack(mRenderingWidget, format);
+    } else {
+        return new SRTTrack(mEventHandler, format);
+    }
+}

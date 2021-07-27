@@ -1,0 +1,7 @@
+public static MethodHandle filterArguments(MethodHandle target, int pos, MethodHandle... filters){
+    filterArgumentsCheckArity(target, pos, filters);
+    for (int i = 0; i < filters.length; ++i) {
+        filterArgumentChecks(target, i + pos, filters[i]);
+    }
+    return new Transformers.FilterArguments(target, pos, filters);
+}

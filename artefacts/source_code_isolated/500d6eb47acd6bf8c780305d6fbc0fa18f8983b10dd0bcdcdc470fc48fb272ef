@@ -1,0 +1,8 @@
+public final void close() throws IOException{
+    synchronized (closeLock) {
+        if (!open)
+            return;
+        open = false;
+        implCloseChannel();
+    }
+}

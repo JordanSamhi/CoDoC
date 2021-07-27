@@ -1,0 +1,41 @@
+public boolean onInterceptTouchEvent(MotionEvent event){
+    final int action = event.getAction();
+    final float x = event.getX();
+    final float y = event.getY();
+    if (mAnimating) {
+        return false;
+    }
+    View leftHandle = mLeftSlider.tab;
+    leftHandle.getHitRect(mTmpRect);
+    boolean leftHit = mTmpRect.contains((int) x, (int) y);
+    View rightHandle = mRightSlider.tab;
+    rightHandle.getHitRect(mTmpRect);
+    boolean rightHit = mTmpRect.contains((int) x, (int) y);
+    if (!mTracking && !(leftHit || rightHit)) {
+        return false;
+    }
+    switch(action) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                mTracking = true;
+                mTriggered = false;
+                vibrate(VIBRATE_SHORT);
+                if (leftHit) {
+                    mCurrentSlider = mLeftSlider;
+                    mOtherSlider = mRightSlider;
+                    mThreshold = isHorizontal() ? THRESHOLD : 1.0f - THRESHOLD;
+                    setGrabbedState(OnTriggerListener.LEFT_HANDLE);
+                } else {
+                    mCurrentSlider = mRightSlider;
+                    mOtherSlider = mLeftSlider;
+                    mThreshold = isHorizontal() ? 1.0f - THRESHOLD : THRESHOLD;
+                    setGrabbedState(OnTriggerListener.RIGHT_HANDLE);
+                }
+                mCurrentSlider.setState(Slider.STATE_PRESSED);
+                mCurrentSlider.showTarget();
+                mOtherSlider.hide();
+                break;
+            }
+    }
+    return true;
+}

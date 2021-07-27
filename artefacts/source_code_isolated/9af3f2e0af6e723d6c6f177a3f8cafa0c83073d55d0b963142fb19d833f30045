@@ -1,0 +1,7 @@
+public ResolveInfo resolveServiceAsUser(Intent intent, @ResolveInfoFlags int flags, @UserIdInt int userId){
+    try {
+        return mPM.resolveService(intent, intent.resolveTypeIfNeeded(mContext.getContentResolver()), updateFlagsForComponent(flags, userId, intent), userId);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

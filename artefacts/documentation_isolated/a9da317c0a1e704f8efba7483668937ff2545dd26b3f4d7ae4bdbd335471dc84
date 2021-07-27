@@ -1,0 +1,30 @@
+
+     * Formats a number and appends the resulting text to the given string
+     * buffer.
+     * The number can be of any subclass of {@link java.lang.Number}.
+     * <p>
+     * This implementation extracts the number's value using
+     * {@link java.lang.Number#longValue()} for all integral type values that
+     * can be converted to <code>long</code> without loss of information,
+     * including <code>BigInteger</code> values with a
+     * {@link java.math.BigInteger#bitLength() bit length} of less than 64,
+     * and {@link java.lang.Number#doubleValue()} for all other types. It
+     * then calls
+     * {@link #format(long,java.lang.StringBuffer,java.text.FieldPosition)}
+     * or {@link #format(double,java.lang.StringBuffer,java.text.FieldPosition)}.
+     * This may result in loss of magnitude information and precision for
+     * <code>BigInteger</code> and <code>BigDecimal</code> values.
+     * @param number     the number to format
+     * @param toAppendTo the <code>StringBuffer</code> to which the formatted
+     *                   text is to be appended
+     * @param pos        On input: an alignment field, if desired.
+     *                   On output: the offsets of the alignment field.
+     * @return           the value passed in as <code>toAppendTo</code>
+     * @exception        IllegalArgumentException if <code>number</code> is
+     *                   null or not an instance of <code>Number</code>.
+     * @exception        NullPointerException if <code>toAppendTo</code> or
+     *                   <code>pos</code> is null
+     * @exception        ArithmeticException if rounding is needed with rounding
+     *                   mode being set to RoundingMode.UNNECESSARY
+     * @see              java.text.FieldPosition
+     

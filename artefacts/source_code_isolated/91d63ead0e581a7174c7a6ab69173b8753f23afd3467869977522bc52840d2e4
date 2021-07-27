@@ -1,0 +1,13 @@
+public long[] getCpuFreqTimes(int which, int procState){
+    if (which < 0 || which >= NUM_PROCESS_STATE) {
+        return null;
+    }
+    if (mProcStateTimeMs == null) {
+        return null;
+    }
+    if (!mBsi.mPerProcStateCpuTimesAvailable) {
+        mProcStateTimeMs = null;
+        return null;
+    }
+    return nullIfAllZeros(mProcStateTimeMs[procState], which);
+}

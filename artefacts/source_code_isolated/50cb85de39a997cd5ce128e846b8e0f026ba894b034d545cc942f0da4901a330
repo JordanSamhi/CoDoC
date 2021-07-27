@@ -1,0 +1,35 @@
+public void readConfiguration(InputStream ins) throws IOException, SecurityException{
+    checkPermission();
+    reset();
+    props.load(ins);
+    String[] names = parseClassNames("config");
+    for (int i = 0; i < names.length; i++) {
+        String word = names[i];
+        try {
+            getClassInstance(word).newInstance();
+        } catch (Exception ex) {
+            System.err.println("Can't load config class \"" + word + "\"");
+            System.err.println("" + ex);
+        }
+    }
+    setLevelsOnExistingLoggers();
+    Map<Object, Integer> listeners = null;
+    synchronized (listenerMap) {
+        if (!listenerMap.isEmpty())
+            listeners = new HashMap<>(listenerMap);
+    }
+    if (listeners != null) {
+        assert Beans.isBeansPresent();
+        Object ev = Beans.newPropertyChangeEvent(LogManager.class, null, null, null);
+        for (Map.Entry<Object, Integer> entry : listeners.entrySet()) {
+            Object listener = entry.getKey();
+            int count = entry.getValue().intValue();
+            for (int i = 0; i < count; i++) {
+                Beans.invokePropertyChange(listener, ev);
+            }
+        }
+    }
+    synchronized (this) {
+        initializedGlobalHandlers = false;
+    }
+}

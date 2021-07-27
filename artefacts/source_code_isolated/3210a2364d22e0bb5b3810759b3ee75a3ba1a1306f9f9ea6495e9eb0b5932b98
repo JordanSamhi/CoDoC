@@ -1,0 +1,13 @@
+public void onDestroy(){
+    super.onDestroy();
+    mRootView.getViewTreeObserver().removeOnComputeInternalInsetsListener(mInsetsComputer);
+    doFinishInput();
+    mWindow.dismissForDestroyIfNecessary();
+    if (mSettingsObserver != null) {
+        mSettingsObserver.unregister();
+        mSettingsObserver = null;
+    }
+    if (mToken != null) {
+        InputMethodPrivilegedOperationsRegistry.remove(mToken);
+    }
+}

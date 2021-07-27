@@ -1,0 +1,18 @@
+public Type[] getGenericInterfaces(){
+    Type[] result;
+    synchronized (Caches.genericInterfaces) {
+        result = Caches.genericInterfaces.get(this);
+        if (result == null) {
+            String annotationSignature = getSignatureAttribute();
+            if (annotationSignature == null) {
+                result = getInterfaces();
+            } else {
+                GenericSignatureParser parser = new GenericSignatureParser(getClassLoader());
+                parser.parseForClass(this, annotationSignature);
+                result = Types.getTypeArray(parser.interfaceTypes, false);
+            }
+            Caches.genericInterfaces.put(this, result);
+        }
+    }
+    return (result.length == 0) ? result : result.clone();
+}

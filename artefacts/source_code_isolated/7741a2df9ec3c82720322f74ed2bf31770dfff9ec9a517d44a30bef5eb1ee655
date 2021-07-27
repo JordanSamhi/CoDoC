@@ -1,0 +1,16 @@
+public void onListItemClick(ListView l, View v, int position, long id){
+    final LocaleStore.LocaleInfo locale = (LocaleStore.LocaleInfo) getListAdapter().getItem(position);
+    if (locale.getParent() != null) {
+        if (mListener != null) {
+            mListener.onLocaleSelected(locale);
+        }
+        returnToParentFrame();
+    } else {
+        LocalePickerWithRegion selector = LocalePickerWithRegion.createCountryPicker(getContext(), mListener, locale, mTranslatedOnly);
+        if (selector != null) {
+            getFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).replace(getId(), selector).addToBackStack(null).commit();
+        } else {
+            returnToParentFrame();
+        }
+    }
+}

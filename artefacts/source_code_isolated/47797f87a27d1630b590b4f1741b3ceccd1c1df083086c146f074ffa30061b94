@@ -1,0 +1,41 @@
+public void putNextEntry(ZipEntry e) throws IOException{
+    ensureOpen();
+    if (current != null) {
+        closeEntry();
+    }
+    if (e.xdostime == -1) {
+        e.setTime(System.currentTimeMillis());
+    }
+    if (e.method == -1) {
+        e.method = method;
+    }
+    e.flag = 0;
+    switch(e.method) {
+        case DEFLATED:
+            if (e.size == -1 || e.csize == -1 || e.crc == -1)
+                e.flag = 8;
+            break;
+        case STORED:
+            if (e.size == -1) {
+                e.size = e.csize;
+            } else if (e.csize == -1) {
+                e.csize = e.size;
+            } else if (e.size != e.csize) {
+                throw new ZipException("STORED entry where compressed != uncompressed size");
+            }
+            if (e.size == -1 || e.crc == -1) {
+                throw new ZipException("STORED entry missing size, compressed size, or crc-32");
+            }
+            break;
+        default:
+            throw new ZipException("unsupported compression method");
+    }
+    if (!names.add(e.name)) {
+        throw new ZipException("duplicate entry: " + e.name);
+    }
+    if (zc.isUTF8())
+        e.flag |= EFS;
+    current = new XEntry(e, written);
+    xentries.add(current);
+    writeLOC(current);
+}

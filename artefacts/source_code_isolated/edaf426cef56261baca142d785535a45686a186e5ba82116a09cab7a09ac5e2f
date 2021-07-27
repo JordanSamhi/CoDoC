@@ -1,7 +1,0 @@
-public void testSelectBackupTransportAsync_withoutPermission() throws Exception{
-    setUpForSelectTransport();
-    mShadowContext.denyPermissions(android.Manifest.permission.BACKUP);
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    ComponentName newTransportComponent = mNewTransport.getTransportComponent();
-    expectThrows(SecurityException.class, () -> backupManagerService.selectBackupTransportAsync(newTransportComponent, mock(ISelectBackupTransportCallback.class)));
-}

@@ -1,0 +1,13 @@
+public int lastIndexOf(int ch, int fromIndex){
+    if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+        int i = Math.min(fromIndex, length() - 1);
+        for (; i >= 0; i--) {
+            if (charAt(i) == ch) {
+                return i;
+            }
+        }
+        return -1;
+    } else {
+        return lastIndexOfSupplementary(ch, fromIndex);
+    }
+}

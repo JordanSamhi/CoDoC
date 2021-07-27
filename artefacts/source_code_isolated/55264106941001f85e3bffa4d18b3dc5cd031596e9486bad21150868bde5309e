@@ -1,0 +1,21 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (!mTextView.isFromPrimePointer(event, true)) {
+        return true;
+    }
+    boolean superResult = super.onTouchEvent(event);
+    switch(event.getActionMasked()) {
+        case MotionEvent.ACTION_DOWN:
+            mTouchWordDelta = 0.0f;
+            mPrevX = UNSET_X_VALUE;
+            updateMagnifier(event);
+            break;
+        case MotionEvent.ACTION_MOVE:
+            updateMagnifier(event);
+            break;
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_CANCEL:
+            dismissMagnifier();
+            break;
+    }
+    return superResult;
+}

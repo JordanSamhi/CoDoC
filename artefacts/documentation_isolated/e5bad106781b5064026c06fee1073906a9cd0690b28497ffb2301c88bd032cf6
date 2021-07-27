@@ -1,0 +1,37 @@
+
+     * Gets an immutable collection of issuer alternative names from the
+     * {@code IssuerAltName} extension, (OID = 2.5.29.18).
+     * <p>
+     * The ASN.1 definition of the {@code IssuerAltName} extension is:
+     * <pre>
+     * IssuerAltName ::= GeneralNames
+     * </pre>
+     * The ASN.1 definition of {@code GeneralNames} is defined
+     * in {@link #getSubjectAlternativeNames getSubjectAlternativeNames}.
+     * <p>
+     * If this certificate does not contain an {@code IssuerAltName}
+     * extension, {@code null} is returned. Otherwise, a
+     * {@code Collection} is returned with an entry representing each
+     * {@code GeneralName} included in the extension. Each entry is a
+     * {@code List} whose first entry is an {@code Integer}
+     * (the name type, 0-8) and whose second entry is a {@code String}
+     * or a byte array (the name, in string or ASN.1 DER encoded form,
+     * respectively). For more details about the formats used for each
+     * name type, see the {@code getSubjectAlternativeNames} method.
+     * <p>
+     * Note that the {@code Collection} returned may contain more
+     * than one name of the same type. Also, note that the returned
+     * {@code Collection} is immutable and any entries containing byte
+     * arrays are cloned to protect against subsequent modifications.
+     * <p>
+     * This method was added to version 1.4 of the Java 2 Platform Standard
+     * Edition. In order to maintain backwards compatibility with existing
+     * service providers, this method is not {@code abstract}
+     * and it provides a default implementation. Subclasses
+     * should override this method with a correct implementation.
+     *
+     * @return an immutable {@code Collection} of issuer alternative
+     * names (or {@code null})
+     * @throws CertificateParsingException if the extension cannot be decoded
+     * @since 1.4
+     

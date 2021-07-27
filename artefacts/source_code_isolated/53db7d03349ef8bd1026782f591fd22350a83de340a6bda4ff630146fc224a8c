@@ -1,0 +1,15 @@
+public MethodHandle unreflect(Method m) throws IllegalAccessException{
+    if (m == null) {
+        throw new NullPointerException("m == null");
+    }
+    MethodType methodType = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
+    if (!m.isAccessible()) {
+        checkAccess(m.getDeclaringClass(), m.getDeclaringClass(), m.getModifiers(), m.getName());
+    }
+    if (Modifier.isStatic(m.getModifiers())) {
+        return createMethodHandle(m, MethodHandle.INVOKE_STATIC, methodType);
+    } else {
+        methodType = methodType.insertParameterTypes(0, m.getDeclaringClass());
+        return createMethodHandle(m, MethodHandle.INVOKE_VIRTUAL, methodType);
+    }
+}

@@ -1,0 +1,10 @@
+public void deleteOnExit(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkDelete(path);
+    }
+    if (isInvalid()) {
+        return;
+    }
+    DeleteOnExitHook.add(path);
+}

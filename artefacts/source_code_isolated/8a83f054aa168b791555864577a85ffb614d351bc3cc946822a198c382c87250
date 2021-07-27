@@ -1,0 +1,10 @@
+public MethodHandleInfo revealDirect(MethodHandle target){
+    MethodHandleImpl directTarget = getMethodHandleImpl(target);
+    MethodHandleInfo info = directTarget.reveal();
+    try {
+        checkAccess(lookupClass(), info.getDeclaringClass(), info.getModifiers(), info.getName());
+    } catch (IllegalAccessException exception) {
+        throw new IllegalArgumentException("Unable to access memeber.", exception);
+    }
+    return info;
+}

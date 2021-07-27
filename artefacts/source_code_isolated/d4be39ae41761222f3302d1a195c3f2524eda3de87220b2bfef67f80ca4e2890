@@ -1,0 +1,20 @@
+public void putAll(Map<? extends K, ? extends V> m){
+    if (m instanceof EnumMap) {
+        EnumMap<?, ?> em = (EnumMap<?, ?>) m;
+        if (em.keyType != keyType) {
+            if (em.isEmpty())
+                return;
+            throw new ClassCastException(em.keyType + " != " + keyType);
+        }
+        for (int i = 0; i < keyUniverse.length; i++) {
+            Object emValue = em.vals[i];
+            if (emValue != null) {
+                if (vals[i] == null)
+                    size++;
+                vals[i] = emValue;
+            }
+        }
+    } else {
+        super.putAll(m);
+    }
+}

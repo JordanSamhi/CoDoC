@@ -1,0 +1,27 @@
+public synchronized void write(byte[] b, int off, int len) throws IOException{
+    ensureOpen();
+    if (off < 0 || len < 0 || off > b.length - len) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return;
+    }
+    if (current == null) {
+        throw new ZipException("no current ZIP entry");
+    }
+    ZipEntry entry = current.entry;
+    switch(entry.method) {
+        case DEFLATED:
+            super.write(b, off, len);
+            break;
+        case STORED:
+            written += len;
+            if (written - locoff > entry.size) {
+                throw new ZipException("attempt to write past end of STORED entry");
+            }
+            out.write(b, off, len);
+            break;
+        default:
+            throw new ZipException("invalid compression method");
+    }
+    crc.update(b, off, len);
+}

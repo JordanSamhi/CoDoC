@@ -1,0 +1,41 @@
+
+     * Relative bulk <i>put</i> method&nbsp;&nbsp;<i>(optional operation)</i>.
+     *
+     * <p> This method transfers the ints remaining in the given source
+     * buffer into this buffer.  If there are more ints remaining in the
+     * source buffer than in this buffer, that is, if
+     * <tt>src.remaining()</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>remaining()</tt>,
+     * then no ints are transferred and a {@link
+     * BufferOverflowException} is thrown.
+     *
+     * <p> Otherwise, this method copies
+     * <i>n</i>&nbsp;=&nbsp;<tt>src.remaining()</tt> ints from the given
+     * buffer into this buffer, starting at each buffer's current position.
+     * The positions of both buffers are then incremented by <i>n</i>.
+     *
+     * <p> In other words, an invocation of this method of the form
+     * <tt>dst.put(src)</tt> has exactly the same effect as the loop
+     *
+     * <pre>
+     *     while (src.hasRemaining())
+     *         dst.put(src.get()); </pre>
+     *
+     * except that it first checks that there is sufficient space in this
+     * buffer and it is potentially much more efficient.
+     *
+     * @param  src
+     *         The source buffer from which ints are to be read;
+     *         must not be this buffer
+     *
+     * @return  This buffer
+     *
+     * @throws  BufferOverflowException
+     *          If there is insufficient space in this buffer
+     *          for the remaining ints in the source buffer
+     *
+     * @throws  IllegalArgumentException
+     *          If the source buffer is this buffer
+     *
+     * @throws  ReadOnlyBufferException
+     *          If this buffer is read-only
+     

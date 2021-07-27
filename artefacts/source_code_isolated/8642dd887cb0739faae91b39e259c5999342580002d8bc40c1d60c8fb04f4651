@@ -1,0 +1,22 @@
+public LocalTime plus(long amountToAdd, TemporalUnit unit){
+    if (unit instanceof ChronoUnit) {
+        switch((ChronoUnit) unit) {
+            case NANOS:
+                return plusNanos(amountToAdd);
+            case MICROS:
+                return plusNanos((amountToAdd % MICROS_PER_DAY) * 1000);
+            case MILLIS:
+                return plusNanos((amountToAdd % MILLIS_PER_DAY) * 1000_000);
+            case SECONDS:
+                return plusSeconds(amountToAdd);
+            case MINUTES:
+                return plusMinutes(amountToAdd);
+            case HOURS:
+                return plusHours(amountToAdd);
+            case HALF_DAYS:
+                return plusHours((amountToAdd % 2) * 12);
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit);
+    }
+    return unit.addTo(this, amountToAdd);
+}

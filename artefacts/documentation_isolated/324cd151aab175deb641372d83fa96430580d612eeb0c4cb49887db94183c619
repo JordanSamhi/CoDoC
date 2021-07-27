@@ -1,0 +1,29 @@
+
+     * Request that a given application service be stopped.  If the service is
+     * not running, nothing happens.  Otherwise it is stopped.  Note that calls
+     * to startService() are not counted -- this stops the service no matter
+     * how many times it was started.
+     *
+     * <p>Note that if a stopped service still has {@link ServiceConnection}
+     * objects bound to it with the {@link #BIND_AUTO_CREATE} set, it will
+     * not be destroyed until all of these bindings are removed.  See
+     * the {@link android.app.Service} documentation for more details on a
+     * service's lifecycle.
+     *
+     * <p>This function will throw {@link SecurityException} if you do not
+     * have permission to stop the given service.
+     *
+     * @param service Description of the service to be stopped.  The Intent must be either
+     *      fully explicit (supplying a component name) or specify a specific package
+     *      name it is targeted to.
+     *
+     * @return If there is a service matching the given Intent that is already
+     * running, then it is stopped and {@code true} is returned; else {@code false} is returned.
+     *
+     * @throws SecurityException If the caller does not have permission to access the service
+     * or the service can not be found.
+     * @throws IllegalStateException If the application is in a state where the service
+     * can not be started (such as not in the foreground in a state when services are allowed).
+     *
+     * @see #startService
+     

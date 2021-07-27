@@ -1,0 +1,11 @@
+public int getOpacity(){
+    final Drawable d = getDrawable();
+    if (d.getLevel() == 0) {
+        return PixelFormat.TRANSPARENT;
+    }
+    final int opacity = d.getOpacity();
+    if (opacity == PixelFormat.OPAQUE && d.getLevel() < MAX_LEVEL) {
+        return PixelFormat.TRANSLUCENT;
+    }
+    return opacity;
+}

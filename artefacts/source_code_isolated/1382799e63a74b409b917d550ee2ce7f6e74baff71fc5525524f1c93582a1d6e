@@ -1,0 +1,8 @@
+public boolean equals(@Nullable Object o){
+    if (!getClass().equals(o != null ? o.getClass() : null))
+        return false;
+    AppTarget other = (AppTarget) o;
+    boolean sameClassName = (mClassName == null && other.mClassName == null) || (mClassName != null && mClassName.equals(other.mClassName));
+    boolean sameShortcutInfo = (mShortcutInfo == null && other.mShortcutInfo == null) || (mShortcutInfo != null && other.mShortcutInfo != null && mShortcutInfo.getId() == other.mShortcutInfo.getId());
+    return mId.equals(other.mId) && mPackageName.equals(other.mPackageName) && sameClassName && mUser.equals(other.mUser) && sameShortcutInfo && mRank == other.mRank;
+}

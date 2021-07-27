@@ -1,0 +1,10 @@
+public YearMonth plusMonths(long monthsToAdd){
+    if (monthsToAdd == 0) {
+        return this;
+    }
+    long monthCount = year * 12L + (month - 1);
+    long calcMonths = monthCount + monthsToAdd;
+    int newYear = YEAR.checkValidIntValue(Math.floorDiv(calcMonths, 12));
+    int newMonth = (int) Math.floorMod(calcMonths, 12) + 1;
+    return with(newYear, newMonth);
+}

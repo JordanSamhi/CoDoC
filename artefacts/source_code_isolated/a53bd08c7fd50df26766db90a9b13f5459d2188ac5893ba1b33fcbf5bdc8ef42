@@ -1,0 +1,33 @@
+public static Iterator<T> iterator(Spliterator<? extends T> spliterator){
+    Objects.requireNonNull(spliterator);
+    class Adapter implements Iterator<T>, Consumer<T> {
+
+        boolean valueReady = false;
+
+        T nextElement;
+
+        @Override
+        public void accept(T t) {
+            valueReady = true;
+            nextElement = t;
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (!valueReady)
+                spliterator.tryAdvance(this);
+            return valueReady;
+        }
+
+        @Override
+        public T next() {
+            if (!valueReady && !hasNext())
+                throw new NoSuchElementException();
+            else {
+                valueReady = false;
+                return nextElement;
+            }
+        }
+    }
+    return new Adapter();
+}

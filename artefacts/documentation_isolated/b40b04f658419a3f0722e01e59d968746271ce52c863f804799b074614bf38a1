@@ -1,0 +1,36 @@
+
+     * Get a top-level shared/external storage directory for placing files of a
+     * particular type. This is where the user will typically place and manage
+     * their own files, so you should be careful about what you put here to
+     * ensure you don't erase their files or get in the way of their own
+     * organization.
+     * <p>
+     * On devices with multiple users (as described by {@link UserManager}),
+     * each user has their own isolated shared storage. Applications only have
+     * access to the shared storage for the user they're running as.
+     * </p>
+     * <p>
+     * Here is an example of typical code to manipulate a picture on the public
+     * shared storage:
+     * </p>
+     * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
+     * public_picture}
+     *
+     * @param type The type of storage directory to return. Should be one of
+     *            {@link #DIRECTORY_MUSIC}, {@link #DIRECTORY_PODCASTS},
+     *            {@link #DIRECTORY_RINGTONES}, {@link #DIRECTORY_ALARMS},
+     *            {@link #DIRECTORY_NOTIFICATIONS}, {@link #DIRECTORY_PICTURES},
+     *            {@link #DIRECTORY_MOVIES}, {@link #DIRECTORY_DOWNLOADS},
+     *            {@link #DIRECTORY_DCIM}, or {@link #DIRECTORY_DOCUMENTS}. May not be null.
+     * @return Returns the File path for the directory. Note that this directory
+     *         may not yet exist, so you must make sure it exists before using
+     *         it such as with {@link File#mkdirs File.mkdirs()}.
+     * @deprecated To improve user privacy, direct access to shared/external
+     *             storage devices is deprecated. When an app targets
+     *             {@link android.os.Build.VERSION_CODES#Q}, the path returned
+     *             from this method is no longer directly accessible to apps.
+     *             Apps can continue to access content stored on shared/external
+     *             storage by migrating to alternatives such as
+     *             {@link Context#getExternalFilesDir(String)},
+     *             {@link MediaStore}, or {@link Intent#ACTION_OPEN_DOCUMENT}.
+     

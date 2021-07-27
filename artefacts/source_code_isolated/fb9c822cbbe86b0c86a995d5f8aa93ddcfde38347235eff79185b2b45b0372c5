@@ -1,0 +1,14 @@
+public synchronized boolean addAll(int index, Collection<? extends E> c){
+    modCount++;
+    if (index < 0 || index > elementCount)
+        throw new ArrayIndexOutOfBoundsException(index);
+    Object[] a = c.toArray();
+    int numNew = a.length;
+    ensureCapacityHelper(elementCount + numNew);
+    int numMoved = elementCount - index;
+    if (numMoved > 0)
+        System.arraycopy(elementData, index, elementData, index + numNew, numMoved);
+    System.arraycopy(a, 0, elementData, index, numNew);
+    elementCount += numNew;
+    return numNew != 0;
+}

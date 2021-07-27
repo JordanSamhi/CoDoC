@@ -1,0 +1,20 @@
+public int activeGroupCount(){
+    int ngroupsSnapshot;
+    ThreadGroup[] groupsSnapshot;
+    synchronized (this) {
+        if (destroyed) {
+            return 0;
+        }
+        ngroupsSnapshot = ngroups;
+        if (groups != null) {
+            groupsSnapshot = Arrays.copyOf(groups, ngroupsSnapshot);
+        } else {
+            groupsSnapshot = null;
+        }
+    }
+    int n = ngroupsSnapshot;
+    for (int i = 0; i < ngroupsSnapshot; i++) {
+        n += groupsSnapshot[i].activeGroupCount();
+    }
+    return n;
+}

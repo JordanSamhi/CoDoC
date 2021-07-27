@@ -1,0 +1,21 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null || endValues == null) {
+        return null;
+    }
+    final View view = endValues.view;
+    int startX = (Integer) startValues.values.get(PROPNAME_SCROLL_X);
+    int endX = (Integer) endValues.values.get(PROPNAME_SCROLL_X);
+    int startY = (Integer) startValues.values.get(PROPNAME_SCROLL_Y);
+    int endY = (Integer) endValues.values.get(PROPNAME_SCROLL_Y);
+    Animator scrollXAnimator = null;
+    Animator scrollYAnimator = null;
+    if (startX != endX) {
+        view.setScrollX(startX);
+        scrollXAnimator = ObjectAnimator.ofInt(view, "scrollX", startX, endX);
+    }
+    if (startY != endY) {
+        view.setScrollY(startY);
+        scrollYAnimator = ObjectAnimator.ofInt(view, "scrollY", startY, endY);
+    }
+    return TransitionUtils.mergeAnimators(scrollXAnimator, scrollYAnimator);
+}

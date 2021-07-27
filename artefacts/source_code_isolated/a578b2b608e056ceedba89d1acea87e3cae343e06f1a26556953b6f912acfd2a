@@ -1,0 +1,12 @@
+public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed){
+    if (!mHideOnContentScroll || !consumed) {
+        return false;
+    }
+    if (shouldHideActionBarOnFling(velocityX, velocityY)) {
+        addActionBarHideOffset();
+    } else {
+        removeActionBarHideOffset();
+    }
+    mAnimatingForFling = true;
+    return true;
+}

@@ -1,9 +1,0 @@
-public static void guard(int index){
-    for (int i = 0; i < index; i++) {
-        final Object lock = sKnownFixed[i];
-        if (lock != null && Thread.holdsLock(lock)) {
-            final Object targetMayBeNull = sKnownFixed[index];
-            doLog(targetMayBeNull, "Calling thread " + Thread.currentThread().getName() + " is holding " + lockToString(i) + " while trying to acquire " + lockToString(index));
-        }
-    }
-}

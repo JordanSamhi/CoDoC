@@ -1,0 +1,25 @@
+
+     * Adds a name to the pathToNames criterion. The {@code X509Certificate}
+     * must not include name constraints that would prohibit building a
+     * path to the specified name.
+     * <p>
+     * This method allows the caller to add a name to the set of names which
+     * the {@code X509Certificates}'s name constraints must permit.
+     * The specified name is added to any previous value for the
+     * pathToNames criterion. If the name is a duplicate, it may be ignored.
+     * <p>
+     * The name is provided as a byte array. This byte array should contain
+     * the DER encoded name, as it would appear in the GeneralName structure
+     * defined in RFC 3280 and X.509. The ASN.1 definition of this structure
+     * appears in the documentation for
+     * {@link #addSubjectAlternativeName(int type, byte [] name)
+     * addSubjectAlternativeName(int type, byte [] name)}.
+     * <p>
+     * Note that the byte array supplied here is cloned to protect against
+     * subsequent modifications.
+     *
+     * @param type the name type (0-8, as specified in
+     *             RFC 3280, section 4.2.1.7)
+     * @param name a byte array containing the name in ASN.1 DER encoded form
+     * @throws IOException if a parsing error occurs
+     

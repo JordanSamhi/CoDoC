@@ -1,0 +1,21 @@
+public TemporalAccessor parseBest(CharSequence text, TemporalQuery<?>... queries){
+    Objects.requireNonNull(text, "text");
+    Objects.requireNonNull(queries, "queries");
+    if (queries.length < 2) {
+        throw new IllegalArgumentException("At least two queries must be specified");
+    }
+    try {
+        TemporalAccessor resolved = parseResolved0(text, null);
+        for (TemporalQuery<?> query : queries) {
+            try {
+                return (TemporalAccessor) resolved.query(query);
+            } catch (RuntimeException ex) {
+            }
+        }
+        throw new DateTimeException("Unable to convert parsed text using any of the specified queries");
+    } catch (DateTimeParseException ex) {
+        throw ex;
+    } catch (RuntimeException ex) {
+        throw createError(text, ex);
+    }
+}

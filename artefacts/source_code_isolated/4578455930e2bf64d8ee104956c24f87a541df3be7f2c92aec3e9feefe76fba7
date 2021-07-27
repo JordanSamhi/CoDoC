@@ -1,0 +1,37 @@
+public boolean onHoverEvent(MotionEvent ev){
+    if (mHoverListener != null) {
+        final int headersCount;
+        final MenuAdapter menuAdapter;
+        final ListAdapter adapter = getAdapter();
+        if (adapter instanceof HeaderViewListAdapter) {
+            final HeaderViewListAdapter headerAdapter = (HeaderViewListAdapter) adapter;
+            headersCount = headerAdapter.getHeadersCount();
+            menuAdapter = (MenuAdapter) headerAdapter.getWrappedAdapter();
+        } else {
+            headersCount = 0;
+            menuAdapter = (MenuAdapter) adapter;
+        }
+        MenuItem menuItem = null;
+        if (ev.getAction() != MotionEvent.ACTION_HOVER_EXIT) {
+            final int position = pointToPosition((int) ev.getX(), (int) ev.getY());
+            if (position != INVALID_POSITION) {
+                final int itemPosition = position - headersCount;
+                if (itemPosition >= 0 && itemPosition < menuAdapter.getCount()) {
+                    menuItem = menuAdapter.getItem(itemPosition);
+                }
+            }
+        }
+        final MenuItem oldMenuItem = mHoveredMenuItem;
+        if (oldMenuItem != menuItem) {
+            final MenuBuilder menu = menuAdapter.getAdapterMenu();
+            if (oldMenuItem != null) {
+                mHoverListener.onItemHoverExit(menu, oldMenuItem);
+            }
+            mHoveredMenuItem = menuItem;
+            if (menuItem != null) {
+                mHoverListener.onItemHoverEnter(menu, menuItem);
+            }
+        }
+    }
+    return super.onHoverEvent(ev);
+}

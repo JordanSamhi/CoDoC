@@ -1,0 +1,27 @@
+public static Signature getInstance(String algorithm) throws NoSuchAlgorithmException{
+    List<Service> list;
+    if (algorithm.equalsIgnoreCase(RSA_SIGNATURE)) {
+        list = GetInstance.getServices(rsaIds);
+    } else {
+        list = GetInstance.getServices("Signature", algorithm);
+    }
+    Iterator<Service> t = list.iterator();
+    if (t.hasNext() == false) {
+        throw new NoSuchAlgorithmException(algorithm + " Signature not available");
+    }
+    NoSuchAlgorithmException failure;
+    do {
+        Service s = t.next();
+        if (isSpi(s)) {
+            return new Delegate(algorithm);
+        } else {
+            try {
+                Instance instance = GetInstance.getInstance(s, SignatureSpi.class);
+                return getInstance(instance, algorithm);
+            } catch (NoSuchAlgorithmException e) {
+                failure = e;
+            }
+        }
+    } while (t.hasNext());
+    throw failure;
+}

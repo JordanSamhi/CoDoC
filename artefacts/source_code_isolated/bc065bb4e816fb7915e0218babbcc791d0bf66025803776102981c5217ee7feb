@@ -1,0 +1,21 @@
+public void writeBytes(String s) throws IOException{
+    int endoff = s.length();
+    int cpos = 0;
+    int csize = 0;
+    for (int off = 0; off < endoff; ) {
+        if (cpos >= csize) {
+            cpos = 0;
+            csize = Math.min(endoff - off, CHAR_BUF_SIZE);
+            s.getChars(off, off + csize, cbuf, 0);
+        }
+        if (pos >= MAX_BLOCK_SIZE) {
+            drain();
+        }
+        int n = Math.min(csize - cpos, MAX_BLOCK_SIZE - pos);
+        int stop = pos + n;
+        while (pos < stop) {
+            buf[pos++] = (byte) cbuf[cpos++];
+        }
+        off += n;
+    }
+}

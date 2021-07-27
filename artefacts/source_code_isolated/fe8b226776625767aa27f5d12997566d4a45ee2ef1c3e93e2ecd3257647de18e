@@ -1,0 +1,10 @@
+public boolean isSafeMode(){
+    try {
+        if (mCachedSafeMode < 0) {
+            mCachedSafeMode = mPM.isSafeMode() ? 1 : 0;
+        }
+        return mCachedSafeMode != 0;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

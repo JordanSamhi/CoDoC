@@ -1,0 +1,131 @@
+public void add(int field, int amount){
+    if (amount == 0) {
+        return;
+    }
+    if (field < 0 || field >= ZONE_OFFSET) {
+        throw new IllegalArgumentException();
+    }
+    complete();
+    if (field == YEAR) {
+        int year = internalGet(YEAR);
+        if (internalGetEra() == CE) {
+            year += amount;
+            if (year > 0) {
+                set(YEAR, year);
+            } else {
+                set(YEAR, 1 - year);
+                set(ERA, BCE);
+            }
+        } else {
+            year -= amount;
+            if (year > 0) {
+                set(YEAR, year);
+            } else {
+                set(YEAR, 1 - year);
+                set(ERA, CE);
+            }
+        }
+        pinDayOfMonth();
+    } else if (field == MONTH) {
+        int month = internalGet(MONTH) + amount;
+        int year = internalGet(YEAR);
+        int y_amount;
+        if (month >= 0) {
+            y_amount = month / 12;
+        } else {
+            y_amount = (month + 1) / 12 - 1;
+        }
+        if (y_amount != 0) {
+            if (internalGetEra() == CE) {
+                year += y_amount;
+                if (year > 0) {
+                    set(YEAR, year);
+                } else {
+                    set(YEAR, 1 - year);
+                    set(ERA, BCE);
+                }
+            } else {
+                year -= y_amount;
+                if (year > 0) {
+                    set(YEAR, year);
+                } else {
+                    set(YEAR, 1 - year);
+                    set(ERA, CE);
+                }
+            }
+        }
+        if (month >= 0) {
+            set(MONTH, month % 12);
+        } else {
+            month %= 12;
+            if (month < 0) {
+                month += 12;
+            }
+            set(MONTH, JANUARY + month);
+        }
+        pinDayOfMonth();
+    } else if (field == ERA) {
+        int era = internalGet(ERA) + amount;
+        if (era < 0) {
+            era = 0;
+        }
+        if (era > 1) {
+            era = 1;
+        }
+        set(ERA, era);
+    } else {
+        long delta = amount;
+        long timeOfDay = 0;
+        switch(field) {
+            case HOUR:
+            case HOUR_OF_DAY:
+                delta *= 60 * 60 * 1000;
+                break;
+            case MINUTE:
+                delta *= 60 * 1000;
+                break;
+            case SECOND:
+                delta *= 1000;
+                break;
+            case MILLISECOND:
+                break;
+            case WEEK_OF_YEAR:
+            case WEEK_OF_MONTH:
+            case DAY_OF_WEEK_IN_MONTH:
+                delta *= 7;
+                break;
+            case DAY_OF_MONTH:
+            case DAY_OF_YEAR:
+            case DAY_OF_WEEK:
+                break;
+            case AM_PM:
+                delta = amount / 2;
+                timeOfDay = 12 * (amount % 2);
+                break;
+        }
+        if (field >= HOUR) {
+            setTimeInMillis(time + delta);
+            return;
+        }
+        long fd = getCurrentFixedDate();
+        timeOfDay += internalGet(HOUR_OF_DAY);
+        timeOfDay *= 60;
+        timeOfDay += internalGet(MINUTE);
+        timeOfDay *= 60;
+        timeOfDay += internalGet(SECOND);
+        timeOfDay *= 1000;
+        timeOfDay += internalGet(MILLISECOND);
+        if (timeOfDay >= ONE_DAY) {
+            fd++;
+            timeOfDay -= ONE_DAY;
+        } else if (timeOfDay < 0) {
+            fd--;
+            timeOfDay += ONE_DAY;
+        }
+        fd += delta;
+        long utcTime = (fd - EPOCH_OFFSET) * ONE_DAY + timeOfDay;
+        int tzMask = 0;
+        long millis = adjustForZoneAndDaylightSavingsTime(tzMask, utcTime, getZone());
+        setTimeInMillis(millis);
+    }
+}

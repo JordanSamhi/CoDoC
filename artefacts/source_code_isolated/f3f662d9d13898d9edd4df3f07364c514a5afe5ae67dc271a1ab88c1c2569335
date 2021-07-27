@@ -1,0 +1,17 @@
+public Lookup in(Class<?> requestedLookupClass){
+    requestedLookupClass.getClass();
+    if (requestedLookupClass == this.lookupClass)
+        return this;
+    int newModes = (allowedModes & (ALL_MODES & ~PROTECTED));
+    if ((newModes & PACKAGE) != 0 && !VerifyAccess.isSamePackage(this.lookupClass, requestedLookupClass)) {
+        newModes &= ~(PACKAGE | PRIVATE);
+    }
+    if ((newModes & PRIVATE) != 0 && !VerifyAccess.isSamePackageMember(this.lookupClass, requestedLookupClass)) {
+        newModes &= ~PRIVATE;
+    }
+    if ((newModes & PUBLIC) != 0 && !VerifyAccess.isClassAccessible(requestedLookupClass, this.lookupClass, allowedModes)) {
+        newModes = 0;
+    }
+    checkUnprivilegedlookupClass(requestedLookupClass, newModes);
+    return new Lookup(requestedLookupClass, newModes);
+}

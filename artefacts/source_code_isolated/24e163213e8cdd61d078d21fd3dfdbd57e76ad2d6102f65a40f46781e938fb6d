@@ -1,0 +1,67 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (mLocked) {
+        return true;
+    }
+    if (mTracking) {
+        mVelocityTracker.addMovement(event);
+        final int action = event.getAction();
+        switch(action) {
+            case MotionEvent.ACTION_MOVE:
+                moveHandle((int) (mVertical ? event.getY() : event.getX()) - mTouchDelta);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                {
+                    final VelocityTracker velocityTracker = mVelocityTracker;
+                    velocityTracker.computeCurrentVelocity(mVelocityUnits);
+                    float yVelocity = velocityTracker.getYVelocity();
+                    float xVelocity = velocityTracker.getXVelocity();
+                    boolean negative;
+                    final boolean vertical = mVertical;
+                    if (vertical) {
+                        negative = yVelocity < 0;
+                        if (xVelocity < 0) {
+                            xVelocity = -xVelocity;
+                        }
+                        if (xVelocity > mMaximumMinorVelocity) {
+                            xVelocity = mMaximumMinorVelocity;
+                        }
+                    } else {
+                        negative = xVelocity < 0;
+                        if (yVelocity < 0) {
+                            yVelocity = -yVelocity;
+                        }
+                        if (yVelocity > mMaximumMinorVelocity) {
+                            yVelocity = mMaximumMinorVelocity;
+                        }
+                    }
+                    float velocity = (float) Math.hypot(xVelocity, yVelocity);
+                    if (negative) {
+                        velocity = -velocity;
+                    }
+                    final int top = mHandle.getTop();
+                    final int left = mHandle.getLeft();
+                    if (Math.abs(velocity) < mMaximumTapVelocity) {
+                        if (vertical ? (mExpanded && top < mTapThreshold + mTopOffset) || (!mExpanded && top > mBottomOffset + mBottom - mTop - mHandleHeight - mTapThreshold) : (mExpanded && left < mTapThreshold + mTopOffset) || (!mExpanded && left > mBottomOffset + mRight - mLeft - mHandleWidth - mTapThreshold)) {
+                            if (mAllowSingleTap) {
+                                playSoundEffect(SoundEffectConstants.CLICK);
+                                if (mExpanded) {
+                                    animateClose(vertical ? top : left, true);
+                                } else {
+                                    animateOpen(vertical ? top : left, true);
+                                }
+                            } else {
+                                performFling(vertical ? top : left, velocity, false, true);
+                            }
+                        } else {
+                            performFling(vertical ? top : left, velocity, false, true);
+                        }
+                    } else {
+                        performFling(vertical ? top : left, velocity, false, true);
+                    }
+                }
+                break;
+        }
+    }
+    return mTracking || mAnimating || super.onTouchEvent(event);
+}

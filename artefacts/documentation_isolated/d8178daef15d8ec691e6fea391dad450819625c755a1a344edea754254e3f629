@@ -1,0 +1,62 @@
+
+     * <strong>Note:</strong> use {@linkplain #setIssuers(Collection)} instead
+     * or only specify the byte array form of distinguished names when using
+     * this method. See {@link #addIssuerName(String)} for more information.
+     * <p>
+     * Sets the issuerNames criterion. The issuer distinguished name in the
+     * {@code X509CRL} must match at least one of the specified
+     * distinguished names. If {@code null}, any issuer distinguished name
+     * will do.
+     * <p>
+     * This method allows the caller to specify, with a single method call,
+     * the complete set of issuer names which {@code X509CRLs} may contain.
+     * The specified value replaces the previous value for the issuerNames
+     * criterion.
+     * <p>
+     * The {@code names} parameter (if not {@code null}) is a
+     * {@code Collection} of names. Each name is a {@code String}
+     * or a byte array representing a distinguished name (in
+     * <a href="http://www.ietf.org/rfc/rfc2253.txt">RFC 2253</a> or
+     * ASN.1 DER encoded form, respectively). If {@code null} is supplied
+     * as the value for this argument, no issuerNames check will be performed.
+     * <p>
+     * Note that the {@code names} parameter can contain duplicate
+     * distinguished names, but they may be removed from the
+     * {@code Collection} of names returned by the
+     * {@link #getIssuerNames getIssuerNames} method.
+     * <p>
+     * If a name is specified as a byte array, it should contain a single DER
+     * encoded distinguished name, as defined in X.501. The ASN.1 notation for
+     * this structure is as follows.
+     * <pre>{@code
+     * Name ::= CHOICE {
+     *   RDNSequence }
+     *
+     * RDNSequence ::= SEQUENCE OF RelativeDistinguishedName
+     *
+     * RelativeDistinguishedName ::=
+     *   SET SIZE (1 .. MAX) OF AttributeTypeAndValue
+     *
+     * AttributeTypeAndValue ::= SEQUENCE {
+     *   type     AttributeType,
+     *   value    AttributeValue }
+     *
+     * AttributeType ::= OBJECT IDENTIFIER
+     *
+     * AttributeValue ::= ANY DEFINED BY AttributeType
+     * ....
+     * DirectoryString ::= CHOICE {
+     *       teletexString           TeletexString (SIZE (1..MAX)),
+     *       printableString         PrintableString (SIZE (1..MAX)),
+     *       universalString         UniversalString (SIZE (1..MAX)),
+     *       utf8String              UTF8String (SIZE (1.. MAX)),
+     *       bmpString               BMPString (SIZE (1..MAX)) }
+     * }</pre>
+     * <p>
+     * Note that a deep copy is performed on the {@code Collection} to
+     * protect against subsequent modifications.
+     *
+     * @param names a {@code Collection} of names (or {@code null})
+     * @throws IOException if a parsing error occurs
+     * @see #getIssuerNames
+     

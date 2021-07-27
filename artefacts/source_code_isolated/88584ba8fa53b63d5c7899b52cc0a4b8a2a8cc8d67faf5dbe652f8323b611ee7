@@ -1,0 +1,44 @@
+public void handleDestroyActivity(IBinder token, boolean finishing, int configChanges, boolean getNonConfigInstance, String reason){
+    ActivityClientRecord r = performDestroyActivity(token, finishing, configChanges, getNonConfigInstance, reason);
+    if (r != null) {
+        cleanUpPendingRemoveWindows(r, finishing);
+        WindowManager wm = r.activity.getWindowManager();
+        View v = r.activity.mDecor;
+        if (v != null) {
+            if (r.activity.mVisibleFromServer) {
+                mNumVisibleActivities--;
+            }
+            IBinder wtoken = v.getWindowToken();
+            if (r.activity.mWindowAdded) {
+                if (r.mPreserveWindow) {
+                    r.mPendingRemoveWindow = r.window;
+                    r.mPendingRemoveWindowManager = wm;
+                    r.window.clearContentView();
+                } else {
+                    wm.removeViewImmediate(v);
+                }
+            }
+            if (wtoken != null && r.mPendingRemoveWindow == null) {
+                WindowManagerGlobal.getInstance().closeAll(wtoken, r.activity.getClass().getName(), "Activity");
+            } else if (r.mPendingRemoveWindow != null) {
+                WindowManagerGlobal.getInstance().closeAllExceptView(token, v, r.activity.getClass().getName(), "Activity");
+            }
+            r.activity.mDecor = null;
+        }
+        if (r.mPendingRemoveWindow == null) {
+            WindowManagerGlobal.getInstance().closeAll(token, r.activity.getClass().getName(), "Activity");
+        }
+        Context c = r.activity.getBaseContext();
+        if (c instanceof ContextImpl) {
+            ((ContextImpl) c).scheduleFinalCleanup(r.activity.getClass().getName(), "Activity");
+        }
+    }
+    if (finishing) {
+        try {
+            ActivityTaskManager.getService().activityDestroyed(token);
+        } catch (RemoteException ex) {
+            throw ex.rethrowFromSystemServer();
+        }
+    }
+    mSomeActivitiesChanged = true;
+}

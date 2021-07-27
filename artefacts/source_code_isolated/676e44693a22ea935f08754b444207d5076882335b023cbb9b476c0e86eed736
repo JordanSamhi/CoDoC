@@ -1,0 +1,12 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        if (field == EPOCH_DAY) {
+            return toEpochDay();
+        }
+        if (field == PROLEPTIC_MONTH) {
+            return getProlepticMonth();
+        }
+        return get0(field);
+    }
+    return field.getFrom(this);
+}

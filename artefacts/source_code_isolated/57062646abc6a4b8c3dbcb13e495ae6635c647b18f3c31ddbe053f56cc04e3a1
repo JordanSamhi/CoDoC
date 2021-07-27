@@ -1,0 +1,12 @@
+public static MethodHandle arrayElementSetter(Class<?> arrayClass) throws IllegalArgumentException{
+    checkClassIsArray(arrayClass);
+    final Class<?> componentType = arrayClass.getComponentType();
+    if (componentType.isPrimitive()) {
+        try {
+            return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class, "arrayElementSetter", MethodType.methodType(void.class, arrayClass, int.class, componentType));
+        } catch (NoSuchMethodException | IllegalAccessException exception) {
+            throw new AssertionError(exception);
+        }
+    }
+    return new Transformers.ReferenceArrayElementSetter(arrayClass);
+}

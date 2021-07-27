@@ -1,0 +1,12 @@
+public final byte[] wrap(Key key) throws IllegalBlockSizeException, InvalidKeyException{
+    if (!(this instanceof NullCipher)) {
+        if (!initialized) {
+            throw new IllegalStateException("Cipher not initialized");
+        }
+        if (opmode != Cipher.WRAP_MODE) {
+            throw new IllegalStateException("Cipher not initialized " + "for wrapping keys");
+        }
+    }
+    updateProviderIfNeeded();
+    return spi.engineWrap(key);
+}

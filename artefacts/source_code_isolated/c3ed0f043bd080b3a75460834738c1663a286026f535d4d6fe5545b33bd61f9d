@@ -1,2 +1,6 @@
 public void onCallDisconnectCauseChanged(int disconnectCause, int preciseDisconnectCause){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onCallDisconnectCauseChanged(disconnectCause, preciseDisconnectCause)));
 }

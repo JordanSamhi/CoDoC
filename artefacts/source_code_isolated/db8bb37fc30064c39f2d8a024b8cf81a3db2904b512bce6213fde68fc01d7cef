@@ -1,0 +1,23 @@
+public boolean onDragEvent(DragEvent event){
+    switch(event.getAction()) {
+        case DragEvent.ACTION_DRAG_STARTED:
+            return mEditor != null && mEditor.hasInsertionController();
+        case DragEvent.ACTION_DRAG_ENTERED:
+            TextView.this.requestFocus();
+            return true;
+        case DragEvent.ACTION_DRAG_LOCATION:
+            if (mText instanceof Spannable) {
+                final int offset = getOffsetForPosition(event.getX(), event.getY());
+                Selection.setSelection(mSpannable, offset);
+            }
+            return true;
+        case DragEvent.ACTION_DROP:
+            if (mEditor != null)
+                mEditor.onDrop(event);
+            return true;
+        case DragEvent.ACTION_DRAG_ENDED:
+        case DragEvent.ACTION_DRAG_EXITED:
+        default:
+            return true;
+    }
+}

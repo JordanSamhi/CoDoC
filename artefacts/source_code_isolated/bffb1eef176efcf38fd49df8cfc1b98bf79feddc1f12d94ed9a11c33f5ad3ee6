@@ -1,0 +1,5 @@
+public synchronized void setSoTimeout(int timeout) throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    getImpl().setOption(SocketOptions.SO_TIMEOUT, new Integer(timeout));
+}

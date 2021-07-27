@@ -1,0 +1,11 @@
+public List<ResolveInfo> queryIntentServicesAsUser(Intent intent, int flags, int userId){
+    try {
+        ParceledListSlice<ResolveInfo> parceledList = mPM.queryIntentServices(intent, intent.resolveTypeIfNeeded(mContext.getContentResolver()), updateFlagsForComponent(flags, userId, intent), userId);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

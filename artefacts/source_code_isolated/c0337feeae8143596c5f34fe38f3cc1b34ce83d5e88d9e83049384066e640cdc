@@ -1,0 +1,9 @@
+public void logp(Level level, String sourceClass, String sourceMethod, Supplier<String> msgSupplier){
+    if (!isLoggable(level)) {
+        return;
+    }
+    LogRecord lr = new LogRecord(level, msgSupplier.get());
+    lr.setSourceClassName(sourceClass);
+    lr.setSourceMethodName(sourceMethod);
+    doLog(lr);
+}

@@ -1,0 +1,56 @@
+public void draw(Canvas canvas){
+    final Bitmap bitmap = mBitmapState.mBitmap;
+    if (bitmap == null) {
+        return;
+    }
+    final BitmapState state = mBitmapState;
+    final Paint paint = state.mPaint;
+    if (state.mRebuildShader) {
+        final Shader.TileMode tmx = state.mTileModeX;
+        final Shader.TileMode tmy = state.mTileModeY;
+        if (tmx == null && tmy == null) {
+            paint.setShader(null);
+        } else {
+            paint.setShader(new BitmapShader(bitmap, tmx == null ? Shader.TileMode.CLAMP : tmx, tmy == null ? Shader.TileMode.CLAMP : tmy));
+        }
+        state.mRebuildShader = false;
+    }
+    final int restoreAlpha;
+    if (state.mBaseAlpha != 1.0f) {
+        final Paint p = getPaint();
+        restoreAlpha = p.getAlpha();
+        p.setAlpha((int) (restoreAlpha * state.mBaseAlpha + 0.5f));
+    } else {
+        restoreAlpha = -1;
+    }
+    final boolean clearColorFilter;
+    if (mBlendModeFilter != null && paint.getColorFilter() == null) {
+        paint.setColorFilter(mBlendModeFilter);
+        clearColorFilter = true;
+    } else {
+        clearColorFilter = false;
+    }
+    updateDstRectAndInsetsIfDirty();
+    final Shader shader = paint.getShader();
+    final boolean needMirroring = needMirroring();
+    if (shader == null) {
+        if (needMirroring) {
+            canvas.save();
+            canvas.translate(mDstRect.right - mDstRect.left, 0);
+            canvas.scale(-1.0f, 1.0f);
+        }
+        canvas.drawBitmap(bitmap, null, mDstRect, paint);
+        if (needMirroring) {
+            canvas.restore();
+        }
+    } else {
+        updateShaderMatrix(bitmap, paint, shader, needMirroring);
+        canvas.drawRect(mDstRect, paint);
+    }
+    if (clearColorFilter) {
+        paint.setColorFilter(null);
+    }
+    if (restoreAlpha >= 0) {
+        paint.setAlpha(restoreAlpha);
+    }
+}

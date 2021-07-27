@@ -1,0 +1,47 @@
+
+     * Sets the subjectAlternativeNames criterion. The
+     * {@code X509Certificate} must contain all or at least one of the
+     * specified subjectAlternativeNames, depending on the value of
+     * the matchAllNames flag (see {@link #setMatchAllSubjectAltNames
+     * setMatchAllSubjectAltNames}).
+     * <p>
+     * This method allows the caller to specify, with a single method call,
+     * the complete set of subject alternative names for the
+     * subjectAlternativeNames criterion. The specified value replaces
+     * the previous value for the subjectAlternativeNames criterion.
+     * <p>
+     * The {@code names} parameter (if not {@code null}) is a
+     * {@code Collection} with one
+     * entry for each name to be included in the subject alternative name
+     * criterion. Each entry is a {@code List} whose first entry is an
+     * {@code Integer} (the name type, 0-8) and whose second
+     * entry is a {@code String} or a byte array (the name, in
+     * string or ASN.1 DER encoded form, respectively).
+     * There can be multiple names of the same type. If {@code null}
+     * is supplied as the value for this argument, no
+     * subjectAlternativeNames check will be performed.
+     * <p>
+     * Each subject alternative name in the {@code Collection}
+     * may be specified either as a {@code String} or as an ASN.1 encoded
+     * byte array. For more details about the formats used, see
+     * {@link #addSubjectAlternativeName(int type, String name)
+     * addSubjectAlternativeName(int type, String name)} and
+     * {@link #addSubjectAlternativeName(int type, byte [] name)
+     * addSubjectAlternativeName(int type, byte [] name)}.
+     * <p>
+     * <strong>Note:</strong> for distinguished names, specify the byte
+     * array form instead of the String form. See the note in
+     * {@link #addSubjectAlternativeName(int, String)} for more information.
+     * <p>
+     * Note that the {@code names} parameter can contain duplicate
+     * names (same name and name type), but they may be removed from the
+     * {@code Collection} of names returned by the
+     * {@link #getSubjectAlternativeNames getSubjectAlternativeNames} method.
+     * <p>
+     * Note that a deep copy is performed on the {@code Collection} to
+     * protect against subsequent modifications.
+     *
+     * @param names a {@code Collection} of names (or {@code null})
+     * @throws IOException if a parsing error occurs
+     * @see #getSubjectAlternativeNames
+     

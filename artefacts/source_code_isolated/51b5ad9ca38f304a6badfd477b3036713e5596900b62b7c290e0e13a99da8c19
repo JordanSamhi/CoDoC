@@ -1,0 +1,33 @@
+public void setSplitToolbar(boolean splitActionBar){
+    if (mSplitActionBar != splitActionBar) {
+        if (mMenuView != null) {
+            final ViewGroup oldParent = (ViewGroup) mMenuView.getParent();
+            if (oldParent != null) {
+                oldParent.removeView(mMenuView);
+            }
+            if (splitActionBar) {
+                if (mSplitView != null) {
+                    mSplitView.addView(mMenuView);
+                }
+                mMenuView.getLayoutParams().width = LayoutParams.MATCH_PARENT;
+            } else {
+                addView(mMenuView);
+                mMenuView.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+            }
+            mMenuView.requestLayout();
+        }
+        if (mSplitView != null) {
+            mSplitView.setVisibility(splitActionBar ? VISIBLE : GONE);
+        }
+        if (mActionMenuPresenter != null) {
+            if (!splitActionBar) {
+                mActionMenuPresenter.setExpandedActionViewsExclusive(getResources().getBoolean(com.android.internal.R.bool.action_bar_expanded_action_views_exclusive));
+            } else {
+                mActionMenuPresenter.setExpandedActionViewsExclusive(false);
+                mActionMenuPresenter.setWidthLimit(getContext().getResources().getDisplayMetrics().widthPixels, true);
+                mActionMenuPresenter.setItemLimit(Integer.MAX_VALUE);
+            }
+        }
+        super.setSplitToolbar(splitActionBar);
+    }
+}

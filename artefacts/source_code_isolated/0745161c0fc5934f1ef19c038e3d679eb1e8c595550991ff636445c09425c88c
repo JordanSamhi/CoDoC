@@ -1,0 +1,25 @@
+public static void invokeAll(ForkJoinTask<?>... tasks){
+    Throwable ex = null;
+    int last = tasks.length - 1;
+    for (int i = last; i >= 0; --i) {
+        ForkJoinTask<?> t = tasks[i];
+        if (t == null) {
+            if (ex == null)
+                ex = new NullPointerException();
+        } else if (i != 0)
+            t.fork();
+        else if (t.doInvoke() < NORMAL && ex == null)
+            ex = t.getException();
+    }
+    for (int i = 1; i <= last; ++i) {
+        ForkJoinTask<?> t = tasks[i];
+        if (t != null) {
+            if (ex != null)
+                t.cancel(false);
+            else if (t.doJoin() < NORMAL)
+                ex = t.getException();
+        }
+    }
+    if (ex != null)
+        rethrow(ex);
+}

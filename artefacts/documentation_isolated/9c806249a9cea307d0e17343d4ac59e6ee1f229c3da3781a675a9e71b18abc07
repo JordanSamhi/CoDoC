@@ -1,0 +1,26 @@
+
+     * Returns a {@code Collector} which performs a reduction of its
+     * input elements under a specified {@code BinaryOperator}.  The result
+     * is described as an {@code Optional<T>}.
+     *
+     * @apiNote
+     * The {@code reducing()} collectors are most useful when used in a
+     * multi-level reduction, downstream of {@code groupingBy} or
+     * {@code partitioningBy}.  To perform a simple reduction on a stream,
+     * use {@link Stream#reduce(BinaryOperator)} instead.
+     *
+     * <p>For example, given a stream of {@code Person}, to calculate tallest
+     * person in each city:
+     * <pre>{@code
+     *     Comparator<Person> byHeight = Comparator.comparing(Person::getHeight);
+     *     Map<City, Person> tallestByCity
+     *         = people.stream().collect(groupingBy(Person::getCity, reducing(BinaryOperator.maxBy(byHeight))));
+     * }</pre>
+     *
+     * @param <T> element type for the input and output of the reduction
+     * @param op a {@code BinaryOperator<T>} used to reduce the input elements
+     * @return a {@code Collector} which implements the reduction operation
+     *
+     * @see #reducing(Object, BinaryOperator)
+     * @see #reducing(Object, Function, BinaryOperator)
+     

@@ -1,0 +1,24 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null || endValues == null || !startValues.values.containsKey(PROPNAME_PARENT) || !endValues.values.containsKey(PROPNAME_PARENT)) {
+        return null;
+    }
+    ViewGroup startParent = (ViewGroup) startValues.values.get(PROPNAME_PARENT);
+    ViewGroup endParent = (ViewGroup) endValues.values.get(PROPNAME_PARENT);
+    boolean handleParentChange = mReparent && !parentsMatch(startParent, endParent);
+    Matrix startMatrix = (Matrix) startValues.values.get(PROPNAME_INTERMEDIATE_MATRIX);
+    if (startMatrix != null) {
+        startValues.values.put(PROPNAME_MATRIX, startMatrix);
+    }
+    Matrix startParentMatrix = (Matrix) startValues.values.get(PROPNAME_INTERMEDIATE_PARENT_MATRIX);
+    if (startParentMatrix != null) {
+        startValues.values.put(PROPNAME_PARENT_MATRIX, startParentMatrix);
+    }
+    if (handleParentChange) {
+        setMatricesForParent(startValues, endValues);
+    }
+    ObjectAnimator transformAnimator = createTransformAnimator(startValues, endValues, handleParentChange);
+    if (handleParentChange && transformAnimator != null && mUseOverlay) {
+        createGhostView(sceneRoot, startValues, endValues);
+    }
+    return transformAnimator;
+}

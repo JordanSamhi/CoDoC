@@ -1,0 +1,16 @@
+public boolean equals(@Nullable Object obj){
+    if (this == obj)
+        return true;
+    if (!(obj instanceof RadioMetadata))
+        return false;
+    Bundle otherBundle = ((RadioMetadata) obj).mBundle;
+    if (!mBundle.keySet().equals(otherBundle.keySet())) {
+        return false;
+    }
+    for (String key : mBundle.keySet()) {
+        if (!mBundle.get(key).equals(otherBundle.get(key))) {
+            return false;
+        }
+    }
+    return true;
+}

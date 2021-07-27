@@ -1,0 +1,11 @@
+public void reportRelaunch(IBinder token, PendingTransactionActions pendingActions){
+    try {
+        ActivityTaskManager.getService().activityRelaunched(token);
+        final ActivityClientRecord r = mActivities.get(token);
+        if (pendingActions.shouldReportRelaunchToWindowManager() && r != null && r.window != null) {
+            r.window.reportActivityRelaunched();
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

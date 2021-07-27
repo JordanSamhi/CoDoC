@@ -1,0 +1,31 @@
+public BigDecimal pow(int n, MathContext mc){
+    int m = Math.abs(n);
+    int mcPrecision = mc.getPrecision();
+    int elength = (int) Math.log10(m) + 1;
+    int oneBitMask;
+    BigDecimal accum;
+    MathContext newPrecision = mc;
+    if ((n == 0) || ((isZero()) && (n > 0))) {
+        return pow(n);
+    }
+    if ((m > 999999999) || ((mcPrecision == 0) && (n < 0)) || ((mcPrecision > 0) && (elength > mcPrecision))) {
+        throw new ArithmeticException("Invalid operation");
+    }
+    if (mcPrecision > 0) {
+        newPrecision = new MathContext(mcPrecision + elength + 1, mc.getRoundingMode());
+    }
+    accum = round(newPrecision);
+    oneBitMask = Integer.highestOneBit(m) >> 1;
+    while (oneBitMask > 0) {
+        accum = accum.multiply(accum, newPrecision);
+        if ((m & oneBitMask) == oneBitMask) {
+            accum = accum.multiply(this, newPrecision);
+        }
+        oneBitMask >>= 1;
+    }
+    if (n < 0) {
+        accum = ONE.divide(accum, newPrecision);
+    }
+    accum.inplaceRound(mc);
+    return accum;
+}

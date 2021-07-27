@@ -1,0 +1,12 @@
+public ServiceInfo getServiceInfo(ComponentName className, int flags) throws NameNotFoundException{
+    final int userId = getUserId();
+    try {
+        ServiceInfo si = mPM.getServiceInfo(className, updateFlagsForComponent(flags, userId, null), userId);
+        if (si != null) {
+            return si;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(className.toString());
+}

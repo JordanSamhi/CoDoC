@@ -1,0 +1,17 @@
+public String toString(){
+    StringBuilder buffer = new StringBuilder(800);
+    buffer.append(getClass().getName()).append('[');
+    appendValue(buffer, "time", isTimeSet, time);
+    buffer.append(",areFieldsSet=").append(areFieldsSet);
+    buffer.append(",areAllFieldsSet=").append(areAllFieldsSet);
+    buffer.append(",lenient=").append(lenient);
+    buffer.append(",zone=").append(zone);
+    appendValue(buffer, ",firstDayOfWeek", true, (long) firstDayOfWeek);
+    appendValue(buffer, ",minimalDaysInFirstWeek", true, (long) minimalDaysInFirstWeek);
+    for (int i = 0; i < FIELD_COUNT; ++i) {
+        buffer.append(',');
+        appendValue(buffer, FIELD_NAME[i], isSet(i), (long) fields[i]);
+    }
+    buffer.append(']');
+    return buffer.toString();
+}

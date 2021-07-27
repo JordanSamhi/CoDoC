@@ -1,0 +1,22 @@
+public String toString(){
+    final StringBuilder builder = new StringBuilder("{");
+    builder.append("type=").append(getNetworkTypeName(mType));
+    builder.append(", subType=");
+    if (mSubType == SUBTYPE_COMBINED) {
+        builder.append("COMBINED");
+    } else {
+        builder.append(mSubType);
+    }
+    if (mSubscriberId != null) {
+        builder.append(", subscriberId=").append(scrubSubscriberId(mSubscriberId));
+    }
+    if (mNetworkId != null) {
+        builder.append(", networkId=").append(mNetworkId);
+    }
+    if (mRoaming) {
+        builder.append(", ROAMING");
+    }
+    builder.append(", metered=").append(mMetered);
+    builder.append(", defaultNetwork=").append(mDefaultNetwork);
+    return builder.append("}").toString();
+}

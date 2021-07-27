@@ -1,0 +1,12 @@
+public boolean setVisible(boolean visible, boolean restart){
+    final boolean changed = super.setVisible(visible, restart);
+    final ChildDrawable[] array = mLayerState.mChildren;
+    final int N = mLayerState.mNumChildren;
+    for (int i = 0; i < N; i++) {
+        final Drawable dr = array[i].mDrawable;
+        if (dr != null) {
+            dr.setVisible(visible, restart);
+        }
+    }
+    return changed;
+}

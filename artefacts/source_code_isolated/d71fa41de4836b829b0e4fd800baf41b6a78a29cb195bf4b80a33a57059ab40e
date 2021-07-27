@@ -1,0 +1,11 @@
+public final void setBackgroundDrawable(Drawable drawable){
+    if (drawable != mBackgroundDrawable) {
+        mBackgroundDrawable = drawable;
+        if (mDecor != null) {
+            mDecor.setWindowBackground(drawable);
+            if (mBackgroundFallbackDrawable != null) {
+                mDecor.setBackgroundFallback(drawable != null ? null : mBackgroundFallbackDrawable);
+            }
+        }
+    }
+}

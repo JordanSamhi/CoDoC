@@ -1,0 +1,21 @@
+public static int getNumericValue(int codePoint){
+    if (codePoint < 128) {
+        if (codePoint >= '0' && codePoint <= '9') {
+            return codePoint - '0';
+        }
+        if (codePoint >= 'a' && codePoint <= 'z') {
+            return codePoint - ('a' - 10);
+        }
+        if (codePoint >= 'A' && codePoint <= 'Z') {
+            return codePoint - ('A' - 10);
+        }
+        return -1;
+    }
+    if (codePoint >= 0xff21 && codePoint <= 0xff3a) {
+        return codePoint - 0xff17;
+    }
+    if (codePoint >= 0xff41 && codePoint <= 0xff5a) {
+        return codePoint - 0xff37;
+    }
+    return getNumericValueImpl(codePoint);
+}

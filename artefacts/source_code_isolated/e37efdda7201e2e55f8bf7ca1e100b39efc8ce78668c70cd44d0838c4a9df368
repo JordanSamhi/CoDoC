@@ -1,0 +1,12 @@
+public int getWeeksInWeekYear(){
+    GregorianCalendar gc = getNormalizedCalendar();
+    int weekYear = gc.getWeekYear();
+    if (weekYear == gc.internalGet(YEAR)) {
+        return gc.getActualMaximum(WEEK_OF_YEAR);
+    }
+    if (gc == this) {
+        gc = (GregorianCalendar) gc.clone();
+    }
+    gc.setWeekDate(weekYear, 2, internalGet(DAY_OF_WEEK));
+    return gc.getActualMaximum(WEEK_OF_YEAR);
+}

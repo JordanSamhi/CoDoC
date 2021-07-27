@@ -1,0 +1,10 @@
+public Spliterator<E> spliterator(){
+    int lo = offset;
+    int hi = offset + size;
+    Object[] a = expectedArray;
+    if (l.getArray() != a)
+        throw new ConcurrentModificationException();
+    if (lo < 0 || hi > a.length)
+        throw new IndexOutOfBoundsException();
+    return Spliterators.spliterator(a, lo, hi, Spliterator.IMMUTABLE | Spliterator.ORDERED);
+}

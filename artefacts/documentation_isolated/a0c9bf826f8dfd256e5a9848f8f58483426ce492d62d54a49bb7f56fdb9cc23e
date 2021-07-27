@@ -1,0 +1,18 @@
+
+     * Adapts a {@code Collector} to perform an additional finishing
+     * transformation.  For example, one could adapt the {@link #toList()}
+     * collector to always produce an immutable list with:
+     * <pre>{@code
+     *     List<String> people
+     *         = people.stream().collect(collectingAndThen(toList(), Collections::unmodifiableList));
+     * }</pre>
+     *
+     * @param <T> the type of the input elements
+     * @param <A> intermediate accumulation type of the downstream collector
+     * @param <R> result type of the downstream collector
+     * @param <RR> result type of the resulting collector
+     * @param downstream a collector
+     * @param finisher a function to be applied to the final result of the downstream collector
+     * @return a collector which performs the action of the downstream collector,
+     * followed by an additional finishing step
+     

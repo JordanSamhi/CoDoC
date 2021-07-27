@@ -1,0 +1,16 @@
+ int compareTo(ChronoZonedDateTime<?> other){
+    int cmp = Long.compare(toEpochSecond(), other.toEpochSecond());
+    if (cmp == 0) {
+        cmp = toLocalTime().getNano() - other.toLocalTime().getNano();
+        if (cmp == 0) {
+            cmp = toLocalDateTime().compareTo(other.toLocalDateTime());
+            if (cmp == 0) {
+                cmp = getZone().getId().compareTo(other.getZone().getId());
+                if (cmp == 0) {
+                    cmp = getChronology().compareTo(other.getChronology());
+                }
+            }
+        }
+    }
+    return cmp;
+}

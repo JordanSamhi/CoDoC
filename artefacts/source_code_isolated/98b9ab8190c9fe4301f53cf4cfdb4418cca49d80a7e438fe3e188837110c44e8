@@ -1,0 +1,17 @@
+public PrintWriter format(String format, Object... args){
+    try {
+        synchronized (lock) {
+            ensureOpen();
+            if ((formatter == null) || (formatter.locale() != Locale.getDefault()))
+                formatter = new Formatter(this);
+            formatter.format(Locale.getDefault(), format, args);
+            if (autoFlush)
+                out.flush();
+        }
+    } catch (InterruptedIOException x) {
+        Thread.currentThread().interrupt();
+    } catch (IOException x) {
+        trouble = true;
+    }
+    return this;
+}

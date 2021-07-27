@@ -1,0 +1,11 @@
+public ModuleInfo getModuleInfo(String packageName, int flags) throws NameNotFoundException{
+    try {
+        ModuleInfo mi = mPM.getModuleInfo(packageName, flags);
+        if (mi != null) {
+            return mi;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException("No module info for package: " + packageName);
+}

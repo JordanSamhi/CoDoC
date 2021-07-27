@@ -1,0 +1,9 @@
+public static ZonedDateTime ofInstant(LocalDateTime localDateTime, ZoneOffset offset, ZoneId zone){
+    Objects.requireNonNull(localDateTime, "localDateTime");
+    Objects.requireNonNull(offset, "offset");
+    Objects.requireNonNull(zone, "zone");
+    if (zone.getRules().isValidOffset(localDateTime, offset)) {
+        return new ZonedDateTime(localDateTime, offset, zone);
+    }
+    return create(localDateTime.toEpochSecond(offset), localDateTime.getNano(), zone);
+}

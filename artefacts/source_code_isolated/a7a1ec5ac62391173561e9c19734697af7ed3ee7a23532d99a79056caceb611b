@@ -1,0 +1,15 @@
+public void close(){
+    if (zfisCloseRequested)
+        return;
+    zfisCloseRequested = true;
+    rem = 0;
+    synchronized (ZipFile.this) {
+        if (jzentry != 0 && ZipFile.this.jzfile != 0) {
+            freeEntry(ZipFile.this.jzfile, jzentry);
+            jzentry = 0;
+        }
+    }
+    synchronized (streams) {
+        streams.remove(this);
+    }
+}

@@ -1,0 +1,26 @@
+
+     * Runs the given possibly blocking task.  When {@linkplain
+     * ForkJoinTask#inForkJoinPool() running in a ForkJoinPool}, this
+     * method possibly arranges for a spare thread to be activated if
+     * necessary to ensure sufficient parallelism while the current
+     * thread is blocked in {@link ManagedBlocker#block blocker.block()}.
+     *
+     * <p>This method repeatedly calls {@code blocker.isReleasable()} and
+     * {@code blocker.block()} until either method returns {@code true}.
+     * Every call to {@code blocker.block()} is preceded by a call to
+     * {@code blocker.isReleasable()} that returned {@code false}.
+     *
+     * <p>If not running in a ForkJoinPool, this method is
+     * behaviorally equivalent to
+     * <pre> {@code
+     * while (!blocker.isReleasable())
+     *   if (blocker.block())
+     *     break;}</pre>
+     *
+     * If running in a ForkJoinPool, the pool may first be expanded to
+     * ensure sufficient parallelism available during the call to
+     * {@code blocker.block()}.
+     *
+     * @param blocker the blocker task
+     * @throws InterruptedException if {@code blocker.block()} did so
+     

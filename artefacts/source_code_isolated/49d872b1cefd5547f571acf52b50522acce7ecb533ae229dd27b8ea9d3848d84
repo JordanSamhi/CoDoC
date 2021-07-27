@@ -1,0 +1,15 @@
+public void setCorePoolSize(int corePoolSize){
+    if (corePoolSize < 0)
+        throw new IllegalArgumentException();
+    int delta = corePoolSize - this.corePoolSize;
+    this.corePoolSize = corePoolSize;
+    if (workerCountOf(ctl.get()) > corePoolSize)
+        interruptIdleWorkers();
+    else if (delta > 0) {
+        int k = Math.min(delta, workQueue.size());
+        while (k-- > 0 && addWorker(null, true)) {
+            if (workQueue.isEmpty())
+                break;
+        }
+    }
+}

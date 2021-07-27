@@ -1,0 +1,14 @@
+public void write(byte[] buf, int off, int len){
+    try {
+        synchronized (this) {
+            ensureOpen();
+            out.write(buf, off, len);
+            if (autoFlush)
+                out.flush();
+        }
+    } catch (InterruptedIOException x) {
+        Thread.currentThread().interrupt();
+    } catch (IOException x) {
+        trouble = true;
+    }
+}

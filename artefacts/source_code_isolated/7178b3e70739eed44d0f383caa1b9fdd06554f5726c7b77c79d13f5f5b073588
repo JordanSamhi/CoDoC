@@ -1,0 +1,9 @@
+public boolean dispatchPopulateAccessibilityEventInternal(AccessibilityEvent event){
+    final Window.Callback cb = mWindow.getCallback();
+    if (cb != null && !mWindow.isDestroyed()) {
+        if (cb.dispatchPopulateAccessibilityEvent(event)) {
+            return true;
+        }
+    }
+    return super.dispatchPopulateAccessibilityEventInternal(event);
+}

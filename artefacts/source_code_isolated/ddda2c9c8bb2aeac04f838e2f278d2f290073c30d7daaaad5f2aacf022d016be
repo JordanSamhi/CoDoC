@@ -1,0 +1,16 @@
+public void end(){
+    if (mState != STATE_FINISHED) {
+        if (mState < STATE_RUNNING) {
+            getHelper().removeDelayedAnimation(this);
+            doStart();
+        }
+        if (mNativePtr != null) {
+            nEnd(mNativePtr.get());
+            if (mViewListener != null) {
+                mViewListener.invalidateParent(false);
+            }
+        } else {
+            onFinished();
+        }
+    }
+}

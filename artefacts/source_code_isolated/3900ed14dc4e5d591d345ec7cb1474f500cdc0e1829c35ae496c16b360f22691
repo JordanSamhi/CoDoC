@@ -1,0 +1,36 @@
+public static Collector<T, ?, M> groupingByConcurrent(Function<? super T, ? extends K> classifier, Supplier<M> mapFactory, Collector<? super T, A, D> downstream){
+    Supplier<A> downstreamSupplier = downstream.supplier();
+    BiConsumer<A, ? super T> downstreamAccumulator = downstream.accumulator();
+    BinaryOperator<ConcurrentMap<K, A>> merger = Collectors.<K, A, ConcurrentMap<K, A>>mapMerger(downstream.combiner());
+    @SuppressWarnings("unchecked")
+    Supplier<ConcurrentMap<K, A>> mangledFactory = (Supplier<ConcurrentMap<K, A>>) mapFactory;
+    BiConsumer<ConcurrentMap<K, A>, T> accumulator;
+    if (downstream.characteristics().contains(Collector.Characteristics.CONCURRENT)) {
+        accumulator = (m, t) -> {
+            K key = Objects.requireNonNull(classifier.apply(t), "element cannot be mapped to a null key");
+            A resultContainer = m.computeIfAbsent(key, k -> downstreamSupplier.get());
+            downstreamAccumulator.accept(resultContainer, t);
+        };
+    } else {
+        accumulator = (m, t) -> {
+            K key = Objects.requireNonNull(classifier.apply(t), "element cannot be mapped to a null key");
+            A resultContainer = m.computeIfAbsent(key, k -> downstreamSupplier.get());
+            synchronized (resultContainer) {
+                downstreamAccumulator.accept(resultContainer, t);
+            }
+        };
+    }
+    if (downstream.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+        return new CollectorImpl<>(mangledFactory, accumulator, merger, CH_CONCURRENT_ID);
+    } else {
+        @SuppressWarnings("unchecked")
+        Function<A, A> downstreamFinisher = (Function<A, A>) downstream.finisher();
+        Function<ConcurrentMap<K, A>, M> finisher = intermediate -> {
+            intermediate.replaceAll((k, v) -> downstreamFinisher.apply(v));
+            @SuppressWarnings("unchecked")
+            M castResult = (M) intermediate;
+            return castResult;
+        };
+        return new CollectorImpl<>(mangledFactory, accumulator, merger, finisher, CH_CONCURRENT_NOID);
+    }
+}

@@ -1,0 +1,17 @@
+public ParcelFileDescriptor openDocument(String documentId, String mode, CancellationSignal signal) throws FileNotFoundException{
+    final File file = getFileForDocId(documentId);
+    final File visibleFile = getFileForDocId(documentId, true);
+    final int pfdMode = ParcelFileDescriptor.parseMode(mode);
+    if (pfdMode == ParcelFileDescriptor.MODE_READ_ONLY || visibleFile == null) {
+        return ParcelFileDescriptor.open(file, pfdMode);
+    } else {
+        try {
+            return ParcelFileDescriptor.open(file, pfdMode, mHandler, (IOException e) -> {
+                onDocIdChanged(documentId);
+                scanFile(visibleFile);
+            });
+        } catch (IOException e) {
+            throw new FileNotFoundException("Failed to open for writing: " + e);
+        }
+    }
+}

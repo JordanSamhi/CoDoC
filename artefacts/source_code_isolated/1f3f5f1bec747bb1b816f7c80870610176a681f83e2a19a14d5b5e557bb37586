@@ -1,0 +1,37 @@
+public String toString(){
+    StringBuilder b = new StringBuilder("ProviderProperties[");
+    b.append("power=").append(powerToString(mPowerRequirement)).append(", ");
+    b.append("accuracy=").append(accuracyToString(mAccuracy));
+    if (mRequiresNetwork || mRequiresSatellite || mRequiresCell) {
+        b.append(", requires=");
+        if (mRequiresNetwork) {
+            b.append("network,");
+        }
+        if (mRequiresSatellite) {
+            b.append("satellite,");
+        }
+        if (mRequiresCell) {
+            b.append("cell,");
+        }
+        b.setLength(b.length() - 1);
+    }
+    if (mHasMonetaryCost) {
+        b.append(", hasMonetaryCost");
+    }
+    if (mSupportsBearing || mSupportsSpeed || mSupportsAltitude) {
+        b.append(", supports=[");
+        if (mSupportsBearing) {
+            b.append("bearing, ");
+        }
+        if (mSupportsSpeed) {
+            b.append("speed, ");
+        }
+        if (mSupportsAltitude) {
+            b.append("altitude, ");
+        }
+        b.setLength(b.length() - 2);
+        b.append("]");
+    }
+    b.append("]");
+    return b.toString();
+}

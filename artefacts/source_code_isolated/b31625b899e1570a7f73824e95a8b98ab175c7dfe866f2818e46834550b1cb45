@@ -1,0 +1,7 @@
+public static AlgorithmParameters getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException{
+    if (provider == null)
+        throw new IllegalArgumentException("missing provider");
+    Providers.checkBouncyCastleDeprecation(provider, "AlgorithmParameters", algorithm);
+    Object[] objs = Security.getImpl(algorithm, "AlgorithmParameters", provider);
+    return new AlgorithmParameters((AlgorithmParametersSpi) objs[0], (Provider) objs[1], algorithm);
+}

@@ -1,0 +1,15 @@
+public String toString(){
+    final StringBuilder builder = new StringBuilder("Context[");
+    if (fromServer()) {
+        builder.append("act=").append(ComponentName.flattenToShortString(mComponentName)).append(", taskId=").append(mTaskId).append(", displayId=").append(mDisplayId).append(", flags=").append(mFlags);
+    } else {
+        builder.append("id=").append(mId);
+        if (mExtras != null) {
+            builder.append(", hasExtras");
+        }
+    }
+    if (mParentSessionId != NO_SESSION_ID) {
+        builder.append(", parentId=").append(mParentSessionId);
+    }
+    return builder.append(']').toString();
+}

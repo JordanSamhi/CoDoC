@@ -1,0 +1,5 @@
+public static KeyFactory getInstance(String algorithm, String provider) throws NoSuchAlgorithmException, NoSuchProviderException{
+    Providers.checkBouncyCastleDeprecation(provider, "KeyFactory", algorithm);
+    Instance instance = GetInstance.getInstance("KeyFactory", KeyFactorySpi.class, algorithm, provider);
+    return new KeyFactory((KeyFactorySpi) instance.impl, instance.provider, algorithm);
+}

@@ -1,0 +1,32 @@
+public void addKeyboardNavigationClusters(Collection<View> views, int direction){
+    final int focusableCount = views.size();
+    if (isKeyboardNavigationCluster()) {
+        final boolean blockedFocus = getTouchscreenBlocksFocus();
+        try {
+            setTouchscreenBlocksFocusNoRefocus(false);
+            super.addKeyboardNavigationClusters(views, direction);
+        } finally {
+            setTouchscreenBlocksFocusNoRefocus(blockedFocus);
+        }
+    } else {
+        super.addKeyboardNavigationClusters(views, direction);
+    }
+    if (focusableCount != views.size()) {
+        return;
+    }
+    if (getDescendantFocusability() == FOCUS_BLOCK_DESCENDANTS) {
+        return;
+    }
+    int count = 0;
+    final View[] visibleChildren = new View[mChildrenCount];
+    for (int i = 0; i < mChildrenCount; ++i) {
+        final View child = mChildren[i];
+        if ((child.mViewFlags & VISIBILITY_MASK) == VISIBLE) {
+            visibleChildren[count++] = child;
+        }
+    }
+    FocusFinder.sort(visibleChildren, 0, count, this, isLayoutRtl());
+    for (int i = 0; i < count; ++i) {
+        visibleChildren[i].addKeyboardNavigationClusters(views, direction);
+    }
+}

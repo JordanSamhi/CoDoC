@@ -1,0 +1,18 @@
+public void updateMenuView(boolean cleared){
+    final IconMenuView menuView = (IconMenuView) mMenuView;
+    if (mMaxItems < 0)
+        mMaxItems = menuView.getMaxItems();
+    final ArrayList<MenuItemImpl> itemsToShow = mMenu.getNonActionItems();
+    final boolean needsMore = itemsToShow.size() > mMaxItems;
+    super.updateMenuView(cleared);
+    if (needsMore && (mMoreView == null || mMoreView.getParent() != menuView)) {
+        if (mMoreView == null) {
+            mMoreView = menuView.createMoreItemView();
+            mMoreView.setBackgroundDrawable(menuView.getItemBackgroundDrawable());
+        }
+        menuView.addView(mMoreView);
+    } else if (!needsMore && mMoreView != null) {
+        menuView.removeView(mMoreView);
+    }
+    menuView.setNumActualItemsShown(needsMore ? mMaxItems - 1 : itemsToShow.size());
+}

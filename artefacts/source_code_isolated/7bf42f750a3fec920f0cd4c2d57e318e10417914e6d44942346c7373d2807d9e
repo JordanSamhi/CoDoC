@@ -1,0 +1,16 @@
+public LocalDateTime createDateTime(LocalDateTime dateTime, ZoneOffset standardOffset, ZoneOffset wallOffset){
+    switch(this) {
+        case UTC:
+            {
+                int difference = wallOffset.getTotalSeconds() - ZoneOffset.UTC.getTotalSeconds();
+                return dateTime.plusSeconds(difference);
+            }
+        case STANDARD:
+            {
+                int difference = wallOffset.getTotalSeconds() - standardOffset.getTotalSeconds();
+                return dateTime.plusSeconds(difference);
+            }
+        default:
+            return dateTime;
+    }
+}

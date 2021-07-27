@@ -1,3 +1,7 @@
-public boolean setNightDisplayActivated(boolean activated){
-    return mManager.setNightDisplayActivated(activated);
+ boolean setNightDisplayActivated(boolean activated){
+    try {
+        return mCdm.setNightDisplayActivated(activated);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

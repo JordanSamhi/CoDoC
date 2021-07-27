@@ -1,0 +1,10 @@
+public static Collector<T, ?, Double> summingDouble(ToDoubleFunction<? super T> mapper){
+    return new CollectorImpl<>(() -> new double[3], (a, t) -> {
+        sumWithCompensation(a, mapper.applyAsDouble(t));
+        a[2] += mapper.applyAsDouble(t);
+    }, (a, b) -> {
+        sumWithCompensation(a, b[0]);
+        a[2] += b[2];
+        return sumWithCompensation(a, b[1]);
+    }, a -> computeFinalSum(a), CH_NOID);
+}

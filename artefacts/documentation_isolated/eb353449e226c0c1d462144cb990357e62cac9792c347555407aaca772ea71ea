@@ -1,0 +1,34 @@
+
+     * Enable/disable the SO_REUSEADDR socket option.
+     * <p>
+     * For UDP sockets it may be necessary to bind more than one
+     * socket to the same socket address. This is typically for the
+     * purpose of receiving multicast packets
+     * (See {@link java.net.MulticastSocket}). The
+     * {@code SO_REUSEADDR} socket option allows multiple
+     * sockets to be bound to the same socket address if the
+     * {@code SO_REUSEADDR} socket option is enabled prior
+     * to binding the socket using {@link #bind(SocketAddress)}.
+     * <p>
+     * Note: This functionality is not supported by all existing platforms,
+     * so it is implementation specific whether this option will be ignored
+     * or not. However, if it is not supported then
+     * {@link #getReuseAddress()} will always return {@code false}.
+     * <p>
+     * When a {@code DatagramSocket} is created the initial setting
+     * of {@code SO_REUSEADDR} is disabled.
+     * <p>
+     * The behaviour when {@code SO_REUSEADDR} is enabled or
+     * disabled after a socket is bound (See {@link #isBound()})
+     * is not defined.
+     *
+     * @param on  whether to enable or disable the
+     * @exception SocketException if an error occurs enabling or
+     *            disabling the {@code SO_RESUEADDR} socket option,
+     *            or the socket is closed.
+     * @since 1.4
+     * @see #getReuseAddress()
+     * @see #bind(SocketAddress)
+     * @see #isBound()
+     * @see #isClosed()
+     

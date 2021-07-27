@@ -1,0 +1,24 @@
+
+     * Combines this date-time with a time-zone to create a {@code ZonedDateTime}
+     * trying to keep the same local date and time.
+     * <p>
+     * This returns a {@code ZonedDateTime} formed from this date-time and the specified time-zone.
+     * Where possible, the result will have the same local date-time as this object.
+     * <p>
+     * Time-zone rules, such as daylight savings, mean that not every time on the
+     * local time-line exists. If the local date-time is in a gap or overlap according to
+     * the rules then a resolver is used to determine the resultant local time and offset.
+     * This method uses {@link ZonedDateTime#ofLocal(LocalDateTime, ZoneId, ZoneOffset)}
+     * to retain the offset from this instance if possible.
+     * <p>
+     * Finer control over gaps and overlaps is available in two ways.
+     * If you simply want to use the later offset at overlaps then call
+     * {@link ZonedDateTime#withLaterOffsetAtOverlap()} immediately after this method.
+     * <p>
+     * To create a zoned date-time at the same instant irrespective of the local time-line,
+     * use {@link #atZoneSameInstant(ZoneId)}.
+     * To use the offset as the zone ID, use {@link #toZonedDateTime()}.
+     *
+     * @param zone  the time-zone to use, not null
+     * @return the zoned date-time formed from this date and the earliest valid time for the zone, not null
+     

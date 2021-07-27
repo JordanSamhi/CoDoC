@@ -1,0 +1,29 @@
+public int getIntrinsicWidth(){
+    int width = -1;
+    int padL = 0;
+    int padR = 0;
+    final boolean nest = mLayerState.mPaddingMode == PADDING_MODE_NEST;
+    final boolean isLayoutRtl = getLayoutDirection() == LayoutDirection.RTL;
+    final ChildDrawable[] array = mLayerState.mChildren;
+    final int N = mLayerState.mNumChildren;
+    for (int i = 0; i < N; i++) {
+        final ChildDrawable r = array[i];
+        if (r.mDrawable == null) {
+            continue;
+        }
+        final int insetRtlL = isLayoutRtl ? r.mInsetE : r.mInsetS;
+        final int insetRtlR = isLayoutRtl ? r.mInsetS : r.mInsetE;
+        final int insetL = insetRtlL == INSET_UNDEFINED ? r.mInsetL : insetRtlL;
+        final int insetR = insetRtlR == INSET_UNDEFINED ? r.mInsetR : insetRtlR;
+        final int minWidth = r.mWidth < 0 ? r.mDrawable.getIntrinsicWidth() : r.mWidth;
+        final int w = minWidth < 0 ? -1 : minWidth + insetL + insetR + padL + padR;
+        if (w > width) {
+            width = w;
+        }
+        if (nest) {
+            padL += mPaddingL[i];
+            padR += mPaddingR[i];
+        }
+    }
+    return width;
+}

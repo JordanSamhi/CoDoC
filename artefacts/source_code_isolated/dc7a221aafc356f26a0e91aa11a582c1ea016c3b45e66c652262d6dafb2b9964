@@ -1,0 +1,59 @@
+public String[] getCameraIdListNoLazy(){
+    if (sCameraServiceDisabled) {
+        return new String[] {};
+    }
+    CameraStatus[] cameraStatuses;
+    ICameraServiceListener.Stub testListener = new ICameraServiceListener.Stub() {
+
+        @Override
+        public void onStatusChanged(int status, String id) throws RemoteException {
+        }
+
+        @Override
+        public void onPhysicalCameraStatusChanged(int status, String id, String physicalId) throws RemoteException {
+        }
+
+        @Override
+        public void onTorchStatusChanged(int status, String id) throws RemoteException {
+        }
+
+        @Override
+        public void onCameraAccessPrioritiesChanged() {
+        }
+
+        @Override
+        public void onCameraOpened(String id, String clientPackageId) {
+        }
+
+        @Override
+        public void onCameraClosed(String id) {
+        }
+    };
+    String[] cameraIds = null;
+    synchronized (mLock) {
+        connectCameraServiceLocked();
+        try {
+            cameraStatuses = mCameraService.addListener(testListener);
+            mCameraService.removeListener(testListener);
+            for (CameraStatus c : cameraStatuses) {
+                onStatusChangedLocked(c.status, c.cameraId);
+            }
+            Set<String> deviceCameraIds = mDeviceStatus.keySet();
+            ArrayList<String> deviceIdsToRemove = new ArrayList<String>();
+            for (String deviceCameraId : deviceCameraIds) {
+                if (!cameraStatusesContains(cameraStatuses, deviceCameraId)) {
+                    deviceIdsToRemove.add(deviceCameraId);
+                }
+            }
+            for (String id : deviceIdsToRemove) {
+                onStatusChangedLocked(ICameraServiceListener.STATUS_NOT_PRESENT, id);
+            }
+        } catch (ServiceSpecificException e) {
+            throw new IllegalStateException("Failed to register a camera service listener", e);
+        } catch (RemoteException e) {
+        }
+        cameraIds = extractCameraIdListLocked();
+    }
+    sortCameraIds(cameraIds);
+    return cameraIds;
+}

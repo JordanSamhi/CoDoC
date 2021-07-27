@@ -1,0 +1,11 @@
+public long getSerialVersionUID(){
+    if (suid == null) {
+        suid = AccessController.doPrivileged(new PrivilegedAction<Long>() {
+
+            public Long run() {
+                return computeDefaultSUID(cl);
+            }
+        });
+    }
+    return suid.longValue();
+}

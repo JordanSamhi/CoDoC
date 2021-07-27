@@ -1,0 +1,40 @@
+public Object newInstance(Object constructorParameter) throws NoSuchAlgorithmException{
+    if (registered == false) {
+        if (provider.getService(type, algorithm) != this) {
+            throw new NoSuchAlgorithmException("Service not registered with Provider " + provider.getName() + ": " + this);
+        }
+        registered = true;
+    }
+    try {
+        EngineDescription cap = knownEngines.get(type);
+        if (cap == null) {
+            return newInstanceGeneric(constructorParameter);
+        }
+        if (cap.constructorParameterClassName == null) {
+            if (constructorParameter != null) {
+                throw new InvalidParameterException("constructorParameter not used with " + type + " engines");
+            }
+            Class<?> clazz = getImplClass();
+            Class<?>[] empty = {};
+            Constructor<?> con = clazz.getConstructor(empty);
+            return con.newInstance();
+        } else {
+            Class<?> paramClass = cap.getConstructorParameterClass();
+            if (constructorParameter != null) {
+                Class<?> argClass = constructorParameter.getClass();
+                if (paramClass.isAssignableFrom(argClass) == false) {
+                    throw new InvalidParameterException("constructorParameter must be instanceof " + cap.constructorParameterClassName.replace('$', '.') + " for engine type " + type);
+                }
+            }
+            Class<?> clazz = getImplClass();
+            Constructor<?> cons = clazz.getConstructor(paramClass);
+            return cons.newInstance(constructorParameter);
+        }
+    } catch (NoSuchAlgorithmException e) {
+        throw e;
+    } catch (InvocationTargetException e) {
+        throw new NoSuchAlgorithmException("Error constructing implementation (algorithm: " + algorithm + ", provider: " + provider.getName() + ", class: " + className + ")", e.getCause());
+    } catch (Exception e) {
+        throw new NoSuchAlgorithmException("Error constructing implementation (algorithm: " + algorithm + ", provider: " + provider.getName() + ", class: " + className + ")", e);
+    }
+}

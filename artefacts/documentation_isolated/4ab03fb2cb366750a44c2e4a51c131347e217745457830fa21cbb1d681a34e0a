@@ -1,0 +1,44 @@
+
+     * Read all lines from a file as a {@code Stream}. Unlike {@link
+     * #readAllLines(Path, Charset) readAllLines}, this method does not read
+     * all lines into a {@code List}, but instead populates lazily as the stream
+     * is consumed.
+     *
+     * <p> Bytes from the file are decoded into characters using the specified
+     * charset and the same line terminators as specified by {@code
+     * readAllLines} are supported.
+     *
+     * <p> After this method returns, then any subsequent I/O exception that
+     * occurs while reading from the file or when a malformed or unmappable byte
+     * sequence is read, is wrapped in an {@link UncheckedIOException} that will
+     * be thrown from the
+     * {@link java.util.stream.Stream} method that caused the read to take
+     * place. In case an {@code IOException} is thrown when closing the file,
+     * it is also wrapped as an {@code UncheckedIOException}.
+     *
+     * <p> The returned stream encapsulates a {@link Reader}.  If timely
+     * disposal of file system resources is required, the try-with-resources
+     * construct should be used to ensure that the stream's
+     * {@link Stream#close close} method is invoked after the stream operations
+     * are completed.
+     *
+     *
+     * @param   path
+     *          the path to the file
+     * @param   cs
+     *          the charset to use for decoding
+     *
+     * @return  the lines from the file as a {@code Stream}
+     *
+     * @throws  IOException
+     *          if an I/O error occurs opening the file
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkRead(String) checkRead}
+     *          method is invoked to check read access to the file.
+     *
+     * @see     #readAllLines(Path, Charset)
+     * @see     #newBufferedReader(Path, Charset)
+     * @see     java.io.BufferedReader#lines()
+     * @since   1.8
+     

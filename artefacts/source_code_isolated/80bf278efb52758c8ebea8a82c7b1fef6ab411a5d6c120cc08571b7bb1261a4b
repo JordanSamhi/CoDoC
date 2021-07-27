@@ -1,0 +1,12 @@
+public final void drawTextRun(@NonNull char[] text, int index, int count, int contextIndex, int contextCount, float x, float y, boolean isRtl, @NonNull Paint paint){
+    if (text == null) {
+        throw new NullPointerException("text is null");
+    }
+    if (paint == null) {
+        throw new NullPointerException("paint is null");
+    }
+    if ((index | count | contextIndex | contextCount | index - contextIndex | (contextIndex + contextCount) - (index + count) | text.length - (contextIndex + contextCount)) < 0) {
+        throw new IndexOutOfBoundsException();
+    }
+    nDrawTextRun(mNativeCanvasWrapper, text, index, count, contextIndex, contextCount, x, y, isRtl, paint.getNativeInstance(), 0);
+}

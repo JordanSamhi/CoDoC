@@ -1,0 +1,6 @@
+ ChronoLocalDate with(TemporalField field, long newValue){
+    if (field instanceof ChronoField) {
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return ChronoLocalDateImpl.ensureValid(getChronology(), field.adjustInto(this, newValue));
+}

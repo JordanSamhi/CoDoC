@@ -1,0 +1,13 @@
+public IBinder onBind(Intent intent){
+    if (DEBUG)
+        Log.d(TAG, "onBind " + intent);
+    if (!SERVICE_INTERFACE.equals(intent.getAction())) {
+        if (DEBUG)
+            Log.d(TAG, "bad intent action " + intent.getAction() + "; returning null");
+        return null;
+    }
+    if (mWrapper == null) {
+        mWrapper = new IChooserTargetServiceWrapper();
+    }
+    return mWrapper;
+}

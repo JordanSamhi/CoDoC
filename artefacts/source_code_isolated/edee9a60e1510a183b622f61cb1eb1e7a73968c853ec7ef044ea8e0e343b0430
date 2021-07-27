@@ -1,0 +1,15 @@
+public int movePackage(String packageName, VolumeInfo vol){
+    try {
+        final String volumeUuid;
+        if (VolumeInfo.ID_PRIVATE_INTERNAL.equals(vol.id)) {
+            volumeUuid = StorageManager.UUID_PRIVATE_INTERNAL;
+        } else if (vol.isPrimaryPhysical()) {
+            volumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+        } else {
+            volumeUuid = Objects.requireNonNull(vol.fsUuid);
+        }
+        return mPM.movePackage(packageName, volumeUuid);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

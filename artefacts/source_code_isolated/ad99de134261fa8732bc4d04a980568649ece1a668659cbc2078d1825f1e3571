@@ -1,0 +1,9 @@
+ void forEachRemaining(Consumer<? super Double> action){
+    if (action instanceof DoubleConsumer) {
+        forEachRemaining((DoubleConsumer) action);
+    } else {
+        if (Tripwire.ENABLED)
+            Tripwire.trip(getClass(), "{0} calling Spliterator.OfDouble.forEachRemaining((DoubleConsumer) action::accept)");
+        forEachRemaining((DoubleConsumer) action::accept);
+    }
+}

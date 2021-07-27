@@ -1,0 +1,27 @@
+public boolean equals(Object o){
+    if (this == o)
+        return true;
+    if (!(o instanceof SigningDetails))
+        return false;
+    SigningDetails that = (SigningDetails) o;
+    if (signatureSchemeVersion != that.signatureSchemeVersion)
+        return false;
+    if (!Signature.areExactMatch(signatures, that.signatures))
+        return false;
+    if (publicKeys != null) {
+        if (!publicKeys.equals((that.publicKeys))) {
+            return false;
+        }
+    } else if (that.publicKeys != null) {
+        return false;
+    }
+    if (!Arrays.equals(pastSigningCertificates, that.pastSigningCertificates)) {
+        return false;
+    }
+    for (int i = 0; i < pastSigningCertificates.length; i++) {
+        if (pastSigningCertificates[i].getFlags() != that.pastSigningCertificates[i].getFlags()) {
+            return false;
+        }
+    }
+    return true;
+}

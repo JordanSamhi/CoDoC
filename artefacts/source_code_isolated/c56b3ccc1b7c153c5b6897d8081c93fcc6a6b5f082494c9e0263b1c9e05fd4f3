@@ -1,0 +1,8 @@
+public void onReady(CameraCaptureSession session){
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        mExecutor.execute(() -> mCallback.onReady(session));
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

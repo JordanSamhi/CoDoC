@@ -1,0 +1,39 @@
+
+     * Return a {@code Stream} that is lazily populated with {@code
+     * Path} by walking the file tree rooted at a given starting file.  The
+     * file tree is traversed <em>depth-first</em>, the elements in the stream
+     * are {@link Path} objects that are obtained as if by {@link
+     * Path#resolve(Path) resolving} the relative path against {@code start}.
+     *
+     * <p> This method works as if invoking it were equivalent to evaluating the
+     * expression:
+     * <blockquote><pre>
+     * walk(start, Integer.MAX_VALUE, options)
+     * </pre></blockquote>
+     * In other words, it visits all levels of the file tree.
+     *
+     * <p> The returned stream encapsulates one or more {@link DirectoryStream}s.
+     * If timely disposal of file system resources is required, the
+     * {@code try}-with-resources construct should be used to ensure that the
+     * stream's {@link Stream#close close} method is invoked after the stream
+     * operations are completed.  Operating on a closed stream will result in an
+     * {@link java.lang.IllegalStateException}.
+     *
+     * @param   start
+     *          the starting file
+     * @param   options
+     *          options to configure the traversal
+     *
+     * @return  the {@link Stream} of {@link Path}
+     *
+     * @throws  SecurityException
+     *          If the security manager denies access to the starting file.
+     *          In the case of the default provider, the {@link
+     *          SecurityManager#checkRead(String) checkRead} method is invoked
+     *          to check read access to the directory.
+     * @throws  IOException
+     *          if an I/O error is thrown when accessing the starting file.
+     *
+     * @see     #walk(Path, int, FileVisitOption...)
+     * @since   1.8
+     

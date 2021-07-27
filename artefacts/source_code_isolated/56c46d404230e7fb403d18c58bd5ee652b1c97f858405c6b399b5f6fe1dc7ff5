@@ -1,0 +1,17 @@
+public static FileSystem newFileSystem(URI uri, Map<String, ?> env, ClassLoader loader) throws IOException{
+    String scheme = uri.getScheme();
+    for (FileSystemProvider provider : FileSystemProvider.installedProviders()) {
+        if (scheme.equalsIgnoreCase(provider.getScheme())) {
+            return provider.newFileSystem(uri, env);
+        }
+    }
+    if (loader != null) {
+        ServiceLoader<FileSystemProvider> sl = ServiceLoader.load(FileSystemProvider.class, loader);
+        for (FileSystemProvider provider : sl) {
+            if (scheme.equalsIgnoreCase(provider.getScheme())) {
+                return provider.newFileSystem(uri, env);
+            }
+        }
+    }
+    throw new ProviderNotFoundException("Provider \"" + scheme + "\" not found");
+}

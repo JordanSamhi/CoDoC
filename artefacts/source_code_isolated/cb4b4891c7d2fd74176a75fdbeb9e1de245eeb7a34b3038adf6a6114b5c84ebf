@@ -1,0 +1,29 @@
+public final void destroy(){
+    int ngroupsSnapshot;
+    ThreadGroup[] groupsSnapshot;
+    synchronized (this) {
+        checkAccess();
+        if (destroyed || (nthreads > 0)) {
+            throw new IllegalThreadStateException();
+        }
+        ngroupsSnapshot = ngroups;
+        if (groups != null) {
+            groupsSnapshot = Arrays.copyOf(groups, ngroupsSnapshot);
+        } else {
+            groupsSnapshot = null;
+        }
+        if (parent != null) {
+            destroyed = true;
+            ngroups = 0;
+            groups = null;
+            nthreads = 0;
+            threads = null;
+        }
+    }
+    for (int i = 0; i < ngroupsSnapshot; i += 1) {
+        groupsSnapshot[i].destroy();
+    }
+    if (parent != null) {
+        parent.remove(this);
+    }
+}

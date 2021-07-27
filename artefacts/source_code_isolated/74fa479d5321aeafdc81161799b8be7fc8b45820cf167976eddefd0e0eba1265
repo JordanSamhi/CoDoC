@@ -1,0 +1,7 @@
+public ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit){
+    if (callable == null || unit == null)
+        throw new NullPointerException();
+    RunnableScheduledFuture<V> t = decorateTask(callable, new ScheduledFutureTask<V>(callable, triggerTime(delay, unit), sequencer.getAndIncrement()));
+    delayedExecute(t);
+    return t;
+}

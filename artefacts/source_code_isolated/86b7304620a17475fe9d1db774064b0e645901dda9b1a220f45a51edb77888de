@@ -1,0 +1,13 @@
+public final void setFeatureDrawableUri(int featureId, Uri uri){
+    if (uri != null) {
+        DrawableFeatureState st = getDrawableState(featureId, true);
+        if (st.uri == null || !st.uri.equals(uri)) {
+            st.resid = 0;
+            st.uri = uri;
+            st.local = loadImageURI(uri);
+            updateDrawable(featureId, st, false);
+        }
+    } else {
+        setFeatureDrawable(featureId, null);
+    }
+}

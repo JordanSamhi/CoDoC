@@ -1,0 +1,7 @@
+public static String toHexString(float f){
+    if (Math.abs(f) < FloatConsts.MIN_NORMAL && f != 0.0f) {
+        String s = Double.toHexString(Math.scalb((double) f, DoubleConsts.MIN_EXPONENT - FloatConsts.MIN_EXPONENT));
+        return s.replaceFirst("p-1022$", "p-126");
+    } else
+        return Double.toHexString(f);
+}

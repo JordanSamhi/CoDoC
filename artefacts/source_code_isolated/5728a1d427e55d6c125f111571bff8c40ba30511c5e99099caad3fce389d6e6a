@@ -1,0 +1,21 @@
+public static float nextAfter(float start, double direction){
+    if (Float.isNaN(start) || Double.isNaN(direction)) {
+        return start + (float) direction;
+    } else if (start == direction) {
+        return (float) direction;
+    } else {
+        int transducer = Float.floatToRawIntBits(start + 0.0f);
+        if (direction > start) {
+            transducer = transducer + (transducer >= 0 ? 1 : -1);
+        } else {
+            assert direction < start;
+            if (transducer > 0)
+                --transducer;
+            else if (transducer < 0)
+                ++transducer;
+            else
+                transducer = FloatConsts.SIGN_BIT_MASK | 1;
+        }
+        return Float.intBitsToFloat(transducer);
+    }
+}

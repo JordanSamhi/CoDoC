@@ -1,0 +1,38 @@
+
+     * Appends the reduced value of a date-time field to the formatter.
+     * <p>
+     * Since fields such as year vary by chronology, it is recommended to use the
+     * {@link #appendValueReduced(TemporalField, int, int, ChronoLocalDate)} date}
+     * variant of this method in most cases. This variant is suitable for
+     * simple fields or working with only the ISO chronology.
+     * <p>
+     * For formatting, the {@code width} and {@code maxWidth} are used to
+     * determine the number of characters to format.
+     * If they are equal then the format is fixed width.
+     * If the value of the field is within the range of the {@code baseValue} using
+     * {@code width} characters then the reduced value is formatted otherwise the value is
+     * truncated to fit {@code maxWidth}.
+     * The rightmost characters are output to match the width, left padding with zero.
+     * <p>
+     * For strict parsing, the number of characters allowed by {@code width} to {@code maxWidth} are parsed.
+     * For lenient parsing, the number of characters must be at least 1 and less than 10.
+     * If the number of digits parsed is equal to {@code width} and the value is positive,
+     * the value of the field is computed to be the first number greater than
+     * or equal to the {@code baseValue} with the same least significant characters,
+     * otherwise the value parsed is the field value.
+     * This allows a reduced value to be entered for values in range of the baseValue
+     * and width and absolute values can be entered for values outside the range.
+     * <p>
+     * For example, a base value of {@code 1980} and a width of {@code 2} will have
+     * valid values from {@code 1980} to {@code 2079}.
+     * During parsing, the text {@code "12"} will result in the value {@code 2012} as that
+     * is the value within the range where the last two characters are "12".
+     * By contrast, parsing the text {@code "1915"} will result in the value {@code 1915}.
+     *
+     * @param field  the field to append, not null
+     * @param width  the field width of the printed and parsed field, from 1 to 10
+     * @param maxWidth  the maximum field width of the printed field, from 1 to 10
+     * @param baseValue  the base value of the range of valid values
+     * @return this, for chaining, not null
+     * @throws IllegalArgumentException if the width or base value is invalid
+     

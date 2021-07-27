@@ -1,0 +1,9 @@
+public DateTimeFormatterBuilder appendValue(TemporalField field, int width){
+    Objects.requireNonNull(field, "field");
+    if (width < 1 || width > 19) {
+        throw new IllegalArgumentException("The width must be from 1 to 19 inclusive but was " + width);
+    }
+    NumberPrinterParser pp = new NumberPrinterParser(field, width, width, SignStyle.NOT_NEGATIVE);
+    appendValue(pp);
+    return this;
+}

@@ -1,0 +1,18 @@
+public int indexOf(int ch, int fromIndex){
+    final int max = length();
+    if (fromIndex < 0) {
+        fromIndex = 0;
+    } else if (fromIndex >= max) {
+        return -1;
+    }
+    if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+        for (int i = fromIndex; i < max; i++) {
+            if (charAt(i) == ch) {
+                return i;
+            }
+        }
+        return -1;
+    } else {
+        return indexOfSupplementary(ch, fromIndex);
+    }
+}

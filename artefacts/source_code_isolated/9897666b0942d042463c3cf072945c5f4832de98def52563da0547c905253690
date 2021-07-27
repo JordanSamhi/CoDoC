@@ -1,0 +1,10 @@
+public IBinder onBind(@NonNull Intent intent){
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        Log.w(TAG, "Warning: binding on pre-R device");
+    }
+    if (!SERVICE_INTERFACE.equals(intent.getAction())) {
+        Log.w(TAG, "Wrong action");
+        return null;
+    }
+    return mInterface.asBinder();
+}

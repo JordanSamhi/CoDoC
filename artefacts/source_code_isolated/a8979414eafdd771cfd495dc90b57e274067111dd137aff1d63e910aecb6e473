@@ -1,0 +1,20 @@
+public String findWithinHorizon(Pattern pattern, int horizon){
+    ensureOpen();
+    if (pattern == null)
+        throw new NullPointerException();
+    if (horizon < 0)
+        throw new IllegalArgumentException("horizon < 0");
+    clearCaches();
+    while (true) {
+        String token = findPatternInBuffer(pattern, horizon);
+        if (token != null) {
+            matchValid = true;
+            return token;
+        }
+        if (needInput)
+            readInput();
+        else
+            break;
+    }
+    return null;
+}

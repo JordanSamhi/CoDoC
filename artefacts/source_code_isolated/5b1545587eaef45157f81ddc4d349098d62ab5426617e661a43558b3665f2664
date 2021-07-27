@@ -1,0 +1,28 @@
+public final int getOpacity(){
+    if (mCheckedOpacity) {
+        return mOpacity;
+    }
+    final ChildDrawable[] array = mChildren;
+    int firstIndex = -1;
+    for (int i = 0; i < N_CHILDREN; i++) {
+        if (array[i].mDrawable != null) {
+            firstIndex = i;
+            break;
+        }
+    }
+    int op;
+    if (firstIndex >= 0) {
+        op = array[firstIndex].mDrawable.getOpacity();
+    } else {
+        op = PixelFormat.TRANSPARENT;
+    }
+    for (int i = firstIndex + 1; i < N_CHILDREN; i++) {
+        final Drawable dr = array[i].mDrawable;
+        if (dr != null) {
+            op = Drawable.resolveOpacity(op, dr.getOpacity());
+        }
+    }
+    mOpacity = op;
+    mCheckedOpacity = true;
+    return op;
+}

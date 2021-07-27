@@ -1,0 +1,19 @@
+public void flip(int fromIndex, int toIndex){
+    checkRange(fromIndex, toIndex);
+    if (fromIndex == toIndex)
+        return;
+    int startWordIndex = wordIndex(fromIndex);
+    int endWordIndex = wordIndex(toIndex - 1);
+    expandTo(endWordIndex);
+    long firstWordMask = WORD_MASK << fromIndex;
+    long lastWordMask = WORD_MASK >>> -toIndex;
+    if (startWordIndex == endWordIndex) {
+        words[startWordIndex] ^= (firstWordMask & lastWordMask);
+    } else {
+        words[startWordIndex] ^= firstWordMask;
+        for (int i = startWordIndex + 1; i < endWordIndex; i++) words[i] ^= WORD_MASK;
+        words[endWordIndex] ^= lastWordMask;
+    }
+    recalculateWordsInUse();
+    checkInvariants();
+}

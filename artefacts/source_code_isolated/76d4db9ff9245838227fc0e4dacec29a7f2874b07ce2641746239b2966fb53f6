@@ -1,0 +1,11 @@
+public boolean isLoggable(LogRecord record){
+    final int levelValue = getLevel().intValue();
+    if (record.getLevel().intValue() < levelValue || levelValue == offValue) {
+        return false;
+    }
+    final Filter filter = getFilter();
+    if (filter == null) {
+        return true;
+    }
+    return filter.isLoggable(record);
+}

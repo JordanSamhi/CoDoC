@@ -1,0 +1,18 @@
+public boolean onGenericMotionEvent(MotionEvent event){
+    if ((event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0) {
+        switch(event.getAction()) {
+            case MotionEvent.ACTION_SCROLL:
+                {
+                    final float vscroll = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+                    if (vscroll < 0) {
+                        pacedScroll(false);
+                        return true;
+                    } else if (vscroll > 0) {
+                        pacedScroll(true);
+                        return true;
+                    }
+                }
+        }
+    }
+    return super.onGenericMotionEvent(event);
+}

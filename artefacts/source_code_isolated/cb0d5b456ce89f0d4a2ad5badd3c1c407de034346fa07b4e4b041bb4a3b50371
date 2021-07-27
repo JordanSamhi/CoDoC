@@ -1,0 +1,15 @@
+public boolean equals(Object other){
+    if (this == other) {
+        return true;
+    }
+    if (!(other instanceof Certificate)) {
+        return false;
+    }
+    try {
+        byte[] thisCert = X509CertImpl.getEncodedInternal(this);
+        byte[] otherCert = X509CertImpl.getEncodedInternal((Certificate) other);
+        return Arrays.equals(thisCert, otherCert);
+    } catch (CertificateException e) {
+        return false;
+    }
+}

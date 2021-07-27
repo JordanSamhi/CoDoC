@@ -1,0 +1,12 @@
+public static final KeyAgreement getInstance(String algorithm) throws NoSuchAlgorithmException{
+    List<Service> services = GetInstance.getServices("KeyAgreement", algorithm);
+    Iterator<Service> t = services.iterator();
+    while (t.hasNext()) {
+        Service s = t.next();
+        if (JceSecurity.canUseProvider(s.getProvider()) == false) {
+            continue;
+        }
+        return new KeyAgreement(algorithm);
+    }
+    throw new NoSuchAlgorithmException("Algorithm " + algorithm + " not available");
+}

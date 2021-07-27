@@ -1,0 +1,21 @@
+public void computeScroll(){
+    Scroller scroller = mFlingScroller;
+    if (scroller.isFinished()) {
+        scroller = mAdjustScroller;
+        if (scroller.isFinished()) {
+            return;
+        }
+    }
+    scroller.computeScrollOffset();
+    int currentScrollerY = scroller.getCurrY();
+    if (mPreviousScrollerY == 0) {
+        mPreviousScrollerY = scroller.getStartY();
+    }
+    scrollBy(0, currentScrollerY - mPreviousScrollerY);
+    mPreviousScrollerY = currentScrollerY;
+    if (scroller.isFinished()) {
+        onScrollerFinished(scroller);
+    } else {
+        invalidate();
+    }
+}

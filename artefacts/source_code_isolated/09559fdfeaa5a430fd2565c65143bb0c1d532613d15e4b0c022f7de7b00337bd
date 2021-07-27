@@ -1,0 +1,25 @@
+public LocalDate plus(long amountToAdd, TemporalUnit unit){
+    if (unit instanceof ChronoUnit) {
+        ChronoUnit f = (ChronoUnit) unit;
+        switch(f) {
+            case DAYS:
+                return plusDays(amountToAdd);
+            case WEEKS:
+                return plusWeeks(amountToAdd);
+            case MONTHS:
+                return plusMonths(amountToAdd);
+            case YEARS:
+                return plusYears(amountToAdd);
+            case DECADES:
+                return plusYears(Math.multiplyExact(amountToAdd, 10));
+            case CENTURIES:
+                return plusYears(Math.multiplyExact(amountToAdd, 100));
+            case MILLENNIA:
+                return plusYears(Math.multiplyExact(amountToAdd, 1000));
+            case ERAS:
+                return with(ERA, Math.addExact(getLong(ERA), amountToAdd));
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit);
+    }
+    return unit.addTo(this, amountToAdd);
+}

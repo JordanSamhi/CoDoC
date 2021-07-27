@@ -1,0 +1,8 @@
+public void onInputRemoved(String inputId){
+    synchronized (mLock) {
+        mStateMap.remove(inputId);
+        for (TvInputCallbackRecord record : mCallbackRecords) {
+            record.postInputRemoved(inputId);
+        }
+    }
+}

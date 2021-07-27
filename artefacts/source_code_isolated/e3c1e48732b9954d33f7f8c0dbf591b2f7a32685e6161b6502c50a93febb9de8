@@ -1,0 +1,6 @@
+public ProcessBuilder redirectInput(Redirect source){
+    if (source.type() == Redirect.Type.WRITE || source.type() == Redirect.Type.APPEND)
+        throw new IllegalArgumentException("Redirect invalid for reading: " + source);
+    redirects()[0] = source;
+    return this;
+}

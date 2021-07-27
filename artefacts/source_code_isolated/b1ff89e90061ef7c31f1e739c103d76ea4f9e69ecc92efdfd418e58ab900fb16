@@ -1,0 +1,19 @@
+public BigDecimal setScale(int newScale, RoundingMode roundingMode){
+    if (roundingMode == null) {
+        throw new NullPointerException("roundingMode == null");
+    }
+    long diffScale = newScale - (long) scale;
+    if (diffScale == 0) {
+        return this;
+    }
+    if (diffScale > 0) {
+        if (diffScale < MathUtils.LONG_POWERS_OF_TEN.length && (this.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[(int) diffScale]) < 64) {
+            return valueOf(this.smallValue * MathUtils.LONG_POWERS_OF_TEN[(int) diffScale], newScale);
+        }
+        return new BigDecimal(Multiplication.multiplyByTenPow(getUnscaledValue(), (int) diffScale), newScale);
+    }
+    if (this.bitLength < 64 && -diffScale < MathUtils.LONG_POWERS_OF_TEN.length) {
+        return dividePrimitiveLongs(this.smallValue, MathUtils.LONG_POWERS_OF_TEN[(int) -diffScale], newScale, roundingMode);
+    }
+    return divideBigIntegers(this.getUnscaledValue(), Multiplication.powerOf10(-diffScale), newScale, roundingMode);
+}

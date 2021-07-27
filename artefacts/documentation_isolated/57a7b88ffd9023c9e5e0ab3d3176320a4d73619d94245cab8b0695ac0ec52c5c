@@ -1,0 +1,19 @@
+
+     * Obtains a {@code Duration} representing a number of seconds and an
+     * adjustment in nanoseconds.
+     * <p>
+     * This method allows an arbitrary number of nanoseconds to be passed in.
+     * The factory will alter the values of the second and nanosecond in order
+     * to ensure that the stored nanosecond is in the range 0 to 999,999,999.
+     * For example, the following will result in the exactly the same duration:
+     * <pre>
+     *  Duration.ofSeconds(3, 1);
+     *  Duration.ofSeconds(4, -999_999_999);
+     *  Duration.ofSeconds(2, 1000_000_001);
+     * </pre>
+     *
+     * @param seconds  the number of seconds, positive or negative
+     * @param nanoAdjustment  the nanosecond adjustment to the number of seconds, positive or negative
+     * @return a {@code Duration}, not null
+     * @throws ArithmeticException if the adjustment causes the seconds to exceed the capacity of {@code Duration}
+     

@@ -1,0 +1,36 @@
+public KeyPair generateKeyPair(){
+    if (mKeyStore == null || mSpec == null) {
+        throw new IllegalStateException("Not initialized");
+    }
+    int flags = (mEncryptionAtRestRequired) ? KeyStore.FLAG_ENCRYPTED : 0;
+    if (((flags & KeyStore.FLAG_ENCRYPTED) != 0) && (mKeyStore.state() != KeyStore.State.UNLOCKED)) {
+        throw new IllegalStateException("Encryption at rest using secure lock screen credential requested for key pair" + ", but the user has not yet entered the credential");
+    }
+    if (mSpec.isStrongBoxBacked()) {
+        flags |= KeyStore.FLAG_STRONGBOX;
+    }
+    if (mSpec.isCriticalToDeviceEncryption()) {
+        flags |= KeyStore.FLAG_CRITICAL_TO_DEVICE_ENCRYPTION;
+    }
+    byte[] additionalEntropy = KeyStoreCryptoOperationUtils.getRandomBytesToMixIntoKeystoreRng(mRng, (mKeySizeBits + 7) / 8);
+    Credentials.deleteAllTypesForAlias(mKeyStore, mEntryAlias, mEntryUid);
+    final String privateKeyAlias = Credentials.USER_PRIVATE_KEY + mEntryAlias;
+    boolean success = false;
+    try {
+        generateKeystoreKeyPair(privateKeyAlias, constructKeyGenerationArguments(), additionalEntropy, flags);
+        KeyPair keyPair = loadKeystoreKeyPair(privateKeyAlias);
+        storeCertificateChain(flags, createCertificateChain(privateKeyAlias, keyPair));
+        success = true;
+        return keyPair;
+    } catch (ProviderException e) {
+        if ((mSpec.getPurposes() & KeyProperties.PURPOSE_WRAP_KEY) != 0) {
+            throw new SecureKeyImportUnavailableException(e);
+        } else {
+            throw e;
+        }
+    } finally {
+        if (!success) {
+            Credentials.deleteAllTypesForAlias(mKeyStore, mEntryAlias, mEntryUid);
+        }
+    }
+}

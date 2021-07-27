@@ -1,0 +1,47 @@
+
+     * Probes the content type of a file.
+     *
+     * <p> This method uses the installed {@link FileTypeDetector} implementations
+     * to probe the given file to determine its content type. Each file type
+     * detector's {@link FileTypeDetector#probeContentType probeContentType} is
+     * invoked, in turn, to probe the file type. If the file is recognized then
+     * the content type is returned. If the file is not recognized by any of the
+     * installed file type detectors then a system-default file type detector is
+     * invoked to guess the content type.
+     *
+     * <p> A given invocation of the Java virtual machine maintains a system-wide
+     * list of file type detectors. Installed file type detectors are loaded
+     * using the service-provider loading facility defined by the {@link ServiceLoader}
+     * class. Installed file type detectors are loaded using the system class
+     * loader. If the system class loader cannot be found then the extension class
+     * loader is used; If the extension class loader cannot be found then the
+     * bootstrap class loader is used. File type detectors are typically installed
+     * by placing them in a JAR file on the application class path or in the
+     * extension directory, the JAR file contains a provider-configuration file
+     * named {@code java.nio.file.spi.FileTypeDetector} in the resource directory
+     * {@code META-INF/services}, and the file lists one or more fully-qualified
+     * names of concrete subclass of {@code FileTypeDetector } that have a zero
+     * argument constructor. If the process of locating or instantiating the
+     * installed file type detectors fails then an unspecified error is thrown.
+     * The ordering that installed providers are located is implementation
+     * specific.
+     *
+     * <p> The return value of this method is the string form of the value of a
+     * Multipurpose Internet Mail Extension (MIME) content type as
+     * defined by <a href="http://www.ietf.org/rfc/rfc2045.txt"><i>RFC&nbsp;2045:
+     * Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet
+     * Message Bodies</i></a>. The string is guaranteed to be parsable according
+     * to the grammar in the RFC.
+     *
+     * @param   path
+     *          the path to the file to probe
+     *
+     * @return  The content type of the file, or {@code null} if the content
+     *          type cannot be determined
+     *
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          If a security manager is installed and it denies an unspecified
+     *          permission required by a file type detector implementation.
+     

@@ -1,9 +1,6 @@
-public CharSequence getInitialSelectedText(int flags){
-    final int correctedTextSelStart = initialSelStart > initialSelEnd ? initialSelEnd : initialSelStart;
-    final int correctedTextSelEnd = initialSelStart > initialSelEnd ? initialSelStart : initialSelEnd;
-    final int sourceSelLength = correctedTextSelEnd - correctedTextSelStart;
-    if (initialSelStart < 0 || initialSelEnd < 0 || mInitialSurroundingText.getSelectionLength() != sourceSelLength) {
+private CharSequence getInitialSelectedText(int flags){
+    if (mSurroundingText == null) {
         return null;
     }
-    return mInitialSurroundingText.getInitialSelectedText(flags);
+    return ((flags & InputConnection.GET_TEXT_WITH_STYLES) != 0) ? mSurroundingText.subSequence(mSelectionHead, mSelectionEnd) : TextUtils.substring(mSurroundingText, mSelectionHead, mSelectionEnd);
 }

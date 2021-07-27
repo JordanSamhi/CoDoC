@@ -1,0 +1,14 @@
+public BigDecimal multiply(BigDecimal multiplicand){
+    long newScale = (long) this.scale + multiplicand.scale;
+    if ((this.isZero()) || (multiplicand.isZero())) {
+        return zeroScaledBy(newScale);
+    }
+    if (this.bitLength + multiplicand.bitLength < 64) {
+        long unscaledValue = this.smallValue * multiplicand.smallValue;
+        boolean longMultiplicationOverflowed = (unscaledValue == Long.MIN_VALUE) && (Math.signum(smallValue) * Math.signum(multiplicand.smallValue) > 0);
+        if (!longMultiplicationOverflowed) {
+            return valueOf(unscaledValue, safeLongToInt(newScale));
+        }
+    }
+    return new BigDecimal(this.getUnscaledValue().multiply(multiplicand.getUnscaledValue()), safeLongToInt(newScale));
+}

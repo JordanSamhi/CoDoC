@@ -1,0 +1,14 @@
+public void checkServerTrusted(X509Certificate[] certs, String authType, Socket socket) throws CertificateException{
+    if (socket instanceof SSLSocket) {
+        SSLSocket sslSocket = (SSLSocket) socket;
+        SSLSession session = sslSocket.getHandshakeSession();
+        if (session == null) {
+            throw new CertificateException("Not in handshake; no session available");
+        }
+        String host = session.getPeerHost();
+        NetworkSecurityConfig config = mConfig.getConfigForHostname(host);
+        config.getTrustManager().checkServerTrusted(certs, authType, socket);
+    } else {
+        checkServerTrusted(certs, authType);
+    }
+}

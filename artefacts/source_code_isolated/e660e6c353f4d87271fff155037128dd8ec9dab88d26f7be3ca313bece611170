@@ -1,0 +1,28 @@
+public void draw(Canvas canvas){
+    final Rect r = getBounds();
+    final ShapeState state = mShapeState;
+    final Paint paint = state.mPaint;
+    final int prevAlpha = paint.getAlpha();
+    paint.setAlpha(modulateAlpha(prevAlpha, state.mAlpha));
+    if (paint.getAlpha() != 0 || paint.getXfermode() != null || paint.hasShadowLayer()) {
+        final boolean clearColorFilter;
+        if (mBlendModeColorFilter != null && paint.getColorFilter() == null) {
+            paint.setColorFilter(mBlendModeColorFilter);
+            clearColorFilter = true;
+        } else {
+            clearColorFilter = false;
+        }
+        if (state.mShape != null) {
+            final int count = canvas.save();
+            canvas.translate(r.left, r.top);
+            onDraw(state.mShape, canvas, paint);
+            canvas.restoreToCount(count);
+        } else {
+            canvas.drawRect(r, paint);
+        }
+        if (clearColorFilter) {
+            paint.setColorFilter(null);
+        }
+    }
+    paint.setAlpha(prevAlpha);
+}

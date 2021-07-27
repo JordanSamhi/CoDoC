@@ -1,0 +1,39 @@
+
+     * Returns the next pseudorandom, uniformly distributed
+     * {@code double} value between {@code 0.0} and
+     * {@code 1.0} from this random number generator's sequence.
+     *
+     * <p>The general contract of {@code nextDouble} is that one
+     * {@code double} value, chosen (approximately) uniformly from the
+     * range {@code 0.0d} (inclusive) to {@code 1.0d} (exclusive), is
+     * pseudorandomly generated and returned.
+     *
+     * <p>The method {@code nextDouble} is implemented by class {@code Random}
+     * as if by:
+     *  <pre> {@code
+     * public double nextDouble() {
+     *   return (((long)next(26) << 27) + next(27))
+     *     / (double)(1L << 53);
+     * }}</pre>
+     *
+     * <p>The hedge "approximately" is used in the foregoing description only
+     * because the {@code next} method is only approximately an unbiased
+     * source of independently chosen bits. If it were a perfect source of
+     * randomly chosen bits, then the algorithm shown would choose
+     * {@code double} values from the stated range with perfect uniformity.
+     * <p>[In early versions of Java, the result was incorrectly calculated as:
+     *  <pre> {@code
+     *   return (((long)next(27) << 27) + next(27))
+     *     / (double)(1L << 54);}</pre>
+     * This might seem to be equivalent, if not better, but in fact it
+     * introduced a large nonuniformity because of the bias in the rounding
+     * of floating-point numbers: it was three times as likely that the
+     * low-order bit of the significand would be 0 than that it would be 1!
+     * This nonuniformity probably doesn't matter much in practice, but we
+     * strive for perfection.]
+     *
+     * @return the next pseudorandom, uniformly distributed {@code double}
+     *         value between {@code 0.0} and {@code 1.0} from this
+     *         random number generator's sequence
+     * @see Math#random
+     

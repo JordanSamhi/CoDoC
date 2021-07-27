@@ -1,0 +1,10 @@
+public static MethodHandle dropArguments(MethodHandle target, int pos, List<Class<?>> valueTypes){
+    valueTypes = copyTypes(valueTypes);
+    MethodType oldType = target.type();
+    int dropped = dropArgumentChecks(oldType, pos, valueTypes);
+    MethodType newType = oldType.insertParameterTypes(pos, valueTypes);
+    if (dropped == 0) {
+        return target;
+    }
+    return new Transformers.DropArguments(newType, target, pos, valueTypes.size());
+}

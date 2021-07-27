@@ -1,0 +1,12 @@
+public float floatValue(){
+    float floatResult = signum();
+    long powerOfTwo = this.bitLength - (long) (scale / LOG10_2);
+    if ((powerOfTwo < -149) || (floatResult == 0.0f)) {
+        floatResult *= 0.0f;
+    } else if (powerOfTwo > 129) {
+        floatResult *= Float.POSITIVE_INFINITY;
+    } else {
+        floatResult = (float) doubleValue();
+    }
+    return floatResult;
+}

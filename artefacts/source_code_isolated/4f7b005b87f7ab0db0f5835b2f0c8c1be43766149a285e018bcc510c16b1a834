@@ -1,0 +1,9 @@
+public Drawable mutate(){
+    if (!mMutated && super.mutate() == this) {
+        final DrawableContainerState clone = cloneConstantState();
+        clone.mutate();
+        setConstantState(clone);
+        mMutated = true;
+    }
+    return this;
+}

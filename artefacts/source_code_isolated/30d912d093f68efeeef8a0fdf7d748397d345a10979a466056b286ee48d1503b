@@ -1,0 +1,10 @@
+public int compareTo(OffsetTime other){
+    if (offset.equals(other.offset)) {
+        return time.compareTo(other.time);
+    }
+    int compare = Long.compare(toEpochNano(), other.toEpochNano());
+    if (compare == 0) {
+        compare = time.compareTo(other.time);
+    }
+    return compare;
+}

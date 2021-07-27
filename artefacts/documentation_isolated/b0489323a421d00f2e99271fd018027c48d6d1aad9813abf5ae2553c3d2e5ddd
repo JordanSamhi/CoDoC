@@ -1,0 +1,27 @@
+
+     * Accepts a function that extracts a sort key from a type {@code T}, and
+     * returns a {@code Comparator<T>} that compares by that sort key using
+     * the specified {@link Comparator}.
+      *
+     * <p>The returned comparator is serializable if the specified function
+     * and comparator are both serializable.
+     *
+     * @apiNote
+     * For example, to obtain a {@code Comparator} that compares {@code
+     * Person} objects by their last name ignoring case differences,
+     *
+     * <pre>{@code
+     *     Comparator<Person> cmp = Comparator.comparing(
+     *             Person::getLastName,
+     *             String.CASE_INSENSITIVE_ORDER);
+     * }</pre>
+     *
+     * @param  <T> the type of element to be compared
+     * @param  <U> the type of the sort key
+     * @param  keyExtractor the function used to extract the sort key
+     * @param  keyComparator the {@code Comparator} used to compare the sort key
+     * @return a comparator that compares by an extracted key using the
+     *         specified {@code Comparator}
+     * @throws NullPointerException if either argument is null
+     * @since 1.8
+     

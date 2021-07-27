@@ -1,0 +1,15 @@
+ Node<T> truncate(long from, long to, IntFunction<T[]> generator){
+    if (from == 0 && to == count())
+        return this;
+    Spliterator<T> spliterator = spliterator();
+    long size = to - from;
+    Node.Builder<T> nodeBuilder = Nodes.builder(size, generator);
+    nodeBuilder.begin(size);
+    for (int i = 0; i < from && spliterator.tryAdvance(e -> {
+    }); i++) {
+    }
+    for (int i = 0; (i < size) && spliterator.tryAdvance(nodeBuilder); i++) {
+    }
+    nodeBuilder.end();
+    return nodeBuilder.build();
+}

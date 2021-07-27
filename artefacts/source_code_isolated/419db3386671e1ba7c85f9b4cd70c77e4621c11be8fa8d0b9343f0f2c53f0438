@@ -1,0 +1,9 @@
+public static ServiceLoader<S> loadInstalled(Class<S> service){
+    ClassLoader cl = ClassLoader.getSystemClassLoader();
+    ClassLoader prev = null;
+    while (cl != null) {
+        prev = cl;
+        cl = cl.getParent();
+    }
+    return ServiceLoader.load(service, prev);
+}

@@ -1,9 +1,0 @@
-public void put(Account account, String token, String tokenType, String packageName, byte[] sigDigest, long expiryMillis){
-    Objects.requireNonNull(account);
-    if (token == null || System.currentTimeMillis() > expiryMillis) {
-        return;
-    }
-    Key k = new Key(account, tokenType, packageName, sigDigest);
-    Value v = new Value(token, expiryMillis);
-    mCachedTokens.putToken(k, v);
-}

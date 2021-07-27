@@ -1,9 +1,0 @@
-public static ContentResolver newResolverWithContentProviderFromSql(Context targetContext, String filenamePrefix, Class<T> providerClass, String authority, String databaseName, int databaseVersion, String sql) throws IllegalAccessException, InstantiationException{
-    MockContentResolver resolver = new MockContentResolver();
-    RenamingDelegatingContext targetContextWrapper = new RenamingDelegatingContext(new MockContext(), targetContext, filenamePrefix);
-    Context context = new IsolatedContext(resolver, targetContextWrapper);
-    DatabaseUtils.createDbFromSqlStatements(context, databaseName, databaseVersion, sql);
-    T provider = createProviderForTest(context, providerClass, authority);
-    resolver.addProvider(authority, provider);
-    return resolver;
-}

@@ -1,0 +1,38 @@
+
+     * Appends the zone offset, such as '+01:00', to the formatter.
+     * <p>
+     * This appends an instruction to format/parse the offset ID to the builder.
+     * <p>
+     * During formatting, the offset is obtained using a mechanism equivalent
+     * to querying the temporal with {@link TemporalQueries#offset()}.
+     * It will be printed using the format defined below.
+     * If the offset cannot be obtained then an exception is thrown unless the
+     * section of the formatter is optional.
+     * <p>
+     * During parsing, the offset is parsed using the format defined below.
+     * If the offset cannot be parsed then an exception is thrown unless the
+     * section of the formatter is optional.
+     * <p>
+     * The format of the offset is controlled by a pattern which must be one
+     * of the following:
+     * <ul>
+     * <li>{@code +HH} - hour only, ignoring minute and second
+     * <li>{@code +HHmm} - hour, with minute if non-zero, ignoring second, no colon
+     * <li>{@code +HH:mm} - hour, with minute if non-zero, ignoring second, with colon
+     * <li>{@code +HHMM} - hour and minute, ignoring second, no colon
+     * <li>{@code +HH:MM} - hour and minute, ignoring second, with colon
+     * <li>{@code +HHMMss} - hour and minute, with second if non-zero, no colon
+     * <li>{@code +HH:MM:ss} - hour and minute, with second if non-zero, with colon
+     * <li>{@code +HHMMSS} - hour, minute and second, no colon
+     * <li>{@code +HH:MM:SS} - hour, minute and second, with colon
+     * </ul>
+     * The "no offset" text controls what text is printed when the total amount of
+     * the offset fields to be output is zero.
+     * Example values would be 'Z', '+00:00', 'UTC' or 'GMT'.
+     * Three formats are accepted for parsing UTC - the "no offset" text, and the
+     * plus and minus versions of zero defined by the pattern.
+     *
+     * @param pattern  the pattern to use, not null
+     * @param noOffsetText  the text to use when the offset is zero, not null
+     * @return this, for chaining, not null
+     

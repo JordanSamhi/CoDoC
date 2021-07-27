@@ -1,0 +1,29 @@
+
+     * Generates a certificate revocation list (CRL) object and initializes it
+     * with the data read from the input stream {@code inStream}.
+     *
+     * <p>In order to take advantage of the specialized CRL format
+     * supported by this certificate factory,
+     * the returned CRL object can be typecast to the corresponding
+     * CRL class. For example, if this certificate
+     * factory implements X.509 CRLs, the returned CRL object
+     * can be typecast to the {@code X509CRL} class.
+     *
+     * <p>Note that if the given input stream does not support
+     * {@link java.io.InputStream#mark(int) mark} and
+     * {@link java.io.InputStream#reset() reset}, this method will
+     * consume the entire input stream. Otherwise, each call to this
+     * method consumes one CRL and the read position of the input stream
+     * is positioned to the next available byte after the inherent
+     * end-of-CRL marker. If the data in the
+     * input stream does not contain an inherent end-of-CRL marker (other
+     * than EOF) and there is trailing data after the CRL is parsed, a
+     * {@code CRLException} is thrown.
+     *
+     * @param inStream an input stream with the CRL data.
+     *
+     * @return a CRL object initialized with the data
+     * from the input stream.
+     *
+     * @exception CRLException on parsing errors.
+     

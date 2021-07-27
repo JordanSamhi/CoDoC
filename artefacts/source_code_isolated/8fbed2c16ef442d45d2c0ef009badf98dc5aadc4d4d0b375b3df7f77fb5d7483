@@ -1,0 +1,23 @@
+public void addAttributes(Map<? extends Attribute, ?> attributes, int beginIndex, int endIndex){
+    if (attributes == null) {
+        throw new NullPointerException();
+    }
+    if (beginIndex < 0 || endIndex > length() || beginIndex > endIndex) {
+        throw new IllegalArgumentException("Invalid substring range");
+    }
+    if (beginIndex == endIndex) {
+        if (attributes.isEmpty())
+            return;
+        throw new IllegalArgumentException("Can't add attribute to 0-length text");
+    }
+    if (runCount == 0) {
+        createRunAttributeDataVectors();
+    }
+    int beginRunIndex = ensureRunBreak(beginIndex);
+    int endRunIndex = ensureRunBreak(endIndex);
+    Iterator<? extends Map.Entry<? extends Attribute, ?>> iterator = attributes.entrySet().iterator();
+    while (iterator.hasNext()) {
+        Map.Entry<? extends Attribute, ?> entry = iterator.next();
+        addAttributeRunData(entry.getKey(), entry.getValue(), beginRunIndex, endRunIndex);
+    }
+}

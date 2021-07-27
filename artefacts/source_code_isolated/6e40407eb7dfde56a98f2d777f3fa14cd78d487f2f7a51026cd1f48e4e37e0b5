@@ -1,0 +1,13 @@
+public final void setFeatureDrawableResource(int featureId, int resId){
+    if (resId != 0) {
+        DrawableFeatureState st = getDrawableState(featureId, true);
+        if (st.resid != resId) {
+            st.resid = resId;
+            st.uri = null;
+            st.local = getContext().getDrawable(resId);
+            updateDrawable(featureId, st, false);
+        }
+    } else {
+        setFeatureDrawable(featureId, null);
+    }
+}

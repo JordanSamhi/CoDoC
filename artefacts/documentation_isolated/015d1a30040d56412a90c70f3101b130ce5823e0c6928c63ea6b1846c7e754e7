@@ -1,0 +1,34 @@
+
+     * Produces a special <em>invoker method handle</em> which can be used to
+     * invoke any method handle compatible with the given type, as if by {@link MethodHandle#invoke invoke}.
+     * The resulting invoker will have a type which is
+     * exactly equal to the desired type, except that it will accept
+     * an additional leading argument of type {@code MethodHandle}.
+     * <p>
+     * Before invoking its target, if the target differs from the expected type,
+     * the invoker will apply reference casts as
+     * necessary and box, unbox, or widen primitive values, as if by {@link MethodHandle#asType asType}.
+     * Similarly, the return value will be converted as necessary.
+     * If the target is a {@linkplain MethodHandle#asVarargsCollector variable arity method handle},
+     * the required arity conversion will be made, again as if by {@link MethodHandle#asType asType}.
+     * <p>
+     * This method is equivalent to the following code (though it may be more efficient):
+     * {@code publicLookup().findVirtual(MethodHandle.class, "invoke", type)}
+     * <p style="font-size:smaller;">
+     * <em>Discussion:</em>
+     * A {@linkplain MethodType#genericMethodType general method type} is one which
+     * mentions only {@code Object} arguments and return values.
+     * An invoker for such a type is capable of calling any method handle
+     * of the same arity as the general type.
+     * <p style="font-size:smaller;">
+     * <em>(Note:  The invoker method is not available via the Core Reflection API.
+     * An attempt to call {@linkplain java.lang.reflect.Method#invoke java.lang.reflect.Method.invoke}
+     * on the declared {@code invokeExact} or {@code invoke} method will raise an
+     * {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.)</em>
+     * <p>
+     * This method throws no reflective or security exceptions.
+     * @param type the desired target type
+     * @return a method handle suitable for invoking any method handle convertible to the given type
+     * @throws IllegalArgumentException if the resulting method handle's type would have
+     *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     

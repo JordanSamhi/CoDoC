@@ -1,0 +1,17 @@
+public synchronized void println(String s){
+    if (builder.length() == 0 && s != null) {
+        int length = s.length();
+        int start = 0;
+        int nextBreak;
+        while (start < length && (nextBreak = s.indexOf('\n', start)) != -1) {
+            log(s.substring(start, nextBreak));
+            start = nextBreak + 1;
+        }
+        if (start < length) {
+            log(s.substring(start));
+        }
+    } else {
+        builder.append(s);
+        flush(true);
+    }
+}

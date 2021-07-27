@@ -1,0 +1,12 @@
+public String toString(){
+    final String format = "   %-15s = %s\n";
+    final String formatWithUncertainty = "   %-15s = %-25s   %-26s = %s\n";
+    StringBuilder builder = new StringBuilder("GpsClock:\n");
+    builder.append(String.format(format, "Type", getTypeString()));
+    builder.append(String.format(format, "LeapSecond", hasLeapSecond() ? mLeapSecond : null));
+    builder.append(String.format(formatWithUncertainty, "TimeInNs", mTimeInNs, "TimeUncertaintyInNs", hasTimeUncertaintyInNs() ? mTimeUncertaintyInNs : null));
+    builder.append(String.format(format, "FullBiasInNs", hasFullBiasInNs() ? mFullBiasInNs : null));
+    builder.append(String.format(formatWithUncertainty, "BiasInNs", hasBiasInNs() ? mBiasInNs : null, "BiasUncertaintyInNs", hasBiasUncertaintyInNs() ? mBiasUncertaintyInNs : null));
+    builder.append(String.format(formatWithUncertainty, "DriftInNsPerSec", hasDriftInNsPerSec() ? mDriftInNsPerSec : null, "DriftUncertaintyInNsPerSec", hasDriftUncertaintyInNsPerSec() ? mDriftUncertaintyInNsPerSec : null));
+    return builder.toString();
+}

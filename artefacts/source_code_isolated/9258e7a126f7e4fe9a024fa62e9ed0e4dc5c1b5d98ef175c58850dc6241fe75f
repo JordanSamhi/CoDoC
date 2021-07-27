@@ -1,0 +1,16 @@
+public final void setServerNames(List<SNIServerName> serverNames){
+    if (serverNames != null) {
+        if (!serverNames.isEmpty()) {
+            sniNames = new LinkedHashMap<>(serverNames.size());
+            for (SNIServerName serverName : serverNames) {
+                if (sniNames.put(serverName.getType(), serverName) != null) {
+                    throw new IllegalArgumentException("Duplicated server name of type " + serverName.getType());
+                }
+            }
+        } else {
+            sniNames = Collections.<Integer, SNIServerName>emptyMap();
+        }
+    } else {
+        sniNames = null;
+    }
+}

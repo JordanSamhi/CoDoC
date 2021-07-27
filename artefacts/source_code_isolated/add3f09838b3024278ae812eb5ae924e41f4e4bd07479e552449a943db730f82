@@ -1,0 +1,11 @@
+public void registerMoveCallback(MoveCallback callback, Handler handler){
+    synchronized (mDelegates) {
+        final MoveCallbackDelegate delegate = new MoveCallbackDelegate(callback, handler.getLooper());
+        try {
+            mPM.registerMoveCallback(delegate);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+        mDelegates.add(delegate);
+    }
+}

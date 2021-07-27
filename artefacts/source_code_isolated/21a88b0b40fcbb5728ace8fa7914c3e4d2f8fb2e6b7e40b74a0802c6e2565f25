@@ -1,0 +1,11 @@
+public synchronized Object clone(){
+    try {
+        @SuppressWarnings("unchecked")
+        Vector<E> v = (Vector<E>) super.clone();
+        v.elementData = Arrays.copyOf(elementData, elementCount);
+        v.modCount = 0;
+        return v;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e);
+    }
+}

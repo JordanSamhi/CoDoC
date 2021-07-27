@@ -1,0 +1,16 @@
+public boolean dispatchKeyEvent(KeyEvent event){
+    if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+            removeCallbacks(this);
+            postDelayed(this, ViewConfiguration.getLongPressTimeout());
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            if (mMenuBeingLongpressed) {
+                setCycleShortcutCaptionMode(false);
+                return true;
+            } else {
+                removeCallbacks(this);
+            }
+        }
+    }
+    return super.dispatchKeyEvent(event);
+}

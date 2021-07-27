@@ -1,0 +1,18 @@
+public void inflate(Resources r, XmlPullParser parser, AttributeSet attrs, Theme theme) throws XmlPullParserException, IOException{
+    super.inflate(r, parser, attrs, theme);
+    final TypedArray a = obtainAttributes(r, theme, attrs, R.styleable.ShapeDrawable);
+    updateStateFromTypedArray(a);
+    a.recycle();
+    int type;
+    final int outerDepth = parser.getDepth();
+    while ((type = parser.next()) != XmlPullParser.END_DOCUMENT && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
+        if (type != XmlPullParser.START_TAG) {
+            continue;
+        }
+        final String name = parser.getName();
+        if (!inflateTag(name, r, parser, attrs)) {
+            android.util.Log.w("drawable", "Unknown element: " + name + " for ShapeDrawable " + this);
+        }
+    }
+    updateLocalState();
+}

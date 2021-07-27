@@ -1,0 +1,10 @@
+public static Collector<T, ?, Double> averagingLong(ToLongFunction<? super T> mapper){
+    return new CollectorImpl<>(() -> new long[2], (a, t) -> {
+        a[0] += mapper.applyAsLong(t);
+        a[1]++;
+    }, (a, b) -> {
+        a[0] += b[0];
+        a[1] += b[1];
+        return a;
+    }, a -> (a[1] == 0) ? 0.0d : (double) a[0] / a[1], CH_NOID);
+}

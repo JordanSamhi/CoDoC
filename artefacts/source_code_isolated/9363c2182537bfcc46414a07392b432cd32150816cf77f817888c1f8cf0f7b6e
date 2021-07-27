@@ -1,0 +1,11 @@
+public List<InstrumentationInfo> queryInstrumentation(String targetPackage, int flags){
+    try {
+        ParceledListSlice<InstrumentationInfo> parceledList = mPM.queryInstrumentation(targetPackage, flags);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

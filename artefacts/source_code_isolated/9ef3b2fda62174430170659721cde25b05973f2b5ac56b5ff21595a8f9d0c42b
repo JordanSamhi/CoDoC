@@ -1,0 +1,11 @@
+public final void updateAAD(byte[] src, int offset, int len){
+    checkCipherState();
+    if ((src == null) || (offset < 0) || (len < 0) || ((len + offset) > src.length)) {
+        throw new IllegalArgumentException("Bad arguments");
+    }
+    updateProviderIfNeeded();
+    if (len == 0) {
+        return;
+    }
+    spi.engineUpdateAAD(src, offset, len);
+}

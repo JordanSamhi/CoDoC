@@ -1,0 +1,30 @@
+
+     * A query that provides access to whether a leap-second was parsed.
+     * <p>
+     * This returns a singleton {@linkplain TemporalQuery query} that provides
+     * access to additional information from the parse. The query always returns
+     * a non-null boolean, true if parsing saw a leap-second, false if not.
+     * <p>
+     * Instant parsing handles the special "leap second" time of '23:59:60'.
+     * Leap seconds occur at '23:59:60' in the UTC time-zone, but at other
+     * local times in different time-zones. To avoid this potential ambiguity,
+     * the handling of leap-seconds is limited to
+     * {@link DateTimeFormatterBuilder#appendInstant()}, as that method
+     * always parses the instant with the UTC zone offset.
+     * <p>
+     * If the time '23:59:60' is received, then a simple conversion is applied,
+     * replacing the second-of-minute of 60 with 59. This query can be used
+     * on the parse result to determine if the leap-second adjustment was made.
+     * The query will return {@code true} if it did adjust to remove the
+     * leap-second, and {@code false} if not. Note that applying a leap-second
+     * smoothing mechanism, such as UTC-SLS, is the responsibility of the
+     * application, as follows:
+     * <pre>
+     *  TemporalAccessor parsed = formatter.parse(str);
+     *  Instant instant = parsed.query(Instant::from);
+     *  if (parsed.query(DateTimeFormatter.parsedLeapSecond())) {
+     *    // validate leap-second is correct and apply correct smoothing
+     *  }
+     * </pre>
+     * @return a query that provides access to whether a leap-second was parsed
+     

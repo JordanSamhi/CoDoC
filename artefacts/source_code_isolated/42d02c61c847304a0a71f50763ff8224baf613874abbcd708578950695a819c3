@@ -1,0 +1,34 @@
+public static long copy(InputStream in, Path target, CopyOption... options) throws IOException{
+    Objects.requireNonNull(in);
+    boolean replaceExisting = false;
+    for (CopyOption opt : options) {
+        if (opt == StandardCopyOption.REPLACE_EXISTING) {
+            replaceExisting = true;
+        } else {
+            if (opt == null) {
+                throw new NullPointerException("options contains 'null'");
+            } else {
+                throw new UnsupportedOperationException(opt + " not supported");
+            }
+        }
+    }
+    SecurityException se = null;
+    if (replaceExisting) {
+        try {
+            deleteIfExists(target);
+        } catch (SecurityException x) {
+            se = x;
+        }
+    }
+    OutputStream ostream;
+    try {
+        ostream = newOutputStream(target, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+    } catch (FileAlreadyExistsException x) {
+        if (se != null)
+            throw se;
+        throw x;
+    }
+    try (OutputStream out = ostream) {
+        return copy(in, out);
+    }
+}

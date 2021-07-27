@@ -1,0 +1,17 @@
+public void joinGroup(SocketAddress mcastaddr, NetworkInterface netIf) throws IOException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    if (mcastaddr == null || !(mcastaddr instanceof InetSocketAddress))
+        throw new IllegalArgumentException("Unsupported address type");
+    if (oldImpl)
+        throw new UnsupportedOperationException();
+    checkAddress(((InetSocketAddress) mcastaddr).getAddress(), "joinGroup");
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkMulticast(((InetSocketAddress) mcastaddr).getAddress());
+    }
+    if (!((InetSocketAddress) mcastaddr).getAddress().isMulticastAddress()) {
+        throw new SocketException("Not a multicast address");
+    }
+    getImpl().joinGroup(mcastaddr, netIf);
+}

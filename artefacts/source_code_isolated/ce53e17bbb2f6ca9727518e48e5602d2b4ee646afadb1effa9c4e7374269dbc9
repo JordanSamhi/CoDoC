@@ -1,0 +1,20 @@
+public boolean requestFeature(int featureId){
+    if (mContentParentExplicitlySet) {
+        throw new AndroidRuntimeException("requestFeature() must be called before adding content");
+    }
+    final int features = getFeatures();
+    final int newFeatures = features | (1 << featureId);
+    if ((newFeatures & (1 << FEATURE_CUSTOM_TITLE)) != 0 && (newFeatures & ~CUSTOM_TITLE_COMPATIBLE_FEATURES) != 0) {
+        throw new AndroidRuntimeException("You cannot combine custom titles with other title features");
+    }
+    if ((features & (1 << FEATURE_NO_TITLE)) != 0 && featureId == FEATURE_ACTION_BAR) {
+        return false;
+    }
+    if ((features & (1 << FEATURE_ACTION_BAR)) != 0 && featureId == FEATURE_NO_TITLE) {
+        removeFeature(FEATURE_ACTION_BAR);
+    }
+    if (featureId == FEATURE_INDETERMINATE_PROGRESS && getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WATCH)) {
+        throw new AndroidRuntimeException("You cannot use indeterminate progress on a watch.");
+    }
+    return super.requestFeature(featureId);
+}

@@ -1,0 +1,22 @@
+public static Redirect to(final File file){
+    if (file == null)
+        throw new NullPointerException();
+    return new Redirect() {
+
+        public Type type() {
+            return Type.WRITE;
+        }
+
+        public File file() {
+            return file;
+        }
+
+        public String toString() {
+            return "redirect to write to file \"" + file + "\"";
+        }
+
+        boolean append() {
+            return false;
+        }
+    };
+}

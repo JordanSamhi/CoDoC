@@ -1,0 +1,7 @@
+public int read(byte[] b, int off, int len) throws IOException{
+    int result = in.read(b, off, len);
+    if (on && result != -1) {
+        digest.update(b, off, result);
+    }
+    return result;
+}

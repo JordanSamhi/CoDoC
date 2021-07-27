@@ -1,0 +1,4 @@
+public boolean tryUnfork(){
+    Thread t;
+    return (((t = Thread.currentThread()) instanceof ForkJoinWorkerThread) ? ((ForkJoinWorkerThread) t).workQueue.tryUnpush(this) : ForkJoinPool.common.tryExternalUnpush(this));
+}

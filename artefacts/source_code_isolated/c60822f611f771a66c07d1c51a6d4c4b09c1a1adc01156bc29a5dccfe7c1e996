@@ -1,0 +1,18 @@
+public void setRequestMethod(String method) throws ProtocolException{
+    if (connected) {
+        throw new ProtocolException("Can't reset method: already connected");
+    }
+    for (int i = 0; i < methods.length; i++) {
+        if (methods[i].equals(method)) {
+            if (method.equals("TRACE")) {
+                SecurityManager s = System.getSecurityManager();
+                if (s != null) {
+                    s.checkPermission(new NetPermission("allowHttpTrace"));
+                }
+            }
+            this.method = method;
+            return;
+        }
+    }
+    throw new ProtocolException("Invalid HTTP method: " + method);
+}

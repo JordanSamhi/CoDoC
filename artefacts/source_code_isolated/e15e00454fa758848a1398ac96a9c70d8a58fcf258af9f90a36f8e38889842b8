@@ -1,0 +1,12 @@
+public PackageInfo getPackageInfo(VersionedPackage versionedPackage, int flags) throws NameNotFoundException{
+    final int userId = getUserId();
+    try {
+        PackageInfo pi = mPM.getPackageInfoVersioned(versionedPackage, updateFlagsForPackage(flags, userId), userId);
+        if (pi != null) {
+            return pi;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(versionedPackage.toString());
+}

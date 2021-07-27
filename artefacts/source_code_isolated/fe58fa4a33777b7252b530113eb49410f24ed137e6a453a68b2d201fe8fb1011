@@ -1,0 +1,8 @@
+public static ZoneOffset from(TemporalAccessor temporal){
+    Objects.requireNonNull(temporal, "temporal");
+    ZoneOffset offset = temporal.query(TemporalQueries.offset());
+    if (offset == null) {
+        throw new DateTimeException("Unable to obtain ZoneOffset from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName());
+    }
+    return offset;
+}

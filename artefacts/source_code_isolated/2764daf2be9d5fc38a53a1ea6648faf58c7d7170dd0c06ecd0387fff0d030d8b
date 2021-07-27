@@ -1,0 +1,14 @@
+public void onPause(){
+    super.onPause();
+    if (mSearchView != null) {
+        mPreviousSearchHadFocus = mSearchView.hasFocus();
+        mPreviousSearch = mSearchView.getQuery();
+    } else {
+        mPreviousSearchHadFocus = false;
+        mPreviousSearch = null;
+    }
+    final ListView list = getListView();
+    final View firstChild = list.getChildAt(0);
+    mFirstVisiblePosition = list.getFirstVisiblePosition();
+    mTopDistance = (firstChild == null) ? 0 : (firstChild.getTop() - list.getPaddingTop());
+}

@@ -1,0 +1,12 @@
+public void seek(long pos) throws IOException{
+    if (pos < 0) {
+        throw new IOException("offset < 0: " + pos);
+    } else {
+        try {
+            Libcore.os.lseek(fd, pos, SEEK_SET);
+            ioTracker.reset();
+        } catch (ErrnoException errnoException) {
+            throw errnoException.rethrowAsIOException();
+        }
+    }
+}

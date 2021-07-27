@@ -1,0 +1,10 @@
+public int getSoLinger() throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    Object o = getImpl().getOption(SocketOptions.SO_LINGER);
+    if (o instanceof Integer) {
+        return ((Integer) o).intValue();
+    } else {
+        return -1;
+    }
+}

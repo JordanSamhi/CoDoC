@@ -1,0 +1,47 @@
+
+     * Returns a concurrent {@code Collector} that accumulates elements into a
+     * {@code ConcurrentMap} whose keys and values are the result of applying
+     * the provided mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to
+     * {@link Object#equals(Object)}), an {@code IllegalStateException} is
+     * thrown when the collection operation is performed.  If the mapped keys
+     * may have duplicates, use
+     * {@link #toConcurrentMap(Function, Function, BinaryOperator)} instead.
+     *
+     * @apiNote
+     * It is common for either the key or the value to be the input elements.
+     * In this case, the utility method
+     * {@link java.util.function.Function#identity()} may be helpful.
+     * For example, the following produces a {@code Map} mapping
+     * students to their grade point average:
+     * <pre>{@code
+     *     Map<Student, Double> studentToGPA
+     *         students.stream().collect(toMap(Functions.identity(),
+     *                                         student -> computeGPA(student)));
+     * }</pre>
+     * And the following produces a {@code Map} mapping a unique identifier to
+     * students:
+     * <pre>{@code
+     *     Map<String, Student> studentIdToStudent
+     *         students.stream().collect(toConcurrentMap(Student::getId,
+     *                                                   Functions.identity());
+     * }</pre>
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper the mapping function to produce keys
+     * @param valueMapper the mapping function to produce values
+     * @return a concurrent, unordered {@code Collector} which collects elements into a
+     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
+     * function to the input elements, and whose values are the result of
+     * applying a value mapping function to the input elements
+     *
+     * @see #toMap(Function, Function)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
+     

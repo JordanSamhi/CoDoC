@@ -1,0 +1,14 @@
+public MethodType insertParameterTypes(int num, Class<?>... ptypesToInsert){
+    int len = ptypes.length;
+    if (num < 0 || num > len)
+        throw newIndexOutOfBoundsException(num);
+    int ins = checkPtypes(ptypesToInsert);
+    checkSlotCount(parameterSlotCount() + ptypesToInsert.length + ins);
+    int ilen = ptypesToInsert.length;
+    if (ilen == 0)
+        return this;
+    Class<?>[] nptypes = Arrays.copyOfRange(ptypes, 0, len + ilen);
+    System.arraycopy(nptypes, num, nptypes, num + ilen, len - num);
+    System.arraycopy(ptypesToInsert, 0, nptypes, num, ilen);
+    return makeImpl(rtype, nptypes, true);
+}

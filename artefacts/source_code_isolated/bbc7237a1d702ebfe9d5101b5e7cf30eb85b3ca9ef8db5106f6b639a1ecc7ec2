@@ -1,0 +1,12 @@
+public void setIssuers(Collection<X500Principal> issuers){
+    if ((issuers == null) || issuers.isEmpty()) {
+        issuerNames = null;
+        issuerX500Principals = null;
+    } else {
+        issuerX500Principals = new HashSet<X500Principal>(issuers);
+        issuerNames = new HashSet<Object>();
+        for (X500Principal p : issuerX500Principals) {
+            issuerNames.add(p.getEncoded());
+        }
+    }
+}

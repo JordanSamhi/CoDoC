@@ -1,0 +1,16 @@
+public static Class<?> forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException{
+    if (loader == null) {
+        loader = BootClassLoader.getInstance();
+    }
+    Class<?> result;
+    try {
+        result = classForName(name, initialize, loader);
+    } catch (ClassNotFoundException e) {
+        Throwable cause = e.getCause();
+        if (cause instanceof LinkageError) {
+            throw (LinkageError) cause;
+        }
+        throw e;
+    }
+    return result;
+}

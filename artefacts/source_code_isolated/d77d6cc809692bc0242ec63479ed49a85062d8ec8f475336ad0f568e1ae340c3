@@ -1,0 +1,15 @@
+public static Provider[] getProviders(String filter){
+    String key = null;
+    String value = null;
+    int index = filter.indexOf(':');
+    if (index == -1) {
+        key = filter;
+        value = "";
+    } else {
+        key = filter.substring(0, index);
+        value = filter.substring(index + 1);
+    }
+    Hashtable<String, String> hashtableFilter = new Hashtable<>(1);
+    hashtableFilter.put(key, value);
+    return (getProviders(hashtableFilter));
+}

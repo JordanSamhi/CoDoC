@@ -1,0 +1,9 @@
+public static Path move(Path source, Path target, CopyOption... options) throws IOException{
+    FileSystemProvider provider = provider(source);
+    if (provider(target) == provider) {
+        provider.move(source, target, options);
+    } else {
+        CopyMoveHelper.moveToForeignTarget(source, target, options);
+    }
+    return target;
+}

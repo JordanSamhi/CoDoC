@@ -1,0 +1,22 @@
+public static PasswordAuthentication requestPasswordAuthentication(String host, InetAddress addr, int port, String protocol, String prompt, String scheme){
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        NetPermission requestPermission = new NetPermission("requestPasswordAuthentication");
+        sm.checkPermission(requestPermission);
+    }
+    Authenticator a = theAuthenticator;
+    if (a == null) {
+        return null;
+    } else {
+        synchronized (a) {
+            a.reset();
+            a.requestingHost = host;
+            a.requestingSite = addr;
+            a.requestingPort = port;
+            a.requestingProtocol = protocol;
+            a.requestingPrompt = prompt;
+            a.requestingScheme = scheme;
+            return a.getPasswordAuthentication();
+        }
+    }
+}

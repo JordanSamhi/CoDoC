@@ -1,0 +1,13 @@
+public int getMTU() throws SocketException{
+    FileDescriptor fd = null;
+    try {
+        fd = Libcore.rawOs.socket(AF_INET, SOCK_DGRAM, 0);
+        return Libcore.rawOs.ioctlMTU(fd, name);
+    } catch (ErrnoException e) {
+        throw e.rethrowAsSocketException();
+    } catch (Exception ex) {
+        throw new SocketException(ex);
+    } finally {
+        IoUtils.closeQuietly(fd);
+    }
+}

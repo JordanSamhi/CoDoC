@@ -1,0 +1,9 @@
+public MethodHandle unreflectConstructor(Constructor<?> c) throws IllegalAccessException{
+    if (c == null) {
+        throw new NullPointerException("c == null");
+    }
+    if (!c.isAccessible()) {
+        checkAccess(c.getDeclaringClass(), c.getDeclaringClass(), c.getModifiers(), c.getName());
+    }
+    return createMethodHandleForConstructor(c);
+}

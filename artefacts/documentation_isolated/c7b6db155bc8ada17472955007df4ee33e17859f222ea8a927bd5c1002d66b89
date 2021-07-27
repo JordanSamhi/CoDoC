@@ -1,0 +1,29 @@
+
+     * Attempts to acquire an exclusive lock on this channel's file.
+     *
+     * <p> An invocation of this method of the form <tt>fc.tryLock()</tt>
+     * behaves in exactly the same way as the invocation
+     *
+     * <pre>
+     *     fc.{@link #tryLock(long,long,boolean) tryLock}(0L, Long.MAX_VALUE, false) </pre>
+     *
+     * @return  A lock object representing the newly-acquired lock,
+     *          or <tt>null</tt> if the lock could not be acquired
+     *          because another program holds an overlapping lock
+     *
+     * @throws  ClosedChannelException
+     *          If this channel is closed
+     *
+     * @throws  OverlappingFileLockException
+     *          If a lock that overlaps the requested region is already held by
+     *          this Java virtual machine, or if another thread is already
+     *          blocked in this method and is attempting to lock an overlapping
+     *          region
+     *
+     * @throws  IOException
+     *          If some other I/O error occurs
+     *
+     * @see     #lock()
+     * @see     #lock(long,long,boolean)
+     * @see     #tryLock(long,long,boolean)
+     

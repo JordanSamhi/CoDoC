@@ -1,9 +1,0 @@
-public boolean isUidRestrictedOnMeteredNetworks(int uid){
-    final int uidRules;
-    final boolean isBackgroundRestricted;
-    synchronized (mUidRulesFirstLock) {
-        uidRules = mUidRules.get(uid, RULE_ALLOW_ALL);
-        isBackgroundRestricted = mRestrictBackground;
-    }
-    return isBackgroundRestricted && !hasRule(uidRules, RULE_ALLOW_METERED) && !hasRule(uidRules, RULE_TEMPORARY_ALLOW_METERED);
-}

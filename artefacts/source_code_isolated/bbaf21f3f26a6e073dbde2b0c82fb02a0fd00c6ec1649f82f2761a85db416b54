@@ -1,0 +1,36 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (mTracking) {
+        final int action = event.getAction();
+        final float x = event.getX();
+        final float y = event.getY();
+        switch(action) {
+            case MotionEvent.ACTION_MOVE:
+                if (withinView(x, y, this)) {
+                    moveHandle(x, y);
+                    float position = isHorizontal() ? x : y;
+                    float target = mThreshold * (isHorizontal() ? getWidth() : getHeight());
+                    boolean thresholdReached;
+                    if (isHorizontal()) {
+                        thresholdReached = mCurrentSlider == mLeftSlider ? position > target : position < target;
+                    } else {
+                        thresholdReached = mCurrentSlider == mLeftSlider ? position < target : position > target;
+                    }
+                    if (!mTriggered && thresholdReached) {
+                        mTriggered = true;
+                        mTracking = false;
+                        mCurrentSlider.setState(Slider.STATE_ACTIVE);
+                        boolean isLeft = mCurrentSlider == mLeftSlider;
+                        dispatchTriggerEvent(isLeft ? OnTriggerListener.LEFT_HANDLE : OnTriggerListener.RIGHT_HANDLE);
+                        startAnimating(isLeft ? mHoldLeftOnTransition : mHoldRightOnTransition);
+                        setGrabbedState(OnTriggerListener.NO_HANDLE);
+                    }
+                    break;
+                }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                cancelGrab();
+                break;
+        }
+    }
+    return mTracking || super.onTouchEvent(event);
+}

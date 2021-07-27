@@ -1,0 +1,17 @@
+public void requestSetVolume(int volume){
+    final int maxVol = getVolumeMax();
+    if (maxVol == 0) {
+        return;
+    }
+    final float scaledVolume = (float) volume / maxVol;
+    final int routeCount = getRouteCount();
+    for (int i = 0; i < routeCount; i++) {
+        final RouteInfo route = getRouteAt(i);
+        final int routeVol = (int) (scaledVolume * route.getVolumeMax());
+        route.requestSetVolume(routeVol);
+    }
+    if (volume != mVolume) {
+        mVolume = volume;
+        dispatchRouteVolumeChanged(this);
+    }
+}

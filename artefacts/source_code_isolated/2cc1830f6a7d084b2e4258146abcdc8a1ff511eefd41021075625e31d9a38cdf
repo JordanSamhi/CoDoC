@@ -1,0 +1,23 @@
+public boolean addAll(int index, Collection<? extends E> c){
+    Object[] cs = c.toArray();
+    synchronized (lock) {
+        Object[] elements = getArray();
+        int len = elements.length;
+        if (index > len || index < 0)
+            throw new IndexOutOfBoundsException(outOfBounds(index, len));
+        if (cs.length == 0)
+            return false;
+        int numMoved = len - index;
+        Object[] newElements;
+        if (numMoved == 0)
+            newElements = Arrays.copyOf(elements, len + cs.length);
+        else {
+            newElements = new Object[len + cs.length];
+            System.arraycopy(elements, 0, newElements, 0, index);
+            System.arraycopy(elements, index, newElements, index + cs.length, numMoved);
+        }
+        System.arraycopy(cs, 0, newElements, index, cs.length);
+        setArray(newElements);
+        return true;
+    }
+}

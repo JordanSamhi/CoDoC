@@ -1,0 +1,15 @@
+public void calculateRemaining(BatterySipper app, BatteryStats stats, long rawRealtimeUs, long rawUptimeUs, int statsType){
+    final BatteryStats.ControllerActivityCounter counter = stats.getWifiControllerActivity();
+    final long idleTimeMs = counter.getIdleTimeCounter().getCountLocked(statsType);
+    final long txTimeMs = counter.getTxTimeCounters()[0].getCountLocked(statsType);
+    final long rxTimeMs = counter.getRxTimeCounter().getCountLocked(statsType);
+    app.wifiRunningTimeMs = Math.max(0, (idleTimeMs + rxTimeMs + txTimeMs) - mTotalAppRunningTime);
+    double powerDrainMah = counter.getPowerCounter().getCountLocked(statsType) / (double) (1000 * 60 * 60);
+    if (powerDrainMah == 0) {
+        powerDrainMah = ((idleTimeMs * mIdleCurrentMa) + (txTimeMs * mTxCurrentMa) + (rxTimeMs * mRxCurrentMa)) / (1000 * 60 * 60);
+    }
+    app.wifiPowerMah = Math.max(0, powerDrainMah - mTotalAppPowerDrain);
+    if (DEBUG) {
+        Log.d(TAG, "left over WiFi power: " + BatteryStatsHelper.makemAh(app.wifiPowerMah));
+    }
+}

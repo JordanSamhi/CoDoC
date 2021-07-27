@@ -1,0 +1,11 @@
+public final Collection<Thread> getExclusiveQueuedThreads(){
+    ArrayList<Thread> list = new ArrayList<>();
+    for (Node p = tail; p != null; p = p.prev) {
+        if (!p.isShared()) {
+            Thread t = p.thread;
+            if (t != null)
+                list.add(t);
+        }
+    }
+    return list;
+}

@@ -1,0 +1,12 @@
+public synchronized int lastIndexOf(Object o, int index){
+    if (index >= elementCount)
+        throw new IndexOutOfBoundsException(index + " >= " + elementCount);
+    if (o == null) {
+        for (int i = index; i >= 0; i--) if (elementData[i] == null)
+            return i;
+    } else {
+        for (int i = index; i >= 0; i--) if (o.equals(elementData[i]))
+            return i;
+    }
+    return -1;
+}

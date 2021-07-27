@@ -1,0 +1,13 @@
+public void publish(LogRecord record){
+    int level = getAndroidLevel(record.getLevel());
+    String tag = DalvikLogging.loggerNameToTag(record.getLoggerName());
+    if (!Log.isLoggable(tag, level)) {
+        return;
+    }
+    try {
+        String message = getFormatter().format(record);
+        Log.println(level, tag, message);
+    } catch (RuntimeException e) {
+        Log.e("AndroidHandler", "Error logging message.", e);
+    }
+}

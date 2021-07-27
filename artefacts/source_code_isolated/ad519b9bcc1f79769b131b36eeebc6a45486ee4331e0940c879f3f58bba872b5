@@ -1,0 +1,14 @@
+public static void resetToDefaultsAsUser(@NonNull ContentResolver resolver, @Nullable String tag, @ResetMode int mode, @IntRange(from = 0) int userHandle){
+    try {
+        Bundle arg = new Bundle();
+        arg.putInt(CALL_METHOD_USER_KEY, userHandle);
+        if (tag != null) {
+            arg.putString(CALL_METHOD_TAG_KEY, tag);
+        }
+        arg.putInt(CALL_METHOD_RESET_MODE_KEY, mode);
+        IContentProvider cp = sProviderHolder.getProvider(resolver);
+        cp.call(resolver.getPackageName(), resolver.getAttributionTag(), sProviderHolder.mUri.getAuthority(), CALL_METHOD_RESET_GLOBAL, null, arg);
+    } catch (RemoteException e) {
+        Log.w(TAG, "Can't reset do defaults for " + CONTENT_URI, e);
+    }
+}

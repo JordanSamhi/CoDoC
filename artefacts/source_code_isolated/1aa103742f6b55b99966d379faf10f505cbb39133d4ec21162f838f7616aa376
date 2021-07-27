@@ -1,0 +1,33 @@
+public final void drawTextRun(@NonNull CharSequence text, int start, int end, int contextStart, int contextEnd, float x, float y, boolean isRtl, @NonNull Paint paint){
+    if (text == null) {
+        throw new NullPointerException("text is null");
+    }
+    if (paint == null) {
+        throw new NullPointerException("paint is null");
+    }
+    if ((start | end | contextStart | contextEnd | start - contextStart | end - start | contextEnd - end | text.length() - contextEnd) < 0) {
+        throw new IndexOutOfBoundsException();
+    }
+    if (text instanceof String || text instanceof SpannedString || text instanceof SpannableString) {
+        nDrawTextRun(mNativeCanvasWrapper, text.toString(), start, end, contextStart, contextEnd, x, y, isRtl, paint.getNativeInstance());
+    } else if (text instanceof GraphicsOperations) {
+        ((GraphicsOperations) text).drawTextRun(this, start, end, contextStart, contextEnd, x, y, isRtl, paint);
+    } else {
+        if (text instanceof PrecomputedText) {
+            final PrecomputedText pt = (PrecomputedText) text;
+            final int paraIndex = pt.findParaIndex(start);
+            if (end <= pt.getParagraphEnd(paraIndex)) {
+                final int paraStart = pt.getParagraphStart(paraIndex);
+                final MeasuredParagraph mp = pt.getMeasuredParagraph(paraIndex);
+                drawTextRun(mp.getMeasuredText(), start - paraStart, end - paraStart, contextStart - paraStart, contextEnd - paraStart, x, y, isRtl, paint);
+                return;
+            }
+        }
+        int contextLen = contextEnd - contextStart;
+        int len = end - start;
+        char[] buf = TemporaryBuffer.obtain(contextLen);
+        TextUtils.getChars(text, contextStart, contextEnd, buf, 0);
+        nDrawTextRun(mNativeCanvasWrapper, buf, start - contextStart, len, 0, contextLen, x, y, isRtl, paint.getNativeInstance(), 0);
+        TemporaryBuffer.recycle(buf);
+    }
+}

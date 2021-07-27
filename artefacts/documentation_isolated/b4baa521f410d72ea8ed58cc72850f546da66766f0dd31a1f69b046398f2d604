@@ -1,0 +1,24 @@
+
+     * Callback that allows an accessibility service to observe the key events
+     * before they are passed to the rest of the system. This means that the events
+     * are first delivered here before they are passed to the device policy, the
+     * input method, or applications.
+     * <p>
+     * <strong>Note:</strong> It is important that key events are handled in such
+     * a way that the event stream that would be passed to the rest of the system
+     * is well-formed. For example, handling the down event but not the up event
+     * and vice versa would generate an inconsistent event stream.
+     * </p>
+     * <p>
+     * <strong>Note:</strong> The key events delivered in this method are copies
+     * and modifying them will have no effect on the events that will be passed
+     * to the system. This method is intended to perform purely filtering
+     * functionality.
+     * <p>
+     *
+     * @param event The event to be processed. This event is owned by the caller and cannot be used
+     * after this method returns. Services wishing to use the event after this method returns should
+     * make a copy.
+     * @return If true then the event will be consumed and not delivered to
+     *         applications, otherwise it will be delivered as usual.
+     

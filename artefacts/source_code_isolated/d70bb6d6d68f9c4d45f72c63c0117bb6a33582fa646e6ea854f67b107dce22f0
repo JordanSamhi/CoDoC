@@ -1,0 +1,15 @@
+public final int getOpacity(){
+    if (mCheckedOpacity) {
+        return mOpacity;
+    }
+    createAllFutures();
+    final int N = mNumChildren;
+    final Drawable[] drawables = mDrawables;
+    int op = (N > 0) ? drawables[0].getOpacity() : PixelFormat.TRANSPARENT;
+    for (int i = 1; i < N; i++) {
+        op = Drawable.resolveOpacity(op, drawables[i].getOpacity());
+    }
+    mOpacity = op;
+    mCheckedOpacity = true;
+    return op;
+}

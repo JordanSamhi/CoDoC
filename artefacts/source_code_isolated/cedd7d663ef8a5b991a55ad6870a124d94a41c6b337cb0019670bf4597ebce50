@@ -1,0 +1,24 @@
+public final void init(int keysize, SecureRandom random){
+    if (serviceIterator == null) {
+        spi.engineInit(keysize, random);
+        return;
+    }
+    RuntimeException failure = null;
+    KeyGeneratorSpi mySpi = spi;
+    do {
+        try {
+            mySpi.engineInit(keysize, random);
+            initType = I_SIZE;
+            initKeySize = keysize;
+            initParams = null;
+            initRandom = random;
+            return;
+        } catch (RuntimeException e) {
+            if (failure == null) {
+                failure = e;
+            }
+            mySpi = nextSpi(mySpi, false);
+        }
+    } while (mySpi != null);
+    throw failure;
+}

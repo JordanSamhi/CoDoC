@@ -1,0 +1,13 @@
+public final SelectableChannel configureBlocking(boolean block) throws IOException{
+    synchronized (regLock) {
+        if (!isOpen())
+            throw new ClosedChannelException();
+        if (blocking == block)
+            return this;
+        if (block && haveValidKeys())
+            throw new IllegalBlockingModeException();
+        implConfigureBlocking(block);
+        blocking = block;
+    }
+    return this;
+}

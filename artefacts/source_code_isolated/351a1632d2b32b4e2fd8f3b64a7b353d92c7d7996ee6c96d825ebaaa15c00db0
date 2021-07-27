@@ -1,0 +1,7 @@
+public List<ZoneOffset> getValidOffsets(LocalDateTime localDateTime){
+    Object info = getOffsetInfo(localDateTime);
+    if (info instanceof ZoneOffsetTransition) {
+        return ((ZoneOffsetTransition) info).getValidOffsets();
+    }
+    return Collections.singletonList((ZoneOffset) info);
+}

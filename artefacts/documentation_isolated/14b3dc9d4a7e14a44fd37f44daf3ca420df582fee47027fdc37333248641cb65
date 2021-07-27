@@ -1,0 +1,35 @@
+
+     * Constructs a new {@code FileSystem} to access the contents of a file as a
+     * file system.
+     *
+     * <p> This method makes use of specialized providers that create pseudo file
+     * systems where the contents of one or more files is treated as a file
+     * system.
+     *
+     * <p> This method iterates over the {@link FileSystemProvider#installedProviders()
+     * installed} providers. It invokes, in turn, each provider's {@link
+     * FileSystemProvider#newFileSystem(Path,Map) newFileSystem(Path,Map)} method
+     * with an empty map. If a provider returns a file system then the iteration
+     * terminates and the file system is returned. If none of the installed
+     * providers return a {@code FileSystem} then an attempt is made to locate
+     * the provider using the given class loader. If a provider returns a file
+     * system then the lookup terminates and the file system is returned.
+     *
+     * @param   path
+     *          the path to the file
+     * @param   loader
+     *          the class loader to locate the provider or {@code null} to only
+     *          attempt to locate an installed provider
+     *
+     * @return  a new file system
+     *
+     * @throws  ProviderNotFoundException
+     *          if a provider supporting this file type cannot be located
+     * @throws  ServiceConfigurationError
+     *          when an error occurs while loading a service provider
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          if a security manager is installed and it denies an unspecified
+     *          permission
+     

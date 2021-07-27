@@ -1,0 +1,15 @@
+public PrintStream format(Locale l, String format, Object... args){
+    try {
+        synchronized (this) {
+            ensureOpen();
+            if ((formatter == null) || (formatter.locale() != l))
+                formatter = new Formatter(this, l);
+            formatter.format(l, format, args);
+        }
+    } catch (InterruptedIOException x) {
+        Thread.currentThread().interrupt();
+    } catch (IOException x) {
+        trouble = true;
+    }
+    return this;
+}

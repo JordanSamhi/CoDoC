@@ -1,0 +1,15 @@
+public List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks){
+    ArrayList<Future<T>> futures = new ArrayList<>(tasks.size());
+    try {
+        for (Callable<T> t : tasks) {
+            ForkJoinTask<T> f = new ForkJoinTask.AdaptedCallable<T>(t);
+            futures.add(f);
+            externalSubmit(f);
+        }
+        for (int i = 0, size = futures.size(); i < size; i++) ((ForkJoinTask<?>) futures.get(i)).quietlyJoin();
+        return futures;
+    } catch (Throwable t) {
+        for (int i = 0, size = futures.size(); i < size; i++) futures.get(i).cancel(false);
+        throw t;
+    }
+}

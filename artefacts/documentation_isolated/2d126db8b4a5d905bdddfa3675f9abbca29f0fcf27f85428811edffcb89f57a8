@@ -1,0 +1,34 @@
+
+         * Returns a {@code Calendar} built from the parameters set by the
+         * setter methods. The calendar type given by the {@link #setCalendarType(String)
+         * setCalendarType} method or the {@linkplain #setLocale(Locale) locale} is
+         * used to determine what {@code Calendar} to be created. If no explicit
+         * calendar type is given, the locale's default calendar is created.
+         *
+         * <p>If the calendar type is {@code "iso8601"}, the
+         * {@linkplain GregorianCalendar#setGregorianChange(Date) Gregorian change date}
+         * of a {@link GregorianCalendar} is set to {@code Date(Long.MIN_VALUE)}
+         * to be the <em>proleptic</em> Gregorian calendar. Its week definition
+         * parameters are also set to be <a
+         * href="GregorianCalendar.html#iso8601_compatible_setting">compatible
+         * with the ISO 8601 standard</a>. Note that the
+         * {@link GregorianCalendar#getCalendarType() getCalendarType} method of
+         * a {@code GregorianCalendar} created with {@code "iso8601"} returns
+         * {@code "gregory"}.
+         *
+         * <p>The default values are used for locale and time zone if these
+         * parameters haven't been given explicitly.
+         *
+         * <p>Any out of range field values are either normalized in lenient
+         * mode or detected as an invalid value in non-lenient mode.
+         *
+         * @return a {@code Calendar} built with parameters of this {@code
+         *         Calendar.Builder}
+         * @throws IllegalArgumentException if the calendar type is unknown, or
+         *             if any invalid field values are given in non-lenient mode, or
+         *             if a week date is given for the calendar type that doesn't
+         *             support week dates.
+         * @see Calendar#getInstance(TimeZone, Locale)
+         * @see Locale#getDefault(Locale.Category)
+         * @see TimeZone#getDefault()
+         

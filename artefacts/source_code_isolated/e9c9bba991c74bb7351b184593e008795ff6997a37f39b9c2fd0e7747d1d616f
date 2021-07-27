@@ -1,0 +1,13 @@
+public CharSequence getBackgroundPermissionOptionLabel(){
+    try {
+        String permissionController = getPermissionControllerPackageName();
+        Context context = mContext.createPackageContext(permissionController, 0);
+        int textId = context.getResources().getIdentifier(APP_PERMISSION_BUTTON_ALLOW_ALWAYS, "string", PERMISSION_CONTROLLER_RESOURCE_PACKAGE);
+        if (textId != 0) {
+            return context.getText(textId);
+        }
+    } catch (NameNotFoundException e) {
+        Log.e(TAG, "Permission controller not found.", e);
+    }
+    return "";
+}

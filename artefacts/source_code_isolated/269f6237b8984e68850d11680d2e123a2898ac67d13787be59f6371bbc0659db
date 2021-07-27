@@ -1,0 +1,11 @@
+public void setKeepAliveTime(long time, TimeUnit unit){
+    if (time < 0)
+        throw new IllegalArgumentException();
+    if (time == 0 && allowsCoreThreadTimeOut())
+        throw new IllegalArgumentException("Core threads must have nonzero keep alive times");
+    long keepAliveTime = unit.toNanos(time);
+    long delta = keepAliveTime - this.keepAliveTime;
+    this.keepAliveTime = keepAliveTime;
+    if (delta < 0)
+        interruptIdleWorkers();
+}

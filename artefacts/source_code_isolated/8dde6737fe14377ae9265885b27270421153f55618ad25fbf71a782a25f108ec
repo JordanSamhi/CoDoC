@@ -1,0 +1,8 @@
+public static MethodHandle spreadInvoker(MethodType type, int leadingArgCount){
+    if (leadingArgCount < 0 || leadingArgCount > type.parameterCount())
+        throw newIllegalArgumentException("bad argument count", leadingArgCount);
+    MethodHandle invoker = MethodHandles.invoker(type);
+    int spreadArgCount = type.parameterCount() - leadingArgCount;
+    invoker = invoker.asSpreader(Object[].class, spreadArgCount);
+    return invoker;
+}

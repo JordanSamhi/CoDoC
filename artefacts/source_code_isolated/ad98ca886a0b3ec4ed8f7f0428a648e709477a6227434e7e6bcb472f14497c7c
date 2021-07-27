@@ -1,0 +1,23 @@
+public synchronized void write(byte[] bytes, int start, int count){
+    if (decoder == null) {
+        encodedBytes = ByteBuffer.allocate(80);
+        decodedChars = CharBuffer.allocate(80);
+        decoder = Charset.defaultCharset().newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);
+    }
+    int end = start + count;
+    while (start < end) {
+        int numBytes = Math.min(encodedBytes.remaining(), end - start);
+        encodedBytes.put(bytes, start, numBytes);
+        start += numBytes;
+        encodedBytes.flip();
+        CoderResult coderResult;
+        do {
+            coderResult = decoder.decode(encodedBytes, decodedChars, false);
+            decodedChars.flip();
+            builder.append(decodedChars);
+            decodedChars.clear();
+        } while (coderResult.isOverflow());
+        encodedBytes.compact();
+    }
+    flush(false);
+}

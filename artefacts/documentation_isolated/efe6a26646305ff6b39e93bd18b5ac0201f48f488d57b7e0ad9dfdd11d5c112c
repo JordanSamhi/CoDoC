@@ -1,0 +1,31 @@
+
+     * Returns a set backed by the specified map.  The resulting set displays
+     * the same ordering, concurrency, and performance characteristics as the
+     * backing map.  In essence, this factory method provides a {@link Set}
+     * implementation corresponding to any {@link Map} implementation.  There
+     * is no need to use this method on a {@link Map} implementation that
+     * already has a corresponding {@link Set} implementation (such as {@link
+     * HashMap} or {@link TreeMap}).
+     *
+     * <p>Each method invocation on the set returned by this method results in
+     * exactly one method invocation on the backing map or its <tt>keySet</tt>
+     * view, with one exception.  The <tt>addAll</tt> method is implemented
+     * as a sequence of <tt>put</tt> invocations on the backing map.
+     *
+     * <p>The specified map must be empty at the time this method is invoked,
+     * and should not be accessed directly after this method returns.  These
+     * conditions are ensured if the map is created empty, passed directly
+     * to this method, and no reference to the map is retained, as illustrated
+     * in the following code fragment:
+     * <pre>
+     *    Set&lt;Object&gt; weakHashSet = Collections.newSetFromMap(
+     *        new WeakHashMap&lt;Object, Boolean&gt;());
+     * </pre>
+     *
+     * @param <E> the class of the map keys and of the objects in the
+     *        returned set
+     * @param map the backing map
+     * @return the set backed by the map
+     * @throws IllegalArgumentException if <tt>map</tt> is not empty
+     * @since 1.6
+     

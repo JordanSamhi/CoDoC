@@ -1,0 +1,25 @@
+public final String toString(){
+    boolean l = (baseLocale.getLanguage().length() != 0);
+    boolean s = (baseLocale.getScript().length() != 0);
+    boolean r = (baseLocale.getRegion().length() != 0);
+    boolean v = (baseLocale.getVariant().length() != 0);
+    boolean e = (localeExtensions != null && localeExtensions.getID().length() != 0);
+    StringBuilder result = new StringBuilder(baseLocale.getLanguage());
+    if (r || (l && (v || s || e))) {
+        result.append('_').append(baseLocale.getRegion());
+    }
+    if (v && (l || r)) {
+        result.append('_').append(baseLocale.getVariant());
+    }
+    if (s && (l || r)) {
+        result.append("_#").append(baseLocale.getScript());
+    }
+    if (e && (l || r)) {
+        result.append('_');
+        if (!s) {
+            result.append('#');
+        }
+        result.append(localeExtensions.getID());
+    }
+    return result.toString();
+}

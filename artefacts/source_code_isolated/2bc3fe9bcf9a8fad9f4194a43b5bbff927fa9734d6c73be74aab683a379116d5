@@ -1,0 +1,9 @@
+public void onShortcutsRemoved(@NonNull String packageName, @NonNull List<ShortcutInfo> shortcuts, @NonNull UserHandle user){
+    Pair<Executor, ShortcutChangeCallback> remoteReferences = mRemoteReferences.get();
+    if (remoteReferences == null) {
+        return;
+    }
+    final Executor executor = remoteReferences.first;
+    final ShortcutChangeCallback callback = remoteReferences.second;
+    executor.execute(PooledLambda.obtainRunnable(ShortcutChangeCallback::onShortcutsRemoved, callback, packageName, shortcuts, user).recycleOnUse());
+}

@@ -1,0 +1,13 @@
+public static Collector<T, A, RR> collectingAndThen(Collector<T, A, R> downstream, Function<R, RR> finisher){
+    Set<Collector.Characteristics> characteristics = downstream.characteristics();
+    if (characteristics.contains(Collector.Characteristics.IDENTITY_FINISH)) {
+        if (characteristics.size() == 1)
+            characteristics = Collectors.CH_NOID;
+        else {
+            characteristics = EnumSet.copyOf(characteristics);
+            characteristics.remove(Collector.Characteristics.IDENTITY_FINISH);
+            characteristics = Collections.unmodifiableSet(characteristics);
+        }
+    }
+    return new CollectorImpl<>(downstream.supplier(), downstream.accumulator(), downstream.combiner(), downstream.finisher().andThen(finisher), characteristics);
+}

@@ -1,9 +1,0 @@
-public void setMacRandomizationSettingPasspointEnabled(String fqdn, boolean enable){
-    enforceNetworkSettingsPermission();
-    if (fqdn == null) {
-        throw new IllegalArgumentException("FQDN cannot be null");
-    }
-    int callingUid = Binder.getCallingUid();
-    mLog.info("setMacRandomizationSettingPasspointEnabled=% uid=%").c(enable).c(callingUid).flush();
-    mWifiThreadRunner.post(() -> mPasspointManager.enableMacRandomization(fqdn, enable));
-}

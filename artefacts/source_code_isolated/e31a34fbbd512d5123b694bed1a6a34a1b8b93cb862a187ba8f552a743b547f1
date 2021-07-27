@@ -1,0 +1,10 @@
+public static OffsetTime ofInstant(Instant instant, ZoneId zone){
+    Objects.requireNonNull(instant, "instant");
+    Objects.requireNonNull(zone, "zone");
+    ZoneRules rules = zone.getRules();
+    ZoneOffset offset = rules.getOffset(instant);
+    long localSecond = instant.getEpochSecond() + offset.getTotalSeconds();
+    int secsOfDay = (int) Math.floorMod(localSecond, SECONDS_PER_DAY);
+    LocalTime time = LocalTime.ofNanoOfDay(secsOfDay * NANOS_PER_SECOND + instant.getNano());
+    return new OffsetTime(time, offset);
+}

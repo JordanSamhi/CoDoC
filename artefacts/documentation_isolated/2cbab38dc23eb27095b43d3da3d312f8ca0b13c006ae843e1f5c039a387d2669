@@ -1,0 +1,33 @@
+
+     * Sets the subjectPublicKey criterion. The {@code X509Certificate}
+     * must contain the specified subject public key. If {@code null},
+     * no subjectPublicKey check will be done.
+     * <p>
+     * Because this method allows the public key to be specified as a byte
+     * array, it may be used for unknown key types.
+     * <p>
+     * If {@code key} is not {@code null}, it should contain a
+     * single DER encoded SubjectPublicKeyInfo structure, as defined in X.509.
+     * The ASN.1 notation for this structure is as follows.
+     * <pre>{@code
+     * SubjectPublicKeyInfo  ::=  SEQUENCE  {
+     *   algorithm            AlgorithmIdentifier,
+     *   subjectPublicKey     BIT STRING  }
+     *
+     * AlgorithmIdentifier  ::=  SEQUENCE  {
+     *   algorithm               OBJECT IDENTIFIER,
+     *   parameters              ANY DEFINED BY algorithm OPTIONAL  }
+     *                              -- contains a value of the type
+     *                              -- registered for use with the
+     *                              -- algorithm object identifier value
+     * }</pre>
+     * <p>
+     * Note that the byte array supplied here is cloned to protect against
+     * subsequent modifications.
+     *
+     * @param key a byte array containing the subject public key in ASN.1 DER
+     *            form (or {@code null})
+     * @throws IOException if an encoding error occurs (incorrect form for
+     * subject public key)
+     * @see #getSubjectPublicKey
+     

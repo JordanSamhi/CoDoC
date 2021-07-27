@@ -1,0 +1,5 @@
+public static OffsetDateTime now(Clock clock){
+    Objects.requireNonNull(clock, "clock");
+    final Instant now = clock.instant();
+    return ofInstant(now, clock.getZone().getRules().getOffset(now));
+}

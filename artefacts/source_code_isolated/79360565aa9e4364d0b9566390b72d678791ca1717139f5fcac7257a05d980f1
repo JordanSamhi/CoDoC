@@ -1,0 +1,9 @@
+public void setAutoMirrored(boolean mirrored){
+    if (mState.mAutoMirrored != mirrored) {
+        mState.mAutoMirrored = mirrored;
+        if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL && mState.mNativePtr != 0) {
+            nSetMirrored(mState.mNativePtr, mirrored);
+            invalidateSelf();
+        }
+    }
+}

@@ -1,0 +1,18 @@
+public String toString(){
+    final String format = "   %-15s = %s\n";
+    StringBuilder builder = new StringBuilder("GnssNavigationMessage:\n");
+    builder.append(String.format(format, "Type", getTypeString()));
+    builder.append(String.format(format, "Svid", mSvid));
+    builder.append(String.format(format, "Status", getStatusString()));
+    builder.append(String.format(format, "MessageId", mMessageId));
+    builder.append(String.format(format, "SubmessageId", mSubmessageId));
+    builder.append(String.format(format, "Data", "{"));
+    String prefix = "        ";
+    for (byte value : mData) {
+        builder.append(prefix);
+        builder.append(value);
+        prefix = ", ";
+    }
+    builder.append(" }");
+    return builder.toString();
+}

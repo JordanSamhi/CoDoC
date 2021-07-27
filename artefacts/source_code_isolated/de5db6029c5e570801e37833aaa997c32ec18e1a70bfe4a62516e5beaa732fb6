@@ -1,0 +1,45 @@
+public String getDisplayName(Locale locale){
+    int count = 0;
+    StringBuilder buffer = new StringBuilder();
+    String languageCode = baseLocale.getLanguage();
+    if (!languageCode.isEmpty()) {
+        String displayLanguage = getDisplayLanguage(locale);
+        buffer.append(displayLanguage.isEmpty() ? languageCode : displayLanguage);
+        ++count;
+    }
+    String scriptCode = baseLocale.getScript();
+    if (!scriptCode.isEmpty()) {
+        if (count == 1) {
+            buffer.append(" (");
+        }
+        String displayScript = getDisplayScript(locale);
+        buffer.append(displayScript.isEmpty() ? scriptCode : displayScript);
+        ++count;
+    }
+    String countryCode = baseLocale.getRegion();
+    if (!countryCode.isEmpty()) {
+        if (count == 1) {
+            buffer.append(" (");
+        } else if (count == 2) {
+            buffer.append(",");
+        }
+        String displayCountry = getDisplayCountry(locale);
+        buffer.append(displayCountry.isEmpty() ? countryCode : displayCountry);
+        ++count;
+    }
+    String variantCode = baseLocale.getVariant();
+    if (!variantCode.isEmpty()) {
+        if (count == 1) {
+            buffer.append(" (");
+        } else if (count == 2 || count == 3) {
+            buffer.append(",");
+        }
+        String displayVariant = getDisplayVariant(locale);
+        buffer.append(displayVariant.isEmpty() ? variantCode : displayVariant);
+        ++count;
+    }
+    if (count > 1) {
+        buffer.append(")");
+    }
+    return buffer.toString();
+}

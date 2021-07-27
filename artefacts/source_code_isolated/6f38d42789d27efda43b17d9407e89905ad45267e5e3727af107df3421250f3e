@@ -1,0 +1,12 @@
+public int captureBurst(List<CaptureRequest> requests, CaptureCallback callback, Handler handler) throws CameraAccessException{
+    checkCaptureRequests(requests);
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        handler = checkHandler(handler, callback);
+        if (DEBUG) {
+            CaptureRequest[] requestArray = requests.toArray(new CaptureRequest[0]);
+            Log.v(TAG, mIdString + "captureBurst - requests " + Arrays.toString(requestArray) + ", callback " + callback + " handler " + handler);
+        }
+        return addPendingSequence(mDeviceImpl.captureBurst(requests, createCaptureCallbackProxy(handler, callback), mDeviceExecutor));
+    }
+}

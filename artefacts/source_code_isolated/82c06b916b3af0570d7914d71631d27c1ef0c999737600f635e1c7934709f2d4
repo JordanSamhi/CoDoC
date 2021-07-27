@@ -1,0 +1,24 @@
+public boolean onHoverEvent(MotionEvent event){
+    if (mAccessibilityManager.isTouchExplorationEnabled() && event.getPointerCount() == 1) {
+        final int action = event.getAction();
+        switch(action) {
+            case MotionEvent.ACTION_HOVER_ENTER:
+                {
+                    event.setAction(MotionEvent.ACTION_DOWN);
+                }
+                break;
+            case MotionEvent.ACTION_HOVER_MOVE:
+                {
+                    event.setAction(MotionEvent.ACTION_MOVE);
+                }
+                break;
+            case MotionEvent.ACTION_HOVER_EXIT:
+                {
+                    event.setAction(MotionEvent.ACTION_UP);
+                }
+                break;
+        }
+        return onTouchEvent(event);
+    }
+    return true;
+}

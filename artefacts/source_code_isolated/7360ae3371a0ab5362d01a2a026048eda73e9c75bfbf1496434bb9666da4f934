@@ -1,0 +1,8 @@
+public static void invokeAll(ForkJoinTask<?> t1, ForkJoinTask<?> t2){
+    int s1, s2;
+    t2.fork();
+    if ((s1 = t1.doInvoke() & DONE_MASK) != NORMAL)
+        t1.reportException(s1);
+    if ((s2 = t2.doJoin() & DONE_MASK) != NORMAL)
+        t2.reportException(s2);
+}

@@ -1,0 +1,5 @@
+public void forEachValue(long parallelismThreshold, Function<? super V, ? extends U> transformer, Consumer<? super U> action){
+    if (transformer == null || action == null)
+        throw new NullPointerException();
+    new ForEachTransformedValueTask<K, V, U>(null, batchFor(parallelismThreshold), 0, 0, table, transformer, action).invoke();
+}

@@ -1,0 +1,33 @@
+
+     * Returns a concurrent {@code Collector} implementing a "group by"
+     * operation on input elements of type {@code T}, grouping elements
+     * according to a classification function.
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * <p>The classification function maps elements to some key type {@code K}.
+     * The collector produces a {@code ConcurrentMap<K, List<T>>} whose keys are the
+     * values resulting from applying the classification function to the input
+     * elements, and whose corresponding values are {@code List}s containing the
+     * input elements which map to the associated key under the classification
+     * function.
+     *
+     * <p>There are no guarantees on the type, mutability, or serializability
+     * of the {@code Map} or {@code List} objects returned, or of the
+     * thread-safety of the {@code List} objects returned.
+     * @implSpec
+     * This produces a result similar to:
+     * <pre>{@code
+     *     groupingByConcurrent(classifier, toList());
+     * }</pre>
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the type of the keys
+     * @param classifier a classifier function mapping input elements to keys
+     * @return a concurrent, unordered {@code Collector} implementing the group-by operation
+     *
+     * @see #groupingBy(Function)
+     * @see #groupingByConcurrent(Function, Collector)
+     * @see #groupingByConcurrent(Function, Supplier, Collector)
+     

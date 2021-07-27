@@ -1,0 +1,10 @@
+public void shutdownInput() throws IOException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    if (!isConnected())
+        throw new SocketException("Socket is not connected");
+    if (isInputShutdown())
+        throw new SocketException("Socket input is already shutdown");
+    getImpl().shutdownInput();
+    shutIn = true;
+}

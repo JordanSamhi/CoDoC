@@ -1,0 +1,35 @@
+
+     * Returns a (possibly empty) collection view of the certificates read
+     * from the given input stream {@code inStream}.
+     *
+     * <p>In order to take advantage of the specialized certificate format
+     * supported by this certificate factory, each element in
+     * the returned collection view can be typecast to the corresponding
+     * certificate class. For example, if this certificate
+     * factory implements X.509 certificates, the elements in the returned
+     * collection can be typecast to the {@code X509Certificate} class.
+     *
+     * <p>In the case of a certificate factory for X.509 certificates,
+     * {@code inStream} may contain a sequence of DER-encoded certificates
+     * in the formats described for
+     * {@link #generateCertificate(java.io.InputStream) generateCertificate}.
+     * In addition, {@code inStream} may contain a PKCS#7 certificate
+     * chain. This is a PKCS#7 <i>SignedData</i> object, with the only
+     * significant field being <i>certificates</i>. In particular, the
+     * signature and the contents are ignored. This format allows multiple
+     * certificates to be downloaded at once. If no certificates are present,
+     * an empty collection is returned.
+     *
+     * <p>Note that if the given input stream does not support
+     * {@link java.io.InputStream#mark(int) mark} and
+     * {@link java.io.InputStream#reset() reset}, this method will
+     * consume the entire input stream.
+     *
+     * @param inStream the input stream with the certificates.
+     *
+     * @return a (possibly empty) collection view of
+     * java.security.cert.Certificate objects
+     * initialized with the data from the input stream.
+     *
+     * @exception CertificateException on parsing errors.
+     

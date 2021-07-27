@@ -1,0 +1,14 @@
+public static String getName(int codePoint){
+    if (!isValidCodePoint(codePoint)) {
+        throw new IllegalArgumentException();
+    }
+    String name = getNameImpl(codePoint);
+    if (name != null)
+        return name;
+    if (getType(codePoint) == UNASSIGNED)
+        return null;
+    UnicodeBlock block = UnicodeBlock.of(codePoint);
+    if (block != null)
+        return block.toString().replace('_', ' ') + " " + Integer.toHexString(codePoint).toUpperCase(Locale.ENGLISH);
+    return Integer.toHexString(codePoint).toUpperCase(Locale.ENGLISH);
+}

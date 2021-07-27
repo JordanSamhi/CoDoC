@@ -1,0 +1,33 @@
+
+     * Adds a name to the pathToNames criterion. The {@code X509Certificate}
+     * must not include name constraints that would prohibit building a
+     * path to the specified name.
+     * <p>
+     * This method allows the caller to add a name to the set of names which
+     * the {@code X509Certificates}'s name constraints must permit.
+     * The specified name is added to any previous value for the
+     * pathToNames criterion.  If the name is a duplicate, it may be ignored.
+     * <p>
+     * The name is provided in string format. RFC 822, DNS, and URI names
+     * use the well-established string formats for those types (subject to
+     * the restrictions included in RFC 3280). IPv4 address names are
+     * supplied using dotted quad notation. OID address names are represented
+     * as a series of nonnegative integers separated by periods. And
+     * directory names (distinguished names) are supplied in RFC 2253 format.
+     * No standard string format is defined for otherNames, X.400 names,
+     * EDI party names, IPv6 address names, or any other type of names. They
+     * should be specified using the
+     * {@link #addPathToName(int type, byte [] name)
+     * addPathToName(int type, byte [] name)} method.
+     * <p>
+     * <strong>Note:</strong> for distinguished names, use
+     * {@linkplain #addPathToName(int, byte[])} instead.
+     * This method should not be relied on as it can fail to match some
+     * certificates because of a loss of encoding information in the RFC 2253
+     * String form of some distinguished names.
+     *
+     * @param type the name type (0-8, as specified in
+     *             RFC 3280, section 4.2.1.7)
+     * @param name the name in string form
+     * @throws IOException if a parsing error occurs
+     

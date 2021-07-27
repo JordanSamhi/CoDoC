@@ -1,0 +1,11 @@
+public BigInteger modPow(@NonNull BigInteger exponent, @NonNull BigInteger modulus){
+    if (modulus.signum() <= 0) {
+        throw new ArithmeticException("modulus.signum() <= 0");
+    }
+    int exponentSignum = exponent.signum();
+    if (exponentSignum == 0) {
+        return ONE.mod(modulus);
+    }
+    BigInteger base = exponentSignum < 0 ? modInverse(modulus) : this;
+    return new BigInteger(BigInt.modExp(base.getBigInt(), exponent.getBigInt(), modulus.getBigInt()));
+}

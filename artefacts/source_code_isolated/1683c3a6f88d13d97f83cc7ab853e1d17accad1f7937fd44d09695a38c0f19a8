@@ -1,0 +1,11 @@
+public void addTouchables(ArrayList<View> views){
+    super.addTouchables(views);
+    final int count = mChildrenCount;
+    final View[] children = mChildren;
+    for (int i = 0; i < count; i++) {
+        final View child = children[i];
+        if ((child.mViewFlags & VISIBILITY_MASK) == VISIBLE) {
+            child.addTouchables(views);
+        }
+    }
+}

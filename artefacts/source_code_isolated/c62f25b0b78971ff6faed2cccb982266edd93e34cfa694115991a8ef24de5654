@@ -1,0 +1,105 @@
+public void initialize(AlgorithmParameterSpec params, SecureRandom random) throws InvalidAlgorithmParameterException{
+    resetAll();
+    boolean success = false;
+    try {
+        if (params == null) {
+            throw new InvalidAlgorithmParameterException("Must supply params of type " + KeyGenParameterSpec.class.getName() + " or " + KeyPairGeneratorSpec.class.getName());
+        }
+        KeyGenParameterSpec spec;
+        boolean encryptionAtRestRequired = false;
+        int keymasterAlgorithm = mOriginalKeymasterAlgorithm;
+        if (params instanceof KeyGenParameterSpec) {
+            spec = (KeyGenParameterSpec) params;
+        } else if (params instanceof KeyPairGeneratorSpec) {
+            KeyPairGeneratorSpec legacySpec = (KeyPairGeneratorSpec) params;
+            try {
+                KeyGenParameterSpec.Builder specBuilder;
+                String specKeyAlgorithm = legacySpec.getKeyType();
+                if (specKeyAlgorithm != null) {
+                    try {
+                        keymasterAlgorithm = KeyProperties.KeyAlgorithm.toKeymasterAsymmetricKeyAlgorithm(specKeyAlgorithm);
+                    } catch (IllegalArgumentException e) {
+                        throw new InvalidAlgorithmParameterException("Invalid key type in parameters", e);
+                    }
+                }
+                switch(keymasterAlgorithm) {
+                    case KeymasterDefs.KM_ALGORITHM_EC:
+                        specBuilder = new KeyGenParameterSpec.Builder(legacySpec.getKeystoreAlias(), KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY);
+                        specBuilder.setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_SHA1, KeyProperties.DIGEST_SHA224, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA384, KeyProperties.DIGEST_SHA512);
+                        break;
+                    case KeymasterDefs.KM_ALGORITHM_RSA:
+                        specBuilder = new KeyGenParameterSpec.Builder(legacySpec.getKeystoreAlias(), KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT | KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY);
+                        specBuilder.setDigests(KeyProperties.DIGEST_NONE, KeyProperties.DIGEST_MD5, KeyProperties.DIGEST_SHA1, KeyProperties.DIGEST_SHA224, KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA384, KeyProperties.DIGEST_SHA512);
+                        specBuilder.setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE, KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1, KeyProperties.ENCRYPTION_PADDING_RSA_OAEP);
+                        specBuilder.setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1, KeyProperties.SIGNATURE_PADDING_RSA_PSS);
+                        specBuilder.setRandomizedEncryptionRequired(false);
+                        break;
+                    default:
+                        throw new ProviderException("Unsupported algorithm: " + mKeymasterAlgorithm);
+                }
+                if (legacySpec.getKeySize() != -1) {
+                    specBuilder.setKeySize(legacySpec.getKeySize());
+                }
+                if (legacySpec.getAlgorithmParameterSpec() != null) {
+                    specBuilder.setAlgorithmParameterSpec(legacySpec.getAlgorithmParameterSpec());
+                }
+                specBuilder.setCertificateSubject(legacySpec.getSubjectDN());
+                specBuilder.setCertificateSerialNumber(legacySpec.getSerialNumber());
+                specBuilder.setCertificateNotBefore(legacySpec.getStartDate());
+                specBuilder.setCertificateNotAfter(legacySpec.getEndDate());
+                encryptionAtRestRequired = legacySpec.isEncryptionRequired();
+                specBuilder.setUserAuthenticationRequired(false);
+                spec = specBuilder.build();
+            } catch (NullPointerException | IllegalArgumentException e) {
+                throw new InvalidAlgorithmParameterException(e);
+            }
+        } else {
+            throw new InvalidAlgorithmParameterException("Unsupported params class: " + params.getClass().getName() + ". Supported: " + KeyGenParameterSpec.class.getName() + ", " + KeyPairGeneratorSpec.class.getName());
+        }
+        mEntryAlias = spec.getKeystoreAlias();
+        mEntryUid = spec.getUid();
+        mSpec = spec;
+        mKeymasterAlgorithm = keymasterAlgorithm;
+        mEncryptionAtRestRequired = encryptionAtRestRequired;
+        mKeySizeBits = spec.getKeySize();
+        initAlgorithmSpecificParameters();
+        if (mKeySizeBits == -1) {
+            mKeySizeBits = getDefaultKeySize(keymasterAlgorithm);
+        }
+        checkValidKeySize(keymasterAlgorithm, mKeySizeBits, mSpec.isStrongBoxBacked());
+        if (spec.getKeystoreAlias() == null) {
+            throw new InvalidAlgorithmParameterException("KeyStore entry alias not provided");
+        }
+        String jcaKeyAlgorithm;
+        try {
+            jcaKeyAlgorithm = KeyProperties.KeyAlgorithm.fromKeymasterAsymmetricKeyAlgorithm(keymasterAlgorithm);
+            mKeymasterPurposes = KeyProperties.Purpose.allToKeymaster(spec.getPurposes());
+            mKeymasterBlockModes = KeyProperties.BlockMode.allToKeymaster(spec.getBlockModes());
+            mKeymasterEncryptionPaddings = KeyProperties.EncryptionPadding.allToKeymaster(spec.getEncryptionPaddings());
+            if (((spec.getPurposes() & KeyProperties.PURPOSE_ENCRYPT) != 0) && (spec.isRandomizedEncryptionRequired())) {
+                for (int keymasterPadding : mKeymasterEncryptionPaddings) {
+                    if (!KeymasterUtils.isKeymasterPaddingSchemeIndCpaCompatibleWithAsymmetricCrypto(keymasterPadding)) {
+                        throw new InvalidAlgorithmParameterException("Randomized encryption (IND-CPA) required but may be violated" + " by padding scheme: " + KeyProperties.EncryptionPadding.fromKeymaster(keymasterPadding) + ". See " + KeyGenParameterSpec.class.getName() + " documentation.");
+                    }
+                }
+            }
+            mKeymasterSignaturePaddings = KeyProperties.SignaturePadding.allToKeymaster(spec.getSignaturePaddings());
+            if (spec.isDigestsSpecified()) {
+                mKeymasterDigests = KeyProperties.Digest.allToKeymaster(spec.getDigests());
+            } else {
+                mKeymasterDigests = EmptyArray.INT;
+            }
+            KeymasterUtils.addUserAuthArgs(new KeymasterArguments(), mSpec);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new InvalidAlgorithmParameterException(e);
+        }
+        mJcaKeyAlgorithm = jcaKeyAlgorithm;
+        mRng = random;
+        mKeyStore = KeyStore.getInstance();
+        success = true;
+    } finally {
+        if (!success) {
+            resetAll();
+        }
+    }
+}

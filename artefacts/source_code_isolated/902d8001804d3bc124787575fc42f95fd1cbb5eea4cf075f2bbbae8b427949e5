@@ -1,0 +1,34 @@
+public String toString(){
+    StringBuilder s = new StringBuilder();
+    s.append("Criteria[");
+    s.append("power=").append(requirementToString(mPowerRequirement)).append(", ");
+    s.append("accuracy=").append(requirementToString(mHorizontalAccuracy));
+    if (mVerticalAccuracy != NO_REQUIREMENT) {
+        s.append(", verticalAccuracy=").append(requirementToString(mVerticalAccuracy));
+    }
+    if (mSpeedAccuracy != NO_REQUIREMENT) {
+        s.append(", speedAccuracy=").append(requirementToString(mSpeedAccuracy));
+    }
+    if (mBearingAccuracy != NO_REQUIREMENT) {
+        s.append(", bearingAccuracy=").append(requirementToString(mBearingAccuracy));
+    }
+    if (mAltitudeRequired || mBearingRequired || mSpeedRequired) {
+        s.append(", required=[");
+        if (mAltitudeRequired) {
+            s.append("altitude, ");
+        }
+        if (mBearingRequired) {
+            s.append("bearing, ");
+        }
+        if (mSpeedRequired) {
+            s.append("speed, ");
+        }
+        s.setLength(s.length() - 2);
+        s.append("]");
+    }
+    if (mCostAllowed) {
+        s.append(", costAllowed");
+    }
+    s.append(']');
+    return s.toString();
+}

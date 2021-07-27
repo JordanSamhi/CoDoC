@@ -1,0 +1,11 @@
+public Builder set(int field, int value){
+    if (field < 0 || field >= FIELD_COUNT) {
+        throw new IllegalArgumentException("field is invalid");
+    }
+    if (isInstantSet()) {
+        throw new IllegalStateException("instant has been set");
+    }
+    allocateFields();
+    internalSet(field, value);
+    return this;
+}

@@ -1,0 +1,6 @@
+public static Collector<T, ?, LongSummaryStatistics> summarizingLong(ToLongFunction<? super T> mapper){
+    return new CollectorImpl<T, LongSummaryStatistics, LongSummaryStatistics>(LongSummaryStatistics::new, (r, t) -> r.accept(mapper.applyAsLong(t)), (l, r) -> {
+        l.combine(r);
+        return l;
+    }, CH_ID);
+}

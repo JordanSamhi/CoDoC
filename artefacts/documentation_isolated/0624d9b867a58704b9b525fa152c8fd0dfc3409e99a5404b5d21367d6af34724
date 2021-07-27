@@ -1,0 +1,30 @@
+
+     * Attempts to acquire an exclusive lock on this channel's file.
+     *
+     * <p> An invocation of this method of the form {@code ch.tryLock()}
+     * behaves in exactly the same way as the invocation
+     *
+     * <pre>
+     *     ch.{@link #tryLock(long,long,boolean) tryLock}(0L, Long.MAX_VALUE, false) </pre>
+     *
+     * @return  A lock object representing the newly-acquired lock,
+     *          or {@code null} if the lock could not be acquired
+     *          because another program holds an overlapping lock
+     *
+     * @throws  ClosedChannelException
+     *          If this channel is closed
+     * @throws  OverlappingFileLockException
+     *          If a lock that overlaps the requested region is already held by
+     *          this Java virtual machine, or if another thread is already
+     *          blocked in this method and is attempting to lock an overlapping
+     *          region
+     * @throws  NonWritableChannelException
+     *          If {@code shared} is false but this channel was not opened for writing
+     *
+     * @throws  IOException
+     *          If some other I/O error occurs
+     *
+     * @see     #lock(Object,CompletionHandler)
+     * @see     #lock(long,long,boolean,Object,CompletionHandler)
+     * @see     #tryLock(long,long,boolean)
+     

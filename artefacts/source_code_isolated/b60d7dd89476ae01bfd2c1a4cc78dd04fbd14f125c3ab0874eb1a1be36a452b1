@@ -1,0 +1,11 @@
+public int capture(CaptureRequest request, CaptureCallback callback, Handler handler) throws CameraAccessException{
+    checkCaptureRequest(request);
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        handler = checkHandler(handler, callback);
+        if (DEBUG) {
+            Log.v(TAG, mIdString + "capture - request " + request + ", callback " + callback + " handler " + handler);
+        }
+        return addPendingSequence(mDeviceImpl.capture(request, createCaptureCallbackProxy(handler, callback), mDeviceExecutor));
+    }
+}

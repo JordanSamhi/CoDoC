@@ -1,0 +1,34 @@
+
+     * Returns a string representation of the X.500 distinguished name
+     * using the specified format. Valid values for the format are
+     * "RFC1779" and "RFC2253" (case insensitive). "CANONICAL" is not
+     * permitted and an {@code IllegalArgumentException} will be thrown.
+     *
+     * <p>This method returns Strings in the format as specified in
+     * {@link #getName(String)} and also emits additional attribute type
+     * keywords for OIDs that have entries in the {@code oidMap}
+     * parameter. OID entries in the oidMap take precedence over the default
+     * OIDs recognized by {@code getName(String)}.
+     * Improperly specified OIDs are ignored; however if an OID
+     * in the name maps to an improperly specified keyword, an
+     * {@code IllegalArgumentException} is thrown.
+     *
+     * <p> Additional standard formats may be introduced in the future.
+     *
+     * <p> Warning: additional attribute type keywords may not be recognized
+     * by other implementations; therefore do not use this method if
+     * you are unsure if these keywords will be recognized by other
+     * implementations.
+     *
+     * @param format the format to use
+     * @param oidMap an OID map, where each key is an object identifier in
+     *  String form (a sequence of nonnegative integers separated by periods)
+     *  that maps to a corresponding attribute type keyword String.
+     *  The map may be empty but never {@code null}.
+     * @return a string representation of this {@code X500Principal}
+     *          using the specified format
+     * @throws IllegalArgumentException if the specified format is invalid,
+     *  null, or an OID in the name maps to an improperly specified keyword
+     * @throws NullPointerException if {@code oidMap} is {@code null}
+     * @since 1.6
+     

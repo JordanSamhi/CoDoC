@@ -1,0 +1,18 @@
+public void draw(@NonNull Canvas canvas){
+    if (mState.mNativePtr == 0) {
+        throw new IllegalStateException("called draw on empty AnimatedImageDrawable");
+    }
+    if (mStarting) {
+        mStarting = false;
+        postOnAnimationStart();
+    }
+    long nextUpdate = nDraw(mState.mNativePtr, canvas.getNativeCanvasWrapper());
+    if (nextUpdate > 0) {
+        if (mRunnable == null) {
+            mRunnable = this::invalidateSelf;
+        }
+        scheduleSelf(mRunnable, nextUpdate + SystemClock.uptimeMillis());
+    } else if (nextUpdate == FINISHED) {
+        postOnAnimationEnd();
+    }
+}

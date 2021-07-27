@@ -1,9 +1,5 @@
-public static BrightnessCorrection loadFromXml(XmlPullParser parser) throws IOException, XmlPullParserException{
-    final int depth = parser.getDepth();
-    while (XmlUtils.nextElementWithin(parser, depth)) {
-        if (TAG_SCALE_AND_TRANSLATE_LOG.equals(parser.getName())) {
-            return ScaleAndTranslateLog.loadFromXml(parser);
-        }
-    }
-    return null;
+ static BrightnessCorrection loadFromXml(XmlPullParser parser) throws IOException, XmlPullParserException{
+    final float scale = loadFloatFromXml(parser, ATTR_SCALE);
+    final float translate = loadFloatFromXml(parser, ATTR_TRANSLATE);
+    return BrightnessCorrection.createScaleAndTranslateLog(scale, translate);
 }

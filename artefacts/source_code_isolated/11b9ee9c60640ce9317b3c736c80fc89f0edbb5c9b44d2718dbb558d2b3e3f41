@@ -1,0 +1,36 @@
+public void calculateRemaining(BatterySipper app, BatteryStats stats, long rawRealtimeUs, long rawUptimeUs, int statsType){
+    double power = 0;
+    long signalTimeMs = 0;
+    long noCoverageTimeMs = 0;
+    for (int i = 0; i < mPowerBins.length; i++) {
+        long strengthTimeMs = stats.getPhoneSignalStrengthTime(i, rawRealtimeUs, statsType) / 1000;
+        final double p = (strengthTimeMs * mPowerBins[i]) / (60 * 60 * 1000);
+        if (DEBUG && p != 0) {
+            Log.d(TAG, "Cell strength #" + i + ": time=" + strengthTimeMs + " power=" + BatteryStatsHelper.makemAh(p));
+        }
+        power += p;
+        signalTimeMs += strengthTimeMs;
+        if (i == 0) {
+            noCoverageTimeMs = strengthTimeMs;
+        }
+    }
+    final long scanningTimeMs = stats.getPhoneSignalScanningTime(rawRealtimeUs, statsType) / 1000;
+    final double p = (scanningTimeMs * mPowerScan) / (60 * 60 * 1000);
+    if (DEBUG && p != 0) {
+        Log.d(TAG, "Cell radio scanning: time=" + scanningTimeMs + " power=" + BatteryStatsHelper.makemAh(p));
+    }
+    power += p;
+    long radioActiveTimeMs = mStats.getMobileRadioActiveTime(rawRealtimeUs, statsType) / 1000;
+    long remainingActiveTimeMs = radioActiveTimeMs - mTotalAppMobileActiveMs;
+    if (remainingActiveTimeMs > 0) {
+        power += (mPowerRadioOn * remainingActiveTimeMs) / (1000 * 60 * 60);
+    }
+    if (power != 0) {
+        if (signalTimeMs != 0) {
+            app.noCoveragePercent = noCoverageTimeMs * 100.0 / signalTimeMs;
+        }
+        app.mobileActive = remainingActiveTimeMs;
+        app.mobileActiveCount = stats.getMobileRadioActiveUnknownCount(statsType);
+        app.mobileRadioPowerMah = power;
+    }
+}

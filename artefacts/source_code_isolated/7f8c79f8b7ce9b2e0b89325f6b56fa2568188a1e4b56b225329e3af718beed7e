@@ -1,0 +1,9 @@
+public int getDischargeAmountScreenOffSinceCharge(){
+    synchronized (this) {
+        int val = mDischargeAmountScreenOffSinceCharge;
+        if (mOnBattery && isScreenOff(mScreenState) && mDischargeCurrentLevel < mDischargeScreenOffUnplugLevel) {
+            val += mDischargeScreenOffUnplugLevel - mDischargeCurrentLevel;
+        }
+        return val + getDischargeAmountScreenDozeSinceCharge();
+    }
+}

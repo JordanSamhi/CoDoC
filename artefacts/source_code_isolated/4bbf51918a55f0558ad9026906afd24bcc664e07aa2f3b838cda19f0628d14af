@@ -1,0 +1,7 @@
+public Optional<T> filter(Predicate<? super T> predicate){
+    Objects.requireNonNull(predicate);
+    if (!isPresent())
+        return this;
+    else
+        return predicate.test(value) ? this : empty();
+}

@@ -1,0 +1,17 @@
+public long to(TimeUnit unit){
+    Objects.requireNonNull(unit, "unit");
+    if (this.unit != null) {
+        return unit.convert(this.value, this.unit);
+    } else {
+        long secs = unit.convert(instant.getEpochSecond(), TimeUnit.SECONDS);
+        if (secs == Long.MIN_VALUE || secs == Long.MAX_VALUE) {
+            return secs;
+        }
+        long nanos = unit.convert(instant.getNano(), TimeUnit.NANOSECONDS);
+        long r = secs + nanos;
+        if (((secs ^ r) & (nanos ^ r)) < 0) {
+            return (secs < 0) ? Long.MIN_VALUE : Long.MAX_VALUE;
+        }
+        return r;
+    }
+}

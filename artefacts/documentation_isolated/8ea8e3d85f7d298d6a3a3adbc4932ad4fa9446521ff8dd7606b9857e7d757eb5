@@ -1,0 +1,43 @@
+
+     * Retrieves the contents of this URL connection.
+     * <p>
+     * This method first determines the content type of the object by
+     * calling the {@code getContentType} method. If this is
+     * the first time that the application has seen that specific content
+     * type, a content handler for that content type is created:
+     * <ol>
+     * <li>If the application has set up a content handler factory instance
+     *     using the {@code setContentHandlerFactory} method, the
+     *     {@code createContentHandler} method of that instance is called
+     *     with the content type as an argument; the result is a content
+     *     handler for that content type.
+     * <li>If no content handler factory has yet been set up, or if the
+     *     factory's {@code createContentHandler} method returns
+     *     {@code null}, then the application loads the class named:
+     *     <blockquote><pre>
+     *         sun.net.www.content.&lt;<i>contentType</i>&gt;
+     *     </pre></blockquote>
+     *     where &lt;<i>contentType</i>&gt; is formed by taking the
+     *     content-type string, replacing all slash characters with a
+     *     {@code period} ('.'), and all other non-alphanumeric characters
+     *     with the underscore character '{@code _}'. The alphanumeric
+     *     characters are specifically the 26 uppercase ASCII letters
+     *     '{@code A}' through '{@code Z}', the 26 lowercase ASCII
+     *     letters '{@code a}' through '{@code z}', and the 10 ASCII
+     *     digits '{@code 0}' through '{@code 9}'. If the specified
+     *     class does not exist, or is not a subclass of
+     *     {@code ContentHandler}, then an
+     *     {@code UnknownServiceException} is thrown.
+     * </ol>
+     *
+     * @return     the object fetched. The {@code instanceof} operator
+     *               should be used to determine the specific kind of object
+     *               returned.
+     * @exception  IOException              if an I/O error occurs while
+     *               getting the content.
+     * @exception  UnknownServiceException  if the protocol does not support
+     *               the content type.
+     * @see        java.net.ContentHandlerFactory#createContentHandler(java.lang.String)
+     * @see        java.net.URLConnection#getContentType()
+     * @see        java.net.URLConnection#setContentHandlerFactory(java.net.ContentHandlerFactory)
+     

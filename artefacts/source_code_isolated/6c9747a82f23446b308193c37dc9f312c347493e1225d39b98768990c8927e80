@@ -1,0 +1,12 @@
+public Object clone(){
+    try {
+        X509CRLSelector copy = (X509CRLSelector) super.clone();
+        if (issuerNames != null) {
+            copy.issuerNames = new HashSet<Object>(issuerNames);
+            copy.issuerX500Principals = new HashSet<X500Principal>(issuerX500Principals);
+        }
+        return copy;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e.toString(), e);
+    }
+}

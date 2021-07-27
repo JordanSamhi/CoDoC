@@ -1,0 +1,7 @@
+public DoubleStream doubles(long streamSize, double randomNumberOrigin, double randomNumberBound){
+    if (streamSize < 0L)
+        throw new IllegalArgumentException(BAD_SIZE);
+    if (!(randomNumberOrigin < randomNumberBound))
+        throw new IllegalArgumentException(BAD_RANGE);
+    return StreamSupport.doubleStream(new RandomDoublesSpliterator(0L, streamSize, randomNumberOrigin, randomNumberBound), false);
+}

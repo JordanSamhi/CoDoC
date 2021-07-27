@@ -1,0 +1,38 @@
+public Formatter format(Locale l, String format, Object... args){
+    ensureOpen();
+    int last = -1;
+    int lasto = -1;
+    FormatString[] fsa = parse(format);
+    for (int i = 0; i < fsa.length; i++) {
+        FormatString fs = fsa[i];
+        int index = fs.index();
+        try {
+            switch(index) {
+                case -2:
+                    fs.print(null, l);
+                    break;
+                case -1:
+                    if (last < 0 || (args != null && last > args.length - 1))
+                        throw new MissingFormatArgumentException(fs.toString());
+                    fs.print((args == null ? null : args[last]), l);
+                    break;
+                case 0:
+                    lasto++;
+                    last = lasto;
+                    if (args != null && lasto > args.length - 1)
+                        throw new MissingFormatArgumentException(fs.toString());
+                    fs.print((args == null ? null : args[lasto]), l);
+                    break;
+                default:
+                    last = index - 1;
+                    if (args != null && last > args.length - 1)
+                        throw new MissingFormatArgumentException(fs.toString());
+                    fs.print((args == null ? null : args[last]), l);
+                    break;
+            }
+        } catch (IOException x) {
+            lastException = x;
+        }
+    }
+    return this;
+}

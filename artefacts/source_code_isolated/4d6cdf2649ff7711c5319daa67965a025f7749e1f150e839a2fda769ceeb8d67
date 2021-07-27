@@ -1,0 +1,92 @@
+public void draw(Canvas canvas){
+    if (!ensureValidRect()) {
+        return;
+    }
+    final int prevFillAlpha = mFillPaint.getAlpha();
+    final int prevStrokeAlpha = mStrokePaint != null ? mStrokePaint.getAlpha() : 0;
+    final int currFillAlpha = modulateAlpha(prevFillAlpha);
+    final int currStrokeAlpha = modulateAlpha(prevStrokeAlpha);
+    final boolean haveStroke = currStrokeAlpha > 0 && mStrokePaint != null && mStrokePaint.getStrokeWidth() > 0;
+    final boolean haveFill = currFillAlpha > 0;
+    final GradientState st = mGradientState;
+    final ColorFilter colorFilter = mColorFilter != null ? mColorFilter : mBlendModeColorFilter;
+    final boolean useLayer = haveStroke && haveFill && st.mShape != LINE && currStrokeAlpha < 255 && (mAlpha < 255 || colorFilter != null);
+    if (useLayer) {
+        if (mLayerPaint == null) {
+            mLayerPaint = new Paint();
+        }
+        mLayerPaint.setDither(st.mDither);
+        mLayerPaint.setAlpha(mAlpha);
+        mLayerPaint.setColorFilter(colorFilter);
+        float rad = mStrokePaint.getStrokeWidth();
+        canvas.saveLayer(mRect.left - rad, mRect.top - rad, mRect.right + rad, mRect.bottom + rad, mLayerPaint);
+        mFillPaint.setColorFilter(null);
+        mStrokePaint.setColorFilter(null);
+    } else {
+        mFillPaint.setAlpha(currFillAlpha);
+        mFillPaint.setDither(st.mDither);
+        mFillPaint.setColorFilter(colorFilter);
+        if (colorFilter != null && st.mSolidColors == null) {
+            mFillPaint.setColor(mAlpha << 24);
+        }
+        if (haveStroke) {
+            mStrokePaint.setAlpha(currStrokeAlpha);
+            mStrokePaint.setDither(st.mDither);
+            mStrokePaint.setColorFilter(colorFilter);
+        }
+    }
+    switch(st.mShape) {
+        case RECTANGLE:
+            if (st.mRadiusArray != null) {
+                buildPathIfDirty();
+                canvas.drawPath(mPath, mFillPaint);
+                if (haveStroke) {
+                    canvas.drawPath(mPath, mStrokePaint);
+                }
+            } else if (st.mRadius > 0.0f) {
+                float rad = Math.min(st.mRadius, Math.min(mRect.width(), mRect.height()) * 0.5f);
+                canvas.drawRoundRect(mRect, rad, rad, mFillPaint);
+                if (haveStroke) {
+                    canvas.drawRoundRect(mRect, rad, rad, mStrokePaint);
+                }
+            } else {
+                if (mFillPaint.getColor() != 0 || colorFilter != null || mFillPaint.getShader() != null) {
+                    canvas.drawRect(mRect, mFillPaint);
+                }
+                if (haveStroke) {
+                    canvas.drawRect(mRect, mStrokePaint);
+                }
+            }
+            break;
+        case OVAL:
+            canvas.drawOval(mRect, mFillPaint);
+            if (haveStroke) {
+                canvas.drawOval(mRect, mStrokePaint);
+            }
+            break;
+        case LINE:
+            {
+                RectF r = mRect;
+                float y = r.centerY();
+                if (haveStroke) {
+                    canvas.drawLine(r.left, y, r.right, y, mStrokePaint);
+                }
+                break;
+            }
+        case RING:
+            Path path = buildRing(st);
+            canvas.drawPath(path, mFillPaint);
+            if (haveStroke) {
+                canvas.drawPath(path, mStrokePaint);
+            }
+            break;
+    }
+    if (useLayer) {
+        canvas.restore();
+    } else {
+        mFillPaint.setAlpha(prevFillAlpha);
+        if (haveStroke) {
+            mStrokePaint.setAlpha(prevStrokeAlpha);
+        }
+    }
+}

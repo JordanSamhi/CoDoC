@@ -1,0 +1,10 @@
+public int read() throws IOException{
+    if (blkmode) {
+        if (pos == end) {
+            refill();
+        }
+        return (end >= 0) ? (buf[pos++] & 0xFF) : -1;
+    } else {
+        return in.read();
+    }
+}

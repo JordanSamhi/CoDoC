@@ -1,0 +1,13 @@
+public boolean dispatchTrackballEvent(MotionEvent event){
+    if (super.dispatchTrackballEvent(event)) {
+        return true;
+    }
+    if (DEBUG)
+        Log.d(TAG, "dispatchTrackballEvent(" + event + ")");
+    if (mSession == null) {
+        return false;
+    }
+    InputEvent copiedEvent = event.copy();
+    int ret = mSession.dispatchInputEvent(copiedEvent, copiedEvent, mFinishedInputEventCallback, mHandler);
+    return ret != Session.DISPATCH_NOT_HANDLED;
+}

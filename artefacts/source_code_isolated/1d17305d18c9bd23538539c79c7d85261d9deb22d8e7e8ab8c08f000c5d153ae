@@ -1,0 +1,28 @@
+public void handleMessage(Message msg){
+    WorkerArgs args = (WorkerArgs) msg.obj;
+    CookieWrapper cw = (CookieWrapper) args.cookie;
+    if (cw == null) {
+        Log.i(LOG_TAG, "Unexpected command (CookieWrapper is null): " + msg.what + " ignored by CallerInfoWorkerHandler, passing onto parent.");
+        super.handleMessage(msg);
+    } else {
+        Log.d(LOG_TAG, "Processing event: " + cw.event + " token (arg1): " + msg.arg1 + " command: " + msg.what + " query URI: " + sanitizeUriToString(args.uri));
+        switch(cw.event) {
+            case EVENT_NEW_QUERY:
+                super.handleMessage(msg);
+                break;
+            case EVENT_EMERGENCY_NUMBER:
+            case EVENT_VOICEMAIL_NUMBER:
+            case EVENT_ADD_LISTENER:
+            case EVENT_END_OF_QUEUE:
+                Message reply = args.handler.obtainMessage(msg.what);
+                reply.obj = args;
+                reply.arg1 = msg.arg1;
+                reply.sendToTarget();
+                break;
+            case EVENT_GET_GEO_DESCRIPTION:
+                handleGeoDescription(msg);
+                break;
+            default:
+        }
+    }
+}

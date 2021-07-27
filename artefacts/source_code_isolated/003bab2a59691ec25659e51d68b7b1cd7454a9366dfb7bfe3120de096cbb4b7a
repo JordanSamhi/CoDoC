@@ -1,0 +1,11 @@
+public boolean onGenericMotionEvent(MotionEvent event){
+    if (mMovement != null && mText instanceof Spannable && mLayout != null) {
+        try {
+            if (mMovement.onGenericMotionEvent(this, mSpannable, event)) {
+                return true;
+            }
+        } catch (AbstractMethodError ex) {
+        }
+    }
+    return super.onGenericMotionEvent(event);
+}

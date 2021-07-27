@@ -1,0 +1,9 @@
+public final void readFully(byte[] b, int off, int len) throws IOException{
+    int n = 0;
+    do {
+        int count = this.read(b, off + n, len - n);
+        if (count < 0)
+            throw new EOFException();
+        n += count;
+    } while (n < len);
+}

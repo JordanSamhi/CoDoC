@@ -1,0 +1,12 @@
+public synchronized void write(byte[] b, int off, int len) throws IOException{
+    if (len >= buf.length) {
+        flushBuffer();
+        out.write(b, off, len);
+        return;
+    }
+    if (len > buf.length - count) {
+        flushBuffer();
+    }
+    System.arraycopy(b, off, buf, count, len);
+    count += len;
+}

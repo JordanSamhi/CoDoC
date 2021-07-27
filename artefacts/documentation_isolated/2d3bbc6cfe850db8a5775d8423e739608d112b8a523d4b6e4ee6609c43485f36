@@ -1,0 +1,48 @@
+
+         * Produces an early-bound method handle for a non-static method.
+         * The receiver must have a supertype {@code defc} in which a method
+         * of the given name and type is accessible to the lookup class.
+         * The method and all its argument types must be accessible to the lookup object.
+         * The type of the method handle will be that of the method,
+         * without any insertion of an additional receiver parameter.
+         * The given receiver will be bound into the method handle,
+         * so that every call to the method handle will invoke the
+         * requested method on the given receiver.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set
+         * <em>and</em> the trailing array argument is not the only argument.
+         * (If the trailing array argument is the only argument,
+         * the given receiver value will be bound to it.)
+         * <p>
+         * This is equivalent to the following code:
+         * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle mh0 = lookup().findVirtual(defc, name, type);
+MethodHandle mh1 = mh0.bindTo(receiver);
+MethodType mt1 = mh1.type();
+if (mh0.isVarargsCollector())
+  mh1 = mh1.asVarargsCollector(mt1.parameterType(mt1.parameterCount()-1));
+return mh1;
+         * }</pre></blockquote>
+         * where {@code defc} is either {@code receiver.getClass()} or a super
+         * type of that class, in which the requested method is accessible
+         * to the lookup class.
+         * (Note that {@code bindTo} does not preserve variable arity.)
+         * @param receiver the object from which the method is accessed
+         * @param name the name of the method
+         * @param type the type of the method, with the receiver argument omitted
+         * @return the desired method handle
+         * @throws NoSuchMethodException if the method does not exist
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @exception SecurityException if a security manager is present and it
+         *                              <a href="MethodHandles.Lookup.html#secmgr">refuses access</a>
+         * @throws NullPointerException if any argument is null
+         * @see MethodHandle#bindTo
+         * @see #findVirtual
+         

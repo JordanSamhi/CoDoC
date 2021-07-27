@@ -1,6 +1,0 @@
-public void testDestinationString_withoutPermission() throws Exception{
-    mShadowContext.denyPermissions(android.Manifest.permission.BACKUP);
-    when(mTransportManager.getTransportCurrentDestinationString(eq(mTransportName))).thenThrow(TransportNotRegisteredException.class);
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    expectThrows(SecurityException.class, () -> backupManagerService.getDestinationString(mTransportName));
-}

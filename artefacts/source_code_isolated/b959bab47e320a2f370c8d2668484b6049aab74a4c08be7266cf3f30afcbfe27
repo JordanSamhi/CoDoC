@@ -1,0 +1,24 @@
+public ZipEntry getNextEntry() throws IOException{
+    JarEntry e;
+    if (first == null) {
+        e = (JarEntry) super.getNextEntry();
+        if (tryManifest) {
+            e = checkManifest(e);
+            tryManifest = false;
+        }
+    } else {
+        e = first;
+        if (first.getName().equalsIgnoreCase(JarIndex.INDEX_NAME))
+            tryManifest = true;
+        first = null;
+    }
+    if (jv != null && e != null) {
+        if (jv.nothingToVerify() == true) {
+            jv = null;
+            mev = null;
+        } else {
+            jv.beginEntry(e, mev);
+        }
+    }
+    return e;
+}

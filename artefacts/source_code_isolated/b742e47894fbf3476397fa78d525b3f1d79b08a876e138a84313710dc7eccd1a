@@ -1,0 +1,11 @@
+public void onClick(View widget){
+    Uri uri = Uri.parse(getURL());
+    Context context = widget.getContext();
+    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+    try {
+        context.startActivity(intent);
+    } catch (ActivityNotFoundException e) {
+        Log.w("URLSpan", "Actvity was not found for intent, " + intent.toString());
+    }
+}

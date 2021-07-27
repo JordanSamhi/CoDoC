@@ -1,0 +1,7 @@
+public void onStopped(){
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> {
+        mSlot = null;
+        callback.onStopped();
+    }));
+    mExecutor.shutdown();
+}

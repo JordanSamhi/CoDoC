@@ -1,0 +1,16 @@
+public ZipEntry getNextEntry() throws IOException{
+    ensureOpen();
+    if (entry != null) {
+        closeEntry();
+    }
+    crc.reset();
+    inf.reset();
+    if ((entry = readLOC()) == null) {
+        return null;
+    }
+    if (entry.method == STORED || entry.method == DEFLATED) {
+        remaining = entry.size;
+    }
+    entryEOF = false;
+    return entry;
+}

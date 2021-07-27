@@ -1,0 +1,14 @@
+public final int doFinal(ByteBuffer input, ByteBuffer output) throws ShortBufferException, IllegalBlockSizeException, BadPaddingException{
+    checkCipherState();
+    if ((input == null) || (output == null)) {
+        throw new IllegalArgumentException("Buffers must not be null");
+    }
+    if (input == output) {
+        throw new IllegalArgumentException("Input and output buffers must " + "not be the same object, consider using buffer.duplicate()");
+    }
+    if (output.isReadOnly()) {
+        throw new ReadOnlyBufferException();
+    }
+    updateProviderIfNeeded();
+    return spi.engineDoFinal(input, output);
+}

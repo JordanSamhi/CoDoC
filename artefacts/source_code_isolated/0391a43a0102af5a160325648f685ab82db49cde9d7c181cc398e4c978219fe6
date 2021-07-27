@@ -1,0 +1,10 @@
+ void forEachRemaining(Consumer<? super Double> action){
+    if (action instanceof DoubleConsumer) {
+        forEachRemaining((DoubleConsumer) action);
+    } else {
+        Objects.requireNonNull(action);
+        if (Tripwire.ENABLED)
+            Tripwire.trip(getClass(), "{0} calling PrimitiveIterator.OfDouble.forEachRemainingDouble(action::accept)");
+        forEachRemaining((DoubleConsumer) action::accept);
+    }
+}

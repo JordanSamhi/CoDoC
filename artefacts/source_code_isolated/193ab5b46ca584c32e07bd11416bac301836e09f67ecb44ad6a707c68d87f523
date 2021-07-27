@@ -1,0 +1,7 @@
+public ApplicationInfo getApplicationInfoAsUser(String packageName, int flags, int userId) throws NameNotFoundException{
+    ApplicationInfo ai = getApplicationInfoAsUserCached(packageName, updateFlagsForApplication(flags, userId), userId);
+    if (ai == null) {
+        throw new NameNotFoundException(packageName);
+    }
+    return maybeAdjustApplicationInfo(ai);
+}

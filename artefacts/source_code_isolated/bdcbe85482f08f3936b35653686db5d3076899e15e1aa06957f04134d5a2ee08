@@ -1,9 +1,0 @@
-public void resetMemory(@EuiccCardManager.ResetOption int options, AsyncResultCallback<Void> callback, Handler handler){
-    sendApduWithSimResetErrorWorkaround(newRequestProvider((RequestBuilder requestBuilder) -> requestBuilder.addStoreData(Asn1Node.newBuilder(Tags.TAG_EUICC_MEMORY_RESET).addChildAsBits(Tags.TAG_CTX_2, options).build().toHex())), response -> {
-        int result = parseSimpleResult(response);
-        if (result != CODE_OK && result != CODE_NOTHING_TO_DELETE) {
-            throw new EuiccCardErrorException(EuiccCardErrorException.OPERATION_RESET_MEMORY, result);
-        }
-        return null;
-    }, callback, handler);
-}

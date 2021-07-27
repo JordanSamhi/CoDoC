@@ -1,0 +1,15 @@
+public boolean equals(Object other){
+    if (this == other) {
+        return true;
+    }
+    if (!(other instanceof X509CRL)) {
+        return false;
+    }
+    try {
+        byte[] thisCRL = X509CRLImpl.getEncodedInternal(this);
+        byte[] otherCRL = X509CRLImpl.getEncodedInternal((X509CRL) other);
+        return Arrays.equals(thisCRL, otherCRL);
+    } catch (CRLException e) {
+        return false;
+    }
+}

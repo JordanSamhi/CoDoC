@@ -1,0 +1,12 @@
+public static GregorianCalendar from(ZonedDateTime zdt){
+    GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone(zdt.getZone()));
+    cal.setGregorianChange(new Date(Long.MIN_VALUE));
+    cal.setFirstDayOfWeek(MONDAY);
+    cal.setMinimalDaysInFirstWeek(4);
+    try {
+        cal.setTimeInMillis(Math.addExact(Math.multiplyExact(zdt.toEpochSecond(), 1000), zdt.get(ChronoField.MILLI_OF_SECOND)));
+    } catch (ArithmeticException ex) {
+        throw new IllegalArgumentException(ex);
+    }
+    return cal;
+}

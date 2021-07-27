@@ -1,0 +1,23 @@
+public static List<FileSystemProvider> installedProviders(){
+    if (installedProviders == null) {
+        FileSystemProvider defaultProvider = FileSystems.getDefault().provider();
+        synchronized (lock) {
+            if (installedProviders == null) {
+                if (loadingProviders) {
+                    throw new Error("Circular loading of installed providers detected");
+                }
+                loadingProviders = true;
+                List<FileSystemProvider> list = AccessController.doPrivileged(new PrivilegedAction<List<FileSystemProvider>>() {
+
+                    @Override
+                    public List<FileSystemProvider> run() {
+                        return loadInstalledProviders();
+                    }
+                });
+                list.add(0, defaultProvider);
+                installedProviders = Collections.unmodifiableList(list);
+            }
+        }
+    }
+    return installedProviders;
+}

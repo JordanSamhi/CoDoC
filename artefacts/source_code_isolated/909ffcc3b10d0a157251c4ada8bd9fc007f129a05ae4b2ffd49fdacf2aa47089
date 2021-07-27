@@ -1,0 +1,17 @@
+public int read(CharBuffer target) throws IOException{
+    int targetRemaining = target.remaining();
+    int remaining = remaining();
+    if (remaining == 0)
+        return -1;
+    int n = Math.min(remaining, targetRemaining);
+    int limit = limit();
+    if (targetRemaining < remaining)
+        limit(position() + n);
+    try {
+        if (n > 0)
+            target.put(this);
+    } finally {
+        limit(limit);
+    }
+    return n;
+}

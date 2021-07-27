@@ -1,0 +1,14 @@
+public static void runFinalization(){
+    boolean shouldRunGC;
+    synchronized (LOCK) {
+        shouldRunGC = runGC;
+        runGC = false;
+    }
+    if (shouldRunGC) {
+        Runtime.getRuntime().gc();
+    }
+    Runtime.getRuntime().runFinalization();
+    synchronized (LOCK) {
+        justRanFinalization = true;
+    }
+}

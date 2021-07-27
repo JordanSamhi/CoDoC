@@ -1,0 +1,6 @@
+public BigDecimal negate(){
+    if (bitLength < 63 || (bitLength == 63 && smallValue != Long.MIN_VALUE)) {
+        return valueOf(-smallValue, scale);
+    }
+    return new BigDecimal(getUnscaledValue().negate(), scale);
+}

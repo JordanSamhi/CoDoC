@@ -1,0 +1,15 @@
+public void unregisterMoveCallback(MoveCallback callback){
+    synchronized (mDelegates) {
+        for (Iterator<MoveCallbackDelegate> i = mDelegates.iterator(); i.hasNext(); ) {
+            final MoveCallbackDelegate delegate = i.next();
+            if (delegate.mCallback == callback) {
+                try {
+                    mPM.unregisterMoveCallback(delegate);
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+                i.remove();
+            }
+        }
+    }
+}

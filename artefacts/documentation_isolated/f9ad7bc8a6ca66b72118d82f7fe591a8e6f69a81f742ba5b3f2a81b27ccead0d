@@ -1,0 +1,63 @@
+
+     * <p>Pre-allocate all buffers for an output Surface.</p>
+     *
+     * <p>Normally, the image buffers for a given output Surface are allocated on-demand,
+     * to minimize startup latency and memory overhead.</p>
+     *
+     * <p>However, in some cases, it may be desirable for the buffers to be allocated before
+     * any requests targeting the Surface are actually submitted to the device. Large buffers
+     * may take some time to allocate, which can result in delays in submitting requests until
+     * sufficient buffers are allocated to reach steady-state behavior. Such delays can cause
+     * bursts to take longer than desired, or cause skips or stutters in preview output.</p>
+     *
+     * <p>The prepare() method can be used to perform this preallocation. It may only be called for
+     * a given output Surface before that Surface is used as a target for a request. The number of
+     * buffers allocated is the sum of the count needed by the consumer providing the output
+     * Surface, and the maximum number needed by the camera device to fill its pipeline. Since this
+     * may be a larger number than what is actually required for steady-state operation, using
+     * prepare may result in higher memory consumption than the normal on-demand behavior results
+     * in. Prepare() will also delay the time to first output to a given Surface, in exchange for
+     * smoother frame rate once the allocation is complete.</p>
+     *
+     * <p>For example, an application that creates an
+     * {@link android.media.ImageReader#newInstance ImageReader} with a maxImages argument of 10,
+     * but only uses 3 simultaneous Images at once would normally only cause those 3 images to be
+     * allocated (plus what is needed by the camera device for smooth operation).  But using
+     * prepare() on the ImageReader Surface will result in all 10 Images being allocated. So
+     * applications using this method should take care to request only the number of buffers
+     * actually necessary for their application.</p>
+     *
+     * <p>If the same output Surface is used in consecutive sessions (without closing the first
+     * session explicitly), then its already-allocated buffers are carried over, and if it was
+     * used as a target of a capture request in the first session, prepare cannot be called on it
+     * in the second session.</p>
+     *
+     * <p>Once allocation is complete, {@link StateCallback#onSurfacePrepared} will be invoked with
+     * the Surface provided to this method. Between the prepare call and the onSurfacePrepared call,
+     * the Surface provided to prepare must not be used as a target of a CaptureRequest submitted
+     * to this session.</p>
+     *
+     * <p>Note that if 2 surfaces share the same stream via {@link
+     * OutputConfiguration#enableSurfaceSharing} and {@link OutputConfiguration#addSurface},
+     * prepare() only needs to be called on one surface, and {link
+     * StateCallback#onSurfacePrepared} will be triggered for both surfaces.</p>
+     *
+     * <p>{@link android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY LEGACY}
+     * devices cannot pre-allocate output buffers; for those devices,
+     * {@link StateCallback#onSurfacePrepared} will be immediately called, and no preallocation is
+     * done.</p>
+     *
+     * @param surface the output Surface for which buffers should be pre-allocated. Must be one of
+     * the output Surfaces used to create this session.
+     *
+     * @throws CameraAccessException if the camera device is no longer connected or has
+     *                               encountered a fatal error
+     * @throws IllegalStateException if this session is no longer active, either because the session
+     *                               was explicitly closed, a new session has been created
+     *                               or the camera device has been closed.
+     * @throws IllegalArgumentException if the Surface is invalid, not part of this Session, or has
+     *                                  already been used as a target of a CaptureRequest in this
+     *                                  session or immediately prior sessions.
+     *
+     * @see StateCallback#onSurfacePrepared
+     

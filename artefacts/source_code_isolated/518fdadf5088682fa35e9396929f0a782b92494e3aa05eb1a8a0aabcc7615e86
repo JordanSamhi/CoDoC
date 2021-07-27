@@ -1,0 +1,11 @@
+public void draw(Canvas canvas){
+    final ColorFilter colorFilter = mPaint.getColorFilter();
+    if ((mColorState.mUseColor >>> 24) != 0 || colorFilter != null || mBlendModeColorFilter != null) {
+        if (colorFilter == null) {
+            mPaint.setColorFilter(mBlendModeColorFilter);
+        }
+        mPaint.setColor(mColorState.mUseColor);
+        canvas.drawRect(getBounds(), mPaint);
+        mPaint.setColorFilter(colorFilter);
+    }
+}

@@ -1,0 +1,21 @@
+public void onCreate(){
+    mMidiManager = IMidiManager.Stub.asInterface(ServiceManager.getService(Context.MIDI_SERVICE));
+    MidiDeviceServer server;
+    try {
+        MidiDeviceInfo deviceInfo = mMidiManager.getServiceDeviceInfo(getPackageName(), this.getClass().getName());
+        if (deviceInfo == null) {
+            Log.e(TAG, "Could not find MidiDeviceInfo for MidiDeviceService " + this);
+            return;
+        }
+        mDeviceInfo = deviceInfo;
+        MidiReceiver[] inputPortReceivers = onGetInputPortReceivers();
+        if (inputPortReceivers == null) {
+            inputPortReceivers = new MidiReceiver[0];
+        }
+        server = new MidiDeviceServer(mMidiManager, inputPortReceivers, deviceInfo, mCallback);
+    } catch (RemoteException e) {
+        Log.e(TAG, "RemoteException in IMidiManager.getServiceDeviceInfo");
+        server = null;
+    }
+    mServer = server;
+}

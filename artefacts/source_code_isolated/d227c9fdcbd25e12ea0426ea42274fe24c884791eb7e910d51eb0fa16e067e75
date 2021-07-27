@@ -1,0 +1,24 @@
+public Certificate[] engineGetCertificateChain(String alias){
+    if (alias == null) {
+        throw new NullPointerException("alias == null");
+    }
+    final X509Certificate leaf = (X509Certificate) engineGetCertificate(alias);
+    if (leaf == null) {
+        return null;
+    }
+    final Certificate[] caList;
+    final byte[] caBytes = mKeyStore.get(Credentials.CA_CERTIFICATE + alias, mUid, true);
+    if (caBytes != null) {
+        final Collection<X509Certificate> caChain = toCertificates(caBytes);
+        caList = new Certificate[caChain.size() + 1];
+        final Iterator<X509Certificate> it = caChain.iterator();
+        int i = 1;
+        while (it.hasNext()) {
+            caList[i++] = it.next();
+        }
+    } else {
+        caList = new Certificate[1];
+    }
+    caList[0] = leaf;
+    return caList;
+}

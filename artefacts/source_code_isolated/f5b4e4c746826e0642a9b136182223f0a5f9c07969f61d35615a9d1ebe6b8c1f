@@ -1,0 +1,11 @@
+public final IBinder onBind(Intent intent){
+    return new IRuntimePermissionPresenter.Stub() {
+
+        @Override
+        public void getAppPermissions(String packageName, RemoteCallback callback) {
+            checkNotNull(packageName, "packageName");
+            checkNotNull(callback, "callback");
+            mHandler.sendMessage(obtainMessage(RuntimePermissionPresenterService::getAppPermissions, RuntimePermissionPresenterService.this, packageName, callback));
+        }
+    };
+}

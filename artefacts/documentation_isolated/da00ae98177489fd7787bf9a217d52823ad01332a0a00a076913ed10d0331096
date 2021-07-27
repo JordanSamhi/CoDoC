@@ -1,0 +1,28 @@
+
+     * Gets a suitable offset for the specified local date-time in these rules.
+     * <p>
+     * The mapping from a local date-time to an offset is not straightforward.
+     * There are three cases:
+     * <ul>
+     * <li>Normal, with one valid offset. For the vast majority of the year, the normal
+     *  case applies, where there is a single valid offset for the local date-time.</li>
+     * <li>Gap, with zero valid offsets. This is when clocks jump forward typically
+     *  due to the spring daylight savings change from "winter" to "summer".
+     *  In a gap there are local date-time values with no valid offset.</li>
+     * <li>Overlap, with two valid offsets. This is when clocks are set back typically
+     *  due to the autumn daylight savings change from "summer" to "winter".
+     *  In an overlap there are local date-time values with two valid offsets.</li>
+     * </ul>
+     * Thus, for any given local date-time there can be zero, one or two valid offsets.
+     * This method returns the single offset in the Normal case, and in the Gap or Overlap
+     * case it returns the offset before the transition.
+     * <p>
+     * Since, in the case of Gap and Overlap, the offset returned is a "best" value, rather
+     * than the "correct" value, it should be treated with care. Applications that care
+     * about the correct offset should use a combination of this method,
+     * {@link #getValidOffsets(LocalDateTime)} and {@link #getTransition(LocalDateTime)}.
+     *
+     * @param localDateTime  the local date-time to query, not null, but null
+     *  may be ignored if the rules have a single offset for all instants
+     * @return the best available offset for the local date-time, not null
+     

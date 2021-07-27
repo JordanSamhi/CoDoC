@@ -1,0 +1,8 @@
+public final void init(Key key, AlgorithmParameterSpec params) throws InvalidKeyException, InvalidAlgorithmParameterException{
+    if (spi != null && (key == null || lock == null)) {
+        spi.engineInit(key, params);
+    } else {
+        chooseProvider(key, params);
+    }
+    initialized = true;
+}

@@ -1,0 +1,18 @@
+public void removeTabAt(int position){
+    if (mTabScrollView == null) {
+        return;
+    }
+    int selectedTabPosition = mSelectedTab != null ? mSelectedTab.getPosition() : mSavedTabPosition;
+    mTabScrollView.removeTabAt(position);
+    TabImpl removedTab = mTabs.remove(position);
+    if (removedTab != null) {
+        removedTab.setPosition(-1);
+    }
+    final int newTabCount = mTabs.size();
+    for (int i = position; i < newTabCount; i++) {
+        mTabs.get(i).setPosition(i);
+    }
+    if (selectedTabPosition == position) {
+        selectTab(mTabs.isEmpty() ? null : mTabs.get(Math.max(0, position - 1)));
+    }
+}

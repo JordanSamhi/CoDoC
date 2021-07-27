@@ -1,0 +1,48 @@
+
+     * Appends the value of a date-time field to the formatter using a fixed
+     * width, zero-padded approach.
+     * <p>
+     * The value of the field will be output during a format.
+     * If the value cannot be obtained then an exception will be thrown.
+     * <p>
+     * The value will be zero-padded on the left. If the size of the value
+     * means that it cannot be printed within the width then an exception is thrown.
+     * If the value of the field is negative then an exception is thrown during formatting.
+     * <p>
+     * This method supports a special technique of parsing known as 'adjacent value parsing'.
+     * This technique solves the problem where a value, variable or fixed width, is followed by one or more
+     * fixed length values. The standard parser is greedy, and thus it would normally
+     * steal the digits that are needed by the fixed width value parsers that follow the
+     * variable width one.
+     * <p>
+     * No action is required to initiate 'adjacent value parsing'.
+     * When a call to {@code appendValue} is made, the builder
+     * enters adjacent value parsing setup mode. If the immediately subsequent method
+     * call or calls on the same builder are for a fixed width value, then the parser will reserve
+     * space so that the fixed width values can be parsed.
+     * <p>
+     * For example, consider {@code builder.appendValue(YEAR).appendValue(MONTH_OF_YEAR, 2);}
+     * The year is a variable width parse of between 1 and 19 digits.
+     * The month is a fixed width parse of 2 digits.
+     * Because these were appended to the same builder immediately after one another,
+     * the year parser will reserve two digits for the month to parse.
+     * Thus, the text '201106' will correctly parse to a year of 2011 and a month of 6.
+     * Without adjacent value parsing, the year would greedily parse all six digits and leave
+     * nothing for the month.
+     * <p>
+     * Adjacent value parsing applies to each set of fixed width not-negative values in the parser
+     * that immediately follow any kind of value, variable or fixed width.
+     * Calling any other append method will end the setup of adjacent value parsing.
+     * Thus, in the unlikely event that you need to avoid adjacent value parsing behavior,
+     * simply add the {@code appendValue} to another {@code DateTimeFormatterBuilder}
+     * and add that to this builder.
+     * <p>
+     * If adjacent parsing is active, then parsing must match exactly the specified
+     * number of digits in both strict and lenient modes.
+     * In addition, no positive or negative sign is permitted.
+     *
+     * @param field  the field to append, not null
+     * @param width  the width of the printed field, from 1 to 19
+     * @return this, for chaining, not null
+     * @throws IllegalArgumentException if the width is invalid
+     

@@ -1,0 +1,71 @@
+public double doubleValue(){
+    int sign = signum();
+    int exponent = 1076;
+    int lowestSetBit;
+    int discardedSize;
+    long powerOfTwo = this.bitLength - (long) (scale / LOG10_2);
+    long bits;
+    long tempBits;
+    BigInteger mantissa;
+    if ((powerOfTwo < -1074) || (sign == 0)) {
+        return (sign * 0.0d);
+    } else if (powerOfTwo > 1025) {
+        return (sign * Double.POSITIVE_INFINITY);
+    }
+    mantissa = getUnscaledValue().abs();
+    if (scale <= 0) {
+        mantissa = mantissa.multiply(Multiplication.powerOf10(-scale));
+    } else {
+        BigInteger[] quotAndRem;
+        BigInteger powerOfTen = Multiplication.powerOf10(scale);
+        int k = 100 - (int) powerOfTwo;
+        int compRem;
+        if (k > 0) {
+            mantissa = mantissa.shiftLeft(k);
+            exponent -= k;
+        }
+        quotAndRem = mantissa.divideAndRemainder(powerOfTen);
+        compRem = quotAndRem[1].shiftLeftOneBit().compareTo(powerOfTen);
+        mantissa = quotAndRem[0].shiftLeft(2).add(BigInteger.valueOf((compRem * (compRem + 3)) / 2 + 1));
+        exponent -= 2;
+    }
+    lowestSetBit = mantissa.getLowestSetBit();
+    discardedSize = mantissa.bitLength() - 54;
+    if (discardedSize > 0) {
+        bits = mantissa.shiftRight(discardedSize).longValue();
+        tempBits = bits;
+        if ((((bits & 1) == 1) && (lowestSetBit < discardedSize)) || ((bits & 3) == 3)) {
+            bits += 2;
+        }
+    } else {
+        bits = mantissa.longValue() << -discardedSize;
+        tempBits = bits;
+        if ((bits & 3) == 3) {
+            bits += 2;
+        }
+    }
+    if ((bits & 0x40000000000000L) == 0) {
+        bits >>= 1;
+        exponent += discardedSize;
+    } else {
+        bits >>= 2;
+        exponent += discardedSize + 1;
+    }
+    if (exponent > 2046) {
+        return (sign * Double.POSITIVE_INFINITY);
+    } else if (exponent <= 0) {
+        if (exponent < -53) {
+            return (sign * 0.0d);
+        }
+        bits = tempBits >> 1;
+        tempBits = bits & (-1L >>> (63 + exponent));
+        bits >>= (-exponent);
+        if (((bits & 3) == 3) || (((bits & 1) == 1) && (tempBits != 0) && (lowestSetBit < discardedSize))) {
+            bits += 1;
+        }
+        exponent = 0;
+        bits >>= 1;
+    }
+    bits = (sign & 0x8000000000000000L) | ((long) exponent << 52) | (bits & 0xFFFFFFFFFFFFFL);
+    return Double.longBitsToDouble(bits);
+}

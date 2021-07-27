@@ -1,0 +1,49 @@
+public List<CaptureRequest> createHighSpeedRequestList(CaptureRequest request) throws CameraAccessException{
+    if (request == null) {
+        throw new IllegalArgumentException("Input capture request must not be null");
+    }
+    Collection<Surface> outputSurfaces = request.getTargets();
+    Range<Integer> fpsRange = request.get(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE);
+    StreamConfigurationMap config = mCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+    SurfaceUtils.checkConstrainedHighSpeedSurfaces(outputSurfaces, fpsRange, config);
+    int requestListSize = fpsRange.getUpper() / 30;
+    List<CaptureRequest> requestList = new ArrayList<CaptureRequest>();
+    CameraMetadataNative requestMetadata = new CameraMetadataNative(request.getNativeCopy());
+    CaptureRequest.Builder singleTargetRequestBuilder = new CaptureRequest.Builder(requestMetadata, false, CameraCaptureSession.SESSION_ID_NONE, request.getLogicalCameraId(), null);
+    singleTargetRequestBuilder.setTag(request.getTag());
+    Iterator<Surface> iterator = outputSurfaces.iterator();
+    Surface firstSurface = iterator.next();
+    Surface secondSurface = null;
+    if (outputSurfaces.size() == 1 && SurfaceUtils.isSurfaceForHwVideoEncoder(firstSurface)) {
+        singleTargetRequestBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_PREVIEW);
+    } else {
+        singleTargetRequestBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
+    }
+    singleTargetRequestBuilder.setPartOfCHSRequestList(true);
+    CaptureRequest.Builder doubleTargetRequestBuilder = null;
+    if (outputSurfaces.size() == 2) {
+        requestMetadata = new CameraMetadataNative(request.getNativeCopy());
+        doubleTargetRequestBuilder = new CaptureRequest.Builder(requestMetadata, false, CameraCaptureSession.SESSION_ID_NONE, request.getLogicalCameraId(), null);
+        doubleTargetRequestBuilder.setTag(request.getTag());
+        doubleTargetRequestBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
+        doubleTargetRequestBuilder.addTarget(firstSurface);
+        secondSurface = iterator.next();
+        doubleTargetRequestBuilder.addTarget(secondSurface);
+        doubleTargetRequestBuilder.setPartOfCHSRequestList(true);
+        Surface recordingSurface = firstSurface;
+        if (!SurfaceUtils.isSurfaceForHwVideoEncoder(recordingSurface)) {
+            recordingSurface = secondSurface;
+        }
+        singleTargetRequestBuilder.addTarget(recordingSurface);
+    } else {
+        singleTargetRequestBuilder.addTarget(firstSurface);
+    }
+    for (int i = 0; i < requestListSize; i++) {
+        if (i == 0 && doubleTargetRequestBuilder != null) {
+            requestList.add(doubleTargetRequestBuilder.build());
+        } else {
+            requestList.add(singleTargetRequestBuilder.build());
+        }
+    }
+    return Collections.unmodifiableList(requestList);
+}

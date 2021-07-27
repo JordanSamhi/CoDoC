@@ -1,0 +1,15 @@
+public final int sign(byte[] outbuf, int offset, int len) throws SignatureException{
+    if (outbuf == null) {
+        throw new IllegalArgumentException("No output buffer given");
+    }
+    if (offset < 0 || len < 0) {
+        throw new IllegalArgumentException("offset or len is less than 0");
+    }
+    if (outbuf.length - offset < len) {
+        throw new IllegalArgumentException("Output buffer too small for specified offset and length");
+    }
+    if (state != SIGN) {
+        throw new SignatureException("object not initialized for " + "signing");
+    }
+    return engineSign(outbuf, offset, len);
+}

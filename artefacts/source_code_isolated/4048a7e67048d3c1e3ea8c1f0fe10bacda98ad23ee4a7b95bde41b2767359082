@@ -1,0 +1,13 @@
+public void createCaptureSession(SessionConfiguration config) throws CameraAccessException{
+    if (config == null) {
+        throw new IllegalArgumentException("Invalid session configuration");
+    }
+    List<OutputConfiguration> outputConfigs = config.getOutputConfigurations();
+    if (outputConfigs == null) {
+        throw new IllegalArgumentException("Invalid output configurations");
+    }
+    if (config.getExecutor() == null) {
+        throw new IllegalArgumentException("Invalid executor");
+    }
+    createCaptureSessionInternal(config.getInputConfiguration(), outputConfigs, config.getStateCallback(), config.getExecutor(), config.getSessionType(), config.getSessionParameters());
+}

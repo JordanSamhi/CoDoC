@@ -1,0 +1,40 @@
+public BigDecimal divideToIntegralValue(BigDecimal divisor){
+    BigInteger integralValue;
+    BigInteger powerOfTen;
+    long newScale = (long) this.scale - divisor.scale;
+    long tempScale = 0;
+    int i = 1;
+    int lastPow = TEN_POW.length - 1;
+    if (divisor.isZero()) {
+        throw new ArithmeticException("Division by zero");
+    }
+    if ((divisor.approxPrecision() + newScale > this.approxPrecision() + 1L) || (this.isZero())) {
+        integralValue = BigInteger.ZERO;
+    } else if (newScale == 0) {
+        integralValue = getUnscaledValue().divide(divisor.getUnscaledValue());
+    } else if (newScale > 0) {
+        powerOfTen = Multiplication.powerOf10(newScale);
+        integralValue = getUnscaledValue().divide(divisor.getUnscaledValue().multiply(powerOfTen));
+        integralValue = integralValue.multiply(powerOfTen);
+    } else {
+        powerOfTen = Multiplication.powerOf10(-newScale);
+        integralValue = getUnscaledValue().multiply(powerOfTen).divide(divisor.getUnscaledValue());
+        while (!integralValue.testBit(0)) {
+            BigInteger[] quotAndRem = integralValue.divideAndRemainder(TEN_POW[i]);
+            if ((quotAndRem[1].signum() == 0) && (tempScale - i >= newScale)) {
+                tempScale -= i;
+                if (i < lastPow) {
+                    i++;
+                }
+                integralValue = quotAndRem[0];
+            } else {
+                if (i == 1) {
+                    break;
+                }
+                i = 1;
+            }
+        }
+        newScale = tempScale;
+    }
+    return ((integralValue.signum() == 0) ? zeroScaledBy(newScale) : new BigDecimal(integralValue, safeLongToInt(newScale)));
+}

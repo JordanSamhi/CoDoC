@@ -1,0 +1,13 @@
+public final IBinder onBind(Intent intent){
+    return new IRecommendationService.Stub() {
+
+        @Override
+        public void registerCallbacks(IRecommendationServiceCallbacks callbacks) {
+            if (callbacks != null) {
+                mHandler.obtainMessage(MyHandler.MSG_CONNECT, callbacks).sendToTarget();
+            } else {
+                mHandler.obtainMessage(MyHandler.MSG_DISCONNECT).sendToTarget();
+            }
+        }
+    };
+}

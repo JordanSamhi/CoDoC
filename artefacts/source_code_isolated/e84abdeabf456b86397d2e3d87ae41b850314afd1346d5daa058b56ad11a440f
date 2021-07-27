@@ -1,0 +1,13 @@
+public void finish() throws IOException{
+    ensureOpen();
+    if (finished) {
+        return;
+    }
+    if (current != null) {
+        closeEntry();
+    }
+    long off = written;
+    for (XEntry xentry : xentries) writeCEN(xentry);
+    writeEND(off, written - off);
+    finished = true;
+}

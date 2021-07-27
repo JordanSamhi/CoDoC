@@ -1,0 +1,30 @@
+
+     * Provides a target method handle with one or more <em>bound arguments</em>
+     * in advance of the method handle's invocation.
+     * The formal parameters to the target corresponding to the bound
+     * arguments are called <em>bound parameters</em>.
+     * Returns a new method handle which saves away the bound arguments.
+     * When it is invoked, it receives arguments for any non-bound parameters,
+     * binds the saved arguments to their corresponding parameters,
+     * and calls the original target.
+     * <p>
+     * The type of the new method handle will drop the types for the bound
+     * parameters from the original target type, since the new method handle
+     * will no longer require those arguments to be supplied by its callers.
+     * <p>
+     * Each given argument object must match the corresponding bound parameter type.
+     * If a bound parameter type is a primitive, the argument object
+     * must be a wrapper, and will be unboxed to produce the primitive value.
+     * <p>
+     * The {@code pos} argument selects which parameters are to be bound.
+     * It may range between zero and <i>N-L</i> (inclusively),
+     * where <i>N</i> is the arity of the target method handle
+     * and <i>L</i> is the length of the values array.
+     * @param target the method handle to invoke after the argument is inserted
+     * @param pos where to insert the argument (zero for the first)
+     * @param values the series of arguments to insert
+     * @return a method handle which inserts an additional argument,
+     *         before calling the original method handle
+     * @throws NullPointerException if the target or the {@code values} array is null
+     * @see MethodHandle#bindTo
+     

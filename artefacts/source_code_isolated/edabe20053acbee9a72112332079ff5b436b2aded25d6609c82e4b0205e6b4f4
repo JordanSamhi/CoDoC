@@ -1,0 +1,9 @@
+public void setChunkedStreamingMode(int chunklen){
+    if (connected) {
+        throw new IllegalStateException("Can't set streaming mode: already connected");
+    }
+    if (fixedContentLength != -1 || fixedContentLengthLong != -1) {
+        throw new IllegalStateException("Fixed length streaming mode set");
+    }
+    chunkLength = chunklen <= 0 ? DEFAULT_CHUNK_SIZE : chunklen;
+}

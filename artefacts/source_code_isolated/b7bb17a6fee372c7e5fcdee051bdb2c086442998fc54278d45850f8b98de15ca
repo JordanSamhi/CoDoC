@@ -1,0 +1,48 @@
+public BigDecimal divide(BigDecimal divisor){
+    BigInteger p = this.getUnscaledValue();
+    BigInteger q = divisor.getUnscaledValue();
+    BigInteger gcd;
+    BigInteger[] quotAndRem;
+    long diffScale = (long) scale - divisor.scale;
+    int newScale;
+    int k;
+    int l = 0;
+    int i = 1;
+    int lastPow = FIVE_POW.length - 1;
+    if (divisor.isZero()) {
+        throw new ArithmeticException("Division by zero");
+    }
+    if (p.signum() == 0) {
+        return zeroScaledBy(diffScale);
+    }
+    gcd = p.gcd(q);
+    p = p.divide(gcd);
+    q = q.divide(gcd);
+    k = q.getLowestSetBit();
+    q = q.shiftRight(k);
+    do {
+        quotAndRem = q.divideAndRemainder(FIVE_POW[i]);
+        if (quotAndRem[1].signum() == 0) {
+            l += i;
+            if (i < lastPow) {
+                i++;
+            }
+            q = quotAndRem[0];
+        } else {
+            if (i == 1) {
+                break;
+            }
+            i = 1;
+        }
+    } while (true);
+    if (!q.abs().equals(BigInteger.ONE)) {
+        throw new ArithmeticException("Non-terminating decimal expansion; no exact representable decimal result");
+    }
+    if (q.signum() < 0) {
+        p = p.negate();
+    }
+    newScale = safeLongToInt(diffScale + Math.max(k, l));
+    i = k - l;
+    p = (i > 0) ? Multiplication.multiplyByFivePow(p, i) : p.shiftLeft(-i);
+    return new BigDecimal(p, newScale);
+}

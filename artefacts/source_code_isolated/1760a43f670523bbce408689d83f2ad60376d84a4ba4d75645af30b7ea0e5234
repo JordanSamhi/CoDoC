@@ -1,0 +1,13 @@
+public void useProtocolVersion(int version) throws IOException{
+    if (handles.size() != 0) {
+        throw new IllegalStateException("stream non-empty");
+    }
+    switch(version) {
+        case PROTOCOL_VERSION_1:
+        case PROTOCOL_VERSION_2:
+            protocol = version;
+            break;
+        default:
+            throw new IllegalArgumentException("unknown version: " + version);
+    }
+}

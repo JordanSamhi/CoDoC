@@ -1,0 +1,18 @@
+public boolean hasNext(Pattern pattern){
+    ensureOpen();
+    if (pattern == null)
+        throw new NullPointerException();
+    hasNextPattern = null;
+    saveState();
+    while (true) {
+        if (getCompleteTokenInBuffer(pattern) != null) {
+            matchValid = true;
+            cacheResult();
+            return revertState(true);
+        }
+        if (needInput)
+            readInput();
+        else
+            return revertState(false);
+    }
+}

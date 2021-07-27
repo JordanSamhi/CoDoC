@@ -1,0 +1,11 @@
+public static UnicodeScript of(int codePoint){
+    if (!isValidCodePoint(codePoint))
+        throw new IllegalArgumentException();
+    int type = getType(codePoint);
+    if (type == UNASSIGNED)
+        return UNKNOWN;
+    int index = Arrays.binarySearch(scriptStarts, codePoint);
+    if (index < 0)
+        index = -index - 2;
+    return scripts[index];
+}

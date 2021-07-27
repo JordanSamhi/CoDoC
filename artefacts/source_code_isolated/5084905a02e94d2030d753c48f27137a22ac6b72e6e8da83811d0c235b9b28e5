@@ -1,0 +1,37 @@
+public ChronoLocalDate resolveDate(Map<TemporalField, Long> fieldValues, ResolverStyle resolverStyle){
+    if (fieldValues.containsKey(EPOCH_DAY)) {
+        return dateEpochDay(fieldValues.remove(EPOCH_DAY));
+    }
+    resolveProlepticMonth(fieldValues, resolverStyle);
+    ChronoLocalDate resolved = resolveYearOfEra(fieldValues, resolverStyle);
+    if (resolved != null) {
+        return resolved;
+    }
+    if (fieldValues.containsKey(YEAR)) {
+        if (fieldValues.containsKey(MONTH_OF_YEAR)) {
+            if (fieldValues.containsKey(DAY_OF_MONTH)) {
+                return resolveYMD(fieldValues, resolverStyle);
+            }
+            if (fieldValues.containsKey(ALIGNED_WEEK_OF_MONTH)) {
+                if (fieldValues.containsKey(ALIGNED_DAY_OF_WEEK_IN_MONTH)) {
+                    return resolveYMAA(fieldValues, resolverStyle);
+                }
+                if (fieldValues.containsKey(DAY_OF_WEEK)) {
+                    return resolveYMAD(fieldValues, resolverStyle);
+                }
+            }
+        }
+        if (fieldValues.containsKey(DAY_OF_YEAR)) {
+            return resolveYD(fieldValues, resolverStyle);
+        }
+        if (fieldValues.containsKey(ALIGNED_WEEK_OF_YEAR)) {
+            if (fieldValues.containsKey(ALIGNED_DAY_OF_WEEK_IN_YEAR)) {
+                return resolveYAA(fieldValues, resolverStyle);
+            }
+            if (fieldValues.containsKey(DAY_OF_WEEK)) {
+                return resolveYAD(fieldValues, resolverStyle);
+            }
+        }
+    }
+    return null;
+}

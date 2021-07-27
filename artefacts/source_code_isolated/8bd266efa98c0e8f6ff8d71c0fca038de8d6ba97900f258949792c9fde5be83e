@@ -1,0 +1,36 @@
+public String[] split(CharSequence input, int limit){
+    String[] fast = fastSplit(pattern, input.toString(), limit);
+    if (fast != null) {
+        return fast;
+    }
+    int index = 0;
+    boolean matchLimited = limit > 0;
+    ArrayList<String> matchList = new ArrayList<>();
+    Matcher m = matcher(input);
+    while (m.find()) {
+        if (!matchLimited || matchList.size() < limit - 1) {
+            if (index == 0 && index == m.start() && m.start() == m.end()) {
+                int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+                if (targetSdkVersion > 28) {
+                    continue;
+                }
+            }
+            String match = input.subSequence(index, m.start()).toString();
+            matchList.add(match);
+            index = m.end();
+        } else if (matchList.size() == limit - 1) {
+            String match = input.subSequence(index, input.length()).toString();
+            matchList.add(match);
+            index = m.end();
+        }
+    }
+    if (index == 0)
+        return new String[] { input.toString() };
+    if (!matchLimited || matchList.size() < limit)
+        matchList.add(input.subSequence(index, input.length()).toString());
+    int resultSize = matchList.size();
+    if (limit == 0)
+        while (resultSize > 0 && matchList.get(resultSize - 1).equals("")) resultSize--;
+    String[] result = new String[resultSize];
+    return matchList.subList(0, resultSize).toArray(result);
+}

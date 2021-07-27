@@ -1,0 +1,21 @@
+public void registerDexModule(@NonNull String dexModule, @Nullable DexModuleRegisterCallback callback){
+    boolean isSharedModule = false;
+    try {
+        StructStat stat = Os.stat(dexModule);
+        if ((OsConstants.S_IROTH & stat.st_mode) != 0) {
+            isSharedModule = true;
+        }
+    } catch (ErrnoException e) {
+        callback.onDexModuleRegistered(dexModule, false, "Could not get stat the module file: " + e.getMessage());
+        return;
+    }
+    DexModuleRegisterCallbackDelegate callbackDelegate = null;
+    if (callback != null) {
+        callbackDelegate = new DexModuleRegisterCallbackDelegate(callback);
+    }
+    try {
+        mPM.registerDexModule(mContext.getPackageName(), dexModule, isSharedModule, callbackDelegate);
+    } catch (RemoteException e) {
+        throw e.rethrowAsRuntimeException();
+    }
+}

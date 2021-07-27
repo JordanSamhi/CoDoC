@@ -1,0 +1,13 @@
+public String getName(String format, Map<String, String> oidMap){
+    if (oidMap == null) {
+        throw new NullPointerException(sun.security.util.ResourcesMgr.getString("provided.null.OID.map"));
+    }
+    if (format != null) {
+        if (format.equalsIgnoreCase(RFC1779)) {
+            return thisX500Name.getRFC1779Name(oidMap);
+        } else if (format.equalsIgnoreCase(RFC2253)) {
+            return thisX500Name.getRFC2253Name(oidMap);
+        }
+    }
+    throw new IllegalArgumentException("invalid format specified");
+}

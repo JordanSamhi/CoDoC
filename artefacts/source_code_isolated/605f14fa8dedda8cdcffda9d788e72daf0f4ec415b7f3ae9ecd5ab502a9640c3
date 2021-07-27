@@ -1,0 +1,71 @@
+public final IBinder onBind(Intent intent){
+    return new ITvInputService.Stub() {
+
+        @Override
+        public void registerCallback(ITvInputServiceCallback cb) {
+            if (cb != null) {
+                mCallbacks.register(cb);
+            }
+        }
+
+        @Override
+        public void unregisterCallback(ITvInputServiceCallback cb) {
+            if (cb != null) {
+                mCallbacks.unregister(cb);
+            }
+        }
+
+        @Override
+        public void createSession(InputChannel channel, ITvInputSessionCallback cb, String inputId, String sessionId) {
+            if (channel == null) {
+                Log.w(TAG, "Creating session without input channel");
+            }
+            if (cb == null) {
+                return;
+            }
+            SomeArgs args = SomeArgs.obtain();
+            args.arg1 = channel;
+            args.arg2 = cb;
+            args.arg3 = inputId;
+            args.arg4 = sessionId;
+            mServiceHandler.obtainMessage(ServiceHandler.DO_CREATE_SESSION, args).sendToTarget();
+        }
+
+        @Override
+        public void createRecordingSession(ITvInputSessionCallback cb, String inputId, String sessionId) {
+            if (cb == null) {
+                return;
+            }
+            SomeArgs args = SomeArgs.obtain();
+            args.arg1 = cb;
+            args.arg2 = inputId;
+            args.arg3 = sessionId;
+            mServiceHandler.obtainMessage(ServiceHandler.DO_CREATE_RECORDING_SESSION, args).sendToTarget();
+        }
+
+        @Override
+        public void notifyHardwareAdded(TvInputHardwareInfo hardwareInfo) {
+            mServiceHandler.obtainMessage(ServiceHandler.DO_ADD_HARDWARE_INPUT, hardwareInfo).sendToTarget();
+        }
+
+        @Override
+        public void notifyHardwareRemoved(TvInputHardwareInfo hardwareInfo) {
+            mServiceHandler.obtainMessage(ServiceHandler.DO_REMOVE_HARDWARE_INPUT, hardwareInfo).sendToTarget();
+        }
+
+        @Override
+        public void notifyHdmiDeviceAdded(HdmiDeviceInfo deviceInfo) {
+            mServiceHandler.obtainMessage(ServiceHandler.DO_ADD_HDMI_INPUT, deviceInfo).sendToTarget();
+        }
+
+        @Override
+        public void notifyHdmiDeviceRemoved(HdmiDeviceInfo deviceInfo) {
+            mServiceHandler.obtainMessage(ServiceHandler.DO_REMOVE_HDMI_INPUT, deviceInfo).sendToTarget();
+        }
+
+        @Override
+        public void notifyHdmiDeviceUpdated(HdmiDeviceInfo deviceInfo) {
+            mServiceHandler.obtainMessage(ServiceHandler.DO_UPDATE_HDMI_INPUT, deviceInfo).sendToTarget();
+        }
+    };
+}

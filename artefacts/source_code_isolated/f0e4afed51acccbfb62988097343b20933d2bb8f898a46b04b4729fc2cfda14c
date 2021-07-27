@@ -1,0 +1,16 @@
+public String toString(){
+    StringBuilder result = new StringBuilder("WindowInsets{\n    ");
+    for (int i = 0; i < SIZE; i++) {
+        Insets insets = mTypeInsetsMap[i];
+        Insets maxInsets = mTypeMaxInsetsMap[i];
+        boolean visible = mTypeVisibilityMap[i];
+        if (!Insets.NONE.equals(insets) || !Insets.NONE.equals(maxInsets) || visible) {
+            result.append(Type.toString(1 << i)).append("=").append(insets).append(" max=").append(maxInsets).append(" vis=").append(visible).append("\n    ");
+        }
+    }
+    result.append(mDisplayCutout != null ? "cutout=" + mDisplayCutout : "");
+    result.append("\n    ");
+    result.append(isRound() ? "round" : "");
+    result.append("}");
+    return result.toString();
+}

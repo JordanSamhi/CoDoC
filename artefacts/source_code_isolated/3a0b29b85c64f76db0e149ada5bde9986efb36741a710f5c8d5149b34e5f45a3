@@ -1,0 +1,29 @@
+public String getDisplayName(int field, int style, Locale locale){
+    if (style == ALL_STYLES) {
+        style = SHORT;
+    }
+    if (!checkDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale, ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK)) {
+        return null;
+    }
+    String calendarType = getCalendarType();
+    int fieldValue = get(field);
+    if (isStandaloneStyle(style) || isNarrowFormatStyle(style)) {
+        String val = CalendarDataUtility.retrieveFieldValueName(calendarType, field, fieldValue, style, locale);
+        if (val == null) {
+            if (isNarrowFormatStyle(style)) {
+                val = CalendarDataUtility.retrieveFieldValueName(calendarType, field, fieldValue, toStandaloneStyle(style), locale);
+            } else if (isStandaloneStyle(style)) {
+                val = CalendarDataUtility.retrieveFieldValueName(calendarType, field, fieldValue, getBaseStyle(style), locale);
+            }
+        }
+        return val;
+    }
+    DateFormatSymbols symbols = DateFormatSymbols.getInstance(locale);
+    String[] strings = getFieldStrings(field, style, symbols);
+    if (strings != null) {
+        if (fieldValue < strings.length) {
+            return strings[fieldValue];
+        }
+    }
+    return null;
+}

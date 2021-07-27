@@ -1,0 +1,23 @@
+
+     * Called when an item is added to the RecyclerView. Implementors can choose
+     * whether and how to animate that change, but must always call
+     * {@link #dispatchAddFinished(ViewHolder)} when done, either
+     * immediately (if no animation will occur) or after the animation actually finishes.
+     * The return value indicates whether an animation has been set up and whether the
+     * ItemAnimator's {@link #runPendingAnimations()} method should be called at the
+     * next opportunity. This mechanism allows ItemAnimator to set up individual animations
+     * as separate calls to {@link #animateAdd(ViewHolder) animateAdd()},
+     * {@link #animateMove(ViewHolder, int, int, int, int) animateMove()},
+     * {@link #animateRemove(ViewHolder) animateRemove()}, and
+     * {@link #animateChange(ViewHolder, ViewHolder, int, int, int, int)} come in one by one,
+     * then start the animations together in the later call to {@link #runPendingAnimations()}.
+     *
+     * <p>This method may also be called for appearing items which were already in the
+     * RecyclerView, but for which the system does not have enough information to animate
+     * them into view. In that case, the default animation for adding items is run
+     * on those items as well.</p>
+     *
+     * @param holder The item that is being added.
+     * @return true if a later call to {@link #runPendingAnimations()} is requested,
+     * false otherwise.
+     

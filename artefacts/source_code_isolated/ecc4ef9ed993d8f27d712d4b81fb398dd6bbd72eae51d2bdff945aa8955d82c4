@@ -1,0 +1,35 @@
+public boolean equals(Object ob){
+    if (ob == this)
+        return true;
+    if (!(ob instanceof URI))
+        return false;
+    URI that = (URI) ob;
+    if (this.isOpaque() != that.isOpaque())
+        return false;
+    if (!equalIgnoringCase(this.scheme, that.scheme))
+        return false;
+    if (!equal(this.fragment, that.fragment))
+        return false;
+    if (this.isOpaque())
+        return equal(this.schemeSpecificPart, that.schemeSpecificPart);
+    if (!equal(this.path, that.path))
+        return false;
+    if (!equal(this.query, that.query))
+        return false;
+    if (this.authority == that.authority)
+        return true;
+    if (this.host != null) {
+        if (!equal(this.userInfo, that.userInfo))
+            return false;
+        if (!equalIgnoringCase(this.host, that.host))
+            return false;
+        if (this.port != that.port)
+            return false;
+    } else if (this.authority != null) {
+        if (!equal(this.authority, that.authority))
+            return false;
+    } else if (this.authority != that.authority) {
+        return false;
+    }
+    return true;
+}

@@ -1,0 +1,11 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder(MAILTO_SCHEME);
+    sb.append('?');
+    for (Map.Entry<String, String> header : mHeaders.entrySet()) {
+        sb.append(Uri.encode(header.getKey()));
+        sb.append('=');
+        sb.append(Uri.encode(header.getValue()));
+        sb.append('&');
+    }
+    return sb.toString();
+}

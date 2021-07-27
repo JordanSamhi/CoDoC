@@ -1,0 +1,20 @@
+public synchronized int read(byte[] b, int off, int len) throws IOException{
+    getBufIfOpen();
+    if ((off | len | (off + len) | (b.length - (off + len))) < 0) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+    int n = 0;
+    for (; ; ) {
+        int nread = read1(b, off + n, len - n);
+        if (nread <= 0)
+            return (n == 0) ? nread : n;
+        n += nread;
+        if (n >= len)
+            return n;
+        InputStream input = in;
+        if (input != null && input.available() <= 0)
+            return n;
+    }
+}

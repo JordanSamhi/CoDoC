@@ -1,0 +1,8 @@
+public boolean dispatchKeyEventPreIme(KeyEvent event){
+    if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
+        return super.dispatchKeyEventPreIme(event);
+    } else if (mFocused != null && (mFocused.mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
+        return mFocused.dispatchKeyEventPreIme(event);
+    }
+    return false;
+}

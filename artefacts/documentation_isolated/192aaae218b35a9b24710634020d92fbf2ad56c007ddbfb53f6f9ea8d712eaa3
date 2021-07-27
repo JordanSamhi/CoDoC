@@ -1,0 +1,25 @@
+
+     * Convenience method that decodes bytes in this charset into Unicode
+     * characters.
+     *
+     * <p> An invocation of this method upon a charset <tt>cs</tt> returns the
+     * same result as the expression
+     *
+     * <pre>
+     *     cs.newDecoder()
+     *       .onMalformedInput(CodingErrorAction.REPLACE)
+     *       .onUnmappableCharacter(CodingErrorAction.REPLACE)
+     *       .decode(bb); </pre>
+     *
+     * except that it is potentially more efficient because it can cache
+     * decoders between successive invocations.
+     *
+     * <p> This method always replaces malformed-input and unmappable-character
+     * sequences with this charset's default replacement byte array.  In order
+     * to detect such sequences, use the {@link
+     * CharsetDecoder#decode(java.nio.ByteBuffer)} method directly.  </p>
+     *
+     * @param  bb  The byte buffer to be decoded
+     *
+     * @return  A char buffer containing the decoded characters
+     

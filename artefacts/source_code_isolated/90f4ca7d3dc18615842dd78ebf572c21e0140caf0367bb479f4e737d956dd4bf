@@ -1,0 +1,33 @@
+public boolean onInterceptTouchEvent(MotionEvent event){
+    if (mLocked) {
+        return false;
+    }
+    final int action = event.getAction();
+    float x = event.getX();
+    float y = event.getY();
+    final Rect frame = mFrame;
+    final View handle = mHandle;
+    handle.getHitRect(frame);
+    if (!mTracking && !frame.contains((int) x, (int) y)) {
+        return false;
+    }
+    if (action == MotionEvent.ACTION_DOWN) {
+        mTracking = true;
+        handle.setPressed(true);
+        prepareContent();
+        if (mOnDrawerScrollListener != null) {
+            mOnDrawerScrollListener.onScrollStarted();
+        }
+        if (mVertical) {
+            final int top = mHandle.getTop();
+            mTouchDelta = (int) y - top;
+            prepareTracking(top);
+        } else {
+            final int left = mHandle.getLeft();
+            mTouchDelta = (int) x - left;
+            prepareTracking(left);
+        }
+        mVelocityTracker.addMovement(event);
+    }
+    return true;
+}

@@ -1,0 +1,15 @@
+public static SocketChannel open(SocketAddress remote) throws IOException{
+    SocketChannel sc = open();
+    try {
+        sc.connect(remote);
+    } catch (Throwable x) {
+        try {
+            sc.close();
+        } catch (Throwable suppressed) {
+            x.addSuppressed(suppressed);
+        }
+        throw x;
+    }
+    assert sc.isConnected();
+    return sc;
+}

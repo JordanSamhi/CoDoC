@@ -1,0 +1,7 @@
+public MethodHandle asSpreader(Class<?> arrayType, int arrayLength){
+    MethodType postSpreadType = asSpreaderChecks(arrayType, arrayLength);
+    final int targetParamCount = postSpreadType.parameterCount();
+    MethodType dropArrayArgs = postSpreadType.dropParameterTypes((targetParamCount - arrayLength), targetParamCount);
+    MethodType adapterType = dropArrayArgs.appendParameterTypes(arrayType);
+    return new Transformers.Spreader(this, adapterType, arrayLength);
+}

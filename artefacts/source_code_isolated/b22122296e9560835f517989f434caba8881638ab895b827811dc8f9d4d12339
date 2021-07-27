@@ -1,0 +1,15 @@
+public void close(){
+    synchronized (lock) {
+        try {
+            flushLocked();
+            if (mOutputStream != null) {
+                mOutputStream.close();
+            } else if (mWriter != null) {
+                mWriter.close();
+            }
+        } catch (IOException e) {
+            Log.w("FastPrintWriter", "Write failure", e);
+            setError();
+        }
+    }
+}

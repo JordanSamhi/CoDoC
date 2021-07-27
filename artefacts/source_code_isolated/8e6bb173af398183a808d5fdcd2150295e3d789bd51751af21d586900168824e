@@ -1,0 +1,6 @@
+public static MethodHandle permuteArguments(MethodHandle target, MethodType newType, int... reorder){
+    reorder = reorder.clone();
+    MethodType oldType = target.type();
+    permuteArgumentChecks(reorder, newType, oldType);
+    return new Transformers.PermuteArguments(newType, target, reorder);
+}

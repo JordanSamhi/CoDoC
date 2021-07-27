@@ -1,0 +1,33 @@
+
+     * Creates an asynchronous channel group with a given thread pool.
+     *
+     * <p> The {@code executor} parameter is an {@code ExecutorService} that
+     * executes tasks submitted to dispatch completion results for operations
+     * initiated on asynchronous channels in the group.
+     *
+     * <p> Care should be taken when configuring the executor service. It
+     * should support <em>direct handoff</em> or <em>unbounded queuing</em> of
+     * submitted tasks, and the thread that invokes the {@link
+     * ExecutorService#execute execute} method should never invoke the task
+     * directly. An implementation may mandate additional constraints.
+     *
+     * <p> The executor is intended to be used exclusively by the resulting
+     * asynchronous channel group. Termination of the group results in the
+     * orderly  {@link ExecutorService#shutdown shutdown} of the executor
+     * service. Shutting down the executor service by other means results in
+     * unspecified behavior.
+     *
+     * <p> The group is created by invoking the {@link
+     * AsynchronousChannelProvider#openAsynchronousChannelGroup(ExecutorService,int)
+     * openAsynchronousChannelGroup(ExecutorService,int)} method of the system-wide
+     * default {@link AsynchronousChannelProvider} object with an {@code
+     * initialSize} of {@code 0}.
+     *
+     * @param   executor
+     *          The thread pool for the resulting group
+     *
+     * @return  A new asynchronous channel group
+     *
+     * @throws  IOException
+     *          If an I/O error occurs
+     

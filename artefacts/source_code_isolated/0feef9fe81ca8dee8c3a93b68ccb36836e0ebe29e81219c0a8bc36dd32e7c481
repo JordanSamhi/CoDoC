@@ -1,0 +1,20 @@
+public final MappedByteBuffer load(){
+    checkMapped();
+    if ((address == 0) || (capacity() == 0))
+        return this;
+    long offset = mappingOffset();
+    long length = mappingLength(offset);
+    load0(mappingAddress(offset), length);
+    Unsafe unsafe = Unsafe.getUnsafe();
+    int ps = Bits.pageSize();
+    int count = Bits.pageCount(length);
+    long a = mappingAddress(offset);
+    byte x = 0;
+    for (int i = 0; i < count; i++) {
+        x ^= unsafe.getByte(a);
+        a += ps;
+    }
+    if (unused != 0)
+        unused = x;
+    return this;
+}

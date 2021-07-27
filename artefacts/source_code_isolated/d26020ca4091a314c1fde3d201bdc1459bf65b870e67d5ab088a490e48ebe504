@@ -1,0 +1,24 @@
+public boolean equals(Object o){
+    if (!(o instanceof ProxyInfo))
+        return false;
+    ProxyInfo p = (ProxyInfo) o;
+    if (!Uri.EMPTY.equals(mPacFileUrl)) {
+        return mPacFileUrl.equals(p.getPacFileUrl()) && mPort == p.mPort;
+    }
+    if (!Uri.EMPTY.equals(p.mPacFileUrl)) {
+        return false;
+    }
+    if (mExclusionList != null && !mExclusionList.equals(p.getExclusionListAsString())) {
+        return false;
+    }
+    if (mHost != null && p.getHost() != null && mHost.equals(p.getHost()) == false) {
+        return false;
+    }
+    if (mHost != null && p.mHost == null)
+        return false;
+    if (mHost == null && p.mHost != null)
+        return false;
+    if (mPort != p.mPort)
+        return false;
+    return true;
+}

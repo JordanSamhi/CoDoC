@@ -1,0 +1,21 @@
+public Builder setFields(int... fieldValuePairs){
+    int len = fieldValuePairs.length;
+    if ((len % 2) != 0) {
+        throw new IllegalArgumentException();
+    }
+    if (isInstantSet()) {
+        throw new IllegalStateException("instant has been set");
+    }
+    if ((nextStamp + len / 2) < 0) {
+        throw new IllegalStateException("stamp counter overflow");
+    }
+    allocateFields();
+    for (int i = 0; i < len; ) {
+        int field = fieldValuePairs[i++];
+        if (field < 0 || field >= FIELD_COUNT) {
+            throw new IllegalArgumentException("field is invalid");
+        }
+        internalSet(field, fieldValuePairs[i++]);
+    }
+    return this;
+}

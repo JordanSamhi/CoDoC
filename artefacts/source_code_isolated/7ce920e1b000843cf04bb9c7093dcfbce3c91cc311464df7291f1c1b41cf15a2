@@ -1,0 +1,14 @@
+public String toGMTString(){
+    long t = getTime();
+    BaseCalendar cal = getCalendarSystem(t);
+    BaseCalendar.Date date = (BaseCalendar.Date) cal.getCalendarDate(getTime(), (TimeZone) null);
+    StringBuilder sb = new StringBuilder(32);
+    CalendarUtils.sprintf0d(sb, date.getDayOfMonth(), 1).append(' ');
+    convertToAbbr(sb, wtb[date.getMonth() - 1 + 2 + 7]).append(' ');
+    sb.append(date.getYear()).append(' ');
+    CalendarUtils.sprintf0d(sb, date.getHours(), 2).append(':');
+    CalendarUtils.sprintf0d(sb, date.getMinutes(), 2).append(':');
+    CalendarUtils.sprintf0d(sb, date.getSeconds(), 2);
+    sb.append(" GMT");
+    return sb.toString();
+}

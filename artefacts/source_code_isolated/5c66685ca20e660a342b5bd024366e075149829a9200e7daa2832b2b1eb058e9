@@ -1,0 +1,15 @@
+public void setSubjectAlternativeNames(Collection<List<?>> names) throws IOException{
+    if (names == null) {
+        subjectAlternativeNames = null;
+        subjectAlternativeGeneralNames = null;
+    } else {
+        if (names.isEmpty()) {
+            subjectAlternativeNames = null;
+            subjectAlternativeGeneralNames = null;
+            return;
+        }
+        Set<List<?>> tempNames = cloneAndCheckNames(names);
+        subjectAlternativeGeneralNames = parseNames(tempNames);
+        subjectAlternativeNames = tempNames;
+    }
+}

@@ -1,0 +1,11 @@
+public String getDisplayScript(Locale inLocale){
+    String scriptCode = baseLocale.getScript();
+    if (scriptCode.isEmpty()) {
+        return "";
+    }
+    String result = LocaleNative.getDisplayScript(this, inLocale);
+    if (result == null) {
+        result = LocaleNative.getDisplayScript(this, Locale.getDefault(Category.DISPLAY));
+    }
+    return result;
+}

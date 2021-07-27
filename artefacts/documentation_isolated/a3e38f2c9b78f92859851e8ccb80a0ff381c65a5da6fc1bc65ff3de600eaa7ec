@@ -1,0 +1,44 @@
+
+     * Returns a copy of this instant with the specified field set to a new value.
+     * <p>
+     * This returns an {@code Instant}, based on this one, with the value
+     * for the specified field changed.
+     * If it is not possible to set the value, because the field is not supported or for
+     * some other reason, an exception is thrown.
+     * <p>
+     * If the field is a {@link ChronoField} then the adjustment is implemented here.
+     * The supported fields behave as follows:
+     * <ul>
+     * <li>{@code NANO_OF_SECOND} -
+     *  Returns an {@code Instant} with the specified nano-of-second.
+     *  The epoch-second will be unchanged.
+     * <li>{@code MICRO_OF_SECOND} -
+     *  Returns an {@code Instant} with the nano-of-second replaced by the specified
+     *  micro-of-second multiplied by 1,000. The epoch-second will be unchanged.
+     * <li>{@code MILLI_OF_SECOND} -
+     *  Returns an {@code Instant} with the nano-of-second replaced by the specified
+     *  milli-of-second multiplied by 1,000,000. The epoch-second will be unchanged.
+     * <li>{@code INSTANT_SECONDS} -
+     *  Returns an {@code Instant} with the specified epoch-second.
+     *  The nano-of-second will be unchanged.
+     * </ul>
+     * <p>
+     * In all cases, if the new value is outside the valid range of values for the field
+     * then a {@code DateTimeException} will be thrown.
+     * <p>
+     * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
+     * <p>
+     * If the field is not a {@code ChronoField}, then the result of this method
+     * is obtained by invoking {@code TemporalField.adjustInto(Temporal, long)}
+     * passing {@code this} as the argument. In this case, the field determines
+     * whether and how to adjust the instant.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param field  the field to set in the result, not null
+     * @param newValue  the new value of the field in the result
+     * @return an {@code Instant} based on {@code this} with the specified field set, not null
+     * @throws DateTimeException if the field cannot be set
+     * @throws UnsupportedTemporalTypeException if the field is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

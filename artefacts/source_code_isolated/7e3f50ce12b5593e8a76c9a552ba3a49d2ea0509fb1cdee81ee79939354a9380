@@ -1,0 +1,13 @@
+public String getISO3Language() throws MissingResourceException{
+    String lang = baseLocale.getLanguage();
+    if (lang.length() == 3) {
+        return lang;
+    } else if (lang.isEmpty()) {
+        return "";
+    }
+    String language3 = ICU.getISO3Language(lang);
+    if (!lang.isEmpty() && language3.isEmpty()) {
+        throw new MissingResourceException("Couldn't find 3-letter language code for " + lang, "FormatData_" + toString(), "ShortLanguage");
+    }
+    return language3;
+}

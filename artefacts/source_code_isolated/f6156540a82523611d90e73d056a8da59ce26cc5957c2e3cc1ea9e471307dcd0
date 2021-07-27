@@ -1,0 +1,13 @@
+public void uncaughtException(Thread t, Throwable e){
+    if (parent != null) {
+        parent.uncaughtException(t, e);
+    } else {
+        Thread.UncaughtExceptionHandler ueh = Thread.getDefaultUncaughtExceptionHandler();
+        if (ueh != null) {
+            ueh.uncaughtException(t, e);
+        } else if (!(e instanceof ThreadDeath)) {
+            System.err.print("Exception in thread \"" + t.getName() + "\" ");
+            e.printStackTrace(System.err);
+        }
+    }
+}

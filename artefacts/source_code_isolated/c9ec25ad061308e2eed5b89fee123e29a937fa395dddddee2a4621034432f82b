@@ -1,0 +1,23 @@
+public void apply(int inputTexId, int width, int height, int outputTexId){
+    beginGLEffect();
+    Filter src = mGraph.getFilter(mInputName);
+    if (src != null) {
+        src.setInputValue("texId", inputTexId);
+        src.setInputValue("width", width);
+        src.setInputValue("height", height);
+    } else {
+        throw new RuntimeException("Internal error applying effect");
+    }
+    Filter dest = mGraph.getFilter(mOutputName);
+    if (dest != null) {
+        dest.setInputValue("texId", outputTexId);
+    } else {
+        throw new RuntimeException("Internal error applying effect");
+    }
+    try {
+        mRunner.run();
+    } catch (RuntimeException e) {
+        throw new RuntimeException("Internal error applying effect: ", e);
+    }
+    endGLEffect();
+}

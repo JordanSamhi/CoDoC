@@ -1,2 +1,6 @@
-public void onEmergencyNumberListChanged(@NonNull Map<Integer, List<EmergencyNumber>> emergencyNumberList){
+public void onEmergencyNumberListChanged(Map emergencyNumberList){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onEmergencyNumberListChanged(emergencyNumberList)));
 }

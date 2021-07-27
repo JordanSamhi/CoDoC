@@ -1,0 +1,10 @@
+public final void update(ByteBuffer input){
+    chooseFirstProvider();
+    if (initialized == false) {
+        throw new IllegalStateException("MAC not initialized");
+    }
+    if (input == null) {
+        throw new IllegalArgumentException("Buffer must not be null");
+    }
+    spi.engineUpdate(input);
+}

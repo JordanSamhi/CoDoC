@@ -1,0 +1,43 @@
+public Enumeration<InetAddress> getInetAddresses(){
+    class checkedAddresses implements Enumeration<InetAddress> {
+
+        private int i = 0, count = 0;
+
+        private InetAddress[] local_addrs;
+
+        checkedAddresses() {
+            local_addrs = new InetAddress[addrs.length];
+            boolean trusted = true;
+            SecurityManager sec = System.getSecurityManager();
+            if (sec != null) {
+                try {
+                    sec.checkPermission(new NetPermission("getNetworkInformation"));
+                } catch (SecurityException e) {
+                    trusted = false;
+                }
+            }
+            for (int j = 0; j < addrs.length; j++) {
+                try {
+                    if (sec != null && !trusted) {
+                        sec.checkConnect(addrs[j].getHostAddress(), -1);
+                    }
+                    local_addrs[count++] = addrs[j];
+                } catch (SecurityException e) {
+                }
+            }
+        }
+
+        public InetAddress nextElement() {
+            if (i < count) {
+                return local_addrs[i++];
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        public boolean hasMoreElements() {
+            return (i < count);
+        }
+    }
+    return new checkedAddresses();
+}

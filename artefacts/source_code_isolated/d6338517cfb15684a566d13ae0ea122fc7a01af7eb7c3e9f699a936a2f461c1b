@@ -1,0 +1,27 @@
+public boolean dispatchKeyShortcutEvent(KeyEvent ev){
+    boolean handled;
+    if (mWindow.mPreparedPanel != null) {
+        handled = mWindow.performPanelShortcut(mWindow.mPreparedPanel, ev.getKeyCode(), ev, Menu.FLAG_PERFORM_NO_CLOSE);
+        if (handled) {
+            if (mWindow.mPreparedPanel != null) {
+                mWindow.mPreparedPanel.isHandled = true;
+            }
+            return true;
+        }
+    }
+    final Window.Callback cb = mWindow.getCallback();
+    handled = cb != null && !mWindow.isDestroyed() && mFeatureId < 0 ? cb.dispatchKeyShortcutEvent(ev) : super.dispatchKeyShortcutEvent(ev);
+    if (handled) {
+        return true;
+    }
+    PhoneWindow.PanelFeatureState st = mWindow.getPanelState(Window.FEATURE_OPTIONS_PANEL, false);
+    if (st != null && mWindow.mPreparedPanel == null) {
+        mWindow.preparePanel(st, ev);
+        handled = mWindow.performPanelShortcut(st, ev.getKeyCode(), ev, Menu.FLAG_PERFORM_NO_CLOSE);
+        st.isPrepared = false;
+        if (handled) {
+            return true;
+        }
+    }
+    return false;
+}

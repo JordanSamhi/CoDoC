@@ -1,0 +1,21 @@
+public void log(LogRecord record){
+    if (!isLoggable(record.getLevel())) {
+        return;
+    }
+    Filter theFilter = filter;
+    if (theFilter != null && !theFilter.isLoggable(record)) {
+        return;
+    }
+    Logger logger = this;
+    while (logger != null) {
+        final Handler[] loggerHandlers = isSystemLogger ? logger.accessCheckedHandlers() : logger.getHandlers();
+        for (Handler handler : loggerHandlers) {
+            handler.publish(record);
+        }
+        final boolean useParentHdls = isSystemLogger ? logger.useParentHandlers : logger.getUseParentHandlers();
+        if (!useParentHdls) {
+            break;
+        }
+        logger = isSystemLogger ? logger.parent : logger.getParent();
+    }
+}

@@ -1,0 +1,14 @@
+public void reduceImageSizes(Context context){
+    super.reduceImageSizes(context);
+    Resources resources = context.getResources();
+    boolean isLowRam = ActivityManager.isLowRamDeviceStatic();
+    if (mPicture != null) {
+        int maxPictureWidth = resources.getDimensionPixelSize(isLowRam ? R.dimen.notification_big_picture_max_height_low_ram : R.dimen.notification_big_picture_max_height);
+        int maxPictureHeight = resources.getDimensionPixelSize(isLowRam ? R.dimen.notification_big_picture_max_width_low_ram : R.dimen.notification_big_picture_max_width);
+        mPicture = Icon.scaleDownIfNecessary(mPicture, maxPictureWidth, maxPictureHeight);
+    }
+    if (mBigLargeIcon != null) {
+        int rightIconSize = resources.getDimensionPixelSize(isLowRam ? R.dimen.notification_right_icon_size_low_ram : R.dimen.notification_right_icon_size);
+        mBigLargeIcon.scaleDownIfNecessary(rightIconSize, rightIconSize);
+    }
+}

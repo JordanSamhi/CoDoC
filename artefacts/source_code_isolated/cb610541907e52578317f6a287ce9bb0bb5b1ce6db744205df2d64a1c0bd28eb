@@ -1,0 +1,11 @@
+public DateTimeFormatterBuilder appendLiteral(String literal){
+    Objects.requireNonNull(literal, "literal");
+    if (literal.length() > 0) {
+        if (literal.length() == 1) {
+            appendInternal(new CharLiteralPrinterParser(literal.charAt(0)));
+        } else {
+            appendInternal(new StringLiteralPrinterParser(literal));
+        }
+    }
+    return this;
+}

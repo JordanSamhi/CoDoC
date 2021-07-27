@@ -1,0 +1,14 @@
+public boolean renameTo(File dest){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkWrite(path);
+        security.checkWrite(dest.path);
+    }
+    if (dest == null) {
+        throw new NullPointerException();
+    }
+    if (this.isInvalid() || dest.isInvalid()) {
+        return false;
+    }
+    return fs.rename(this, dest);
+}

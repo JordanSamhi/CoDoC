@@ -1,0 +1,57 @@
+
+     * Adapts a target method handle by post-processing
+     * its return value (if any) with a filter (another method handle).
+     * The result of the filter is returned from the adapter.
+     * <p>
+     * If the target returns a value, the filter must accept that value as
+     * its only argument.
+     * If the target returns void, the filter must accept no arguments.
+     * <p>
+     * The return type of the filter
+     * replaces the return type of the target
+     * in the resulting adapted method handle.
+     * The argument type of the filter (if any) must be identical to the
+     * return type of the target.
+     * <p><b>Example:</b>
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle cat = lookup().findVirtual(String.class,
+  "concat", methodType(String.class, String.class));
+MethodHandle length = lookup().findVirtual(String.class,
+  "length", methodType(int.class));
+System.out.println((String) cat.invokeExact("x", "y")); // xy
+MethodHandle f0 = filterReturnValue(cat, length);
+System.out.println((int) f0.invokeExact("x", "y")); // 2
+     * }</pre></blockquote>
+     * <p> Here is pseudocode for the resulting adapter:
+     * <blockquote><pre>{@code
+     * V target(A...);
+     * T filter(V);
+     * T adapter(A... a) {
+     *   V v = target(a...);
+     *   return filter(v);
+     * }
+     * // and if the target has a void return:
+     * void target2(A...);
+     * T filter2();
+     * T adapter2(A... a) {
+     *   target2(a...);
+     *   return filter2();
+     * }
+     * // and if the filter has a void return:
+     * V target3(A...);
+     * void filter3(V);
+     * void adapter3(A... a) {
+     *   V v = target3(a...);
+     *   filter3(v);
+     * }
+     * }</pre></blockquote>
+     * @param target the method handle to invoke before filtering the return value
+     * @param filter method handle to call on the return value
+     * @return method handle which incorporates the specified return value filtering logic
+     * @throws NullPointerException if either argument is null
+     * @throws IllegalArgumentException if the argument list of {@code filter}
+     *          does not match the return type of target as described above
+     

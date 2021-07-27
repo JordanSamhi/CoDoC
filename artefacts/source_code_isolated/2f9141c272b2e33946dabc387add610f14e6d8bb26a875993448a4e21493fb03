@@ -1,0 +1,8 @@
+public LocalDate minus(TemporalAmount amountToSubtract){
+    if (amountToSubtract instanceof Period) {
+        Period periodToSubtract = (Period) amountToSubtract;
+        return minusMonths(periodToSubtract.toTotalMonths()).minusDays(periodToSubtract.getDays());
+    }
+    Objects.requireNonNull(amountToSubtract, "amountToSubtract");
+    return (LocalDate) amountToSubtract.subtractFrom(this);
+}

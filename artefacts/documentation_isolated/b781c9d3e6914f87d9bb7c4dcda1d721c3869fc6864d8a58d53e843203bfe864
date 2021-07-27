@@ -1,0 +1,36 @@
+
+     * Returns a copy of this formatter with a new override zone.
+     * <p>
+     * This returns a formatter with similar state to this formatter but
+     * with the override zone set.
+     * By default, a formatter has no override zone, returning null.
+     * <p>
+     * If an override is added, then any instant that is formatted or parsed will be affected.
+     * <p>
+     * When formatting, if the temporal object contains an instant, then it will
+     * be converted to a zoned date-time using the override zone.
+     * Whether the temporal is an instant is determined by querying the
+     * {@link ChronoField#INSTANT_SECONDS INSTANT_SECONDS} field.
+     * If the input has a chronology then it will be retained unless overridden.
+     * If the input does not have a chronology, such as {@code Instant}, then
+     * the ISO chronology will be used.
+     * <p>
+     * If the temporal object does not contain an instant, but does contain
+     * an offset then an additional check is made. If the normalized override
+     * zone is an offset that differs from the offset of the temporal, then
+     * a {@code DateTimeException} is thrown. In all other cases, the override
+     * zone is added to the temporal, replacing any previous zone, but without
+     * changing the date/time.
+     * <p>
+     * When parsing, there are two distinct cases to consider.
+     * If a zone has been parsed directly from the text, perhaps because
+     * {@link DateTimeFormatterBuilder#appendZoneId()} was used, then
+     * this override zone has no effect.
+     * If no zone has been parsed, then this override zone will be included in
+     * the result of the parse where it can be used to build instants and date-times.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param zone  the new override zone, null if no override
+     * @return a formatter based on this formatter with the requested override zone, not null
+     

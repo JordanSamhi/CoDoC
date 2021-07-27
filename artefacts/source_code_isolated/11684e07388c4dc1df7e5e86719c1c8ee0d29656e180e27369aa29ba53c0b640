@@ -1,0 +1,28 @@
+public boolean supportsFormat(MediaFormat format){
+    final Map<String, Object> map = format.getMap();
+    final String mime = mParent.getMimeType();
+    Integer mode = (Integer) map.get(MediaFormat.KEY_BITRATE_MODE);
+    if (mode != null && !isBitrateModeSupported(mode)) {
+        return false;
+    }
+    Integer complexity = (Integer) map.get(MediaFormat.KEY_COMPLEXITY);
+    if (MediaFormat.MIMETYPE_AUDIO_FLAC.equalsIgnoreCase(mime)) {
+        Integer flacComplexity = (Integer) map.get(MediaFormat.KEY_FLAC_COMPRESSION_LEVEL);
+        if (complexity == null) {
+            complexity = flacComplexity;
+        } else if (flacComplexity != null && !complexity.equals(flacComplexity)) {
+            throw new IllegalArgumentException("conflicting values for complexity and " + "flac-compression-level");
+        }
+    }
+    Integer profile = (Integer) map.get(MediaFormat.KEY_PROFILE);
+    if (MediaFormat.MIMETYPE_AUDIO_AAC.equalsIgnoreCase(mime)) {
+        Integer aacProfile = (Integer) map.get(MediaFormat.KEY_AAC_PROFILE);
+        if (profile == null) {
+            profile = aacProfile;
+        } else if (aacProfile != null && !aacProfile.equals(profile)) {
+            throw new IllegalArgumentException("conflicting values for profile and aac-profile");
+        }
+    }
+    Integer quality = (Integer) map.get(MediaFormat.KEY_QUALITY);
+    return supports(complexity, quality, profile);
+}

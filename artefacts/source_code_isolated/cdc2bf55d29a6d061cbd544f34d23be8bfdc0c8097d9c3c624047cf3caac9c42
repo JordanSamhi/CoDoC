@@ -1,0 +1,11 @@
+public final CoderResult flush(CharBuffer out){
+    if (state == ST_END) {
+        CoderResult cr = implFlush(out);
+        if (cr.isUnderflow())
+            state = ST_FLUSHED;
+        return cr;
+    }
+    if (state != ST_FLUSHED)
+        throwIllegalStateException(state, ST_FLUSHED);
+    return CoderResult.UNDERFLOW;
+}

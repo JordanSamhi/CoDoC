@@ -1,0 +1,12 @@
+public ZonedDateTime atStartOfDay(ZoneId zone){
+    Objects.requireNonNull(zone, "zone");
+    LocalDateTime ldt = atTime(LocalTime.MIDNIGHT);
+    if (zone instanceof ZoneOffset == false) {
+        ZoneRules rules = zone.getRules();
+        ZoneOffsetTransition trans = rules.getTransition(ldt);
+        if (trans != null && trans.isGap()) {
+            ldt = trans.getDateTimeAfter();
+        }
+    }
+    return ZonedDateTime.of(ldt, zone);
+}

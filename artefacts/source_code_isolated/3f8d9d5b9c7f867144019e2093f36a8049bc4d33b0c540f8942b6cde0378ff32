@@ -1,0 +1,28 @@
+public MethodHandle findVirtual(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException{
+    if (refc == MethodHandle.class) {
+        MethodHandle mh = findVirtualForMH(name, type);
+        if (mh != null) {
+            return mh;
+        }
+    } else if (refc == VarHandle.class) {
+        MethodHandle mh = findVirtualForVH(name, type);
+        if (mh != null) {
+            return mh;
+        }
+    }
+    Method method = refc.getInstanceMethod(name, type.ptypes());
+    if (method == null) {
+        try {
+            Method m = refc.getDeclaredMethod(name, type.ptypes());
+            if (Modifier.isStatic(m.getModifiers())) {
+                throw new IllegalAccessException("Method" + m + " is static");
+            }
+        } catch (NoSuchMethodException ignored) {
+        }
+        throw new NoSuchMethodException(name + " " + Arrays.toString(type.ptypes()));
+    }
+    checkReturnType(method, type);
+    checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
+    MethodType handleType = type.insertParameterTypes(0, refc);
+    return createMethodHandle(method, MethodHandle.INVOKE_VIRTUAL, handleType);
+}

@@ -1,6 +1,0 @@
-public void performAccessibilityShortcut(String targetName){
-    if ((UserHandle.getAppId(Binder.getCallingUid()) != Process.SYSTEM_UID) && (mContext.checkCallingPermission(Manifest.permission.MANAGE_ACCESSIBILITY) != PackageManager.PERMISSION_GRANTED)) {
-        throw new SecurityException("performAccessibilityShortcut requires the MANAGE_ACCESSIBILITY permission");
-    }
-    mMainHandler.sendMessage(obtainMessage(AccessibilityManagerService::performAccessibilityShortcutInternal, this, Display.DEFAULT_DISPLAY, ACCESSIBILITY_SHORTCUT_KEY, targetName));
-}

@@ -1,0 +1,6 @@
+public double nextDouble(double bound){
+    if (!(bound > 0.0))
+        throw new IllegalArgumentException(BAD_BOUND);
+    double result = (mix64(nextSeed()) >>> 11) * DOUBLE_UNIT * bound;
+    return (result < bound) ? result : Double.longBitsToDouble(Double.doubleToLongBits(bound) - 1);
+}

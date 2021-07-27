@@ -1,0 +1,8 @@
+public static Collator getInstance(Locale desiredLocale){
+    synchronized (Collator.class) {
+        if (desiredLocale == null) {
+            throw new NullPointerException("locale == null");
+        }
+        return new RuleBasedCollator((android.icu.text.RuleBasedCollator) android.icu.text.Collator.getInstance(desiredLocale));
+    }
+}

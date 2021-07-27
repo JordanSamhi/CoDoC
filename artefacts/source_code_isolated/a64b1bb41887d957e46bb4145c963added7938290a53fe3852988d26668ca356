@@ -1,0 +1,17 @@
+public void onWindowFocusChanged(boolean hasWindowFocus){
+    super.onWindowFocusChanged(hasWindowFocus);
+    if (mWindow.hasFeature(Window.FEATURE_OPTIONS_PANEL) && !hasWindowFocus && mWindow.mPanelChordingKey != 0) {
+        mWindow.closePanel(Window.FEATURE_OPTIONS_PANEL);
+    }
+    final Window.Callback cb = mWindow.getCallback();
+    if (cb != null && !mWindow.isDestroyed() && mFeatureId < 0) {
+        cb.onWindowFocusChanged(hasWindowFocus);
+    }
+    if (mPrimaryActionMode != null) {
+        mPrimaryActionMode.onWindowFocusChanged(hasWindowFocus);
+    }
+    if (mFloatingActionMode != null) {
+        mFloatingActionMode.onWindowFocusChanged(hasWindowFocus);
+    }
+    updateElevation();
+}

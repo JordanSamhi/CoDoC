@@ -1,0 +1,21 @@
+public void run(){
+    if (mLogVerbose)
+        Log.v(TAG, "Beginning run.");
+    assertReadyToStep();
+    beginProcessing();
+    boolean glActivated = activateGlContext();
+    boolean keepRunning = true;
+    while (keepRunning) {
+        keepRunning = performStep();
+    }
+    if (glActivated) {
+        deactivateGlContext();
+    }
+    if (mDoneListener != null) {
+        if (mLogVerbose)
+            Log.v(TAG, "Calling completion listener.");
+        mDoneListener.onRunnerDone(determinePostRunState());
+    }
+    if (mLogVerbose)
+        Log.v(TAG, "Run complete");
+}

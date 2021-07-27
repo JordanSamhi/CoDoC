@@ -1,0 +1,27 @@
+public static Builder newInstance(final KeyStore keyStore, final ProtectionParameter protectionParameter){
+    if ((keyStore == null) || (protectionParameter == null)) {
+        throw new NullPointerException();
+    }
+    if (keyStore.initialized == false) {
+        throw new IllegalArgumentException("KeyStore not initialized");
+    }
+    return new Builder() {
+
+        private volatile boolean getCalled;
+
+        public KeyStore getKeyStore() {
+            getCalled = true;
+            return keyStore;
+        }
+
+        public ProtectionParameter getProtectionParameter(String alias) {
+            if (alias == null) {
+                throw new NullPointerException();
+            }
+            if (getCalled == false) {
+                throw new IllegalStateException("getKeyStore() must be called first");
+            }
+            return protectionParameter;
+        }
+    };
+}

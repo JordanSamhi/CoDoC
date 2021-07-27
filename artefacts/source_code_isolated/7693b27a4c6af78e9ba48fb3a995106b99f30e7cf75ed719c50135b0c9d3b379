@@ -1,0 +1,9 @@
+public static Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException{
+    FileTreeIterator iterator = new FileTreeIterator(start, maxDepth, options);
+    try {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.DISTINCT), false).onClose(iterator::close).map(entry -> entry.file());
+    } catch (Error | RuntimeException e) {
+        iterator.close();
+        throw e;
+    }
+}

@@ -1,0 +1,18 @@
+public static void sort(List<T> list, Comparator<? super T> c){
+    int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+    if (targetSdkVersion > 25) {
+        list.sort(c);
+    } else {
+        if (list.getClass() == ArrayList.class) {
+            Arrays.sort((T[]) ((ArrayList) list).elementData, 0, list.size(), c);
+            return;
+        }
+        Object[] a = list.toArray();
+        Arrays.sort(a, (Comparator) c);
+        ListIterator<T> i = list.listIterator();
+        for (int j = 0; j < a.length; j++) {
+            i.next();
+            i.set((T) a[j]);
+        }
+    }
+}

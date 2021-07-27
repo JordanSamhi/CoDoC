@@ -1,0 +1,13 @@
+public boolean onInterceptTouchEvent(MotionEvent ev){
+    if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+        final int x = (int) ev.getX();
+        final int y = (int) ev.getY();
+        if (mMaximizeRect.contains(x, y - mRootScrollY)) {
+            mClickTarget = mMaximize;
+        }
+        if (mCloseRect.contains(x, y - mRootScrollY)) {
+            mClickTarget = mClose;
+        }
+    }
+    return mClickTarget != null;
+}

@@ -1,0 +1,15 @@
+public static LocalDate ofYearDay(int year, int dayOfYear){
+    YEAR.checkValidValue(year);
+    DAY_OF_YEAR.checkValidValue(dayOfYear);
+    boolean leap = IsoChronology.INSTANCE.isLeapYear(year);
+    if (dayOfYear == 366 && leap == false) {
+        throw new DateTimeException("Invalid date 'DayOfYear 366' as '" + year + "' is not a leap year");
+    }
+    Month moy = Month.of((dayOfYear - 1) / 31 + 1);
+    int monthEnd = moy.firstDayOfYear(leap) + moy.length(leap) - 1;
+    if (dayOfYear > monthEnd) {
+        moy = moy.plus(1);
+    }
+    int dom = dayOfYear - moy.firstDayOfYear(leap) + 1;
+    return new LocalDate(year, moy.getValue(), dom);
+}

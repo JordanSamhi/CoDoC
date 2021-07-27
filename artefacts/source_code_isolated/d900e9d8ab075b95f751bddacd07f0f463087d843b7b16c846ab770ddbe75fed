@@ -1,0 +1,12 @@
+public static final Mac getInstance(String algorithm) throws NoSuchAlgorithmException{
+    List<Service> services = GetInstance.getServices("Mac", algorithm);
+    Iterator<Service> t = services.iterator();
+    while (t.hasNext()) {
+        Service s = t.next();
+        if (JceSecurity.canUseProvider(s.getProvider()) == false) {
+            continue;
+        }
+        return new Mac(algorithm);
+    }
+    throw new NoSuchAlgorithmException("Algorithm " + algorithm + " not available");
+}

@@ -1,0 +1,26 @@
+
+     * Copies into the specified array every active thread in the current
+     * thread's thread group and its subgroups. This method simply
+     * invokes the {@link java.lang.ThreadGroup#enumerate(Thread[])}
+     * method of the current thread's thread group.
+     *
+     * <p> An application might use the {@linkplain #activeCount activeCount}
+     * method to get an estimate of how big the array should be, however
+     * <i>if the array is too short to hold all the threads, the extra threads
+     * are silently ignored.</i>  If it is critical to obtain every active
+     * thread in the current thread's thread group and its subgroups, the
+     * invoker should verify that the returned int value is strictly less
+     * than the length of {@code tarray}.
+     *
+     * <p> Due to the inherent race condition in this method, it is recommended
+     * that the method only be used for debugging and monitoring purposes.
+     *
+     * @param  tarray
+     *         an array into which to put the list of threads
+     *
+     * @return  the number of threads put into the array
+     *
+     * @throws  SecurityException
+     *          if {@link java.lang.ThreadGroup#checkAccess} determines that
+     *          the current thread cannot access its thread group
+     

@@ -1,0 +1,10 @@
+public synchronized int getSendBufferSize() throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    int result = 0;
+    Object o = getImpl().getOption(SocketOptions.SO_SNDBUF);
+    if (o instanceof Integer) {
+        result = ((Integer) o).intValue();
+    }
+    return result;
+}

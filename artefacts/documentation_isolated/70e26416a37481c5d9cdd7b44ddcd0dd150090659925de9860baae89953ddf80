@@ -1,0 +1,65 @@
+
+         * Parses the given {@code ranges} to generate a Language Priority List.
+         *
+         * <p>This method performs a syntactic check for each language range in
+         * the given {@code ranges} but doesn't do validation using the IANA
+         * Language Subtag Registry.
+         *
+         * <p>The {@code ranges} to be given can take one of the following
+         * forms:
+         *
+         * <pre>
+         *   "Accept-Language: ja,en;q=0.4"  (weighted list with Accept-Language prefix)
+         *   "ja,en;q=0.4"                   (weighted list)
+         *   "ja,en"                         (prioritized list)
+         * </pre>
+         *
+         * In a weighted list, each language range is given a weight value.
+         * The weight value is identical to the "quality value" in
+         * <a href="http://tools.ietf.org/html/rfc2616">RFC 2616</a>, and it
+         * expresses how much the user prefers  the language. A weight value is
+         * specified after a corresponding language range followed by
+         * {@code ";q="}, and the default weight value is {@code MAX_WEIGHT}
+         * when it is omitted.
+         *
+         * <p>Unlike a weighted list, language ranges in a prioritized list
+         * are sorted in the descending order based on its priority. The first
+         * language range has the highest priority and meets the user's
+         * preference most.
+         *
+         * <p>In either case, language ranges are sorted in descending order in
+         * the Language Priority List based on priority or weight. If a
+         * language range appears in the given {@code ranges} more than once,
+         * only the first one is included on the Language Priority List.
+         *
+         * <p>The returned list consists of language ranges from the given
+         * {@code ranges} and their equivalents found in the IANA Language
+         * Subtag Registry. For example, if the given {@code ranges} is
+         * {@code "Accept-Language: iw,en-us;q=0.7,en;q=0.3"}, the elements in
+         * the list to be returned are:
+         *
+         * <pre>
+         *  <b>Range</b>                                   <b>Weight</b>
+         *    "iw" (older tag for Hebrew)             1.0
+         *    "he" (new preferred code for Hebrew)    1.0
+         *    "en-us" (English, United States)        0.7
+         *    "en" (English)                          0.3
+         * </pre>
+         *
+         * Two language ranges, {@code "iw"} and {@code "he"}, have the same
+         * highest priority in the list. By adding {@code "he"} to the user's
+         * Language Priority List, locale-matching method can find Hebrew as a
+         * matching locale (or language tag) even if the application or system
+         * offers only {@code "he"} as a supported locale (or language tag).
+         *
+         * @param ranges a list of comma-separated language ranges or a list of
+         *     language ranges in the form of the "Accept-Language" header
+         *     defined in <a href="http://tools.ietf.org/html/rfc2616">RFC
+         *     2616</a>
+         * @return a Language Priority List consisting of language ranges
+         *     included in the given {@code ranges} and their equivalent
+         *     language ranges if available. The list is modifiable.
+         * @throws NullPointerException if {@code ranges} is null
+         * @throws IllegalArgumentException if a language range or a weight
+         *     found in the given {@code ranges} is ill-formed
+         

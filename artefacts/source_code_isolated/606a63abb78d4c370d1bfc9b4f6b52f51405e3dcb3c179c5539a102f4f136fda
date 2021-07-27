@@ -1,0 +1,42 @@
+public void inflate(Resources res, XmlPullParser parser, AttributeSet attrs, Theme theme) throws XmlPullParserException, IOException{
+    final AnimatedVectorDrawableState state = mAnimatedVectorState;
+    int eventType = parser.getEventType();
+    float pathErrorScale = 1;
+    final int innerDepth = parser.getDepth() + 1;
+    while (eventType != XmlPullParser.END_DOCUMENT && (parser.getDepth() >= innerDepth || eventType != XmlPullParser.END_TAG)) {
+        if (eventType == XmlPullParser.START_TAG) {
+            final String tagName = parser.getName();
+            if (ANIMATED_VECTOR.equals(tagName)) {
+                final TypedArray a = obtainAttributes(res, theme, attrs, R.styleable.AnimatedVectorDrawable);
+                int drawableRes = a.getResourceId(R.styleable.AnimatedVectorDrawable_drawable, 0);
+                if (drawableRes != 0) {
+                    VectorDrawable vectorDrawable = (VectorDrawable) res.getDrawable(drawableRes, theme).mutate();
+                    vectorDrawable.setAllowCaching(false);
+                    vectorDrawable.setCallback(mCallback);
+                    pathErrorScale = vectorDrawable.getPixelSize();
+                    if (state.mVectorDrawable != null) {
+                        state.mVectorDrawable.setCallback(null);
+                    }
+                    state.mVectorDrawable = vectorDrawable;
+                }
+                a.recycle();
+            } else if (TARGET.equals(tagName)) {
+                final TypedArray a = obtainAttributes(res, theme, attrs, R.styleable.AnimatedVectorDrawableTarget);
+                final String target = a.getString(R.styleable.AnimatedVectorDrawableTarget_name);
+                final int animResId = a.getResourceId(R.styleable.AnimatedVectorDrawableTarget_animation, 0);
+                if (animResId != 0) {
+                    if (theme != null) {
+                        final Animator animator = AnimatorInflater.loadAnimator(res, theme, animResId, pathErrorScale);
+                        updateAnimatorProperty(animator, target, state.mVectorDrawable, state.mShouldIgnoreInvalidAnim);
+                        state.addTargetAnimator(target, animator);
+                    } else {
+                        state.addPendingAnimator(animResId, pathErrorScale, target);
+                    }
+                }
+                a.recycle();
+            }
+        }
+        eventType = parser.next();
+    }
+    mRes = state.mPendingAnims == null ? null : res;
+}

@@ -1,0 +1,32 @@
+public void send(DatagramPacket p) throws IOException{
+    InetAddress packetAddress = null;
+    synchronized (p) {
+        if (pendingConnectException != null) {
+            throw new SocketException("Pending connect failure", pendingConnectException);
+        }
+        if (isClosed())
+            throw new SocketException("Socket is closed");
+        checkAddress(p.getAddress(), "send");
+        if (connectState == ST_NOT_CONNECTED) {
+            SecurityManager security = System.getSecurityManager();
+            if (security != null) {
+                if (p.getAddress().isMulticastAddress()) {
+                    security.checkMulticast(p.getAddress());
+                } else {
+                    security.checkConnect(p.getAddress().getHostAddress(), p.getPort());
+                }
+            }
+        } else {
+            packetAddress = p.getAddress();
+            if (packetAddress == null) {
+                p.setAddress(connectedAddress);
+                p.setPort(connectedPort);
+            } else if ((!packetAddress.equals(connectedAddress)) || p.getPort() != connectedPort) {
+                throw new IllegalArgumentException("connected address " + "and packet address" + " differ");
+            }
+        }
+        if (!isBound())
+            bind(new InetSocketAddress(0));
+        getImpl().send(p);
+    }
+}

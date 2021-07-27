@@ -1,0 +1,17 @@
+public static float ulp(float f){
+    int exp = getExponent(f);
+    switch(exp) {
+        case FloatConsts.MAX_EXPONENT + 1:
+            return Math.abs(f);
+        case FloatConsts.MIN_EXPONENT - 1:
+            return FloatConsts.MIN_VALUE;
+        default:
+            assert exp <= FloatConsts.MAX_EXPONENT && exp >= FloatConsts.MIN_EXPONENT;
+            exp = exp - (FloatConsts.SIGNIFICAND_WIDTH - 1);
+            if (exp >= FloatConsts.MIN_EXPONENT) {
+                return powerOfTwoF(exp);
+            } else {
+                return Float.intBitsToFloat(1 << (exp - (FloatConsts.MIN_EXPONENT - (FloatConsts.SIGNIFICAND_WIDTH - 1))));
+            }
+    }
+}

@@ -1,0 +1,10 @@
+public static synchronized void setContentHandlerFactory(ContentHandlerFactory fac){
+    if (factory != null) {
+        throw new Error("factory already defined");
+    }
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkSetFactory();
+    }
+    factory = fac;
+}

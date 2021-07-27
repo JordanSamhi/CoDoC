@@ -1,2 +1,6 @@
 public void onSignalStrengthsChanged(SignalStrength signalStrength){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onSignalStrengthsChanged(signalStrength)));
 }

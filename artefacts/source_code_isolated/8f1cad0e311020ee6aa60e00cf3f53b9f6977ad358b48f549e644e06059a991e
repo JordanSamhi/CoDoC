@@ -1,0 +1,15 @@
+public String toString(){
+    StringBuilder buffer = new StringBuilder("ConnectivityMetricsEvent(");
+    buffer.append(String.format("%tT.%tL", timestamp, timestamp));
+    if (netId != 0) {
+        buffer.append(", ").append("netId=").append(netId);
+    }
+    if (ifname != null) {
+        buffer.append(", ").append(ifname);
+    }
+    for (int t : BitUtils.unpackBits(transports)) {
+        buffer.append(", ").append(NetworkCapabilities.transportNameOf(t));
+    }
+    buffer.append("): ").append(data.toString());
+    return buffer.toString();
+}

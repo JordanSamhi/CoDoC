@@ -1,0 +1,12 @@
+public Path getPath(float startX, float startY, float endX, float endY){
+    double dx = endX - startX;
+    double dy = endY - startY;
+    float length = (float) Math.hypot(dx, dy);
+    double angle = Math.atan2(dy, dx);
+    mTempMatrix.setScale(length, length);
+    mTempMatrix.postRotate((float) Math.toDegrees(angle));
+    mTempMatrix.postTranslate(startX, startY);
+    Path path = new Path();
+    mPatternPath.transform(mTempMatrix, path);
+    return path;
+}

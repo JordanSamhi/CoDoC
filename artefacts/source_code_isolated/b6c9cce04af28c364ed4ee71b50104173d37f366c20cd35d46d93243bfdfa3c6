@@ -1,0 +1,6 @@
+ ChronoLocalDate plus(long amountToAdd, TemporalUnit unit){
+    if (unit instanceof ChronoUnit) {
+        throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit);
+    }
+    return ChronoLocalDateImpl.ensureValid(getChronology(), unit.addTo(this, amountToAdd));
+}

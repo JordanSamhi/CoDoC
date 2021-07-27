@@ -1,0 +1,11 @@
+public ShortBuffer put(ShortBuffer src){
+    if (src == this)
+        throw new IllegalArgumentException();
+    if (isReadOnly())
+        throw new ReadOnlyBufferException();
+    int n = src.remaining();
+    if (n > remaining())
+        throw new BufferOverflowException();
+    for (int i = 0; i < n; i++) put(src.get());
+    return this;
+}

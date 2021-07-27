@@ -1,0 +1,11 @@
+public int getUidForSharedUser(String sharedUserName) throws NameNotFoundException{
+    try {
+        int uid = mPM.getUidForSharedUser(sharedUserName);
+        if (uid != -1) {
+            return uid;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException("No shared userid for user:" + sharedUserName);
+}

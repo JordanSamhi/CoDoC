@@ -1,0 +1,16 @@
+public void write(byte[] b, int off, int len) throws IOException{
+    if (def.finished()) {
+        throw new IOException("write beyond end of stream");
+    }
+    if ((off | len | (off + len) | (b.length - (off + len))) < 0) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return;
+    }
+    if (!def.finished()) {
+        def.setInput(b, off, len);
+        while (!def.needsInput()) {
+            deflate();
+        }
+    }
+}

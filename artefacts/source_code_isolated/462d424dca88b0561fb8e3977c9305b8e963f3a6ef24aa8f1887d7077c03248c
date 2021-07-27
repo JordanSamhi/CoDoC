@@ -1,0 +1,9 @@
+public Period normalized(){
+    long totalMonths = toTotalMonths();
+    long splitYears = totalMonths / 12;
+    int splitMonths = (int) (totalMonths % 12);
+    if (splitYears == years && splitMonths == months) {
+        return this;
+    }
+    return create(Math.toIntExact(splitYears), splitMonths, days);
+}

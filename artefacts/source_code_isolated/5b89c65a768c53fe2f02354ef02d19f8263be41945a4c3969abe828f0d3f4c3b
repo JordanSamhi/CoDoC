@@ -1,0 +1,8 @@
+public long getStartClockTime(){
+    final long currentTime = System.currentTimeMillis();
+    if ((currentTime > MILLISECONDS_IN_YEAR && mStartClockTime < (currentTime - MILLISECONDS_IN_YEAR)) || (mStartClockTime > currentTime)) {
+        recordCurrentTimeChangeLocked(currentTime, mClocks.elapsedRealtime(), mClocks.uptimeMillis());
+        return currentTime - (mClocks.elapsedRealtime() - (mRealtimeStart / 1000));
+    }
+    return mStartClockTime;
+}

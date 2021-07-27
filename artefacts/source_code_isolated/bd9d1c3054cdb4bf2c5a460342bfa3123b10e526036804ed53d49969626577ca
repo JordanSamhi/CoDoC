@@ -1,0 +1,28 @@
+public IBinder onBind(Intent intent){
+    return new ISuggestionService.Stub() {
+
+        @Override
+        public List<Suggestion> getSuggestions() {
+            if (DEBUG) {
+                Log.d(TAG, "getSuggestions() " + getPackageName());
+            }
+            return onGetSuggestions();
+        }
+
+        @Override
+        public void dismissSuggestion(Suggestion suggestion) {
+            if (DEBUG) {
+                Log.d(TAG, "dismissSuggestion() " + getPackageName());
+            }
+            onSuggestionDismissed(suggestion);
+        }
+
+        @Override
+        public void launchSuggestion(Suggestion suggestion) {
+            if (DEBUG) {
+                Log.d(TAG, "launchSuggestion() " + getPackageName());
+            }
+            onSuggestionLaunched(suggestion);
+        }
+    };
+}

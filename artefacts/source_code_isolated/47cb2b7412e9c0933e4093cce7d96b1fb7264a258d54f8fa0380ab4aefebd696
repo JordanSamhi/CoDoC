@@ -1,0 +1,10 @@
+public void onCameraAccessPrioritiesChanged(){
+    synchronized (mLock) {
+        final int callbackCount = mCallbackMap.size();
+        for (int i = 0; i < callbackCount; i++) {
+            Executor executor = mCallbackMap.valueAt(i);
+            final AvailabilityCallback callback = mCallbackMap.keyAt(i);
+            postSingleAccessPriorityChangeUpdate(callback, executor);
+        }
+    }
+}

@@ -1,0 +1,67 @@
+
+     * Formats an array of objects and appends the <code>MessageFormat</code>'s
+     * pattern, with format elements replaced by the formatted objects, to the
+     * provided <code>StringBuffer</code>.
+     * <p>
+     * The text substituted for the individual format elements is derived from
+     * the current subformat of the format element and the
+     * <code>arguments</code> element at the format element's argument index
+     * as indicated by the first matching line of the following table. An
+     * argument is <i>unavailable</i> if <code>arguments</code> is
+     * <code>null</code> or has fewer than argumentIndex+1 elements.
+     *
+     * <table border=1 summary="Examples of subformat,argument,and formatted text">
+     *    <tr>
+     *       <th>Subformat
+     *       <th>Argument
+     *       <th>Formatted Text
+     *    <tr>
+     *       <td><i>any</i>
+     *       <td><i>unavailable</i>
+     *       <td><code>"{" + argumentIndex + "}"</code>
+     *    <tr>
+     *       <td><i>any</i>
+     *       <td><code>null</code>
+     *       <td><code>"null"</code>
+     *    <tr>
+     *       <td><code>instanceof ChoiceFormat</code>
+     *       <td><i>any</i>
+     *       <td><code>subformat.format(argument).indexOf('{') &gt;= 0 ?<br>
+     *           (new MessageFormat(subformat.format(argument), getLocale())).format(argument) :
+     *           subformat.format(argument)</code>
+     *    <tr>
+     *       <td><code>!= null</code>
+     *       <td><i>any</i>
+     *       <td><code>subformat.format(argument)</code>
+     *    <tr>
+     *       <td><code>null</code>
+     *       <td><code>instanceof Number</code>
+     *       <td><code>NumberFormat.getInstance(getLocale()).format(argument)</code>
+     *    <tr>
+     *       <td><code>null</code>
+     *       <td><code>instanceof Date</code>
+     *       <td><code>DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, getLocale()).format(argument)</code>
+     *    <tr>
+     *       <td><code>null</code>
+     *       <td><code>instanceof String</code>
+     *       <td><code>argument</code>
+     *    <tr>
+     *       <td><code>null</code>
+     *       <td><i>any</i>
+     *       <td><code>argument.toString()</code>
+     * </table>
+     * <p>
+     * If <code>pos</code> is non-null, and refers to
+     * <code>Field.ARGUMENT</code>, the location of the first formatted
+     * string will be returned.
+     *
+     * @param arguments an array of objects to be formatted and substituted.
+     * @param result where text is appended.
+     * @param pos On input: an alignment field, if desired.
+     *            On output: the offsets of the alignment field.
+     * @return the string buffer passed in as {@code result}, with formatted
+     * text appended
+     * @exception IllegalArgumentException if an argument in the
+     *            <code>arguments</code> array is not of the type
+     *            expected by the format element(s) that use it.
+     

@@ -1,0 +1,13 @@
+public void removeOnPermissionsChangeListener(OnPermissionsChangedListener listener){
+    synchronized (mPermissionListeners) {
+        IOnPermissionsChangeListener delegate = mPermissionListeners.get(listener);
+        if (delegate != null) {
+            try {
+                mPermissionManager.removeOnPermissionsChangeListener(delegate);
+                mPermissionListeners.remove(listener);
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+}

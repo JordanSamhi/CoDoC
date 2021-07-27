@@ -1,0 +1,36 @@
+public int drainTo(Collection<? super E> c, int maxElements){
+    if (c == null)
+        throw new NullPointerException();
+    if (c == this)
+        throw new IllegalArgumentException();
+    if (maxElements <= 0)
+        return 0;
+    boolean signalNotFull = false;
+    final ReentrantLock takeLock = this.takeLock;
+    takeLock.lock();
+    try {
+        int n = Math.min(maxElements, count.get());
+        Node<E> h = head;
+        int i = 0;
+        try {
+            while (i < n) {
+                Node<E> p = h.next;
+                c.add(p.item);
+                p.item = null;
+                h.next = h;
+                h = p;
+                ++i;
+            }
+            return n;
+        } finally {
+            if (i > 0) {
+                head = h;
+                signalNotFull = (count.getAndAdd(-i) == capacity);
+            }
+        }
+    } finally {
+        takeLock.unlock();
+        if (signalNotFull)
+            signalNotFull();
+    }
+}

@@ -1,0 +1,7 @@
+public static String getStringForUser(ContentResolver resolver, String name, int userHandle){
+    if (MOVED_TO_SECURE.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.Global" + " to android.provider.Settings.Secure, returning read-only value.");
+        return Secure.getStringForUser(resolver, name, userHandle);
+    }
+    return sNameValueCache.getStringForUser(resolver, name, userHandle);
+}

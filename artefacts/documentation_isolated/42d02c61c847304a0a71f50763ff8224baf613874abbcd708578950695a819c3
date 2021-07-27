@@ -1,0 +1,65 @@
+
+     * Copies all bytes from an input stream to a file. On return, the input
+     * stream will be at end of stream.
+     *
+     * <p> By default, the copy fails if the target file already exists or is a
+     * symbolic link. If the {@link StandardCopyOption#REPLACE_EXISTING
+     * REPLACE_EXISTING} option is specified, and the target file already exists,
+     * then it is replaced if it is not a non-empty directory. If the target
+     * file exists and is a symbolic link, then the symbolic link is replaced.
+     * In this release, the {@code REPLACE_EXISTING} option is the only option
+     * required to be supported by this method. Additional options may be
+     * supported in future releases.
+     *
+     * <p>  If an I/O error occurs reading from the input stream or writing to
+     * the file, then it may do so after the target file has been created and
+     * after some bytes have been read or written. Consequently the input
+     * stream may not be at end of stream and may be in an inconsistent state.
+     * It is strongly recommended that the input stream be promptly closed if an
+     * I/O error occurs.
+     *
+     * <p> This method may block indefinitely reading from the input stream (or
+     * writing to the file). The behavior for the case that the input stream is
+     * <i>asynchronously closed</i> or the thread interrupted during the copy is
+     * highly input stream and file system provider specific and therefore not
+     * specified.
+     *
+     * <p> <b>Usage example</b>: Suppose we want to capture a web page and save
+     * it to a file:
+     * <pre>
+     *     Path path = ...
+     *     URI u = URI.create("http://java.sun.com/");
+     *     try (InputStream in = u.toURL().openStream()) {
+     *         Files.copy(in, path);
+     *     }
+     * </pre>
+     *
+     * @param   in
+     *          the input stream to read from
+     * @param   target
+     *          the path to the file
+     * @param   options
+     *          options specifying how the copy should be done
+     *
+     * @return  the number of bytes read or written
+     *
+     * @throws  IOException
+     *          if an I/O error occurs when reading or writing
+     * @throws  FileAlreadyExistsException
+     *          if the target file exists but cannot be replaced because the
+     *          {@code REPLACE_EXISTING} option is not specified <i>(optional
+     *          specific exception)</i>
+     * @throws  DirectoryNotEmptyException
+     *          the {@code REPLACE_EXISTING} option is specified but the file
+     *          cannot be replaced because it is a non-empty directory
+     *          <i>(optional specific exception)</i>     *
+     * @throws  UnsupportedOperationException
+     *          if {@code options} contains a copy option that is not supported
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method is invoked to check write access to the file. Where the
+     *          {@code REPLACE_EXISTING} option is specified, the security
+     *          manager's {@link SecurityManager#checkDelete(String) checkDelete}
+     *          method is invoked to check that an existing file can be deleted.
+     

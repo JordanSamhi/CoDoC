@@ -1,0 +1,8 @@
+public void onInitializeAccessibilityNodeInfoForItem(View view, int position, AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoForItem(view, position, info);
+    final LayoutParams lp = (LayoutParams) view.getLayoutParams();
+    final boolean isHeading = lp != null && lp.viewType == ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
+    final boolean isSelected = isItemChecked(position);
+    final CollectionItemInfo itemInfo = CollectionItemInfo.obtain(position, 1, 0, 1, isHeading, isSelected);
+    info.setCollectionItemInfo(itemInfo);
+}

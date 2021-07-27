@@ -1,0 +1,33 @@
+
+     * Returns a synchronized (thread-safe) collection backed by the specified
+     * collection.  In order to guarantee serial access, it is critical that
+     * <strong>all</strong> access to the backing collection is accomplished
+     * through the returned collection.<p>
+     *
+     * It is imperative that the user manually synchronize on the returned
+     * collection when traversing it via {@link Iterator}, {@link Spliterator}
+     * or {@link Stream}:
+     * <pre>
+     *  Collection c = Collections.synchronizedCollection(myCollection);
+     *     ...
+     *  synchronized (c) {
+     *      Iterator i = c.iterator(); // Must be in the synchronized block
+     *      while (i.hasNext())
+     *         foo(i.next());
+     *  }
+     * </pre>
+     * Failure to follow this advice may result in non-deterministic behavior.
+     *
+     * <p>The returned collection does <i>not</i> pass the {@code hashCode}
+     * and {@code equals} operations through to the backing collection, but
+     * relies on {@code Object}'s equals and hashCode methods.  This is
+     * necessary to preserve the contracts of these operations in the case
+     * that the backing collection is a set or a list.<p>
+     *
+     * The returned collection will be serializable if the specified collection
+     * is serializable.
+     *
+     * @param  <T> the class of the objects in the collection
+     * @param  c the collection to be "wrapped" in a synchronized collection.
+     * @return a synchronized view of the specified collection.
+     

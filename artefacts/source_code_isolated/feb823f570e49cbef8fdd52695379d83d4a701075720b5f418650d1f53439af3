@@ -1,0 +1,26 @@
+public void jumpToCurrentState(){
+    boolean changed = false;
+    if (mLastDrawable != null) {
+        mLastDrawable.jumpToCurrentState();
+        mLastDrawable = null;
+        mLastIndex = -1;
+        changed = true;
+    }
+    if (mCurrDrawable != null) {
+        mCurrDrawable.jumpToCurrentState();
+        if (mHasAlpha) {
+            mCurrDrawable.setAlpha(mAlpha);
+        }
+    }
+    if (mExitAnimationEnd != 0) {
+        mExitAnimationEnd = 0;
+        changed = true;
+    }
+    if (mEnterAnimationEnd != 0) {
+        mEnterAnimationEnd = 0;
+        changed = true;
+    }
+    if (changed) {
+        invalidateSelf();
+    }
+}

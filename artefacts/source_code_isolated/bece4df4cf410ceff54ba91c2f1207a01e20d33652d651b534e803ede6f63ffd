@@ -1,0 +1,16 @@
+public String moveDocument(String sourceDocumentId, String sourceParentDocumentId, String targetParentDocumentId) throws FileNotFoundException{
+    final File before = getFileForDocId(sourceDocumentId);
+    final File after = new File(getFileForDocId(targetParentDocumentId), before.getName());
+    final File visibleFileBefore = getFileForDocId(sourceDocumentId, true);
+    if (after.exists()) {
+        throw new IllegalStateException("Already exists " + after);
+    }
+    if (!before.renameTo(after)) {
+        throw new IllegalStateException("Failed to move to " + after);
+    }
+    final String docId = getDocIdForFile(after);
+    onDocIdChanged(sourceDocumentId);
+    onDocIdChanged(docId);
+    moveInMediaStore(visibleFileBefore, getFileForDocId(docId, true));
+    return docId;
+}

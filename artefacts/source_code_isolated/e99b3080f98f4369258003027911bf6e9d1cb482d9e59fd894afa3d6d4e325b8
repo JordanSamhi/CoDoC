@@ -1,9 +1,0 @@
-public static void enforceShellRestriction(UserManagerInternal userManager, String restriction, int callingUid, int userHandle){
-    if (callingUid == Process.SHELL_UID) {
-        if (userHandle >= 0 && userManager.hasUserRestriction(restriction, userHandle)) {
-            throw new SecurityException("Shell does not have permission to access user " + userHandle);
-        } else if (userHandle < 0) {
-            Slog.e(PackageManagerService.TAG, "Unable to check shell permission for user " + userHandle + "\n\t" + Debug.getCallers(3));
-        }
-    }
-}

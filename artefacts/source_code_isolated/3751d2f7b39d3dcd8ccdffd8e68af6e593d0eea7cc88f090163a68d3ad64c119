@@ -1,0 +1,8 @@
+public int get(TemporalField field){
+    if (field == OFFSET_SECONDS) {
+        return totalSeconds;
+    } else if (field instanceof ChronoField) {
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return range(field).checkValidIntValue(getLong(field), field);
+}

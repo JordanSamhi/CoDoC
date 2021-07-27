@@ -1,0 +1,21 @@
+public MethodHandle findSpecial(Class<?> refc, String name, MethodType type, Class<?> specialCaller) throws NoSuchMethodException, IllegalAccessException{
+    if (specialCaller == null) {
+        throw new NullPointerException("specialCaller == null");
+    }
+    if (type == null) {
+        throw new NullPointerException("type == null");
+    }
+    if (name == null) {
+        throw new NullPointerException("name == null");
+    }
+    if (refc == null) {
+        throw new NullPointerException("ref == null");
+    }
+    checkSpecialCaller(specialCaller, refc);
+    if (name.startsWith("<")) {
+        throw new NoSuchMethodException(name + " is not a valid method name.");
+    }
+    Method method = refc.getDeclaredMethod(name, type.ptypes());
+    checkReturnType(method, type);
+    return findSpecial(method, type, refc, specialCaller);
+}

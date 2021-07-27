@@ -1,0 +1,71 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (!isEnabled() || !mHasSelectorWheel) {
+        return false;
+    }
+    if (mVelocityTracker == null) {
+        mVelocityTracker = VelocityTracker.obtain();
+    }
+    mVelocityTracker.addMovement(event);
+    int action = event.getActionMasked();
+    switch(action) {
+        case MotionEvent.ACTION_MOVE:
+            {
+                if (mIgnoreMoveEvents) {
+                    break;
+                }
+                float currentMoveY = event.getY();
+                if (mScrollState != OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    int deltaDownY = (int) Math.abs(currentMoveY - mLastDownEventY);
+                    if (deltaDownY > mTouchSlop) {
+                        removeAllCallbacks();
+                        onScrollStateChange(OnScrollListener.SCROLL_STATE_TOUCH_SCROLL);
+                    }
+                } else {
+                    int deltaMoveY = (int) ((currentMoveY - mLastDownOrMoveEventY));
+                    scrollBy(0, deltaMoveY);
+                    invalidate();
+                }
+                mLastDownOrMoveEventY = currentMoveY;
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            {
+                removeBeginSoftInputCommand();
+                removeChangeCurrentByOneFromLongPress();
+                mPressedStateHelper.cancel();
+                VelocityTracker velocityTracker = mVelocityTracker;
+                velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
+                int initialVelocity = (int) velocityTracker.getYVelocity();
+                if (Math.abs(initialVelocity) > mMinimumFlingVelocity) {
+                    fling(initialVelocity);
+                    onScrollStateChange(OnScrollListener.SCROLL_STATE_FLING);
+                } else {
+                    int eventY = (int) event.getY();
+                    int deltaMoveY = (int) Math.abs(eventY - mLastDownEventY);
+                    long deltaTime = event.getEventTime() - mLastDownEventTime;
+                    if (deltaMoveY <= mTouchSlop && deltaTime < ViewConfiguration.getTapTimeout()) {
+                        if (mPerformClickOnTap) {
+                            mPerformClickOnTap = false;
+                            performClick();
+                        } else {
+                            int selectorIndexOffset = (eventY / mSelectorElementHeight) - SELECTOR_MIDDLE_ITEM_INDEX;
+                            if (selectorIndexOffset > 0) {
+                                changeValueByOne(true);
+                                mPressedStateHelper.buttonTapped(PressedStateHelper.BUTTON_INCREMENT);
+                            } else if (selectorIndexOffset < 0) {
+                                changeValueByOne(false);
+                                mPressedStateHelper.buttonTapped(PressedStateHelper.BUTTON_DECREMENT);
+                            }
+                        }
+                    } else {
+                        ensureScrollWheelAdjusted();
+                    }
+                    onScrollStateChange(OnScrollListener.SCROLL_STATE_IDLE);
+                }
+                mVelocityTracker.recycle();
+                mVelocityTracker = null;
+            }
+            break;
+    }
+    return true;
+}

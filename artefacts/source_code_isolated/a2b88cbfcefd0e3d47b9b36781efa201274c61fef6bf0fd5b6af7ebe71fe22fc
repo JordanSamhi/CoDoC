@@ -1,0 +1,15 @@
+public double nextDouble(){
+    if ((typeCache != null) && (typeCache instanceof Double)) {
+        double val = ((Double) typeCache).doubleValue();
+        useTypeCache();
+        return val;
+    }
+    setRadix(10);
+    clearCaches();
+    try {
+        return Double.parseDouble(processFloatToken(next(floatPattern())));
+    } catch (NumberFormatException nfe) {
+        position = matcher.start();
+        throw new InputMismatchException(nfe.getMessage());
+    }
+}

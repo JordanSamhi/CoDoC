@@ -1,0 +1,46 @@
+public boolean onInterceptTouchEvent(MotionEvent event){
+    if (!mHasSelectorWheel || !isEnabled()) {
+        return false;
+    }
+    final int action = event.getActionMasked();
+    switch(action) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                removeAllCallbacks();
+                hideSoftInput();
+                mLastDownOrMoveEventY = mLastDownEventY = event.getY();
+                mLastDownEventTime = event.getEventTime();
+                mIgnoreMoveEvents = false;
+                mPerformClickOnTap = false;
+                if (mLastDownEventY < mTopSelectionDividerTop) {
+                    if (mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+                        mPressedStateHelper.buttonPressDelayed(PressedStateHelper.BUTTON_DECREMENT);
+                    }
+                } else if (mLastDownEventY > mBottomSelectionDividerBottom) {
+                    if (mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+                        mPressedStateHelper.buttonPressDelayed(PressedStateHelper.BUTTON_INCREMENT);
+                    }
+                }
+                getParent().requestDisallowInterceptTouchEvent(true);
+                if (!mFlingScroller.isFinished()) {
+                    mFlingScroller.forceFinished(true);
+                    mAdjustScroller.forceFinished(true);
+                    onScrollerFinished(mFlingScroller);
+                    onScrollStateChange(OnScrollListener.SCROLL_STATE_IDLE);
+                } else if (!mAdjustScroller.isFinished()) {
+                    mFlingScroller.forceFinished(true);
+                    mAdjustScroller.forceFinished(true);
+                    onScrollerFinished(mAdjustScroller);
+                } else if (mLastDownEventY < mTopSelectionDividerTop) {
+                    postChangeCurrentByOneFromLongPress(false, ViewConfiguration.getLongPressTimeout());
+                } else if (mLastDownEventY > mBottomSelectionDividerBottom) {
+                    postChangeCurrentByOneFromLongPress(true, ViewConfiguration.getLongPressTimeout());
+                } else {
+                    mPerformClickOnTap = true;
+                    postBeginSoftInputOnLongPressCommand();
+                }
+                return true;
+            }
+    }
+    return false;
+}

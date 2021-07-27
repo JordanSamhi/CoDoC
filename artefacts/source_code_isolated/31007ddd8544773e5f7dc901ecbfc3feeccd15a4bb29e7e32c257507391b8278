@@ -1,0 +1,11 @@
+public boolean removeShutdownHook(Thread hook){
+    if (hook == null) {
+        throw new NullPointerException("hook == null");
+    }
+    if (shuttingDown) {
+        throw new IllegalStateException("VM already shutting down");
+    }
+    synchronized (shutdownHooks) {
+        return shutdownHooks.remove(hook);
+    }
+}

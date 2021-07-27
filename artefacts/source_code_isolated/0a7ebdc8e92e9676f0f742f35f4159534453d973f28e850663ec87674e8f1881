@@ -1,6 +1,12 @@
-public boolean hasOperation(UndoOwner owner){
-    if (mWorking == null) {
-        throw new IllegalStateException("Must be called during an update");
+ boolean hasOperation(UndoOwner owner){
+    final int N = mOperations.size();
+    if (owner == null) {
+        return N != 0;
     }
-    return mWorking.hasOperation(owner);
+    for (int i = 0; i < N; i++) {
+        if (mOperations.get(i).getOwner() == owner) {
+            return true;
+        }
+    }
+    return false;
 }

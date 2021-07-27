@@ -1,0 +1,44 @@
+
+     * Returns the {@code long} value of the system property with
+     * the specified name.  The first argument is treated as the name
+     * of a system property.  System properties are accessible through
+     * the {@link java.lang.System#getProperty(java.lang.String)}
+     * method. The string value of this property is then interpreted
+     * as a {@code long} value, as per the
+     * {@link Long#decode decode} method, and a {@code Long} object
+     * representing this value is returned; in summary:
+     *
+     * <ul>
+     * <li>If the property value begins with the two ASCII characters
+     * {@code 0x} or the ASCII character {@code #}, not followed by
+     * a minus sign, then the rest of it is parsed as a hexadecimal integer
+     * exactly as for the method {@link #valueOf(java.lang.String, int)}
+     * with radix 16.
+     * <li>If the property value begins with the ASCII character
+     * {@code 0} followed by another character, it is parsed as
+     * an octal integer exactly as by the method {@link
+     * #valueOf(java.lang.String, int)} with radix 8.
+     * <li>Otherwise the property value is parsed as a decimal
+     * integer exactly as by the method
+     * {@link #valueOf(java.lang.String, int)} with radix 10.
+     * </ul>
+     *
+     * <p>Note that, in every case, neither {@code L}
+     * ({@code '\u005Cu004C'}) nor {@code l}
+     * ({@code '\u005Cu006C'}) is permitted to appear at the end
+     * of the property value as a type indicator, as would be
+     * permitted in Java programming language source code.
+     *
+     * <p>The second argument is the default value. The default value is
+     * returned if there is no property of the specified name, if the
+     * property does not have the correct numeric format, or if the
+     * specified name is empty or {@code null}.
+     *
+     * @param   nm   property name.
+     * @param   val   default value.
+     * @return  the {@code Long} value of the property.
+     * @throws  SecurityException for the same reasons as
+     *          {@link System#getProperty(String) System.getProperty}
+     * @see     System#getProperty(java.lang.String)
+     * @see     System#getProperty(java.lang.String, java.lang.String)
+     

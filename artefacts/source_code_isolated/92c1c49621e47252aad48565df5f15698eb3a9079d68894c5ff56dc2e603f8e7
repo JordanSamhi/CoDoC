@@ -1,0 +1,8 @@
+public static String getProperty(String key, String def){
+    checkKey(key);
+    SecurityManager sm = getSecurityManager();
+    if (sm != null) {
+        sm.checkPropertyAccess(key);
+    }
+    return props.getProperty(key, def);
+}

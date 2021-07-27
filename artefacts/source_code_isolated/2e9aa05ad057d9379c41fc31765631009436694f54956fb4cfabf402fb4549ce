@@ -1,0 +1,13 @@
+public void disconnect(){
+    synchronized (this) {
+        if (isClosed())
+            return;
+        if (connectState == ST_CONNECTED) {
+            impl.disconnect();
+        }
+        connectedAddress = null;
+        connectedPort = -1;
+        connectState = ST_NOT_CONNECTED;
+        explicitFilter = false;
+    }
+}

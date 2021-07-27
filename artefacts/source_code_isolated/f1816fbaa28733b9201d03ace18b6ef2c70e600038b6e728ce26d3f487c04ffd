@@ -1,0 +1,14 @@
+public void addView(View child){
+    if (child.getLayoutParams() == null) {
+        final LinearLayout.LayoutParams lp = new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+        lp.setMargins(0, 0, 0, 0);
+        child.setLayoutParams(lp);
+    }
+    child.setFocusable(true);
+    child.setClickable(true);
+    if (child.getPointerIcon() == null) {
+        child.setPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
+    }
+    super.addView(child);
+    child.setOnClickListener(new TabClickListener(getTabCount() - 1));
+}

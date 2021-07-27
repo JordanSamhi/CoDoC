@@ -1,0 +1,20 @@
+public String toString(){
+    StringJoiner j = new StringJoiner(", ", "WakeupEvent(", ")");
+    j.add(String.format("%tT.%tL", timestampMs, timestampMs));
+    j.add(iface);
+    j.add("uid: " + Integer.toString(uid));
+    j.add("eth=0x" + Integer.toHexString(ethertype));
+    j.add("dstHw=" + dstHwAddr);
+    if (ipNextHeader > 0) {
+        j.add("ipNxtHdr=" + ipNextHeader);
+        j.add("srcIp=" + srcIp);
+        j.add("dstIp=" + dstIp);
+        if (srcPort > -1) {
+            j.add("srcPort=" + srcPort);
+        }
+        if (dstPort > -1) {
+            j.add("dstPort=" + dstPort);
+        }
+    }
+    return j.toString();
+}

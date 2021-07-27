@@ -1,0 +1,24 @@
+public void close(){
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        if (mClosed) {
+            if (DEBUG)
+                Log.v(TAG, mIdString + "close - reentering");
+            return;
+        }
+        if (DEBUG)
+            Log.v(TAG, mIdString + "close - first time");
+        mClosed = true;
+        try {
+            mDeviceImpl.stopRepeating();
+        } catch (IllegalStateException e) {
+            mStateCallback.onClosed(this);
+            return;
+        } catch (CameraAccessException e) {
+            Log.e(TAG, mIdString + "Exception while stopping repeating: ", e);
+        }
+        mSequenceDrainer.beginDrain();
+    }
+    if (mInput != null) {
+        mInput.release();
+    }
+}

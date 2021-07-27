@@ -1,0 +1,20 @@
+public String toString(){
+    StringBuilder result = new StringBuilder();
+    result.append(getClassName()).append(".").append(methodName);
+    if (isNativeMethod()) {
+        result.append("(Native Method)");
+    } else if (fileName != null) {
+        if (lineNumber >= 0) {
+            result.append("(").append(fileName).append(":").append(lineNumber).append(")");
+        } else {
+            result.append("(").append(fileName).append(")");
+        }
+    } else {
+        if (lineNumber >= 0) {
+            result.append("(Unknown Source:").append(lineNumber).append(")");
+        } else {
+            result.append("(Unknown Source)");
+        }
+    }
+    return result.toString();
+}

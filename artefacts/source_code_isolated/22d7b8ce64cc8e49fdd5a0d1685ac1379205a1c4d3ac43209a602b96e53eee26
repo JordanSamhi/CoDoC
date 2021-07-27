@@ -1,0 +1,14 @@
+public void cancel(){
+    if (mState != STATE_PREPARE && mState != STATE_FINISHED) {
+        if (mState == STATE_DELAYED) {
+            getHelper().removeDelayedAnimation(this);
+            moveToRunningState();
+        }
+        final ArrayList<AnimatorListener> listeners = cloneListeners();
+        final int numListeners = listeners == null ? 0 : listeners.size();
+        for (int i = 0; i < numListeners; i++) {
+            listeners.get(i).onAnimationCancel(this);
+        }
+        end();
+    }
+}

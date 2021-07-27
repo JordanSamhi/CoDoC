@@ -1,0 +1,10 @@
+public Buffer limit(int newLimit){
+    if ((newLimit > capacity) || (newLimit < 0))
+        throw new IllegalArgumentException();
+    limit = newLimit;
+    if (position > limit)
+        position = limit;
+    if (mark > limit)
+        mark = -1;
+    return this;
+}

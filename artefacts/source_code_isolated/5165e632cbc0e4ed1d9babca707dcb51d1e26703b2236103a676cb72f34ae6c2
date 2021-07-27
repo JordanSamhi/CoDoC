@@ -1,0 +1,15 @@
+public static boolean isEqual(byte[] digesta, byte[] digestb){
+    if (digesta == digestb)
+        return true;
+    if (digesta == null || digestb == null) {
+        return false;
+    }
+    if (digesta.length != digestb.length) {
+        return false;
+    }
+    int result = 0;
+    for (int i = 0; i < digesta.length; i++) {
+        result |= digesta[i] ^ digestb[i];
+    }
+    return result == 0;
+}

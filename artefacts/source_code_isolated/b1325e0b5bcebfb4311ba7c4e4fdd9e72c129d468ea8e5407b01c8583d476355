@@ -1,0 +1,13 @@
+public String toString(){
+    StringBuffer sb = new StringBuffer();
+    sb.append("(");
+    sb.append("timestamp: " + timestamp);
+    List<? extends Certificate> certs = signerCertPath.getCertificates();
+    if (!certs.isEmpty()) {
+        sb.append("TSA: " + certs.get(0));
+    } else {
+        sb.append("TSA: <empty>");
+    }
+    sb.append(")");
+    return sb.toString();
+}

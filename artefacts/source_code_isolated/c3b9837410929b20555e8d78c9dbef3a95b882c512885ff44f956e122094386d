@@ -1,0 +1,15 @@
+public void setMonth(int month){
+    int y = 0;
+    if (month >= 12) {
+        y = month / 12;
+        month %= 12;
+    } else if (month < 0) {
+        y = CalendarUtils.floorDivide(month, 12);
+        month = CalendarUtils.mod(month, 12);
+    }
+    BaseCalendar.Date d = getCalendarDate();
+    if (y != 0) {
+        d.setNormalizedYear(d.getNormalizedYear() + y);
+    }
+    d.setMonth(month + 1);
+}

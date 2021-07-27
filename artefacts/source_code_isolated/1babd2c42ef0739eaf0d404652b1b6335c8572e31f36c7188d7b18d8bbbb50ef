@@ -1,0 +1,25 @@
+public void draw(Canvas canvas){
+    final boolean vertical = mVertical;
+    final int extent = mExtent;
+    final int range = mRange;
+    boolean drawTrack = true;
+    boolean drawThumb = true;
+    if (extent <= 0 || range <= extent) {
+        drawTrack = vertical ? mAlwaysDrawVerticalTrack : mAlwaysDrawHorizontalTrack;
+        drawThumb = false;
+    }
+    final Rect r = getBounds();
+    if (canvas.quickReject(r.left, r.top, r.right, r.bottom)) {
+        return;
+    }
+    if (drawTrack) {
+        drawTrack(canvas, r, vertical);
+    }
+    if (drawThumb) {
+        final int scrollBarLength = vertical ? r.height() : r.width();
+        final int thickness = vertical ? r.width() : r.height();
+        final int thumbLength = ScrollBarUtils.getThumbLength(scrollBarLength, thickness, extent, range);
+        final int thumbOffset = ScrollBarUtils.getThumbOffset(scrollBarLength, thumbLength, extent, range, mOffset);
+        drawThumb(canvas, r, thumbOffset, thumbLength, vertical);
+    }
+}

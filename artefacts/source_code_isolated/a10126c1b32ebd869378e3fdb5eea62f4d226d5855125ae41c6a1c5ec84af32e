@@ -1,0 +1,16 @@
+public boolean isLegalReplacement(byte[] repl){
+    WeakReference<CharsetDecoder> wr = cachedDecoder;
+    CharsetDecoder dec = null;
+    if ((wr == null) || ((dec = wr.get()) == null)) {
+        dec = charset().newDecoder();
+        dec.onMalformedInput(CodingErrorAction.REPORT);
+        dec.onUnmappableCharacter(CodingErrorAction.REPORT);
+        cachedDecoder = new WeakReference<CharsetDecoder>(dec);
+    } else {
+        dec.reset();
+    }
+    ByteBuffer bb = ByteBuffer.wrap(repl);
+    CharBuffer cb = CharBuffer.allocate((int) (bb.remaining() * dec.maxCharsPerByte()));
+    CoderResult cr = dec.decode(bb, cb, true);
+    return !cr.isError();
+}

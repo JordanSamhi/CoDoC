@@ -1,0 +1,42 @@
+
+         * Converts the given <code>baseName</code> and <code>locale</code>
+         * to the bundle name. This method is called from the default
+         * implementation of the {@link #newBundle(String, Locale, String,
+         * ClassLoader, boolean) newBundle} and {@link #needsReload(String,
+         * Locale, String, ClassLoader, ResourceBundle, long) needsReload}
+         * methods.
+         *
+         * <p>This implementation returns the following value:
+         * <pre>
+         *     baseName + "_" + language + "_" + script + "_" + country + "_" + variant
+         * </pre>
+         * where <code>language</code>, <code>script</code>, <code>country</code>,
+         * and <code>variant</code> are the language, script, country, and variant
+         * values of <code>locale</code>, respectively. Final component values that
+         * are empty Strings are omitted along with the preceding '_'.  When the
+         * script is empty, the script value is omitted along with the preceding '_'.
+         * If all of the values are empty strings, then <code>baseName</code>
+         * is returned.
+         *
+         * <p>For example, if <code>baseName</code> is
+         * <code>"baseName"</code> and <code>locale</code> is
+         * <code>Locale("ja",&nbsp;"",&nbsp;"XX")</code>, then
+         * <code>"baseName_ja_&thinsp;_XX"</code> is returned. If the given
+         * locale is <code>Locale("en")</code>, then
+         * <code>"baseName_en"</code> is returned.
+         *
+         * <p>Overriding this method allows applications to use different
+         * conventions in the organization and packaging of localized
+         * resources.
+         *
+         * @param baseName
+         *        the base name of the resource bundle, a fully
+         *        qualified class name
+         * @param locale
+         *        the locale for which a resource bundle should be
+         *        loaded
+         * @return the bundle name for the resource bundle
+         * @exception NullPointerException
+         *        if <code>baseName</code> or <code>locale</code>
+         *        is <code>null</code>
+         

@@ -1,0 +1,20 @@
+public int getActualMinimum(int field){
+    int fieldValue = getGreatestMinimum(field);
+    int endValue = getMinimum(field);
+    if (fieldValue == endValue) {
+        return fieldValue;
+    }
+    Calendar work = (Calendar) this.clone();
+    work.setLenient(true);
+    int result = fieldValue;
+    do {
+        work.set(field, fieldValue);
+        if (work.get(field) != fieldValue) {
+            break;
+        } else {
+            result = fieldValue;
+            fieldValue--;
+        }
+    } while (fieldValue >= endValue);
+    return result;
+}

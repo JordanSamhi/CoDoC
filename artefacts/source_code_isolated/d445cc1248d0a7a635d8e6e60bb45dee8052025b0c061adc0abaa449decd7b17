@@ -1,0 +1,11 @@
+public MethodHandle findConstructor(Class<?> refc, MethodType type) throws NoSuchMethodException, IllegalAccessException{
+    if (refc.isArray()) {
+        throw new NoSuchMethodException("no constructor for array class: " + refc.getName());
+    }
+    Constructor constructor = refc.getDeclaredConstructor(type.ptypes());
+    if (constructor == null) {
+        throw new NoSuchMethodException("No constructor for " + constructor.getDeclaringClass() + " matching " + type);
+    }
+    checkAccess(refc, constructor.getDeclaringClass(), constructor.getModifiers(), constructor.getName());
+    return createMethodHandleForConstructor(constructor);
+}

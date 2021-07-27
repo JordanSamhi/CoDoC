@@ -1,0 +1,16 @@
+public final void setSNIMatchers(Collection<SNIMatcher> matchers){
+    if (matchers != null) {
+        if (!matchers.isEmpty()) {
+            sniMatchers = new HashMap<>(matchers.size());
+            for (SNIMatcher matcher : matchers) {
+                if (sniMatchers.put(matcher.getType(), matcher) != null) {
+                    throw new IllegalArgumentException("Duplicated server name of type " + matcher.getType());
+                }
+            }
+        } else {
+            sniMatchers = Collections.<Integer, SNIMatcher>emptyMap();
+        }
+    } else {
+        sniMatchers = null;
+    }
+}

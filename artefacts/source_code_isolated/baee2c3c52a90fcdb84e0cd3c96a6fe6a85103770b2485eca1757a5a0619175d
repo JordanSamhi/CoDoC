@@ -1,0 +1,16 @@
+public long computeChargeTimeRemaining(long curTime){
+    if (mOnBattery) {
+        return -1;
+    }
+    if (mBatteryTimeToFullSeconds >= 0) {
+        return mBatteryTimeToFullSeconds * (1000 * 1000);
+    }
+    if (mChargeStepTracker.mNumStepDurations < 1) {
+        return -1;
+    }
+    long msPerLevel = mChargeStepTracker.computeTimePerLevel();
+    if (msPerLevel <= 0) {
+        return -1;
+    }
+    return (msPerLevel * (100 - mCurrentBatteryLevel)) * 1000;
+}

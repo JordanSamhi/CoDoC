@@ -1,0 +1,8 @@
+public static TemporalAdjuster previous(DayOfWeek dayOfWeek){
+    int dowValue = dayOfWeek.getValue();
+    return (temporal) -> {
+        int calDow = temporal.get(DAY_OF_WEEK);
+        int daysDiff = dowValue - calDow;
+        return temporal.minus(daysDiff >= 0 ? 7 - daysDiff : -daysDiff, DAYS);
+    };
+}

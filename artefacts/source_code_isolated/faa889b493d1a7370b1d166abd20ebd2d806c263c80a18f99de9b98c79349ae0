@@ -1,0 +1,24 @@
+ String getDisplayName(TextStyle style, Locale locale){
+    TemporalAccessor temporal = new TemporalAccessor() {
+
+        @Override
+        public boolean isSupported(TemporalField field) {
+            return false;
+        }
+
+        @Override
+        public long getLong(TemporalField field) {
+            throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <R> R query(TemporalQuery<R> query) {
+            if (query == TemporalQueries.chronology()) {
+                return (R) Chronology.this;
+            }
+            return TemporalAccessor.super.query(query);
+        }
+    };
+    return new DateTimeFormatterBuilder().appendChronologyText(style).toFormatter(locale).format(temporal);
+}

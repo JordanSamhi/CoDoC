@@ -1,9 +1,0 @@
-public void importKey(@NonNull PlatformEncryptionKey platformKey, int userId, int uid, @NonNull String alias, @NonNull byte[] keyBytes, @Nullable byte[] metadata) throws RecoverableKeyStorageException, KeyStoreException, InvalidKeyException{
-    SecretKey key = new SecretKeySpec(keyBytes, SECRET_KEY_ALGORITHM);
-    WrappedKey wrappedKey = WrappedKey.fromSecretKey(platformKey, key, metadata);
-    long result = mDatabase.insertKey(userId, uid, alias, wrappedKey);
-    if (result == RESULT_CANNOT_INSERT_ROW) {
-        throw new RecoverableKeyStorageException(String.format(Locale.US, "Failed writing (%d, %s) to database.", uid, alias));
-    }
-    mDatabase.setShouldCreateSnapshot(userId, uid, true);
-}

@@ -1,0 +1,45 @@
+public IBinder onBind(Intent intent){
+    mService = IQSService.Stub.asInterface(intent.getIBinderExtra(EXTRA_SERVICE));
+    mTileToken = intent.getIBinderExtra(EXTRA_TOKEN);
+    try {
+        mTile = mService.getTile(mTileToken);
+    } catch (RemoteException e) {
+        throw new RuntimeException("Unable to reach IQSService", e);
+    }
+    if (mTile != null) {
+        mTile.setService(mService, mTileToken);
+        mHandler.sendEmptyMessage(H.MSG_START_SUCCESS);
+    }
+    return new IQSTileService.Stub() {
+
+        @Override
+        public void onTileRemoved() throws RemoteException {
+            mHandler.sendEmptyMessage(H.MSG_TILE_REMOVED);
+        }
+
+        @Override
+        public void onTileAdded() throws RemoteException {
+            mHandler.sendEmptyMessage(H.MSG_TILE_ADDED);
+        }
+
+        @Override
+        public void onStopListening() throws RemoteException {
+            mHandler.sendEmptyMessage(H.MSG_STOP_LISTENING);
+        }
+
+        @Override
+        public void onStartListening() throws RemoteException {
+            mHandler.sendEmptyMessage(H.MSG_START_LISTENING);
+        }
+
+        @Override
+        public void onClick(IBinder wtoken) throws RemoteException {
+            mHandler.obtainMessage(H.MSG_TILE_CLICKED, wtoken).sendToTarget();
+        }
+
+        @Override
+        public void onUnlockComplete() throws RemoteException {
+            mHandler.sendEmptyMessage(H.MSG_UNLOCK_COMPLETE);
+        }
+    };
+}

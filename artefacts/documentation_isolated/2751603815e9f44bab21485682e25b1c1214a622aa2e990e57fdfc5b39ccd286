@@ -1,0 +1,79 @@
+
+     * Reads a set of file attributes as a bulk operation.
+     *
+     * <p> The {@code attributes} parameter identifies the attributes to be read
+     * and takes the form:
+     * <blockquote>
+     * [<i>view-name</i><b>:</b>]<i>attribute-list</i>
+     * </blockquote>
+     * where square brackets [...] delineate an optional component and the
+     * character {@code ':'} stands for itself.
+     *
+     * <p> <i>view-name</i> is the {@link FileAttributeView#name name} of a {@link
+     * FileAttributeView} that identifies a set of file attributes. If not
+     * specified then it defaults to {@code "basic"}, the name of the file
+     * attribute view that identifies the basic set of file attributes common to
+     * many file systems.
+     *
+     * <p> The <i>attribute-list</i> component is a comma separated list of
+     * zero or more names of attributes to read. If the list contains the value
+     * {@code "*"} then all attributes are read. Attributes that are not supported
+     * are ignored and will not be present in the returned map. It is
+     * implementation specific if all attributes are read as an atomic operation
+     * with respect to other file system operations.
+     *
+     * <p> The following examples demonstrate possible values for the {@code
+     * attributes} parameter:
+     *
+     * <blockquote>
+     * <table border="0" summary="Possible values">
+     * <tr>
+     *   <td> {@code "*"} </td>
+     *   <td> Read all {@link BasicFileAttributes basic-file-attributes}. </td>
+     * </tr>
+     * <tr>
+     *   <td> {@code "size,lastModifiedTime,lastAccessTime"} </td>
+     *   <td> Reads the file size, last modified time, and last access time
+     *     attributes. </td>
+     * </tr>
+     * <tr>
+     *   <td> {@code "posix:*"} </td>
+     *   <td> Read all {@link PosixFileAttributes POSIX-file-attributes}. </td>
+     * </tr>
+     * <tr>
+     *   <td> {@code "posix:permissions,owner,size"} </td>
+     *   <td> Reads the POSX file permissions, owner, and file size. </td>
+     * </tr>
+     * </table>
+     * </blockquote>
+     *
+     * <p> The {@code options} array may be used to indicate how symbolic links
+     * are handled for the case that the file is a symbolic link. By default,
+     * symbolic links are followed and the file attribute of the final target
+     * of the link is read. If the option {@link LinkOption#NOFOLLOW_LINKS
+     * NOFOLLOW_LINKS} is present then symbolic links are not followed.
+     *
+     * @param   path
+     *          the path to the file
+     * @param   attributes
+     *          the attributes to read
+     * @param   options
+     *          options indicating how symbolic links are handled
+     *
+     * @return  a map of the attributes returned; The map's keys are the
+     *          attribute names, its values are the attribute values
+     *
+     * @throws  UnsupportedOperationException
+     *          if the attribute view is not available
+     * @throws  IllegalArgumentException
+     *          if no attributes are specified or an unrecognized attributes is
+     *          specified
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, its {@link SecurityManager#checkRead(String) checkRead}
+     *          method denies read access to the file. If this method is invoked
+     *          to read security sensitive attributes then the security manager
+     *          may be invoke to check for additional permissions.
+     

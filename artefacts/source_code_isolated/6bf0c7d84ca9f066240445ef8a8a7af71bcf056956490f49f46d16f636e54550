@@ -1,0 +1,33 @@
+public boolean onKeyDown(View view, Editable content, int keyCode, KeyEvent event){
+    int selStart, selEnd;
+    {
+        int a = Selection.getSelectionStart(content);
+        int b = Selection.getSelectionEnd(content);
+        selStart = Math.min(a, b);
+        selEnd = Math.max(a, b);
+    }
+    if (selStart < 0 || selEnd < 0) {
+        selStart = selEnd = 0;
+        Selection.setSelection(content, 0);
+    }
+    int i = event != null ? lookup(event, content) : 0;
+    int repeatCount = event != null ? event.getRepeatCount() : 0;
+    if (repeatCount == 0) {
+        if (i != 0) {
+            if (selStart != selEnd) {
+                Selection.setSelection(content, selEnd);
+            }
+            content.replace(selStart, selEnd, String.valueOf((char) i));
+            adjustMetaAfterKeypress(content);
+            return true;
+        }
+    } else if (i == '0' && repeatCount == 1) {
+        if (selStart == selEnd && selEnd > 0 && content.charAt(selStart - 1) == '0') {
+            content.replace(selStart - 1, selEnd, String.valueOf('+'));
+            adjustMetaAfterKeypress(content);
+            return true;
+        }
+    }
+    adjustMetaAfterKeypress(content);
+    return super.onKeyDown(view, content, keyCode, event);
+}

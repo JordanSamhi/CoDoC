@@ -1,0 +1,51 @@
+
+     * Relative bulk <i>put</i> method&nbsp;&nbsp;<i>(optional operation)</i>.
+     *
+     * <p> This method transfers chars into this buffer from the given
+     * source array.  If there are more chars to be copied from the array
+     * than remain in this buffer, that is, if
+     * <tt>length</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>remaining()</tt>, then no
+     * chars are transferred and a {@link BufferOverflowException} is
+     * thrown.
+     *
+     * <p> Otherwise, this method copies <tt>length</tt> chars from the
+     * given array into this buffer, starting at the given offset in the array
+     * and at the current position of this buffer.  The position of this buffer
+     * is then incremented by <tt>length</tt>.
+     *
+     * <p> In other words, an invocation of this method of the form
+     * <tt>dst.put(src,&nbsp;off,&nbsp;len)</tt> has exactly the same effect as
+     * the loop
+     *
+     * <pre>{@code
+     *     for (int i = off; i < off + len; i++)
+     *         dst.put(a[i]);
+     * }</pre>
+     *
+     * except that it first checks that there is sufficient space in this
+     * buffer and it is potentially much more efficient.
+     *
+     * @param  src
+     *         The array from which chars are to be read
+     *
+     * @param  offset
+     *         The offset within the array of the first char to be read;
+     *         must be non-negative and no larger than <tt>array.length</tt>
+     *
+     * @param  length
+     *         The number of chars to be read from the given array;
+     *         must be non-negative and no larger than
+     *         <tt>array.length - offset</tt>
+     *
+     * @return  This buffer
+     *
+     * @throws  BufferOverflowException
+     *          If there is insufficient space in this buffer
+     *
+     * @throws  IndexOutOfBoundsException
+     *          If the preconditions on the <tt>offset</tt> and <tt>length</tt>
+     *          parameters do not hold
+     *
+     * @throws  ReadOnlyBufferException
+     *          If this buffer is read-only
+     

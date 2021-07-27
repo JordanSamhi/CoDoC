@@ -1,0 +1,12 @@
+public void setStackTrace(StackTraceElement[] stackTrace){
+    StackTraceElement[] defensiveCopy = stackTrace.clone();
+    for (int i = 0; i < defensiveCopy.length; i++) {
+        if (defensiveCopy[i] == null)
+            throw new NullPointerException("stackTrace[" + i + "]");
+    }
+    synchronized (this) {
+        if (this.stackTrace == null && backtrace == null)
+            return;
+        this.stackTrace = defensiveCopy;
+    }
+}

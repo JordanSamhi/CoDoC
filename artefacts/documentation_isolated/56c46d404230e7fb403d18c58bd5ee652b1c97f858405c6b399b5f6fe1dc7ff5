@@ -1,0 +1,39 @@
+
+     * Constructs a new file system that is identified by a {@link URI}
+     *
+     * <p> This method first attempts to locate an installed provider in exactly
+     * the same manner as the {@link #newFileSystem(URI,Map) newFileSystem(URI,Map)}
+     * method. If none of the installed providers support the URI scheme then an
+     * attempt is made to locate the provider using the given class loader. If a
+     * provider supporting the URI scheme is located then its {@link
+     * FileSystemProvider#newFileSystem(URI,Map) newFileSystem(URI,Map)} is
+     * invoked to construct the new file system.
+     *
+     * @param   uri
+     *          the URI identifying the file system
+     * @param   env
+     *          a map of provider specific properties to configure the file system;
+     *          may be empty
+     * @param   loader
+     *          the class loader to locate the provider or {@code null} to only
+     *          attempt to locate an installed provider
+     *
+     * @return  a new file system
+     *
+     * @throws  IllegalArgumentException
+     *          if the pre-conditions for the {@code uri} parameter are not met,
+     *          or the {@code env} parameter does not contain properties required
+     *          by the provider, or a property value is invalid
+     * @throws  FileSystemAlreadyExistsException
+     *          if the URI scheme identifies an installed provider and the file
+     *          system has already been created
+     * @throws  ProviderNotFoundException
+     *          if a provider supporting the URI scheme is not found
+     * @throws  ServiceConfigurationError
+     *          when an error occurs while loading a service provider
+     * @throws  IOException
+     *          an I/O error occurs creating the file system
+     * @throws  SecurityException
+     *          if a security manager is installed and it denies an unspecified
+     *          permission required by the file system provider implementation
+     

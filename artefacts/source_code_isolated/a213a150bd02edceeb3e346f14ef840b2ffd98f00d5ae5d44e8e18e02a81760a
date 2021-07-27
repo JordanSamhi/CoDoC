@@ -1,8 +1,0 @@
-public byte[] retrieveSoftApBackupData(){
-    enforceNetworkSettingsPermission();
-    mLog.info("retrieveSoftApBackupData uid=%").c(Binder.getCallingUid()).flush();
-    SoftApConfiguration config = mWifiThreadRunner.call(mWifiApConfigStore::getApConfiguration, new SoftApConfiguration.Builder().build());
-    byte[] backupData = mSoftApBackupRestore.retrieveBackupDataFromSoftApConfiguration(config);
-    Log.d(TAG, "Retrieved soft ap backup data");
-    return backupData;
-}

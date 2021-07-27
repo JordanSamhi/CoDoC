@@ -1,0 +1,30 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (!mInputEnabled || !isEnabled()) {
+        return false;
+    }
+    switch(event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            handleActionDown(event);
+            return true;
+        case MotionEvent.ACTION_UP:
+            handleActionUp();
+            return true;
+        case MotionEvent.ACTION_MOVE:
+            handleActionMove(event);
+            return true;
+        case MotionEvent.ACTION_CANCEL:
+            if (mPatternInProgress) {
+                setPatternInProgress(false);
+                resetPattern();
+                notifyPatternCleared();
+            }
+            if (PROFILE_DRAWING) {
+                if (mDrawingProfilingStarted) {
+                    Debug.stopMethodTracing();
+                    mDrawingProfilingStarted = false;
+                }
+            }
+            return true;
+    }
+    return false;
+}

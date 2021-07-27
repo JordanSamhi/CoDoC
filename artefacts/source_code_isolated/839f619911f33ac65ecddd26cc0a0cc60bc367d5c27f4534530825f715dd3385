@@ -1,4 +1,7 @@
 public String format(String format){
-    calculator.copyFieldsFromTime(this);
-    return calculator.format(format);
+    if (format == null) {
+        format = "%c";
+    }
+    TimeFormatter formatter = new TimeFormatter();
+    return formatter.format(format, wallTime, zoneInfo);
 }

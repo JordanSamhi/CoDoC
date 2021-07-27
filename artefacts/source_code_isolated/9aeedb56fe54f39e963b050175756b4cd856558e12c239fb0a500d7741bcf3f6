@@ -1,0 +1,26 @@
+public void draw(Canvas canvas){
+    if (mLayersBitmap == null) {
+        return;
+    }
+    if (mLayersShader == null) {
+        mCanvas.setBitmap(mLayersBitmap);
+        mCanvas.drawColor(Color.BLACK);
+        for (int i = 0; i < mLayerState.N_CHILDREN; i++) {
+            if (mLayerState.mChildren[i] == null) {
+                continue;
+            }
+            final Drawable dr = mLayerState.mChildren[i].mDrawable;
+            if (dr != null) {
+                dr.draw(mCanvas);
+            }
+        }
+        mLayersShader = new BitmapShader(mLayersBitmap, TileMode.CLAMP, TileMode.CLAMP);
+        mPaint.setShader(mLayersShader);
+    }
+    if (mMaskScaleOnly != null) {
+        Rect bounds = getBounds();
+        canvas.translate(bounds.left, bounds.top);
+        canvas.drawPath(mMaskScaleOnly, mPaint);
+        canvas.translate(-bounds.left, -bounds.top);
+    }
+}

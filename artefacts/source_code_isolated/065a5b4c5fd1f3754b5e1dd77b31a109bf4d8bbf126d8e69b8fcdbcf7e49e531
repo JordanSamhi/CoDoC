@@ -1,0 +1,16 @@
+public boolean isOpaque(){
+    boolean retValue = (mCachingActive && mIsCacheColorOpaque && mDividerIsOpaque && hasOpaqueScrollbars()) || super.isOpaque();
+    if (retValue) {
+        final int listTop = mListPadding != null ? mListPadding.top : mPaddingTop;
+        View first = getChildAt(0);
+        if (first == null || first.getTop() > listTop) {
+            return false;
+        }
+        final int listBottom = getHeight() - (mListPadding != null ? mListPadding.bottom : mPaddingBottom);
+        View last = getChildAt(getChildCount() - 1);
+        if (last == null || last.getBottom() < listBottom) {
+            return false;
+        }
+    }
+    return retValue;
+}

@@ -1,0 +1,6 @@
+public static Collector<T, ?, IntSummaryStatistics> summarizingInt(ToIntFunction<? super T> mapper){
+    return new CollectorImpl<T, IntSummaryStatistics, IntSummaryStatistics>(IntSummaryStatistics::new, (r, t) -> r.accept(mapper.applyAsInt(t)), (l, r) -> {
+        l.combine(r);
+        return l;
+    }, CH_ID);
+}

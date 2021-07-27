@@ -1,0 +1,43 @@
+public void write(String s, int off, int len){
+    while (bufferIndex + len > bufferSize) {
+        int nextNewLine = -1;
+        int maxLength = bufferSize - bufferIndex;
+        for (int i = 0; i < maxLength; i++) {
+            if (s.charAt(off + i) == '\n') {
+                if (bufferIndex + i < bufferSize) {
+                    nextNewLine = i;
+                } else {
+                    break;
+                }
+            }
+        }
+        if (nextNewLine != -1) {
+            appendToBuffer(s, off, nextNewLine);
+            writeBuffer(bufferIndex);
+            bufferIndex = 0;
+            lastNewline = -1;
+            off += nextNewLine + 1;
+            len -= nextNewLine + 1;
+        } else if (lastNewline != -1) {
+            writeBuffer(lastNewline);
+            removeFromBuffer(lastNewline + 1);
+            lastNewline = -1;
+        } else {
+            int rest = bufferSize - bufferIndex;
+            appendToBuffer(s, off, rest);
+            writeBuffer(bufferIndex);
+            bufferIndex = 0;
+            off += rest;
+            len -= rest;
+        }
+    }
+    if (len > 0) {
+        appendToBuffer(s, off, len);
+        for (int i = len - 1; i >= 0; i--) {
+            if (s.charAt(off + i) == '\n') {
+                lastNewline = bufferIndex - len + i;
+                break;
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public BigDecimal nextBigDecimal(){
+    if ((typeCache != null) && (typeCache instanceof BigDecimal)) {
+        BigDecimal val = (BigDecimal) typeCache;
+        useTypeCache();
+        return val;
+    }
+    setRadix(10);
+    clearCaches();
+    try {
+        String s = processFloatToken(next(decimalPattern()));
+        return new BigDecimal(s);
+    } catch (NumberFormatException nfe) {
+        position = matcher.start();
+        throw new InputMismatchException(nfe.getMessage());
+    }
+}

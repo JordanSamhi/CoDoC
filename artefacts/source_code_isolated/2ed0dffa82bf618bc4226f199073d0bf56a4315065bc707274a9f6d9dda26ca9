@@ -1,0 +1,32 @@
+public String toString(){
+    final String format = "   %-15s = %s\n";
+    final String formatWithUncertainty = "   %-15s = %-25s   %-26s = %s\n";
+    StringBuilder builder = new StringBuilder("GnssClock:\n");
+    if (hasLeapSecond()) {
+        builder.append(String.format(format, "LeapSecond", mLeapSecond));
+    }
+    builder.append(String.format(formatWithUncertainty, "TimeNanos", mTimeNanos, "TimeUncertaintyNanos", hasTimeUncertaintyNanos() ? mTimeUncertaintyNanos : null));
+    if (hasFullBiasNanos()) {
+        builder.append(String.format(format, "FullBiasNanos", mFullBiasNanos));
+    }
+    if (hasBiasNanos() || hasBiasUncertaintyNanos()) {
+        builder.append(String.format(formatWithUncertainty, "BiasNanos", hasBiasNanos() ? mBiasNanos : null, "BiasUncertaintyNanos", hasBiasUncertaintyNanos() ? mBiasUncertaintyNanos : null));
+    }
+    if (hasDriftNanosPerSecond() || hasDriftUncertaintyNanosPerSecond()) {
+        builder.append(String.format(formatWithUncertainty, "DriftNanosPerSecond", hasDriftNanosPerSecond() ? mDriftNanosPerSecond : null, "DriftUncertaintyNanosPerSecond", hasDriftUncertaintyNanosPerSecond() ? mDriftUncertaintyNanosPerSecond : null));
+    }
+    builder.append(String.format(format, "HardwareClockDiscontinuityCount", mHardwareClockDiscontinuityCount));
+    if (hasElapsedRealtimeNanos() || hasElapsedRealtimeUncertaintyNanos()) {
+        builder.append(String.format(formatWithUncertainty, "ElapsedRealtimeNanos", hasElapsedRealtimeNanos() ? mElapsedRealtimeNanos : null, "ElapsedRealtimeUncertaintyNanos", hasElapsedRealtimeUncertaintyNanos() ? mElapsedRealtimeUncertaintyNanos : null));
+    }
+    if (hasReferenceConstellationTypeForIsb()) {
+        builder.append(String.format(format, "ReferenceConstellationTypeForIsb", mReferenceConstellationTypeForIsb));
+    }
+    if (hasReferenceCarrierFrequencyHzForIsb()) {
+        builder.append(String.format(format, "ReferenceCarrierFrequencyHzForIsb", mReferenceCarrierFrequencyHzForIsb));
+    }
+    if (hasReferenceCodeTypeForIsb()) {
+        builder.append(String.format(format, "ReferenceCodeTypeForIsb", mReferenceCodeTypeForIsb));
+    }
+    return builder.toString();
+}

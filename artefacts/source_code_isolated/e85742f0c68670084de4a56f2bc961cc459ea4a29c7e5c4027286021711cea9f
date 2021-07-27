@@ -1,0 +1,15 @@
+public LocalTime truncatedTo(TemporalUnit unit){
+    if (unit == ChronoUnit.NANOS) {
+        return this;
+    }
+    Duration unitDur = unit.getDuration();
+    if (unitDur.getSeconds() > SECONDS_PER_DAY) {
+        throw new UnsupportedTemporalTypeException("Unit is too large to be used for truncation");
+    }
+    long dur = unitDur.toNanos();
+    if ((NANOS_PER_DAY % dur) != 0) {
+        throw new UnsupportedTemporalTypeException("Unit must divide into a standard day without remainder");
+    }
+    long nod = toNanoOfDay();
+    return ofNanoOfDay((nod / dur) * dur);
+}

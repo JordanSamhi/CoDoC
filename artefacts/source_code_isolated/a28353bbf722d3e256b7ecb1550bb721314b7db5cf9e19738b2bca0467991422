@@ -1,0 +1,16 @@
+public int inflate(byte[] b, int off, int len) throws DataFormatException{
+    if (b == null) {
+        throw new NullPointerException();
+    }
+    if (off < 0 || len < 0 || off > b.length - len) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    synchronized (zsRef) {
+        ensureOpen();
+        int thisLen = this.len;
+        int n = inflateBytes(zsRef.address(), b, off, len);
+        bytesWritten += n;
+        bytesRead += (thisLen - this.len);
+        return n;
+    }
+}

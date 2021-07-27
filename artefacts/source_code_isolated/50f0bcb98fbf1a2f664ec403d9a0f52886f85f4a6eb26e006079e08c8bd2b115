@@ -1,0 +1,14 @@
+public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed){
+    final int motionIndex = getChildCount() / 2;
+    final View motionView = getChildAt(motionIndex);
+    final int oldTop = motionView != null ? motionView.getTop() : 0;
+    if (motionView == null || trackMotionScroll(-dyUnconsumed, -dyUnconsumed)) {
+        int myUnconsumed = dyUnconsumed;
+        int myConsumed = 0;
+        if (motionView != null) {
+            myConsumed = motionView.getTop() - oldTop;
+            myUnconsumed -= myConsumed;
+        }
+        dispatchNestedScroll(0, myConsumed, 0, myUnconsumed, null);
+    }
+}

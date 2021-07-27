@@ -1,0 +1,11 @@
+public final byte[] update(byte[] input, int inputOffset, int inputLen){
+    checkCipherState();
+    if (input == null || inputOffset < 0 || inputLen > (input.length - inputOffset) || inputLen < 0) {
+        throw new IllegalArgumentException("Bad arguments");
+    }
+    updateProviderIfNeeded();
+    if (inputLen == 0) {
+        return null;
+    }
+    return spi.engineUpdate(input, inputOffset, inputLen);
+}

@@ -1,0 +1,8 @@
+public static TemporalAdjuster ofDateAdjuster(UnaryOperator<LocalDate> dateBasedAdjuster){
+    Objects.requireNonNull(dateBasedAdjuster, "dateBasedAdjuster");
+    return (temporal) -> {
+        LocalDate input = LocalDate.from(temporal);
+        LocalDate output = dateBasedAdjuster.apply(input);
+        return temporal.with(output);
+    };
+}

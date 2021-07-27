@@ -1,0 +1,32 @@
+
+     * Add a new dynamic permission to the system.  For this to work, your
+     * package must have defined a permission tree through the
+     * {@link android.R.styleable#AndroidManifestPermissionTree
+     * &lt;permission-tree&gt;} tag in its manifest.  A package can only add
+     * permissions to trees that were defined by either its own package or
+     * another with the same user id; a permission is in a tree if it
+     * matches the name of the permission tree + ".": for example,
+     * "com.foo.bar" is a member of the permission tree "com.foo".
+     *
+     * <p>It is good to make your permission tree name descriptive, because you
+     * are taking possession of that entire set of permission names.  Thus, it
+     * must be under a domain you control, with a suffix that will not match
+     * any normal permissions that may be declared in any applications that
+     * are part of that domain.
+     *
+     * <p>New permissions must be added before
+     * any .apks are installed that use those permissions.  Permissions you
+     * add through this method are remembered across reboots of the device.
+     * If the given permission already exists, the info you supply here
+     * will be used to update it.
+     *
+     * @param info Description of the permission to be added.
+     *
+     * @return Returns true if a new permission was created, false if an
+     * existing one was updated.
+     *
+     * @throws SecurityException if you are not allowed to add the
+     * given permission name.
+     *
+     * @see #removePermission(String)
+     

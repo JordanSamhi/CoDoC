@@ -1,0 +1,32 @@
+public String toString(){
+    StringBuilder s = new StringBuilder();
+    s.append("Request[");
+    s.append(qualityToString(mQuality));
+    s.append(" ").append(mProvider);
+    if (mQuality != POWER_NONE) {
+        s.append(" interval=");
+        TimeUtils.formatDuration(mInterval, s);
+        if (mExplicitFastestInterval) {
+            s.append(" fastestInterval=");
+            TimeUtils.formatDuration(mFastestInterval, s);
+        }
+    }
+    if (mExpireAt != Long.MAX_VALUE) {
+        s.append(" expireAt=").append(TimeUtils.formatRealtime(mExpireAt));
+    }
+    if (mExpireIn != Long.MAX_VALUE) {
+        s.append(" expireIn=");
+        TimeUtils.formatDuration(mExpireIn, s);
+    }
+    if (mNumUpdates != Integer.MAX_VALUE) {
+        s.append(" num=").append(mNumUpdates);
+    }
+    if (mLowPowerMode) {
+        s.append(" lowPowerMode");
+    }
+    if (mLocationSettingsIgnored) {
+        s.append(" locationSettingsIgnored");
+    }
+    s.append(']');
+    return s.toString();
+}

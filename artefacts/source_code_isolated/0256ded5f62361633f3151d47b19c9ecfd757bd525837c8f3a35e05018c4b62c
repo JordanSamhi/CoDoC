@@ -1,0 +1,23 @@
+public boolean onKeyDown(int keyCode, KeyEvent event){
+    if (mPopup.onKeyDown(keyCode, event)) {
+        return true;
+    }
+    if (!isPopupShowing()) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_DPAD_DOWN:
+                if (event.hasNoModifiers()) {
+                    performValidation();
+                }
+        }
+    }
+    if (isPopupShowing() && keyCode == KeyEvent.KEYCODE_TAB && event.hasNoModifiers()) {
+        return true;
+    }
+    mLastKeyCode = keyCode;
+    boolean handled = super.onKeyDown(keyCode, event);
+    mLastKeyCode = KeyEvent.KEYCODE_UNKNOWN;
+    if (handled && isPopupShowing()) {
+        clearListSelection();
+    }
+    return handled;
+}

@@ -1,0 +1,9 @@
+public boolean getSyntheticAppDetailsActivityEnabled(String packageName){
+    try {
+        ComponentName componentName = new ComponentName(packageName, APP_DETAILS_ACTIVITY_CLASS_NAME);
+        int state = mPM.getComponentEnabledSetting(componentName, getUserId());
+        return state == COMPONENT_ENABLED_STATE_ENABLED || state == COMPONENT_ENABLED_STATE_DEFAULT;
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

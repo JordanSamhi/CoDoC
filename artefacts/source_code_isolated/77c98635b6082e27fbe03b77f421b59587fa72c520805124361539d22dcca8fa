@@ -1,0 +1,17 @@
+public Temporal addTo(Temporal temporal){
+    validateChrono(temporal);
+    if (months == 0) {
+        if (years != 0) {
+            temporal = temporal.plus(years, YEARS);
+        }
+    } else {
+        long totalMonths = toTotalMonths();
+        if (totalMonths != 0) {
+            temporal = temporal.plus(totalMonths, MONTHS);
+        }
+    }
+    if (days != 0) {
+        temporal = temporal.plus(days, DAYS);
+    }
+    return temporal;
+}

@@ -1,0 +1,11 @@
+public final int update(byte[] input, int inputOffset, int inputLen, byte[] output, int outputOffset) throws ShortBufferException{
+    checkCipherState();
+    if (input == null || inputOffset < 0 || inputLen > (input.length - inputOffset) || inputLen < 0 || outputOffset < 0) {
+        throw new IllegalArgumentException("Bad arguments");
+    }
+    updateProviderIfNeeded();
+    if (inputLen == 0) {
+        return 0;
+    }
+    return spi.engineUpdate(input, inputOffset, inputLen, output, outputOffset);
+}

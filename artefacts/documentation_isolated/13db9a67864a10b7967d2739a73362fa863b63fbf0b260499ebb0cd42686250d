@@ -1,0 +1,47 @@
+
+     * Sends a datagram packet to the destination, with a TTL (time-
+     * to-live) other than the default for the socket.  This method
+     * need only be used in instances where a particular TTL is desired;
+     * otherwise it is preferable to set a TTL once on the socket, and
+     * use that default TTL for all packets.  This method does <B>not
+     * </B> alter the default TTL for the socket. Its behavior may be
+     * affected by {@code setInterface}.
+     *
+     * <p>If there is a security manager, this method first performs some
+     * security checks. First, if {@code p.getAddress().isMulticastAddress()}
+     * is true, this method calls the
+     * security manager's {@code checkMulticast} method
+     * with {@code p.getAddress()} and {@code ttl} as its arguments.
+     * If the evaluation of that expression is false,
+     * this method instead calls the security manager's
+     * {@code checkConnect} method with arguments
+     * {@code p.getAddress().getHostAddress()} and
+     * {@code p.getPort()}. Each call to a security manager method
+     * could result in a SecurityException if the operation is not allowed.
+     *
+     * @param p is the packet to be sent. The packet should contain
+     * the destination multicast ip address and the data to be sent.
+     * One does not need to be the member of the group to send
+     * packets to a destination multicast address.
+     * @param ttl optional time to live for multicast packet.
+     * default ttl is 1.
+     *
+     * @exception IOException is raised if an error occurs i.e
+     * error while setting ttl.
+     * @exception  SecurityException  if a security manager exists and its
+     *             {@code checkMulticast} or {@code checkConnect}
+     *             method doesn't allow the send.
+     *
+     * @deprecated Use the following code or its equivalent instead:
+     *  ......
+     *  int ttl = mcastSocket.getTimeToLive();
+     *  mcastSocket.setTimeToLive(newttl);
+     *  mcastSocket.send(p);
+     *  mcastSocket.setTimeToLive(ttl);
+     *  ......
+     *
+     * @see DatagramSocket#send
+     * @see DatagramSocket#receive
+     * @see SecurityManager#checkMulticast(java.net.InetAddress, byte)
+     * @see SecurityManager#checkConnect
+     

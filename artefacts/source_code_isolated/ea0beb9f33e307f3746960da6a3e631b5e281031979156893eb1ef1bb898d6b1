@@ -1,9 +1,0 @@
-public static Future<?> submit(@NonNull Runnable runnable, @NonNull String description){
-    Objects.requireNonNull(description, "description cannot be null");
-    SystemServerInitThreadPool instance;
-    synchronized (LOCK) {
-        Preconditions.checkState(sInstance != null, "Cannot get " + TAG + " - it has been shut down");
-        instance = sInstance;
-    }
-    return instance.submitTask(runnable, description);
-}

@@ -1,2 +1,6 @@
 public void onEscrowTokenRemoved(long handle, boolean successful){
+    Message msg = mHandler.obtainMessage(MSG_ESCROW_TOKEN_REMOVED);
+    msg.getData().putLong(EXTRA_TOKEN_HANDLE, handle);
+    msg.getData().putBoolean(EXTRA_TOKEN_REMOVED_RESULT, successful);
+    msg.sendToTarget();
 }

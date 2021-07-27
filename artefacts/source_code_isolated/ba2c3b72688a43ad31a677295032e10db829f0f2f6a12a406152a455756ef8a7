@@ -1,0 +1,12 @@
+public void resume(){
+    if (Looper.myLooper() == null) {
+        throw new AndroidRuntimeException("Animators may only be resumed from the same " + "thread that the animator was started on");
+    }
+    if (mPaused && !mResumed) {
+        mResumed = true;
+        if (mPauseTime > 0) {
+            addAnimationCallback(0);
+        }
+    }
+    super.resume();
+}

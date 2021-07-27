@@ -1,0 +1,11 @@
+public final void init(Key key, SecureRandom random) throws InvalidKeyException{
+    if (spi != null && (key == null || lock == null)) {
+        spi.engineInit(key, random);
+    } else {
+        try {
+            chooseProvider(I_NO_PARAMS, key, null, random);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new InvalidKeyException(e);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+public void dismiss(){
+    if (!isShowing() || isTransitioningToDismiss()) {
+        return;
+    }
+    setShowing(false);
+    setTransitioningToDismiss(true);
+    mWindowPresenter.hide(getTransitionEpicenter());
+    detachFromAnchor();
+    if (getOnDismissListener() != null) {
+        getOnDismissListener().onDismiss();
+    }
+}

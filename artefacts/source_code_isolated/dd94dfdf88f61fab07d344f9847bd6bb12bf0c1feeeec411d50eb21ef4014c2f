@@ -1,0 +1,18 @@
+public synchronized long skip(long n) throws IOException{
+    getBufIfOpen();
+    if (n <= 0) {
+        return 0;
+    }
+    long avail = count - pos;
+    if (avail <= 0) {
+        if (markpos < 0)
+            return getInIfOpen().skip(n);
+        fill();
+        avail = count - pos;
+        if (avail <= 0)
+            return 0;
+    }
+    long skipped = (avail < n) ? avail : n;
+    pos += skipped;
+    return skipped;
+}

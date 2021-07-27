@@ -1,0 +1,29 @@
+public Rect getDirtyBounds(){
+    if (!isBounded()) {
+        final Rect drawingBounds = mDrawingBounds;
+        final Rect dirtyBounds = mDirtyBounds;
+        dirtyBounds.set(drawingBounds);
+        drawingBounds.setEmpty();
+        final int cX = (int) mHotspotBounds.exactCenterX();
+        final int cY = (int) mHotspotBounds.exactCenterY();
+        final Rect rippleBounds = mTempRect;
+        final RippleForeground[] activeRipples = mExitingRipples;
+        final int N = mExitingRipplesCount;
+        for (int i = 0; i < N; i++) {
+            activeRipples[i].getBounds(rippleBounds);
+            rippleBounds.offset(cX, cY);
+            drawingBounds.union(rippleBounds);
+        }
+        final RippleBackground background = mBackground;
+        if (background != null) {
+            background.getBounds(rippleBounds);
+            rippleBounds.offset(cX, cY);
+            drawingBounds.union(rippleBounds);
+        }
+        dirtyBounds.union(drawingBounds);
+        dirtyBounds.union(super.getDirtyBounds());
+        return dirtyBounds;
+    } else {
+        return getBounds();
+    }
+}

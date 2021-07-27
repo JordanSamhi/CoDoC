@@ -1,0 +1,25 @@
+public boolean equals(Object o){
+    if (this == o)
+        return true;
+    if (o instanceof EnumMap)
+        return equals((EnumMap<?, ?>) o);
+    if (!(o instanceof Map))
+        return false;
+    Map<?, ?> m = (Map<?, ?>) o;
+    if (size != m.size())
+        return false;
+    for (int i = 0; i < keyUniverse.length; i++) {
+        if (null != vals[i]) {
+            K key = keyUniverse[i];
+            V value = unmaskNull(vals[i]);
+            if (null == value) {
+                if (!((null == m.get(key)) && m.containsKey(key)))
+                    return false;
+            } else {
+                if (!value.equals(m.get(key)))
+                    return false;
+            }
+        }
+    }
+    return true;
+}

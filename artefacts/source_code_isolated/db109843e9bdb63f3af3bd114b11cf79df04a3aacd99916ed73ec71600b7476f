@@ -1,0 +1,17 @@
+public void engineSetCertificateEntry(String alias, Certificate cert) throws KeyStoreException{
+    if (isKeyEntry(alias)) {
+        throw new KeyStoreException("Entry exists and is not a trusted certificate");
+    }
+    if (cert == null) {
+        throw new NullPointerException("cert == null");
+    }
+    final byte[] encoded;
+    try {
+        encoded = cert.getEncoded();
+    } catch (CertificateEncodingException e) {
+        throw new KeyStoreException(e);
+    }
+    if (!mKeyStore.put(Credentials.CA_CERTIFICATE + alias, encoded, mUid, KeyStore.FLAG_NONE)) {
+        throw new KeyStoreException("Couldn't insert certificate; is KeyStore initialized?");
+    }
+}

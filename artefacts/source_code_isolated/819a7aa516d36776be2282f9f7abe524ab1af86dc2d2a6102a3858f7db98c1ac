@@ -1,0 +1,25 @@
+public BigDecimal add(BigDecimal augend){
+    int diffScale = this.scale - augend.scale;
+    if (this.isZero()) {
+        if (diffScale <= 0) {
+            return augend;
+        }
+        if (augend.isZero()) {
+            return this;
+        }
+    } else if (augend.isZero()) {
+        if (diffScale >= 0) {
+            return this;
+        }
+    }
+    if (diffScale == 0) {
+        if (Math.max(this.bitLength, augend.bitLength) + 1 < 64) {
+            return valueOf(this.smallValue + augend.smallValue, this.scale);
+        }
+        return new BigDecimal(this.getUnscaledValue().add(augend.getUnscaledValue()), this.scale);
+    } else if (diffScale > 0) {
+        return addAndMult10(this, augend, diffScale);
+    } else {
+        return addAndMult10(augend, this, -diffScale);
+    }
+}

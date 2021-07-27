@@ -1,0 +1,7 @@
+public Drawable getUserBadgedIcon(Drawable icon, UserHandle user){
+    if (!hasUserBadge(user.getIdentifier())) {
+        return icon;
+    }
+    Drawable badge = new LauncherIcons(mContext).getBadgeDrawable(getUserManager().getUserIconBadgeResId(user.getIdentifier()), getUserBadgeColor(user, false));
+    return getBadgedDrawable(icon, badge, null, true);
+}

@@ -1,0 +1,66 @@
+public synchronized void receive(DatagramPacket p) throws IOException{
+    synchronized (p) {
+        if (!isBound())
+            bind(new InetSocketAddress(0));
+        if (pendingConnectException != null) {
+            throw new SocketException("Pending connect failure", pendingConnectException);
+        }
+        if (connectState == ST_NOT_CONNECTED) {
+            SecurityManager security = System.getSecurityManager();
+            if (security != null) {
+                while (true) {
+                    String peekAd = null;
+                    int peekPort = 0;
+                    if (!oldImpl) {
+                        DatagramPacket peekPacket = new DatagramPacket(new byte[1], 1);
+                        peekPort = getImpl().peekData(peekPacket);
+                        peekAd = peekPacket.getAddress().getHostAddress();
+                    } else {
+                        InetAddress adr = new InetAddress();
+                        peekPort = getImpl().peek(adr);
+                        peekAd = adr.getHostAddress();
+                    }
+                    try {
+                        security.checkAccept(peekAd, peekPort);
+                        break;
+                    } catch (SecurityException se) {
+                        DatagramPacket tmp = new DatagramPacket(new byte[1], 1);
+                        getImpl().receive(tmp);
+                        continue;
+                    }
+                }
+            }
+        }
+        DatagramPacket tmp = null;
+        if ((connectState == ST_CONNECTED_NO_IMPL) || explicitFilter) {
+            boolean stop = false;
+            while (!stop) {
+                InetAddress peekAddress = null;
+                int peekPort = -1;
+                if (!oldImpl) {
+                    DatagramPacket peekPacket = new DatagramPacket(new byte[1], 1);
+                    peekPort = getImpl().peekData(peekPacket);
+                    peekAddress = peekPacket.getAddress();
+                } else {
+                    peekAddress = new InetAddress();
+                    peekPort = getImpl().peek(peekAddress);
+                }
+                if ((!connectedAddress.equals(peekAddress)) || (connectedPort != peekPort)) {
+                    tmp = new DatagramPacket(new byte[1024], 1024);
+                    getImpl().receive(tmp);
+                    if (explicitFilter) {
+                        if (checkFiltering(tmp)) {
+                            stop = true;
+                        }
+                    }
+                } else {
+                    stop = true;
+                }
+            }
+        }
+        getImpl().receive(p);
+        if (explicitFilter && tmp == null) {
+            checkFiltering(p);
+        }
+    }
+}

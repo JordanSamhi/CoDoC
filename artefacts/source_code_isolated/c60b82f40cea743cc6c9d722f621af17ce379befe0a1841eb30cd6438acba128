@@ -1,0 +1,25 @@
+public final IBinder onBind(@NonNull Intent intent){
+    mHandler = new RequestHandler(Looper.getMainLooper());
+    Bundle bundle = intent.getBundleExtra(CALLBACK_BUNDLE);
+    mToken = bundle.getBinder(CALLBACK_TOKEN);
+    return new IControlsProvider.Stub() {
+
+        public void load(IControlsSubscriber subscriber) {
+            mHandler.obtainMessage(RequestHandler.MSG_LOAD, subscriber).sendToTarget();
+        }
+
+        public void loadSuggested(IControlsSubscriber subscriber) {
+            mHandler.obtainMessage(RequestHandler.MSG_LOAD_SUGGESTED, subscriber).sendToTarget();
+        }
+
+        public void subscribe(List<String> controlIds, IControlsSubscriber subscriber) {
+            SubscribeMessage msg = new SubscribeMessage(controlIds, subscriber);
+            mHandler.obtainMessage(RequestHandler.MSG_SUBSCRIBE, msg).sendToTarget();
+        }
+
+        public void action(String controlId, ControlActionWrapper action, IControlsActionCallback cb) {
+            ActionMessage msg = new ActionMessage(controlId, action.getWrappedAction(), cb);
+            mHandler.obtainMessage(RequestHandler.MSG_ACTION, msg).sendToTarget();
+        }
+    };
+}

@@ -1,0 +1,6 @@
+public Temporal adjustInto(Temporal temporal){
+    if (Chronology.from(temporal).equals(IsoChronology.INSTANCE) == false) {
+        throw new DateTimeException("Adjustment only supported on ISO date-time");
+    }
+    return temporal.with(PROLEPTIC_MONTH, getProlepticMonth());
+}

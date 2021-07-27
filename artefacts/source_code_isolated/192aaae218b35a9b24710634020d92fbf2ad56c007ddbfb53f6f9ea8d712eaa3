@@ -1,0 +1,7 @@
+public final CharBuffer decode(ByteBuffer bb){
+    try {
+        return ThreadLocalCoders.decoderFor(this).onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE).decode(bb);
+    } catch (CharacterCodingException x) {
+        throw new Error(x);
+    }
+}

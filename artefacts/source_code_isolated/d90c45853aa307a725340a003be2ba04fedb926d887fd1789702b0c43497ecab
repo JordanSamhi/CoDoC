@@ -1,0 +1,11 @@
+public List<IntentFilterVerificationInfo> getIntentFilterVerifications(String packageName){
+    try {
+        ParceledListSlice<IntentFilterVerificationInfo> parceledList = mPM.getIntentFilterVerifications(packageName);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

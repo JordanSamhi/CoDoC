@@ -1,0 +1,16 @@
+public String nextLine(){
+    if (hasNextPattern == linePattern())
+        return getCachedResult();
+    clearCaches();
+    String result = findWithinHorizon(linePattern, 0);
+    if (result == null)
+        throw new NoSuchElementException("No line found");
+    MatchResult mr = this.match();
+    String lineSep = mr.group(1);
+    if (lineSep != null)
+        result = result.substring(0, result.length() - lineSep.length());
+    if (result == null)
+        throw new NoSuchElementException();
+    else
+        return result;
+}

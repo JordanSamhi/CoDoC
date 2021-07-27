@@ -1,0 +1,18 @@
+public void updateProcessState(int processState, boolean fromIpc){
+    synchronized (mAppThread) {
+        if (mLastProcessState == processState) {
+            return;
+        }
+        mLastProcessState = processState;
+        if (processState == ActivityManager.PROCESS_STATE_TOP && mNumLaunchingActivities.get() > 0) {
+            mPendingProcessState = processState;
+            mH.postDelayed(this::applyPendingProcessState, PENDING_TOP_PROCESS_STATE_TIMEOUT);
+        } else {
+            mPendingProcessState = PROCESS_STATE_UNKNOWN;
+            updateVmProcessState(processState);
+        }
+        if (localLOGV) {
+            Slog.i(TAG, "******************* PROCESS STATE CHANGED TO: " + processState + (fromIpc ? " (from ipc" : ""));
+        }
+    }
+}

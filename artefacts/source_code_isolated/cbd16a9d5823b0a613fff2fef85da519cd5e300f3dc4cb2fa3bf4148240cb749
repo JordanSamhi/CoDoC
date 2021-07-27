@@ -1,0 +1,16 @@
+public Annotation[] getAnnotations(){
+    HashMap<Class<?>, Annotation> map = new HashMap<Class<?>, Annotation>();
+    for (Annotation declaredAnnotation : getDeclaredAnnotations()) {
+        map.put(declaredAnnotation.annotationType(), declaredAnnotation);
+    }
+    for (Class<?> sup = getSuperclass(); sup != null; sup = sup.getSuperclass()) {
+        for (Annotation declaredAnnotation : sup.getDeclaredAnnotations()) {
+            Class<? extends Annotation> clazz = declaredAnnotation.annotationType();
+            if (!map.containsKey(clazz) && clazz.isDeclaredAnnotationPresent(Inherited.class)) {
+                map.put(clazz, declaredAnnotation);
+            }
+        }
+    }
+    Collection<Annotation> coll = map.values();
+    return coll.toArray(new Annotation[coll.size()]);
+}

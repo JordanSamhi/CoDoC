@@ -1,0 +1,17 @@
+public Object clone(){
+    try {
+        PKIXParameters copy = (PKIXParameters) super.clone();
+        if (certStores != null) {
+            copy.certStores = new ArrayList<CertStore>(certStores);
+        }
+        if (certPathCheckers != null) {
+            copy.certPathCheckers = new ArrayList<PKIXCertPathChecker>(certPathCheckers.size());
+            for (PKIXCertPathChecker checker : certPathCheckers) {
+                copy.certPathCheckers.add((PKIXCertPathChecker) checker.clone());
+            }
+        }
+        return copy;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e.toString(), e);
+    }
+}

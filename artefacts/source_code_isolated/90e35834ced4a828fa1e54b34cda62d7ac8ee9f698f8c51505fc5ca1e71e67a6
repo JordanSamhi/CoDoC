@@ -1,0 +1,18 @@
+public static Set<String> getAlgorithms(String serviceName){
+    if ((serviceName == null) || (serviceName.length() == 0) || (serviceName.endsWith("."))) {
+        return Collections.emptySet();
+    }
+    HashSet<String> result = new HashSet<>();
+    Provider[] providers = Security.getProviders();
+    for (int i = 0; i < providers.length; i++) {
+        for (Enumeration<Object> e = providers[i].keys(); e.hasMoreElements(); ) {
+            String currentKey = ((String) e.nextElement()).toUpperCase(Locale.ENGLISH);
+            if (currentKey.startsWith(serviceName.toUpperCase(Locale.ENGLISH))) {
+                if (currentKey.indexOf(" ") < 0) {
+                    result.add(currentKey.substring(serviceName.length() + 1));
+                }
+            }
+        }
+    }
+    return Collections.unmodifiableSet(result);
+}

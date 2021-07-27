@@ -1,0 +1,15 @@
+public void purge(){
+    final BlockingQueue<Runnable> q = workQueue;
+    try {
+        Iterator<Runnable> it = q.iterator();
+        while (it.hasNext()) {
+            Runnable r = it.next();
+            if (r instanceof Future<?> && ((Future<?>) r).isCancelled())
+                it.remove();
+        }
+    } catch (ConcurrentModificationException fallThrough) {
+        for (Object r : q.toArray()) if (r instanceof Future<?> && ((Future<?>) r).isCancelled())
+            q.remove(r);
+    }
+    tryTerminate();
+}

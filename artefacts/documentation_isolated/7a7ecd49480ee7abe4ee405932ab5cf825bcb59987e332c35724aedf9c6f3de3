@@ -1,0 +1,61 @@
+
+     * Returns a dynamically typesafe view of the specified collection.
+     * Any attempt to insert an element of the wrong type will result in an
+     * immediate {@link ClassCastException}.  Assuming a collection
+     * contains no incorrectly typed elements prior to the time a
+     * dynamically typesafe view is generated, and that all subsequent
+     * access to the collection takes place through the view, it is
+     * <i>guaranteed</i> that the collection cannot contain an incorrectly
+     * typed element.
+     *
+     * <p>The generics mechanism in the language provides compile-time
+     * (static) type checking, but it is possible to defeat this mechanism
+     * with unchecked casts.  Usually this is not a problem, as the compiler
+     * issues warnings on all such unchecked operations.  There are, however,
+     * times when static type checking alone is not sufficient.  For example,
+     * suppose a collection is passed to a third-party library and it is
+     * imperative that the library code not corrupt the collection by
+     * inserting an element of the wrong type.
+     *
+     * <p>Another use of dynamically typesafe views is debugging.  Suppose a
+     * program fails with a {@code ClassCastException}, indicating that an
+     * incorrectly typed element was put into a parameterized collection.
+     * Unfortunately, the exception can occur at any time after the erroneous
+     * element is inserted, so it typically provides little or no information
+     * as to the real source of the problem.  If the problem is reproducible,
+     * one can quickly determine its source by temporarily modifying the
+     * program to wrap the collection with a dynamically typesafe view.
+     * For example, this declaration:
+     *  <pre> {@code
+     *     Collection<String> c = new HashSet<>();
+     * }</pre>
+     * may be replaced temporarily by this one:
+     *  <pre> {@code
+     *     Collection<String> c = Collections.checkedCollection(
+     *         new HashSet<>(), String.class);
+     * }</pre>
+     * Running the program again will cause it to fail at the point where
+     * an incorrectly typed element is inserted into the collection, clearly
+     * identifying the source of the problem.  Once the problem is fixed, the
+     * modified declaration may be reverted back to the original.
+     *
+     * <p>The returned collection does <i>not</i> pass the hashCode and equals
+     * operations through to the backing collection, but relies on
+     * {@code Object}'s {@code equals} and {@code hashCode} methods.  This
+     * is necessary to preserve the contracts of these operations in the case
+     * that the backing collection is a set or a list.
+     *
+     * <p>The returned collection will be serializable if the specified
+     * collection is serializable.
+     *
+     * <p>Since {@code null} is considered to be a value of any reference
+     * type, the returned collection permits insertion of null elements
+     * whenever the backing collection does.
+     *
+     * @param <E> the class of the objects in the collection
+     * @param c the collection for which a dynamically typesafe view is to be
+     *          returned
+     * @param type the type of element that {@code c} is permitted to hold
+     * @return a dynamically typesafe view of the specified collection
+     * @since 1.5
+     

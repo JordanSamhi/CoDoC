@@ -1,0 +1,18 @@
+public IBinder onBind(Intent intent){
+    if (DEBUG)
+        Log.d(TAG, "onBind " + intent);
+    if (!SERVICE_INTERFACE.equals(intent.getAction())) {
+        if (DEBUG)
+            Log.d(TAG, "bad intent action " + intent.getAction() + "; returning null");
+        return null;
+    }
+    if (mHandlerThread == null) {
+        mHandlerThread = new HandlerThread(HANDLER_THREAD_NAME);
+        mHandlerThread.start();
+        mHandler = new Handler(mHandlerThread.getLooper());
+    }
+    if (mWrapper == null) {
+        mWrapper = new ResolverRankerServiceWrapper();
+    }
+    return mWrapper;
+}

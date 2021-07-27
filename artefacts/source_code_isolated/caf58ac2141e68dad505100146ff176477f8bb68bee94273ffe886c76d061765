@@ -1,0 +1,15 @@
+public String getDisplayLanguage(Locale locale){
+    String languageCode = baseLocale.getLanguage();
+    if (languageCode.isEmpty()) {
+        return "";
+    }
+    final String normalizedLanguage = normalizeAndValidateLanguage(languageCode, false);
+    if (UNDETERMINED_LANGUAGE.equals(normalizedLanguage)) {
+        return languageCode;
+    }
+    String result = LocaleNative.getDisplayLanguage(this, locale);
+    if (result == null) {
+        result = LocaleNative.getDisplayLanguage(this, Locale.getDefault());
+    }
+    return result;
+}

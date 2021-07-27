@@ -1,0 +1,15 @@
+public OffsetDateTime with(TemporalField field, long newValue){
+    if (field instanceof ChronoField) {
+        ChronoField f = (ChronoField) field;
+        switch(f) {
+            case INSTANT_SECONDS:
+                return ofInstant(Instant.ofEpochSecond(newValue, getNano()), offset);
+            case OFFSET_SECONDS:
+                {
+                    return with(dateTime, ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue)));
+                }
+        }
+        return with(dateTime.with(field, newValue), offset);
+    }
+    return field.adjustInto(this, newValue);
+}

@@ -1,0 +1,5 @@
+public static final KeyGenerator getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException{
+    Providers.checkBouncyCastleDeprecation(provider, "KeyGenerator", algorithm);
+    Instance instance = JceSecurity.getInstance("KeyGenerator", KeyGeneratorSpi.class, algorithm, provider);
+    return new KeyGenerator((KeyGeneratorSpi) instance.impl, instance.provider, algorithm);
+}

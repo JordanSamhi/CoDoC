@@ -1,0 +1,25 @@
+public int compareTo(FileTime other){
+    if (unit != null && unit == other.unit) {
+        return Long.compare(value, other.value);
+    } else {
+        long secs = toInstant().getEpochSecond();
+        long secsOther = other.toInstant().getEpochSecond();
+        int cmp = Long.compare(secs, secsOther);
+        if (cmp != 0) {
+            return cmp;
+        }
+        cmp = Long.compare(toInstant().getNano(), other.toInstant().getNano());
+        if (cmp != 0) {
+            return cmp;
+        }
+        if (secs != MAX_SECOND && secs != MIN_SECOND) {
+            return 0;
+        }
+        long days = toDays();
+        long daysOther = other.toDays();
+        if (days == daysOther) {
+            return Long.compare(toExcessNanos(days), other.toExcessNanos(daysOther));
+        }
+        return Long.compare(days, daysOther);
+    }
+}

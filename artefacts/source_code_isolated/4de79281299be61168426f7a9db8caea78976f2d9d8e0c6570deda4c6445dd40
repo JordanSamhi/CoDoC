@@ -1,0 +1,28 @@
+public JapaneseDate with(TemporalField field, long newValue){
+    if (field instanceof ChronoField) {
+        ChronoField f = (ChronoField) field;
+        if (getLong(f) == newValue) {
+            return this;
+        }
+        switch(f) {
+            case YEAR_OF_ERA:
+            case YEAR:
+            case ERA:
+                {
+                    int nvalue = getChronology().range(f).checkValidIntValue(newValue, f);
+                    switch(f) {
+                        case YEAR_OF_ERA:
+                            return this.withYear(nvalue);
+                        case YEAR:
+                            return with(isoDate.withYear(nvalue));
+                        case ERA:
+                            {
+                                return this.withYear(JapaneseEra.of(nvalue), yearOfEra);
+                            }
+                    }
+                }
+        }
+        return with(isoDate.with(field, newValue));
+    }
+    return super.with(field, newValue);
+}

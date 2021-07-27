@@ -1,0 +1,59 @@
+
+     * Produces a method handle which adapts the calling sequence of the
+     * given method handle to a new type, by reordering the arguments.
+     * The resulting method handle is guaranteed to report a type
+     * which is equal to the desired new type.
+     * <p>
+     * The given array controls the reordering.
+     * Call {@code #I} the number of incoming parameters (the value
+     * {@code newType.parameterCount()}, and call {@code #O} the number
+     * of outgoing parameters (the value {@code target.type().parameterCount()}).
+     * Then the length of the reordering array must be {@code #O},
+     * and each element must be a non-negative number less than {@code #I}.
+     * For every {@code N} less than {@code #O}, the {@code N}-th
+     * outgoing argument will be taken from the {@code I}-th incoming
+     * argument, where {@code I} is {@code reorder[N]}.
+     * <p>
+     * No argument or return value conversions are applied.
+     * The type of each incoming argument, as determined by {@code newType},
+     * must be identical to the type of the corresponding outgoing parameter
+     * or parameters in the target method handle.
+     * The return type of {@code newType} must be identical to the return
+     * type of the original target.
+     * <p>
+     * The reordering array need not specify an actual permutation.
+     * An incoming argument will be duplicated if its index appears
+     * more than once in the array, and an incoming argument will be dropped
+     * if its index does not appear in the array.
+     * As in the case of {@link #dropArguments(MethodHandle,int,List) dropArguments},
+     * incoming arguments which are not mentioned in the reordering array
+     * are may be any type, as determined only by {@code newType}.
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodType intfn1 = methodType(int.class, int.class);
+MethodType intfn2 = methodType(int.class, int.class, int.class);
+MethodHandle sub = ... (int x, int y) -> (x-y) ...;
+assert(sub.type().equals(intfn2));
+MethodHandle sub1 = permuteArguments(sub, intfn2, 0, 1);
+MethodHandle rsub = permuteArguments(sub, intfn2, 1, 0);
+assert((int)rsub.invokeExact(1, 100) == 99);
+MethodHandle add = ... (int x, int y) -> (x+y) ...;
+assert(add.type().equals(intfn2));
+MethodHandle twice = permuteArguments(add, intfn1, 0, 0);
+assert(twice.type().equals(intfn1));
+assert((int)twice.invokeExact(21) == 42);
+     * }</pre></blockquote>
+     * @param target the method handle to invoke after arguments are reordered
+     * @param newType the expected type of the new method handle
+     * @param reorder an index array which controls the reordering
+     * @return a method handle which delegates to the target after it
+     *           drops unused arguments and moves and/or duplicates the other arguments
+     * @throws NullPointerException if any argument is null
+     * @throws IllegalArgumentException if the index array length is not equal to
+     *                  the arity of the target, or if any index array element
+     *                  not a valid index for a parameter of {@code newType},
+     *                  or if two corresponding parameter types in
+     *                  {@code target.type()} and {@code newType} are not identical,
+     

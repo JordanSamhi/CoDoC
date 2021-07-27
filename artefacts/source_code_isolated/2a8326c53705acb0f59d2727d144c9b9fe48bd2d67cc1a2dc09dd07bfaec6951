@@ -1,0 +1,24 @@
+public static Set<PosixFilePermission> fromString(String perms){
+    if (perms.length() != 9)
+        throw new IllegalArgumentException("Invalid mode");
+    Set<PosixFilePermission> result = EnumSet.noneOf(PosixFilePermission.class);
+    if (isR(perms.charAt(0)))
+        result.add(OWNER_READ);
+    if (isW(perms.charAt(1)))
+        result.add(OWNER_WRITE);
+    if (isX(perms.charAt(2)))
+        result.add(OWNER_EXECUTE);
+    if (isR(perms.charAt(3)))
+        result.add(GROUP_READ);
+    if (isW(perms.charAt(4)))
+        result.add(GROUP_WRITE);
+    if (isX(perms.charAt(5)))
+        result.add(GROUP_EXECUTE);
+    if (isR(perms.charAt(6)))
+        result.add(OTHERS_READ);
+    if (isW(perms.charAt(7)))
+        result.add(OTHERS_WRITE);
+    if (isX(perms.charAt(8)))
+        result.add(OTHERS_EXECUTE);
+    return result;
+}

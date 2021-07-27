@@ -1,0 +1,7 @@
+public static LongStream concat(LongStream a, LongStream b){
+    Objects.requireNonNull(a);
+    Objects.requireNonNull(b);
+    Spliterator.OfLong split = new Streams.ConcatSpliterator.OfLong(a.spliterator(), b.spliterator());
+    LongStream stream = StreamSupport.longStream(split, a.isParallel() || b.isParallel());
+    return stream.onClose(Streams.composedClose(a, b));
+}

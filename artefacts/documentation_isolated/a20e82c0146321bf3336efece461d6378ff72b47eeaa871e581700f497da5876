@@ -1,0 +1,46 @@
+
+     * Sets traffic class or type-of-service octet in the IP
+     * header for packets sent from this Socket.
+     * As the underlying network implementation may ignore this
+     * value applications should consider it a hint.
+     *
+     * <P> The tc <B>must</B> be in the range {@code 0 <= tc <=
+     * 255} or an IllegalArgumentException will be thrown.
+     * <p>Notes:
+     * <p>For Internet Protocol v4 the value consists of an
+     * {@code integer}, the least significant 8 bits of which
+     * represent the value of the TOS octet in IP packets sent by
+     * the socket.
+     * RFC 1349 defines the TOS values as follows:
+     *
+     * <UL>
+     * <LI><CODE>IPTOS_LOWCOST (0x02)</CODE></LI>
+     * <LI><CODE>IPTOS_RELIABILITY (0x04)</CODE></LI>
+     * <LI><CODE>IPTOS_THROUGHPUT (0x08)</CODE></LI>
+     * <LI><CODE>IPTOS_LOWDELAY (0x10)</CODE></LI>
+     * </UL>
+     * The last low order bit is always ignored as this
+     * corresponds to the MBZ (must be zero) bit.
+     * <p>
+     * Setting bits in the precedence field may result in a
+     * SocketException indicating that the operation is not
+     * permitted.
+     * <p>
+     * As RFC 1122 section 4.2.4.2 indicates, a compliant TCP
+     * implementation should, but is not required to, let application
+     * change the TOS field during the lifetime of a connection.
+     * So whether the type-of-service field can be changed after the
+     * TCP connection has been established depends on the implementation
+     * in the underlying platform. Applications should not assume that
+     * they can change the TOS field after the connection.
+     * <p>
+     * For Internet Protocol v6 {@code tc} is the value that
+     * would be placed into the sin6_flowinfo field of the IP header.
+     *
+     * @param tc        an {@code int} value for the bitset.
+     * @throws SocketException if there is an error setting the
+     * traffic class or type-of-service
+     * @since 1.4
+     * @see #getTrafficClass
+     * @see SocketOptions#IP_TOS
+     

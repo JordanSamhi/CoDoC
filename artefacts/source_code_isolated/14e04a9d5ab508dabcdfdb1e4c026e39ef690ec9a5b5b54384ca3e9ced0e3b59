@@ -1,0 +1,10 @@
+public ForkJoinTask<?> submit(Runnable task){
+    if (task == null)
+        throw new NullPointerException();
+    ForkJoinTask<?> job;
+    if (task instanceof ForkJoinTask<?>)
+        job = (ForkJoinTask<?>) task;
+    else
+        job = new ForkJoinTask.AdaptedRunnableAction(task);
+    return externalSubmit(job);
+}

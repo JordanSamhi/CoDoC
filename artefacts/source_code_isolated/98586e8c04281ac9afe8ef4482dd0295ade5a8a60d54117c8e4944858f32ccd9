@@ -1,0 +1,25 @@
+public void computeScroll(){
+    if (mScroller.computeScrollOffset()) {
+        int oldX = mScrollX;
+        int oldY = mScrollY;
+        int x = mScroller.getCurrX();
+        int y = mScroller.getCurrY();
+        if (oldX != x || oldY != y) {
+            final int range = getScrollRange();
+            final int overscrollMode = getOverScrollMode();
+            final boolean canOverscroll = overscrollMode == OVER_SCROLL_ALWAYS || (overscrollMode == OVER_SCROLL_IF_CONTENT_SCROLLS && range > 0);
+            overScrollBy(x - oldX, y - oldY, oldX, oldY, range, 0, mOverflingDistance, 0, false);
+            onScrollChanged(mScrollX, mScrollY, oldX, oldY);
+            if (canOverscroll) {
+                if (x < 0 && oldX >= 0) {
+                    mEdgeGlowLeft.onAbsorb((int) mScroller.getCurrVelocity());
+                } else if (x > range && oldX <= range) {
+                    mEdgeGlowRight.onAbsorb((int) mScroller.getCurrVelocity());
+                }
+            }
+        }
+        if (!awakenScrollBars()) {
+            postInvalidateOnAnimation();
+        }
+    }
+}

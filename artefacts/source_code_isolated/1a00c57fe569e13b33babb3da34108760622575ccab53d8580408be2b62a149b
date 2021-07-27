@@ -1,0 +1,22 @@
+public AttributedCharacterIterator formatToCharacterIterator(Object obj){
+    if (obj == null) {
+        throw new NullPointerException("object == null");
+    }
+    AttributedCharacterIterator original = icuDecimalFormat.formatToCharacterIterator(obj);
+    StringBuilder textBuilder = new StringBuilder(original.getEndIndex() - original.getBeginIndex());
+    for (int i = original.getBeginIndex(); i < original.getEndIndex(); i++) {
+        textBuilder.append(original.current());
+        original.next();
+    }
+    AttributedString result = new AttributedString(textBuilder.toString());
+    for (int i = original.getBeginIndex(); i < original.getEndIndex(); i++) {
+        original.setIndex(i);
+        for (AttributedCharacterIterator.Attribute attribute : original.getAttributes().keySet()) {
+            int start = original.getRunStart();
+            int end = original.getRunLimit();
+            Field javaAttr = toJavaFieldAttribute(attribute);
+            result.addAttribute(javaAttr, javaAttr, start, end);
+        }
+    }
+    return result.getIterator();
+}

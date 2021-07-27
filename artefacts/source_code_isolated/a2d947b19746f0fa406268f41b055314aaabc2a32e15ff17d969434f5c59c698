@@ -1,0 +1,13 @@
+public static final String getDefaultType(){
+    String cstype;
+    cstype = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        public String run() {
+            return Security.getProperty(CERTSTORE_TYPE);
+        }
+    });
+    if (cstype == null) {
+        cstype = "LDAP";
+    }
+    return cstype;
+}

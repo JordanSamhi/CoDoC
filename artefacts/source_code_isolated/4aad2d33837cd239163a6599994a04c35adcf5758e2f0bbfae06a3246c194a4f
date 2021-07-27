@@ -1,0 +1,22 @@
+public boolean performAccessibilityAction(int action, Bundle args){
+    if (super.performAccessibilityAction(action, args)) {
+        return true;
+    }
+    switch(action) {
+        case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+        case R.id.accessibilityActionScrollRight:
+            if (canScrollHorizontally(1)) {
+                setCurrentItem(mCurItem + 1);
+                return true;
+            }
+            return false;
+        case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+        case R.id.accessibilityActionScrollLeft:
+            if (canScrollHorizontally(-1)) {
+                setCurrentItem(mCurItem - 1);
+                return true;
+            }
+            return false;
+    }
+    return false;
+}

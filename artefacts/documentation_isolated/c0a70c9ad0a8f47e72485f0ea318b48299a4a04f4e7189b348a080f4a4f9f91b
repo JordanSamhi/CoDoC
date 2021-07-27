@@ -1,0 +1,20 @@
+
+     * Executes {@code command} with zero required delay.
+     * This has effect equivalent to
+     * {@link #schedule(Runnable,long,TimeUnit) schedule(command, 0, anyUnit)}.
+     * Note that inspections of the queue and of the list returned by
+     * {@code shutdownNow} will access the zero-delayed
+     * {@link ScheduledFuture}, not the {@code command} itself.
+     *
+     * <p>A consequence of the use of {@code ScheduledFuture} objects is
+     * that {@link ThreadPoolExecutor#afterExecute afterExecute} is always
+     * called with a null second {@code Throwable} argument, even if the
+     * {@code command} terminated abruptly.  Instead, the {@code Throwable}
+     * thrown by such a task can be obtained via {@link Future#get}.
+     *
+     * @throws RejectedExecutionException at discretion of
+     *         {@code RejectedExecutionHandler}, if the task
+     *         cannot be accepted for execution because the
+     *         executor has been shut down
+     * @throws NullPointerException {@inheritDoc}
+     

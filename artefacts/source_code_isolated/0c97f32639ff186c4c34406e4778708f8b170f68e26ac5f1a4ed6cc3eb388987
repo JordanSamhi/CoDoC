@@ -1,0 +1,10 @@
+public static synchronized void setDefault(SSLContext context){
+    if (context == null) {
+        throw new NullPointerException();
+    }
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(new SSLPermission("setDefaultSSLContext"));
+    }
+    defaultContext = context;
+}

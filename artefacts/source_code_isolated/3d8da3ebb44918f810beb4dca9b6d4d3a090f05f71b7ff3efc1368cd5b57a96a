@@ -1,0 +1,16 @@
+public List<VolumeInfo> getPrimaryStorageCandidateVolumes(){
+    final StorageManager storage = mContext.getSystemService(StorageManager.class);
+    final VolumeInfo currentVol = getPrimaryStorageCurrentVolume();
+    final List<VolumeInfo> vols = storage.getVolumes();
+    final List<VolumeInfo> candidates = new ArrayList<>();
+    if (Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, storage.getPrimaryStorageUuid()) && currentVol != null) {
+        candidates.add(currentVol);
+    } else {
+        for (VolumeInfo vol : vols) {
+            if (Objects.equals(vol, currentVol) || isPrimaryStorageCandidateVolume(vol)) {
+                candidates.add(vol);
+            }
+        }
+    }
+    return candidates;
+}

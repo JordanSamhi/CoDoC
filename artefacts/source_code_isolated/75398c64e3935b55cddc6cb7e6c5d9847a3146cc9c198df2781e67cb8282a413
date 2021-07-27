@@ -1,0 +1,27 @@
+public void draw(Canvas canvas){
+    final Drawable dr = getDrawable();
+    if (dr.getLevel() == 0) {
+        return;
+    }
+    final Rect r = mTmpRect;
+    final Rect bounds = getBounds();
+    final int level = getLevel();
+    int w = bounds.width();
+    final int iw = 0;
+    if ((mState.mOrientation & HORIZONTAL) != 0) {
+        w -= (w - iw) * (MAX_LEVEL - level) / MAX_LEVEL;
+    }
+    int h = bounds.height();
+    final int ih = 0;
+    if ((mState.mOrientation & VERTICAL) != 0) {
+        h -= (h - ih) * (MAX_LEVEL - level) / MAX_LEVEL;
+    }
+    final int layoutDirection = getLayoutDirection();
+    Gravity.apply(mState.mGravity, w, h, bounds, r, layoutDirection);
+    if (w > 0 && h > 0) {
+        canvas.save();
+        canvas.clipRect(r);
+        dr.draw(canvas);
+        canvas.restore();
+    }
+}

@@ -1,0 +1,11 @@
+public final synchronized void addSuppressed(Throwable exception){
+    if (exception == this)
+        throw new IllegalArgumentException(SELF_SUPPRESSION_MESSAGE, exception);
+    if (exception == null)
+        throw new NullPointerException(NULL_CAUSE_MESSAGE);
+    if (suppressedExceptions == null)
+        return;
+    if (suppressedExceptions.isEmpty())
+        suppressedExceptions = new ArrayList<>(1);
+    suppressedExceptions.add(exception);
+}

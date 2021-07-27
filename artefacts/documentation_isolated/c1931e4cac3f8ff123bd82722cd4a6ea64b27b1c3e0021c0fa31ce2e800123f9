@@ -1,0 +1,54 @@
+
+     * Resolves the given URI against this URI.
+     *
+     * <p> If the given URI is already absolute, or if this URI is opaque, then
+     * the given URI is returned.
+     *
+     * <p><a name="resolve-frag"></a> If the given URI's fragment component is
+     * defined, its path component is empty, and its scheme, authority, and
+     * query components are undefined, then a URI with the given fragment but
+     * with all other components equal to those of this URI is returned.  This
+     * allows a URI representing a standalone fragment reference, such as
+     * {@code "#foo"}, to be usefully resolved against a base URI.
+     *
+     * <p> Otherwise this method constructs a new hierarchical URI in a manner
+     * consistent with <a
+     * href="http://www.ietf.org/rfc/rfc2396.txt">RFC&nbsp;2396</a>,
+     * section&nbsp;5.2; that is: </p>
+     *
+     * <ol>
+     *
+     *   <li><p> A new URI is constructed with this URI's scheme and the given
+     *   URI's query and fragment components. </p></li>
+     *
+     *   <li><p> If the given URI has an authority component then the new URI's
+     *   authority and path are taken from the given URI. </p></li>
+     *
+     *   <li><p> Otherwise the new URI's authority component is copied from
+     *   this URI, and its path is computed as follows: </p>
+     *
+     *   <ol>
+     *
+     *     <li><p> If the given URI's path is absolute then the new URI's path
+     *     is taken from the given URI. </p></li>
+     *
+     *     <li><p> Otherwise the given URI's path is relative, and so the new
+     *     URI's path is computed by resolving the path of the given URI
+     *     against the path of this URI.  This is done by concatenating all but
+     *     the last segment of this URI's path, if any, with the given URI's
+     *     path and then normalizing the result as if by invoking the {@link
+     *     #normalize() normalize} method. </p></li>
+     *
+     *   </ol></li>
+     *
+     * </ol>
+     *
+     * <p> The result of this method is absolute if, and only if, either this
+     * URI is absolute or the given URI is absolute.  </p>
+     *
+     * @param  uri  The URI to be resolved against this URI
+     * @return The resulting URI
+     *
+     * @throws  NullPointerException
+     *          If {@code uri} is {@code null}
+     

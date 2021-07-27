@@ -1,0 +1,20 @@
+public static LongStream iterate(final long seed, final LongUnaryOperator f){
+    Objects.requireNonNull(f);
+    final PrimitiveIterator.OfLong iterator = new PrimitiveIterator.OfLong() {
+
+        long t = seed;
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public long nextLong() {
+            long v = t;
+            t = f.applyAsLong(t);
+            return v;
+        }
+    };
+    return StreamSupport.longStream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
+}

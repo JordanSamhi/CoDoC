@@ -1,0 +1,14 @@
+public void setSoLinger(boolean on, int linger) throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    if (!on) {
+        getImpl().setOption(SocketOptions.SO_LINGER, new Boolean(on));
+    } else {
+        if (linger < 0) {
+            throw new IllegalArgumentException("invalid value for SO_LINGER");
+        }
+        if (linger > 65535)
+            linger = 65535;
+        getImpl().setOption(SocketOptions.SO_LINGER, new Integer(linger));
+    }
+}

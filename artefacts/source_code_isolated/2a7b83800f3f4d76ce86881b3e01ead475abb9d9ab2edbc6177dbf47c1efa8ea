@@ -1,0 +1,17 @@
+public void showAsDropDown(View anchor, int xoff, int yoff, int gravity){
+    if (sVerbose) {
+        Log.v(TAG, "showAsDropDown(): anchor=" + anchor + ", xoff=" + xoff + ", yoff=" + yoff + ", isShowing(): " + isShowing());
+    }
+    if (isShowing()) {
+        return;
+    }
+    setShowing(true);
+    setDropDown(true);
+    attachToAnchor(anchor, xoff, yoff, gravity);
+    final WindowManager.LayoutParams p = mWindowLayoutParams = createPopupLayoutParams(anchor.getWindowToken());
+    final boolean aboveAnchor = findDropDownPosition(anchor, p, xoff, yoff, p.width, p.height, gravity, getAllowScrollingAnchorParent());
+    updateAboveAnchor(aboveAnchor);
+    p.accessibilityIdOfAnchor = anchor.getAccessibilityViewId();
+    p.packageName = anchor.getContext().getPackageName();
+    mWindowPresenter.show(p, getTransitionEpicenter(), isLayoutInsetDecor(), anchor.getLayoutDirection());
+}

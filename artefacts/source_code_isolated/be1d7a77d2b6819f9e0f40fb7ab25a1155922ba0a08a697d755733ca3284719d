@@ -1,0 +1,5 @@
+public static final KeyAgreement getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException{
+    Providers.checkBouncyCastleDeprecation(provider, "KeyAgreement", algorithm);
+    Instance instance = JceSecurity.getInstance("KeyAgreement", KeyAgreementSpi.class, algorithm, provider);
+    return new KeyAgreement((KeyAgreementSpi) instance.impl, instance.provider, algorithm);
+}

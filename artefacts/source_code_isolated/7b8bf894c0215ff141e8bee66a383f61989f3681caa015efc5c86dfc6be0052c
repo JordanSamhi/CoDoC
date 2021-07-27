@@ -1,0 +1,10 @@
+public static boolean putStringForUser(@NonNull ContentResolver resolver, @NonNull String name, @Nullable String value, @Nullable String tag, boolean makeDefault, @UserIdInt int userHandle, boolean overrideableByRestore){
+    if (LOCAL_LOGV) {
+        Log.v(TAG, "Global.putString(name=" + name + ", value=" + value + " for " + userHandle);
+    }
+    if (MOVED_TO_SECURE.contains(name)) {
+        Log.w(TAG, "Setting " + name + " has moved from android.provider.Settings.Global" + " to android.provider.Settings.Secure, value is unchanged.");
+        return Secure.putStringForUser(resolver, name, value, tag, makeDefault, userHandle, overrideableByRestore);
+    }
+    return sNameValueCache.putStringForUser(resolver, name, value, tag, makeDefault, userHandle, overrideableByRestore);
+}

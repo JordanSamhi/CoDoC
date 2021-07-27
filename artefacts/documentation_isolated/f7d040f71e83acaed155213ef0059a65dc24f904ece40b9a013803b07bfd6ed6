@@ -1,0 +1,40 @@
+
+     * Returns a {@code CertStore} object that implements the specified
+     * {@code CertStore} type and is initialized with the specified
+     * parameters.
+     *
+     * <p> This method traverses the list of registered security Providers,
+     * starting with the most preferred Provider.
+     * A new CertStore object encapsulating the
+     * CertStoreSpi implementation from the first
+     * Provider that supports the specified type is returned.
+     *
+     * <p> Note that the list of registered providers may be retrieved via
+     * the {@link Security#getProviders() Security.getProviders()} method.
+     *
+     * <p>The {@code CertStore} that is returned is initialized with the
+     * specified {@code CertStoreParameters}. The type of parameters
+     * needed may vary between different types of {@code CertStore}s.
+     * Note that the specified {@code CertStoreParameters} object is
+     * cloned.
+     *
+     * @param type the name of the requested {@code CertStore} type.
+     * See the CertStore section in the <a href=
+     * "{@docRoot}/../technotes/guides/security/StandardNames.html#CertStore">
+     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
+     * for information about standard types.
+     *
+     * @param params the initialization parameters (may be {@code null}).
+     *
+     * @return a {@code CertStore} object that implements the specified
+     *          {@code CertStore} type.
+     *
+     * @throws NoSuchAlgorithmException if no Provider supports a
+     *          CertStoreSpi implementation for the specified type.
+     *
+     * @throws InvalidAlgorithmParameterException if the specified
+     *          initialization parameters are inappropriate for this
+     *          {@code CertStore}.
+     *
+     * @see java.security.Provider
+     

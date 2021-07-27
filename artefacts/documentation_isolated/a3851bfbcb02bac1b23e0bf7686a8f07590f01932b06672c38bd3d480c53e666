@@ -1,0 +1,38 @@
+
+     * Continues a multiple-part encryption or decryption operation
+     * (depending on how this cipher was initialized), processing another data
+     * part.
+     *
+     * <p>All <code>input.remaining()</code> bytes starting at
+     * <code>input.position()</code> are processed. The result is stored
+     * in the output buffer.
+     * Upon return, the input buffer's position will be equal
+     * to its limit; its limit will not have changed. The output buffer's
+     * position will have advanced by n, where n is the value returned
+     * by this method; the output buffer's limit will not have changed.
+     *
+     * <p>If <code>output.remaining()</code> bytes are insufficient to
+     * hold the result, a <code>ShortBufferException</code> is thrown.
+     * In this case, repeat this call with a larger output buffer. Use
+     * {@link #getOutputSize(int) getOutputSize} to determine how big
+     * the output buffer should be.
+     *
+     * <p>Note: this method should be copy-safe, which means the
+     * <code>input</code> and <code>output</code> buffers can reference
+     * the same block of memory and no unprocessed input data is overwritten
+     * when the result is copied into the output buffer.
+     *
+     * @param input the input ByteBuffer
+     * @param output the output ByteByffer
+     *
+     * @return the number of bytes stored in <code>output</code>
+     *
+     * @exception IllegalStateException if this cipher is in a wrong state
+     * (e.g., has not been initialized)
+     * @exception IllegalArgumentException if input and output are the
+     *   same object
+     * @exception ReadOnlyBufferException if the output buffer is read-only
+     * @exception ShortBufferException if there is insufficient space in the
+     * output buffer
+     * @since 1.5
+     

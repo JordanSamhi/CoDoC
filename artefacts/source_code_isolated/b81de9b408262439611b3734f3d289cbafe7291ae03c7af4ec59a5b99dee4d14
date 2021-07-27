@@ -1,0 +1,10 @@
+public OffsetTime with(TemporalField field, long newValue){
+    if (field instanceof ChronoField) {
+        if (field == OFFSET_SECONDS) {
+            ChronoField f = (ChronoField) field;
+            return with(time, ZoneOffset.ofTotalSeconds(f.checkValidIntValue(newValue)));
+        }
+        return with(time.with(field, newValue), offset);
+    }
+    return field.adjustInto(this, newValue);
+}

@@ -1,0 +1,28 @@
+public String createDocument(String docId, String mimeType, String displayName) throws FileNotFoundException{
+    displayName = FileUtils.buildValidFatFilename(displayName);
+    final File parent = getFileForDocId(docId);
+    if (!parent.isDirectory()) {
+        throw new IllegalArgumentException("Parent document isn't a directory");
+    }
+    final File file = FileUtils.buildUniqueFile(parent, mimeType, displayName);
+    final String childId;
+    if (Document.MIME_TYPE_DIR.equals(mimeType)) {
+        if (!file.mkdir()) {
+            throw new IllegalStateException("Failed to mkdir " + file);
+        }
+        childId = getDocIdForFile(file);
+        onDocIdChanged(childId);
+    } else {
+        try {
+            if (!file.createNewFile()) {
+                throw new IllegalStateException("Failed to touch " + file);
+            }
+            childId = getDocIdForFile(file);
+            onDocIdChanged(childId);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to touch " + file + ": " + e);
+        }
+    }
+    MediaStore.scanFile(getContext().getContentResolver(), file);
+    return childId;
+}

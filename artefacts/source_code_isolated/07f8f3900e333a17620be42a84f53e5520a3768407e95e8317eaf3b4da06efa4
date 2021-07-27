@@ -1,0 +1,14 @@
+public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed){
+    final int childCount = getChildCount();
+    if (!consumed && childCount > 0 && canScrollList((int) velocityY) && Math.abs(velocityY) > mMinimumVelocity) {
+        reportScrollStateChange(OnScrollListener.SCROLL_STATE_FLING);
+        if (mFlingRunnable == null) {
+            mFlingRunnable = new FlingRunnable();
+        }
+        if (!dispatchNestedPreFling(0, velocityY)) {
+            mFlingRunnable.start((int) velocityY);
+        }
+        return true;
+    }
+    return dispatchNestedFling(velocityX, velocityY, consumed);
+}

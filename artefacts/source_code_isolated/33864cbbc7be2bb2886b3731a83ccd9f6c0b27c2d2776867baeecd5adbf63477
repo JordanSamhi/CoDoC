@@ -1,0 +1,79 @@
+public String toString(){
+    final StringJoiner resultJoiner = new StringJoiner(" ", "{", "}");
+    if (mIfaceName != null) {
+        resultJoiner.add("InterfaceName:");
+        resultJoiner.add(mIfaceName);
+    }
+    resultJoiner.add("LinkAddresses: [");
+    if (!mLinkAddresses.isEmpty()) {
+        resultJoiner.add(TextUtils.join(",", mLinkAddresses));
+    }
+    resultJoiner.add("]");
+    resultJoiner.add("DnsAddresses: [");
+    if (!mDnses.isEmpty()) {
+        resultJoiner.add(TextUtils.join(",", mDnses));
+    }
+    resultJoiner.add("]");
+    if (mUsePrivateDns) {
+        resultJoiner.add("UsePrivateDns: true");
+    }
+    if (mPrivateDnsServerName != null) {
+        resultJoiner.add("PrivateDnsServerName:");
+        resultJoiner.add(mPrivateDnsServerName);
+    }
+    if (!mPcscfs.isEmpty()) {
+        resultJoiner.add("PcscfAddresses: [");
+        resultJoiner.add(TextUtils.join(",", mPcscfs));
+        resultJoiner.add("]");
+    }
+    if (!mValidatedPrivateDnses.isEmpty()) {
+        final StringJoiner validatedPrivateDnsesJoiner = new StringJoiner(",", "ValidatedPrivateDnsAddresses: [", "]");
+        for (final InetAddress addr : mValidatedPrivateDnses) {
+            validatedPrivateDnsesJoiner.add(addr.getHostAddress());
+        }
+        resultJoiner.add(validatedPrivateDnsesJoiner.toString());
+    }
+    resultJoiner.add("Domains:");
+    resultJoiner.add(mDomains);
+    resultJoiner.add("MTU:");
+    resultJoiner.add(Integer.toString(mMtu));
+    if (mWakeOnLanSupported) {
+        resultJoiner.add("WakeOnLanSupported: true");
+    }
+    if (mDhcpServerAddress != null) {
+        resultJoiner.add("ServerAddress:");
+        resultJoiner.add(mDhcpServerAddress.toString());
+    }
+    if (mCaptivePortalApiUrl != null) {
+        resultJoiner.add("CaptivePortalApiUrl: " + mCaptivePortalApiUrl);
+    }
+    if (mCaptivePortalData != null) {
+        resultJoiner.add("CaptivePortalData: " + mCaptivePortalData);
+    }
+    if (mTcpBufferSizes != null) {
+        resultJoiner.add("TcpBufferSizes:");
+        resultJoiner.add(mTcpBufferSizes);
+    }
+    resultJoiner.add("Routes: [");
+    if (!mRoutes.isEmpty()) {
+        resultJoiner.add(TextUtils.join(",", mRoutes));
+    }
+    resultJoiner.add("]");
+    if (mHttpProxy != null) {
+        resultJoiner.add("HttpProxy:");
+        resultJoiner.add(mHttpProxy.toString());
+    }
+    if (mNat64Prefix != null) {
+        resultJoiner.add("Nat64Prefix:");
+        resultJoiner.add(mNat64Prefix.toString());
+    }
+    final Collection<LinkProperties> stackedLinksValues = mStackedLinks.values();
+    if (!stackedLinksValues.isEmpty()) {
+        final StringJoiner stackedLinksJoiner = new StringJoiner(",", "Stacked: [", "]");
+        for (final LinkProperties lp : stackedLinksValues) {
+            stackedLinksJoiner.add("[ " + lp + " ]");
+        }
+        resultJoiner.add(stackedLinksJoiner.toString());
+    }
+    return resultJoiner.toString();
+}

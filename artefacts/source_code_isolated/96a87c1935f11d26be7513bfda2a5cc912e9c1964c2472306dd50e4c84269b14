@@ -1,0 +1,34 @@
+public ProgramFragmentFixedFunction create(){
+    InternalBuilder sb = new InternalBuilder(mRS);
+    mNumTextures = 0;
+    for (int i = 0; i < MAX_TEXTURE; i++) {
+        if (mSlots[i] != null) {
+            mNumTextures++;
+        }
+    }
+    buildShaderString();
+    sb.setShader(mShader);
+    Type constType = null;
+    if (!mVaryingColorEnable) {
+        Element.Builder b = new Element.Builder(mRS);
+        b.add(Element.F32_4(mRS), "Color");
+        Type.Builder typeBuilder = new Type.Builder(mRS, b.create());
+        typeBuilder.setX(1);
+        constType = typeBuilder.create();
+        sb.addConstant(constType);
+    }
+    for (int i = 0; i < mNumTextures; i++) {
+        sb.addTexture(TextureType.TEXTURE_2D);
+    }
+    ProgramFragmentFixedFunction pf = sb.create();
+    pf.mTextureCount = MAX_TEXTURE;
+    if (!mVaryingColorEnable) {
+        Allocation constantData = Allocation.createTyped(mRS, constType);
+        FieldPacker fp = new FieldPacker(16);
+        Float4 f4 = new Float4(1.f, 1.f, 1.f, 1.f);
+        fp.addF32(f4);
+        constantData.setFromFieldPacker(0, fp);
+        pf.bindConstants(constantData, 0);
+    }
+    return pf;
+}

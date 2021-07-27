@@ -1,0 +1,71 @@
+public boolean onInterceptTouchEvent(MotionEvent event){
+    int action = event.getAction();
+    if (mHasCaption && isShowingCaption()) {
+        if (action == MotionEvent.ACTION_DOWN) {
+            final int x = (int) event.getX();
+            final int y = (int) event.getY();
+            if (isOutOfInnerBounds(x, y)) {
+                return true;
+            }
+        }
+    }
+    if (mFeatureId >= 0) {
+        if (action == MotionEvent.ACTION_DOWN) {
+            int x = (int) event.getX();
+            int y = (int) event.getY();
+            if (isOutOfBounds(x, y)) {
+                mWindow.closePanel(mFeatureId);
+                return true;
+            }
+        }
+    }
+    if (!SWEEP_OPEN_MENU) {
+        return false;
+    }
+    if (mFeatureId >= 0) {
+        if (action == MotionEvent.ACTION_DOWN) {
+            Log.i(mLogTag, "Watchiing!");
+            mWatchingForMenu = true;
+            mDownY = (int) event.getY();
+            return false;
+        }
+        if (!mWatchingForMenu) {
+            return false;
+        }
+        int y = (int) event.getY();
+        if (action == MotionEvent.ACTION_MOVE) {
+            if (y > (mDownY + 30)) {
+                Log.i(mLogTag, "Closing!");
+                mWindow.closePanel(mFeatureId);
+                mWatchingForMenu = false;
+                return true;
+            }
+        } else if (action == MotionEvent.ACTION_UP) {
+            mWatchingForMenu = false;
+        }
+        return false;
+    }
+    if (action == MotionEvent.ACTION_DOWN) {
+        int y = (int) event.getY();
+        if (y >= (getHeight() - 5) && !mWindow.hasChildren()) {
+            Log.i(mLogTag, "Watching!");
+            mWatchingForMenu = true;
+        }
+        return false;
+    }
+    if (!mWatchingForMenu) {
+        return false;
+    }
+    int y = (int) event.getY();
+    if (action == MotionEvent.ACTION_MOVE) {
+        if (y < (getHeight() - 30)) {
+            Log.i(mLogTag, "Opening!");
+            mWindow.openPanel(Window.FEATURE_OPTIONS_PANEL, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
+            mWatchingForMenu = false;
+            return true;
+        }
+    } else if (action == MotionEvent.ACTION_UP) {
+        mWatchingForMenu = false;
+    }
+    return false;
+}

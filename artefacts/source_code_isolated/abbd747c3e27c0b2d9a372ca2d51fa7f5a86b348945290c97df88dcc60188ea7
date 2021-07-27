@@ -1,0 +1,10 @@
+public void grantRuntimePermission(String packageName, String permissionName, UserHandle user){
+    if (DEBUG_TRACE_GRANTS && shouldTraceGrant(packageName, permissionName, user.getIdentifier())) {
+        Log.i(TAG, "App " + mContext.getPackageName() + " is granting " + packageName + " " + permissionName + " for user " + user.getIdentifier(), new RuntimeException());
+    }
+    try {
+        mPM.grantRuntimePermission(packageName, permissionName, user.getIdentifier());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

@@ -1,8 +1,0 @@
-public long setActiveRootOfTrust(int userId, int uid, @Nullable String rootAlias){
-    SQLiteDatabase db = mKeyStoreDbHelper.getWritableDatabase();
-    ContentValues values = new ContentValues();
-    values.put(RecoveryServiceMetadataEntry.COLUMN_NAME_ACTIVE_ROOT_OF_TRUST, rootAlias);
-    String selection = RecoveryServiceMetadataEntry.COLUMN_NAME_USER_ID + " = ? AND " + RecoveryServiceMetadataEntry.COLUMN_NAME_UID + " = ?";
-    ensureRecoveryServiceMetadataEntryExists(userId, uid);
-    return db.update(RecoveryServiceMetadataEntry.TABLE_NAME, values, selection, new String[] { String.valueOf(userId), String.valueOf(uid) });
-}

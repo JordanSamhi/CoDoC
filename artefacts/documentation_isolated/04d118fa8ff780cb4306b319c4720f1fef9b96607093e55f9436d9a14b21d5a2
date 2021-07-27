@@ -1,0 +1,48 @@
+
+     * Return a lazily populated {@code Stream}, the elements of
+     * which are the entries in the directory.  The listing is not recursive.
+     *
+     * <p> The elements of the stream are {@link Path} objects that are
+     * obtained as if by {@link Path#resolve(Path) resolving} the name of the
+     * directory entry against {@code dir}. Some file systems maintain special
+     * links to the directory itself and the directory's parent directory.
+     * Entries representing these links are not included.
+     *
+     * <p> The stream is <i>weakly consistent</i>. It is thread safe but does
+     * not freeze the directory while iterating, so it may (or may not)
+     * reflect updates to the directory that occur after returning from this
+     * method.
+     *
+     * <p> The returned stream encapsulates a {@link DirectoryStream}.
+     * If timely disposal of file system resources is required, the
+     * {@code try}-with-resources construct should be used to ensure that the
+     * stream's {@link Stream#close close} method is invoked after the stream
+     * operations are completed.
+     *
+     * <p> Operating on a closed stream behaves as if the end of stream
+     * has been reached. Due to read-ahead, one or more elements may be
+     * returned after the stream has been closed.
+     *
+     * <p> If an {@link IOException} is thrown when accessing the directory
+     * after this method has returned, it is wrapped in an {@link
+     * UncheckedIOException} which will be thrown from the method that caused
+     * the access to take place.
+     *
+     * @param   dir  The path to the directory
+     *
+     * @return  The {@code Stream} describing the content of the
+     *          directory
+     *
+     * @throws  NotDirectoryException
+     *          if the file could not otherwise be opened because it is not
+     *          a directory <i>(optional specific exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs when opening the directory
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkRead(String) checkRead}
+     *          method is invoked to check read access to the directory.
+     *
+     * @see     #newDirectoryStream(Path)
+     * @since   1.8
+     

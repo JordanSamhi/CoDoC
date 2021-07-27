@@ -1,0 +1,72 @@
+
+         * Produces an early-bound method handle for a virtual method.
+         * It will bypass checks for overriding methods on the receiver,
+         * <a href="MethodHandles.Lookup.html#equiv">as if called</a> from an {@code invokespecial}
+         * instruction from within the explicitly specified {@code specialCaller}.
+         * The type of the method handle will be that of the method,
+         * with a suitably restricted receiver type prepended.
+         * (The receiver type will be {@code specialCaller} or a subtype.)
+         * The method and all its argument types must be accessible
+         * to the lookup object.
+         * <p>
+         * Before method resolution,
+         * if the explicitly specified caller class is not identical with the
+         * lookup class, or if this lookup object does not have
+         * <a href="MethodHandles.Lookup.html#privacc">private access</a>
+         * privileges, the access fails.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p style="font-size:smaller;">
+         * <em>(Note:  JVM internal methods named {@code "<init>"} are not visible to this API,
+         * even though the {@code invokespecial} instruction can refer to them
+         * in special circumstances.  Use {@link #findConstructor findConstructor}
+         * to access instance initialization methods in a safe manner.)</em>
+         * <p><b>Example:</b>
+         * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+static class Listie extends ArrayList {
+  public String toString() { return "[wee Listie]"; }
+  static Lookup lookup() { return MethodHandles.lookup(); }
+}
+...
+// no access to constructor via invokeSpecial:
+MethodHandle MH_newListie = Listie.lookup()
+  .findConstructor(Listie.class, methodType(void.class));
+Listie l = (Listie) MH_newListie.invokeExact();
+try { assertEquals("impossible", Listie.lookup().findSpecial(
+        Listie.class, "<init>", methodType(void.class), Listie.class));
+ } catch (NoSuchMethodException ex) { } // OK
+// access to super and self methods via invokeSpecial:
+MethodHandle MH_super = Listie.lookup().findSpecial(
+  ArrayList.class, "toString" , methodType(String.class), Listie.class);
+MethodHandle MH_this = Listie.lookup().findSpecial(
+  Listie.class, "toString" , methodType(String.class), Listie.class);
+MethodHandle MH_duper = Listie.lookup().findSpecial(
+  Object.class, "toString" , methodType(String.class), Listie.class);
+assertEquals("[]", (String) MH_super.invokeExact(l));
+assertEquals(""+l, (String) MH_this.invokeExact(l));
+assertEquals("[]", (String) MH_duper.invokeExact(l)); // ArrayList method
+try { assertEquals("inaccessible", Listie.lookup().findSpecial(
+        String.class, "toString", methodType(String.class), Listie.class));
+ } catch (IllegalAccessException ex) { } // OK
+Listie subl = new Listie() { public String toString() { return "[subclass]"; } };
+assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
+         * }</pre></blockquote>
+         *
+         * @param refc the class or interface from which the method is accessed
+         * @param name the name of the method (which must not be "&lt;init&gt;")
+         * @param type the type of the method, with the receiver argument omitted
+         * @param specialCaller the proposed calling class to perform the {@code invokespecial}
+         * @return the desired method handle
+         * @throws NoSuchMethodException if the method does not exist
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @exception SecurityException if a security manager is present and it
+         *                              <a href="MethodHandles.Lookup.html#secmgr">refuses access</a>
+         * @throws NullPointerException if any argument is null
+         

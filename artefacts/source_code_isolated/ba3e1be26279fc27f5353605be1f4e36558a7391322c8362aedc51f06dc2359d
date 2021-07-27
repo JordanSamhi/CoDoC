@@ -1,0 +1,9 @@
+public Builder setLanguageTag(String languageTag){
+    ParseStatus sts = new ParseStatus();
+    LanguageTag tag = LanguageTag.parse(languageTag, sts);
+    if (sts.isError()) {
+        throw new IllformedLocaleException(sts.getErrorMessage(), sts.getErrorIndex());
+    }
+    localeBuilder.setLanguageTag(tag);
+    return this;
+}

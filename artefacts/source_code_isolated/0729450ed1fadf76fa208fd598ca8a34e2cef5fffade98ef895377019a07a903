@@ -1,0 +1,14 @@
+public void addOnPermissionsChangeListener(OnPermissionsChangedListener listener){
+    synchronized (mPermissionListeners) {
+        if (mPermissionListeners.get(listener) != null) {
+            return;
+        }
+        OnPermissionsChangeListenerDelegate delegate = new OnPermissionsChangeListenerDelegate(listener, Looper.getMainLooper());
+        try {
+            mPermissionManager.addOnPermissionsChangeListener(delegate);
+            mPermissionListeners.put(listener, delegate);
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+}

@@ -1,0 +1,127 @@
+public void onReceive(Context context, Intent intent){
+    mChangeUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, UserHandle.USER_NULL);
+    if (mChangeUserId == UserHandle.USER_NULL) {
+        Slog.w("PackageMonitor", "Intent broadcast does not contain user handle: " + intent);
+        return;
+    }
+    onBeginPackageChanges();
+    mDisappearingPackages = mAppearingPackages = null;
+    mSomePackagesChanged = false;
+    mModifiedComponents = null;
+    String action = intent.getAction();
+    if (Intent.ACTION_PACKAGE_ADDED.equals(action)) {
+        String pkg = getPackageName(intent);
+        int uid = intent.getIntExtra(Intent.EXTRA_UID, 0);
+        mSomePackagesChanged = true;
+        if (pkg != null) {
+            mAppearingPackages = mTempArray;
+            mTempArray[0] = pkg;
+            if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
+                mModifiedPackages = mTempArray;
+                mChangeType = PACKAGE_UPDATING;
+                onPackageUpdateFinished(pkg, uid);
+                onPackageModified(pkg);
+            } else {
+                mChangeType = PACKAGE_PERMANENT_CHANGE;
+                onPackageAdded(pkg, uid);
+            }
+            onPackageAppeared(pkg, mChangeType);
+            if (mChangeType == PACKAGE_UPDATING) {
+                synchronized (mUpdatingPackages) {
+                    mUpdatingPackages.remove(pkg);
+                }
+            }
+        }
+    } else if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
+        String pkg = getPackageName(intent);
+        int uid = intent.getIntExtra(Intent.EXTRA_UID, 0);
+        if (pkg != null) {
+            mDisappearingPackages = mTempArray;
+            mTempArray[0] = pkg;
+            if (intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
+                mChangeType = PACKAGE_UPDATING;
+                synchronized (mUpdatingPackages) {
+                }
+                onPackageUpdateStarted(pkg, uid);
+            } else {
+                mChangeType = PACKAGE_PERMANENT_CHANGE;
+                mSomePackagesChanged = true;
+                onPackageRemoved(pkg, uid);
+                if (intent.getBooleanExtra(Intent.EXTRA_REMOVED_FOR_ALL_USERS, false)) {
+                    onPackageRemovedAllUsers(pkg, uid);
+                }
+            }
+            onPackageDisappeared(pkg, mChangeType);
+        }
+    } else if (Intent.ACTION_PACKAGE_CHANGED.equals(action)) {
+        String pkg = getPackageName(intent);
+        int uid = intent.getIntExtra(Intent.EXTRA_UID, 0);
+        mModifiedComponents = intent.getStringArrayExtra(Intent.EXTRA_CHANGED_COMPONENT_NAME_LIST);
+        if (pkg != null) {
+            mModifiedPackages = mTempArray;
+            mTempArray[0] = pkg;
+            mChangeType = PACKAGE_PERMANENT_CHANGE;
+            if (onPackageChanged(pkg, uid, mModifiedComponents)) {
+                mSomePackagesChanged = true;
+            }
+            onPackageModified(pkg);
+        }
+    } else if (Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
+        String pkg = getPackageName(intent);
+        int uid = intent.getIntExtra(Intent.EXTRA_UID, 0);
+        if (pkg != null) {
+            onPackageDataCleared(pkg, uid);
+        }
+    } else if (Intent.ACTION_QUERY_PACKAGE_RESTART.equals(action)) {
+        mDisappearingPackages = intent.getStringArrayExtra(Intent.EXTRA_PACKAGES);
+        mChangeType = PACKAGE_TEMPORARY_CHANGE;
+        boolean canRestart = onHandleForceStop(intent, mDisappearingPackages, intent.getIntExtra(Intent.EXTRA_UID, 0), false);
+        if (canRestart)
+            setResultCode(Activity.RESULT_OK);
+    } else if (Intent.ACTION_PACKAGE_RESTARTED.equals(action)) {
+        mDisappearingPackages = new String[] { getPackageName(intent) };
+        mChangeType = PACKAGE_TEMPORARY_CHANGE;
+        onHandleForceStop(intent, mDisappearingPackages, intent.getIntExtra(Intent.EXTRA_UID, 0), true);
+    } else if (Intent.ACTION_UID_REMOVED.equals(action)) {
+        onUidRemoved(intent.getIntExtra(Intent.EXTRA_UID, 0));
+    } else if (Intent.ACTION_USER_STOPPED.equals(action)) {
+        if (intent.hasExtra(Intent.EXTRA_USER_HANDLE)) {
+            onHandleUserStop(intent, intent.getIntExtra(Intent.EXTRA_USER_HANDLE, 0));
+        }
+    } else if (Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE.equals(action)) {
+        String[] pkgList = intent.getStringArrayExtra(Intent.EXTRA_CHANGED_PACKAGE_LIST);
+        mAppearingPackages = pkgList;
+        mChangeType = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false) ? PACKAGE_UPDATING : PACKAGE_TEMPORARY_CHANGE;
+        mSomePackagesChanged = true;
+        if (pkgList != null) {
+            onPackagesAvailable(pkgList);
+            for (int i = 0; i < pkgList.length; i++) {
+                onPackageAppeared(pkgList[i], mChangeType);
+            }
+        }
+    } else if (Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE.equals(action)) {
+        String[] pkgList = intent.getStringArrayExtra(Intent.EXTRA_CHANGED_PACKAGE_LIST);
+        mDisappearingPackages = pkgList;
+        mChangeType = intent.getBooleanExtra(Intent.EXTRA_REPLACING, false) ? PACKAGE_UPDATING : PACKAGE_TEMPORARY_CHANGE;
+        mSomePackagesChanged = true;
+        if (pkgList != null) {
+            onPackagesUnavailable(pkgList);
+            for (int i = 0; i < pkgList.length; i++) {
+                onPackageDisappeared(pkgList[i], mChangeType);
+            }
+        }
+    } else if (Intent.ACTION_PACKAGES_SUSPENDED.equals(action)) {
+        String[] pkgList = intent.getStringArrayExtra(Intent.EXTRA_CHANGED_PACKAGE_LIST);
+        mSomePackagesChanged = true;
+        onPackagesSuspended(pkgList);
+    } else if (Intent.ACTION_PACKAGES_UNSUSPENDED.equals(action)) {
+        String[] pkgList = intent.getStringArrayExtra(Intent.EXTRA_CHANGED_PACKAGE_LIST);
+        mSomePackagesChanged = true;
+        onPackagesUnsuspended(pkgList);
+    }
+    if (mSomePackagesChanged) {
+        onSomePackagesChanged();
+    }
+    onFinishPackageChanges();
+    mChangeUserId = UserHandle.USER_NULL;
+}

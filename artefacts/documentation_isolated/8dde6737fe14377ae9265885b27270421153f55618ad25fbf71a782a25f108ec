@@ -1,0 +1,46 @@
+
+     * Produces a method handle which will invoke any method handle of the
+     * given {@code type}, with a given number of trailing arguments replaced by
+     * a single trailing {@code Object[]} array.
+     * The resulting invoker will be a method handle with the following
+     * arguments:
+     * <ul>
+     * <li>a single {@code MethodHandle} target
+     * <li>zero or more leading values (counted by {@code leadingArgCount})
+     * <li>an {@code Object[]} array containing trailing arguments
+     * </ul>
+     * <p>
+     * The invoker will invoke its target like a call to {@link MethodHandle#invoke invoke} with
+     * the indicated {@code type}.
+     * That is, if the target is exactly of the given {@code type}, it will behave
+     * like {@code invokeExact}; otherwise it behave as if {@link MethodHandle#asType asType}
+     * is used to convert the target to the required {@code type}.
+     * <p>
+     * The type of the returned invoker will not be the given {@code type}, but rather
+     * will have all parameters except the first {@code leadingArgCount}
+     * replaced by a single array of type {@code Object[]}, which will be
+     * the final parameter.
+     * <p>
+     * Before invoking its target, the invoker will spread the final array, apply
+     * reference casts as necessary, and unbox and widen primitive arguments.
+     * If, when the invoker is called, the supplied array argument does
+     * not have the correct number of elements, the invoker will throw
+     * an {@link IllegalArgumentException} instead of invoking the target.
+     * <p>
+     * This method is equivalent to the following code (though it may be more efficient):
+     * <blockquote><pre>{@code
+MethodHandle invoker = MethodHandles.invoker(type);
+int spreadArgCount = type.parameterCount() - leadingArgCount;
+invoker = invoker.asSpreader(Object[].class, spreadArgCount);
+return invoker;
+     * }</pre></blockquote>
+     * This method throws no reflective or security exceptions.
+     * @param type the desired target type
+     * @param leadingArgCount number of fixed arguments, to be passed unchanged to the target
+     * @return a method handle suitable for invoking any method handle of the given type
+     * @throws NullPointerException if {@code type} is null
+     * @throws IllegalArgumentException if {@code leadingArgCount} is not in
+     *                  the range from 0 to {@code type.parameterCount()} inclusive,
+     *                  or if the resulting method handle's type would have
+     *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     

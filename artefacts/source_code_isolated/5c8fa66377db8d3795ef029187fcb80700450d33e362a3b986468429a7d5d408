@@ -1,0 +1,10 @@
+public void setChecked(boolean checked){
+    super.setChecked(checked);
+    checked = isChecked();
+    if (isAttachedToWindow() && isLaidOut()) {
+        animateThumbToCheckedState(checked);
+    } else {
+        cancelPositionAnimator();
+        setThumbPosition(checked ? 1 : 0);
+    }
+}

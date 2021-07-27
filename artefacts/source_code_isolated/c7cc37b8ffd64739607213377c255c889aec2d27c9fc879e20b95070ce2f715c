@@ -1,2 +1,6 @@
 public void onRegistrationFailed(@NonNull CellIdentity cellIdentity, @NonNull String chosenPlmn, int domain, int causeCode, int additionalCauseCode){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onRegistrationFailed(cellIdentity, chosenPlmn, domain, causeCode, additionalCauseCode)));
 }

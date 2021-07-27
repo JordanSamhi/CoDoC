@@ -1,0 +1,21 @@
+public void start(){
+    if (mTarget == null) {
+        throw new IllegalStateException("Missing target!");
+    }
+    if (mState != STATE_PREPARE) {
+        throw new IllegalStateException("Already started!");
+    }
+    mState = STATE_DELAYED;
+    if (mHandler == null) {
+        mHandler = new Handler(true);
+    }
+    applyInterpolator();
+    if (mNativePtr == null) {
+        cancel();
+    } else if (mStartDelay <= 0 || !mUiThreadHandlesDelay) {
+        nSetStartDelay(mNativePtr.get(), mStartDelay);
+        doStart();
+    } else {
+        getHelper().addDelayedAnimation(this);
+    }
+}

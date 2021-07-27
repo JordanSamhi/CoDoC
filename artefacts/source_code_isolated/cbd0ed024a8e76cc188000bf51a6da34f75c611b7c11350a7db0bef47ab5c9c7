@@ -1,0 +1,28 @@
+public String toString(){
+    StringBuffer sb = new StringBuffer();
+    sb.append("[\n");
+    if (unmodTrustAnchors != null) {
+        sb.append("  Trust Anchors: " + unmodTrustAnchors.toString() + "\n");
+    }
+    if (unmodInitialPolicies != null) {
+        if (unmodInitialPolicies.isEmpty()) {
+            sb.append("  Initial Policy OIDs: any\n");
+        } else {
+            sb.append("  Initial Policy OIDs: [" + unmodInitialPolicies.toString() + "]\n");
+        }
+    }
+    sb.append("  Validity Date: " + String.valueOf(date) + "\n");
+    sb.append("  Signature Provider: " + String.valueOf(sigProvider) + "\n");
+    sb.append("  Default Revocation Enabled: " + revocationEnabled + "\n");
+    sb.append("  Explicit Policy Required: " + explicitPolicyRequired + "\n");
+    sb.append("  Policy Mapping Inhibited: " + policyMappingInhibited + "\n");
+    sb.append("  Any Policy Inhibited: " + anyPolicyInhibited + "\n");
+    sb.append("  Policy Qualifiers Rejected: " + policyQualifiersRejected + "\n");
+    sb.append("  Target Cert Constraints: " + String.valueOf(certSelector) + "\n");
+    if (certPathCheckers != null)
+        sb.append("  Certification Path Checkers: [" + certPathCheckers.toString() + "]\n");
+    if (certStores != null)
+        sb.append("  CertStores: [" + certStores.toString() + "]\n");
+    sb.append("]");
+    return sb.toString();
+}

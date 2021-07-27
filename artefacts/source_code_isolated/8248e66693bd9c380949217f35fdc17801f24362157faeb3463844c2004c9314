@@ -1,0 +1,13 @@
+public static Inet6Address getByAddress(String host, byte[] addr, int scope_id) throws UnknownHostException{
+    if (host != null && host.length() > 0 && host.charAt(0) == '[') {
+        if (host.charAt(host.length() - 1) == ']') {
+            host = host.substring(1, host.length() - 1);
+        }
+    }
+    if (addr != null) {
+        if (addr.length == Inet6Address.INADDRSZ) {
+            return new Inet6Address(host, addr, scope_id);
+        }
+    }
+    throw new UnknownHostException("addr is of illegal length");
+}

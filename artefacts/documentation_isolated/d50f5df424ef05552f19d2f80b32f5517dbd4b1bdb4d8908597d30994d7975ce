@@ -1,0 +1,46 @@
+
+     * Appends the time-zone ID, such as 'Europe/Paris' or '+02:00', to the formatter.
+     * <p>
+     * This appends an instruction to format/parse the zone ID to the builder.
+     * The zone ID is obtained in a strict manner suitable for {@code ZonedDateTime}.
+     * By contrast, {@code OffsetDateTime} does not have a zone ID suitable
+     * for use with this method, see {@link #appendZoneOrOffsetId()}.
+     * <p>
+     * During formatting, the zone is obtained using a mechanism equivalent
+     * to querying the temporal with {@link TemporalQueries#zoneId()}.
+     * It will be printed using the result of {@link ZoneId#getId()}.
+     * If the zone cannot be obtained then an exception is thrown unless the
+     * section of the formatter is optional.
+     * <p>
+     * During parsing, the text must match a known zone or offset.
+     * There are two types of zone ID, offset-based, such as '+01:30' and
+     * region-based, such as 'Europe/London'. These are parsed differently.
+     * If the parse starts with '+', '-', 'UT', 'UTC' or 'GMT', then the parser
+     * expects an offset-based zone and will not match region-based zones.
+     * The offset ID, such as '+02:30', may be at the start of the parse,
+     * or prefixed by  'UT', 'UTC' or 'GMT'. The offset ID parsing is
+     * equivalent to using {@link #appendOffset(String, String)} using the
+     * arguments 'HH:MM:ss' and the no offset string '0'.
+     * If the parse starts with 'UT', 'UTC' or 'GMT', and the parser cannot
+     * match a following offset ID, then {@link ZoneOffset#UTC} is selected.
+     * In all other cases, the list of known region-based zones is used to
+     * find the longest available match. If no match is found, and the parse
+     * starts with 'Z', then {@code ZoneOffset.UTC} is selected.
+     * The parser uses the {@linkplain #parseCaseInsensitive() case sensitive} setting.
+     * <p>
+     * For example, the following will parse:
+     * <pre>
+     *   "Europe/London"           -- ZoneId.of("Europe/London")
+     *   "Z"                       -- ZoneOffset.UTC
+     *   "UT"                      -- ZoneId.of("UT")
+     *   "UTC"                     -- ZoneId.of("UTC")
+     *   "GMT"                     -- ZoneId.of("GMT")
+     *   "+01:30"                  -- ZoneOffset.of("+01:30")
+     *   "UT+01:30"                -- ZoneOffset.of("+01:30")
+     *   "UTC+01:30"               -- ZoneOffset.of("+01:30")
+     *   "GMT+01:30"               -- ZoneOffset.of("+01:30")
+     * </pre>
+     *
+     * @return this, for chaining, not null
+     * @see #appendZoneRegionId()
+     

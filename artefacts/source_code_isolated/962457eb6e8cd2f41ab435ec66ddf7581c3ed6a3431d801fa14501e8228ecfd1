@@ -1,0 +1,10 @@
+public void captureEndValues(TransitionValues transitionValues){
+    if (isValidTarget(transitionValues.view)) {
+        for (Transition childTransition : mTransitions) {
+            if (childTransition.isValidTarget(transitionValues.view)) {
+                childTransition.captureEndValues(transitionValues);
+                transitionValues.targetedTransitions.add(childTransition);
+            }
+        }
+    }
+}

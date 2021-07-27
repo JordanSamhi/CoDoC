@@ -1,0 +1,47 @@
+public InputConnection onCreateInputConnection(EditorInfo outAttrs){
+    if (onCheckIsTextEditor() && isEnabled()) {
+        mEditor.createInputMethodStateIfNeeded();
+        outAttrs.inputType = getInputType();
+        if (mEditor.mInputContentType != null) {
+            outAttrs.imeOptions = mEditor.mInputContentType.imeOptions;
+            outAttrs.privateImeOptions = mEditor.mInputContentType.privateImeOptions;
+            outAttrs.actionLabel = mEditor.mInputContentType.imeActionLabel;
+            outAttrs.actionId = mEditor.mInputContentType.imeActionId;
+            outAttrs.extras = mEditor.mInputContentType.extras;
+            outAttrs.hintLocales = mEditor.mInputContentType.imeHintLocales;
+        } else {
+            outAttrs.imeOptions = EditorInfo.IME_NULL;
+            outAttrs.hintLocales = null;
+        }
+        if (focusSearch(FOCUS_DOWN) != null) {
+            outAttrs.imeOptions |= EditorInfo.IME_FLAG_NAVIGATE_NEXT;
+        }
+        if (focusSearch(FOCUS_UP) != null) {
+            outAttrs.imeOptions |= EditorInfo.IME_FLAG_NAVIGATE_PREVIOUS;
+        }
+        if ((outAttrs.imeOptions & EditorInfo.IME_MASK_ACTION) == EditorInfo.IME_ACTION_UNSPECIFIED) {
+            if ((outAttrs.imeOptions & EditorInfo.IME_FLAG_NAVIGATE_NEXT) != 0) {
+                outAttrs.imeOptions |= EditorInfo.IME_ACTION_NEXT;
+            } else {
+                outAttrs.imeOptions |= EditorInfo.IME_ACTION_DONE;
+            }
+            if (!shouldAdvanceFocusOnEnter()) {
+                outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+            }
+        }
+        if (isMultilineInputType(outAttrs.inputType)) {
+            outAttrs.imeOptions |= EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+        }
+        outAttrs.hintText = mHint;
+        outAttrs.targetInputMethodUser = mTextOperationUser;
+        if (mText instanceof Editable) {
+            InputConnection ic = new EditableInputConnection(this);
+            outAttrs.initialSelStart = getSelectionStart();
+            outAttrs.initialSelEnd = getSelectionEnd();
+            outAttrs.initialCapsMode = ic.getCursorCapsMode(getInputType());
+            outAttrs.setInitialSurroundingText(mText);
+            return ic;
+        }
+    }
+    return null;
+}

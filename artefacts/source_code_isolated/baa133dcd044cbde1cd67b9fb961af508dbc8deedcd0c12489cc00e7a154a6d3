@@ -1,0 +1,21 @@
+public int hashCode(){
+    if (hash != 0)
+        return hash;
+    int h = hashIgnoringCase(0, scheme);
+    h = hash(h, fragment);
+    if (isOpaque()) {
+        h = hash(h, schemeSpecificPart);
+    } else {
+        h = hash(h, path);
+        h = hash(h, query);
+        if (host != null) {
+            h = hash(h, userInfo);
+            h = hashIgnoringCase(h, host);
+            h += 1949 * port;
+        } else {
+            h = hash(h, authority);
+        }
+    }
+    hash = h;
+    return h;
+}

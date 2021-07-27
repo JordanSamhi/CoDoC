@@ -1,0 +1,12 @@
+public boolean checkError(){
+    if (out != null) {
+        flush();
+    }
+    if (out instanceof java.io.PrintWriter) {
+        PrintWriter pw = (PrintWriter) out;
+        return pw.checkError();
+    } else if (psOut != null) {
+        return psOut.checkError();
+    }
+    return trouble;
+}

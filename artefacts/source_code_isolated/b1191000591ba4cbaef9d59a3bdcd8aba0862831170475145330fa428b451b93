@@ -1,3 +1,16 @@
 public int getHeight(){
-    return mHeight;
+    throwISEIfImageIsInvalid();
+    int height;
+    switch(getFormat()) {
+        case ImageFormat.JPEG:
+        case ImageFormat.DEPTH_POINT_CLOUD:
+        case ImageFormat.RAW_PRIVATE:
+        case ImageFormat.DEPTH_JPEG:
+        case ImageFormat.HEIC:
+            height = ImageReader.this.getHeight();
+            break;
+        default:
+            height = nativeGetHeight();
+    }
+    return height;
 }

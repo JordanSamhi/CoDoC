@@ -1,0 +1,8 @@
+public LocalDateTime plus(TemporalAmount amountToAdd){
+    if (amountToAdd instanceof Period) {
+        Period periodToAdd = (Period) amountToAdd;
+        return with(date.plus(periodToAdd), time);
+    }
+    Objects.requireNonNull(amountToAdd, "amountToAdd");
+    return (LocalDateTime) amountToAdd.addTo(this);
+}

@@ -1,0 +1,10 @@
+public static KeyStore getInstance(String type, Provider provider) throws KeyStoreException{
+    if (provider == null)
+        throw new IllegalArgumentException("missing provider");
+    try {
+        Object[] objs = Security.getImpl(type, "KeyStore", provider);
+        return new KeyStore((KeyStoreSpi) objs[0], (Provider) objs[1], type);
+    } catch (NoSuchAlgorithmException nsae) {
+        throw new KeyStoreException(type + " not found", nsae);
+    }
+}

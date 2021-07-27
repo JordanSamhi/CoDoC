@@ -1,0 +1,11 @@
+public Class<?>[] getClasses(){
+    List<Class<?>> result = new ArrayList<Class<?>>();
+    for (Class<?> c = this; c != null; c = c.superClass) {
+        for (Class<?> member : c.getDeclaredClasses()) {
+            if (Modifier.isPublic(member.getModifiers())) {
+                result.add(member);
+            }
+        }
+    }
+    return result.toArray(new Class[result.size()]);
+}

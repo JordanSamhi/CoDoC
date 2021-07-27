@@ -1,0 +1,27 @@
+public String getDisplayName(boolean daylightTime, int style, Locale locale){
+    TimeZoneNames.NameType nameType;
+    switch(style) {
+        case SHORT:
+            nameType = daylightTime ? TimeZoneNames.NameType.SHORT_DAYLIGHT : TimeZoneNames.NameType.SHORT_STANDARD;
+            break;
+        case LONG:
+            nameType = daylightTime ? TimeZoneNames.NameType.LONG_DAYLIGHT : TimeZoneNames.NameType.LONG_STANDARD;
+            break;
+        default:
+            throw new IllegalArgumentException("Illegal style: " + style);
+    }
+    String canonicalID = android.icu.util.TimeZone.getCanonicalID(getID());
+    if (canonicalID != null) {
+        TimeZoneNames names = TimeZoneNames.getInstance(locale);
+        long now = System.currentTimeMillis();
+        String displayName = names.getDisplayName(canonicalID, nameType, now);
+        if (displayName != null) {
+            return displayName;
+        }
+    }
+    int offsetMillis = getRawOffset();
+    if (daylightTime) {
+        offsetMillis += getDSTSavings();
+    }
+    return createGmtOffsetString(true, true, offsetMillis);
+}

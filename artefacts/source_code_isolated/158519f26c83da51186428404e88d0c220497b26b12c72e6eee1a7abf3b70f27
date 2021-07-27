@@ -1,0 +1,9 @@
+public synchronized TypeVariable<Class<T>>[] getTypeParameters(){
+    String annotationSignature = getSignatureAttribute();
+    if (annotationSignature == null) {
+        return EmptyArray.TYPE_VARIABLE;
+    }
+    GenericSignatureParser parser = new GenericSignatureParser(getClassLoader());
+    parser.parseForClass(this, annotationSignature);
+    return parser.formalTypeParameters;
+}

@@ -1,0 +1,18 @@
+public void setSSLParameters(SSLParameters params){
+    String[] s;
+    s = params.getCipherSuites();
+    if (s != null) {
+        setEnabledCipherSuites(s);
+    }
+    s = params.getProtocols();
+    if (s != null) {
+        setEnabledProtocols(s);
+    }
+    if (params.getNeedClientAuth()) {
+        setNeedClientAuth(true);
+    } else if (params.getWantClientAuth()) {
+        setWantClientAuth(true);
+    } else {
+        setWantClientAuth(false);
+    }
+}

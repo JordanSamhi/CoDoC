@@ -1,0 +1,110 @@
+public boolean onTouchEvent(MotionEvent ev){
+    if (ev.getAction() == MotionEvent.ACTION_DOWN && ev.getEdgeFlags() != 0) {
+        return false;
+    }
+    if (mAdapter == null || mAdapter.getCount() == 0) {
+        return false;
+    }
+    if (mVelocityTracker == null) {
+        mVelocityTracker = VelocityTracker.obtain();
+    }
+    mVelocityTracker.addMovement(ev);
+    final int action = ev.getAction();
+    boolean needsInvalidate = false;
+    switch(action & MotionEvent.ACTION_MASK) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                mScroller.abortAnimation();
+                mPopulatePending = false;
+                populate();
+                mLastMotionX = mInitialMotionX = ev.getX();
+                mLastMotionY = mInitialMotionY = ev.getY();
+                mActivePointerId = ev.getPointerId(0);
+                break;
+            }
+        case MotionEvent.ACTION_MOVE:
+            if (!mIsBeingDragged) {
+                final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+                final float x = ev.getX(pointerIndex);
+                final float xDiff = Math.abs(x - mLastMotionX);
+                final float y = ev.getY(pointerIndex);
+                final float yDiff = Math.abs(y - mLastMotionY);
+                if (DEBUG)
+                    Log.v(TAG, "Moved x to " + x + "," + y + " diff=" + xDiff + "," + yDiff);
+                if (xDiff > mTouchSlop && xDiff > yDiff) {
+                    if (DEBUG)
+                        Log.v(TAG, "Starting drag!");
+                    mIsBeingDragged = true;
+                    requestParentDisallowInterceptTouchEvent(true);
+                    mLastMotionX = x - mInitialMotionX > 0 ? mInitialMotionX + mTouchSlop : mInitialMotionX - mTouchSlop;
+                    mLastMotionY = y;
+                    setScrollState(SCROLL_STATE_DRAGGING);
+                    setScrollingCacheEnabled(true);
+                    ViewParent parent = getParent();
+                    if (parent != null) {
+                        parent.requestDisallowInterceptTouchEvent(true);
+                    }
+                }
+            }
+            if (mIsBeingDragged) {
+                final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+                final float x = ev.getX(activePointerIndex);
+                needsInvalidate |= performDrag(x);
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            if (mIsBeingDragged) {
+                final VelocityTracker velocityTracker = mVelocityTracker;
+                velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                final int initialVelocity = (int) velocityTracker.getXVelocity(mActivePointerId);
+                mPopulatePending = true;
+                final float scrollStart = getScrollStart();
+                final float scrolledPages = scrollStart / getPaddedWidth();
+                final ItemInfo ii = infoForFirstVisiblePage();
+                final int currentPage = ii.position;
+                final float nextPageOffset;
+                if (isLayoutRtl()) {
+                    nextPageOffset = (ii.offset - scrolledPages) / ii.widthFactor;
+                } else {
+                    nextPageOffset = (scrolledPages - ii.offset) / ii.widthFactor;
+                }
+                final int activePointerIndex = ev.findPointerIndex(mActivePointerId);
+                final float x = ev.getX(activePointerIndex);
+                final int totalDelta = (int) (x - mInitialMotionX);
+                final int nextPage = determineTargetPage(currentPage, nextPageOffset, initialVelocity, totalDelta);
+                setCurrentItemInternal(nextPage, true, true, initialVelocity);
+                mActivePointerId = INVALID_POINTER;
+                endDrag();
+                mLeftEdge.onRelease();
+                mRightEdge.onRelease();
+                needsInvalidate = true;
+            }
+            break;
+        case MotionEvent.ACTION_CANCEL:
+            if (mIsBeingDragged) {
+                scrollToItem(mCurItem, true, 0, false);
+                mActivePointerId = INVALID_POINTER;
+                endDrag();
+                mLeftEdge.onRelease();
+                mRightEdge.onRelease();
+                needsInvalidate = true;
+            }
+            break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                final int index = ev.getActionIndex();
+                final float x = ev.getX(index);
+                mLastMotionX = x;
+                mActivePointerId = ev.getPointerId(index);
+                break;
+            }
+        case MotionEvent.ACTION_POINTER_UP:
+            onSecondaryPointerUp(ev);
+            mLastMotionX = ev.getX(ev.findPointerIndex(mActivePointerId));
+            break;
+    }
+    if (needsInvalidate) {
+        postInvalidateOnAnimation();
+    }
+    return true;
+}

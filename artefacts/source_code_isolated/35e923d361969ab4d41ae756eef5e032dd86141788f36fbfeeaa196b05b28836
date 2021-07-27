@@ -1,0 +1,8 @@
+public final boolean isLoaded(){
+    checkMapped();
+    if ((address == 0) || (capacity() == 0))
+        return true;
+    long offset = mappingOffset();
+    long length = mappingLength(offset);
+    return isLoaded0(mappingAddress(offset), length, Bits.pageCount(length));
+}

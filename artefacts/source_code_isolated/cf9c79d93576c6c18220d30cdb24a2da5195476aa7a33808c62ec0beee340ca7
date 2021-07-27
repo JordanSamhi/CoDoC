@@ -1,0 +1,15 @@
+ static long getOrCreateCanonicalAddressId(ContentResolver contentResolver, String canonicalAddress){
+    Uri.Builder uriBuilder = CONTENT_AND_AUTHORITY.buildUpon();
+    uriBuilder.appendPath("canonical-address");
+    uriBuilder.appendQueryParameter("address", canonicalAddress);
+    Uri uri = uriBuilder.build();
+    try (Cursor cursor = contentResolver.query(uri, null, null, null)) {
+        if (cursor != null && cursor.moveToFirst()) {
+            return cursor.getLong(cursor.getColumnIndex(CanonicalAddressesColumns._ID));
+        } else {
+            Rlog.e(TAG, "getOrCreateCanonicalAddressId returned no rows");
+        }
+    }
+    Rlog.e(TAG, "getOrCreateCanonicalAddressId failed");
+    throw new IllegalArgumentException("Unable to find or allocate a canonical address ID");
+}

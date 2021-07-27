@@ -1,2 +1,16 @@
 public void onDataConnectionStateChanged(int state, int networkType){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    if (state == TelephonyManager.DATA_DISCONNECTING && VMRuntime.getRuntime().getTargetSdkVersion() < Build.VERSION_CODES.R) {
+        Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> {
+            psl.onDataConnectionStateChanged(TelephonyManager.DATA_CONNECTED, networkType);
+            psl.onDataConnectionStateChanged(TelephonyManager.DATA_CONNECTED);
+        }));
+    } else {
+        Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> {
+            psl.onDataConnectionStateChanged(state, networkType);
+            psl.onDataConnectionStateChanged(state);
+        }));
+    }
 }

@@ -1,0 +1,29 @@
+public int read(byte[] b, int offset, int length) throws IOException{
+    if (mInputStream == null)
+        throw new IllegalStateException("not open");
+    int nIn = ((length / 2) * mRateIn / mRateOut + mFirLength) * 2;
+    if (mBuf == null) {
+        mBuf = new byte[nIn];
+    } else if (nIn > mBuf.length) {
+        byte[] bf = new byte[nIn];
+        System.arraycopy(mBuf, 0, bf, 0, mBufCount);
+        mBuf = bf;
+    }
+    while (true) {
+        int len = ((mBufCount / 2 - mFirLength) * mRateOut / mRateIn) * 2;
+        if (len > 0) {
+            length = len < length ? len : (length / 2) * 2;
+            break;
+        }
+        int n = mInputStream.read(mBuf, mBufCount, mBuf.length - mBufCount);
+        if (n == -1)
+            return -1;
+        mBufCount += n;
+    }
+    fir21(mBuf, 0, b, offset, length / 2);
+    int nFwd = length * mRateIn / mRateOut;
+    mBufCount -= nFwd;
+    if (mBufCount > 0)
+        System.arraycopy(mBuf, nFwd, mBuf, 0, mBufCount);
+    return length;
+}

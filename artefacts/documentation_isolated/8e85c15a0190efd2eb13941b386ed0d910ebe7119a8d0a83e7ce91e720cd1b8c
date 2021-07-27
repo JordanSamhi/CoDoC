@@ -1,0 +1,23 @@
+
+     * Registers a {@link RegistrationCallback} with the system, which will provide registration
+     * updates for the subscription specified in {@link ImsManager#getImsMmTelManager(int)}. Use
+     * {@link SubscriptionManager.OnSubscriptionsChangedListener} to listen to Subscription changed
+     * events and call {@link #unregisterImsRegistrationCallback(RegistrationCallback)} to clean up.
+     *
+     * When the callback is registered, it will initiate the callback c to be called with the
+     * current registration state.
+     *
+     * @param executor The executor the callback events should be run on.
+     * @param c The {@link RegistrationCallback} to be added.
+     * @see #unregisterImsRegistrationCallback(RegistrationCallback)
+     * @throws IllegalArgumentException if the subscription associated with this callback is not
+     * active (SIM is not inserted, ESIM inactive) or invalid, or a null {@link Executor} or
+     * {@link CapabilityCallback} callback.
+     * @throws ImsException if the subscription associated with this callback is valid, but
+     * the {@link ImsService} associated with the subscription is not available. This can happen if
+     * the service crashed, for example. See {@link ImsException#getCode()} for a more detailed
+     * reason.
+     * @deprecated Use {@link RegistrationManager#registerImsRegistrationCallback(Executor,
+     * RegistrationManager.RegistrationCallback)} instead.
+     * @hide
+     

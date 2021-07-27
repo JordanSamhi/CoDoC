@@ -1,0 +1,16 @@
+public void getOutline(Outline outline){
+    if (mInnerRect != null)
+        return;
+    float radius = 0;
+    if (mOuterRadii != null) {
+        radius = mOuterRadii[0];
+        for (int i = 1; i < 8; i++) {
+            if (mOuterRadii[i] != radius) {
+                outline.setPath(mPath);
+                return;
+            }
+        }
+    }
+    final RectF rect = rect();
+    outline.setRoundRect((int) Math.ceil(rect.left), (int) Math.ceil(rect.top), (int) Math.floor(rect.right), (int) Math.floor(rect.bottom), radius);
+}

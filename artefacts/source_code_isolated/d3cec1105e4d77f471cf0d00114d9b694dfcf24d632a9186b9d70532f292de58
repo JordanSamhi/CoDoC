@@ -1,0 +1,11 @@
+public int readUnsignedShort() throws IOException{
+    if (!blkmode) {
+        pos = 0;
+        in.readFully(buf, 0, 2);
+    } else if (end - pos < 2) {
+        return din.readUnsignedShort();
+    }
+    int v = Bits.getShort(buf, pos) & 0xFFFF;
+    pos += 2;
+    return v;
+}

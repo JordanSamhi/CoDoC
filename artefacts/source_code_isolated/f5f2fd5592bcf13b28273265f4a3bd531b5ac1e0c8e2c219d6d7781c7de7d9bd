@@ -1,0 +1,33 @@
+public void setWeekDate(int weekYear, int weekOfYear, int dayOfWeek){
+    if (dayOfWeek < SUNDAY || dayOfWeek > SATURDAY) {
+        throw new IllegalArgumentException("invalid dayOfWeek: " + dayOfWeek);
+    }
+    GregorianCalendar gc = (GregorianCalendar) clone();
+    gc.setLenient(true);
+    int era = gc.get(ERA);
+    gc.clear();
+    gc.setTimeZone(TimeZone.getTimeZone("GMT"));
+    gc.set(ERA, era);
+    gc.set(YEAR, weekYear);
+    gc.set(WEEK_OF_YEAR, 1);
+    gc.set(DAY_OF_WEEK, getFirstDayOfWeek());
+    int days = dayOfWeek - getFirstDayOfWeek();
+    if (days < 0) {
+        days += 7;
+    }
+    days += 7 * (weekOfYear - 1);
+    if (days != 0) {
+        gc.add(DAY_OF_YEAR, days);
+    } else {
+        gc.complete();
+    }
+    if (!isLenient() && (gc.getWeekYear() != weekYear || gc.internalGet(WEEK_OF_YEAR) != weekOfYear || gc.internalGet(DAY_OF_WEEK) != dayOfWeek)) {
+        throw new IllegalArgumentException();
+    }
+    set(ERA, gc.internalGet(ERA));
+    set(YEAR, gc.internalGet(YEAR));
+    set(MONTH, gc.internalGet(MONTH));
+    set(DAY_OF_MONTH, gc.internalGet(DAY_OF_MONTH));
+    internalSet(WEEK_OF_YEAR, weekOfYear);
+    complete();
+}

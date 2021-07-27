@@ -1,0 +1,25 @@
+public int available() throws IOException{
+    if (blkmode) {
+        if ((pos == end) && (unread == 0)) {
+            int n;
+            while ((n = readBlockHeader(false)) == 0) ;
+            switch(n) {
+                case HEADER_BLOCKED:
+                    break;
+                case -1:
+                    pos = 0;
+                    end = -1;
+                    break;
+                default:
+                    pos = 0;
+                    end = 0;
+                    unread = n;
+                    break;
+            }
+        }
+        int unreadAvail = (unread > 0) ? Math.min(in.available(), unread) : 0;
+        return (end >= 0) ? (end - pos) + unreadAvail : 0;
+    } else {
+        return in.available();
+    }
+}

@@ -1,0 +1,46 @@
+
+     * Returns a concurrent {@code Collector} that accumulates elements into a
+     * {@code ConcurrentMap} whose keys and values are the result of applying
+     * the provided mapping functions to the input elements.
+     *
+     * <p>If the mapped keys contains duplicates (according to {@link Object#equals(Object)}),
+     * the value mapping function is applied to each equal element, and the
+     * results are merged using the provided merging function.
+     *
+     * @apiNote
+     * There are multiple ways to deal with collisions between multiple elements
+     * mapping to the same key.  The other forms of {@code toConcurrentMap} simply use
+     * a merge function that throws unconditionally, but you can easily write
+     * more flexible merge policies.  For example, if you have a stream
+     * of {@code Person}, and you want to produce a "phone book" mapping name to
+     * address, but it is possible that two persons have the same name, you can
+     * do as follows to gracefully deals with these collisions, and produce a
+     * {@code Map} mapping names to a concatenated list of addresses:
+     * <pre>{@code
+     *     Map<String, String> phoneBook
+     *         people.stream().collect(toConcurrentMap(Person::getName,
+     *                                                 Person::getAddress,
+     *                                                 (s, a) -> s + ", " + a));
+     * }</pre>
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the output type of the key mapping function
+     * @param <U> the output type of the value mapping function
+     * @param keyMapper a mapping function to produce keys
+     * @param valueMapper a mapping function to produce values
+     * @param mergeFunction a merge function, used to resolve collisions between
+     *                      values associated with the same key, as supplied
+     *                      to {@link Map#merge(Object, Object, BiFunction)}
+     * @return a concurrent, unordered {@code Collector} which collects elements into a
+     * {@code ConcurrentMap} whose keys are the result of applying a key mapping
+     * function to the input elements, and whose values are the result of
+     * applying a value mapping function to all input elements equal to the key
+     * and combining them using the merge function
+     *
+     * @see #toConcurrentMap(Function, Function)
+     * @see #toConcurrentMap(Function, Function, BinaryOperator, Supplier)
+     * @see #toMap(Function, Function, BinaryOperator)
+     

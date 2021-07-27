@@ -1,0 +1,17 @@
+public String toString(){
+    StringBuilder buf = new StringBuilder();
+    buf.append("TransitionRule[").append(offsetBefore.compareTo(offsetAfter) > 0 ? "Gap " : "Overlap ").append(offsetBefore).append(" to ").append(offsetAfter).append(", ");
+    if (dow != null) {
+        if (dom == -1) {
+            buf.append(dow.name()).append(" on or before last day of ").append(month.name());
+        } else if (dom < 0) {
+            buf.append(dow.name()).append(" on or before last day minus ").append(-dom - 1).append(" of ").append(month.name());
+        } else {
+            buf.append(dow.name()).append(" on or after ").append(month.name()).append(' ').append(dom);
+        }
+    } else {
+        buf.append(month.name()).append(' ').append(dom);
+    }
+    buf.append(" at ").append(timeEndOfDay ? "24:00" : time.toString()).append(" ").append(timeDefinition).append(", standard offset ").append(standardOffset).append(']');
+    return buf.toString();
+}

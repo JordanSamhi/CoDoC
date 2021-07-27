@@ -1,0 +1,22 @@
+public Animator onDisappear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null) {
+        return null;
+    }
+    Rect bounds = (Rect) startValues.values.get(PROPNAME_SCREEN_BOUNDS);
+    int viewPosX = bounds.left;
+    int viewPosY = bounds.top;
+    float startX = view.getTranslationX();
+    float startY = view.getTranslationY();
+    float endX = startX;
+    float endY = startY;
+    int[] interruptedPosition = (int[]) startValues.view.getTag(R.id.transitionPosition);
+    if (interruptedPosition != null) {
+        endX += interruptedPosition[0] - bounds.left;
+        endY += interruptedPosition[1] - bounds.top;
+        bounds.offsetTo(interruptedPosition[0], interruptedPosition[1]);
+    }
+    calculateOut(sceneRoot, bounds, mTempLoc);
+    endX += mTempLoc[0];
+    endY += mTempLoc[1];
+    return TranslationAnimationCreator.createAnimation(view, startValues, viewPosX, viewPosY, startX, startY, endX, endY, sAccelerate, this);
+}

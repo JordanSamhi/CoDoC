@@ -1,0 +1,32 @@
+public boolean onGenericMotionEvent(MotionEvent event){
+    switch(event.getAction()) {
+        case MotionEvent.ACTION_SCROLL:
+            final float axisValue;
+            if (event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+                axisValue = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+            } else if (event.isFromSource(InputDevice.SOURCE_ROTARY_ENCODER)) {
+                axisValue = event.getAxisValue(MotionEvent.AXIS_SCROLL);
+            } else {
+                axisValue = 0;
+            }
+            final int delta = Math.round(axisValue * mVerticalScrollFactor);
+            if (delta != 0) {
+                if (!trackMotionScroll(delta, delta)) {
+                    return true;
+                }
+            }
+            break;
+        case MotionEvent.ACTION_BUTTON_PRESS:
+            if (event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+                int actionButton = event.getActionButton();
+                if ((actionButton == MotionEvent.BUTTON_STYLUS_PRIMARY || actionButton == MotionEvent.BUTTON_SECONDARY) && (mTouchMode == TOUCH_MODE_DOWN || mTouchMode == TOUCH_MODE_TAP)) {
+                    if (performStylusButtonPressAction(event)) {
+                        removeCallbacks(mPendingCheckForLongPress);
+                        removeCallbacks(mPendingCheckForTap);
+                    }
+                }
+            }
+            break;
+    }
+    return super.onGenericMotionEvent(event);
+}

@@ -1,9 +1,0 @@
-public static ChunkListingMap fromProto(ChunksMetadataProto.ChunkListing chunkListingProto){
-    Map<ChunkHash, Entry> entries = new HashMap<>();
-    long start = 0;
-    for (ChunksMetadataProto.Chunk chunk : chunkListingProto.chunks) {
-        entries.put(new ChunkHash(chunk.hash), new Entry(start, chunk.length));
-        start += chunk.length;
-    }
-    return new ChunkListingMap(entries);
-}

@@ -1,0 +1,76 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("Notification(channel=");
+    sb.append(getChannelId());
+    sb.append(" shortcut=");
+    sb.append(getShortcutId());
+    sb.append(" contentView=");
+    if (contentView != null) {
+        sb.append(contentView.getPackage());
+        sb.append("/0x");
+        sb.append(Integer.toHexString(contentView.getLayoutId()));
+    } else {
+        sb.append("null");
+    }
+    sb.append(" vibrate=");
+    if ((this.defaults & DEFAULT_VIBRATE) != 0) {
+        sb.append("default");
+    } else if (this.vibrate != null) {
+        int N = this.vibrate.length - 1;
+        sb.append("[");
+        for (int i = 0; i < N; i++) {
+            sb.append(this.vibrate[i]);
+            sb.append(',');
+        }
+        if (N != -1) {
+            sb.append(this.vibrate[N]);
+        }
+        sb.append("]");
+    } else {
+        sb.append("null");
+    }
+    sb.append(" sound=");
+    if ((this.defaults & DEFAULT_SOUND) != 0) {
+        sb.append("default");
+    } else if (this.sound != null) {
+        sb.append(this.sound.toString());
+    } else {
+        sb.append("null");
+    }
+    if (this.tickerText != null) {
+        sb.append(" tick");
+    }
+    sb.append(" defaults=0x");
+    sb.append(Integer.toHexString(this.defaults));
+    sb.append(" flags=0x");
+    sb.append(Integer.toHexString(this.flags));
+    sb.append(String.format(" color=0x%08x", this.color));
+    if (this.category != null) {
+        sb.append(" category=");
+        sb.append(this.category);
+    }
+    if (this.mGroupKey != null) {
+        sb.append(" groupKey=");
+        sb.append(this.mGroupKey);
+    }
+    if (this.mSortKey != null) {
+        sb.append(" sortKey=");
+        sb.append(this.mSortKey);
+    }
+    if (actions != null) {
+        sb.append(" actions=");
+        sb.append(actions.length);
+    }
+    sb.append(" vis=");
+    sb.append(visibilityToString(this.visibility));
+    if (this.publicVersion != null) {
+        sb.append(" publicVersion=");
+        sb.append(publicVersion.toString());
+    }
+    if (this.mLocusId != null) {
+        sb.append(" locusId=");
+        sb.append(this.mLocusId);
+    }
+    sb.append(")");
+    return sb.toString();
+}

@@ -1,0 +1,170 @@
+public final IBinder onBind(Intent intent){
+    return new IPermissionController.Stub() {
+
+        @Override
+        public void revokeRuntimePermissions(Bundle bundleizedRequest, boolean doDryRun, int reason, String callerPackageName, AndroidFuture callback) {
+            checkNotNull(bundleizedRequest, "bundleizedRequest");
+            checkNotNull(callerPackageName);
+            checkNotNull(callback);
+            Map<String, List<String>> request = new ArrayMap<>();
+            for (String packageName : bundleizedRequest.keySet()) {
+                Preconditions.checkNotNull(packageName);
+                ArrayList<String> permissions = bundleizedRequest.getStringArrayList(packageName);
+                Preconditions.checkCollectionElementsNotNull(permissions, "permissions");
+                request.put(packageName, permissions);
+            }
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.REVOKE_RUNTIME_PERMISSIONS);
+            try {
+                PackageInfo pkgInfo = getPackageManager().getPackageInfo(callerPackageName, 0);
+                checkArgument(getCallingUid() == pkgInfo.applicationInfo.uid);
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            onRevokeRuntimePermissions(request, doDryRun, reason, callerPackageName, revoked -> {
+                CollectionUtils.forEach(revoked, (pkg, perms) -> {
+                    Preconditions.checkNotNull(pkg);
+                    Preconditions.checkCollectionElementsNotNull(perms, "permissions");
+                });
+                callback.complete(revoked);
+            });
+        }
+
+        private void enforceSomePermissionsGrantedToCaller(@NonNull String... requiredPermissions) {
+            for (String requiredPermission : requiredPermissions) {
+                if (checkCallingPermission(requiredPermission) == PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+            }
+            throw new SecurityException("At lest one of the following permissions is required: " + Arrays.toString(requiredPermissions));
+        }
+
+        @Override
+        public void getRuntimePermissionBackup(UserHandle user, ParcelFileDescriptor pipe) {
+            checkNotNull(user);
+            checkNotNull(pipe);
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GET_RUNTIME_PERMISSIONS);
+            try (OutputStream backup = new ParcelFileDescriptor.AutoCloseOutputStream(pipe)) {
+                CountDownLatch latch = new CountDownLatch(1);
+                onGetRuntimePermissionsBackup(user, backup, latch::countDown);
+                latch.await();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Could not open pipe to write backup to", e);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "getRuntimePermissionBackup timed out", e);
+            }
+        }
+
+        @Override
+        public void stageAndApplyRuntimePermissionsBackup(UserHandle user, ParcelFileDescriptor pipe) {
+            checkNotNull(user);
+            checkNotNull(pipe);
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GRANT_RUNTIME_PERMISSIONS, Manifest.permission.RESTORE_RUNTIME_PERMISSIONS);
+            try (InputStream backup = new ParcelFileDescriptor.AutoCloseInputStream(pipe)) {
+                CountDownLatch latch = new CountDownLatch(1);
+                onStageAndApplyRuntimePermissionsBackup(user, backup, latch::countDown);
+                latch.await();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Could not open pipe to read backup from", e);
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "restoreRuntimePermissionBackup timed out", e);
+            }
+        }
+
+        @Override
+        public void applyStagedRuntimePermissionBackup(String packageName, UserHandle user, AndroidFuture callback) {
+            checkNotNull(packageName);
+            checkNotNull(user);
+            checkNotNull(callback);
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GRANT_RUNTIME_PERMISSIONS, Manifest.permission.RESTORE_RUNTIME_PERMISSIONS);
+            onApplyStagedRuntimePermissionBackup(packageName, user, callback::complete);
+        }
+
+        @Override
+        public void getAppPermissions(String packageName, AndroidFuture callback) {
+            checkNotNull(packageName, "packageName");
+            checkNotNull(callback, "callback");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GET_RUNTIME_PERMISSIONS);
+            onGetAppPermissions(packageName, callback::complete);
+        }
+
+        @Override
+        public void revokeRuntimePermission(String packageName, String permissionName) {
+            checkNotNull(packageName, "packageName");
+            checkNotNull(permissionName, "permissionName");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.REVOKE_RUNTIME_PERMISSIONS);
+            CountDownLatch latch = new CountDownLatch(1);
+            PermissionControllerService.this.onRevokeRuntimePermission(packageName, permissionName, latch::countDown);
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Log.e(LOG_TAG, "revokeRuntimePermission timed out", e);
+            }
+        }
+
+        @Override
+        public void countPermissionApps(List<String> permissionNames, int flags, AndroidFuture callback) {
+            checkCollectionElementsNotNull(permissionNames, "permissionNames");
+            checkFlagsArgument(flags, COUNT_WHEN_SYSTEM | COUNT_ONLY_WHEN_GRANTED);
+            checkNotNull(callback, "callback");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GET_RUNTIME_PERMISSIONS);
+            onCountPermissionApps(permissionNames, flags, callback::complete);
+        }
+
+        @Override
+        public void getPermissionUsages(boolean countSystem, long numMillis, AndroidFuture callback) {
+            checkArgumentNonnegative(numMillis);
+            checkNotNull(callback, "callback");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GET_RUNTIME_PERMISSIONS);
+            onGetPermissionUsages(countSystem, numMillis, callback::complete);
+        }
+
+        @Override
+        public void setRuntimePermissionGrantStateByDeviceAdmin(String callerPackageName, String packageName, String permission, int grantState, AndroidFuture callback) {
+            checkStringNotEmpty(callerPackageName);
+            checkStringNotEmpty(packageName);
+            checkStringNotEmpty(permission);
+            checkArgument(grantState == PERMISSION_GRANT_STATE_GRANTED || grantState == PERMISSION_GRANT_STATE_DENIED || grantState == PERMISSION_GRANT_STATE_DEFAULT);
+            checkNotNull(callback);
+            if (grantState == PERMISSION_GRANT_STATE_DENIED) {
+                enforceSomePermissionsGrantedToCaller(Manifest.permission.GRANT_RUNTIME_PERMISSIONS);
+            }
+            if (grantState == PERMISSION_GRANT_STATE_DENIED) {
+                enforceSomePermissionsGrantedToCaller(Manifest.permission.REVOKE_RUNTIME_PERMISSIONS);
+            }
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.ADJUST_RUNTIME_PERMISSIONS_POLICY);
+            onSetRuntimePermissionGrantStateByDeviceAdmin(callerPackageName, packageName, permission, grantState, callback::complete);
+        }
+
+        @Override
+        public void grantOrUpgradeDefaultRuntimePermissions(@NonNull AndroidFuture callback) {
+            checkNotNull(callback, "callback");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.ADJUST_RUNTIME_PERMISSIONS_POLICY);
+            onGrantOrUpgradeDefaultRuntimePermissions(() -> callback.complete(true));
+        }
+
+        @Override
+        public void updateUserSensitiveForApp(int uid, @NonNull AndroidFuture callback) {
+            Preconditions.checkNotNull(callback, "callback cannot be null");
+            try {
+                onUpdateUserSensitivePermissionFlags(uid, () -> callback.complete(null));
+            } catch (Exception e) {
+                callback.completeExceptionally(e);
+            }
+        }
+
+        @Override
+        public void notifyOneTimePermissionSessionTimeout(String packageName) {
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.REVOKE_RUNTIME_PERMISSIONS);
+            packageName = Preconditions.checkNotNull(packageName, "packageName cannot be null");
+            onOneTimePermissionSessionTimeout(packageName);
+        }
+
+        @Override
+        protected void dump(FileDescriptor fd, PrintWriter writer, String[] args) {
+            checkNotNull(fd, "fd");
+            checkNotNull(writer, "writer");
+            enforceSomePermissionsGrantedToCaller(Manifest.permission.GET_RUNTIME_PERMISSIONS);
+            PermissionControllerService.this.dump(fd, writer, args);
+        }
+    };
+}

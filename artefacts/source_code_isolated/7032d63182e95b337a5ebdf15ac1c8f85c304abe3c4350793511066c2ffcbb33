@@ -1,0 +1,15 @@
+public void run(){
+    try {
+        Looper.prepare();
+        synchronized (this) {
+            mChoreographer = Choreographer.getInstance();
+        }
+        Looper.loop();
+    } finally {
+        releaseRenderer();
+    }
+    synchronized (this) {
+        mChoreographer = null;
+        Choreographer.releaseInstance();
+    }
+}

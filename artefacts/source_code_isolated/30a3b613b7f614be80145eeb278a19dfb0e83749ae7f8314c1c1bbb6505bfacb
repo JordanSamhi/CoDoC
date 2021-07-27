@@ -1,2 +1,6 @@
-public void onDisplayInfoChanged(@NonNull TelephonyDisplayInfo telephonyDisplayInfo){
+public void onDisplayInfoChanged(TelephonyDisplayInfo telephonyDisplayInfo){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onDisplayInfoChanged(telephonyDisplayInfo)));
 }

@@ -1,0 +1,53 @@
+
+     * Relative bulk <i>put</i> method&nbsp;&nbsp;<i>(optional operation)</i>.
+     *
+     * <p> This method transfers chars from the given string into this
+     * buffer.  If there are more chars to be copied from the string than
+     * remain in this buffer, that is, if
+     * <tt>end&nbsp;-&nbsp;start</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>remaining()</tt>,
+     * then no chars are transferred and a {@link
+     * BufferOverflowException} is thrown.
+     *
+     * <p> Otherwise, this method copies
+     * <i>n</i>&nbsp;=&nbsp;<tt>end</tt>&nbsp;-&nbsp;<tt>start</tt> chars
+     * from the given string into this buffer, starting at the given
+     * <tt>start</tt> index and at the current position of this buffer.  The
+     * position of this buffer is then incremented by <i>n</i>.
+     *
+     * <p> In other words, an invocation of this method of the form
+     * <tt>dst.put(src,&nbsp;start,&nbsp;end)</tt> has exactly the same effect
+     * as the loop
+     *
+     * <pre>{@code
+     *     for (int i = start; i < end; i++)
+     *         dst.put(src.charAt(i));
+     * }</pre>
+     *
+     * except that it first checks that there is sufficient space in this
+     * buffer and it is potentially much more efficient.
+     *
+     * @param  src
+     *         The string from which chars are to be read
+     *
+     * @param  start
+     *         The offset within the string of the first char to be read;
+     *         must be non-negative and no larger than
+     *         <tt>string.length()</tt>
+     *
+     * @param  end
+     *         The offset within the string of the last char to be read,
+     *         plus one; must be non-negative and no larger than
+     *         <tt>string.length()</tt>
+     *
+     * @return  This buffer
+     *
+     * @throws  BufferOverflowException
+     *          If there is insufficient space in this buffer
+     *
+     * @throws  IndexOutOfBoundsException
+     *          If the preconditions on the <tt>start</tt> and <tt>end</tt>
+     *          parameters do not hold
+     *
+     * @throws  ReadOnlyBufferException
+     *          If this buffer is read-only
+     

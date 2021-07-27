@@ -1,9 +1,0 @@
-public void setQuotaFree(int userId, @NonNull String packageName, boolean isFree){
-    synchronized (mLock) {
-        final boolean wasFree = mFreeQuota.getOrDefault(userId, packageName, Boolean.FALSE);
-        if (wasFree != isFree) {
-            mFreeQuota.add(userId, packageName, isFree);
-            onQuotaFreeChangedLocked(userId, packageName, isFree);
-        }
-    }
-}

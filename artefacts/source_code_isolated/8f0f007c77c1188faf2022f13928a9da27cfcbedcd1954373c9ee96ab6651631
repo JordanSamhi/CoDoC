@@ -1,0 +1,8 @@
+public static BitSet valueOf(LongBuffer lb){
+    lb = lb.slice();
+    int n;
+    for (n = lb.remaining(); n > 0 && lb.get(n - 1) == 0; n--) ;
+    long[] words = new long[n];
+    lb.get(words);
+    return new BitSet(words);
+}

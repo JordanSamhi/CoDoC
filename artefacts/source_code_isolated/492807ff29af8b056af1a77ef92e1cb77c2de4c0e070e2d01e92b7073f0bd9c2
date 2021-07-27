@@ -1,0 +1,14 @@
+public static Year from(TemporalAccessor temporal){
+    if (temporal instanceof Year) {
+        return (Year) temporal;
+    }
+    Objects.requireNonNull(temporal, "temporal");
+    try {
+        if (IsoChronology.INSTANCE.equals(Chronology.from(temporal)) == false) {
+            temporal = LocalDate.from(temporal);
+        }
+        return of(temporal.get(YEAR));
+    } catch (DateTimeException ex) {
+        throw new DateTimeException("Unable to obtain Year from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName(), ex);
+    }
+}

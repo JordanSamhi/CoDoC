@@ -1,0 +1,45 @@
+
+     * Reads an "unshared" object from the ObjectInputStream.  This method is
+     * identical to readObject, except that it prevents subsequent calls to
+     * readObject and readUnshared from returning additional references to the
+     * deserialized instance obtained via this call.  Specifically:
+     * <ul>
+     *   <li>If readUnshared is called to deserialize a back-reference (the
+     *       stream representation of an object which has been written
+     *       previously to the stream), an ObjectStreamException will be
+     *       thrown.
+     *
+     *   <li>If readUnshared returns successfully, then any subsequent attempts
+     *       to deserialize back-references to the stream handle deserialized
+     *       by readUnshared will cause an ObjectStreamException to be thrown.
+     * </ul>
+     * Deserializing an object via readUnshared invalidates the stream handle
+     * associated with the returned object.  Note that this in itself does not
+     * always guarantee that the reference returned by readUnshared is unique;
+     * the deserialized object may define a readResolve method which returns an
+     * object visible to other parties, or readUnshared may return a Class
+     * object or enum constant obtainable elsewhere in the stream or through
+     * external means. If the deserialized object defines a readResolve method
+     * and the invocation of that method returns an array, then readUnshared
+     * returns a shallow clone of that array; this guarantees that the returned
+     * array object is unique and cannot be obtained a second time from an
+     * invocation of readObject or readUnshared on the ObjectInputStream,
+     * even if the underlying data stream has been manipulated.
+     *
+     * <p>ObjectInputStream subclasses which override this method can only be
+     * constructed in security contexts possessing the
+     * "enableSubclassImplementation" SerializablePermission; any attempt to
+     * instantiate such a subclass without this permission will cause a
+     * SecurityException to be thrown.
+     *
+     * @return  reference to deserialized object
+     * @throws  ClassNotFoundException if class of an object to deserialize
+     *          cannot be found
+     * @throws  StreamCorruptedException if control information in the stream
+     *          is inconsistent
+     * @throws  ObjectStreamException if object to deserialize has already
+     *          appeared in stream
+     * @throws  OptionalDataException if primitive data is next in stream
+     * @throws  IOException if an I/O error occurs during deserialization
+     * @since   1.4
+     

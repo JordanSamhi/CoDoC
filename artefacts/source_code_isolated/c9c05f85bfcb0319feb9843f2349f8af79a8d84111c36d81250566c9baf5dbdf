@@ -1,0 +1,10 @@
+public String toString(){
+    if (!isBound())
+        return "ServerSocket[unbound]";
+    InetAddress in;
+    if (System.getSecurityManager() != null)
+        in = InetAddress.getLoopbackAddress();
+    else
+        in = impl.getInetAddress();
+    return "ServerSocket[addr=" + in + ",localport=" + impl.getLocalPort() + "]";
+}

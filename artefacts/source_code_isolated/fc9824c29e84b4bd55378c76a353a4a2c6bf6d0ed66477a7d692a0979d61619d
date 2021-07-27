@@ -1,0 +1,66 @@
+public BigDecimal divideToIntegralValue(BigDecimal divisor, MathContext mc){
+    int mcPrecision = mc.getPrecision();
+    int diffPrecision = this.precision() - divisor.precision();
+    int lastPow = TEN_POW.length - 1;
+    long diffScale = (long) this.scale - divisor.scale;
+    long newScale = diffScale;
+    long quotPrecision = diffPrecision - diffScale + 1;
+    BigInteger[] quotAndRem = new BigInteger[2];
+    if ((mcPrecision == 0) || (this.isZero()) || (divisor.isZero())) {
+        return this.divideToIntegralValue(divisor);
+    }
+    if (quotPrecision <= 0) {
+        quotAndRem[0] = BigInteger.ZERO;
+    } else if (diffScale == 0) {
+        quotAndRem[0] = this.getUnscaledValue().divide(divisor.getUnscaledValue());
+    } else if (diffScale > 0) {
+        quotAndRem[0] = this.getUnscaledValue().divide(divisor.getUnscaledValue().multiply(Multiplication.powerOf10(diffScale)));
+        newScale = Math.min(diffScale, Math.max(mcPrecision - quotPrecision + 1, 0));
+        quotAndRem[0] = quotAndRem[0].multiply(Multiplication.powerOf10(newScale));
+    } else {
+        long exp = Math.min(-diffScale, Math.max((long) mcPrecision - diffPrecision, 0));
+        long compRemDiv;
+        quotAndRem = this.getUnscaledValue().multiply(Multiplication.powerOf10(exp)).divideAndRemainder(divisor.getUnscaledValue());
+        newScale += exp;
+        exp = -newScale;
+        if ((quotAndRem[1].signum() != 0) && (exp > 0)) {
+            compRemDiv = (new BigDecimal(quotAndRem[1])).precision() + exp - divisor.precision();
+            if (compRemDiv == 0) {
+                quotAndRem[1] = quotAndRem[1].multiply(Multiplication.powerOf10(exp)).divide(divisor.getUnscaledValue());
+                compRemDiv = Math.abs(quotAndRem[1].signum());
+            }
+            if (compRemDiv > 0) {
+                throw new ArithmeticException("Division impossible");
+            }
+        }
+    }
+    if (quotAndRem[0].signum() == 0) {
+        return zeroScaledBy(diffScale);
+    }
+    BigInteger strippedBI = quotAndRem[0];
+    BigDecimal integralValue = new BigDecimal(quotAndRem[0]);
+    long resultPrecision = integralValue.precision();
+    int i = 1;
+    while (!strippedBI.testBit(0)) {
+        quotAndRem = strippedBI.divideAndRemainder(TEN_POW[i]);
+        if ((quotAndRem[1].signum() == 0) && ((resultPrecision - i >= mcPrecision) || (newScale - i >= diffScale))) {
+            resultPrecision -= i;
+            newScale -= i;
+            if (i < lastPow) {
+                i++;
+            }
+            strippedBI = quotAndRem[0];
+        } else {
+            if (i == 1) {
+                break;
+            }
+            i = 1;
+        }
+    }
+    if (resultPrecision > mcPrecision) {
+        throw new ArithmeticException("Division impossible");
+    }
+    integralValue.scale = safeLongToInt(newScale);
+    integralValue.setUnscaledValue(strippedBI);
+    return integralValue;
+}

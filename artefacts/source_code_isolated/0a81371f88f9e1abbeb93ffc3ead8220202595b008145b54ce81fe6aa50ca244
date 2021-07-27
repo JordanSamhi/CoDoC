@@ -1,0 +1,14 @@
+public void onVisibilityAggregated(boolean isVisible){
+    super.onVisibilityAggregated(isVisible);
+    if (!mShouldRunTicker && isVisible) {
+        mShouldRunTicker = true;
+        if (mHasSeconds) {
+            mTicker.run();
+        } else {
+            onTimeChanged();
+        }
+    } else if (mShouldRunTicker && !isVisible) {
+        mShouldRunTicker = false;
+        getHandler().removeCallbacks(mTicker);
+    }
+}

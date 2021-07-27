@@ -1,0 +1,11 @@
+public int setRepeatingRequest(CaptureRequest request, CaptureCallback callback, Handler handler) throws CameraAccessException{
+    checkRepeatingRequest(request);
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        handler = checkHandler(handler, callback);
+        if (DEBUG) {
+            Log.v(TAG, mIdString + "setRepeatingRequest - request " + request + ", callback " + callback + " handler" + " " + handler);
+        }
+        return addPendingSequence(mDeviceImpl.setRepeatingRequest(request, createCaptureCallbackProxy(handler, callback), mDeviceExecutor));
+    }
+}

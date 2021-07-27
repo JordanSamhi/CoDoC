@@ -1,0 +1,8 @@
+public void log(Level level, Throwable thrown, Supplier<String> msgSupplier){
+    if (!isLoggable(level)) {
+        return;
+    }
+    LogRecord lr = new LogRecord(level, msgSupplier.get());
+    lr.setThrown(thrown);
+    doLog(lr);
+}

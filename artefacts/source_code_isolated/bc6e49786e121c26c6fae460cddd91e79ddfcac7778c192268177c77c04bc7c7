@@ -1,0 +1,4 @@
+public static Comparator<T> comparingInt(ToIntFunction<? super T> keyExtractor){
+    Objects.requireNonNull(keyExtractor);
+    return (Comparator<T> & Serializable) (c1, c2) -> Integer.compare(keyExtractor.applyAsInt(c1), keyExtractor.applyAsInt(c2));
+}

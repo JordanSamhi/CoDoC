@@ -1,0 +1,8 @@
+public final long accumulateAndGet(long x, LongBinaryOperator accumulatorFunction){
+    long prev, next;
+    do {
+        prev = get();
+        next = accumulatorFunction.applyAsLong(prev, x);
+    } while (!compareAndSet(prev, next));
+    return next;
+}

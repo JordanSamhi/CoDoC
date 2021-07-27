@@ -1,0 +1,17 @@
+public static NetworkInterface getByInetAddress(InetAddress addr) throws SocketException{
+    if (addr == null) {
+        throw new NullPointerException();
+    }
+    if (!(addr instanceof Inet4Address || addr instanceof Inet6Address)) {
+        throw new IllegalArgumentException("invalid address type");
+    }
+    NetworkInterface[] nis = getAll();
+    for (NetworkInterface ni : nis) {
+        for (InetAddress inetAddress : Collections.list(ni.getInetAddresses())) {
+            if (inetAddress.equals(addr)) {
+                return ni;
+            }
+        }
+    }
+    return null;
+}

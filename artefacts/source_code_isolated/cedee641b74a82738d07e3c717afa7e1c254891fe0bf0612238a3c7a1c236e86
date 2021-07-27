@@ -1,0 +1,65 @@
+public boolean match(Certificate cert){
+    if (!(cert instanceof X509Certificate)) {
+        return false;
+    }
+    X509Certificate xcert = (X509Certificate) cert;
+    if (debug != null) {
+        debug.println("X509CertSelector.match(SN: " + (xcert.getSerialNumber()).toString(16) + "\n  Issuer: " + xcert.getIssuerDN() + "\n  Subject: " + xcert.getSubjectDN() + ")");
+    }
+    if (x509Cert != null) {
+        if (!x509Cert.equals(xcert)) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "certs don't match");
+            }
+            return false;
+        }
+    }
+    if (serialNumber != null) {
+        if (!serialNumber.equals(xcert.getSerialNumber())) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "serial numbers don't match");
+            }
+            return false;
+        }
+    }
+    if (issuer != null) {
+        if (!issuer.equals(xcert.getIssuerX500Principal())) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "issuer DNs don't match");
+            }
+            return false;
+        }
+    }
+    if (subject != null) {
+        if (!subject.equals(xcert.getSubjectX500Principal())) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "subject DNs don't match");
+            }
+            return false;
+        }
+    }
+    if (certificateValid != null) {
+        try {
+            xcert.checkValidity(certificateValid);
+        } catch (CertificateException e) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "certificate not within validity period");
+            }
+            return false;
+        }
+    }
+    if (subjectPublicKeyBytes != null) {
+        byte[] certKey = xcert.getPublicKey().getEncoded();
+        if (!Arrays.equals(subjectPublicKeyBytes, certKey)) {
+            if (debug != null) {
+                debug.println("X509CertSelector.match: " + "subject public keys don't match");
+            }
+            return false;
+        }
+    }
+    boolean result = matchBasicConstraints(xcert) && matchKeyUsage(xcert) && matchExtendedKeyUsage(xcert) && matchSubjectKeyID(xcert) && matchAuthorityKeyID(xcert) && matchPrivateKeyValid(xcert) && matchSubjectPublicKeyAlgID(xcert) && matchPolicy(xcert) && matchSubjectAlternativeNames(xcert) && matchPathToNames(xcert) && matchNameConstraints(xcert);
+    if (result && (debug != null)) {
+        debug.println("X509CertSelector.match returning: true");
+    }
+    return result;
+}

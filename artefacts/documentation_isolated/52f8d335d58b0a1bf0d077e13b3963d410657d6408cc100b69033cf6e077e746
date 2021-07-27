@@ -1,0 +1,33 @@
+
+     * Returns a copy of this formatter with a new override chronology.
+     * <p>
+     * This returns a formatter with similar state to this formatter but
+     * with the override chronology set.
+     * By default, a formatter has no override chronology, returning null.
+     * <p>
+     * If an override is added, then any date that is formatted or parsed will be affected.
+     * <p>
+     * When formatting, if the temporal object contains a date, then it will
+     * be converted to a date in the override chronology.
+     * Whether the temporal contains a date is determined by querying the
+     * {@link ChronoField#EPOCH_DAY EPOCH_DAY} field.
+     * Any time or zone will be retained unaltered unless overridden.
+     * <p>
+     * If the temporal object does not contain a date, but does contain one
+     * or more {@code ChronoField} date fields, then a {@code DateTimeException}
+     * is thrown. In all other cases, the override chronology is added to the temporal,
+     * replacing any previous chronology, but without changing the date/time.
+     * <p>
+     * When parsing, there are two distinct cases to consider.
+     * If a chronology has been parsed directly from the text, perhaps because
+     * {@link DateTimeFormatterBuilder#appendChronologyId()} was used, then
+     * this override chronology has no effect.
+     * If no zone has been parsed, then this override chronology will be used
+     * to interpret the {@code ChronoField} values into a date according to the
+     * date resolving rules of the chronology.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param chrono  the new chronology, null if no override
+     * @return a formatter based on this formatter with the requested override chronology, not null
+     

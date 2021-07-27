@@ -1,0 +1,50 @@
+
+     * Executes the specified string command in a separate process with the
+     * specified environment and working directory.
+     *
+     * <p>This is a convenience method.  An invocation of the form
+     * <tt>exec(command, envp, dir)</tt>
+     * behaves in exactly the same way as the invocation
+     * <tt>{@link #exec(String[], String[], File) exec}(cmdarray, envp, dir)</tt>,
+     * where <code>cmdarray</code> is an array of all the tokens in
+     * <code>command</code>.
+     *
+     * <p>More precisely, the <code>command</code> string is broken
+     * into tokens using a {@link StringTokenizer} created by the call
+     * <code>new {@link StringTokenizer}(command)</code> with no
+     * further modification of the character categories.  The tokens
+     * produced by the tokenizer are then placed in the new string
+     * array <code>cmdarray</code>, in the same order.
+     *
+     * @param   command   a specified system command.
+     *
+     * @param   envp      array of strings, each element of which
+     *                    has environment variable settings in the format
+     *                    <i>name</i>=<i>value</i>, or
+     *                    <tt>null</tt> if the subprocess should inherit
+     *                    the environment of the current process.
+     *
+     * @param   dir       the working directory of the subprocess, or
+     *                    <tt>null</tt> if the subprocess should inherit
+     *                    the working directory of the current process.
+     *
+     * @return  A new {@link Process} object for managing the subprocess
+     *
+     * @throws  SecurityException
+     *          If a security manager exists and its
+     *          {@link SecurityManager#checkExec checkExec}
+     *          method doesn't allow creation of the subprocess
+     *
+     * @throws  IOException
+     *          If an I/O error occurs
+     *
+     * @throws  NullPointerException
+     *          If <code>command</code> is <code>null</code>,
+     *          or one of the elements of <code>envp</code> is <code>null</code>
+     *
+     * @throws  IllegalArgumentException
+     *          If <code>command</code> is empty
+     *
+     * @see     ProcessBuilder
+     * @since 1.3
+     

@@ -1,0 +1,74 @@
+
+     * Returns a hexadecimal string representation of the
+     * {@code float} argument. All characters mentioned below are
+     * ASCII characters.
+     *
+     * <ul>
+     * <li>If the argument is NaN, the result is the string
+     *     "{@code NaN}".
+     * <li>Otherwise, the result is a string that represents the sign and
+     * magnitude (absolute value) of the argument. If the sign is negative,
+     * the first character of the result is '{@code -}'
+     * ({@code '\u005Cu002D'}); if the sign is positive, no sign character
+     * appears in the result. As for the magnitude <i>m</i>:
+     *
+     * <ul>
+     * <li>If <i>m</i> is infinity, it is represented by the string
+     * {@code "Infinity"}; thus, positive infinity produces the
+     * result {@code "Infinity"} and negative infinity produces
+     * the result {@code "-Infinity"}.
+     *
+     * <li>If <i>m</i> is zero, it is represented by the string
+     * {@code "0x0.0p0"}; thus, negative zero produces the result
+     * {@code "-0x0.0p0"} and positive zero produces the result
+     * {@code "0x0.0p0"}.
+     *
+     * <li>If <i>m</i> is a {@code float} value with a
+     * normalized representation, substrings are used to represent the
+     * significand and exponent fields.  The significand is
+     * represented by the characters {@code "0x1."}
+     * followed by a lowercase hexadecimal representation of the rest
+     * of the significand as a fraction.  Trailing zeros in the
+     * hexadecimal representation are removed unless all the digits
+     * are zero, in which case a single zero is used. Next, the
+     * exponent is represented by {@code "p"} followed
+     * by a decimal string of the unbiased exponent as if produced by
+     * a call to {@link Integer#toString(int) Integer.toString} on the
+     * exponent value.
+     *
+     * <li>If <i>m</i> is a {@code float} value with a subnormal
+     * representation, the significand is represented by the
+     * characters {@code "0x0."} followed by a
+     * hexadecimal representation of the rest of the significand as a
+     * fraction.  Trailing zeros in the hexadecimal representation are
+     * removed. Next, the exponent is represented by
+     * {@code "p-126"}.  Note that there must be at
+     * least one nonzero digit in a subnormal significand.
+     *
+     * </ul>
+     *
+     * </ul>
+     *
+     * <table border>
+     * <caption>Examples</caption>
+     * <tr><th>Floating-point Value</th><th>Hexadecimal String</th>
+     * <tr><td>{@code 1.0}</td> <td>{@code 0x1.0p0}</td>
+     * <tr><td>{@code -1.0}</td>        <td>{@code -0x1.0p0}</td>
+     * <tr><td>{@code 2.0}</td> <td>{@code 0x1.0p1}</td>
+     * <tr><td>{@code 3.0}</td> <td>{@code 0x1.8p1}</td>
+     * <tr><td>{@code 0.5}</td> <td>{@code 0x1.0p-1}</td>
+     * <tr><td>{@code 0.25}</td>        <td>{@code 0x1.0p-2}</td>
+     * <tr><td>{@code Float.MAX_VALUE}</td>
+     *     <td>{@code 0x1.fffffep127}</td>
+     * <tr><td>{@code Minimum Normal Value}</td>
+     *     <td>{@code 0x1.0p-126}</td>
+     * <tr><td>{@code Maximum Subnormal Value}</td>
+     *     <td>{@code 0x0.fffffep-126}</td>
+     * <tr><td>{@code Float.MIN_VALUE}</td>
+     *     <td>{@code 0x0.000002p-126}</td>
+     * </table>
+     * @param   f   the {@code float} to be converted.
+     * @return a hex string representation of the argument.
+     * @since 1.5
+     * @author Joseph D. Darcy
+     

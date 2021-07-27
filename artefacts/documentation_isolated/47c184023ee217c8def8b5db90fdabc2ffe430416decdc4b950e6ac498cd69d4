@@ -1,0 +1,30 @@
+
+     * {@inheritDoc}
+     *
+     * @implSpec
+     * <p>The default implementation is equivalent to, for this {@code map}:
+     * <pre> {@code
+     * for (Map.Entry<K,V> entry : map.entrySet()) {
+     *   K k;
+     *   V v;
+     *   do {
+     *     k = entry.getKey();
+     *     v = entry.getValue();
+     *   } while (!map.replace(k, v, function.apply(k, v)));
+     * }}</pre>
+     *
+     * The default implementation may retry these steps when multiple
+     * threads attempt updates including potentially calling the function
+     * repeatedly for a given key.
+     *
+     * <p>This implementation assumes that the ConcurrentMap cannot contain null
+     * values and {@code get()} returning null unambiguously means the key is
+     * absent. Implementations which support null values <strong>must</strong>
+     * override this default implementation.
+     *
+     * @throws UnsupportedOperationException {@inheritDoc}
+     * @throws NullPointerException {@inheritDoc}
+     * @throws ClassCastException {@inheritDoc}
+     * @throws IllegalArgumentException {@inheritDoc}
+     * @since 1.8
+     

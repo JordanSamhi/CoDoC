@@ -1,0 +1,6 @@
+public static MethodHandle filterReturnValue(MethodHandle target, MethodHandle filter){
+    MethodType targetType = target.type();
+    MethodType filterType = filter.type();
+    filterReturnValueChecks(targetType, filterType);
+    return new Transformers.FilterReturnValue(target, filter);
+}

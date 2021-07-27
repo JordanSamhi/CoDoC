@@ -1,0 +1,26 @@
+public void onConfigurationChanged(Configuration newConfig){
+    if (mDecorContentParent == null) {
+        PanelFeatureState st = getPanelState(FEATURE_OPTIONS_PANEL, false);
+        if ((st != null) && (st.menu != null)) {
+            if (st.isOpen) {
+                final Bundle state = new Bundle();
+                if (st.iconMenuPresenter != null) {
+                    st.iconMenuPresenter.saveHierarchyState(state);
+                }
+                if (st.listMenuPresenter != null) {
+                    st.listMenuPresenter.saveHierarchyState(state);
+                }
+                clearMenuViews(st);
+                reopenMenu(false);
+                if (st.iconMenuPresenter != null) {
+                    st.iconMenuPresenter.restoreHierarchyState(state);
+                }
+                if (st.listMenuPresenter != null) {
+                    st.listMenuPresenter.restoreHierarchyState(state);
+                }
+            } else {
+                clearMenuViews(st);
+            }
+        }
+    }
+}

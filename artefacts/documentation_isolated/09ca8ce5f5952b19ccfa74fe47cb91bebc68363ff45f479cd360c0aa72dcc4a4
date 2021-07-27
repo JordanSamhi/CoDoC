@@ -1,0 +1,62 @@
+
+     * Returns a string representation of the {@code double}
+     * argument. All characters mentioned below are ASCII characters.
+     * <ul>
+     * <li>If the argument is NaN, the result is the string
+     *     "{@code NaN}".
+     * <li>Otherwise, the result is a string that represents the sign and
+     * magnitude (absolute value) of the argument. If the sign is negative,
+     * the first character of the result is '{@code -}'
+     * ({@code '\u005Cu002D'}); if the sign is positive, no sign character
+     * appears in the result. As for the magnitude <i>m</i>:
+     * <ul>
+     * <li>If <i>m</i> is infinity, it is represented by the characters
+     * {@code "Infinity"}; thus, positive infinity produces the result
+     * {@code "Infinity"} and negative infinity produces the result
+     * {@code "-Infinity"}.
+     *
+     * <li>If <i>m</i> is zero, it is represented by the characters
+     * {@code "0.0"}; thus, negative zero produces the result
+     * {@code "-0.0"} and positive zero produces the result
+     * {@code "0.0"}.
+     *
+     * <li>If <i>m</i> is greater than or equal to 10<sup>-3</sup> but less
+     * than 10<sup>7</sup>, then it is represented as the integer part of
+     * <i>m</i>, in decimal form with no leading zeroes, followed by
+     * '{@code .}' ({@code '\u005Cu002E'}), followed by one or
+     * more decimal digits representing the fractional part of <i>m</i>.
+     *
+     * <li>If <i>m</i> is less than 10<sup>-3</sup> or greater than or
+     * equal to 10<sup>7</sup>, then it is represented in so-called
+     * "computerized scientific notation." Let <i>n</i> be the unique
+     * integer such that 10<sup><i>n</i></sup> &le; <i>m</i> {@literal <}
+     * 10<sup><i>n</i>+1</sup>; then let <i>a</i> be the
+     * mathematically exact quotient of <i>m</i> and
+     * 10<sup><i>n</i></sup> so that 1 &le; <i>a</i> {@literal <} 10. The
+     * magnitude is then represented as the integer part of <i>a</i>,
+     * as a single decimal digit, followed by '{@code .}'
+     * ({@code '\u005Cu002E'}), followed by decimal digits
+     * representing the fractional part of <i>a</i>, followed by the
+     * letter '{@code E}' ({@code '\u005Cu0045'}), followed
+     * by a representation of <i>n</i> as a decimal integer, as
+     * produced by the method {@link Integer#toString(int)}.
+     * </ul>
+     * </ul>
+     * How many digits must be printed for the fractional part of
+     * <i>m</i> or <i>a</i>? There must be at least one digit to represent
+     * the fractional part, and beyond that as many, but only as many, more
+     * digits as are needed to uniquely distinguish the argument value from
+     * adjacent values of type {@code double}. That is, suppose that
+     * <i>x</i> is the exact mathematical value represented by the decimal
+     * representation produced by this method for a finite nonzero argument
+     * <i>d</i>. Then <i>d</i> must be the {@code double} value nearest
+     * to <i>x</i>; or if two {@code double} values are equally close
+     * to <i>x</i>, then <i>d</i> must be one of them and the least
+     * significant bit of the significand of <i>d</i> must be {@code 0}.
+     *
+     * <p>To create localized string representations of a floating-point
+     * value, use subclasses of {@link java.text.NumberFormat}.
+     *
+     * @param   d   the {@code double} to be converted.
+     * @return a string representation of the argument.
+     

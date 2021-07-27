@@ -1,0 +1,16 @@
+public boolean remove(Object o){
+    if (o == null)
+        return false;
+    fullyLock();
+    try {
+        for (Node<E> trail = head, p = trail.next; p != null; trail = p, p = p.next) {
+            if (o.equals(p.item)) {
+                unlink(p, trail);
+                return true;
+            }
+        }
+        return false;
+    } finally {
+        fullyUnlock();
+    }
+}

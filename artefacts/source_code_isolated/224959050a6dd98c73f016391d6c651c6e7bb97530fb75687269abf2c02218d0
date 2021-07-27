@@ -1,0 +1,17 @@
+public static Clock tick(Clock baseClock, Duration tickDuration){
+    Objects.requireNonNull(baseClock, "baseClock");
+    Objects.requireNonNull(tickDuration, "tickDuration");
+    if (tickDuration.isNegative()) {
+        throw new IllegalArgumentException("Tick duration must not be negative");
+    }
+    long tickNanos = tickDuration.toNanos();
+    if (tickNanos % 1000_000 == 0) {
+    } else if (1000_000_000 % tickNanos == 0) {
+    } else {
+        throw new IllegalArgumentException("Invalid tick duration");
+    }
+    if (tickNanos <= 1) {
+        return baseClock;
+    }
+    return new TickClock(baseClock, tickNanos);
+}

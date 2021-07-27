@@ -1,0 +1,30 @@
+public boolean onGenericMotionEvent(MotionEvent event){
+    switch(event.getAction()) {
+        case MotionEvent.ACTION_SCROLL:
+            final float axisValue;
+            if (event.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+                axisValue = event.getAxisValue(MotionEvent.AXIS_VSCROLL);
+            } else if (event.isFromSource(InputDevice.SOURCE_ROTARY_ENCODER)) {
+                axisValue = event.getAxisValue(MotionEvent.AXIS_SCROLL);
+            } else {
+                axisValue = 0;
+            }
+            final int delta = Math.round(axisValue * mVerticalScrollFactor);
+            if (delta != 0) {
+                final int range = getScrollRange();
+                int oldScrollY = mScrollY;
+                int newScrollY = oldScrollY - delta;
+                if (newScrollY < 0) {
+                    newScrollY = 0;
+                } else if (newScrollY > range) {
+                    newScrollY = range;
+                }
+                if (newScrollY != oldScrollY) {
+                    super.scrollTo(mScrollX, newScrollY);
+                    return true;
+                }
+            }
+            break;
+    }
+    return super.onGenericMotionEvent(event);
+}

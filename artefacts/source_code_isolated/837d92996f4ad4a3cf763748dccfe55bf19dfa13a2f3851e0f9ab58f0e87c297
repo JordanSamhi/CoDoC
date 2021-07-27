@@ -1,0 +1,13 @@
+public View getItemView(final MenuItemImpl item, View convertView, ViewGroup parent){
+    View actionView = item.getActionView();
+    if (actionView == null || item.hasCollapsibleActionView()) {
+        actionView = super.getItemView(item, convertView, parent);
+    }
+    actionView.setVisibility(item.isActionViewExpanded() ? View.GONE : View.VISIBLE);
+    final ActionMenuView menuParent = (ActionMenuView) parent;
+    final ViewGroup.LayoutParams lp = actionView.getLayoutParams();
+    if (!menuParent.checkLayoutParams(lp)) {
+        actionView.setLayoutParams(menuParent.generateLayoutParams(lp));
+    }
+    return actionView;
+}

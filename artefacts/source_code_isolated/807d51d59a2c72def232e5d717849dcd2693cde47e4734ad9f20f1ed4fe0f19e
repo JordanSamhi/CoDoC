@@ -1,0 +1,68 @@
+public void endAnimation(ViewHolder item){
+    final View view = item.itemView;
+    view.animate().cancel();
+    for (int i = mPendingMoves.size() - 1; i >= 0; i--) {
+        MoveInfo moveInfo = mPendingMoves.get(i);
+        if (moveInfo.holder == item) {
+            view.setTranslationY(0);
+            view.setTranslationX(0);
+            dispatchMoveFinished(item);
+            mPendingMoves.remove(i);
+        }
+    }
+    endChangeAnimation(mPendingChanges, item);
+    if (mPendingRemovals.remove(item)) {
+        view.setAlpha(1);
+        dispatchRemoveFinished(item);
+    }
+    if (mPendingAdditions.remove(item)) {
+        view.setAlpha(1);
+        dispatchAddFinished(item);
+    }
+    for (int i = mChangesList.size() - 1; i >= 0; i--) {
+        ArrayList<ChangeInfo> changes = mChangesList.get(i);
+        endChangeAnimation(changes, item);
+        if (changes.isEmpty()) {
+            mChangesList.remove(i);
+        }
+    }
+    for (int i = mMovesList.size() - 1; i >= 0; i--) {
+        ArrayList<MoveInfo> moves = mMovesList.get(i);
+        for (int j = moves.size() - 1; j >= 0; j--) {
+            MoveInfo moveInfo = moves.get(j);
+            if (moveInfo.holder == item) {
+                view.setTranslationY(0);
+                view.setTranslationX(0);
+                dispatchMoveFinished(item);
+                moves.remove(j);
+                if (moves.isEmpty()) {
+                    mMovesList.remove(i);
+                }
+                break;
+            }
+        }
+    }
+    for (int i = mAdditionsList.size() - 1; i >= 0; i--) {
+        ArrayList<ViewHolder> additions = mAdditionsList.get(i);
+        if (additions.remove(item)) {
+            view.setAlpha(1);
+            dispatchAddFinished(item);
+            if (additions.isEmpty()) {
+                mAdditionsList.remove(i);
+            }
+        }
+    }
+    if (mRemoveAnimations.remove(item) && DEBUG) {
+        throw new IllegalStateException("after animation is cancelled, item should not be in " + "mRemoveAnimations list");
+    }
+    if (mAddAnimations.remove(item) && DEBUG) {
+        throw new IllegalStateException("after animation is cancelled, item should not be in " + "mAddAnimations list");
+    }
+    if (mChangeAnimations.remove(item) && DEBUG) {
+        throw new IllegalStateException("after animation is cancelled, item should not be in " + "mChangeAnimations list");
+    }
+    if (mMoveAnimations.remove(item) && DEBUG) {
+        throw new IllegalStateException("after animation is cancelled, item should not be in " + "mMoveAnimations list");
+    }
+    dispatchFinishedWhenDone();
+}

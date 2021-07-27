@@ -1,0 +1,17 @@
+public BigInteger gcd(@NonNull BigInteger value){
+    int thisLen = bitLength();
+    int valueLen = value.bitLength();
+    final int gcdDirectRatio = 16;
+    if (thisLen > gcdDirectRatio * valueLen) {
+        if (value.signum() == 0) {
+            return this.abs();
+        }
+        return value.gcd(this.mod(value.abs()));
+    } else if (valueLen > gcdDirectRatio * thisLen) {
+        if (signum() == 0) {
+            return value.abs();
+        }
+        return this.gcd(value.mod(this.abs()));
+    }
+    return new BigInteger(BigInt.gcd(getBigInt(), value.getBigInt()));
+}

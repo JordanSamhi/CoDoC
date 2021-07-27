@@ -1,0 +1,26 @@
+public Scanner useLocale(Locale locale){
+    if (locale.equals(this.locale))
+        return this;
+    this.locale = locale;
+    DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(locale);
+    DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
+    groupSeparator = "\\" + dfs.getGroupingSeparator();
+    decimalSeparator = "\\" + dfs.getDecimalSeparator();
+    nanString = "\\Q" + dfs.getNaN() + "\\E";
+    infinityString = "\\Q" + dfs.getInfinity() + "\\E";
+    positivePrefix = df.getPositivePrefix();
+    if (positivePrefix.length() > 0)
+        positivePrefix = "\\Q" + positivePrefix + "\\E";
+    negativePrefix = df.getNegativePrefix();
+    if (negativePrefix.length() > 0)
+        negativePrefix = "\\Q" + negativePrefix + "\\E";
+    positiveSuffix = df.getPositiveSuffix();
+    if (positiveSuffix.length() > 0)
+        positiveSuffix = "\\Q" + positiveSuffix + "\\E";
+    negativeSuffix = df.getNegativeSuffix();
+    if (negativeSuffix.length() > 0)
+        negativeSuffix = "\\Q" + negativeSuffix + "\\E";
+    integerPattern = null;
+    floatPattern = null;
+    return this;
+}

@@ -1,0 +1,40 @@
+public InputStream getInputStream(ZipEntry entry) throws IOException{
+    if (entry == null) {
+        throw new NullPointerException("entry");
+    }
+    long jzentry = 0;
+    ZipFileInputStream in = null;
+    synchronized (this) {
+        ensureOpen();
+        if (!zc.isUTF8() && (entry.flag & EFS) != 0) {
+            jzentry = getEntry(jzfile, zc.getBytesUTF8(entry.name), true);
+        } else {
+            jzentry = getEntry(jzfile, zc.getBytes(entry.name), true);
+        }
+        if (jzentry == 0) {
+            return null;
+        }
+        in = new ZipFileInputStream(jzentry);
+        switch(getEntryMethod(jzentry)) {
+            case STORED:
+                synchronized (streams) {
+                    streams.put(in, null);
+                }
+                return in;
+            case DEFLATED:
+                long size = getEntrySize(jzentry) + 2;
+                if (size > 65536)
+                    size = 65536;
+                if (size <= 0)
+                    size = 4096;
+                Inflater inf = getInflater();
+                InputStream is = new ZipFileInflaterInputStream(in, inf, (int) size);
+                synchronized (streams) {
+                    streams.put(is, inf);
+                }
+                return is;
+            default:
+                throw new ZipException("invalid compression method");
+        }
+    }
+}

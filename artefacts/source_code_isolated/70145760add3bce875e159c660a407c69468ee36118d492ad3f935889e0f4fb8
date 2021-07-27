@@ -1,0 +1,24 @@
+public void write(char[] cbuf, int off, int len) throws IOException{
+    synchronized (lock) {
+        ensureOpen();
+        if ((off < 0) || (off > cbuf.length) || (len < 0) || ((off + len) > cbuf.length) || ((off + len) < 0)) {
+            throw new IndexOutOfBoundsException();
+        } else if (len == 0) {
+            return;
+        }
+        if (len >= nChars) {
+            flushBuffer();
+            out.write(cbuf, off, len);
+            return;
+        }
+        int b = off, t = off + len;
+        while (b < t) {
+            int d = min(nChars - nextChar, t - b);
+            System.arraycopy(cbuf, b, cb, nextChar, d);
+            b += d;
+            nextChar += d;
+            if (nextChar >= nChars)
+                flushBuffer();
+        }
+    }
+}

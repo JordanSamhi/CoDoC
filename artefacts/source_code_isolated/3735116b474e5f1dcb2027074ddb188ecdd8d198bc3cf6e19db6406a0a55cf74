@@ -1,0 +1,9 @@
+ static AppStandbyInternal newAppStandbyController(ClassLoader loader, Context context, Looper looper){
+    try {
+        final Class<?> clazz = Class.forName("com.android.server.usage.AppStandbyController", true, loader);
+        final Constructor<?> ctor = clazz.getConstructor(Context.class, Looper.class);
+        return (AppStandbyInternal) ctor.newInstance(context, looper);
+    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+        throw new RuntimeException("Unable to instantiate AppStandbyController!", e);
+    }
+}

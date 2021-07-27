@@ -1,0 +1,12 @@
+public void setFixedLengthStreamingMode(long contentLength){
+    if (connected) {
+        throw new IllegalStateException("Already connected");
+    }
+    if (chunkLength != -1) {
+        throw new IllegalStateException("Chunked encoding streaming mode set");
+    }
+    if (contentLength < 0) {
+        throw new IllegalArgumentException("invalid content length");
+    }
+    fixedContentLengthLong = contentLength;
+}

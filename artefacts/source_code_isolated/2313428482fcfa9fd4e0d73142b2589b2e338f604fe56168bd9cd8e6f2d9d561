@@ -1,0 +1,6 @@
+public static void parallelSetAll(int[] array, IntUnaryOperator generator){
+    Objects.requireNonNull(generator);
+    IntStream.range(0, array.length).parallel().forEach(i -> {
+        array[i] = generator.applyAsInt(i);
+    });
+}

@@ -1,0 +1,12 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        switch((ChronoField) field) {
+            case DAY_OF_MONTH:
+                return day;
+            case MONTH_OF_YEAR:
+                return month;
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return field.getFrom(this);
+}

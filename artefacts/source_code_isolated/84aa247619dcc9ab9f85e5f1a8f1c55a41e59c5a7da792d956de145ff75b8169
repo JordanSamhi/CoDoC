@@ -1,0 +1,16 @@
+public String toString(){
+    StringBuilder builder = new StringBuilder("ConnectStats(").append("netId=").append(netId).append(", ");
+    for (int t : BitUtils.unpackBits(transports)) {
+        builder.append(NetworkCapabilities.transportNameOf(t)).append(", ");
+    }
+    builder.append(String.format("%d events, ", eventCount));
+    builder.append(String.format("%d success, ", connectCount));
+    builder.append(String.format("%d blocking, ", connectBlockingCount));
+    builder.append(String.format("%d IPv6 dst", ipv6ConnectCount));
+    for (int i = 0; i < errnos.size(); i++) {
+        String errno = OsConstants.errnoName(errnos.keyAt(i));
+        int count = errnos.valueAt(i);
+        builder.append(String.format(", %s: %d", errno, count));
+    }
+    return builder.append(")").toString();
+}

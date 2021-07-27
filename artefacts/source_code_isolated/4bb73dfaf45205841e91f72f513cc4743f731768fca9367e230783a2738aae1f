@@ -1,0 +1,18 @@
+public long nextLong(int radix){
+    if ((typeCache != null) && (typeCache instanceof Long) && this.radix == radix) {
+        long val = ((Long) typeCache).longValue();
+        useTypeCache();
+        return val;
+    }
+    setRadix(radix);
+    clearCaches();
+    try {
+        String s = next(integerPattern());
+        if (matcher.group(SIMPLE_GROUP_INDEX) == null)
+            s = processIntegerToken(s);
+        return Long.parseLong(s, radix);
+    } catch (NumberFormatException nfe) {
+        position = matcher.start();
+        throw new InputMismatchException(nfe.getMessage());
+    }
+}

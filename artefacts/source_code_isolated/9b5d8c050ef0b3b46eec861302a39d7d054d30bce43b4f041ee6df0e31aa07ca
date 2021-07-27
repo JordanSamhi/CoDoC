@@ -1,0 +1,32 @@
+public int getBaseline(){
+    if (mBaselineAlignedChildIndex < 0) {
+        return super.getBaseline();
+    }
+    if (getChildCount() <= mBaselineAlignedChildIndex) {
+        throw new RuntimeException("mBaselineAlignedChildIndex of LinearLayout " + "set to an index that is out of bounds.");
+    }
+    final View child = getChildAt(mBaselineAlignedChildIndex);
+    final int childBaseline = child.getBaseline();
+    if (childBaseline == -1) {
+        if (mBaselineAlignedChildIndex == 0) {
+            return -1;
+        }
+        throw new RuntimeException("mBaselineAlignedChildIndex of LinearLayout " + "points to a View that doesn't know how to get its baseline.");
+    }
+    int childTop = mBaselineChildTop;
+    if (mOrientation == VERTICAL) {
+        final int majorGravity = mGravity & Gravity.VERTICAL_GRAVITY_MASK;
+        if (majorGravity != Gravity.TOP) {
+            switch(majorGravity) {
+                case Gravity.BOTTOM:
+                    childTop = mBottom - mTop - mPaddingBottom - mTotalLength;
+                    break;
+                case Gravity.CENTER_VERTICAL:
+                    childTop += ((mBottom - mTop - mPaddingTop - mPaddingBottom) - mTotalLength) / 2;
+                    break;
+            }
+        }
+    }
+    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) child.getLayoutParams();
+    return childTop + lp.topMargin + childBaseline;
+}

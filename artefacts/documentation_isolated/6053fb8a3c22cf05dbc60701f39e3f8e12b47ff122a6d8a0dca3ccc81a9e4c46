@@ -1,0 +1,27 @@
+
+         * Called by the RecyclerView when a ViewHolder is present in both before and after the
+         * layout and RecyclerView has not received a {@link Adapter#notifyItemChanged(int)} call
+         * for it or a {@link Adapter#notifyDataSetChanged()} call.
+         * <p>
+         * This ViewHolder still represents the same data that it was representing when the layout
+         * started but its position / size may be changed by the LayoutManager.
+         * <p>
+         * If the Item's layout position didn't change, RecyclerView still calls this method because
+         * it does not track this information (or does not necessarily know that an animation is
+         * not required). Your ItemAnimator should handle this case and if there is nothing to
+         * animate, it should call {@link #dispatchAnimationFinished(ViewHolder)} and return
+         * <code>false</code>.
+         * <p>
+         * ItemAnimator must call {@link #dispatchAnimationFinished(ViewHolder)} when the animation
+         * is complete (or instantly call {@link #dispatchAnimationFinished(ViewHolder)} if it
+         * decides not to animate the view).
+         *
+         * @param viewHolder     The ViewHolder which should be animated
+         * @param preLayoutInfo  The information that was returned from
+         *                       {@link #recordPreLayoutInformation(State, ViewHolder, int, List)}.
+         * @param postLayoutInfo The information that was returned from {@link
+         *                       #recordPreLayoutInformation(State, ViewHolder, int, List)}.
+         *
+         * @return true if a later call to {@link #runPendingAnimations()} is requested,
+         * false otherwise.
+         

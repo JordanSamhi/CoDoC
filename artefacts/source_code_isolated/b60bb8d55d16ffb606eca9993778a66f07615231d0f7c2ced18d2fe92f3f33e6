@@ -1,0 +1,10 @@
+public boolean supports(MediaFormat format){
+    if (format.containsKey(MediaFormat.KEY_MIME)) {
+        if (!format.getString(MediaFormat.KEY_MIME).equals(MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP)) {
+            return false;
+        }
+        ;
+        return mRender == (format.getInteger(MediaFormat.KEY_IS_TIMED_TEXT, 0) == 0);
+    }
+    return false;
+}

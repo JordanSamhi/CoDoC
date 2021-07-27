@@ -1,0 +1,10 @@
+public float[] transform(@NonNull @Size(min = 3) float[] rgb){
+    rgb[0] = (float) mSource.mClampedEotf.applyAsDouble(rgb[0]);
+    rgb[1] = (float) mSource.mClampedEotf.applyAsDouble(rgb[1]);
+    rgb[2] = (float) mSource.mClampedEotf.applyAsDouble(rgb[2]);
+    mul3x3Float3(mTransform, rgb);
+    rgb[0] = (float) mDestination.mClampedOetf.applyAsDouble(rgb[0]);
+    rgb[1] = (float) mDestination.mClampedOetf.applyAsDouble(rgb[1]);
+    rgb[2] = (float) mDestination.mClampedOetf.applyAsDouble(rgb[2]);
+    return rgb;
+}

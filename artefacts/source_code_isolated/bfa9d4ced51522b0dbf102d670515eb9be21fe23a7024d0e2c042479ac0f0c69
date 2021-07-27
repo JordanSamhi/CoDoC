@@ -1,0 +1,40 @@
+public static Path walkFileTree(Path start, Set<FileVisitOption> options, int maxDepth, FileVisitor<? super Path> visitor) throws IOException{
+    try (FileTreeWalker walker = new FileTreeWalker(options, maxDepth)) {
+        FileTreeWalker.Event ev = walker.walk(start);
+        do {
+            FileVisitResult result;
+            switch(ev.type()) {
+                case ENTRY:
+                    IOException ioe = ev.ioeException();
+                    if (ioe == null) {
+                        assert ev.attributes() != null;
+                        result = visitor.visitFile(ev.file(), ev.attributes());
+                    } else {
+                        result = visitor.visitFileFailed(ev.file(), ioe);
+                    }
+                    break;
+                case START_DIRECTORY:
+                    result = visitor.preVisitDirectory(ev.file(), ev.attributes());
+                    if (result == FileVisitResult.SKIP_SUBTREE || result == FileVisitResult.SKIP_SIBLINGS)
+                        walker.pop();
+                    break;
+                case END_DIRECTORY:
+                    result = visitor.postVisitDirectory(ev.file(), ev.ioeException());
+                    if (result == FileVisitResult.SKIP_SIBLINGS)
+                        result = FileVisitResult.CONTINUE;
+                    break;
+                default:
+                    throw new AssertionError("Should not get here");
+            }
+            if (Objects.requireNonNull(result) != FileVisitResult.CONTINUE) {
+                if (result == FileVisitResult.TERMINATE) {
+                    break;
+                } else if (result == FileVisitResult.SKIP_SIBLINGS) {
+                    walker.skipRemainingSiblings();
+                }
+            }
+            ev = walker.next();
+        } while (ev != null);
+    }
+    return start;
+}

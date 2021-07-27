@@ -1,0 +1,36 @@
+
+     * Sets a {@code List} of additional certification path checkers. If
+     * the specified {@code List} contains an object that is not a
+     * {@code PKIXCertPathChecker}, it is ignored.
+     * <p>
+     * Each {@code PKIXCertPathChecker} specified implements
+     * additional checks on a certificate. Typically, these are checks to
+     * process and verify private extensions contained in certificates.
+     * Each {@code PKIXCertPathChecker} should be instantiated with any
+     * initialization parameters needed to execute the check.
+     * <p>
+     * This method allows sophisticated applications to extend a PKIX
+     * {@code CertPathValidator} or {@code CertPathBuilder}.
+     * Each of the specified {@code PKIXCertPathChecker}s will be called,
+     * in turn, by a PKIX {@code CertPathValidator} or
+     * {@code CertPathBuilder} for each certificate processed or
+     * validated.
+     * <p>
+     * Regardless of whether these additional {@code PKIXCertPathChecker}s
+     * are set, a PKIX {@code CertPathValidator} or
+     * {@code CertPathBuilder} must perform all of the required PKIX
+     * checks on each certificate. The one exception to this rule is if the
+     * RevocationEnabled flag is set to false (see the {@link
+     * #setRevocationEnabled setRevocationEnabled} method).
+     * <p>
+     * Note that the {@code List} supplied here is copied and each
+     * {@code PKIXCertPathChecker} in the list is cloned to protect
+     * against subsequent modifications.
+     *
+     * @param checkers a {@code List} of {@code PKIXCertPathChecker}s.
+     * May be {@code null}, in which case no additional checkers will be
+     * used.
+     * @throws ClassCastException if any of the elements in the list
+     * are not of type {@code java.security.cert.PKIXCertPathChecker}
+     * @see #getCertPathCheckers
+     

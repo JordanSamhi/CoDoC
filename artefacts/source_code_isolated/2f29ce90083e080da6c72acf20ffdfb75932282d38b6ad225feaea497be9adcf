@@ -1,0 +1,27 @@
+public static Period from(TemporalAmount amount){
+    if (amount instanceof Period) {
+        return (Period) amount;
+    }
+    if (amount instanceof ChronoPeriod) {
+        if (IsoChronology.INSTANCE.equals(((ChronoPeriod) amount).getChronology()) == false) {
+            throw new DateTimeException("Period requires ISO chronology: " + amount);
+        }
+    }
+    Objects.requireNonNull(amount, "amount");
+    int years = 0;
+    int months = 0;
+    int days = 0;
+    for (TemporalUnit unit : amount.getUnits()) {
+        long unitAmount = amount.get(unit);
+        if (unit == ChronoUnit.YEARS) {
+            years = Math.toIntExact(unitAmount);
+        } else if (unit == ChronoUnit.MONTHS) {
+            months = Math.toIntExact(unitAmount);
+        } else if (unit == ChronoUnit.DAYS) {
+            days = Math.toIntExact(unitAmount);
+        } else {
+            throw new DateTimeException("Unit must be Years, Months or Days, but was " + unit);
+        }
+    }
+    return create(years, months, days);
+}

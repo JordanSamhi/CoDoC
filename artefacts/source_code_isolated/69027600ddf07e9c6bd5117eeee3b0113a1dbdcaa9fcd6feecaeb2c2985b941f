@@ -1,0 +1,10 @@
+public static TimeZone getTimeZone(ZoneId zoneId){
+    String tzid = zoneId.getId();
+    char c = tzid.charAt(0);
+    if (c == '+' || c == '-') {
+        tzid = "GMT" + tzid;
+    } else if (c == 'Z' && tzid.length() == 1) {
+        tzid = "UTC";
+    }
+    return getTimeZone(tzid);
+}

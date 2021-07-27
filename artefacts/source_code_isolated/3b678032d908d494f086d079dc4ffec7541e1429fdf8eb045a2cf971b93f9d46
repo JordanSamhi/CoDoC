@@ -1,0 +1,25 @@
+public boolean equals(Object o){
+    if (this == o)
+        return true;
+    if (o == null || getClass() != o.getClass())
+        return false;
+    if (!super.equals(o))
+        return false;
+    Rgb rgb = (Rgb) o;
+    if (Float.compare(rgb.mMin, mMin) != 0)
+        return false;
+    if (Float.compare(rgb.mMax, mMax) != 0)
+        return false;
+    if (!Arrays.equals(mWhitePoint, rgb.mWhitePoint))
+        return false;
+    if (!Arrays.equals(mPrimaries, rgb.mPrimaries))
+        return false;
+    if (mTransferParameters != null) {
+        return mTransferParameters.equals(rgb.mTransferParameters);
+    } else if (rgb.mTransferParameters == null) {
+        return true;
+    }
+    if (!mOetf.equals(rgb.mOetf))
+        return false;
+    return mEotf.equals(rgb.mEotf);
+}

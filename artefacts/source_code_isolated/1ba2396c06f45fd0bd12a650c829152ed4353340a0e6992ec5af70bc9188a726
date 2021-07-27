@@ -1,0 +1,10 @@
+public void findViewsWithText(ArrayList<View> outViews, CharSequence searched, int flags){
+    super.findViewsWithText(outViews, searched, flags);
+    if (!outViews.contains(this) && (flags & FIND_VIEWS_WITH_TEXT) != 0 && !TextUtils.isEmpty(searched) && !TextUtils.isEmpty(mText)) {
+        String searchedLowerCase = searched.toString().toLowerCase();
+        String textLowerCase = mText.toString().toLowerCase();
+        if (textLowerCase.contains(searchedLowerCase)) {
+            outViews.add(this);
+        }
+    }
+}

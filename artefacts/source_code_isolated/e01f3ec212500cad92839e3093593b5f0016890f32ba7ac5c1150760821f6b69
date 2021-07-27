@@ -1,10 +1,26 @@
-public void setCacheColorHint(@ColorInt int color){
-    if (color != mCacheColorHint) {
-        mCacheColorHint = color;
-        int count = getChildCount();
-        for (int i = 0; i < count; i++) {
-            getChildAt(i).setDrawingCacheBackgroundColor(color);
+ void setCacheColorHint(int color){
+    if (mViewTypeCount == 1) {
+        final ArrayList<View> scrap = mCurrentScrap;
+        final int scrapCount = scrap.size();
+        for (int i = 0; i < scrapCount; i++) {
+            scrap.get(i).setDrawingCacheBackgroundColor(color);
         }
-        mRecycler.setCacheColorHint(color);
+    } else {
+        final int typeCount = mViewTypeCount;
+        for (int i = 0; i < typeCount; i++) {
+            final ArrayList<View> scrap = mScrapViews[i];
+            final int scrapCount = scrap.size();
+            for (int j = 0; j < scrapCount; j++) {
+                scrap.get(j).setDrawingCacheBackgroundColor(color);
+            }
+        }
+    }
+    final View[] activeViews = mActiveViews;
+    final int count = activeViews.length;
+    for (int i = 0; i < count; ++i) {
+        final View victim = activeViews[i];
+        if (victim != null) {
+            victim.setDrawingCacheBackgroundColor(color);
+        }
     }
 }

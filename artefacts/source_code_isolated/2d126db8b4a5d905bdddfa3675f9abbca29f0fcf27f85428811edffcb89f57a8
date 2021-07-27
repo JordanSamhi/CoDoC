@@ -1,0 +1,59 @@
+public Calendar build(){
+    if (locale == null) {
+        locale = Locale.getDefault();
+    }
+    if (zone == null) {
+        zone = TimeZone.getDefault();
+    }
+    Calendar cal;
+    if (type == null) {
+        type = locale.getUnicodeLocaleType("ca");
+    }
+    if (type == null) {
+        type = "gregory";
+    }
+    switch(type) {
+        case "gregory":
+            cal = new GregorianCalendar(zone, locale, true);
+            break;
+        case "iso8601":
+            GregorianCalendar gcal = new GregorianCalendar(zone, locale, true);
+            gcal.setGregorianChange(new Date(Long.MIN_VALUE));
+            setWeekDefinition(MONDAY, 4);
+            cal = gcal;
+            break;
+        default:
+            throw new IllegalArgumentException("unknown calendar type: " + type);
+    }
+    cal.setLenient(lenient);
+    if (firstDayOfWeek != 0) {
+        cal.setFirstDayOfWeek(firstDayOfWeek);
+        cal.setMinimalDaysInFirstWeek(minimalDaysInFirstWeek);
+    }
+    if (isInstantSet()) {
+        cal.setTimeInMillis(instant);
+        cal.complete();
+        return cal;
+    }
+    if (fields != null) {
+        boolean weekDate = isSet(WEEK_YEAR) && fields[WEEK_YEAR] > fields[YEAR];
+        if (weekDate && !cal.isWeekDateSupported()) {
+            throw new IllegalArgumentException("week date is unsupported by " + type);
+        }
+        for (int stamp = MINIMUM_USER_STAMP; stamp < nextStamp; stamp++) {
+            for (int index = 0; index <= maxFieldIndex; index++) {
+                if (fields[index] == stamp) {
+                    cal.set(index, fields[NFIELDS + index]);
+                    break;
+                }
+            }
+        }
+        if (weekDate) {
+            int weekOfYear = isSet(WEEK_OF_YEAR) ? fields[NFIELDS + WEEK_OF_YEAR] : 1;
+            int dayOfWeek = isSet(DAY_OF_WEEK) ? fields[NFIELDS + DAY_OF_WEEK] : cal.getFirstDayOfWeek();
+            cal.setWeekDate(fields[NFIELDS + WEEK_YEAR], weekOfYear, dayOfWeek);
+        }
+        cal.complete();
+    }
+    return cal;
+}

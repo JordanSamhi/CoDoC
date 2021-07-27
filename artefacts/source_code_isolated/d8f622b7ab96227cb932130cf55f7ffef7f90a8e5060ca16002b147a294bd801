@@ -1,0 +1,11 @@
+public int getPackageUidAsUser(String packageName, int flags, int userId) throws NameNotFoundException{
+    try {
+        int uid = mPM.getPackageUid(packageName, updateFlagsForPackage(flags, userId), userId);
+        if (uid >= 0) {
+            return uid;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(packageName);
+}

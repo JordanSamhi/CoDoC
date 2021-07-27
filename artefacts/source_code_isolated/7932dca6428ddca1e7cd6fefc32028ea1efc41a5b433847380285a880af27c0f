@@ -1,0 +1,12 @@
+public synchronized void setTrafficClass(int tc) throws SocketException{
+    if (tc < 0 || tc > 255)
+        throw new IllegalArgumentException("tc is not in range 0 -- 255");
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    try {
+        getImpl().setOption(SocketOptions.IP_TOS, tc);
+    } catch (SocketException se) {
+        if (!isConnected())
+            throw se;
+    }
+}

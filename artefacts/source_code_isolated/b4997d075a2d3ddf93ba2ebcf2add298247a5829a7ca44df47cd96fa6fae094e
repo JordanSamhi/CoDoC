@@ -1,0 +1,23 @@
+public boolean dispatchTouchEvent(@NonNull MotionEvent event){
+    switch(event.getActionMasked()) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                mDownX = event.getX();
+                mDownY = event.getY();
+            }
+        case MotionEvent.ACTION_MOVE:
+            {
+                final float distance = MathUtils.dist(mDownX, mDownY, event.getX(), event.getY());
+                final boolean isSecure = (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) == 0;
+                if (!isSecure || distance > mTouchSlop) {
+                    try {
+                        mCallback.onTransferTouchFocusToImeWindow(getViewRootImpl().getInputToken(), getContext().getDisplayId());
+                    } catch (RemoteException e) {
+                        Log.w(TAG, "RemoteException transferring touch focus to IME");
+                    }
+                }
+            }
+            break;
+    }
+    return super.dispatchTouchEvent(event);
+}

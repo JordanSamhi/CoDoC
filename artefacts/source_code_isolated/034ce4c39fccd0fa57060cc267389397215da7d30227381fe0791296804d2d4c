@@ -1,0 +1,14 @@
+public static final String getDefaultAlgorithm(){
+    String type;
+    type = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        @Override
+        public String run() {
+            return Security.getProperty("ssl.TrustManagerFactory.algorithm");
+        }
+    });
+    if (type == null) {
+        type = "SunX509";
+    }
+    return type;
+}

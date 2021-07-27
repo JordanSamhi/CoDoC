@@ -1,0 +1,15 @@
+public void onSend(byte[] msg, int offset, int count, long timestamp) throws IOException{
+    if (offset < 0 || count < 0 || offset + count > msg.length) {
+        throw new IllegalArgumentException("offset or count out of range");
+    }
+    if (count > MidiPortImpl.MAX_PACKET_DATA_SIZE) {
+        throw new IllegalArgumentException("count exceeds max message size");
+    }
+    synchronized (mBuffer) {
+        if (mOutputStream == null) {
+            throw new IOException("MidiInputPort is closed");
+        }
+        int length = MidiPortImpl.packData(msg, offset, count, timestamp, mBuffer);
+        mOutputStream.write(mBuffer, 0, length);
+    }
+}

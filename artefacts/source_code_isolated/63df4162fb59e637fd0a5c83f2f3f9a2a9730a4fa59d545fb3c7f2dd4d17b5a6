@@ -1,0 +1,13 @@
+public Animator createAnimator(ViewGroup sceneRoot, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null || endValues == null) {
+        return null;
+    }
+    final View view = endValues.view;
+    float startRotation = (Float) startValues.values.get(PROPNAME_ROTATION);
+    float endRotation = (Float) endValues.values.get(PROPNAME_ROTATION);
+    if (startRotation != endRotation) {
+        view.setRotation(startRotation);
+        return ObjectAnimator.ofFloat(view, View.ROTATION, startRotation, endRotation);
+    }
+    return null;
+}

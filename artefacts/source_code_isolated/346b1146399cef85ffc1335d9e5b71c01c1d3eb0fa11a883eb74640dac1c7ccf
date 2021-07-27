@@ -1,0 +1,25 @@
+public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
+    try {
+        switch(mMatcher.match(uri)) {
+            case MATCH_RES_CODE:
+                return queryXmlResources(null);
+            case MATCH_RAW_CODE:
+                return queryRawData(null);
+            case MATCH_NON_INDEXABLE_KEYS_CODE:
+                return queryNonIndexableKeys(null);
+            case MATCH_SITE_MAP_PAIRS_CODE:
+                return querySiteMapPairs();
+            case MATCH_SLICE_URI_PAIRS_CODE:
+                return querySliceUriPairs();
+            case MATCH_DYNAMIC_RAW_CODE:
+                return queryDynamicRawData(null);
+            default:
+                throw new UnsupportedOperationException("Unknown Uri " + uri);
+        }
+    } catch (UnsupportedOperationException e) {
+        throw e;
+    } catch (Exception e) {
+        Log.e(TAG, "Provider querying exception:", e);
+        return null;
+    }
+}

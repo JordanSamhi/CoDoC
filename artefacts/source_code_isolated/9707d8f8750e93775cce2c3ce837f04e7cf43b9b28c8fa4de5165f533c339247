@@ -1,0 +1,12 @@
+public void logrb(Level level, String sourceClass, String sourceMethod, ResourceBundle bundle, String msg, Object... params){
+    if (!isLoggable(level)) {
+        return;
+    }
+    LogRecord lr = new LogRecord(level, msg);
+    lr.setSourceClassName(sourceClass);
+    lr.setSourceMethodName(sourceMethod);
+    if (params != null && params.length != 0) {
+        lr.setParameters(params);
+    }
+    doLog(lr, bundle);
+}

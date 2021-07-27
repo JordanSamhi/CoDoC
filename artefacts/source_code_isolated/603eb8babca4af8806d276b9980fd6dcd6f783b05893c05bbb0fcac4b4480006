@@ -1,0 +1,16 @@
+public boolean hasNextLine(){
+    saveState();
+    String result = findWithinHorizon(linePattern(), 0);
+    if (result != null) {
+        MatchResult mr = this.match();
+        String lineSep = mr.group(1);
+        if (lineSep != null) {
+            result = result.substring(0, result.length() - lineSep.length());
+            cacheResult(result);
+        } else {
+            cacheResult();
+        }
+    }
+    revertState();
+    return (result != null);
+}

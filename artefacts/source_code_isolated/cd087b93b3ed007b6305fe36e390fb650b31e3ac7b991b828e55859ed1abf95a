@@ -1,3 +1,7 @@
-public boolean setAppSaturationLevel(@NonNull String packageName, @IntRange(from = 0, to = 100) int saturationLevel){
-    return mManager.setAppSaturationLevel(packageName, saturationLevel);
+ boolean setAppSaturationLevel(String packageName, int saturationLevel){
+    try {
+        return mCdm.setAppSaturationLevel(packageName, saturationLevel);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

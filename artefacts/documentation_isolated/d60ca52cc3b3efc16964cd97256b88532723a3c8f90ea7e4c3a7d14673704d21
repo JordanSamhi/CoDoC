@@ -1,0 +1,20 @@
+
+     * This call warms up the hardware and starts scanning for valid biometrics. It terminates
+     * when {@link AuthenticationCallback#onAuthenticationError(int,
+     * CharSequence)} is called or when {@link AuthenticationCallback#onAuthenticationSucceeded(
+     * AuthenticationResult)} is called, at which point the crypto object becomes invalid. This
+     * operation can be canceled by using the provided cancel object. The application wil receive
+     * authentication errors through {@link AuthenticationCallback}. Calling
+     * {@link BiometricAuthenticator#authenticate(CryptoObject, CancellationSignal, Executor,
+     * AuthenticationCallback)} while an existing authentication attempt is occurring will stop
+     * the previous client and start a new authentication. The interrupted client will receive a
+     * cancelled notification through {@link AuthenticationCallback#onAuthenticationError(int,
+     * CharSequence)}.
+     *
+     * @throws IllegalArgumentException If any of the arguments are null
+     *
+     * @param crypto Object associated with the call
+     * @param cancel An object that can be used to cancel authentication
+     * @param executor An executor to handle callback events
+     * @param callback An object to receive authentication events
+     

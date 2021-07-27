@@ -1,0 +1,17 @@
+public void handleStopActivity(IBinder token, int configChanges, PendingTransactionActions pendingActions, boolean finalStateRequest, String reason){
+    final ActivityClientRecord r = mActivities.get(token);
+    r.activity.mConfigChangeFlags |= configChanges;
+    final StopInfo stopInfo = new StopInfo();
+    performStopActivityInner(r, stopInfo, true, finalStateRequest, reason);
+    if (localLOGV)
+        Slog.v(TAG, "Finishing stop of " + r + ": win=" + r.window);
+    updateVisibility(r, false);
+    if (!r.isPreHoneycomb()) {
+        QueuedWork.waitToFinish();
+    }
+    stopInfo.setActivity(r);
+    stopInfo.setState(r.state);
+    stopInfo.setPersistentState(r.persistentState);
+    pendingActions.setStopInfo(stopInfo);
+    mSomeActivitiesChanged = true;
+}

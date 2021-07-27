@@ -1,0 +1,63 @@
+public String toString(){
+    StringBuffer sb = new StringBuffer();
+    sb.append("X509CertSelector: [\n");
+    if (x509Cert != null) {
+        sb.append("  Certificate: " + x509Cert.toString() + "\n");
+    }
+    if (serialNumber != null) {
+        sb.append("  Serial Number: " + serialNumber.toString() + "\n");
+    }
+    if (issuer != null) {
+        sb.append("  Issuer: " + getIssuerAsString() + "\n");
+    }
+    if (subject != null) {
+        sb.append("  Subject: " + getSubjectAsString() + "\n");
+    }
+    sb.append("  matchAllSubjectAltNames flag: " + String.valueOf(matchAllSubjectAltNames) + "\n");
+    if (subjectAlternativeNames != null) {
+        sb.append("  SubjectAlternativeNames:\n");
+        Iterator<List<?>> i = subjectAlternativeNames.iterator();
+        while (i.hasNext()) {
+            List<?> list = i.next();
+            sb.append("    type " + list.get(0) + ", name " + list.get(1) + "\n");
+        }
+    }
+    if (subjectKeyID != null) {
+        HexDumpEncoder enc = new HexDumpEncoder();
+        sb.append("  Subject Key Identifier: " + enc.encodeBuffer(subjectKeyID) + "\n");
+    }
+    if (authorityKeyID != null) {
+        HexDumpEncoder enc = new HexDumpEncoder();
+        sb.append("  Authority Key Identifier: " + enc.encodeBuffer(authorityKeyID) + "\n");
+    }
+    if (certificateValid != null) {
+        sb.append("  Certificate Valid: " + certificateValid.toString() + "\n");
+    }
+    if (privateKeyValid != null) {
+        sb.append("  Private Key Valid: " + privateKeyValid.toString() + "\n");
+    }
+    if (subjectPublicKeyAlgID != null) {
+        sb.append("  Subject Public Key AlgID: " + subjectPublicKeyAlgID.toString() + "\n");
+    }
+    if (subjectPublicKey != null) {
+        sb.append("  Subject Public Key: " + subjectPublicKey.toString() + "\n");
+    }
+    if (keyUsage != null) {
+        sb.append("  Key Usage: " + keyUsageToString(keyUsage) + "\n");
+    }
+    if (keyPurposeSet != null) {
+        sb.append("  Extended Key Usage: " + keyPurposeSet.toString() + "\n");
+    }
+    if (policy != null) {
+        sb.append("  Policy: " + policy.toString() + "\n");
+    }
+    if (pathToGeneralNames != null) {
+        sb.append("  Path to names:\n");
+        Iterator<GeneralNameInterface> i = pathToGeneralNames.iterator();
+        while (i.hasNext()) {
+            sb.append("    " + i.next() + "\n");
+        }
+    }
+    sb.append("]");
+    return sb.toString();
+}

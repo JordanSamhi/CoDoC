@@ -1,0 +1,10 @@
+public Object[] toArray(){
+    final int head = this.head;
+    final int tail = this.tail;
+    boolean wrap = (tail < head);
+    int end = wrap ? tail + elements.length : tail;
+    Object[] a = Arrays.copyOfRange(elements, head, end);
+    if (wrap)
+        System.arraycopy(elements, 0, a, elements.length - head, tail);
+    return a;
+}

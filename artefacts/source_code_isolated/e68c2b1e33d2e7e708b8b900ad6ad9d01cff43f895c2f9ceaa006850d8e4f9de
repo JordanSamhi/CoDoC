@@ -1,0 +1,9 @@
+public boolean onKeyShortcut(int keyCode, KeyEvent event){
+    Menu menu = mDecorToolbar.getMenu();
+    if (menu != null) {
+        final KeyCharacterMap kmap = KeyCharacterMap.load(event != null ? event.getDeviceId() : KeyCharacterMap.VIRTUAL_KEYBOARD);
+        menu.setQwertyMode(kmap.getKeyboardType() != KeyCharacterMap.NUMERIC);
+        return menu.performShortcut(keyCode, event, 0);
+    }
+    return false;
+}

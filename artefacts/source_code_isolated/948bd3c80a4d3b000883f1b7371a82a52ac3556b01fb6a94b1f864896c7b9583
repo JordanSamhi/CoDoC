@@ -1,2 +1,6 @@
 public void onCellInfoChanged(List<CellInfo> cellInfo){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onCellInfoChanged(cellInfo)));
 }

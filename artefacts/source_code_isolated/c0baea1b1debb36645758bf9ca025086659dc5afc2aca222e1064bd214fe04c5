@@ -1,0 +1,11 @@
+public void advance(){
+    long timeSinceLastInteraction = System.currentTimeMillis() - mLastInteractionTime;
+    if (mAdapter == null)
+        return;
+    final int adapterCount = getCount();
+    if (adapterCount == 1 && mLoopViews)
+        return;
+    if (mSwipeGestureType == GESTURE_NONE && timeSinceLastInteraction > MIN_TIME_BETWEEN_INTERACTION_AND_AUTOADVANCE) {
+        showNext();
+    }
+}

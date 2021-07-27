@@ -1,0 +1,14 @@
+public boolean cancel(boolean mayInterruptIfRunning){
+    boolean changed = super.cancel(mayInterruptIfRunning);
+    if (changed) {
+        try {
+            get();
+            throw new IllegalStateException("Expected CancellationException");
+        } catch (CancellationException ex) {
+            onCompleted(null, ex);
+        } catch (Throwable e) {
+            throw new IllegalStateException("Expected CancellationException", e);
+        }
+    }
+    return changed;
+}

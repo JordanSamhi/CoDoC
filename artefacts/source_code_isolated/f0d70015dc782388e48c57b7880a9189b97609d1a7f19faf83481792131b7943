@@ -1,0 +1,10 @@
+public static Callable<Object> callable(final PrivilegedExceptionAction<?> action){
+    if (action == null)
+        throw new NullPointerException();
+    return new Callable<Object>() {
+
+        public Object call() throws Exception {
+            return action.run();
+        }
+    };
+}

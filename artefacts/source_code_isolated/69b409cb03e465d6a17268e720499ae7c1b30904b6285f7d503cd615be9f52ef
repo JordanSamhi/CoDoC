@@ -1,5 +1,8 @@
 public void setCornerRadius(float radius){
-    mGradientState.setCornerRadius(radius);
-    mPathIsDirty = true;
-    invalidateSelf();
+    if (radius < 0) {
+        radius = 0;
+    }
+    mRadius = radius;
+    mRadiusArray = null;
+    computeOpacity();
 }

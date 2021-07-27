@@ -1,0 +1,12 @@
+public int read(byte[] b, int off, int len) throws IOException{
+    int n;
+    if (first == null) {
+        n = super.read(b, off, len);
+    } else {
+        n = -1;
+    }
+    if (jv != null) {
+        jv.update(n, b, off, len, mev);
+    }
+    return n;
+}

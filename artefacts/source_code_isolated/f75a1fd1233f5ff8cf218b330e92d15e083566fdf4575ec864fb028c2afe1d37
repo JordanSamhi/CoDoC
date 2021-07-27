@@ -1,0 +1,11 @@
+public final void update(byte[] input, int offset, int len) throws IllegalStateException{
+    chooseFirstProvider();
+    if (initialized == false) {
+        throw new IllegalStateException("MAC not initialized");
+    }
+    if (input != null) {
+        if ((offset < 0) || (len > (input.length - offset)) || (len < 0))
+            throw new IllegalArgumentException("Bad arguments");
+        spi.engineUpdate(input, offset, len);
+    }
+}

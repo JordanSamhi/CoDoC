@@ -1,0 +1,15 @@
+public void add(SchedulableEvent event){
+    synchronized (mLock) {
+        FastEventQueue list = mEventBuffer.get(event.getTimestamp());
+        if (list == null) {
+            long lowestTime = mEventBuffer.isEmpty() ? Long.MAX_VALUE : mEventBuffer.firstKey();
+            list = new FastEventQueue(event);
+            mEventBuffer.put(event.getTimestamp(), list);
+            if (event.getTimestamp() < lowestTime) {
+                mLock.notify();
+            }
+        } else {
+            list.add(event);
+        }
+    }
+}

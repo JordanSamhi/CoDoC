@@ -1,0 +1,21 @@
+public void onInitializeAccessibilityNodeInfoForItem(View view, int position, AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoForItem(view, position, info);
+    final int count = getCount();
+    final int columnsCount = getNumColumns();
+    final int rowsCount = count / columnsCount;
+    final int row;
+    final int column;
+    if (!mStackFromBottom) {
+        column = position % columnsCount;
+        row = position / columnsCount;
+    } else {
+        final int invertedIndex = count - 1 - position;
+        column = columnsCount - 1 - (invertedIndex % columnsCount);
+        row = rowsCount - 1 - invertedIndex / columnsCount;
+    }
+    final LayoutParams lp = (LayoutParams) view.getLayoutParams();
+    final boolean isHeading = lp != null && lp.viewType == ITEM_VIEW_TYPE_HEADER_OR_FOOTER;
+    final boolean isSelected = isItemChecked(position);
+    final CollectionItemInfo itemInfo = CollectionItemInfo.obtain(row, 1, column, 1, isHeading, isSelected);
+    info.setCollectionItemInfo(itemInfo);
+}

@@ -1,3 +1,10 @@
 public void remove(@NonNull Drawable drawable){
-    mOverlayViewGroup.remove(drawable);
+    if (drawable == null) {
+        throw new IllegalArgumentException("drawable must be non-null");
+    }
+    if (mDrawables != null) {
+        mDrawables.remove(drawable);
+        invalidate(drawable.getBounds());
+        drawable.setCallback(null);
+    }
 }

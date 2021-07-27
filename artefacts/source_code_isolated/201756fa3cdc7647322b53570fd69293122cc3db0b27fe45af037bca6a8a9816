@@ -1,0 +1,6 @@
+public final short setForkJoinTaskTag(short newValue){
+    for (int s; ; ) {
+        if (U.compareAndSwapInt(this, STATUS, s = status, (s & ~SMASK) | (newValue & SMASK)))
+            return (short) s;
+    }
+}

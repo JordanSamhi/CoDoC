@@ -1,0 +1,11 @@
+public long getCompletedTaskCount(){
+    final ReentrantLock mainLock = this.mainLock;
+    mainLock.lock();
+    try {
+        long n = completedTaskCount;
+        for (Worker w : workers) n += w.completedTasks;
+        return n;
+    } finally {
+        mainLock.unlock();
+    }
+}

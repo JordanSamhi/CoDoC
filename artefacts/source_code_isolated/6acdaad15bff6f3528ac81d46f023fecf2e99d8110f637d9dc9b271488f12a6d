@@ -1,0 +1,7 @@
+public void onError(int error){
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> {
+        mSlot = null;
+        callback.onError(error);
+    }));
+    mExecutor.shutdown();
+}

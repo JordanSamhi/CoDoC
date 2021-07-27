@@ -1,0 +1,15 @@
+public void close() throws IOException{
+    synchronized (closeLock) {
+        if (closed) {
+            return;
+        }
+        closed = true;
+    }
+    guard.close();
+    if (channel != null) {
+        channel.close();
+    }
+    if (isFdOwner) {
+        IoBridge.closeAndSignalBlockedThreads(fd);
+    }
+}

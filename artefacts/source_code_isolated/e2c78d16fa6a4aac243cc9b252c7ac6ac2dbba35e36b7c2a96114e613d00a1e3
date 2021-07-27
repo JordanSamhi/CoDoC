@@ -1,0 +1,12 @@
+public List<PackageInfo> getPackagesHoldingPermissions(String[] permissions, int flags){
+    final int userId = getUserId();
+    try {
+        ParceledListSlice<PackageInfo> parceledList = mPM.getPackagesHoldingPermissions(permissions, updateFlagsForPackage(flags, userId), userId);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

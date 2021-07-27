@@ -1,0 +1,20 @@
+
+     * Close this capture session asynchronously.
+     *
+     * <p>Closing a session frees up the target output Surfaces of the session for reuse with either
+     * a new session, or to other APIs that can draw to Surfaces.</p>
+     *
+     * <p>Note that creating a new capture session with {@link CameraDevice#createCaptureSession}
+     * will close any existing capture session automatically, and call the older session listener's
+     * {@link StateCallback#onClosed} callback. Using {@link CameraDevice#createCaptureSession}
+     * directly without closing is the recommended approach for quickly switching to a new session,
+     * since unchanged target outputs can be reused more efficiently.</p>
+     *
+     * <p>Once a session is closed, all methods on it will throw an IllegalStateException, and any
+     * repeating requests or bursts are stopped (as if {@link #stopRepeating()} was called).
+     * However, any in-progress capture requests submitted to the session will be completed as
+     * normal; once all captures have completed and the session has been torn down,
+     * {@link StateCallback#onClosed} will be called.</p>
+     *
+     * <p>Closing a session is idempotent; closing more than once has no effect.</p>
+     

@@ -1,0 +1,12 @@
+public InstallSourceInfo getInstallSourceInfo(String packageName) throws NameNotFoundException{
+    final InstallSourceInfo installSourceInfo;
+    try {
+        installSourceInfo = mPM.getInstallSourceInfo(packageName);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    if (installSourceInfo == null) {
+        throw new NameNotFoundException(packageName);
+    }
+    return installSourceInfo;
+}

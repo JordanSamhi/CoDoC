@@ -1,0 +1,8 @@
+public ZonedDateTime plus(TemporalAmount amountToAdd){
+    if (amountToAdd instanceof Period) {
+        Period periodToAdd = (Period) amountToAdd;
+        return resolveLocal(dateTime.plus(periodToAdd));
+    }
+    Objects.requireNonNull(amountToAdd, "amountToAdd");
+    return (ZonedDateTime) amountToAdd.addTo(this);
+}

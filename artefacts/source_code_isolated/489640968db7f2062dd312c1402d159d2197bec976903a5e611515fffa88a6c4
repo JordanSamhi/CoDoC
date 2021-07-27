@@ -1,13 +1,5 @@
 public void close(){
-    setOnImageReleasedListener(null, null);
-    for (Image image : mDequeuedImages) {
-        image.close();
-    }
-    mDequeuedImages.clear();
-    nativeClose(mNativeContext);
-    mNativeContext = 0;
-    if (mEstimatedNativeAllocBytes > 0) {
-        VMRuntime.getRuntime().registerNativeFree(mEstimatedNativeAllocBytes);
-        mEstimatedNativeAllocBytes = 0;
+    if (mIsImageValid) {
+        getOwner().abortImage(this);
     }
 }

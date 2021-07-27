@@ -1,0 +1,29 @@
+public String toString(){
+    final String format = "   %-29s = %s\n";
+    final String formatWithUncertainty = "   %-29s = %-25s   %-40s = %s\n";
+    StringBuilder builder = new StringBuilder("GpsMeasurement:\n");
+    builder.append(String.format(format, "Prn", mPrn));
+    builder.append(String.format(format, "TimeOffsetInNs", mTimeOffsetInNs));
+    builder.append(String.format(format, "State", getStateString()));
+    builder.append(String.format(formatWithUncertainty, "ReceivedGpsTowInNs", mReceivedGpsTowInNs, "ReceivedGpsTowUncertaintyInNs", mReceivedGpsTowUncertaintyInNs));
+    builder.append(String.format(format, "Cn0InDbHz", mCn0InDbHz));
+    builder.append(String.format(formatWithUncertainty, "PseudorangeRateInMetersPerSec", mPseudorangeRateInMetersPerSec, "PseudorangeRateUncertaintyInMetersPerSec", mPseudorangeRateUncertaintyInMetersPerSec));
+    builder.append(String.format(format, "PseudorangeRateIsCorrected", isPseudorangeRateCorrected()));
+    builder.append(String.format(format, "AccumulatedDeltaRangeState", getAccumulatedDeltaRangeStateString()));
+    builder.append(String.format(formatWithUncertainty, "AccumulatedDeltaRangeInMeters", mAccumulatedDeltaRangeInMeters, "AccumulatedDeltaRangeUncertaintyInMeters", mAccumulatedDeltaRangeUncertaintyInMeters));
+    builder.append(String.format(formatWithUncertainty, "PseudorangeInMeters", hasPseudorangeInMeters() ? mPseudorangeInMeters : null, "PseudorangeUncertaintyInMeters", hasPseudorangeUncertaintyInMeters() ? mPseudorangeUncertaintyInMeters : null));
+    builder.append(String.format(formatWithUncertainty, "CodePhaseInChips", hasCodePhaseInChips() ? mCodePhaseInChips : null, "CodePhaseUncertaintyInChips", hasCodePhaseUncertaintyInChips() ? mCodePhaseUncertaintyInChips : null));
+    builder.append(String.format(format, "CarrierFrequencyInHz", hasCarrierFrequencyInHz() ? mCarrierFrequencyInHz : null));
+    builder.append(String.format(format, "CarrierCycles", hasCarrierCycles() ? mCarrierCycles : null));
+    builder.append(String.format(formatWithUncertainty, "CarrierPhase", hasCarrierPhase() ? mCarrierPhase : null, "CarrierPhaseUncertainty", hasCarrierPhaseUncertainty() ? mCarrierPhaseUncertainty : null));
+    builder.append(String.format(format, "LossOfLock", getLossOfLockString()));
+    builder.append(String.format(format, "BitNumber", hasBitNumber() ? mBitNumber : null));
+    builder.append(String.format(format, "TimeFromLastBitInMs", hasTimeFromLastBitInMs() ? mTimeFromLastBitInMs : null));
+    builder.append(String.format(formatWithUncertainty, "DopplerShiftInHz", hasDopplerShiftInHz() ? mDopplerShiftInHz : null, "DopplerShiftUncertaintyInHz", hasDopplerShiftUncertaintyInHz() ? mDopplerShiftUncertaintyInHz : null));
+    builder.append(String.format(format, "MultipathIndicator", getMultipathIndicatorString()));
+    builder.append(String.format(format, "SnrInDb", hasSnrInDb() ? mSnrInDb : null));
+    builder.append(String.format(formatWithUncertainty, "ElevationInDeg", hasElevationInDeg() ? mElevationInDeg : null, "ElevationUncertaintyInDeg", hasElevationUncertaintyInDeg() ? mElevationUncertaintyInDeg : null));
+    builder.append(String.format(formatWithUncertainty, "AzimuthInDeg", hasAzimuthInDeg() ? mAzimuthInDeg : null, "AzimuthUncertaintyInDeg", hasAzimuthUncertaintyInDeg() ? mAzimuthUncertaintyInDeg : null));
+    builder.append(String.format(format, "UsedInFix", mUsedInFix));
+    return builder.toString();
+}

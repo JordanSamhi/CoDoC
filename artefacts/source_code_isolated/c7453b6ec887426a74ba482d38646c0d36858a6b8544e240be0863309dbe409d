@@ -1,0 +1,35 @@
+public static void sleep(long millis, int nanos) throws InterruptedException{
+    if (millis < 0) {
+        throw new IllegalArgumentException("millis < 0: " + millis);
+    }
+    if (nanos < 0) {
+        throw new IllegalArgumentException("nanos < 0: " + nanos);
+    }
+    if (nanos > 999999) {
+        throw new IllegalArgumentException("nanos > 999999: " + nanos);
+    }
+    if (millis == 0 && nanos == 0) {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+        return;
+    }
+    final int nanosPerMilli = 1000000;
+    long start = System.nanoTime();
+    long duration = (millis * nanosPerMilli) + nanos;
+    Object lock = currentThread().lock;
+    synchronized (lock) {
+        while (true) {
+            sleep(lock, millis, nanos);
+            long now = System.nanoTime();
+            long elapsed = now - start;
+            if (elapsed >= duration) {
+                break;
+            }
+            duration -= elapsed;
+            start = now;
+            millis = duration / nanosPerMilli;
+            nanos = (int) (duration % nanosPerMilli);
+        }
+    }
+}

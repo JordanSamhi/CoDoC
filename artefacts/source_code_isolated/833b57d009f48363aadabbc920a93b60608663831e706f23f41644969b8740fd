@@ -1,0 +1,32 @@
+public boolean addAll(Collection<? extends E> c){
+    if (c == this)
+        throw new IllegalArgumentException();
+    Node<E> beginningOfTheEnd = null, last = null;
+    for (E e : c) {
+        Node<E> newNode = newNode(Objects.requireNonNull(e));
+        if (beginningOfTheEnd == null)
+            beginningOfTheEnd = last = newNode;
+        else {
+            lazySetNext(last, newNode);
+            last = newNode;
+        }
+    }
+    if (beginningOfTheEnd == null)
+        return false;
+    for (Node<E> t = tail, p = t; ; ) {
+        Node<E> q = p.next;
+        if (q == null) {
+            if (casNext(p, null, beginningOfTheEnd)) {
+                if (!casTail(t, last)) {
+                    t = tail;
+                    if (last.next == null)
+                        casTail(t, last);
+                }
+                return true;
+            }
+        } else if (p == q)
+            p = (t != (t = tail)) ? t : head;
+        else
+            p = (p != t && t != (t = tail)) ? t : q;
+    }
+}

@@ -1,0 +1,26 @@
+public BigDecimal stripTrailingZeros(){
+    int i = 1;
+    int lastPow = TEN_POW.length - 1;
+    long newScale = scale;
+    if (isZero()) {
+        return new BigDecimal(BigInteger.ZERO, 0);
+    }
+    BigInteger strippedBI = getUnscaledValue();
+    BigInteger[] quotAndRem;
+    while (!strippedBI.testBit(0)) {
+        quotAndRem = strippedBI.divideAndRemainder(TEN_POW[i]);
+        if (quotAndRem[1].signum() == 0) {
+            newScale -= i;
+            if (i < lastPow) {
+                i++;
+            }
+            strippedBI = quotAndRem[0];
+        } else {
+            if (i == 1) {
+                break;
+            }
+            i = 1;
+        }
+    }
+    return new BigDecimal(strippedBI, safeLongToInt(newScale));
+}

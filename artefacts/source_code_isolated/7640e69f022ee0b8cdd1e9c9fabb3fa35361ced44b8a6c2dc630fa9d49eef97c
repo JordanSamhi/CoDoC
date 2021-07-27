@@ -1,7 +1,0 @@
-public void load_throwsIfHasWrongBackupKey() throws Exception{
-    String packageName = "com.android.example";
-    SecretKey packageKey = generateAesKey();
-    mTertiaryKeyStore.save(packageName, packageKey);
-    TertiaryKeyStore managerWithBadKey = TertiaryKeyStore.newInstance(mApplication, new RecoverableKeyStoreSecondaryKey(SECONDARY_KEY_ALIAS, generateAesKey()));
-    assertThrows(InvalidKeyException.class, () -> managerWithBadKey.load(packageName));
-}

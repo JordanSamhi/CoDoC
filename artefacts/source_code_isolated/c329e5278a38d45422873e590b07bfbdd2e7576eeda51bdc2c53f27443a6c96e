@@ -1,0 +1,8 @@
+public static WeekFields of(Locale locale){
+    Objects.requireNonNull(locale, "locale");
+    ULocale ulocale = ULocale.forLocale(locale);
+    String region = ULocale.getRegionForSupplementalData(ulocale, true);
+    Calendar.WeekData weekData = Calendar.getWeekDataForRegion(region);
+    DayOfWeek dow = DayOfWeek.SUNDAY.plus(weekData.firstDayOfWeek - 1);
+    return WeekFields.of(dow, weekData.minimalDaysInFirstWeek);
+}

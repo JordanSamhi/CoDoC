@@ -1,0 +1,8 @@
+public final boolean compareAndSetForkJoinTaskTag(short expect, short update){
+    for (int s; ; ) {
+        if ((short) (s = status) != expect)
+            return false;
+        if (U.compareAndSwapInt(this, STATUS, s, (s & ~SMASK) | (update & SMASK)))
+            return true;
+    }
+}

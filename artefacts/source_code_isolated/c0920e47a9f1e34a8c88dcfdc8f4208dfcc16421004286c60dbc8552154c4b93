@@ -1,0 +1,5 @@
+public static MethodHandle throwException(Class<?> returnType, Class<? extends Throwable> exType){
+    if (!Throwable.class.isAssignableFrom(exType))
+        throw new ClassCastException(exType.getName());
+    return new Transformers.AlwaysThrow(returnType, exType);
+}

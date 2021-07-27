@@ -1,0 +1,7 @@
+public static IntStream concat(IntStream a, IntStream b){
+    Objects.requireNonNull(a);
+    Objects.requireNonNull(b);
+    Spliterator.OfInt split = new Streams.ConcatSpliterator.OfInt(a.spliterator(), b.spliterator());
+    IntStream stream = StreamSupport.intStream(split, a.isParallel() || b.isParallel());
+    return stream.onClose(Streams.composedClose(a, b));
+}

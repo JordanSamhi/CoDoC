@@ -1,0 +1,11 @@
+public synchronized void setSize(int newSize){
+    modCount++;
+    if (newSize > elementCount) {
+        ensureCapacityHelper(newSize);
+    } else {
+        for (int i = newSize; i < elementCount; i++) {
+            elementData[i] = null;
+        }
+    }
+    elementCount = newSize;
+}

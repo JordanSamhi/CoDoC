@@ -1,0 +1,34 @@
+
+     * Returns a copy of this date-time with the specified field set to a new value.
+     * <p>
+     * This returns a {@code LocalDateTime}, based on this one, with the value
+     * for the specified field changed.
+     * This can be used to change any supported field, such as the year, month or day-of-month.
+     * If it is not possible to set the value, because the field is not supported or for
+     * some other reason, an exception is thrown.
+     * <p>
+     * In some cases, changing the specified field can cause the resulting date-time to become invalid,
+     * such as changing the month from 31st January to February would make the day-of-month invalid.
+     * In cases like this, the field is responsible for resolving the date. Typically it will choose
+     * the previous valid date, which would be the last valid day of February in this example.
+     * <p>
+     * If the field is a {@link ChronoField} then the adjustment is implemented here.
+     * The {@link #isSupported(TemporalField) supported fields} will behave as per
+     * the matching method on {@link LocalDate#with(TemporalField, long) LocalDate}
+     * or {@link LocalTime#with(TemporalField, long) LocalTime}.
+     * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
+     * <p>
+     * If the field is not a {@code ChronoField}, then the result of this method
+     * is obtained by invoking {@code TemporalField.adjustInto(Temporal, long)}
+     * passing {@code this} as the argument. In this case, the field determines
+     * whether and how to adjust the instant.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param field  the field to set in the result, not null
+     * @param newValue  the new value of the field in the result
+     * @return a {@code LocalDateTime} based on {@code this} with the specified field set, not null
+     * @throws DateTimeException if the field cannot be set
+     * @throws UnsupportedTemporalTypeException if the field is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

@@ -1,0 +1,5 @@
+public static final SecretKeyFactory getInstance(String algorithm, Provider provider) throws NoSuchAlgorithmException{
+    Providers.checkBouncyCastleDeprecation(provider, "SecretKeyFactory", algorithm);
+    Instance instance = JceSecurity.getInstance("SecretKeyFactory", SecretKeyFactorySpi.class, algorithm, provider);
+    return new SecretKeyFactory((SecretKeyFactorySpi) instance.impl, instance.provider, algorithm);
+}

@@ -1,0 +1,11 @@
+public boolean equals(@Nullable Object object){
+    if (object == this) {
+        return true;
+    }
+    boolean isEqual = false;
+    if (object instanceof NanoAppMessage) {
+        NanoAppMessage other = (NanoAppMessage) object;
+        isEqual = (other.getNanoAppId() == mNanoAppId) && (other.getMessageType() == mMessageType) && (other.isBroadcastMessage() == mIsBroadcasted) && Arrays.equals(other.getMessageBody(), mMessageBody);
+    }
+    return isEqual;
+}

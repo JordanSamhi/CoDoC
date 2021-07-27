@@ -1,0 +1,32 @@
+public boolean equals(Object o){
+    if (o == null)
+        return false;
+    if (this == o)
+        return true;
+    if (o instanceof Subject) {
+        final Subject that = (Subject) o;
+        Set<Principal> thatPrincipals;
+        synchronized (that.principals) {
+            thatPrincipals = new HashSet<Principal>(that.principals);
+        }
+        if (!principals.equals(thatPrincipals)) {
+            return false;
+        }
+        Set<Object> thatPubCredentials;
+        synchronized (that.pubCredentials) {
+            thatPubCredentials = new HashSet<Object>(that.pubCredentials);
+        }
+        if (!pubCredentials.equals(thatPubCredentials)) {
+            return false;
+        }
+        Set<Object> thatPrivCredentials;
+        synchronized (that.privCredentials) {
+            thatPrivCredentials = new HashSet<Object>(that.privCredentials);
+        }
+        if (!privCredentials.equals(thatPrivCredentials)) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}

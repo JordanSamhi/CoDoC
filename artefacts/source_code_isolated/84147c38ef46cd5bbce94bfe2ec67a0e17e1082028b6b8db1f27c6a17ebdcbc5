@@ -1,0 +1,12 @@
+public void autofill(AutofillValue value){
+    if (!value.isText() || !isTextEditable()) {
+        Log.w(LOG_TAG, value + " could not be autofilled into " + this);
+        return;
+    }
+    final CharSequence autofilledValue = value.getTextValue();
+    setText(autofilledValue, mBufferType, true, 0);
+    final CharSequence text = getText();
+    if ((text instanceof Spannable)) {
+        Selection.setSelection((Spannable) text, text.length());
+    }
+}

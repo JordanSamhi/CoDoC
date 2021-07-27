@@ -1,0 +1,9 @@
+public static BigDecimal valueOf(long unscaledVal, int scale){
+    if (scale == 0) {
+        return valueOf(unscaledVal);
+    }
+    if ((unscaledVal == 0) && (scale >= 0) && (scale < ZERO_SCALED_BY.length)) {
+        return ZERO_SCALED_BY[scale];
+    }
+    return new BigDecimal(unscaledVal, scale);
+}

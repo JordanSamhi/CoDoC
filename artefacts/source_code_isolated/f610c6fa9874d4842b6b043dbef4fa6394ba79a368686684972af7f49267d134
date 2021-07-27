@@ -1,0 +1,23 @@
+public WindowInsets onApplyWindowInsets(WindowInsets insets){
+    final WindowManager.LayoutParams attrs = mWindow.getAttributes();
+    mFloatingInsets.setEmpty();
+    if ((attrs.flags & FLAG_LAYOUT_IN_SCREEN) == 0) {
+        if (attrs.height == WindowManager.LayoutParams.WRAP_CONTENT) {
+            mFloatingInsets.top = insets.getSystemWindowInsetTop();
+            mFloatingInsets.bottom = insets.getSystemWindowInsetBottom();
+            insets = insets.inset(0, insets.getSystemWindowInsetTop(), 0, insets.getSystemWindowInsetBottom());
+        }
+        if (mWindow.getAttributes().width == WindowManager.LayoutParams.WRAP_CONTENT) {
+            mFloatingInsets.left = insets.getSystemWindowInsetTop();
+            mFloatingInsets.right = insets.getSystemWindowInsetBottom();
+            insets = insets.inset(insets.getSystemWindowInsetLeft(), 0, insets.getSystemWindowInsetRight(), 0);
+        }
+    }
+    mFrameOffsets.set(insets.getSystemWindowInsetsAsRect());
+    insets = updateColorViews(insets, true);
+    insets = updateStatusGuard(insets);
+    if (getForeground() != null) {
+        drawableChanged();
+    }
+    return insets;
+}

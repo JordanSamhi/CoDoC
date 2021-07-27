@@ -1,0 +1,14 @@
+public Matcher usePattern(Pattern newPattern){
+    if (newPattern == null)
+        throw new IllegalArgumentException("Pattern cannot be null");
+    synchronized (this) {
+        nativeMatcher = MatcherNative.create(newPattern.nativePattern);
+    }
+    parentPattern = newPattern;
+    if (text != null) {
+        resetForInput();
+    }
+    groups = new int[(groupCount() + 1) * 2];
+    matchFound = false;
+    return this;
+}

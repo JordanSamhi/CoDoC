@@ -1,0 +1,38 @@
+
+     * Returns a {@link List} containing all {@link SNIServerName}s of the
+     * Server Name Indication (SNI) parameter, or null if none has been set.
+     * <P>
+     * This method is only useful to {@link SSLSocket}s or {@link SSLEngine}s
+     * operating in client mode.
+     * <P>
+     * For SSL/TLS connections, the underlying SSL/TLS provider
+     * may specify a default value for a certain server name type.  In
+     * client mode, it is recommended that, by default, providers should
+     * include the server name indication whenever the server can be located
+     * by a supported server name type.
+     * <P>
+     * It is recommended that providers initialize default Server Name
+     * Indications when creating {@code SSLSocket}/{@code SSLEngine}s.
+     * In the following examples, the server name could be represented by an
+     * instance of {@link SNIHostName} which has been initialized with the
+     * hostname "www.example.com" and type
+     * {@link StandardConstants#SNI_HOST_NAME}.
+     *
+     * <pre>
+     *     Socket socket =
+     *         sslSocketFactory.createSocket("www.example.com", 443);
+     * </pre>
+     * or
+     * <pre>
+     *     SSLEngine engine =
+     *         sslContext.createSSLEngine("www.example.com", 443);
+     * </pre>
+     * <P>
+     *
+     * @return null or an immutable list of non-null {@link SNIServerName}s
+     *
+     * @see List
+     * @see #setServerNames(List)
+     *
+     * @since 1.8
+     

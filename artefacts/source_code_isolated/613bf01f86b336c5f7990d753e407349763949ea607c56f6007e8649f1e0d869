@@ -1,0 +1,48 @@
+public void draw(Canvas c){
+    final Rect padding = mTempRect;
+    final int switchLeft = mSwitchLeft;
+    final int switchTop = mSwitchTop;
+    final int switchRight = mSwitchRight;
+    final int switchBottom = mSwitchBottom;
+    int thumbInitialLeft = switchLeft + getThumbOffset();
+    final Insets thumbInsets;
+    if (mThumbDrawable != null) {
+        thumbInsets = mThumbDrawable.getOpticalInsets();
+    } else {
+        thumbInsets = Insets.NONE;
+    }
+    if (mTrackDrawable != null) {
+        mTrackDrawable.getPadding(padding);
+        thumbInitialLeft += padding.left;
+        int trackLeft = switchLeft;
+        int trackTop = switchTop;
+        int trackRight = switchRight;
+        int trackBottom = switchBottom;
+        if (thumbInsets != Insets.NONE) {
+            if (thumbInsets.left > padding.left) {
+                trackLeft += thumbInsets.left - padding.left;
+            }
+            if (thumbInsets.top > padding.top) {
+                trackTop += thumbInsets.top - padding.top;
+            }
+            if (thumbInsets.right > padding.right) {
+                trackRight -= thumbInsets.right - padding.right;
+            }
+            if (thumbInsets.bottom > padding.bottom) {
+                trackBottom -= thumbInsets.bottom - padding.bottom;
+            }
+        }
+        mTrackDrawable.setBounds(trackLeft, trackTop, trackRight, trackBottom);
+    }
+    if (mThumbDrawable != null) {
+        mThumbDrawable.getPadding(padding);
+        final int thumbLeft = thumbInitialLeft - padding.left;
+        final int thumbRight = thumbInitialLeft + mThumbWidth + padding.right;
+        mThumbDrawable.setBounds(thumbLeft, switchTop, thumbRight, switchBottom);
+        final Drawable background = getBackground();
+        if (background != null) {
+            background.setHotspotBounds(thumbLeft, switchTop, thumbRight, switchBottom);
+        }
+    }
+    super.draw(c);
+}

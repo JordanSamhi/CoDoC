@@ -1,0 +1,14 @@
+public boolean equals(Object obj){
+    if (!(obj instanceof BitSet))
+        return false;
+    if (this == obj)
+        return true;
+    BitSet set = (BitSet) obj;
+    checkInvariants();
+    set.checkInvariants();
+    if (wordsInUse != set.wordsInUse)
+        return false;
+    for (int i = 0; i < wordsInUse; i++) if (words[i] != set.words[i])
+        return false;
+    return true;
+}

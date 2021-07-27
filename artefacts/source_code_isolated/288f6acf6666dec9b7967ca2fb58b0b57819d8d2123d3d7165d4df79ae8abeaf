@@ -1,0 +1,25 @@
+public void selectTab(Tab tab){
+    if (getNavigationMode() != NAVIGATION_MODE_TABS) {
+        mSavedTabPosition = tab != null ? tab.getPosition() : INVALID_POSITION;
+        return;
+    }
+    final FragmentTransaction trans = mDecorToolbar.getViewGroup().isInEditMode() ? null : mActivity.getFragmentManager().beginTransaction().disallowAddToBackStack();
+    if (mSelectedTab == tab) {
+        if (mSelectedTab != null) {
+            mSelectedTab.getCallback().onTabReselected(mSelectedTab, trans);
+            mTabScrollView.animateToTab(tab.getPosition());
+        }
+    } else {
+        mTabScrollView.setTabSelected(tab != null ? tab.getPosition() : Tab.INVALID_POSITION);
+        if (mSelectedTab != null) {
+            mSelectedTab.getCallback().onTabUnselected(mSelectedTab, trans);
+        }
+        mSelectedTab = (TabImpl) tab;
+        if (mSelectedTab != null) {
+            mSelectedTab.getCallback().onTabSelected(mSelectedTab, trans);
+        }
+    }
+    if (trans != null && !trans.isEmpty()) {
+        trans.commit();
+    }
+}

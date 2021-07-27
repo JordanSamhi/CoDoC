@@ -1,0 +1,9 @@
+public static final String getDefaultType(){
+    String cpvtype = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        public String run() {
+            return Security.getProperty(CPV_TYPE);
+        }
+    });
+    return (cpvtype == null) ? "PKIX" : cpvtype;
+}

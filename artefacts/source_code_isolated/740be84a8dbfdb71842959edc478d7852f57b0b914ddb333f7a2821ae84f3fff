@@ -1,0 +1,11 @@
+public Type getGenericType(){
+    String signatureAttribute = getSignatureAttribute();
+    ClassLoader cl = declaringClass.getClassLoader();
+    GenericSignatureParser parser = new GenericSignatureParser(cl);
+    parser.parseForField(declaringClass, signatureAttribute);
+    Type genericType = parser.fieldType;
+    if (genericType == null) {
+        genericType = getType();
+    }
+    return genericType;
+}

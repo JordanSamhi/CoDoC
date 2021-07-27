@@ -1,0 +1,61 @@
+
+     * Sets the value of a file attribute.
+     *
+     * <p> The {@code attribute} parameter identifies the attribute to be set
+     * and takes the form:
+     * <blockquote>
+     * [<i>view-name</i><b>:</b>]<i>attribute-name</i>
+     * </blockquote>
+     * where square brackets [...] delineate an optional component and the
+     * character {@code ':'} stands for itself.
+     *
+     * <p> <i>view-name</i> is the {@link FileAttributeView#name name} of a {@link
+     * FileAttributeView} that identifies a set of file attributes. If not
+     * specified then it defaults to {@code "basic"}, the name of the file
+     * attribute view that identifies the basic set of file attributes common to
+     * many file systems. <i>attribute-name</i> is the name of the attribute
+     * within the set.
+     *
+     * <p> The {@code options} array may be used to indicate how symbolic links
+     * are handled for the case that the file is a symbolic link. By default,
+     * symbolic links are followed and the file attribute of the final target
+     * of the link is set. If the option {@link LinkOption#NOFOLLOW_LINKS
+     * NOFOLLOW_LINKS} is present then symbolic links are not followed.
+     *
+     * <p> <b>Usage Example:</b>
+     * Suppose we want to set the DOS "hidden" attribute:
+     * <pre>
+     *    Path path = ...
+     *    Files.setAttribute(path, "dos:hidden", true);
+     * </pre>
+     *
+     * @param   path
+     *          the path to the file
+     * @param   attribute
+     *          the attribute to set
+     * @param   value
+     *          the attribute value
+     * @param   options
+     *          options indicating how symbolic links are handled
+     *
+     * @return  the {@code path} parameter
+     *
+     * @throws  UnsupportedOperationException
+     *          if the attribute view is not available
+     * @throws  IllegalArgumentException
+     *          if the attribute name is not specified, or is not recognized, or
+     *          the attribute value is of the correct type but has an
+     *          inappropriate value
+     * @throws  ClassCastException
+     *          if the attribute value is not of the expected type or is a
+     *          collection containing elements that are not of the expected
+     *          type
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, its {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method denies write access to the file. If this method is invoked
+     *          to set security sensitive attributes then the security manager
+     *          may be invoked to check for additional permissions.
+     

@@ -1,0 +1,44 @@
+public Collection<V> values(){
+    Collection<V> vals = values;
+    if (vals == null) {
+        vals = new AbstractCollection<V>() {
+
+            public Iterator<V> iterator() {
+                return new Iterator<V>() {
+
+                    private Iterator<Entry<K, V>> i = entrySet().iterator();
+
+                    public boolean hasNext() {
+                        return i.hasNext();
+                    }
+
+                    public V next() {
+                        return i.next().getValue();
+                    }
+
+                    public void remove() {
+                        i.remove();
+                    }
+                };
+            }
+
+            public int size() {
+                return AbstractMap.this.size();
+            }
+
+            public boolean isEmpty() {
+                return AbstractMap.this.isEmpty();
+            }
+
+            public void clear() {
+                AbstractMap.this.clear();
+            }
+
+            public boolean contains(Object v) {
+                return AbstractMap.this.containsValue(v);
+            }
+        };
+        values = vals;
+    }
+    return vals;
+}

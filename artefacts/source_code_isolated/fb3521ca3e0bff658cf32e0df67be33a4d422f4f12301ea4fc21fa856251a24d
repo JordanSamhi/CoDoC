@@ -1,0 +1,6 @@
+public OffsetDateTime plus(long amountToAdd, TemporalUnit unit){
+    if (unit instanceof ChronoUnit) {
+        return with(dateTime.plus(amountToAdd, unit), offset);
+    }
+    return unit.addTo(this, amountToAdd);
+}

@@ -1,0 +1,10 @@
+public ZoneId normalized(){
+    try {
+        ZoneRules rules = getRules();
+        if (rules.isFixedOffset()) {
+            return rules.getOffset(Instant.EPOCH);
+        }
+    } catch (ZoneRulesException ex) {
+    }
+    return this;
+}

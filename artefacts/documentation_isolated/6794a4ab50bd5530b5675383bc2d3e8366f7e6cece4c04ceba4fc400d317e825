@@ -1,0 +1,47 @@
+
+     * Calculates the amount of time until another time in terms of the specified unit.
+     * <p>
+     * This calculates the amount of time between two {@code LocalTime}
+     * objects in terms of a single {@code TemporalUnit}.
+     * The start and end points are {@code this} and the specified time.
+     * The result will be negative if the end is before the start.
+     * The {@code Temporal} passed to this method is converted to a
+     * {@code LocalTime} using {@link #from(TemporalAccessor)}.
+     * For example, the amount in hours between two times can be calculated
+     * using {@code startTime.until(endTime, HOURS)}.
+     * <p>
+     * The calculation returns a whole number, representing the number of
+     * complete units between the two times.
+     * For example, the amount in hours between 11:30 and 13:29 will only
+     * be one hour as it is one minute short of two hours.
+     * <p>
+     * There are two equivalent ways of using this method.
+     * The first is to invoke this method.
+     * The second is to use {@link TemporalUnit#between(Temporal, Temporal)}:
+     * <pre>
+     *   // these two lines are equivalent
+     *   amount = start.until(end, MINUTES);
+     *   amount = MINUTES.between(start, end);
+     * </pre>
+     * The choice should be made based on which makes the code more readable.
+     * <p>
+     * The calculation is implemented in this method for {@link ChronoUnit}.
+     * The units {@code NANOS}, {@code MICROS}, {@code MILLIS}, {@code SECONDS},
+     * {@code MINUTES}, {@code HOURS} and {@code HALF_DAYS} are supported.
+     * Other {@code ChronoUnit} values will throw an exception.
+     * <p>
+     * If the unit is not a {@code ChronoUnit}, then the result of this method
+     * is obtained by invoking {@code TemporalUnit.between(Temporal, Temporal)}
+     * passing {@code this} as the first argument and the converted input temporal
+     * as the second argument.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param endExclusive  the end time, exclusive, which is converted to a {@code LocalTime}, not null
+     * @param unit  the unit to measure the amount in, not null
+     * @return the amount of time between this time and the end time
+     * @throws DateTimeException if the amount cannot be calculated, or the end
+     *  temporal cannot be converted to a {@code LocalTime}
+     * @throws UnsupportedTemporalTypeException if the unit is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

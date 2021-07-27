@@ -1,0 +1,23 @@
+public IntStream stream(){
+    class BitSetIterator implements PrimitiveIterator.OfInt {
+
+        int next = nextSetBit(0);
+
+        @Override
+        public boolean hasNext() {
+            return next != -1;
+        }
+
+        @Override
+        public int nextInt() {
+            if (next != -1) {
+                int ret = next;
+                next = nextSetBit(next + 1);
+                return ret;
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+    }
+    return StreamSupport.intStream(() -> Spliterators.spliterator(new BitSetIterator(), cardinality(), Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.SORTED), Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.SORTED, false);
+}

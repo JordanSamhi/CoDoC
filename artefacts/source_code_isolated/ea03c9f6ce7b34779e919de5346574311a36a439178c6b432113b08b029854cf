@@ -1,4 +1,10 @@
 public void dismiss(){
-    unregisterOrientationHandler();
-    mPopup.dismiss();
+    if (mDismissed) {
+        return;
+    }
+    mHidden = false;
+    mDismissed = true;
+    mHideAnimation.cancel();
+    runDismissAnimation();
+    setZeroTouchableSurface();
 }

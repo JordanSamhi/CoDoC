@@ -1,0 +1,13 @@
+public boolean hasNextBigDecimal(){
+    setRadix(10);
+    boolean result = hasNext(decimalPattern());
+    if (result) {
+        try {
+            String s = processFloatToken(hasNextResult);
+            typeCache = new BigDecimal(s);
+        } catch (NumberFormatException nfe) {
+            result = false;
+        }
+    }
+    return result;
+}

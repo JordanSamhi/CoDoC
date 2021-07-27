@@ -1,0 +1,13 @@
+public void end(){
+    if (Looper.myLooper() == null) {
+        throw new AndroidRuntimeException("Animators may only be run on Looper threads");
+    }
+    if (!mRunning) {
+        startAnimation();
+        mStarted = true;
+    } else if (!mInitialized) {
+        initAnimation();
+    }
+    animateValue(shouldPlayBackward(mRepeatCount, mReversing) ? 0f : 1f);
+    endAnimation();
+}

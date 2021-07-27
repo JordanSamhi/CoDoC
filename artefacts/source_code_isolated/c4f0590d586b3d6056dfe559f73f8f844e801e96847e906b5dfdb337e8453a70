@@ -1,0 +1,10 @@
+public TemporalAccessor parse(CharSequence text){
+    Objects.requireNonNull(text, "text");
+    try {
+        return parseResolved0(text, null);
+    } catch (DateTimeParseException ex) {
+        throw ex;
+    } catch (RuntimeException ex) {
+        throw createError(text, ex);
+    }
+}

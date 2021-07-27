@@ -1,0 +1,16 @@
+public void applyTheme(Theme t){
+    super.applyTheme(t);
+    final ColorState state = mColorState;
+    if (state == null) {
+        return;
+    }
+    if (state.mThemeAttrs != null) {
+        final TypedArray a = t.resolveAttributes(state.mThemeAttrs, R.styleable.ColorDrawable);
+        updateStateFromTypedArray(a);
+        a.recycle();
+    }
+    if (state.mTint != null && state.mTint.canApplyTheme()) {
+        state.mTint = state.mTint.obtainForTheme(t);
+    }
+    updateLocalState(t.getResources());
+}

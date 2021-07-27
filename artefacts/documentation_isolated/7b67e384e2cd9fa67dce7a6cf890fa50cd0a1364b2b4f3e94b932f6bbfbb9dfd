@@ -1,0 +1,48 @@
+
+         * Determines if the expired <code>bundle</code> in the cache needs
+         * to be reloaded based on the loading time given by
+         * <code>loadTime</code> or some other criteria. The method returns
+         * <code>true</code> if reloading is required; <code>false</code>
+         * otherwise. <code>loadTime</code> is a millisecond offset since
+         * the <a href="Calendar.html#Epoch"> <code>Calendar</code>
+         * Epoch</a>.
+         *
+         * The calling <code>ResourceBundle.getBundle</code> factory method
+         * calls this method on the <code>ResourceBundle.Control</code>
+         * instance used for its current invocation, not on the instance
+         * used in the invocation that originally loaded the resource
+         * bundle.
+         *
+         * <p>The default implementation compares <code>loadTime</code> and
+         * the last modified time of the source data of the resource
+         * bundle. If it's determined that the source data has been modified
+         * since <code>loadTime</code>, <code>true</code> is
+         * returned. Otherwise, <code>false</code> is returned. This
+         * implementation assumes that the given <code>format</code> is the
+         * same string as its file suffix if it's not one of the default
+         * formats, <code>"java.class"</code> or
+         * <code>"java.properties"</code>.
+         *
+         * @param baseName
+         *        the base bundle name of the resource bundle, a
+         *        fully qualified class name
+         * @param locale
+         *        the locale for which the resource bundle
+         *        should be instantiated
+         * @param format
+         *        the resource bundle format to be loaded
+         * @param loader
+         *        the <code>ClassLoader</code> to use to load the bundle
+         * @param bundle
+         *        the resource bundle instance that has been expired
+         *        in the cache
+         * @param loadTime
+         *        the time when <code>bundle</code> was loaded and put
+         *        in the cache
+         * @return <code>true</code> if the expired bundle needs to be
+         *        reloaded; <code>false</code> otherwise.
+         * @exception NullPointerException
+         *        if <code>baseName</code>, <code>locale</code>,
+         *        <code>format</code>, <code>loader</code>, or
+         *        <code>bundle</code> is <code>null</code>
+         

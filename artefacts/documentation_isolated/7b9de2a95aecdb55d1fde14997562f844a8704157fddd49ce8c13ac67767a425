@@ -1,0 +1,31 @@
+
+     * The application is being restored from backup and should replace any
+     * existing data with the contents of the backup. The backup data is
+     * provided through the <code>data</code> parameter. Once
+     * the restore is finished, the application should write a representation of
+     * the final state to the <code>newState</code> file descriptor.
+     * <p>
+     * The application is responsible for properly erasing its old data and
+     * replacing it with the data supplied to this method. No "clear user data"
+     * operation will be performed automatically by the operating system. The
+     * exception to this is in the case of a failed restore attempt: if
+     * onRestore() throws an exception, the OS will assume that the
+     * application's data may now be in an incoherent state, and will clear it
+     * before proceeding.
+     *
+     * @param data A structured wrapper around an open, read-only
+     *            file descriptor pointing to a full snapshot of the
+     *            application's data.  The application should consume every
+     *            entity represented in this data stream.
+     * @param appVersionCode The value of the <a
+     * href="{@docRoot}guide/topics/manifest/manifest-element.html#vcode">{@code
+     *            android:versionCode}</a> manifest attribute,
+     *            from the application that backed up this particular data set. This
+     *            makes it possible for an application's agent to distinguish among any
+     *            possible older data versions when asked to perform the restore
+     *            operation.
+     * @param newState An open, read/write ParcelFileDescriptor pointing to an
+     *            empty file. The application should record the final backup
+     *            state here after restoring its data from the <code>data</code> stream.
+     *            When a full-backup dataset is being restored, this will be <code>null</code>.
+     

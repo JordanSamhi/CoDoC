@@ -1,6 +1,18 @@
-public void setTorchMode(@NonNull String cameraId, boolean enabled) throws CameraAccessException{
-    if (CameraManagerGlobal.sCameraServiceDisabled) {
-        throw new IllegalArgumentException("No cameras available on device");
+public void setTorchMode(String cameraId, boolean enabled) throws CameraAccessException{
+    synchronized (mLock) {
+        if (cameraId == null) {
+            throw new IllegalArgumentException("cameraId was null");
+        }
+        ICameraService cameraService = getCameraService();
+        if (cameraService == null) {
+            throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service is currently unavailable");
+        }
+        try {
+            cameraService.setTorchMode(cameraId, enabled, mTorchClientBinder);
+        } catch (ServiceSpecificException e) {
+            throwAsPublicException(e);
+        } catch (RemoteException e) {
+            throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service is currently unavailable");
+        }
     }
-    CameraManagerGlobal.get().setTorchMode(cameraId, enabled);
 }

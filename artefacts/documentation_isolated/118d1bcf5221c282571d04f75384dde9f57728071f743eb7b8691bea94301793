@@ -1,0 +1,38 @@
+
+     * Creates a new link (directory entry) for an existing file <i>(optional
+     * operation)</i>.
+     *
+     * <p> The {@code link} parameter locates the directory entry to create.
+     * The {@code existing} parameter is the path to an existing file. This
+     * method creates a new directory entry for the file so that it can be
+     * accessed using {@code link} as the path. On some file systems this is
+     * known as creating a "hard link". Whether the file attributes are
+     * maintained for the file or for each directory entry is file system
+     * specific and therefore not specified. Typically, a file system requires
+     * that all links (directory entries) for a file be on the same file system.
+     * Furthermore, on some platforms, the Java virtual machine may require to
+     * be started with implementation specific privileges to create hard links
+     * or to create links to directories.
+     *
+     * @param   link
+     *          the link (directory entry) to create
+     * @param   existing
+     *          a path to an existing file
+     *
+     * @return  the path to the link (directory entry)
+     *
+     * @throws  UnsupportedOperationException
+     *          if the implementation does not support adding an existing file
+     *          to a directory
+     * @throws  FileAlreadyExistsException
+     *          if the entry could not otherwise be created because a file of
+     *          that name already exists <i>(optional specific exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager
+     *          is installed, it denies {@link LinkPermission}<tt>("hard")</tt>
+     *          or its {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method denies write access to either the link or the
+     *          existing file.
+     

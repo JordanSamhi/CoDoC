@@ -1,0 +1,43 @@
+
+         * Returns a {@link Condition} instance for use with this
+         * {@link Lock} instance.
+         * <p>The returned {@link Condition} instance supports the same
+         * usages as do the {@link Object} monitor methods ({@link
+         * Object#wait() wait}, {@link Object#notify notify}, and {@link
+         * Object#notifyAll notifyAll}) when used with the built-in
+         * monitor lock.
+         *
+         * <ul>
+         *
+         * <li>If this write lock is not held when any {@link
+         * Condition} method is called then an {@link
+         * IllegalMonitorStateException} is thrown.  (Read locks are
+         * held independently of write locks, so are not checked or
+         * affected. However it is essentially always an error to
+         * invoke a condition waiting method when the current thread
+         * has also acquired read locks, since other threads that
+         * could unblock it will not be able to acquire the write
+         * lock.)
+         *
+         * <li>When the condition {@linkplain Condition#await() waiting}
+         * methods are called the write lock is released and, before
+         * they return, the write lock is reacquired and the lock hold
+         * count restored to what it was when the method was called.
+         *
+         * <li>If a thread is {@linkplain Thread#interrupt interrupted} while
+         * waiting then the wait will terminate, an {@link
+         * InterruptedException} will be thrown, and the thread's
+         * interrupted status will be cleared.
+         *
+         * <li>Waiting threads are signalled in FIFO order.
+         *
+         * <li>The ordering of lock reacquisition for threads returning
+         * from waiting methods is the same as for threads initially
+         * acquiring the lock, which is in the default case not specified,
+         * but for <em>fair</em> locks favors those threads that have been
+         * waiting the longest.
+         *
+         * </ul>
+         *
+         * @return the Condition object
+         

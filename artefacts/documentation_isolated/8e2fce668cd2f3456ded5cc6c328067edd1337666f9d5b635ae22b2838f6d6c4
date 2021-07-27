@@ -1,0 +1,32 @@
+
+     * Returns an object of the same type as this object with the specified period subtracted.
+     * <p>
+     * This method returns a new object based on this one with the specified period subtracted.
+     * For example, on a {@code LocalDate}, this could be used to subtract a number of years, months or days.
+     * The returned object will have the same observable type as this object.
+     * <p>
+     * In some cases, changing a field is not fully defined. For example, if the target object is
+     * a date representing the 31st March, then subtracting one month would be unclear.
+     * In cases like this, the field is responsible for resolving the result. Typically it will choose
+     * the previous valid date, which would be the last valid day of February in this example.
+     *
+     * @implSpec
+     * Implementations must behave in a manor equivalent to the default method behavior.
+     * <p>
+     * Implementations must not alter this object.
+     * Instead, an adjusted copy of the original must be returned.
+     * This provides equivalent, safe behavior for immutable and mutable implementations.
+     * <p>
+     * The default implementation must behave equivalent to this code:
+     * <pre>
+     *  return (amountToSubtract == Long.MIN_VALUE ?
+     *      plus(Long.MAX_VALUE, unit).plus(1, unit) : plus(-amountToSubtract, unit));
+     * </pre>
+     *
+     * @param amountToSubtract  the amount of the specified unit to subtract, may be negative
+     * @param unit  the unit of the amount to subtract, not null
+     * @return an object of the same type with the specified period subtracted, not null
+     * @throws DateTimeException if the unit cannot be subtracted
+     * @throws UnsupportedTemporalTypeException if the unit is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

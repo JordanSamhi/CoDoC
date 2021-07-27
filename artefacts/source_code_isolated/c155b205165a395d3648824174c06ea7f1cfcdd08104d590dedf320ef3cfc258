@@ -1,0 +1,18 @@
+public void close(){
+    synchronized (this) {
+        if (!closing) {
+            closing = true;
+            try {
+                if (textOut != null) {
+                    textOut.close();
+                }
+                out.close();
+            } catch (IOException x) {
+                trouble = true;
+            }
+            textOut = null;
+            charOut = null;
+            out = null;
+        }
+    }
+}

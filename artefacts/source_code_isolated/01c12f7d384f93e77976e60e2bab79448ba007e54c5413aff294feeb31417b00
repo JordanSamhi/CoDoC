@@ -1,0 +1,13 @@
+public Type getGenericSuperclass(){
+    Type genericSuperclass = getSuperclass();
+    if (genericSuperclass == null) {
+        return null;
+    }
+    String annotationSignature = getSignatureAttribute();
+    if (annotationSignature != null) {
+        GenericSignatureParser parser = new GenericSignatureParser(getClassLoader());
+        parser.parseForClass(this, annotationSignature);
+        genericSuperclass = parser.superclassType;
+    }
+    return Types.getType(genericSuperclass);
+}

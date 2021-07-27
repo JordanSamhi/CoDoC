@@ -1,0 +1,7 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        ChronoField f = (ChronoField) field;
+        return (f.isTimeBased() ? time.getLong(field) : date.getLong(field));
+    }
+    return field.getFrom(this);
+}

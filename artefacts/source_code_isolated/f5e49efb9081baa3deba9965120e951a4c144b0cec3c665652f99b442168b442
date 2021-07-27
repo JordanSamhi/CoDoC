@@ -1,0 +1,12 @@
+public int get(TemporalField field){
+    if (field instanceof ChronoField) {
+        switch((ChronoField) field) {
+            case INSTANT_SECONDS:
+                throw new UnsupportedTemporalTypeException("Invalid field 'InstantSeconds' for get() method, use getLong() instead");
+            case OFFSET_SECONDS:
+                return getOffset().getTotalSeconds();
+        }
+        return dateTime.get(field);
+    }
+    return Temporal.super.get(field);
+}

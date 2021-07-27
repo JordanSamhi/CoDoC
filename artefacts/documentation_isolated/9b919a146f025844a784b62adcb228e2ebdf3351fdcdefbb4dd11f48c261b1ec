@@ -1,0 +1,80 @@
+
+     * Implements a non-terminal append-and-replace step.
+     *
+     * <p> This method performs the following actions: </p>
+     *
+     * <ol>
+     *
+     *   <li><p> It reads characters from the input sequence, starting at the
+     *   append position, and appends them to the given string buffer.  It
+     *   stops after reading the last character preceding the previous match,
+     *   that is, the character at index {@link
+     *   #start()}&nbsp;<tt>-</tt>&nbsp;<tt>1</tt>.  </p></li>
+     *
+     *   <li><p> It appends the given replacement string to the string buffer.
+     *   </p></li>
+     *
+     *   <li><p> It sets the append position of this matcher to the index of
+     *   the last character matched, plus one, that is, to {@link #end()}.
+     *   </p></li>
+     *
+     * </ol>
+     *
+     * <p> The replacement string may contain references to subsequences
+     * captured during the previous match: Each occurrence of
+     * <tt>${</tt><i>name</i><tt>}</tt> or <tt>$</tt><i>g</i>
+     * will be replaced by the result of evaluating the corresponding
+     * {@link #group(String) group(name)} or {@link #group(int) group(g)}
+     * respectively. For  <tt>$</tt><i>g</i>,
+     * the first number after the <tt>$</tt> is always treated as part of
+     * the group reference. Subsequent numbers are incorporated into g if
+     * they would form a legal group reference. Only the numerals '0'
+     * through '9' are considered as potential components of the group
+     * reference. If the second group matched the string <tt>"foo"</tt>, for
+     * example, then passing the replacement string <tt>"$2bar"</tt> would
+     * cause <tt>"foobar"</tt> to be appended to the string buffer. A dollar
+     * sign (<tt>$</tt>) may be included as a literal in the replacement
+     * string by preceding it with a backslash (<tt>\$</tt>).
+     *
+     * <p> Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
+     * the replacement string may cause the results to be different than if it
+     * were being treated as a literal replacement string. Dollar signs may be
+     * treated as references to captured subsequences as described above, and
+     * backslashes are used to escape literal characters in the replacement
+     * string.
+     *
+     * <p> This method is intended to be used in a loop together with the
+     * {@link #appendTail appendTail} and {@link #find find} methods.  The
+     * following code, for example, writes <tt>one dog two dogs in the
+     * yard</tt> to the standard-output stream: </p>
+     *
+     * <blockquote><pre>
+     * Pattern p = Pattern.compile("cat");
+     * Matcher m = p.matcher("one cat two cats in the yard");
+     * StringBuffer sb = new StringBuffer();
+     * while (m.find()) {
+     *     m.appendReplacement(sb, "dog");
+     * }
+     * m.appendTail(sb);
+     * System.out.println(sb.toString());</pre></blockquote>
+     *
+     * @param  sb
+     *         The target string buffer
+     *
+     * @param  replacement
+     *         The replacement string
+     *
+     * @return  This matcher
+     *
+     * @throws  IllegalStateException
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
+     *
+     * @throws  IllegalArgumentException
+     *          If the replacement string refers to a named-capturing
+     *          group that does not exist in the pattern
+     *
+     * @throws  IndexOutOfBoundsException
+     *          If the replacement string refers to a capturing group
+     *          that does not exist in the pattern
+     

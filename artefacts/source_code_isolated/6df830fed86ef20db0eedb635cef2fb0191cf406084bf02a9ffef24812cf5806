@@ -1,0 +1,5 @@
+public long reduceToLong(long parallelismThreshold, ToLongBiFunction<? super K, ? super V> transformer, long basis, LongBinaryOperator reducer){
+    if (transformer == null || reducer == null)
+        throw new NullPointerException();
+    return new MapReduceMappingsToLongTask<K, V>(null, batchFor(parallelismThreshold), 0, 0, table, null, transformer, basis, reducer).invoke();
+}

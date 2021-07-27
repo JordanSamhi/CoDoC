@@ -1,0 +1,28 @@
+public boolean onInitialize(){
+    final DisplayManager displayManager = mContext.getSystemService(DisplayManager.class);
+    mDisplayDensityDpi = getBaseDisplayDensity();
+    int virtualDisplayFlags = VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY | VIRTUAL_DISPLAY_FLAG_DESTROY_CONTENT_ON_REMOVAL;
+    if (mUsePublicVirtualDisplay) {
+        virtualDisplayFlags |= VIRTUAL_DISPLAY_FLAG_PUBLIC;
+    }
+    mVirtualDisplay = displayManager.createVirtualDisplay(DISPLAY_NAME + "@" + System.identityHashCode(this), mHost.getWidth(), mHost.getHeight(), mDisplayDensityDpi, null, virtualDisplayFlags);
+    if (mVirtualDisplay == null) {
+        Log.e(TAG, "Failed to initialize TaskEmbedder");
+        return false;
+    }
+    try {
+        final int displayId = getDisplayId();
+        final IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
+        WindowManagerGlobal.getWindowSession().reparentDisplayContent(mHost.getWindow(), mSurfaceControl, displayId);
+        wm.dontOverrideDisplayInfo(displayId);
+        if (mSingleTaskInstance) {
+            mContext.getSystemService(ActivityTaskManager.class).setDisplayToSingleTaskInstance(displayId);
+        }
+        setForwardedInsets(mForwardedInsets);
+        mTaskStackListener = new TaskStackListenerImpl();
+        mActivityTaskManager.registerTaskStackListener(mTaskStackListener);
+    } catch (RemoteException e) {
+        e.rethrowAsRuntimeException();
+    }
+    return super.onInitialize();
+}

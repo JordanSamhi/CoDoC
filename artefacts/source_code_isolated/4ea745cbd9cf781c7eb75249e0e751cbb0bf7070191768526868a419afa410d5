@@ -1,0 +1,9 @@
+ void forEach(Consumer<? super Double> consumer){
+    if (consumer instanceof DoubleConsumer) {
+        forEach((DoubleConsumer) consumer);
+    } else {
+        if (Tripwire.ENABLED)
+            Tripwire.trip(getClass(), "{0} calling Node.OfLong.forEachRemaining(Consumer)");
+        spliterator().forEachRemaining(consumer);
+    }
+}

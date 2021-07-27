@@ -1,0 +1,196 @@
+public int getActualMaximum(int field){
+    final int fieldsForFixedMax = ERA_MASK | DAY_OF_WEEK_MASK | HOUR_MASK | AM_PM_MASK | HOUR_OF_DAY_MASK | MINUTE_MASK | SECOND_MASK | MILLISECOND_MASK | ZONE_OFFSET_MASK | DST_OFFSET_MASK;
+    if ((fieldsForFixedMax & (1 << field)) != 0) {
+        return getMaximum(field);
+    }
+    GregorianCalendar gc = getNormalizedCalendar();
+    BaseCalendar.Date date = gc.cdate;
+    BaseCalendar cal = gc.calsys;
+    int normalizedYear = date.getNormalizedYear();
+    int value = -1;
+    switch(field) {
+        case MONTH:
+            {
+                if (!gc.isCutoverYear(normalizedYear)) {
+                    value = DECEMBER;
+                    break;
+                }
+                long nextJan1;
+                do {
+                    nextJan1 = gcal.getFixedDate(++normalizedYear, BaseCalendar.JANUARY, 1, null);
+                } while (nextJan1 < gregorianCutoverDate);
+                BaseCalendar.Date d = (BaseCalendar.Date) date.clone();
+                cal.getCalendarDateFromFixedDate(d, nextJan1 - 1);
+                value = d.getMonth() - 1;
+            }
+            break;
+        case DAY_OF_MONTH:
+            {
+                value = cal.getMonthLength(date);
+                if (!gc.isCutoverYear(normalizedYear) || date.getDayOfMonth() == value) {
+                    break;
+                }
+                long fd = gc.getCurrentFixedDate();
+                if (fd >= gregorianCutoverDate) {
+                    break;
+                }
+                int monthLength = gc.actualMonthLength();
+                long monthEnd = gc.getFixedDateMonth1(gc.cdate, fd) + monthLength - 1;
+                BaseCalendar.Date d = gc.getCalendarDate(monthEnd);
+                value = d.getDayOfMonth();
+            }
+            break;
+        case DAY_OF_YEAR:
+            {
+                if (!gc.isCutoverYear(normalizedYear)) {
+                    value = cal.getYearLength(date);
+                    break;
+                }
+                long jan1;
+                if (gregorianCutoverYear == gregorianCutoverYearJulian) {
+                    BaseCalendar cocal = gc.getCutoverCalendarSystem();
+                    jan1 = cocal.getFixedDate(normalizedYear, 1, 1, null);
+                } else if (normalizedYear == gregorianCutoverYearJulian) {
+                    jan1 = cal.getFixedDate(normalizedYear, 1, 1, null);
+                } else {
+                    jan1 = gregorianCutoverDate;
+                }
+                long nextJan1 = gcal.getFixedDate(++normalizedYear, 1, 1, null);
+                if (nextJan1 < gregorianCutoverDate) {
+                    nextJan1 = gregorianCutoverDate;
+                }
+                assert jan1 <= cal.getFixedDate(date.getNormalizedYear(), date.getMonth(), date.getDayOfMonth(), date);
+                assert nextJan1 >= cal.getFixedDate(date.getNormalizedYear(), date.getMonth(), date.getDayOfMonth(), date);
+                value = (int) (nextJan1 - jan1);
+            }
+            break;
+        case WEEK_OF_YEAR:
+            {
+                if (!gc.isCutoverYear(normalizedYear)) {
+                    CalendarDate d = cal.newCalendarDate(TimeZone.NO_TIMEZONE);
+                    d.setDate(date.getYear(), BaseCalendar.JANUARY, 1);
+                    int dayOfWeek = cal.getDayOfWeek(d);
+                    dayOfWeek -= getFirstDayOfWeek();
+                    if (dayOfWeek < 0) {
+                        dayOfWeek += 7;
+                    }
+                    value = 52;
+                    int magic = dayOfWeek + getMinimalDaysInFirstWeek() - 1;
+                    if ((magic == 6) || (date.isLeapYear() && (magic == 5 || magic == 12))) {
+                        value++;
+                    }
+                    break;
+                }
+                if (gc == this) {
+                    gc = (GregorianCalendar) gc.clone();
+                }
+                int maxDayOfYear = getActualMaximum(DAY_OF_YEAR);
+                gc.set(DAY_OF_YEAR, maxDayOfYear);
+                value = gc.get(WEEK_OF_YEAR);
+                if (internalGet(YEAR) != gc.getWeekYear()) {
+                    gc.set(DAY_OF_YEAR, maxDayOfYear - 7);
+                    value = gc.get(WEEK_OF_YEAR);
+                }
+            }
+            break;
+        case WEEK_OF_MONTH:
+            {
+                if (!gc.isCutoverYear(normalizedYear)) {
+                    CalendarDate d = cal.newCalendarDate(null);
+                    d.setDate(date.getYear(), date.getMonth(), 1);
+                    int dayOfWeek = cal.getDayOfWeek(d);
+                    int monthLength = cal.getMonthLength(d);
+                    dayOfWeek -= getFirstDayOfWeek();
+                    if (dayOfWeek < 0) {
+                        dayOfWeek += 7;
+                    }
+                    int nDaysFirstWeek = 7 - dayOfWeek;
+                    value = 3;
+                    if (nDaysFirstWeek >= getMinimalDaysInFirstWeek()) {
+                        value++;
+                    }
+                    monthLength -= nDaysFirstWeek + 7 * 3;
+                    if (monthLength > 0) {
+                        value++;
+                        if (monthLength > 7) {
+                            value++;
+                        }
+                    }
+                    break;
+                }
+                if (gc == this) {
+                    gc = (GregorianCalendar) gc.clone();
+                }
+                int y = gc.internalGet(YEAR);
+                int m = gc.internalGet(MONTH);
+                do {
+                    value = gc.get(WEEK_OF_MONTH);
+                    gc.add(WEEK_OF_MONTH, +1);
+                } while (gc.get(YEAR) == y && gc.get(MONTH) == m);
+            }
+            break;
+        case DAY_OF_WEEK_IN_MONTH:
+            {
+                int ndays, dow1;
+                int dow = date.getDayOfWeek();
+                if (!gc.isCutoverYear(normalizedYear)) {
+                    BaseCalendar.Date d = (BaseCalendar.Date) date.clone();
+                    ndays = cal.getMonthLength(d);
+                    d.setDayOfMonth(1);
+                    cal.normalize(d);
+                    dow1 = d.getDayOfWeek();
+                } else {
+                    if (gc == this) {
+                        gc = (GregorianCalendar) clone();
+                    }
+                    ndays = gc.actualMonthLength();
+                    gc.set(DAY_OF_MONTH, gc.getActualMinimum(DAY_OF_MONTH));
+                    dow1 = gc.get(DAY_OF_WEEK);
+                }
+                int x = dow - dow1;
+                if (x < 0) {
+                    x += 7;
+                }
+                ndays -= x;
+                value = (ndays + 6) / 7;
+            }
+            break;
+        case YEAR:
+            {
+                if (gc == this) {
+                    gc = (GregorianCalendar) clone();
+                }
+                long current = gc.getYearOffsetInMillis();
+                if (gc.internalGetEra() == CE) {
+                    gc.setTimeInMillis(Long.MAX_VALUE);
+                    value = gc.get(YEAR);
+                    long maxEnd = gc.getYearOffsetInMillis();
+                    if (current > maxEnd) {
+                        value--;
+                    }
+                } else {
+                    CalendarSystem mincal = gc.getTimeInMillis() >= gregorianCutover ? gcal : getJulianCalendarSystem();
+                    CalendarDate d = mincal.getCalendarDate(Long.MIN_VALUE, getZone());
+                    long maxEnd = (cal.getDayOfYear(d) - 1) * 24 + d.getHours();
+                    maxEnd *= 60;
+                    maxEnd += d.getMinutes();
+                    maxEnd *= 60;
+                    maxEnd += d.getSeconds();
+                    maxEnd *= 1000;
+                    maxEnd += d.getMillis();
+                    value = d.getYear();
+                    if (value <= 0) {
+                        assert mincal == gcal;
+                        value = 1 - value;
+                    }
+                    if (current < maxEnd) {
+                        value--;
+                    }
+                }
+            }
+            break;
+        default:
+            throw new ArrayIndexOutOfBoundsException(field);
+    }
+    return value;
+}

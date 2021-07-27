@@ -1,0 +1,25 @@
+public CharSequence getText(String packageName, @StringRes int resid, ApplicationInfo appInfo){
+    ResourceName name = new ResourceName(packageName, resid);
+    CharSequence text = getCachedString(name);
+    if (text != null) {
+        return text;
+    }
+    if (appInfo == null) {
+        try {
+            appInfo = getApplicationInfo(packageName, sDefaultFlags);
+        } catch (NameNotFoundException e) {
+            return null;
+        }
+    }
+    try {
+        Resources r = getResourcesForApplication(appInfo);
+        text = r.getText(resid);
+        putCachedString(name, text);
+        return text;
+    } catch (NameNotFoundException e) {
+        Log.w("PackageManager", "Failure retrieving resources for " + appInfo.packageName);
+    } catch (RuntimeException e) {
+        Log.w("PackageManager", "Failure retrieving text 0x" + Integer.toHexString(resid) + " in package " + packageName, e);
+    }
+    return null;
+}

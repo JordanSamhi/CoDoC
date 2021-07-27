@@ -1,0 +1,24 @@
+public int getIntrinsicHeight(){
+    int height = -1;
+    int padT = 0;
+    int padB = 0;
+    final boolean nest = mLayerState.mPaddingMode == PADDING_MODE_NEST;
+    final ChildDrawable[] array = mLayerState.mChildren;
+    final int N = mLayerState.mNumChildren;
+    for (int i = 0; i < N; i++) {
+        final ChildDrawable r = array[i];
+        if (r.mDrawable == null) {
+            continue;
+        }
+        final int minHeight = r.mHeight < 0 ? r.mDrawable.getIntrinsicHeight() : r.mHeight;
+        final int h = minHeight < 0 ? -1 : minHeight + r.mInsetT + r.mInsetB + padT + padB;
+        if (h > height) {
+            height = h;
+        }
+        if (nest) {
+            padT += mPaddingT[i];
+            padB += mPaddingB[i];
+        }
+    }
+    return height;
+}

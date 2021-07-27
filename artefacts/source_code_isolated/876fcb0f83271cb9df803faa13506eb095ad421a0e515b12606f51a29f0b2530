@@ -1,0 +1,10 @@
+public void onError(int errorCode) throws RemoteException{
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        mExecutor.execute(() -> {
+            mCallback.onError(errorCode);
+        });
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

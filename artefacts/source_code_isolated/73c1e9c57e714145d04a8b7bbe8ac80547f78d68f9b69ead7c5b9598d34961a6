@@ -1,0 +1,7 @@
+ ChronoLocalDateTime<? extends ChronoLocalDate> localDateTime(TemporalAccessor temporal){
+    try {
+        return date(temporal).atTime(LocalTime.from(temporal));
+    } catch (DateTimeException ex) {
+        throw new DateTimeException("Unable to obtain ChronoLocalDateTime from TemporalAccessor: " + temporal.getClass(), ex);
+    }
+}

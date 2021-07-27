@@ -1,0 +1,12 @@
+public int drainTo(Collection<? super E> c, int maxElements){
+    if (c == null)
+        throw new NullPointerException();
+    if (c == this)
+        throw new IllegalArgumentException();
+    int n = 0;
+    for (E e; n < maxElements && (e = poll()) != null; ) {
+        c.add(e);
+        ++n;
+    }
+    return n;
+}

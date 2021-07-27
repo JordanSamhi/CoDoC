@@ -1,0 +1,7 @@
+public synchronized void setMin(int min){
+    super.setMin(min);
+    int range = getMax() - getMin();
+    if ((mKeyProgressIncrement == 0) || (range / mKeyProgressIncrement > 20)) {
+        setKeyProgressIncrement(Math.max(1, Math.round((float) range / 20)));
+    }
+}

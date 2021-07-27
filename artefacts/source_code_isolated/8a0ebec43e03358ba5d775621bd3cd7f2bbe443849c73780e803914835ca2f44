@@ -1,0 +1,10 @@
+public Object invokeWithArguments(Object... arguments) throws Throwable{
+    MethodHandle invoker = null;
+    synchronized (this) {
+        if (cachedSpreadInvoker == null) {
+            cachedSpreadInvoker = MethodHandles.spreadInvoker(this.type(), 0);
+        }
+        invoker = cachedSpreadInvoker;
+    }
+    return invoker.invoke(this, arguments);
+}

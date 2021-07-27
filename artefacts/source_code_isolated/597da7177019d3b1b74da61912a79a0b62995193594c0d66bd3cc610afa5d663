@@ -1,0 +1,19 @@
+public DateTimeFormatterBuilder appendValue(TemporalField field, int minWidth, int maxWidth, SignStyle signStyle){
+    if (minWidth == maxWidth && signStyle == SignStyle.NOT_NEGATIVE) {
+        return appendValue(field, maxWidth);
+    }
+    Objects.requireNonNull(field, "field");
+    Objects.requireNonNull(signStyle, "signStyle");
+    if (minWidth < 1 || minWidth > 19) {
+        throw new IllegalArgumentException("The minimum width must be from 1 to 19 inclusive but was " + minWidth);
+    }
+    if (maxWidth < 1 || maxWidth > 19) {
+        throw new IllegalArgumentException("The maximum width must be from 1 to 19 inclusive but was " + maxWidth);
+    }
+    if (maxWidth < minWidth) {
+        throw new IllegalArgumentException("The maximum width must exceed or equal the minimum width but " + maxWidth + " < " + minWidth);
+    }
+    NumberPrinterParser pp = new NumberPrinterParser(field, minWidth, maxWidth, signStyle);
+    appendValue(pp);
+    return this;
+}

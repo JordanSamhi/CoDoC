@@ -1,0 +1,17 @@
+public static SelectorProvider provider(){
+    synchronized (lock) {
+        if (provider != null)
+            return provider;
+        return AccessController.doPrivileged(new PrivilegedAction<SelectorProvider>() {
+
+            public SelectorProvider run() {
+                if (loadProviderFromProperty())
+                    return provider;
+                if (loadProviderAsService())
+                    return provider;
+                provider = sun.nio.ch.DefaultSelectorProvider.create();
+                return provider;
+            }
+        });
+    }
+}

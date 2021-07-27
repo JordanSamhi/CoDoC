@@ -1,0 +1,10 @@
+public static long getLong(ContentResolver cr, String name, long def){
+    String valString = getString(cr, name);
+    long value;
+    try {
+        value = valString != null ? Long.parseLong(valString) : def;
+    } catch (NumberFormatException e) {
+        value = def;
+    }
+    return value;
+}

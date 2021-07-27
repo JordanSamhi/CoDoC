@@ -1,0 +1,8 @@
+public Duration minus(Duration duration){
+    long secsToSubtract = duration.getSeconds();
+    int nanosToSubtract = duration.getNano();
+    if (secsToSubtract == Long.MIN_VALUE) {
+        return plus(Long.MAX_VALUE, -nanosToSubtract).plus(1, 0);
+    }
+    return plus(-secsToSubtract, -nanosToSubtract);
+}

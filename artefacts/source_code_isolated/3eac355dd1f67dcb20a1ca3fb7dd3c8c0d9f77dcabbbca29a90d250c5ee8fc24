@@ -1,0 +1,18 @@
+public void update(ByteBuffer buffer){
+    int pos = buffer.position();
+    int limit = buffer.limit();
+    assert (pos <= limit);
+    int rem = limit - pos;
+    if (rem <= 0)
+        return;
+    if (buffer instanceof DirectBuffer) {
+        crc = updateByteBuffer(crc, ((DirectBuffer) buffer).address(), pos, rem);
+    } else if (buffer.hasArray()) {
+        crc = updateBytes(crc, buffer.array(), pos + buffer.arrayOffset(), rem);
+    } else {
+        byte[] b = new byte[rem];
+        buffer.get(b);
+        crc = updateBytes(crc, b, 0, b.length);
+    }
+    buffer.position(limit);
+}

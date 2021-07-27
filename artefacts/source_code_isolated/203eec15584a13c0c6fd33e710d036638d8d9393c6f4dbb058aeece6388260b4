@@ -1,0 +1,16 @@
+public long getTimeAtCpuSpeed(int cluster, int step, int which){
+    if (mCpuClusterSpeedTimesUs != null) {
+        if (cluster >= 0 && cluster < mCpuClusterSpeedTimesUs.length) {
+            final LongSamplingCounter[] cpuSpeedTimesUs = mCpuClusterSpeedTimesUs[cluster];
+            if (cpuSpeedTimesUs != null) {
+                if (step >= 0 && step < cpuSpeedTimesUs.length) {
+                    final LongSamplingCounter c = cpuSpeedTimesUs[step];
+                    if (c != null) {
+                        return c.getCountLocked(which);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}

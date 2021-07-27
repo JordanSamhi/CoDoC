@@ -1,0 +1,24 @@
+public MethodType dropParameterTypes(int start, int end){
+    int len = ptypes.length;
+    if (!(0 <= start && start <= end && end <= len))
+        throw newIndexOutOfBoundsException("start=" + start + " end=" + end);
+    if (start == end)
+        return this;
+    Class<?>[] nptypes;
+    if (start == 0) {
+        if (end == len) {
+            nptypes = NO_PTYPES;
+        } else {
+            nptypes = Arrays.copyOfRange(ptypes, end, len);
+        }
+    } else {
+        if (end == len) {
+            nptypes = Arrays.copyOfRange(ptypes, 0, start);
+        } else {
+            int tail = len - end;
+            nptypes = Arrays.copyOfRange(ptypes, 0, start + tail);
+            System.arraycopy(ptypes, end, nptypes, start, tail);
+        }
+    }
+    return makeImpl(rtype, nptypes, true);
+}

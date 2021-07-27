@@ -1,0 +1,9 @@
+public String getComment(){
+    synchronized (this) {
+        ensureOpen();
+        byte[] bcomm = getCommentBytes(jzfile);
+        if (bcomm == null)
+            return null;
+        return zc.toString(bcomm, bcomm.length);
+    }
+}

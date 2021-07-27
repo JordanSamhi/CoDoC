@@ -1,0 +1,30 @@
+public Number parse(String text, ParsePosition pos){
+    if (pos.index < 0 || pos.index >= text.length()) {
+        return null;
+    }
+    Number number = icuDecimalFormat.parse(text, pos);
+    if (number == null) {
+        return null;
+    }
+    if (isParseBigDecimal()) {
+        if (number instanceof Long) {
+            return new BigDecimal(number.longValue());
+        }
+        if ((number instanceof Double) && !((Double) number).isInfinite() && !((Double) number).isNaN()) {
+            return new BigDecimal(number.toString());
+        }
+        if ((number instanceof Double) && (((Double) number).isNaN() || ((Double) number).isInfinite())) {
+            return number;
+        }
+        if (number instanceof android.icu.math.BigDecimal) {
+            return ((android.icu.math.BigDecimal) number).toBigDecimal();
+        }
+    }
+    if ((number instanceof android.icu.math.BigDecimal) || (number instanceof BigInteger)) {
+        return number.doubleValue();
+    }
+    if (isParseIntegerOnly() && number.equals(new Double(-0.0))) {
+        return 0L;
+    }
+    return number;
+}

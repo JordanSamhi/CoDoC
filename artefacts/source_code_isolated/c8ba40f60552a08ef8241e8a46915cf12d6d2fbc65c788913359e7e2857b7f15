@@ -1,0 +1,45 @@
+public boolean onInterceptTouchEvent(MotionEvent ev){
+    final int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_DOWN) {
+        mVelocityTracker.clear();
+    }
+    mVelocityTracker.addMovement(ev);
+    switch(action) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                final float x = ev.getX();
+                final float y = ev.getY();
+                mInitialTouchX = x;
+                mInitialTouchY = mLastTouchY = y;
+                mOpenOnClick = isListChildUnderClipped(x, y) && mCollapseOffset > 0;
+            }
+            break;
+        case MotionEvent.ACTION_MOVE:
+            {
+                final float x = ev.getX();
+                final float y = ev.getY();
+                final float dy = y - mInitialTouchY;
+                if (Math.abs(dy) > mTouchSlop && findChildUnder(x, y) != null && (getNestedScrollAxes() & SCROLL_AXIS_VERTICAL) == 0) {
+                    mActivePointerId = ev.getPointerId(0);
+                    mIsDragging = true;
+                    mLastTouchY = Math.max(mLastTouchY - mTouchSlop, Math.min(mLastTouchY + dy, mLastTouchY + mTouchSlop));
+                }
+            }
+            break;
+        case MotionEvent.ACTION_POINTER_UP:
+            {
+                onSecondaryPointerUp(ev);
+            }
+            break;
+        case MotionEvent.ACTION_CANCEL:
+        case MotionEvent.ACTION_UP:
+            {
+                resetTouch();
+            }
+            break;
+    }
+    if (mIsDragging) {
+        abortAnimation();
+    }
+    return mIsDragging || mOpenOnClick;
+}

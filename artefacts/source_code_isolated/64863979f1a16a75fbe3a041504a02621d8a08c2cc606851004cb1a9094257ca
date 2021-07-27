@@ -1,0 +1,16 @@
+public boolean ready() throws IOException{
+    synchronized (lock) {
+        ensureOpen();
+        if (skipLF) {
+            if (nextChar >= nChars && in.ready()) {
+                fill();
+            }
+            if (nextChar < nChars) {
+                if (cb[nextChar] == '\n')
+                    nextChar++;
+                skipLF = false;
+            }
+        }
+        return (nextChar < nChars) || in.ready();
+    }
+}

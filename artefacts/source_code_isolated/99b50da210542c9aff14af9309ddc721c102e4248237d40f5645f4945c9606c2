@@ -1,0 +1,28 @@
+public void setNavigationMode(int mode){
+    final int oldMode = mDecorToolbar.getNavigationMode();
+    switch(oldMode) {
+        case NAVIGATION_MODE_TABS:
+            mSavedTabPosition = getSelectedNavigationIndex();
+            selectTab(null);
+            mTabScrollView.setVisibility(View.GONE);
+            break;
+    }
+    if (oldMode != mode && !mHasEmbeddedTabs) {
+        if (mOverlayLayout != null) {
+            mOverlayLayout.requestFitSystemWindows();
+        }
+    }
+    mDecorToolbar.setNavigationMode(mode);
+    switch(mode) {
+        case NAVIGATION_MODE_TABS:
+            ensureTabsExist();
+            mTabScrollView.setVisibility(View.VISIBLE);
+            if (mSavedTabPosition != INVALID_POSITION) {
+                setSelectedNavigationItem(mSavedTabPosition);
+                mSavedTabPosition = INVALID_POSITION;
+            }
+            break;
+    }
+    mDecorToolbar.setCollapsible(mode == NAVIGATION_MODE_TABS && !mHasEmbeddedTabs);
+    mOverlayLayout.setHasNonEmbeddedTabs(mode == NAVIGATION_MODE_TABS && !mHasEmbeddedTabs);
+}

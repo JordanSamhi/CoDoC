@@ -1,0 +1,47 @@
+
+     * Produces a method handle which will discard some dummy arguments
+     * before calling some other specified <i>target</i> method handle.
+     * The type of the new method handle will be the same as the target's type,
+     * except it will also include the dummy argument types,
+     * at some given position.
+     * <p>
+     * The {@code pos} argument may range between zero and <i>N</i>,
+     * where <i>N</i> is the arity of the target.
+     * If {@code pos} is zero, the dummy arguments will precede
+     * the target's real arguments; if {@code pos} is <i>N</i>
+     * they will come after.
+     * <p>
+     * <b>Example:</b>
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle cat = lookup().findVirtual(String.class,
+  "concat", methodType(String.class, String.class));
+assertEquals("xy", (String) cat.invokeExact("x", "y"));
+MethodHandle d0 = dropArguments(cat, 0, String.class);
+assertEquals("yz", (String) d0.invokeExact("x", "y", "z"));
+MethodHandle d1 = dropArguments(cat, 1, String.class);
+assertEquals("xz", (String) d1.invokeExact("x", "y", "z"));
+MethodHandle d2 = dropArguments(cat, 2, String.class);
+assertEquals("xy", (String) d2.invokeExact("x", "y", "z"));
+MethodHandle d12 = dropArguments(cat, 1, int.class, boolean.class);
+assertEquals("xz", (String) d12.invokeExact("x", 12, true, "z"));
+     * }</pre></blockquote>
+     * <p>
+     * This method is also equivalent to the following code:
+     * <blockquote><pre>
+     * {@link #dropArguments(MethodHandle,int,List) dropArguments}{@code (target, pos, Arrays.asList(valueTypes))}
+     * </pre></blockquote>
+     * @param target the method handle to invoke after the arguments are dropped
+     * @param valueTypes the type(s) of the argument(s) to drop
+     * @param pos position of first argument to drop (zero for the leftmost)
+     * @return a method handle which drops arguments of the given types,
+     *         before calling the original method handle
+     * @throws NullPointerException if the target is null,
+     *                              or if the {@code valueTypes} array or any of its elements is null
+     * @throws IllegalArgumentException if any element of {@code valueTypes} is {@code void.class},
+     *                  or if {@code pos} is negative or greater than the arity of the target,
+     *                  or if the new method handle's type would have
+     *                  <a href="MethodHandle.html#maxarity">too many parameters</a>
+     

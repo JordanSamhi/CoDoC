@@ -1,0 +1,16 @@
+public Builder setCalendarType(String type){
+    if (type.equals("gregorian")) {
+        type = "gregory";
+    }
+    if (!Calendar.getAvailableCalendarTypes().contains(type) && !type.equals("iso8601")) {
+        throw new IllegalArgumentException("unknown calendar type: " + type);
+    }
+    if (this.type == null) {
+        this.type = type;
+    } else {
+        if (!this.type.equals(type)) {
+            throw new IllegalStateException("calendar type override");
+        }
+    }
+    return this;
+}

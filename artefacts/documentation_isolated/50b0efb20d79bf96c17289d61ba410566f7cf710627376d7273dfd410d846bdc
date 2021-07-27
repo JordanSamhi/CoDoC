@@ -1,0 +1,41 @@
+
+     * Returns absolute paths to application-specific directories on all
+     * shared/external storage devices where the application's OBB files (if
+     * there are any) can be found. Note if the application does not have any
+     * OBB files, these directories may not exist.
+     * <p>
+     * This is like {@link #getFilesDir()} in that these files will be deleted
+     * when the application is uninstalled, however there are some important
+     * differences:
+     * <ul>
+     * <li>Shared storage may not always be available, since removable media can
+     * be ejected by the user. Media state can be checked using
+     * {@link Environment#getExternalStorageState(File)}.
+     * <li>There is no security enforced with these files. For example, any
+     * application holding
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} can write to
+     * these files.
+     * </ul>
+     * <p>
+     * Shared storage devices returned here are considered a stable part of the
+     * device, including physical media slots under a protective cover. The
+     * returned paths do not include transient devices, such as USB flash drives
+     * connected to handheld devices.
+     * <p>
+     * An application may store data on any or all of the returned devices. For
+     * example, an app may choose to store large files on the device with the
+     * most available space, as measured by {@link StatFs}.
+     * <p>
+     * No additional permissions are required for the calling app to read or
+     * write files under the returned path. Write access outside of these paths
+     * on secondary external storage devices is not available.
+     *
+     * @return the absolute paths to application-specific directories. Some
+     *         individual paths may be {@code null} if that shared storage is
+     *         not currently available. The first path returned is the same as
+     *         {@link #getObbDir()}
+     * @see #getObbDir()
+     * @see Environment#getExternalStorageState(File)
+     * @see Environment#isExternalStorageEmulated(File)
+     * @see Environment#isExternalStorageRemovable(File)
+     

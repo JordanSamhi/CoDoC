@@ -1,0 +1,10 @@
+public boolean canRead(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkRead(path);
+    }
+    if (isInvalid()) {
+        return false;
+    }
+    return fs.checkAccess(this, FileSystem.ACCESS_READ);
+}

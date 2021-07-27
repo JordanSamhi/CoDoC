@@ -1,0 +1,24 @@
+public static LocalDate ofEpochDay(long epochDay){
+    long zeroDay = epochDay + DAYS_0000_TO_1970;
+    zeroDay -= 60;
+    long adjust = 0;
+    if (zeroDay < 0) {
+        long adjustCycles = (zeroDay + 1) / DAYS_PER_CYCLE - 1;
+        adjust = adjustCycles * 400;
+        zeroDay += -adjustCycles * DAYS_PER_CYCLE;
+    }
+    long yearEst = (400 * zeroDay + 591) / DAYS_PER_CYCLE;
+    long doyEst = zeroDay - (365 * yearEst + yearEst / 4 - yearEst / 100 + yearEst / 400);
+    if (doyEst < 0) {
+        yearEst--;
+        doyEst = zeroDay - (365 * yearEst + yearEst / 4 - yearEst / 100 + yearEst / 400);
+    }
+    yearEst += adjust;
+    int marchDoy0 = (int) doyEst;
+    int marchMonth0 = (marchDoy0 * 5 + 2) / 153;
+    int month = (marchMonth0 + 2) % 12 + 1;
+    int dom = marchDoy0 - (marchMonth0 * 306 + 5) / 10 + 1;
+    yearEst += marchMonth0 / 10;
+    int year = YEAR.checkValidIntValue(yearEst);
+    return new LocalDate(year, month, dom);
+}

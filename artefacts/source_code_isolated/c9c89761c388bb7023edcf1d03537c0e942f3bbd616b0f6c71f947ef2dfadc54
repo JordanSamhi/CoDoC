@@ -1,0 +1,13 @@
+public boolean equals(Object obj){
+    if (this == obj)
+        return true;
+    if (!(obj instanceof SecretKey))
+        return false;
+    String thatAlg = ((SecretKey) obj).getAlgorithm();
+    if (!(thatAlg.equalsIgnoreCase(this.algorithm))) {
+        if ((!(thatAlg.equalsIgnoreCase("DESede")) || !(this.algorithm.equalsIgnoreCase("TripleDES"))) && (!(thatAlg.equalsIgnoreCase("TripleDES")) || !(this.algorithm.equalsIgnoreCase("DESede"))))
+            return false;
+    }
+    byte[] thatKey = ((SecretKey) obj).getEncoded();
+    return MessageDigest.isEqual(this.key, thatKey);
+}

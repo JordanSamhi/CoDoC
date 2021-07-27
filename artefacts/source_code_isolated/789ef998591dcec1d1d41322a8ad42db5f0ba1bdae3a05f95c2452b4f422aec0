@@ -1,0 +1,6 @@
+public static Collector<T, ?, Set<T>> toSet(){
+    return new CollectorImpl<>((Supplier<Set<T>>) HashSet::new, Set::add, (left, right) -> {
+        left.addAll(right);
+        return left;
+    }, CH_UNORDERED_ID);
+}

@@ -1,0 +1,13 @@
+public static Currency getInstance(String currencyCode){
+    Currency instance = instances.get(currencyCode);
+    if (instance != null) {
+        return instance;
+    }
+    android.icu.util.Currency icuInstance = android.icu.util.Currency.getInstance(currencyCode);
+    if (icuInstance == null) {
+        return null;
+    }
+    Currency currencyVal = new Currency(icuInstance);
+    instance = instances.putIfAbsent(currencyCode, currencyVal);
+    return (instance != null ? instance : currencyVal);
+}

@@ -1,0 +1,21 @@
+public int getItemViewType(int position){
+    int count;
+    int countSum = (count = getContentPreviewRowCount());
+    if (count > 0 && position < countSum)
+        return VIEW_TYPE_CONTENT_PREVIEW;
+    countSum += (count = getProfileRowCount());
+    if (count > 0 && position < countSum)
+        return VIEW_TYPE_PROFILE;
+    countSum += (count = getServiceTargetRowCount());
+    if (count > 0 && position < countSum)
+        return VIEW_TYPE_DIRECT_SHARE;
+    countSum += (count = getCallerAndRankedTargetRowCount());
+    if (count > 0 && position < countSum)
+        return VIEW_TYPE_CALLER_AND_RANK;
+    countSum += (count = getAzLabelRowCount());
+    if (count > 0 && position < countSum)
+        return VIEW_TYPE_AZ_LABEL;
+    if (position == getItemCount() - 1)
+        return VIEW_TYPE_FOOTER;
+    return VIEW_TYPE_NORMAL;
+}

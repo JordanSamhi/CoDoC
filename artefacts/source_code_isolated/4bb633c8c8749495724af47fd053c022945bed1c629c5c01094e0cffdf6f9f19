@@ -1,9 +1,0 @@
-public static SparseArray<Pair<Dataset, InlineSuggestion>> createAutofillInlineSuggestions(@NonNull InlineSuggestionsRequest request, int requestId, @NonNull List<Dataset> datasets, @NonNull AutofillId autofillId, @NonNull AutoFillUI.AutoFillUiCallback client, @NonNull Runnable onErrorCallback, @Nullable RemoteInlineSuggestionRenderService remoteRenderService, int userId, int sessionId){
-    if (sDebug)
-        Slog.d(TAG, "createInlineSuggestionsResponse called");
-    final Consumer<IntentSender> intentSenderConsumer = (intentSender) -> client.startIntentSender(intentSender, new Intent());
-    final BiConsumer<Dataset, Integer> onClickFactory = (dataset, datasetIndex) -> {
-        client.fill(requestId, datasetIndex, dataset);
-    };
-    return createInlineSuggestionsInternal(false, request, datasets, autofillId, onErrorCallback, onClickFactory, intentSenderConsumer, remoteRenderService, userId, sessionId);
-}

@@ -1,0 +1,14 @@
+public static int codePointCount(CharSequence seq, int beginIndex, int endIndex){
+    int length = seq.length();
+    if (beginIndex < 0 || endIndex > length || beginIndex > endIndex) {
+        throw new IndexOutOfBoundsException();
+    }
+    int n = endIndex - beginIndex;
+    for (int i = beginIndex; i < endIndex; ) {
+        if (isHighSurrogate(seq.charAt(i++)) && i < endIndex && isLowSurrogate(seq.charAt(i))) {
+            n--;
+            i++;
+        }
+    }
+    return n;
+}

@@ -1,0 +1,21 @@
+public String toString(){
+    long ncompleted;
+    int nworkers, nactive;
+    final ReentrantLock mainLock = this.mainLock;
+    mainLock.lock();
+    try {
+        ncompleted = completedTaskCount;
+        nactive = 0;
+        nworkers = workers.size();
+        for (Worker w : workers) {
+            ncompleted += w.completedTasks;
+            if (w.isLocked())
+                ++nactive;
+        }
+    } finally {
+        mainLock.unlock();
+    }
+    int c = ctl.get();
+    String runState = runStateLessThan(c, SHUTDOWN) ? "Running" : runStateAtLeast(c, TERMINATED) ? "Terminated" : "Shutting down";
+    return super.toString() + "[" + runState + ", pool size = " + nworkers + ", active threads = " + nactive + ", queued tasks = " + workQueue.size() + ", completed tasks = " + ncompleted + "]";
+}

@@ -1,0 +1,18 @@
+public boolean equals(Object obj){
+    if (obj == null) {
+        return false;
+    }
+    if (!(obj instanceof CallAudioState)) {
+        return false;
+    }
+    CallAudioState state = (CallAudioState) obj;
+    if (supportedBluetoothDevices.size() != state.supportedBluetoothDevices.size()) {
+        return false;
+    }
+    for (BluetoothDevice device : supportedBluetoothDevices) {
+        if (!state.supportedBluetoothDevices.contains(device)) {
+            return false;
+        }
+    }
+    return Objects.equals(activeBluetoothDevice, state.activeBluetoothDevice) && isMuted() == state.isMuted() && getRoute() == state.getRoute() && getSupportedRouteMask() == state.getSupportedRouteMask();
+}

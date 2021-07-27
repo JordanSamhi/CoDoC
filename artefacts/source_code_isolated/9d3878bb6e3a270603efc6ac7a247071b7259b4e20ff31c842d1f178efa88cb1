@@ -1,0 +1,16 @@
+public String toString(){
+    String basic = " Histogram id = " + mId + " Time(ms): min = " + mMinTimeMs + " max = " + mMaxTimeMs + " avg = " + mAverageTimeMs + " Count = " + mSampleCount;
+    if (mSampleCount < RANGE_CALCULATION_COUNT) {
+        return basic;
+    } else {
+        StringBuffer intervals = new StringBuffer(" Interval Endpoints:");
+        for (int i = 0; i < mBucketEndPoints.length; i++) {
+            intervals.append(" " + mBucketEndPoints[i]);
+        }
+        intervals.append(" Interval counters:");
+        for (int i = 0; i < mBucketCounters.length; i++) {
+            intervals.append(" " + mBucketCounters[i]);
+        }
+        return basic + intervals;
+    }
+}

@@ -1,0 +1,33 @@
+
+     * Creates a new sequential or parallel {@code Stream} from a
+     * {@code Supplier} of {@code Spliterator}.
+     *
+     * <p>The {@link Supplier#get()} method will be invoked on the supplier no
+     * more than once, and only after the terminal operation of the stream pipeline
+     * commences.
+     *
+     * <p>For spliterators that report a characteristic of {@code IMMUTABLE}
+     * or {@code CONCURRENT}, or that are
+     * <a href="../Spliterator.html#binding">late-binding</a>, it is likely
+     * more efficient to use {@link #stream(java.util.Spliterator, boolean)}
+     * instead.
+     * <p>The use of a {@code Supplier} in this form provides a level of
+     * indirection that reduces the scope of potential interference with the
+     * source.  Since the supplier is only invoked after the terminal operation
+     * commences, any modifications to the source up to the start of the
+     * terminal operation are reflected in the stream result.  See
+     * <a href="package-summary.html#NonInterference">Non-Interference</a> for
+     * more details.
+     *
+     * @param <T> the type of stream elements
+     * @param supplier a {@code Supplier} of a {@code Spliterator}
+     * @param characteristics Spliterator characteristics of the supplied
+     *        {@code Spliterator}.  The characteristics must be equal to
+     *        {@code supplier.get().characteristics()}, otherwise undefined
+     *        behavior may occur when terminal operation commences.
+     * @param parallel if {@code true} then the returned stream is a parallel
+     *        stream; if {@code false} the returned stream is a sequential
+     *        stream.
+     * @return a new sequential or parallel {@code Stream}
+     * @see #stream(java.util.Spliterator, boolean)
+     

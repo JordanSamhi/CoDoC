@@ -1,0 +1,26 @@
+public int read(byte[] b, int off, int len) throws IOException{
+    ensureOpen();
+    if (b == null) {
+        throw new NullPointerException();
+    } else if (off < 0 || len < 0 || len > b.length - off) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+    try {
+        int n;
+        while ((n = inf.inflate(b, off, len)) == 0) {
+            if (inf.finished() || inf.needsDictionary()) {
+                reachEOF = true;
+                return -1;
+            }
+            if (inf.needsInput()) {
+                fill();
+            }
+        }
+        return n;
+    } catch (DataFormatException e) {
+        String s = e.getMessage();
+        throw new ZipException(s != null ? s : "Invalid ZLIB data format");
+    }
+}

@@ -1,0 +1,19 @@
+public boolean equals(@Nullable Object obj){
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    final HistoricalOp other = (HistoricalOp) obj;
+    if (mOp != other.mOp) {
+        return false;
+    }
+    if (!equalsLongSparseLongArray(mAccessCount, other.mAccessCount)) {
+        return false;
+    }
+    if (!equalsLongSparseLongArray(mRejectCount, other.mRejectCount)) {
+        return false;
+    }
+    return equalsLongSparseLongArray(mAccessDuration, other.mAccessDuration);
+}

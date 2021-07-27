@@ -1,0 +1,8 @@
+public final long getAndUpdate(LongUnaryOperator updateFunction){
+    long prev, next;
+    do {
+        prev = get();
+        next = updateFunction.applyAsLong(prev);
+    } while (!compareAndSet(prev, next));
+    return prev;
+}

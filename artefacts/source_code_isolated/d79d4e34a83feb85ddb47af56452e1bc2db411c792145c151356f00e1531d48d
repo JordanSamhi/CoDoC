@@ -1,0 +1,14 @@
+public static int round(float a){
+    int intBits = Float.floatToRawIntBits(a);
+    int biasedExp = (intBits & FloatConsts.EXP_BIT_MASK) >> (FloatConsts.SIGNIFICAND_WIDTH - 1);
+    int shift = (FloatConsts.SIGNIFICAND_WIDTH - 2 + FloatConsts.EXP_BIAS) - biasedExp;
+    if ((shift & -32) == 0) {
+        int r = ((intBits & FloatConsts.SIGNIF_BIT_MASK) | (FloatConsts.SIGNIF_BIT_MASK + 1));
+        if (intBits < 0) {
+            r = -r;
+        }
+        return ((r >> shift) + 1) >> 1;
+    } else {
+        return (int) a;
+    }
+}

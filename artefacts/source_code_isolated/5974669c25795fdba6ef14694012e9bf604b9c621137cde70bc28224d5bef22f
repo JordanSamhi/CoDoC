@@ -1,0 +1,9 @@
+public final Entry getEntry(String alias, ProtectionParameter protParam) throws NoSuchAlgorithmException, UnrecoverableEntryException, KeyStoreException{
+    if (alias == null) {
+        throw new NullPointerException("invalid null input");
+    }
+    if (!initialized) {
+        throw new KeyStoreException("Uninitialized keystore");
+    }
+    return keyStoreSpi.engineGetEntry(alias, protParam);
+}

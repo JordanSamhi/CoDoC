@@ -1,0 +1,13 @@
+public void list(PrintWriter out){
+    out.println("-- listing properties --");
+    Hashtable<String, Object> h = new Hashtable<>();
+    enumerate(h);
+    for (Enumeration<String> e = h.keys(); e.hasMoreElements(); ) {
+        String key = e.nextElement();
+        String val = (String) h.get(key);
+        if (val.length() > 40) {
+            val = val.substring(0, 37) + "...";
+        }
+        out.println(key + "=" + val);
+    }
+}

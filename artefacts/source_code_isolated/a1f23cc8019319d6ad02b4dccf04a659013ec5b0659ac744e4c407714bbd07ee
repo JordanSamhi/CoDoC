@@ -1,0 +1,11 @@
+public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfo(info);
+    if (getParent() instanceof RadioGroup) {
+        RadioGroup radioGroup = (RadioGroup) getParent();
+        if (radioGroup.getOrientation() == LinearLayout.HORIZONTAL) {
+            info.setCollectionItemInfo(AccessibilityNodeInfo.CollectionItemInfo.obtain(0, 1, radioGroup.getIndexWithinVisibleButtons(this), 1, false, isChecked()));
+        } else {
+            info.setCollectionItemInfo(AccessibilityNodeInfo.CollectionItemInfo.obtain(radioGroup.getIndexWithinVisibleButtons(this), 1, 0, 1, false, isChecked()));
+        }
+    }
+}

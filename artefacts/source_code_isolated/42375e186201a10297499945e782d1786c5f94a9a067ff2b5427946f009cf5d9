@@ -1,0 +1,8 @@
+public int getIntrinsicHeight(){
+    final int childHeight = getDrawable().getIntrinsicHeight();
+    final float fraction = mState.mInsetTop.mFraction + mState.mInsetBottom.mFraction;
+    if (childHeight < 0 || fraction >= 1) {
+        return -1;
+    }
+    return (int) (childHeight / (1 - fraction)) + mState.mInsetTop.mDimension + mState.mInsetBottom.mDimension;
+}

@@ -1,0 +1,37 @@
+public static Stream<Path> list(Path dir) throws IOException{
+    DirectoryStream<Path> ds = Files.newDirectoryStream(dir);
+    try {
+        final Iterator<Path> delegate = ds.iterator();
+        Iterator<Path> it = new Iterator<Path>() {
+
+            @Override
+            public boolean hasNext() {
+                try {
+                    return delegate.hasNext();
+                } catch (DirectoryIteratorException e) {
+                    throw new UncheckedIOException(e.getCause());
+                }
+            }
+
+            @Override
+            public Path next() {
+                try {
+                    return delegate.next();
+                } catch (DirectoryIteratorException e) {
+                    throw new UncheckedIOException(e.getCause());
+                }
+            }
+        };
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, Spliterator.DISTINCT), false).onClose(asUncheckedRunnable(ds));
+    } catch (Error | RuntimeException e) {
+        try {
+            ds.close();
+        } catch (IOException ex) {
+            try {
+                e.addSuppressed(ex);
+            } catch (Throwable ignore) {
+            }
+        }
+        throw e;
+    }
+}

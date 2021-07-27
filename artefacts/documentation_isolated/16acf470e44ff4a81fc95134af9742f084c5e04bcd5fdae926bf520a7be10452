@@ -1,0 +1,31 @@
+
+     * Ask the authenticator that has been registered with the system
+     * for a password. This is the preferred method for requesting a password
+     * because the hostname can be provided in cases where the InetAddress
+     * is not available.
+     * <p>
+     * First, if there is a security manager, its {@code checkPermission}
+     * method is called with a
+     * {@code NetPermission("requestPasswordAuthentication")} permission.
+     * This may result in a java.lang.SecurityException.
+     *
+     * @param host The hostname of the site requesting authentication.
+     * @param addr The InetAddress of the site requesting authentication,
+     *             or null if not known.
+     * @param port the port for the requested connection.
+     * @param protocol The protocol that's requesting the connection
+     *          ({@link java.net.Authenticator#getRequestingProtocol()})
+     * @param prompt A prompt string for the user which identifies the authentication realm.
+     * @param scheme The authentication scheme
+     *
+     * @return The username/password, or null if one can't be gotten.
+     *
+     * @throws SecurityException
+     *        if a security manager exists and its
+     *        {@code checkPermission} method doesn't allow
+     *        the password authentication request.
+     *
+     * @see SecurityManager#checkPermission
+     * @see java.net.NetPermission
+     * @since 1.4
+     

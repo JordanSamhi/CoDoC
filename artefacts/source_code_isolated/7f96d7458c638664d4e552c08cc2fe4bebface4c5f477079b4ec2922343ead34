@@ -1,0 +1,8 @@
+public final int genExemptionBlob(byte[] output, int outputOffset) throws IllegalStateException, ShortBufferException, ExemptionMechanismException{
+    if (!initialized) {
+        throw new IllegalStateException("ExemptionMechanism not initialized");
+    }
+    int n = exmechSpi.engineGenExemptionBlob(output, outputOffset);
+    done = true;
+    return n;
+}

@@ -1,0 +1,13 @@
+public static final String getDefaultType(){
+    String kstype;
+    kstype = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        public String run() {
+            return Security.getProperty(KEYSTORE_TYPE);
+        }
+    });
+    if (kstype == null) {
+        kstype = "jks";
+    }
+    return kstype;
+}

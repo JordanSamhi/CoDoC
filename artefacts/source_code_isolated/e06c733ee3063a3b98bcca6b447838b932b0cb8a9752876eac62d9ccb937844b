@@ -1,0 +1,20 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (!mInputEnabled) {
+        return true;
+    }
+    final int action = event.getActionMasked();
+    if (action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
+        boolean forceSelection = false;
+        boolean autoAdvance = false;
+        if (action == MotionEvent.ACTION_DOWN) {
+            mChangedDuringTouch = false;
+        } else if (action == MotionEvent.ACTION_UP) {
+            autoAdvance = true;
+            if (!mChangedDuringTouch) {
+                forceSelection = true;
+            }
+        }
+        mChangedDuringTouch |= handleTouchInput(event.getX(), event.getY(), forceSelection, autoAdvance);
+    }
+    return true;
+}

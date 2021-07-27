@@ -1,0 +1,5 @@
+public void forEachEntry(long parallelismThreshold, Function<Map.Entry<K, V>, ? extends U> transformer, Consumer<? super U> action){
+    if (transformer == null || action == null)
+        throw new NullPointerException();
+    new ForEachTransformedEntryTask<K, V, U>(null, batchFor(parallelismThreshold), 0, 0, table, transformer, action).invoke();
+}

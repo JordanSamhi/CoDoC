@@ -1,0 +1,14 @@
+public AttributedCharacterIterator formatToCharacterIterator(Object obj){
+    StringBuffer sb = new StringBuffer();
+    CharacterIteratorFieldDelegate delegate = new CharacterIteratorFieldDelegate();
+    if (obj instanceof Date) {
+        format((Date) obj, sb, delegate);
+    } else if (obj instanceof Number) {
+        format(new Date(((Number) obj).longValue()), sb, delegate);
+    } else if (obj == null) {
+        throw new NullPointerException("formatToCharacterIterator must be passed non-null object");
+    } else {
+        throw new IllegalArgumentException("Cannot format given Object as a Date");
+    }
+    return delegate.getIterator(sb.toString());
+}

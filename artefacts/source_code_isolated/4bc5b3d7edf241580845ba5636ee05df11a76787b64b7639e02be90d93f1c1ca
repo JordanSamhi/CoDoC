@@ -1,0 +1,32 @@
+public String toString(){
+    StringBuilder msg = new StringBuilder();
+    msg.append("MotionEvent { action=").append(actionToString(getAction()));
+    appendUnless("0", msg, ", actionButton=", buttonStateToString(getActionButton()));
+    final int pointerCount = getPointerCount();
+    for (int i = 0; i < pointerCount; i++) {
+        appendUnless(i, msg, ", id[" + i + "]=", getPointerId(i));
+        float x = getX(i);
+        float y = getY(i);
+        if (!DEBUG_CONCISE_TOSTRING || x != 0f || y != 0f) {
+            msg.append(", x[").append(i).append("]=").append(x);
+            msg.append(", y[").append(i).append("]=").append(y);
+        }
+        appendUnless(TOOL_TYPE_SYMBOLIC_NAMES.get(TOOL_TYPE_FINGER), msg, ", toolType[" + i + "]=", toolTypeToString(getToolType(i)));
+    }
+    appendUnless("0", msg, ", buttonState=", MotionEvent.buttonStateToString(getButtonState()));
+    appendUnless(classificationToString(CLASSIFICATION_NONE), msg, ", classification=", classificationToString(getClassification()));
+    appendUnless("0", msg, ", metaState=", KeyEvent.metaStateToString(getMetaState()));
+    appendUnless("0", msg, ", flags=0x", Integer.toHexString(getFlags()));
+    appendUnless("0", msg, ", edgeFlags=0x", Integer.toHexString(getEdgeFlags()));
+    appendUnless(1, msg, ", pointerCount=", pointerCount);
+    appendUnless(0, msg, ", historySize=", getHistorySize());
+    msg.append(", eventTime=").append(getEventTime());
+    if (!DEBUG_CONCISE_TOSTRING) {
+        msg.append(", downTime=").append(getDownTime());
+        msg.append(", deviceId=").append(getDeviceId());
+        msg.append(", source=0x").append(Integer.toHexString(getSource()));
+        msg.append(", displayId=").append(getDisplayId());
+    }
+    msg.append(" }");
+    return msg.toString();
+}

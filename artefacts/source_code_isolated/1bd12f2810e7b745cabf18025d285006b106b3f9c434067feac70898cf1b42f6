@@ -1,0 +1,24 @@
+public final void setPriority(int newPriority){
+    ThreadGroup g;
+    checkAccess();
+    if (newPriority > MAX_PRIORITY || newPriority < MIN_PRIORITY) {
+        throw new IllegalArgumentException("Priority out of range: " + newPriority);
+    }
+    if ((g = getThreadGroup()) != null) {
+        if (newPriority > g.getMaxPriority()) {
+            newPriority = g.getMaxPriority();
+        }
+        synchronized (this) {
+            this.priority = newPriority;
+            if (isAlive()) {
+                ThreadPrioritySetter threadPrioritySetter = RuntimeHooks.getThreadPrioritySetter();
+                int nativeTid = this.getNativeTid();
+                if (threadPrioritySetter != null && nativeTid != 0) {
+                    threadPrioritySetter.setPriority(nativeTid, newPriority);
+                } else {
+                    setPriority0(newPriority);
+                }
+            }
+        }
+    }
+}

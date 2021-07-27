@@ -1,0 +1,10 @@
+public static URLClassLoader newInstance(final URL[] urls){
+    final AccessControlContext acc = AccessController.getContext();
+    URLClassLoader ucl = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>() {
+
+        public URLClassLoader run() {
+            return new FactoryURLClassLoader(urls, acc);
+        }
+    });
+    return ucl;
+}

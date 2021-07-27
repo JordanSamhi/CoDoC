@@ -1,0 +1,27 @@
+
+     * Returns a stream producing the given {@code streamSize} number of
+     * pseudorandom {@code double} values, each conforming to the given origin
+     * (inclusive) and bound (exclusive).
+     *
+     * <p>A pseudorandom {@code double} value is generated as if it's the result
+     * of calling the following method with the origin and bound:
+     * <pre> {@code
+     * double nextDouble(double origin, double bound) {
+     *   double r = nextDouble();
+     *   r = r * (bound - origin) + origin;
+     *   if (r >= bound) // correct for rounding
+     *     r = Math.nextDown(bound);
+     *   return r;
+     * }}</pre>
+     *
+     * @param streamSize the number of values to generate
+     * @param randomNumberOrigin the origin (inclusive) of each random value
+     * @param randomNumberBound the bound (exclusive) of each random value
+     * @return a stream of pseudorandom {@code double} values,
+     *         each with the given origin (inclusive) and bound (exclusive)
+     * @throws IllegalArgumentException if {@code streamSize} is
+     *         less than zero
+     * @throws IllegalArgumentException if {@code randomNumberOrigin}
+     *         is greater than or equal to {@code randomNumberBound}
+     * @since 1.8
+     

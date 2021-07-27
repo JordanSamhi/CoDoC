@@ -1,2 +1,6 @@
-public void onBarringInfoChanged(@NonNull BarringInfo barringInfo){
+public void onBarringInfoChanged(BarringInfo barringInfo){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onBarringInfoChanged(barringInfo)));
 }

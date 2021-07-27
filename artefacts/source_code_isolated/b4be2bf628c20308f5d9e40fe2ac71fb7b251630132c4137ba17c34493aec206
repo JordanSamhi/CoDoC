@@ -1,0 +1,11 @@
+public static final void clearCache(ClassLoader loader){
+    if (loader == null) {
+        throw new NullPointerException();
+    }
+    Set<CacheKey> set = cacheList.keySet();
+    for (CacheKey key : set) {
+        if (key.getLoader() == loader) {
+            set.remove(key);
+        }
+    }
+}

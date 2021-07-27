@@ -1,0 +1,8 @@
+public Duration getDaylightSavings(Instant instant){
+    if (savingsInstantTransitions.length == 0) {
+        return Duration.ZERO;
+    }
+    ZoneOffset standardOffset = getStandardOffset(instant);
+    ZoneOffset actualOffset = getOffset(instant);
+    return Duration.ofSeconds(actualOffset.getTotalSeconds() - standardOffset.getTotalSeconds());
+}

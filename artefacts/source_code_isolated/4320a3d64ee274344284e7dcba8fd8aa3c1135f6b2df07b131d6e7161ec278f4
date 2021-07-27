@@ -1,0 +1,8 @@
+public synchronized void setReceiveBufferSize(int size) throws SocketException{
+    if (size <= 0) {
+        throw new IllegalArgumentException("invalid receive size");
+    }
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    getImpl().setOption(SocketOptions.SO_RCVBUF, new Integer(size));
+}

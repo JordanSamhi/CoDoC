@@ -1,0 +1,11 @@
+public Resources getResourcesForApplication(@NonNull ApplicationInfo app) throws NameNotFoundException{
+    if (app.packageName.equals("system")) {
+        return mContext.mMainThread.getSystemUiContext().getResources();
+    }
+    final boolean sameUid = (app.uid == Process.myUid());
+    final Resources r = mContext.mMainThread.getTopLevelResources(sameUid ? app.sourceDir : app.publicSourceDir, sameUid ? app.splitSourceDirs : app.splitPublicSourceDirs, app.resourceDirs, app.sharedLibraryFiles, Display.DEFAULT_DISPLAY, mContext.mPackageInfo);
+    if (r != null) {
+        return r;
+    }
+    throw new NameNotFoundException("Unable to open " + app.publicSourceDir);
+}

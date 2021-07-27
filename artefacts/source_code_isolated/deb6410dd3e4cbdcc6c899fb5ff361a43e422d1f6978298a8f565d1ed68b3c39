@@ -1,0 +1,18 @@
+public void removePropertyChangeListener(PropertyChangeListener l) throws SecurityException{
+    checkPermission();
+    if (l != null) {
+        PropertyChangeListener listener = l;
+        synchronized (listenerMap) {
+            Integer value = listenerMap.get(listener);
+            if (value != null) {
+                int i = value.intValue();
+                if (i == 1) {
+                    listenerMap.remove(listener);
+                } else {
+                    assert i > 1;
+                    listenerMap.put(listener, i - 1);
+                }
+            }
+        }
+    }
+}

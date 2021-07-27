@@ -1,0 +1,15 @@
+public void setDefaultIcon(int resId){
+    if ((mResourcesSetFlags & FLAG_RESOURCE_SET_ICON) != 0) {
+        return;
+    }
+    mIconRes = resId;
+    if (mDecorContentParent != null && (!mDecorContentParent.hasIcon() || (mResourcesSetFlags & FLAG_RESOURCE_SET_ICON_FALLBACK) != 0)) {
+        if (resId != 0) {
+            mDecorContentParent.setIcon(resId);
+            mResourcesSetFlags &= ~FLAG_RESOURCE_SET_ICON_FALLBACK;
+        } else {
+            mDecorContentParent.setIcon(getContext().getPackageManager().getDefaultActivityIcon());
+            mResourcesSetFlags |= FLAG_RESOURCE_SET_ICON_FALLBACK;
+        }
+    }
+}

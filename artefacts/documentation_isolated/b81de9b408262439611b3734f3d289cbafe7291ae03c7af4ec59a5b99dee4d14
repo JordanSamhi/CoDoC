@@ -1,0 +1,35 @@
+
+     * Returns a copy of this time with the specified field set to a new value.
+     * <p>
+     * This returns an {@code OffsetTime}, based on this one, with the value
+     * for the specified field changed.
+     * This can be used to change any supported field, such as the hour, minute or second.
+     * If it is not possible to set the value, because the field is not supported or for
+     * some other reason, an exception is thrown.
+     * <p>
+     * If the field is a {@link ChronoField} then the adjustment is implemented here.
+     * <p>
+     * The {@code OFFSET_SECONDS} field will return a time with the specified offset.
+     * The local time is unaltered. If the new offset value is outside the valid range
+     * then a {@code DateTimeException} will be thrown.
+     * <p>
+     * The other {@link #isSupported(TemporalField) supported fields} will behave as per
+     * the matching method on {@link LocalTime#with(TemporalField, long)} LocalTime}.
+     * In this case, the offset is not part of the calculation and will be unchanged.
+     * <p>
+     * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
+     * <p>
+     * If the field is not a {@code ChronoField}, then the result of this method
+     * is obtained by invoking {@code TemporalField.adjustInto(Temporal, long)}
+     * passing {@code this} as the argument. In this case, the field determines
+     * whether and how to adjust the instant.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param field  the field to set in the result, not null
+     * @param newValue  the new value of the field in the result
+     * @return an {@code OffsetTime} based on {@code this} with the specified field set, not null
+     * @throws DateTimeException if the field cannot be set
+     * @throws UnsupportedTemporalTypeException if the field is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

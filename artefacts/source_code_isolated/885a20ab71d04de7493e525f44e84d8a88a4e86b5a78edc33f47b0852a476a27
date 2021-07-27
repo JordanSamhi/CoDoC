@@ -1,0 +1,10 @@
+public static DayOfWeek from(TemporalAccessor temporal){
+    if (temporal instanceof DayOfWeek) {
+        return (DayOfWeek) temporal;
+    }
+    try {
+        return of(temporal.get(DAY_OF_WEEK));
+    } catch (DateTimeException ex) {
+        throw new DateTimeException("Unable to obtain DayOfWeek from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName(), ex);
+    }
+}

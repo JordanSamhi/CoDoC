@@ -1,0 +1,12 @@
+public int nextInt(int bound){
+    if (bound <= 0)
+        throw new IllegalArgumentException(BAD_BOUND);
+    int r = mix32(nextSeed());
+    int m = bound - 1;
+    if ((bound & m) == 0)
+        r &= m;
+    else {
+        for (int u = r >>> 1; u + m - (r = u % bound) < 0; u = mix32(nextSeed()) >>> 1) ;
+    }
+    return r;
+}

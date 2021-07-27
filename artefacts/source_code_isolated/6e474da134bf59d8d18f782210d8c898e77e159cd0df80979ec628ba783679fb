@@ -1,0 +1,23 @@
+public Parcelable onSaveInstanceState(){
+    if (mPendingSavedState != null) {
+        return new SavedState(mPendingSavedState);
+    }
+    SavedState state = new SavedState();
+    if (getChildCount() > 0) {
+        ensureLayoutState();
+        boolean didLayoutFromEnd = mLastStackFromEnd ^ mShouldReverseLayout;
+        state.mAnchorLayoutFromEnd = didLayoutFromEnd;
+        if (didLayoutFromEnd) {
+            final View refChild = getChildClosestToEnd();
+            state.mAnchorOffset = mOrientationHelper.getEndAfterPadding() - mOrientationHelper.getDecoratedEnd(refChild);
+            state.mAnchorPosition = getPosition(refChild);
+        } else {
+            final View refChild = getChildClosestToStart();
+            state.mAnchorPosition = getPosition(refChild);
+            state.mAnchorOffset = mOrientationHelper.getDecoratedStart(refChild) - mOrientationHelper.getStartAfterPadding();
+        }
+    } else {
+        state.invalidateAnchor();
+    }
+    return state;
+}

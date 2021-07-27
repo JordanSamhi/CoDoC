@@ -1,0 +1,21 @@
+
+     * Remove permissions to access a particular content provider Uri
+     * that were previously added with {@link #grantUriPermission} for a specific target
+     * package.  The given Uri will match all previously granted Uris that are the same or a
+     * sub-path of the given Uri.  That is, revoking "content://foo/target" will
+     * revoke both "content://foo/target" and "content://foo/target/sub", but not
+     * "content://foo".  It will not remove any prefix grants that exist at a
+     * higher level.
+     *
+     * <p>Unlike {@link #revokeUriPermission(Uri, int)}, this method will <em>only</em>
+     * revoke permissions that had been explicitly granted through {@link #grantUriPermission}
+     * and only for the package specified.  Any matching grants that have happened through
+     * other mechanisms (clipboard, activity launching, service starting, etc) will not be
+     * removed.</p>
+     *
+     * @param toPackage The package you had previously granted access to.
+     * @param uri The Uri you would like to revoke access to.
+     * @param modeFlags The access modes to revoke.
+     *
+     * @see #grantUriPermission
+     

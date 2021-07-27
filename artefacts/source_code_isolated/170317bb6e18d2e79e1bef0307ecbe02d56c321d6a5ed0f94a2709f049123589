@@ -1,0 +1,29 @@
+public int compareTo(BigDecimal val){
+    int thisSign = signum();
+    int valueSign = val.signum();
+    if (thisSign == valueSign) {
+        if (this.scale == val.scale && this.bitLength < 64 && val.bitLength < 64) {
+            return (smallValue < val.smallValue) ? -1 : (smallValue > val.smallValue) ? 1 : 0;
+        }
+        long diffScale = (long) this.scale - val.scale;
+        int diffPrecision = this.approxPrecision() - val.approxPrecision();
+        if (diffPrecision > diffScale + 1) {
+            return thisSign;
+        } else if (diffPrecision < diffScale - 1) {
+            return -thisSign;
+        } else {
+            BigInteger thisUnscaled = this.getUnscaledValue();
+            BigInteger valUnscaled = val.getUnscaledValue();
+            if (diffScale < 0) {
+                thisUnscaled = thisUnscaled.multiply(Multiplication.powerOf10(-diffScale));
+            } else if (diffScale > 0) {
+                valUnscaled = valUnscaled.multiply(Multiplication.powerOf10(diffScale));
+            }
+            return thisUnscaled.compareTo(valUnscaled);
+        }
+    } else if (thisSign < valueSign) {
+        return -1;
+    } else {
+        return 1;
+    }
+}

@@ -1,0 +1,24 @@
+public void clear(int fromIndex, int toIndex){
+    checkRange(fromIndex, toIndex);
+    if (fromIndex == toIndex)
+        return;
+    int startWordIndex = wordIndex(fromIndex);
+    if (startWordIndex >= wordsInUse)
+        return;
+    int endWordIndex = wordIndex(toIndex - 1);
+    if (endWordIndex >= wordsInUse) {
+        toIndex = length();
+        endWordIndex = wordsInUse - 1;
+    }
+    long firstWordMask = WORD_MASK << fromIndex;
+    long lastWordMask = WORD_MASK >>> -toIndex;
+    if (startWordIndex == endWordIndex) {
+        words[startWordIndex] &= ~(firstWordMask & lastWordMask);
+    } else {
+        words[startWordIndex] &= ~firstWordMask;
+        for (int i = startWordIndex + 1; i < endWordIndex; i++) words[i] = 0;
+        words[endWordIndex] &= ~lastWordMask;
+    }
+    recalculateWordsInUse();
+    checkInvariants();
+}

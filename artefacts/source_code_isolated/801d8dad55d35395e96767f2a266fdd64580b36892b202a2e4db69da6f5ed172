@@ -1,0 +1,25 @@
+public final CharBuffer decode(ByteBuffer in) throws CharacterCodingException{
+    int n = (int) (in.remaining() * averageCharsPerByte());
+    CharBuffer out = CharBuffer.allocate(n);
+    if ((n == 0) && (in.remaining() == 0))
+        return out;
+    reset();
+    for (; ; ) {
+        CoderResult cr = in.hasRemaining() ? decode(in, out, true) : CoderResult.UNDERFLOW;
+        if (cr.isUnderflow())
+            cr = flush(out);
+        if (cr.isUnderflow())
+            break;
+        if (cr.isOverflow()) {
+            n = 2 * n + 1;
+            CharBuffer o = CharBuffer.allocate(n);
+            out.flip();
+            o.put(out);
+            out = o;
+            continue;
+        }
+        cr.throwException();
+    }
+    out.flip();
+    return out;
+}

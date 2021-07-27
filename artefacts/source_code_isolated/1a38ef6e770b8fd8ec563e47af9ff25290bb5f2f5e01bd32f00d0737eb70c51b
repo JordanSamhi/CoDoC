@@ -1,0 +1,9 @@
+public boolean performAccessibilityAction(View host, int action, Bundle args){
+    if (super.performAccessibilityAction(host, action, args)) {
+        return true;
+    }
+    if (!shouldIgnore() && mRecyclerView.getLayoutManager() != null) {
+        return mRecyclerView.getLayoutManager().performAccessibilityActionForItem(host, action, args);
+    }
+    return false;
+}

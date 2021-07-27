@@ -1,0 +1,269 @@
+public void roll(int field, int amount){
+    if (amount == 0) {
+        return;
+    }
+    if (field < 0 || field >= ZONE_OFFSET) {
+        throw new IllegalArgumentException();
+    }
+    complete();
+    int min = getMinimum(field);
+    int max = getMaximum(field);
+    switch(field) {
+        case AM_PM:
+        case ERA:
+        case YEAR:
+        case MINUTE:
+        case SECOND:
+        case MILLISECOND:
+            break;
+        case HOUR:
+        case HOUR_OF_DAY:
+            {
+                int unit = max + 1;
+                int h = internalGet(field);
+                int nh = (h + amount) % unit;
+                if (nh < 0) {
+                    nh += unit;
+                }
+                time += ONE_HOUR * (nh - h);
+                CalendarDate d = calsys.getCalendarDate(time, getZone());
+                if (internalGet(DAY_OF_MONTH) != d.getDayOfMonth()) {
+                    d.setDate(internalGet(YEAR), internalGet(MONTH) + 1, internalGet(DAY_OF_MONTH));
+                    if (field == HOUR) {
+                        assert (internalGet(AM_PM) == PM);
+                        d.addHours(+12);
+                    }
+                    time = calsys.getTime(d);
+                }
+                int hourOfDay = d.getHours();
+                internalSet(field, hourOfDay % unit);
+                if (field == HOUR) {
+                    internalSet(HOUR_OF_DAY, hourOfDay);
+                } else {
+                    internalSet(AM_PM, hourOfDay / 12);
+                    internalSet(HOUR, hourOfDay % 12);
+                }
+                int zoneOffset = d.getZoneOffset();
+                int saving = d.getDaylightSaving();
+                internalSet(ZONE_OFFSET, zoneOffset - saving);
+                internalSet(DST_OFFSET, saving);
+                return;
+            }
+        case MONTH:
+            {
+                if (!isCutoverYear(cdate.getNormalizedYear())) {
+                    int mon = (internalGet(MONTH) + amount) % 12;
+                    if (mon < 0) {
+                        mon += 12;
+                    }
+                    set(MONTH, mon);
+                    int monthLen = monthLength(mon);
+                    if (internalGet(DAY_OF_MONTH) > monthLen) {
+                        set(DAY_OF_MONTH, monthLen);
+                    }
+                } else {
+                    int yearLength = getActualMaximum(MONTH) + 1;
+                    int mon = (internalGet(MONTH) + amount) % yearLength;
+                    if (mon < 0) {
+                        mon += yearLength;
+                    }
+                    set(MONTH, mon);
+                    int monthLen = getActualMaximum(DAY_OF_MONTH);
+                    if (internalGet(DAY_OF_MONTH) > monthLen) {
+                        set(DAY_OF_MONTH, monthLen);
+                    }
+                }
+                return;
+            }
+        case WEEK_OF_YEAR:
+            {
+                int y = cdate.getNormalizedYear();
+                max = getActualMaximum(WEEK_OF_YEAR);
+                set(DAY_OF_WEEK, internalGet(DAY_OF_WEEK));
+                int woy = internalGet(WEEK_OF_YEAR);
+                int value = woy + amount;
+                if (!isCutoverYear(y)) {
+                    int weekYear = getWeekYear();
+                    if (weekYear == y) {
+                        if (value > min && value < max) {
+                            set(WEEK_OF_YEAR, value);
+                            return;
+                        }
+                        long fd = getCurrentFixedDate();
+                        long day1 = fd - (7 * (woy - min));
+                        if (calsys.getYearFromFixedDate(day1) != y) {
+                            min++;
+                        }
+                        fd += 7 * (max - internalGet(WEEK_OF_YEAR));
+                        if (calsys.getYearFromFixedDate(fd) != y) {
+                            max--;
+                        }
+                    } else {
+                        if (weekYear > y) {
+                            if (amount < 0) {
+                                amount++;
+                            }
+                            woy = max;
+                        } else {
+                            if (amount > 0) {
+                                amount -= woy - max;
+                            }
+                            woy = min;
+                        }
+                    }
+                    set(field, getRolledValue(woy, amount, min, max));
+                    return;
+                }
+                long fd = getCurrentFixedDate();
+                BaseCalendar cal;
+                if (gregorianCutoverYear == gregorianCutoverYearJulian) {
+                    cal = getCutoverCalendarSystem();
+                } else if (y == gregorianCutoverYear) {
+                    cal = gcal;
+                } else {
+                    cal = getJulianCalendarSystem();
+                }
+                long day1 = fd - (7 * (woy - min));
+                if (cal.getYearFromFixedDate(day1) != y) {
+                    min++;
+                }
+                fd += 7 * (max - woy);
+                cal = (fd >= gregorianCutoverDate) ? gcal : getJulianCalendarSystem();
+                if (cal.getYearFromFixedDate(fd) != y) {
+                    max--;
+                }
+                value = getRolledValue(woy, amount, min, max) - 1;
+                BaseCalendar.Date d = getCalendarDate(day1 + value * 7);
+                set(MONTH, d.getMonth() - 1);
+                set(DAY_OF_MONTH, d.getDayOfMonth());
+                return;
+            }
+        case WEEK_OF_MONTH:
+            {
+                boolean isCutoverYear = isCutoverYear(cdate.getNormalizedYear());
+                int dow = internalGet(DAY_OF_WEEK) - getFirstDayOfWeek();
+                if (dow < 0) {
+                    dow += 7;
+                }
+                long fd = getCurrentFixedDate();
+                long month1;
+                int monthLength;
+                if (isCutoverYear) {
+                    month1 = getFixedDateMonth1(cdate, fd);
+                    monthLength = actualMonthLength();
+                } else {
+                    month1 = fd - internalGet(DAY_OF_MONTH) + 1;
+                    monthLength = calsys.getMonthLength(cdate);
+                }
+                long monthDay1st = BaseCalendar.getDayOfWeekDateOnOrBefore(month1 + 6, getFirstDayOfWeek());
+                if ((int) (monthDay1st - month1) >= getMinimalDaysInFirstWeek()) {
+                    monthDay1st -= 7;
+                }
+                max = getActualMaximum(field);
+                int value = getRolledValue(internalGet(field), amount, 1, max) - 1;
+                long nfd = monthDay1st + value * 7 + dow;
+                if (nfd < month1) {
+                    nfd = month1;
+                } else if (nfd >= (month1 + monthLength)) {
+                    nfd = month1 + monthLength - 1;
+                }
+                int dayOfMonth;
+                if (isCutoverYear) {
+                    BaseCalendar.Date d = getCalendarDate(nfd);
+                    dayOfMonth = d.getDayOfMonth();
+                } else {
+                    dayOfMonth = (int) (nfd - month1) + 1;
+                }
+                set(DAY_OF_MONTH, dayOfMonth);
+                return;
+            }
+        case DAY_OF_MONTH:
+            {
+                if (!isCutoverYear(cdate.getNormalizedYear())) {
+                    max = calsys.getMonthLength(cdate);
+                    break;
+                }
+                long fd = getCurrentFixedDate();
+                long month1 = getFixedDateMonth1(cdate, fd);
+                int value = getRolledValue((int) (fd - month1), amount, 0, actualMonthLength() - 1);
+                BaseCalendar.Date d = getCalendarDate(month1 + value);
+                assert d.getMonth() - 1 == internalGet(MONTH);
+                set(DAY_OF_MONTH, d.getDayOfMonth());
+                return;
+            }
+        case DAY_OF_YEAR:
+            {
+                max = getActualMaximum(field);
+                if (!isCutoverYear(cdate.getNormalizedYear())) {
+                    break;
+                }
+                long fd = getCurrentFixedDate();
+                long jan1 = fd - internalGet(DAY_OF_YEAR) + 1;
+                int value = getRolledValue((int) (fd - jan1) + 1, amount, min, max);
+                BaseCalendar.Date d = getCalendarDate(jan1 + value - 1);
+                set(MONTH, d.getMonth() - 1);
+                set(DAY_OF_MONTH, d.getDayOfMonth());
+                return;
+            }
+        case DAY_OF_WEEK:
+            {
+                if (!isCutoverYear(cdate.getNormalizedYear())) {
+                    int weekOfYear = internalGet(WEEK_OF_YEAR);
+                    if (weekOfYear > 1 && weekOfYear < 52) {
+                        set(WEEK_OF_YEAR, weekOfYear);
+                        max = SATURDAY;
+                        break;
+                    }
+                }
+                amount %= 7;
+                if (amount == 0) {
+                    return;
+                }
+                long fd = getCurrentFixedDate();
+                long dowFirst = BaseCalendar.getDayOfWeekDateOnOrBefore(fd, getFirstDayOfWeek());
+                fd += amount;
+                if (fd < dowFirst) {
+                    fd += 7;
+                } else if (fd >= dowFirst + 7) {
+                    fd -= 7;
+                }
+                BaseCalendar.Date d = getCalendarDate(fd);
+                set(ERA, (d.getNormalizedYear() <= 0 ? BCE : CE));
+                set(d.getYear(), d.getMonth() - 1, d.getDayOfMonth());
+                return;
+            }
+        case DAY_OF_WEEK_IN_MONTH:
+            {
+                min = 1;
+                if (!isCutoverYear(cdate.getNormalizedYear())) {
+                    int dom = internalGet(DAY_OF_MONTH);
+                    int monthLength = calsys.getMonthLength(cdate);
+                    int lastDays = monthLength % 7;
+                    max = monthLength / 7;
+                    int x = (dom - 1) % 7;
+                    if (x < lastDays) {
+                        max++;
+                    }
+                    set(DAY_OF_WEEK, internalGet(DAY_OF_WEEK));
+                    break;
+                }
+                long fd = getCurrentFixedDate();
+                long month1 = getFixedDateMonth1(cdate, fd);
+                int monthLength = actualMonthLength();
+                int lastDays = monthLength % 7;
+                max = monthLength / 7;
+                int x = (int) (fd - month1) % 7;
+                if (x < lastDays) {
+                    max++;
+                }
+                int value = getRolledValue(internalGet(field), amount, min, max) - 1;
+                fd = month1 + value * 7 + x;
+                BaseCalendar cal = (fd >= gregorianCutoverDate) ? gcal : getJulianCalendarSystem();
+                BaseCalendar.Date d = (BaseCalendar.Date) cal.newCalendarDate(TimeZone.NO_TIMEZONE);
+                cal.getCalendarDateFromFixedDate(d, fd);
+                set(DAY_OF_MONTH, d.getDayOfMonth());
+                return;
+            }
+    }
+    set(field, getRolledValue(internalGet(field), amount, min, max));
+}

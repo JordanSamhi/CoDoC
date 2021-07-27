@@ -1,0 +1,10 @@
+public static LongStream rangeClosed(long startInclusive, final long endInclusive){
+    if (startInclusive > endInclusive) {
+        return empty();
+    } else if (endInclusive - startInclusive + 1 <= 0) {
+        long m = startInclusive + Long.divideUnsigned(endInclusive - startInclusive, 2) + 1;
+        return concat(range(startInclusive, m), rangeClosed(m, endInclusive));
+    } else {
+        return StreamSupport.longStream(new Streams.RangeLongSpliterator(startInclusive, endInclusive, true), false);
+    }
+}

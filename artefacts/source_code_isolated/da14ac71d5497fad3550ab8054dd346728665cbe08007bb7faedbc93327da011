@@ -1,0 +1,11 @@
+public void setLevel(int level){
+    if ((level < 0 || level > 9) && level != DEFAULT_COMPRESSION) {
+        throw new IllegalArgumentException("invalid compression level");
+    }
+    synchronized (zsRef) {
+        if (this.level != level) {
+            this.level = level;
+            setParams = true;
+        }
+    }
+}

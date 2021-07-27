@@ -1,0 +1,9 @@
+public void setMinimumIntegerDigits(int newValue){
+    minimumIntegerDigits = Math.min(Math.max(0, newValue), MAXIMUM_INTEGER_DIGITS);
+    super.setMinimumIntegerDigits((minimumIntegerDigits > DOUBLE_INTEGER_DIGITS) ? DOUBLE_INTEGER_DIGITS : minimumIntegerDigits);
+    if (minimumIntegerDigits > maximumIntegerDigits) {
+        maximumIntegerDigits = minimumIntegerDigits;
+        super.setMaximumIntegerDigits((maximumIntegerDigits > DOUBLE_INTEGER_DIGITS) ? DOUBLE_INTEGER_DIGITS : maximumIntegerDigits);
+    }
+    icuDecimalFormat.setMinimumIntegerDigits(getMinimumIntegerDigits());
+}

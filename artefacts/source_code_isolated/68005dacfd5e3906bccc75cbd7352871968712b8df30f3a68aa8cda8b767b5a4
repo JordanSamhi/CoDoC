@@ -1,0 +1,21 @@
+public static String toString(long i, int radix){
+    if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX)
+        radix = 10;
+    if (radix == 10)
+        return toString(i);
+    char[] buf = new char[65];
+    int charPos = 64;
+    boolean negative = (i < 0);
+    if (!negative) {
+        i = -i;
+    }
+    while (i <= -radix) {
+        buf[charPos--] = Integer.digits[(int) (-(i % radix))];
+        i = i / radix;
+    }
+    buf[charPos] = Integer.digits[(int) (-i)];
+    if (negative) {
+        buf[--charPos] = '-';
+    }
+    return new String(buf, charPos, (65 - charPos));
+}

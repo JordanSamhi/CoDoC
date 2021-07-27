@@ -1,0 +1,14 @@
+public static ZoneId ofOffset(String prefix, ZoneOffset offset){
+    Objects.requireNonNull(prefix, "prefix");
+    Objects.requireNonNull(offset, "offset");
+    if (prefix.length() == 0) {
+        return offset;
+    }
+    if (!prefix.equals("GMT") && !prefix.equals("UTC") && !prefix.equals("UT")) {
+        throw new IllegalArgumentException("prefix should be GMT, UTC or UT, is: " + prefix);
+    }
+    if (offset.getTotalSeconds() != 0) {
+        prefix = prefix.concat(offset.getId());
+    }
+    return new ZoneRegion(prefix, offset.getRules());
+}

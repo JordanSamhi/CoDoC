@@ -1,0 +1,31 @@
+public void handleSendResult(IBinder token, List<ResultInfo> results, String reason){
+    ActivityClientRecord r = mActivities.get(token);
+    if (DEBUG_RESULTS)
+        Slog.v(TAG, "Handling send result to " + r);
+    if (r != null) {
+        final boolean resumed = !r.paused;
+        if (!r.activity.mFinished && r.activity.mDecor != null && r.hideForNow && resumed) {
+            updateVisibility(r, true);
+        }
+        if (resumed) {
+            try {
+                r.activity.mCalled = false;
+                mInstrumentation.callActivityOnPause(r.activity);
+                if (!r.activity.mCalled) {
+                    throw new SuperNotCalledException("Activity " + r.intent.getComponent().toShortString() + " did not call through to super.onPause()");
+                }
+            } catch (SuperNotCalledException e) {
+                throw e;
+            } catch (Exception e) {
+                if (!mInstrumentation.onException(r.activity, e)) {
+                    throw new RuntimeException("Unable to pause activity " + r.intent.getComponent().toShortString() + ": " + e.toString(), e);
+                }
+            }
+        }
+        checkAndBlockForNetworkAccess();
+        deliverResults(r, results, reason);
+        if (resumed) {
+            r.activity.performResume(false, reason);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+public int read(byte[] buffer, int offset, int byteCount) throws IOException{
+    if (mOffset >= mEnd) {
+        return -1;
+    }
+    final int arrayLength = buffer.length;
+    ArrayUtils.throwsIfOutOfBounds(arrayLength, offset, byteCount);
+    if (mOffset > Long.MAX_VALUE - byteCount) {
+        throw new IOException("offset out of bounds: " + mOffset + " + " + byteCount);
+    }
+    if (mOffset + byteCount > mEnd) {
+        byteCount = (int) (mEnd - mOffset);
+    }
+    final int numRead = super.read(buffer, offset, byteCount);
+    mOffset += numRead;
+    return numRead;
+}

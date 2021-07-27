@@ -1,0 +1,13 @@
+public void onBackPressed(){
+    if (mCurHeader != null && mSinglePane && getFragmentManager().getBackStackEntryCount() == 0 && getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT) == null) {
+        mCurHeader = null;
+        mPrefsContainer.setVisibility(View.GONE);
+        mHeadersContainer.setVisibility(View.VISIBLE);
+        if (mActivityTitle != null) {
+            showBreadCrumbs(mActivityTitle, null);
+        }
+        getListView().clearChoices();
+    } else {
+        super.onBackPressed();
+    }
+}

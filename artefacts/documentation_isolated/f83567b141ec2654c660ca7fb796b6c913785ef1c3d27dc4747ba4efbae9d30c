@@ -1,0 +1,33 @@
+
+     * A query for the smallest supported unit.
+     * <p>
+     * This queries a {@code TemporalAccessor} for the time precision.
+     * If the target {@code TemporalAccessor} represents a consistent or complete date-time,
+     * date or time then this must return the smallest precision actually supported.
+     * Note that fields such as {@code NANO_OF_DAY} and {@code NANO_OF_SECOND}
+     * are defined to always return ignoring the precision, thus this is the only
+     * way to find the actual smallest supported unit.
+     * For example, were {@code GregorianCalendar} to implement {@code TemporalAccessor}
+     * it would return a precision of {@code MILLIS}.
+     * <p>
+     * The result from JDK classes implementing {@code TemporalAccessor} is as follows:<br>
+     * {@code LocalDate} returns {@code DAYS}<br>
+     * {@code LocalTime} returns {@code NANOS}<br>
+     * {@code LocalDateTime} returns {@code NANOS}<br>
+     * {@code ZonedDateTime} returns {@code NANOS}<br>
+     * {@code OffsetTime} returns {@code NANOS}<br>
+     * {@code OffsetDateTime} returns {@code NANOS}<br>
+     * {@code ChronoLocalDate} returns {@code DAYS}<br>
+     * {@code ChronoLocalDateTime} returns {@code NANOS}<br>
+     * {@code ChronoZonedDateTime} returns {@code NANOS}<br>
+     * {@code Era} returns {@code ERAS}<br>
+     * {@code DayOfWeek} returns {@code DAYS}<br>
+     * {@code Month} returns {@code MONTHS}<br>
+     * {@code Year} returns {@code YEARS}<br>
+     * {@code YearMonth} returns {@code MONTHS}<br>
+     * {@code MonthDay} returns null (does not represent a complete date or time)<br>
+     * {@code ZoneOffset} returns null (does not represent a date or time)<br>
+     * {@code Instant} returns {@code NANOS}<br>
+     *
+     * @return a query that can obtain the precision of a temporal, not null
+     

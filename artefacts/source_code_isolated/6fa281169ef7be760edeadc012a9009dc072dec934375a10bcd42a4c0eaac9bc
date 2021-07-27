@@ -1,0 +1,38 @@
+public String toGenericString(){
+    if (isPrimitive()) {
+        return toString();
+    } else {
+        StringBuilder sb = new StringBuilder();
+        int modifiers = getModifiers() & Modifier.classModifiers();
+        if (modifiers != 0) {
+            sb.append(Modifier.toString(modifiers));
+            sb.append(' ');
+        }
+        if (isAnnotation()) {
+            sb.append('@');
+        }
+        if (isInterface()) {
+            sb.append("interface");
+        } else {
+            if (isEnum())
+                sb.append("enum");
+            else
+                sb.append("class");
+        }
+        sb.append(' ');
+        sb.append(getName());
+        TypeVariable<?>[] typeparms = getTypeParameters();
+        if (typeparms.length > 0) {
+            boolean first = true;
+            sb.append('<');
+            for (TypeVariable<?> typeparm : typeparms) {
+                if (!first)
+                    sb.append(',');
+                sb.append(typeparm.getTypeName());
+                first = false;
+            }
+            sb.append('>');
+        }
+        return sb.toString();
+    }
+}

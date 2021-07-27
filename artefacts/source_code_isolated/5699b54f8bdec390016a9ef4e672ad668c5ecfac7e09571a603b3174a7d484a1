@@ -1,0 +1,65 @@
+public int getWeekYear(){
+    int year = get(YEAR);
+    if (internalGetEra() == BCE) {
+        year = 1 - year;
+    }
+    if (year > gregorianCutoverYear + 1) {
+        int weekOfYear = internalGet(WEEK_OF_YEAR);
+        if (internalGet(MONTH) == JANUARY) {
+            if (weekOfYear >= 52) {
+                --year;
+            }
+        } else {
+            if (weekOfYear == 1) {
+                ++year;
+            }
+        }
+        return year;
+    }
+    int dayOfYear = internalGet(DAY_OF_YEAR);
+    int maxDayOfYear = getActualMaximum(DAY_OF_YEAR);
+    int minimalDays = getMinimalDaysInFirstWeek();
+    if (dayOfYear > minimalDays && dayOfYear < (maxDayOfYear - 6)) {
+        return year;
+    }
+    GregorianCalendar cal = (GregorianCalendar) clone();
+    cal.setLenient(true);
+    cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+    cal.set(DAY_OF_YEAR, 1);
+    cal.complete();
+    int delta = getFirstDayOfWeek() - cal.get(DAY_OF_WEEK);
+    if (delta != 0) {
+        if (delta < 0) {
+            delta += 7;
+        }
+        cal.add(DAY_OF_YEAR, delta);
+    }
+    int minDayOfYear = cal.get(DAY_OF_YEAR);
+    if (dayOfYear < minDayOfYear) {
+        if (minDayOfYear <= minimalDays) {
+            --year;
+        }
+    } else {
+        cal.set(YEAR, year + 1);
+        cal.set(DAY_OF_YEAR, 1);
+        cal.complete();
+        int del = getFirstDayOfWeek() - cal.get(DAY_OF_WEEK);
+        if (del != 0) {
+            if (del < 0) {
+                del += 7;
+            }
+            cal.add(DAY_OF_YEAR, del);
+        }
+        minDayOfYear = cal.get(DAY_OF_YEAR) - 1;
+        if (minDayOfYear == 0) {
+            minDayOfYear = 7;
+        }
+        if (minDayOfYear >= minimalDays) {
+            int days = maxDayOfYear - dayOfYear + 1;
+            if (days <= (7 - minDayOfYear)) {
+                ++year;
+            }
+        }
+    }
+    return year;
+}

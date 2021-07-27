@@ -1,0 +1,29 @@
+
+     * Sets the SO_SNDBUF option to the specified value for this
+     * {@code DatagramSocket}. The SO_SNDBUF option is used by the
+     * network implementation as a hint to size the underlying
+     * network I/O buffers. The SO_SNDBUF setting may also be used
+     * by the network implementation to determine the maximum size
+     * of the packet that can be sent on this socket.
+     * <p>
+     * As SO_SNDBUF is a hint, applications that want to verify
+     * what size the buffer is should call {@link #getSendBufferSize()}.
+     * <p>
+     * Increasing the buffer size may allow multiple outgoing packets
+     * to be queued by the network implementation when the send rate
+     * is high.
+     * <p>
+     * Note: If {@link #send(DatagramPacket)} is used to send a
+     * {@code DatagramPacket} that is larger than the setting
+     * of SO_SNDBUF then it is implementation specific if the
+     * packet is sent or discarded.
+     *
+     * @param size the size to which to set the send buffer
+     * size. This value must be greater than 0.
+     *
+     * @exception SocketException if there is an error
+     * in the underlying protocol, such as an UDP error.
+     * @exception IllegalArgumentException if the value is 0 or is
+     * negative.
+     * @see #getSendBufferSize()
+     

@@ -1,0 +1,13 @@
+public ProgramVertexFixedFunction create(){
+    buildShaderString();
+    InternalBuilder sb = new InternalBuilder(mRS);
+    sb.setShader(mShader);
+    sb.addConstant(getConstantInputType(mRS));
+    Element.Builder b = new Element.Builder(mRS);
+    b.add(Element.F32_4(mRS), "position");
+    b.add(Element.F32_4(mRS), "color");
+    b.add(Element.F32_3(mRS), "normal");
+    b.add(Element.F32_2(mRS), "texture0");
+    sb.addInput(b.create());
+    return sb.create();
+}

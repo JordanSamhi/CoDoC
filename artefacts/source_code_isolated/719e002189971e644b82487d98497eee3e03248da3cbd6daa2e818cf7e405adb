@@ -1,0 +1,19 @@
+public String toString(){
+    String cname = lookupClass.getName();
+    switch(allowedModes) {
+        case 0:
+            return cname + "/noaccess";
+        case PUBLIC:
+            return cname + "/public";
+        case PUBLIC | PACKAGE:
+            return cname + "/package";
+        case ALL_MODES & ~PROTECTED:
+            return cname + "/private";
+        case ALL_MODES:
+            return cname;
+        default:
+            cname = cname + "/" + Integer.toHexString(allowedModes);
+            assert (false) : cname;
+            return cname;
+    }
+}

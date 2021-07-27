@@ -1,0 +1,24 @@
+public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h) throws IllegalArgumentException{
+    Objects.requireNonNull(h);
+    final Class<?>[] intfs = interfaces.clone();
+    Class<?> cl = getProxyClass0(loader, intfs);
+    try {
+        final Constructor<?> cons = cl.getConstructor(constructorParams);
+        final InvocationHandler ih = h;
+        if (!Modifier.isPublic(cl.getModifiers())) {
+            cons.setAccessible(true);
+        }
+        return cons.newInstance(new Object[] { h });
+    } catch (IllegalAccessException | InstantiationException e) {
+        throw new InternalError(e.toString(), e);
+    } catch (InvocationTargetException e) {
+        Throwable t = e.getCause();
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        } else {
+            throw new InternalError(t.toString(), t);
+        }
+    } catch (NoSuchMethodException e) {
+        throw new InternalError(e.toString(), e);
+    }
+}

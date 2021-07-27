@@ -1,0 +1,13 @@
+public int hashCode(){
+    int result = super.hashCode();
+    result = 31 * result + Arrays.hashCode(mWhitePoint);
+    result = 31 * result + Arrays.hashCode(mPrimaries);
+    result = 31 * result + (mMin != +0.0f ? Float.floatToIntBits(mMin) : 0);
+    result = 31 * result + (mMax != +0.0f ? Float.floatToIntBits(mMax) : 0);
+    result = 31 * result + (mTransferParameters != null ? mTransferParameters.hashCode() : 0);
+    if (mTransferParameters == null) {
+        result = 31 * result + mOetf.hashCode();
+        result = 31 * result + mEotf.hashCode();
+    }
+    return result;
+}

@@ -1,0 +1,30 @@
+
+     * Called when an item is changed in the RecyclerView, as indicated by a call to
+     * {@link Adapter#notifyItemChanged(int)} or
+     * {@link Adapter#notifyItemRangeChanged(int, int)}.
+     * <p>
+     * Implementers can choose whether and how to animate changes, but must always call
+     * {@link #dispatchChangeFinished(ViewHolder, boolean)} for each non-null distinct ViewHolder,
+     * either immediately (if no animation will occur) or after the animation actually finishes.
+     * If the {@code oldHolder} is the same ViewHolder as the {@code newHolder}, you must call
+     * {@link #dispatchChangeFinished(ViewHolder, boolean)} once and only once. In that case, the
+     * second parameter of {@code dispatchChangeFinished} is ignored.
+     * <p>
+     * The return value indicates whether an animation has been set up and whether the
+     * ItemAnimator's {@link #runPendingAnimations()} method should be called at the
+     * next opportunity. This mechanism allows ItemAnimator to set up individual animations
+     * as separate calls to {@link #animateAdd(ViewHolder) animateAdd()},
+     * {@link #animateMove(ViewHolder, int, int, int, int) animateMove()},
+     * {@link #animateRemove(ViewHolder) animateRemove()}, and
+     * {@link #animateChange(ViewHolder, ViewHolder, int, int, int, int)} come in one by one,
+     * then start the animations together in the later call to {@link #runPendingAnimations()}.
+     *
+     * @param oldHolder The original item that changed.
+     * @param newHolder The new item that was created with the changed content. Might be null
+     * @param fromLeft  Left of the old view holder
+     * @param fromTop   Top of the old view holder
+     * @param toLeft    Left of the new view holder
+     * @param toTop     Top of the new view holder
+     * @return true if a later call to {@link #runPendingAnimations()} is requested,
+     * false otherwise.
+     

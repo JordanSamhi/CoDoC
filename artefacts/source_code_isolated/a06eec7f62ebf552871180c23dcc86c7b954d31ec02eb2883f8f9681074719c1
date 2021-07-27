@@ -1,0 +1,22 @@
+public void onInitializeAccessibilityNodeInfoInternal(AccessibilityNodeInfo info){
+    super.onInitializeAccessibilityNodeInfoInternal(info);
+    if (isEnabled()) {
+        if (mCollapseOffset != 0) {
+            info.addAction(AccessibilityAction.ACTION_SCROLL_FORWARD);
+            info.addAction(AccessibilityAction.ACTION_EXPAND);
+            info.addAction(AccessibilityAction.ACTION_SCROLL_DOWN);
+            info.setScrollable(true);
+        }
+        if ((mCollapseOffset < mCollapsibleHeight + mUncollapsibleHeight) && ((mCollapseOffset < mCollapsibleHeight) || isDismissable())) {
+            info.addAction(AccessibilityAction.ACTION_SCROLL_UP);
+            info.setScrollable(true);
+        }
+        if (mCollapseOffset < mCollapsibleHeight) {
+            info.addAction(AccessibilityAction.ACTION_COLLAPSE);
+        }
+        if (mCollapseOffset < mCollapsibleHeight + mUncollapsibleHeight && isDismissable()) {
+            info.addAction(AccessibilityAction.ACTION_DISMISS);
+        }
+    }
+    info.removeAction(AccessibilityAction.ACTION_ACCESSIBILITY_FOCUS);
+}

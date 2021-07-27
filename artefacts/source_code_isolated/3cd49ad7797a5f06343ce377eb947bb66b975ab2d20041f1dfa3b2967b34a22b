@@ -1,0 +1,17 @@
+public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("FontRequest {" + "mProviderAuthority: " + mProviderAuthority + ", mProviderPackage: " + mProviderPackage + ", mQuery: " + mQuery + ", mCertificates:");
+    for (int i = 0; i < mCertificates.size(); i++) {
+        builder.append(" [");
+        List<byte[]> set = mCertificates.get(i);
+        for (int j = 0; j < set.size(); j++) {
+            builder.append(" \"");
+            byte[] array = set.get(j);
+            builder.append(Base64.encodeToString(array, Base64.DEFAULT));
+            builder.append("\"");
+        }
+        builder.append(" ]");
+    }
+    builder.append("}");
+    return builder.toString();
+}

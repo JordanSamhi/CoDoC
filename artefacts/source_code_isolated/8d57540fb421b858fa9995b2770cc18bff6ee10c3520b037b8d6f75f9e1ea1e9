@@ -1,0 +1,44 @@
+public boolean onKeyShortcut(int keyCode, KeyEvent event){
+    if (event.hasModifiers(KeyEvent.META_CTRL_ON)) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_A:
+                if (canSelectText()) {
+                    return onTextContextMenuItem(ID_SELECT_ALL);
+                }
+                break;
+            case KeyEvent.KEYCODE_Z:
+                if (canUndo()) {
+                    return onTextContextMenuItem(ID_UNDO);
+                }
+                break;
+            case KeyEvent.KEYCODE_X:
+                if (canCut()) {
+                    return onTextContextMenuItem(ID_CUT);
+                }
+                break;
+            case KeyEvent.KEYCODE_C:
+                if (canCopy()) {
+                    return onTextContextMenuItem(ID_COPY);
+                }
+                break;
+            case KeyEvent.KEYCODE_V:
+                if (canPaste()) {
+                    return onTextContextMenuItem(ID_PASTE);
+                }
+                break;
+        }
+    } else if (event.hasModifiers(KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_Z:
+                if (canRedo()) {
+                    return onTextContextMenuItem(ID_REDO);
+                }
+                break;
+            case KeyEvent.KEYCODE_V:
+                if (canPaste()) {
+                    return onTextContextMenuItem(ID_PASTE_AS_PLAIN_TEXT);
+                }
+        }
+    }
+    return super.onKeyShortcut(keyCode, event);
+}

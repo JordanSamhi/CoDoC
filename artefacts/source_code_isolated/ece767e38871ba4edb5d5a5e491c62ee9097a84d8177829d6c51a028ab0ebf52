@@ -1,0 +1,8 @@
+public void unread(byte[] b, int off, int len) throws IOException{
+    ensureOpen();
+    if (len > pos) {
+        throw new IOException("Push back buffer is full");
+    }
+    pos -= len;
+    System.arraycopy(b, off, buf, pos, len);
+}

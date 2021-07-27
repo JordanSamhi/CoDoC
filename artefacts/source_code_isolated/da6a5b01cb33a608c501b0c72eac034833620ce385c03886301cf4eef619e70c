@@ -1,0 +1,30 @@
+public void close() throws IOException{
+    if (closed) {
+        return;
+    }
+    closed = true;
+    Throwable flushException = null;
+    try {
+        flush();
+    } catch (Throwable e) {
+        flushException = e;
+        throw e;
+    } finally {
+        if (flushException == null) {
+            out.close();
+        } else {
+            try {
+                out.close();
+            } catch (Throwable closeException) {
+                if ((flushException instanceof ThreadDeath) && !(closeException instanceof ThreadDeath)) {
+                    flushException.addSuppressed(closeException);
+                    throw (ThreadDeath) flushException;
+                }
+                if (flushException != closeException) {
+                    closeException.addSuppressed(flushException);
+                }
+                throw closeException;
+            }
+        }
+    }
+}

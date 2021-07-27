@@ -1,0 +1,48 @@
+public static synchronized ServerSocketFactory getDefault(){
+    if (defaultServerSocketFactory != null && lastVersion == Security.getVersion()) {
+        return defaultServerSocketFactory;
+    }
+    lastVersion = Security.getVersion();
+    SSLServerSocketFactory previousDefaultServerSocketFactory = defaultServerSocketFactory;
+    defaultServerSocketFactory = null;
+    String clsName = SSLSocketFactory.getSecurityProperty("ssl.ServerSocketFactory.provider");
+    if (clsName != null) {
+        if (previousDefaultServerSocketFactory != null && clsName.equals(previousDefaultServerSocketFactory.getClass().getName())) {
+            defaultServerSocketFactory = previousDefaultServerSocketFactory;
+            return defaultServerSocketFactory;
+        }
+        log("setting up default SSLServerSocketFactory");
+        try {
+            Class<?> cls = null;
+            try {
+                cls = Class.forName(clsName);
+            } catch (ClassNotFoundException e) {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                if (cl == null) {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+                if (cl != null) {
+                    cls = Class.forName(clsName, true, cl);
+                }
+            }
+            log("class " + clsName + " is loaded");
+            SSLServerSocketFactory fac = (SSLServerSocketFactory) cls.newInstance();
+            log("instantiated an instance of class " + clsName);
+            defaultServerSocketFactory = fac;
+            return fac;
+        } catch (Exception e) {
+            log("SSLServerSocketFactory instantiation failed: " + e);
+        }
+    }
+    try {
+        SSLContext context = SSLContext.getDefault();
+        if (context != null) {
+            defaultServerSocketFactory = context.getServerSocketFactory();
+        } else {
+            defaultServerSocketFactory = new DefaultSSLServerSocketFactory(new IllegalStateException("No factory found."));
+        }
+        return defaultServerSocketFactory;
+    } catch (NoSuchAlgorithmException e) {
+        return new DefaultSSLServerSocketFactory(e);
+    }
+}

@@ -1,0 +1,65 @@
+
+     * Adapts a target method handle by pre-processing
+     * one or more of its arguments, each with its own unary filter function,
+     * and then calling the target with each pre-processed argument
+     * replaced by the result of its corresponding filter function.
+     * <p>
+     * The pre-processing is performed by one or more method handles,
+     * specified in the elements of the {@code filters} array.
+     * The first element of the filter array corresponds to the {@code pos}
+     * argument of the target, and so on in sequence.
+     * <p>
+     * Null arguments in the array are treated as identity functions,
+     * and the corresponding arguments left unchanged.
+     * (If there are no non-null elements in the array, the original target is returned.)
+     * Each filter is applied to the corresponding argument of the adapter.
+     * <p>
+     * If a filter {@code F} applies to the {@code N}th argument of
+     * the target, then {@code F} must be a method handle which
+     * takes exactly one argument.  The type of {@code F}'s sole argument
+     * replaces the corresponding argument type of the target
+     * in the resulting adapted method handle.
+     * The return type of {@code F} must be identical to the corresponding
+     * parameter type of the target.
+     * <p>
+     * It is an error if there are elements of {@code filters}
+     * (null or not)
+     * which do not correspond to argument positions in the target.
+     * <p><b>Example:</b>
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle cat = lookup().findVirtual(String.class,
+  "concat", methodType(String.class, String.class));
+MethodHandle upcase = lookup().findVirtual(String.class,
+  "toUpperCase", methodType(String.class));
+assertEquals("xy", (String) cat.invokeExact("x", "y"));
+MethodHandle f0 = filterArguments(cat, 0, upcase);
+assertEquals("Xy", (String) f0.invokeExact("x", "y")); // Xy
+MethodHandle f1 = filterArguments(cat, 1, upcase);
+assertEquals("xY", (String) f1.invokeExact("x", "y")); // xY
+MethodHandle f2 = filterArguments(cat, 0, upcase, upcase);
+assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
+     * }</pre></blockquote>
+     * <p> Here is pseudocode for the resulting adapter:
+     * <blockquote><pre>{@code
+     * V target(P... p, A[i]... a[i], B... b);
+     * A[i] filter[i](V[i]);
+     * T adapter(P... p, V[i]... v[i], B... b) {
+     *   return target(p..., f[i](v[i])..., b...);
+     * }
+     * }</pre></blockquote>
+     *
+     * @param target the method handle to invoke after arguments are filtered
+     * @param pos the position of the first argument to filter
+     * @param filters method handles to call initially on filtered arguments
+     * @return method handle which incorporates the specified argument filtering logic
+     * @throws NullPointerException if the target is null
+     *                              or if the {@code filters} array is null
+     * @throws IllegalArgumentException if a non-null element of {@code filters}
+     *          does not match a corresponding argument type of target as described above,
+     *          or if the {@code pos+filters.length} is greater than {@code target.type().parameterCount()},
+     *          or if the resulting method handle's type would have
+     *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     

@@ -1,0 +1,82 @@
+public boolean onTouchEvent(MotionEvent ev){
+    if (!isEnabled()) {
+        return isClickable() || isLongClickable();
+    }
+    if (mPositionScroller != null) {
+        mPositionScroller.stop();
+    }
+    if (mIsDetaching || !isAttachedToWindow()) {
+        return false;
+    }
+    startNestedScroll(SCROLL_AXIS_VERTICAL);
+    if (mFastScroll != null && mFastScroll.onTouchEvent(ev)) {
+        return true;
+    }
+    initVelocityTrackerIfNotExists();
+    final MotionEvent vtev = MotionEvent.obtain(ev);
+    final int actionMasked = ev.getActionMasked();
+    if (actionMasked == MotionEvent.ACTION_DOWN) {
+        mNestedYOffset = 0;
+    }
+    vtev.offsetLocation(0, mNestedYOffset);
+    switch(actionMasked) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                onTouchDown(ev);
+                break;
+            }
+        case MotionEvent.ACTION_MOVE:
+            {
+                onTouchMove(ev, vtev);
+                break;
+            }
+        case MotionEvent.ACTION_UP:
+            {
+                onTouchUp(ev);
+                break;
+            }
+        case MotionEvent.ACTION_CANCEL:
+            {
+                onTouchCancel();
+                break;
+            }
+        case MotionEvent.ACTION_POINTER_UP:
+            {
+                onSecondaryPointerUp(ev);
+                final int x = mMotionX;
+                final int y = mMotionY;
+                final int motionPosition = pointToPosition(x, y);
+                if (motionPosition >= 0) {
+                    final View child = getChildAt(motionPosition - mFirstPosition);
+                    mMotionViewOriginalTop = child.getTop();
+                    mMotionPosition = motionPosition;
+                }
+                mLastY = y;
+                break;
+            }
+        case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                final int index = ev.getActionIndex();
+                final int id = ev.getPointerId(index);
+                final int x = (int) ev.getX(index);
+                final int y = (int) ev.getY(index);
+                mMotionCorrection = 0;
+                mActivePointerId = id;
+                mMotionX = x;
+                mMotionY = y;
+                final int motionPosition = pointToPosition(x, y);
+                if (motionPosition >= 0) {
+                    final View child = getChildAt(motionPosition - mFirstPosition);
+                    mMotionViewOriginalTop = child.getTop();
+                    mMotionPosition = motionPosition;
+                }
+                mLastY = y;
+                break;
+            }
+    }
+    if (mVelocityTracker != null) {
+        mVelocityTracker.addMovement(vtev);
+    }
+    vtev.recycle();
+    return true;
+}

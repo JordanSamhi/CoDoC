@@ -1,0 +1,46 @@
+
+     * Gets the value of the specified environment variable. An
+     * environment variable is a system-dependent external named
+     * value.
+     *
+     * <p>If a security manager exists, its
+     * {@link SecurityManager#checkPermission checkPermission}
+     * method is called with a
+     * <code>{@link RuntimePermission}("getenv."+name)</code>
+     * permission.  This may result in a {@link SecurityException}
+     * being thrown.  If no exception is thrown the value of the
+     * variable <code>name</code> is returned.
+     *
+     * <p><a name="EnvironmentVSSystemProperties"><i>System
+     * properties</i> and <i>environment variables</i></a> are both
+     * conceptually mappings between names and values.  Both
+     * mechanisms can be used to pass user-defined information to a
+     * Java process.  Environment variables have a more global effect,
+     * because they are visible to all descendants of the process
+     * which defines them, not just the immediate Java subprocess.
+     * They can have subtly different semantics, such as case
+     * insensitivity, on different operating systems.  For these
+     * reasons, environment variables are more likely to have
+     * unintended side effects.  It is best to use system properties
+     * where possible.  Environment variables should be used when a
+     * global effect is desired, or when an external system interface
+     * requires an environment variable (such as <code>PATH</code>).
+     *
+     * <p>On UNIX systems the alphabetic case of <code>name</code> is
+     * typically significant, while on Microsoft Windows systems it is
+     * typically not.  For example, the expression
+     * <code>System.getenv("FOO").equals(System.getenv("foo"))</code>
+     * is likely to be true on Microsoft Windows.
+     *
+     * @param  name the name of the environment variable
+     * @return the string value of the variable, or <code>null</code>
+     *         if the variable is not defined in the system environment
+     * @throws NullPointerException if <code>name</code> is <code>null</code>
+     * @throws SecurityException
+     *         if a security manager exists and its
+     *         {@link SecurityManager#checkPermission checkPermission}
+     *         method doesn't allow access to the environment variable
+     *         <code>name</code>
+     * @see    #getenv()
+     * @see    ProcessBuilder#environment()
+     

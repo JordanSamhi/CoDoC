@@ -1,0 +1,5 @@
+public double reduceValuesToDouble(long parallelismThreshold, ToDoubleFunction<? super V> transformer, double basis, DoubleBinaryOperator reducer){
+    if (transformer == null || reducer == null)
+        throw new NullPointerException();
+    return new MapReduceValuesToDoubleTask<K, V>(null, batchFor(parallelismThreshold), 0, 0, table, null, transformer, basis, reducer).invoke();
+}

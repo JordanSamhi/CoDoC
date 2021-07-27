@@ -1,8 +1,0 @@
-public static KeyValueBackupTask start(UserBackupManagerService backupManagerService, TransportClient transportClient, String transportDirName, List<String> queue, @Nullable DataChangedJournal dataChangedJournal, IBackupObserver observer, @Nullable IBackupManagerMonitor monitor, OnTaskFinishedListener listener, List<String> pendingFullBackups, boolean userInitiated, boolean nonIncremental){
-    KeyValueBackupReporter reporter = new KeyValueBackupReporter(backupManagerService, observer, monitor);
-    KeyValueBackupTask task = new KeyValueBackupTask(backupManagerService, transportClient, transportDirName, queue, dataChangedJournal, reporter, listener, pendingFullBackups, userInitiated, nonIncremental);
-    Thread thread = new Thread(task, "key-value-backup-" + THREAD_COUNT.incrementAndGet());
-    thread.start();
-    KeyValueBackupReporter.onNewThread(thread.getName());
-    return task;
-}

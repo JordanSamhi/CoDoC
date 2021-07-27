@@ -1,0 +1,13 @@
+public void draw(Canvas canvas){
+    final Drawable d = getDrawable();
+    final Rect bounds = d.getBounds();
+    final int w = bounds.right - bounds.left;
+    final int h = bounds.bottom - bounds.top;
+    final RotateState st = mState;
+    final float px = st.mPivotXRel ? (w * st.mPivotX) : st.mPivotX;
+    final float py = st.mPivotYRel ? (h * st.mPivotY) : st.mPivotY;
+    final int saveCount = canvas.save();
+    canvas.rotate(st.mCurrentDegrees, px + bounds.left, py + bounds.top);
+    d.draw(canvas);
+    canvas.restoreToCount(saveCount);
+}

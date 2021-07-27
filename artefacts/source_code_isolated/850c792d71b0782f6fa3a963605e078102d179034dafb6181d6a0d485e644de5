@@ -1,0 +1,13 @@
+public boolean addAll(int index, Collection<? extends E> c){
+    if (index < 0 || index > this.size)
+        throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+    int cSize = c.size();
+    if (cSize == 0)
+        return false;
+    if (ArrayList.this.modCount != this.modCount)
+        throw new ConcurrentModificationException();
+    parent.addAll(parentOffset + index, c);
+    this.modCount = parent.modCount;
+    this.size += cSize;
+    return true;
+}

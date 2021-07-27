@@ -1,0 +1,8 @@
+public static CertStore getInstance(String type, CertStoreParameters params, String provider) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException{
+    try {
+        Instance instance = GetInstance.getInstance("CertStore", CertStoreSpi.class, type, params, provider);
+        return new CertStore((CertStoreSpi) instance.impl, instance.provider, type, params);
+    } catch (NoSuchAlgorithmException e) {
+        return handleException(e);
+    }
+}

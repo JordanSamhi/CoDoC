@@ -1,0 +1,14 @@
+public List<PermissionInfo> queryPermissionsByGroup(String groupName, int flags) throws NameNotFoundException{
+    try {
+        final ParceledListSlice<PermissionInfo> parceledList = mPermissionManager.queryPermissionsByGroup(groupName, flags);
+        if (parceledList != null) {
+            final List<PermissionInfo> pi = parceledList.getList();
+            if (pi != null) {
+                return pi;
+            }
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(groupName);
+}

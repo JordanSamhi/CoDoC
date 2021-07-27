@@ -1,0 +1,10 @@
+public String[] list(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkRead(path);
+    }
+    if (isInvalid()) {
+        return null;
+    }
+    return fs.list(this);
+}

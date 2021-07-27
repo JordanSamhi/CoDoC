@@ -1,0 +1,10 @@
+public static int hashCode(double[] a){
+    if (a == null)
+        return 0;
+    int result = 1;
+    for (double element : a) {
+        long bits = Double.doubleToLongBits(element);
+        result = 31 * result + (int) (bits ^ (bits >>> 32));
+    }
+    return result;
+}

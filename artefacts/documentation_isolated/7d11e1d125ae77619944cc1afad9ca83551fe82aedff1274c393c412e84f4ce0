@@ -1,0 +1,28 @@
+
+     * Register to receive intent broadcasts, with the receiver optionally being
+     * exposed to Instant Apps. See
+     * {@link #registerReceiver(BroadcastReceiver, IntentFilter)} for more
+     * information. By default Instant Apps cannot interact with receivers in other
+     * applications, this allows you to expose a receiver that Instant Apps can
+     * interact with.
+     *
+     * <p>See {@link BroadcastReceiver} for more information on Intent broadcasts.
+     *
+     * <p>As of {@link android.os.Build.VERSION_CODES#ICE_CREAM_SANDWICH}, receivers
+     * registered with this method will correctly respect the
+     * {@link Intent#setPackage(String)} specified for an Intent being broadcast.
+     * Prior to that, it would be ignored and delivered to all matching registered
+     * receivers.  Be careful if using this for security.</p>
+     *
+     * @param receiver The BroadcastReceiver to handle the broadcast.
+     * @param filter Selects the Intent broadcasts to be received.
+     * @param flags Additional options for the receiver. May be 0 or
+     *      {@link #RECEIVER_VISIBLE_TO_INSTANT_APPS}.
+     *
+     * @return The first sticky intent found that matches <var>filter</var>,
+     *         or null if there are none.
+     *
+     * @see #registerReceiver(BroadcastReceiver, IntentFilter)
+     * @see #sendBroadcast
+     * @see #unregisterReceiver
+     

@@ -1,0 +1,11 @@
+public float readFloat() throws IOException{
+    if (!blkmode) {
+        pos = 0;
+        in.readFully(buf, 0, 4);
+    } else if (end - pos < 4) {
+        return din.readFloat();
+    }
+    float v = Bits.getFloat(buf, pos);
+    pos += 4;
+    return v;
+}

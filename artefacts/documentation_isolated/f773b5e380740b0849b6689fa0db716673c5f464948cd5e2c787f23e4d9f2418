@@ -1,0 +1,53 @@
+
+     * Return a {@code Stream} that is lazily populated with {@code
+     * Path} by searching for files in a file tree rooted at a given starting
+     * file.
+     *
+     * <p> This method walks the file tree in exactly the manner specified by
+     * the {@link #walk walk} method. For each file encountered, the given
+     * {@link BiPredicate} is invoked with its {@link Path} and {@link
+     * BasicFileAttributes}. The {@code Path} object is obtained as if by
+     * {@link Path#resolve(Path) resolving} the relative path against {@code
+     * start} and is only included in the returned {@link Stream} if
+     * the {@code BiPredicate} returns true. Compare to calling {@link
+     * java.util.stream.Stream#filter filter} on the {@code Stream}
+     * returned by {@code walk} method, this method may be more efficient by
+     * avoiding redundant retrieval of the {@code BasicFileAttributes}.
+     *
+     * <p> The returned stream encapsulates one or more {@link DirectoryStream}s.
+     * If timely disposal of file system resources is required, the
+     * {@code try}-with-resources construct should be used to ensure that the
+     * stream's {@link Stream#close close} method is invoked after the stream
+     * operations are completed.  Operating on a closed stream will result in an
+     * {@link java.lang.IllegalStateException}.
+     *
+     * <p> If an {@link IOException} is thrown when accessing the directory
+     * after returned from this method, it is wrapped in an {@link
+     * UncheckedIOException} which will be thrown from the method that caused
+     * the access to take place.
+     *
+     * @param   start
+     *          the starting file
+     * @param   maxDepth
+     *          the maximum number of directory levels to search
+     * @param   matcher
+     *          the function used to decide whether a file should be included
+     *          in the returned stream
+     * @param   options
+     *          options to configure the traversal
+     *
+     * @return  the {@link Stream} of {@link Path}
+     *
+     * @throws  IllegalArgumentException
+     *          if the {@code maxDepth} parameter is negative
+     * @throws  SecurityException
+     *          If the security manager denies access to the starting file.
+     *          In the case of the default provider, the {@link
+     *          SecurityManager#checkRead(String) checkRead} method is invoked
+     *          to check read access to the directory.
+     * @throws  IOException
+     *          if an I/O error is thrown when accessing the starting file.
+     *
+     * @see     #walk(Path, int, FileVisitOption...)
+     * @since   1.8
+     

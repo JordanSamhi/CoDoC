@@ -1,0 +1,17 @@
+public static MethodHandle catchException(MethodHandle target, Class<? extends Throwable> exType, MethodHandle handler){
+    MethodType ttype = target.type();
+    MethodType htype = handler.type();
+    if (htype.parameterCount() < 1 || !htype.parameterType(0).isAssignableFrom(exType))
+        throw newIllegalArgumentException("handler does not accept exception type " + exType);
+    if (htype.returnType() != ttype.returnType())
+        throw misMatchedTypes("target and handler return types", ttype, htype);
+    List<Class<?>> targs = ttype.parameterList();
+    List<Class<?>> hargs = htype.parameterList();
+    hargs = hargs.subList(1, hargs.size());
+    if (!targs.equals(hargs)) {
+        int hpc = hargs.size(), tpc = targs.size();
+        if (hpc >= tpc || !targs.subList(0, hpc).equals(hargs))
+            throw misMatchedTypes("target and handler types", ttype, htype);
+    }
+    return new Transformers.CatchException(target, handler, exType);
+}

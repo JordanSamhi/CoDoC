@@ -1,0 +1,25 @@
+public void exit(int status){
+    synchronized (this) {
+        if (!shuttingDown) {
+            shuttingDown = true;
+            Thread[] hooks;
+            synchronized (shutdownHooks) {
+                hooks = new Thread[shutdownHooks.size()];
+                shutdownHooks.toArray(hooks);
+            }
+            for (Thread hook : hooks) {
+                hook.start();
+            }
+            for (Thread hook : hooks) {
+                try {
+                    hook.join();
+                } catch (InterruptedException ex) {
+                }
+            }
+            if (finalizeOnExit) {
+                runFinalization();
+            }
+            nativeExit(status);
+        }
+    }
+}

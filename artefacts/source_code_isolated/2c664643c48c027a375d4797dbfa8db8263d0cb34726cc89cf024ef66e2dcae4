@@ -1,0 +1,12 @@
+public void setCertStores(List<CertStore> stores){
+    if (stores == null) {
+        this.certStores = new ArrayList<CertStore>();
+    } else {
+        for (Iterator<CertStore> i = stores.iterator(); i.hasNext(); ) {
+            if (!(i.next() instanceof CertStore)) {
+                throw new ClassCastException("all elements of list must be " + "of type java.security.cert.CertStore");
+            }
+        }
+        this.certStores = new ArrayList<CertStore>(stores);
+    }
+}

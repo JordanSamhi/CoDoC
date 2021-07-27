@@ -1,0 +1,7 @@
+public IntStream ints(long streamSize, int randomNumberOrigin, int randomNumberBound){
+    if (streamSize < 0L)
+        throw new IllegalArgumentException(BAD_SIZE);
+    if (randomNumberOrigin >= randomNumberBound)
+        throw new IllegalArgumentException(BAD_RANGE);
+    return StreamSupport.intStream(new RandomIntsSpliterator(0L, streamSize, randomNumberOrigin, randomNumberBound), false);
+}

@@ -1,0 +1,24 @@
+public final SelectionKey register(Selector sel, int ops, Object att) throws ClosedChannelException{
+    synchronized (regLock) {
+        if (!isOpen())
+            throw new ClosedChannelException();
+        if ((ops & ~validOps()) != 0)
+            throw new IllegalArgumentException();
+        if (blocking)
+            throw new IllegalBlockingModeException();
+        SelectionKey k = findKey(sel);
+        if (k != null) {
+            k.interestOps(ops);
+            k.attach(att);
+        }
+        if (k == null) {
+            synchronized (keyLock) {
+                if (!isOpen())
+                    throw new ClosedChannelException();
+                k = ((AbstractSelector) sel).register(this, ops, att);
+                addKey(k);
+            }
+        }
+        return k;
+    }
+}

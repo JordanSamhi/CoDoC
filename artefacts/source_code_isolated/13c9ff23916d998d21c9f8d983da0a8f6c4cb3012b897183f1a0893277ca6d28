@@ -1,0 +1,40 @@
+public String replace(CharSequence target, CharSequence replacement){
+    if (target == null) {
+        throw new NullPointerException("target == null");
+    }
+    if (replacement == null) {
+        throw new NullPointerException("replacement == null");
+    }
+    String replacementStr = replacement.toString();
+    String targetStr = target.toString();
+    final int len = length();
+    if (targetStr.isEmpty()) {
+        StringBuilder sb = new StringBuilder(replacementStr.length() * (len + 2) + len);
+        sb.append(replacementStr);
+        for (int i = 0; i < len; ++i) {
+            sb.append(charAt(i));
+            sb.append(replacementStr);
+        }
+        return sb.toString();
+    }
+    int lastMatch = 0;
+    StringBuilder sb = null;
+    for (; ; ) {
+        int currentMatch = indexOf(this, targetStr, lastMatch);
+        if (currentMatch == -1) {
+            break;
+        }
+        if (sb == null) {
+            sb = new StringBuilder(len);
+        }
+        sb.append(this, lastMatch, currentMatch);
+        sb.append(replacementStr);
+        lastMatch = currentMatch + targetStr.length();
+    }
+    if (sb != null) {
+        sb.append(this, lastMatch, len);
+        return sb.toString();
+    } else {
+        return this;
+    }
+}

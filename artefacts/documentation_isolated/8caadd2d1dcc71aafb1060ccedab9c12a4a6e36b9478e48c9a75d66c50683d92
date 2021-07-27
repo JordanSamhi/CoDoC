@@ -1,0 +1,29 @@
+
+         * Produces a method handle for a reflected method.
+         * It will bypass checks for overriding methods on the receiver,
+         * <a href="MethodHandles.Lookup.html#equiv">as if called</a> from an {@code invokespecial}
+         * instruction from within the explicitly specified {@code specialCaller}.
+         * The type of the method handle will be that of the method,
+         * with a suitably restricted receiver type prepended.
+         * (The receiver type will be {@code specialCaller} or a subtype.)
+         * If the method's {@code accessible} flag is not set,
+         * access checking is performed immediately on behalf of the lookup class,
+         * as if {@code invokespecial} instruction were being linked.
+         * <p>
+         * Before method resolution,
+         * if the explicitly specified caller class is not identical with the
+         * lookup class, or if this lookup object does not have
+         * <a href="MethodHandles.Lookup.html#privacc">private access</a>
+         * privileges, the access fails.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set.
+         * @param m the reflected method
+         * @param specialCaller the class nominally calling the method
+         * @return a method handle which can invoke the reflected method
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @throws NullPointerException if any argument is null
+         

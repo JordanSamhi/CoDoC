@@ -1,0 +1,77 @@
+public boolean onInterceptTouchEvent(MotionEvent ev){
+    final int action = ev.getAction();
+    if ((action == MotionEvent.ACTION_MOVE) && (mIsBeingDragged)) {
+        return true;
+    }
+    if (super.onInterceptTouchEvent(ev)) {
+        return true;
+    }
+    if (getScrollY() == 0 && !canScrollVertically(1)) {
+        return false;
+    }
+    switch(action & MotionEvent.ACTION_MASK) {
+        case MotionEvent.ACTION_MOVE:
+            {
+                final int activePointerId = mActivePointerId;
+                if (activePointerId == INVALID_POINTER) {
+                    break;
+                }
+                final int pointerIndex = ev.findPointerIndex(activePointerId);
+                if (pointerIndex == -1) {
+                    Log.e(TAG, "Invalid pointerId=" + activePointerId + " in onInterceptTouchEvent");
+                    break;
+                }
+                final int y = (int) ev.getY(pointerIndex);
+                final int yDiff = Math.abs(y - mLastMotionY);
+                if (yDiff > mTouchSlop && (getNestedScrollAxes() & SCROLL_AXIS_VERTICAL) == 0) {
+                    mIsBeingDragged = true;
+                    mLastMotionY = y;
+                    initVelocityTrackerIfNotExists();
+                    mVelocityTracker.addMovement(ev);
+                    mNestedYOffset = 0;
+                    if (mScrollStrictSpan == null) {
+                        mScrollStrictSpan = StrictMode.enterCriticalSpan("ScrollView-scroll");
+                    }
+                    final ViewParent parent = getParent();
+                    if (parent != null) {
+                        parent.requestDisallowInterceptTouchEvent(true);
+                    }
+                }
+                break;
+            }
+        case MotionEvent.ACTION_DOWN:
+            {
+                final int y = (int) ev.getY();
+                if (!inChild((int) ev.getX(), (int) y)) {
+                    mIsBeingDragged = false;
+                    recycleVelocityTracker();
+                    break;
+                }
+                mLastMotionY = y;
+                mActivePointerId = ev.getPointerId(0);
+                initOrResetVelocityTracker();
+                mVelocityTracker.addMovement(ev);
+                mScroller.computeScrollOffset();
+                mIsBeingDragged = !mScroller.isFinished();
+                if (mIsBeingDragged && mScrollStrictSpan == null) {
+                    mScrollStrictSpan = StrictMode.enterCriticalSpan("ScrollView-scroll");
+                }
+                startNestedScroll(SCROLL_AXIS_VERTICAL);
+                break;
+            }
+        case MotionEvent.ACTION_CANCEL:
+        case MotionEvent.ACTION_UP:
+            mIsBeingDragged = false;
+            mActivePointerId = INVALID_POINTER;
+            recycleVelocityTracker();
+            if (mScroller.springBack(mScrollX, mScrollY, 0, 0, 0, getScrollRange())) {
+                postInvalidateOnAnimation();
+            }
+            stopNestedScroll();
+            break;
+        case MotionEvent.ACTION_POINTER_UP:
+            onSecondaryPointerUp(ev);
+            break;
+    }
+    return mIsBeingDragged;
+}

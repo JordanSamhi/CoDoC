@@ -1,0 +1,5 @@
+public void forEachValue(long parallelismThreshold, Consumer<? super V> action){
+    if (action == null)
+        throw new NullPointerException();
+    new ForEachValueTask<K, V>(null, batchFor(parallelismThreshold), 0, 0, table, action).invoke();
+}

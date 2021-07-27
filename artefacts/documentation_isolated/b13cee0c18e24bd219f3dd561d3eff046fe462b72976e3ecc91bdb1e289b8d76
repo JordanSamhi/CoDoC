@@ -1,0 +1,61 @@
+
+     * Parses the string argument as a signed {@code long} in the
+     * radix specified by the second argument. The characters in the
+     * string must all be digits of the specified radix (as determined
+     * by whether {@link java.lang.Character#digit(char, int)} returns
+     * a nonnegative value), except that the first character may be an
+     * ASCII minus sign {@code '-'} ({@code '\u005Cu002D'}) to
+     * indicate a negative value or an ASCII plus sign {@code '+'}
+     * ({@code '\u005Cu002B'}) to indicate a positive value. The
+     * resulting {@code long} value is returned.
+     *
+     * <p>Note that neither the character {@code L}
+     * ({@code '\u005Cu004C'}) nor {@code l}
+     * ({@code '\u005Cu006C'}) is permitted to appear at the end
+     * of the string as a type indicator, as would be permitted in
+     * Java programming language source code - except that either
+     * {@code L} or {@code l} may appear as a digit for a
+     * radix greater than or equal to 22.
+     *
+     * <p>An exception of type {@code NumberFormatException} is
+     * thrown if any of the following situations occurs:
+     * <ul>
+     *
+     * <li>The first argument is {@code null} or is a string of
+     * length zero.
+     *
+     * <li>The {@code radix} is either smaller than {@link
+     * java.lang.Character#MIN_RADIX} or larger than {@link
+     * java.lang.Character#MAX_RADIX}.
+     *
+     * <li>Any character of the string is not a digit of the specified
+     * radix, except that the first character may be a minus sign
+     * {@code '-'} ({@code '\u005Cu002d'}) or plus sign {@code
+     * '+'} ({@code '\u005Cu002B'}) provided that the string is
+     * longer than length 1.
+     *
+     * <li>The value represented by the string is not a value of type
+     *      {@code long}.
+     * </ul>
+     *
+     * <p>Examples:
+     * <blockquote><pre>
+     * parseLong("0", 10) returns 0L
+     * parseLong("473", 10) returns 473L
+     * parseLong("+42", 10) returns 42L
+     * parseLong("-0", 10) returns 0L
+     * parseLong("-FF", 16) returns -255L
+     * parseLong("1100110", 2) returns 102L
+     * parseLong("99", 8) throws a NumberFormatException
+     * parseLong("Hazelnut", 10) throws a NumberFormatException
+     * parseLong("Hazelnut", 36) returns 1356099454469L
+     * </pre></blockquote>
+     *
+     * @param      s       the {@code String} containing the
+     *                     {@code long} representation to be parsed.
+     * @param      radix   the radix to be used while parsing {@code s}.
+     * @return     the {@code long} represented by the string argument in
+     *             the specified radix.
+     * @throws     NumberFormatException  if the string does not contain a
+     *             parsable {@code long}.
+     

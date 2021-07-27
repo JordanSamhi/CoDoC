@@ -1,0 +1,12 @@
+public final void init(Key key) throws InvalidKeyException{
+    try {
+        if (spi != null && (key == null || lock == null)) {
+            spi.engineInit(key, null);
+        } else {
+            chooseProvider(key, null);
+        }
+    } catch (InvalidAlgorithmParameterException e) {
+        throw new InvalidKeyException("init() failed", e);
+    }
+    initialized = true;
+}

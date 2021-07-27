@@ -1,0 +1,12 @@
+public int getModifiers(){
+    if (isArray()) {
+        int componentModifiers = getComponentType().getModifiers();
+        if ((componentModifiers & Modifier.INTERFACE) != 0) {
+            componentModifiers &= ~(Modifier.INTERFACE | Modifier.STATIC);
+        }
+        return Modifier.ABSTRACT | Modifier.FINAL | componentModifiers;
+    }
+    int JAVA_FLAGS_MASK = 0xffff;
+    int modifiers = this.getInnerClassFlags(accessFlags & JAVA_FLAGS_MASK);
+    return modifiers & JAVA_FLAGS_MASK;
+}

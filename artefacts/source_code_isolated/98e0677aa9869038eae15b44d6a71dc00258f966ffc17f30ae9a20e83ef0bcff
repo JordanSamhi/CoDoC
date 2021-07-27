@@ -1,0 +1,11 @@
+public boolean hasExpired(){
+    if (maxAge == 0)
+        return true;
+    if (maxAge == MAX_AGE_UNSPECIFIED)
+        return false;
+    long deltaSecond = (System.currentTimeMillis() - whenCreated) / 1000;
+    if (deltaSecond > maxAge)
+        return true;
+    else
+        return false;
+}

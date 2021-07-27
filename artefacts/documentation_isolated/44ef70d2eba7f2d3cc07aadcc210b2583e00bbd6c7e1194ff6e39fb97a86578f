@@ -1,0 +1,82 @@
+
+     * Returns a copy of this time with the specified field set to a new value.
+     * <p>
+     * This returns a {@code LocalTime}, based on this one, with the value
+     * for the specified field changed.
+     * This can be used to change any supported field, such as the hour, minute or second.
+     * If it is not possible to set the value, because the field is not supported or for
+     * some other reason, an exception is thrown.
+     * <p>
+     * If the field is a {@link ChronoField} then the adjustment is implemented here.
+     * The supported fields behave as follows:
+     * <ul>
+     * <li>{@code NANO_OF_SECOND} -
+     *  Returns a {@code LocalTime} with the specified nano-of-second.
+     *  The hour, minute and second will be unchanged.
+     * <li>{@code NANO_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified nano-of-day.
+     *  This completely replaces the time and is equivalent to {@link #ofNanoOfDay(long)}.
+     * <li>{@code MICRO_OF_SECOND} -
+     *  Returns a {@code LocalTime} with the nano-of-second replaced by the specified
+     *  micro-of-second multiplied by 1,000.
+     *  The hour, minute and second will be unchanged.
+     * <li>{@code MICRO_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified micro-of-day.
+     *  This completely replaces the time and is equivalent to using {@link #ofNanoOfDay(long)}
+     *  with the micro-of-day multiplied by 1,000.
+     * <li>{@code MILLI_OF_SECOND} -
+     *  Returns a {@code LocalTime} with the nano-of-second replaced by the specified
+     *  milli-of-second multiplied by 1,000,000.
+     *  The hour, minute and second will be unchanged.
+     * <li>{@code MILLI_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified milli-of-day.
+     *  This completely replaces the time and is equivalent to using {@link #ofNanoOfDay(long)}
+     *  with the milli-of-day multiplied by 1,000,000.
+     * <li>{@code SECOND_OF_MINUTE} -
+     *  Returns a {@code LocalTime} with the specified second-of-minute.
+     *  The hour, minute and nano-of-second will be unchanged.
+     * <li>{@code SECOND_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified second-of-day.
+     *  The nano-of-second will be unchanged.
+     * <li>{@code MINUTE_OF_HOUR} -
+     *  Returns a {@code LocalTime} with the specified minute-of-hour.
+     *  The hour, second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code MINUTE_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified minute-of-day.
+     *  The second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code HOUR_OF_AMPM} -
+     *  Returns a {@code LocalTime} with the specified hour-of-am-pm.
+     *  The AM/PM, minute-of-hour, second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code CLOCK_HOUR_OF_AMPM} -
+     *  Returns a {@code LocalTime} with the specified clock-hour-of-am-pm.
+     *  The AM/PM, minute-of-hour, second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code HOUR_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified hour-of-day.
+     *  The minute-of-hour, second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code CLOCK_HOUR_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified clock-hour-of-day.
+     *  The minute-of-hour, second-of-minute and nano-of-second will be unchanged.
+     * <li>{@code AMPM_OF_DAY} -
+     *  Returns a {@code LocalTime} with the specified AM/PM.
+     *  The hour-of-am-pm, minute-of-hour, second-of-minute and nano-of-second will be unchanged.
+     * </ul>
+     * <p>
+     * In all cases, if the new value is outside the valid range of values for the field
+     * then a {@code DateTimeException} will be thrown.
+     * <p>
+     * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
+     * <p>
+     * If the field is not a {@code ChronoField}, then the result of this method
+     * is obtained by invoking {@code TemporalField.adjustInto(Temporal, long)}
+     * passing {@code this} as the argument. In this case, the field determines
+     * whether and how to adjust the instant.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param field  the field to set in the result, not null
+     * @param newValue  the new value of the field in the result
+     * @return a {@code LocalTime} based on {@code this} with the specified field set, not null
+     * @throws DateTimeException if the field cannot be set
+     * @throws UnsupportedTemporalTypeException if the field is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

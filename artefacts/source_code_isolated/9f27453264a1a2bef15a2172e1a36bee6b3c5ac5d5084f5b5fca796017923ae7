@@ -1,0 +1,11 @@
+public InstrumentationInfo getInstrumentationInfo(ComponentName className, int flags) throws NameNotFoundException{
+    try {
+        InstrumentationInfo ii = mPM.getInstrumentationInfo(className, flags);
+        if (ii != null) {
+            return ii;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(className.toString());
+}

@@ -1,0 +1,10 @@
+public BigDecimal pow(int n){
+    if (n == 0) {
+        return ONE;
+    }
+    if ((n < 0) || (n > 999999999)) {
+        throw new ArithmeticException("Invalid operation");
+    }
+    long newScale = scale * (long) n;
+    return isZero() ? zeroScaledBy(newScale) : new BigDecimal(getUnscaledValue().pow(n), safeLongToInt(newScale));
+}

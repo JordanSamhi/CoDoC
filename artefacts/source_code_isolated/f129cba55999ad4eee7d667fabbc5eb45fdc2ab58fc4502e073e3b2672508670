@@ -1,0 +1,16 @@
+public void write(byte[] buffer, int offset, int count) throws IOException{
+    ArrayUtils.throwsIfOutOfBounds(buffer.length, offset, count);
+    final byte[] exactBuffer;
+    if (count == buffer.length) {
+        exactBuffer = buffer;
+    } else {
+        exactBuffer = new byte[count];
+        System.arraycopy(buffer, offset, exactBuffer, 0, count);
+    }
+    final DrmConvertedStatus status = mClient.convertData(mSessionId, exactBuffer);
+    if (status.statusCode == STATUS_OK) {
+        IoBridge.write(mFd, status.convertedData, 0, status.convertedData.length);
+    } else {
+        throw new IOException("Unexpected DRM status: " + status.statusCode);
+    }
+}

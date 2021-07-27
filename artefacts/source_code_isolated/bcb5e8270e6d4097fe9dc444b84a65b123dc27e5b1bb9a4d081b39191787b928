@@ -1,0 +1,10 @@
+public void updateInstantAppCookie(@NonNull byte[] cookie){
+    if (cookie != null && cookie.length > getInstantAppCookieMaxBytes()) {
+        throw new IllegalArgumentException("instant cookie longer than " + getInstantAppCookieMaxBytes());
+    }
+    try {
+        mPM.setInstantAppCookie(mContext.getPackageName(), cookie, getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

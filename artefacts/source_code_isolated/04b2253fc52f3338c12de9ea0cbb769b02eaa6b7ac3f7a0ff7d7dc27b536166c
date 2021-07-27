@@ -1,0 +1,8 @@
+public FileChannel getChannel(){
+    synchronized (this) {
+        if (channel == null) {
+            channel = FileChannelImpl.open(fd, path, true, false, this);
+        }
+        return channel;
+    }
+}

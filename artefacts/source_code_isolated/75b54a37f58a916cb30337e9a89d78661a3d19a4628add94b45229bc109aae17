@@ -1,0 +1,9 @@
+public final boolean entryInstanceOf(String alias, Class<? extends KeyStore.Entry> entryClass) throws KeyStoreException{
+    if (alias == null || entryClass == null) {
+        throw new NullPointerException("invalid null input");
+    }
+    if (!initialized) {
+        throw new KeyStoreException("Uninitialized keystore");
+    }
+    return keyStoreSpi.engineEntryInstanceOf(alias, entryClass);
+}

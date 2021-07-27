@@ -1,0 +1,30 @@
+
+     * Returns a string representation for a {@code MethodHandleInfo},
+     * given the four parts of its symbolic reference.
+     * This is defined to be of the form {@code "RK C.N:MT"}, where {@code RK} is the
+     * {@linkplain #referenceKindToString reference kind string} for {@code kind},
+     * {@code C} is the {@linkplain java.lang.Class#getName name} of {@code defc}
+     * {@code N} is the {@code name}, and
+     * {@code MT} is the {@code type}.
+     * These four values may be obtained from the
+     * {@linkplain #getReferenceKind reference kind},
+     * {@linkplain #getDeclaringClass declaring class},
+     * {@linkplain #getName member name},
+     * and {@linkplain #getMethodType method type}
+     * of a {@code MethodHandleInfo} object.
+     *
+     * @implSpec
+     * This produces a result equivalent to:
+     * <pre>{@code
+     *     String.format("%s %s.%s:%s", referenceKindToString(kind), defc.getName(), name, type)
+     * }</pre>
+     *
+     * @param kind the {@linkplain #getReferenceKind reference kind} part of the symbolic reference
+     * @param defc the {@linkplain #getDeclaringClass declaring class} part of the symbolic reference
+     * @param name the {@linkplain #getName member name} part of the symbolic reference
+     * @param type the {@linkplain #getMethodType method type} part of the symbolic reference
+     * @return a string of the form {@code "RK C.N:MT"}
+     * @exception IllegalArgumentException if the first argument is not a valid
+     *            <a href="MethodHandleInfo.html#refkinds">reference kind number</a>
+     * @exception NullPointerException if any reference argument is {@code null}
+     

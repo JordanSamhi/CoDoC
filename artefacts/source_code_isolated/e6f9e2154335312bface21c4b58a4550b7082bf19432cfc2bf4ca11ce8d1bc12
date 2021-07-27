@@ -1,0 +1,17 @@
+ void writeFields() throws IOException{
+    bout.write(primVals, 0, primVals.length, false);
+    ObjectStreamField[] fields = desc.getFields(false);
+    int numPrimFields = fields.length - objVals.length;
+    for (int i = 0; i < objVals.length; i++) {
+        if (extendedDebugInfo) {
+            debugInfoStack.push("field (class \"" + desc.getName() + "\", name: \"" + fields[numPrimFields + i].getName() + "\", type: \"" + fields[numPrimFields + i].getType() + "\")");
+        }
+        try {
+            writeObject0(objVals[i], fields[numPrimFields + i].isUnshared());
+        } finally {
+            if (extendedDebugInfo) {
+                debugInfoStack.pop();
+            }
+        }
+    }
+}

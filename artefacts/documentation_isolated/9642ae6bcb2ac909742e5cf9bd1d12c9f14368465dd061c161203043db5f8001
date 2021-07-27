@@ -1,0 +1,85 @@
+
+     * Returns the absolute path to the directory on the primary shared/external
+     * storage device where the application can place persistent files it owns.
+     * These files are internal to the applications, and not typically visible
+     * to the user as media.
+     * <p>
+     * This is like {@link #getFilesDir()} in that these files will be deleted
+     * when the application is uninstalled, however there are some important
+     * differences:
+     * <ul>
+     * <li>Shared storage may not always be available, since removable media can
+     * be ejected by the user. Media state can be checked using
+     * {@link Environment#getExternalStorageState(File)}.
+     * <li>There is no security enforced with these files. For example, any
+     * application holding
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} can write to
+     * these files.
+     * </ul>
+     * <p>
+     * If a shared storage device is emulated (as determined by
+     * {@link Environment#isExternalStorageEmulated(File)}), it's contents are
+     * backed by a private user data partition, which means there is little
+     * benefit to storing data here instead of the private directories returned
+     * by {@link #getFilesDir()}, etc.
+     * <p>
+     * Starting in {@link android.os.Build.VERSION_CODES#KITKAT}, no permissions
+     * are required to read or write to the returned path; it's always
+     * accessible to the calling app. This only applies to paths generated for
+     * package name of the calling application. To access paths belonging to
+     * other packages,
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} and/or
+     * {@link android.Manifest.permission#READ_EXTERNAL_STORAGE} are required.
+     * <p>
+     * On devices with multiple users (as described by {@link UserManager}),
+     * each user has their own isolated shared storage. Applications only have
+     * access to the shared storage for the user they're running as.
+     * <p>
+     * The returned path may change over time if different shared storage media
+     * is inserted, so only relative paths should be persisted.
+     * <p>
+     * Here is an example of typical code to manipulate a file in an
+     * application's shared storage:
+     * </p>
+     * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
+     * private_file}
+     * <p>
+     * If you supply a non-null <var>type</var> to this function, the returned
+     * file will be a path to a sub-directory of the given type. Though these
+     * files are not automatically scanned by the media scanner, you can
+     * explicitly add them to the media database with
+     * {@link android.media.MediaScannerConnection#scanFile(Context, String[], String[], android.media.MediaScannerConnection.OnScanCompletedListener)
+     * MediaScannerConnection.scanFile}. Note that this is not the same as
+     * {@link android.os.Environment#getExternalStoragePublicDirectory
+     * Environment.getExternalStoragePublicDirectory()}, which provides
+     * directories of media shared by all applications. The directories returned
+     * here are owned by the application, and their contents will be removed
+     * when the application is uninstalled. Unlike
+     * {@link android.os.Environment#getExternalStoragePublicDirectory
+     * Environment.getExternalStoragePublicDirectory()}, the directory returned
+     * here will be automatically created for you.
+     * <p>
+     * Here is an example of typical code to manipulate a picture in an
+     * application's shared storage and add it to the media database:
+     * </p>
+     * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
+     * private_picture}
+     *
+     * @param type The type of files directory to return. May be {@code null}
+     *            for the root of the files directory or one of the following
+     *            constants for a subdirectory:
+     *            {@link android.os.Environment#DIRECTORY_MUSIC},
+     *            {@link android.os.Environment#DIRECTORY_PODCASTS},
+     *            {@link android.os.Environment#DIRECTORY_RINGTONES},
+     *            {@link android.os.Environment#DIRECTORY_ALARMS},
+     *            {@link android.os.Environment#DIRECTORY_NOTIFICATIONS},
+     *            {@link android.os.Environment#DIRECTORY_PICTURES}, or
+     *            {@link android.os.Environment#DIRECTORY_MOVIES}.
+     * @return the absolute path to application-specific directory. May return
+     *         {@code null} if shared storage is not currently available.
+     * @see #getFilesDir
+     * @see #getExternalFilesDirs(String)
+     * @see Environment#getExternalStorageState(File)
+     * @see Environment#isExternalStorageEmulated(File)
+     * @see Environment#isExternalStorageRemovable(File)
+     

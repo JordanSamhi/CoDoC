@@ -1,0 +1,18 @@
+public InetAddress getLocalAddress(){
+    if (isClosed())
+        return null;
+    InetAddress in = null;
+    try {
+        in = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
+        if (in.isAnyLocalAddress()) {
+            in = InetAddress.anyLocalAddress();
+        }
+        SecurityManager s = System.getSecurityManager();
+        if (s != null) {
+            s.checkConnect(in.getHostAddress(), -1);
+        }
+    } catch (Exception e) {
+        in = InetAddress.anyLocalAddress();
+    }
+    return in;
+}

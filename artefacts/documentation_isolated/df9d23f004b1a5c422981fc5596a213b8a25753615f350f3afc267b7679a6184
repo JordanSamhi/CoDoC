@@ -1,0 +1,67 @@
+
+     * <p>Submit a request for an image to be captured by the camera device.</p>
+     *
+     * <p>The request defines all the parameters for capturing the single image,
+     * including sensor, lens, flash, and post-processing settings.</p>
+     *
+     * <p>Each request will produce one {@link CaptureResult} and produce new frames for one or more
+     * target Surfaces, set with the CaptureRequest builder's
+     * {@link CaptureRequest.Builder#addTarget} method. The target surfaces (set with
+     * {@link CaptureRequest.Builder#addTarget}) must be a subset of the surfaces provided when this
+     * capture session was created.</p>
+     *
+     * <p>Multiple regular and reprocess requests can be in progress at once. If there are only
+     * regular requests or reprocess requests in progress, they are processed in first-in,
+     * first-out order. If there are both regular and reprocess requests in progress, regular
+     * requests are processed in first-in, first-out order and reprocess requests are processed in
+     * first-in, first-out order, respectively. However, the processing order of a regular request
+     * and a reprocess request in progress is not specified. In other words, a regular request
+     * will always be processed before regular requets that are submitted later. A reprocess request
+     * will always be processed before reprocess requests that are submitted later. However, a
+     * regular request may not be processed before reprocess requests that are submitted later.<p>
+     *
+     * <p>Requests submitted through this method have higher priority than
+     * those submitted through {@link #setRepeatingRequest} or
+     * {@link #setRepeatingBurst}, and will be processed as soon as the current
+     * repeat/repeatBurst processing completes.</p>
+     *
+     * <p>All capture sessions can be used for capturing images from the camera but only capture
+     * sessions created by
+     * {@link CameraDevice#createReprocessableCaptureSession createReprocessableCaptureSession}
+     * can submit reprocess capture requests. Submitting a reprocess request to a regular capture
+     * session will result in an {@link IllegalArgumentException}.</p>
+     *
+     * @param request the settings for this capture
+     * @param listener The callback object to notify once this request has been
+     * processed. If null, no metadata will be produced for this capture,
+     * although image data will still be produced.
+     * @param handler the handler on which the listener should be invoked, or
+     * {@code null} to use the current thread's {@link android.os.Looper
+     * looper}.
+     *
+     * @return int A unique capture sequence ID used by
+     *             {@link CaptureCallback#onCaptureSequenceCompleted}.
+     *
+     * @throws CameraAccessException if the camera device is no longer connected or has
+     *                               encountered a fatal error
+     * @throws IllegalStateException if this session is no longer active, either because the session
+     *                               was explicitly closed, a new session has been created
+     *                               or the camera device has been closed.
+     * @throws IllegalArgumentException if the request targets no Surfaces or Surfaces that are not
+     *                                  configured as outputs for this session; or the request
+     *                                  targets a set of Surfaces that cannot be submitted
+     *                                  simultaneously in a reprocessable capture session; or a
+     *                                  reprocess capture request is submitted in a
+     *                                  non-reprocessable capture session; or the reprocess capture
+     *                                  request was created with a {@link TotalCaptureResult} from
+     *                                  a different session; or the capture targets a Surface in
+     *                                  the middle of being {@link #prepare prepared}; or the
+     *                                  handler is null, the listener is not null, and the calling
+     *                                  thread has no looper.
+     *
+     * @see #captureBurst
+     * @see #setRepeatingRequest
+     * @see #setRepeatingBurst
+     * @see #abortCaptures
+     * @see CameraDevice#createReprocessableCaptureSession
+     

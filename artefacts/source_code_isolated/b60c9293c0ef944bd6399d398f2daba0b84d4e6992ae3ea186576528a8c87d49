@@ -1,0 +1,20 @@
+public Map<String, Integer> getDisplayNames(int field, int style, Locale locale){
+    if (!checkDisplayNameParams(field, style, ALL_STYLES, NARROW_FORMAT, locale, ERA_MASK | MONTH_MASK | DAY_OF_WEEK_MASK | AM_PM_MASK)) {
+        return null;
+    }
+    complete();
+    String calendarType = getCalendarType();
+    if (style == ALL_STYLES || isStandaloneStyle(style) || isNarrowFormatStyle(style)) {
+        Map<String, Integer> map;
+        map = CalendarDataUtility.retrieveFieldValueNames(calendarType, field, style, locale);
+        if (map == null) {
+            if (isNarrowFormatStyle(style)) {
+                map = CalendarDataUtility.retrieveFieldValueNames(calendarType, field, toStandaloneStyle(style), locale);
+            } else if (style != ALL_STYLES) {
+                map = CalendarDataUtility.retrieveFieldValueNames(calendarType, field, getBaseStyle(style), locale);
+            }
+        }
+        return map;
+    }
+    return getDisplayNamesImpl(field, style, locale);
+}

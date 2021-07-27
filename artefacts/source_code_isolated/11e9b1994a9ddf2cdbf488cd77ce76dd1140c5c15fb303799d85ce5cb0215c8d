@@ -1,0 +1,9 @@
+public static FileSystem getFileSystem(URI uri){
+    String scheme = uri.getScheme();
+    for (FileSystemProvider provider : FileSystemProvider.installedProviders()) {
+        if (scheme.equalsIgnoreCase(provider.getScheme())) {
+            return provider.getFileSystem(uri);
+        }
+    }
+    throw new ProviderNotFoundException("Provider \"" + scheme + "\" not found");
+}

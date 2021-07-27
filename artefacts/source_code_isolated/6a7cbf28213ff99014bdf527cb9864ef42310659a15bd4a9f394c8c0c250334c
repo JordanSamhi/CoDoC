@@ -1,0 +1,10 @@
+public ZonedDateTime withLaterOffsetAtOverlap(){
+    ZoneOffsetTransition trans = getZone().getRules().getTransition(toLocalDateTime());
+    if (trans != null) {
+        ZoneOffset laterOffset = trans.getOffsetAfter();
+        if (laterOffset.equals(offset) == false) {
+            return new ZonedDateTime(dateTime, laterOffset, zone);
+        }
+    }
+    return this;
+}

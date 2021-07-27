@@ -1,0 +1,8 @@
+public synchronized Throwable initCause(Throwable cause){
+    if (this.cause != this)
+        throw new IllegalStateException("Can't overwrite cause with " + Objects.toString(cause, "a null"), this);
+    if (cause == this)
+        throw new IllegalArgumentException("Self-causation not permitted", this);
+    this.cause = cause;
+    return this;
+}

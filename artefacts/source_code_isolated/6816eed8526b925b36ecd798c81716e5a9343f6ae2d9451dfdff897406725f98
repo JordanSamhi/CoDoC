@@ -1,0 +1,35 @@
+public BigDecimal divide(BigDecimal divisor, int scale, RoundingMode roundingMode){
+    if (roundingMode == null) {
+        throw new NullPointerException("roundingMode == null");
+    }
+    if (divisor.isZero()) {
+        throw new ArithmeticException("Division by zero");
+    }
+    long diffScale = ((long) this.scale - divisor.scale) - scale;
+    if (bitLength(diffScale) > 32) {
+        throw new ArithmeticException("Unable to perform divisor / dividend scaling: the difference in scale is too" + " big (" + diffScale + ")");
+    }
+    if (this.bitLength < 64 && divisor.bitLength < 64) {
+        if (diffScale == 0) {
+            if (this.smallValue != Long.MIN_VALUE || divisor.smallValue != -1) {
+                return dividePrimitiveLongs(this.smallValue, divisor.smallValue, scale, roundingMode);
+            }
+        } else if (diffScale > 0) {
+            if (diffScale < MathUtils.LONG_POWERS_OF_TEN.length && divisor.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[(int) diffScale] < 64) {
+                return dividePrimitiveLongs(this.smallValue, divisor.smallValue * MathUtils.LONG_POWERS_OF_TEN[(int) diffScale], scale, roundingMode);
+            }
+        } else {
+            if (-diffScale < MathUtils.LONG_POWERS_OF_TEN.length && this.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[(int) -diffScale] < 64) {
+                return dividePrimitiveLongs(this.smallValue * MathUtils.LONG_POWERS_OF_TEN[(int) -diffScale], divisor.smallValue, scale, roundingMode);
+            }
+        }
+    }
+    BigInteger scaledDividend = this.getUnscaledValue();
+    BigInteger scaledDivisor = divisor.getUnscaledValue();
+    if (diffScale > 0) {
+        scaledDivisor = Multiplication.multiplyByTenPow(scaledDivisor, (int) diffScale);
+    } else if (diffScale < 0) {
+        scaledDividend = Multiplication.multiplyByTenPow(scaledDividend, (int) -diffScale);
+    }
+    return divideBigIntegers(scaledDividend, scaledDivisor, scale, roundingMode);
+}

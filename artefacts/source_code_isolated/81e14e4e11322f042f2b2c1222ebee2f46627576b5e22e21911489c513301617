@@ -1,0 +1,8 @@
+public LocalDateTime minus(TemporalAmount amountToSubtract){
+    if (amountToSubtract instanceof Period) {
+        Period periodToSubtract = (Period) amountToSubtract;
+        return with(date.minus(periodToSubtract), time);
+    }
+    Objects.requireNonNull(amountToSubtract, "amountToSubtract");
+    return (LocalDateTime) amountToSubtract.subtractFrom(this);
+}

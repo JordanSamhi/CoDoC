@@ -1,0 +1,37 @@
+
+     * Normalizes this URI's path.
+     *
+     * <p> If this URI is opaque, or if its path is already in normal form,
+     * then this URI is returned.  Otherwise a new URI is constructed that is
+     * identical to this URI except that its path is computed by normalizing
+     * this URI's path in a manner consistent with <a
+     * href="http://www.ietf.org/rfc/rfc2396.txt">RFC&nbsp;2396</a>,
+     * section&nbsp;5.2, step&nbsp;6, sub-steps&nbsp;c through&nbsp;f; that is:
+     * </p>
+     *
+     * <ol>
+     *
+     *   <li><p> All {@code "."} segments are removed. </p></li>
+     *
+     *   <li><p> If a {@code ".."} segment is preceded by a non-{@code ".."}
+     *   segment then both of these segments are removed.  This step is
+     *   repeated until it is no longer applicable. </p></li>
+     *
+     *   <li><p> If the path is relative, and if its first segment contains a
+     *   colon character ({@code ':'}), then a {@code "."} segment is
+     *   prepended.  This prevents a relative URI with a path such as
+     *   {@code "a:b/c/d"} from later being re-parsed as an opaque URI with a
+     *   scheme of {@code "a"} and a scheme-specific part of {@code "b/c/d"}.
+     *   <b><i>(Deviation from RFC&nbsp;2396)</i></b> </p></li>
+     *
+     * </ol>
+     *
+     * <p> A normalized path will begin with one or more {@code ".."} segments
+     * if there were insufficient non-{@code ".."} segments preceding them to
+     * allow their removal.  A normalized path will begin with a {@code "."}
+     * segment if one was inserted by step 3 above.  Otherwise, a normalized
+     * path will not contain any {@code "."} or {@code ".."} segments. </p>
+     *
+     * @return  A URI equivalent to this URI,
+     *          but whose path is in normal form
+     

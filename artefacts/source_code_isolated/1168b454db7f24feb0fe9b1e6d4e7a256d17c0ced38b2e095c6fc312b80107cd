@@ -1,0 +1,17 @@
+public static SortedMap<String, Charset> availableCharsets(){
+    return AccessController.doPrivileged(new PrivilegedAction<SortedMap<String, Charset>>() {
+
+        public SortedMap<String, Charset> run() {
+            TreeMap<String, Charset> m = new TreeMap<String, Charset>(ASCIICaseInsensitiveComparator.CASE_INSENSITIVE_ORDER);
+            for (String charsetName : CharsetICU.getAvailableCharsetNames()) {
+                Charset charset = CharsetICU.charsetForName(charsetName);
+                m.put(charset.name(), charset);
+            }
+            for (Iterator i = providers(); i.hasNext(); ) {
+                CharsetProvider cp = (CharsetProvider) i.next();
+                put(cp.charsets(), m);
+            }
+            return Collections.unmodifiableSortedMap(m);
+        }
+    });
+}

@@ -1,0 +1,9 @@
+public final void setEntry(String alias, Entry entry, ProtectionParameter protParam) throws KeyStoreException{
+    if (alias == null || entry == null) {
+        throw new NullPointerException("invalid null input");
+    }
+    if (!initialized) {
+        throw new KeyStoreException("Uninitialized keystore");
+    }
+    keyStoreSpi.engineSetEntry(alias, entry, protParam);
+}

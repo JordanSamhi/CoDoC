@@ -1,0 +1,23 @@
+public WindowInsets onApplyWindowInsets(WindowInsets insets){
+    pullChildren();
+    final int vis = getWindowSystemUiVisibility();
+    final Rect systemInsets = insets.getSystemWindowInsetsAsRect();
+    boolean changed = applyInsets(mActionBarTop, systemInsets, true, true, false, true);
+    if (mActionBarBottom != null) {
+        changed |= applyInsets(mActionBarBottom, systemInsets, true, false, true, true);
+    }
+    computeSystemWindowInsets(insets, mBaseContentInsets);
+    mBaseInnerInsets = insets.inset(mBaseContentInsets);
+    if (!mLastBaseInnerInsets.equals(mBaseInnerInsets)) {
+        changed = true;
+        mLastBaseInnerInsets = mBaseInnerInsets;
+    }
+    if (!mLastBaseContentInsets.equals(mBaseContentInsets)) {
+        changed = true;
+        mLastBaseContentInsets.set(mBaseContentInsets);
+    }
+    if (changed) {
+        requestLayout();
+    }
+    return WindowInsets.CONSUMED;
+}

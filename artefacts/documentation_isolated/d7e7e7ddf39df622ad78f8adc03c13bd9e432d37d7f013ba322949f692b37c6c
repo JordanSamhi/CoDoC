@@ -1,0 +1,29 @@
+
+     * Open and return the requested document.
+     * <p>
+     * Your provider should return a reliable {@link ParcelFileDescriptor} to
+     * detect when the remote caller has finished reading or writing the
+     * document.
+     * <p>
+     * Mode "r" should always be supported. Provider should throw
+     * {@link UnsupportedOperationException} if the passing mode is not supported.
+     * You may return a pipe or socket pair if the mode is exclusively "r" or
+     * "w", but complex modes like "rw" imply a normal file on disk that
+     * supports seeking.
+     * <p>
+     * If you block while downloading content, you should periodically check
+     * {@link CancellationSignal#isCanceled()} to abort abandoned open requests.
+     *
+     * @param documentId the document to return.
+     * @param mode the mode to open with, such as 'r', 'w', or 'rw'.
+     * @param signal used by the caller to signal if the request should be
+     *            cancelled. May be null.
+     * @throws AuthenticationRequiredException If authentication is required from
+     *            the user (such as login credentials), but it is not guaranteed
+     *            that the client will handle this properly.
+     * @see ParcelFileDescriptor#open(java.io.File, int, android.os.Handler,
+     *      OnCloseListener)
+     * @see ParcelFileDescriptor#createReliablePipe()
+     * @see ParcelFileDescriptor#createReliableSocketPair()
+     * @see ParcelFileDescriptor#parseMode(String)
+     

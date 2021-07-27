@@ -1,0 +1,12 @@
+public int setRepeatingBurst(List<CaptureRequest> requests, CaptureCallback callback, Handler handler) throws CameraAccessException{
+    checkRepeatingRequests(requests);
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        handler = checkHandler(handler, callback);
+        if (DEBUG) {
+            CaptureRequest[] requestArray = requests.toArray(new CaptureRequest[0]);
+            Log.v(TAG, mIdString + "setRepeatingBurst - requests " + Arrays.toString(requestArray) + ", callback " + callback + " handler" + "" + handler);
+        }
+        return addPendingSequence(mDeviceImpl.setRepeatingBurst(requests, createCaptureCallbackProxy(handler, callback), mDeviceExecutor));
+    }
+}

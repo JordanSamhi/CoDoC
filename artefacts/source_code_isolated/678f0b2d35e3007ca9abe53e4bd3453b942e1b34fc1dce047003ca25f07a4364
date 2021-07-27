@@ -1,0 +1,6 @@
+public final void acquireSharedInterruptibly(int arg) throws InterruptedException{
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    if (tryAcquireShared(arg) < 0)
+        doAcquireSharedInterruptibly(arg);
+}

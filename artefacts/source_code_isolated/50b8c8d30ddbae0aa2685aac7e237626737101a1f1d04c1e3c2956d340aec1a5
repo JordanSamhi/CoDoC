@@ -1,0 +1,14 @@
+public synchronized void removeElementAt(int index){
+    modCount++;
+    if (index >= elementCount) {
+        throw new ArrayIndexOutOfBoundsException(index + " >= " + elementCount);
+    } else if (index < 0) {
+        throw new ArrayIndexOutOfBoundsException(index);
+    }
+    int j = elementCount - index - 1;
+    if (j > 0) {
+        System.arraycopy(elementData, index + 1, elementData, index, j);
+    }
+    elementCount--;
+    elementData[elementCount] = null;
+}

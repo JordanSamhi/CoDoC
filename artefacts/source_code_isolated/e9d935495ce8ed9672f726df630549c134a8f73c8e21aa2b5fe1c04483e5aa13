@@ -1,0 +1,14 @@
+public void clear(){
+    fullyLock();
+    try {
+        for (Node<E> p, h = head; (p = h.next) != null; h = p) {
+            h.next = h;
+            p.item = null;
+        }
+        head = last;
+        if (count.getAndSet(0) == capacity)
+            notFull.signal();
+    } finally {
+        fullyUnlock();
+    }
+}

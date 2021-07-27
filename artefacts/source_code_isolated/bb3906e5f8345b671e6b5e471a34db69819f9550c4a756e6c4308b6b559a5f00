@@ -1,0 +1,10 @@
+public long millis(){
+    for (Clock clock : clocks) {
+        try {
+            return clock.millis();
+        } catch (DateTimeException e) {
+            Log.w(TAG, e.toString());
+        }
+    }
+    throw new DateTimeException("No clocks in " + Arrays.toString(clocks) + " were able to provide time");
+}

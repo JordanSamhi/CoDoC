@@ -1,3 +1,7 @@
-public boolean isNightDisplayActivated(){
-    return mManager.isNightDisplayActivated();
+ boolean isNightDisplayActivated(){
+    try {
+        return mCdm.isNightDisplayActivated();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

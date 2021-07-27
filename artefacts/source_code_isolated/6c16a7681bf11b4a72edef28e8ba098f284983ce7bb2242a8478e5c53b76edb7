@@ -1,0 +1,22 @@
+public String toString(){
+    StringBuilder buf = new StringBuilder(18);
+    int hourValue = hour;
+    int minuteValue = minute;
+    int secondValue = second;
+    int nanoValue = nano;
+    buf.append(hourValue < 10 ? "0" : "").append(hourValue).append(minuteValue < 10 ? ":0" : ":").append(minuteValue);
+    if (secondValue > 0 || nanoValue > 0) {
+        buf.append(secondValue < 10 ? ":0" : ":").append(secondValue);
+        if (nanoValue > 0) {
+            buf.append('.');
+            if (nanoValue % 1000_000 == 0) {
+                buf.append(Integer.toString((nanoValue / 1000_000) + 1000).substring(1));
+            } else if (nanoValue % 1000 == 0) {
+                buf.append(Integer.toString((nanoValue / 1000) + 1000_000).substring(1));
+            } else {
+                buf.append(Integer.toString((nanoValue) + 1000_000_000).substring(1));
+            }
+        }
+    }
+    return buf.toString();
+}

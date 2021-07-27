@@ -1,0 +1,29 @@
+public List<ResolveInfo> queryIntentActivityOptions(ComponentName caller, Intent[] specifics, Intent intent, int flags){
+    final int userId = getUserId();
+    final ContentResolver resolver = mContext.getContentResolver();
+    String[] specificTypes = null;
+    if (specifics != null) {
+        final int N = specifics.length;
+        for (int i = 0; i < N; i++) {
+            Intent sp = specifics[i];
+            if (sp != null) {
+                String t = sp.resolveTypeIfNeeded(resolver);
+                if (t != null) {
+                    if (specificTypes == null) {
+                        specificTypes = new String[N];
+                    }
+                    specificTypes[i] = t;
+                }
+            }
+        }
+    }
+    try {
+        ParceledListSlice<ResolveInfo> parceledList = mPM.queryIntentActivityOptions(caller, specifics, specificTypes, intent, intent.resolveTypeIfNeeded(resolver), updateFlagsForComponent(flags, userId, intent), userId);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

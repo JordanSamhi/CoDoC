@@ -1,0 +1,12 @@
+public void onFlush() throws IOException{
+    for (MidiReceiver receiver : mReceivers) {
+        try {
+            receiver.flush();
+        } catch (IOException e) {
+            mReceivers.remove(receiver);
+            if (mFailureHandler != null) {
+                mFailureHandler.onReceiverFailure(receiver, e);
+            }
+        }
+    }
+}

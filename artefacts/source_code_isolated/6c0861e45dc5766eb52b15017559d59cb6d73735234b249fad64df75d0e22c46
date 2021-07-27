@@ -1,0 +1,10 @@
+public Drawable getActivityLogo(Intent intent) throws NameNotFoundException{
+    if (intent.getComponent() != null) {
+        return getActivityLogo(intent.getComponent());
+    }
+    ResolveInfo info = resolveActivity(intent, MATCH_DEFAULT_ONLY);
+    if (info != null) {
+        return info.activityInfo.loadLogo(this);
+    }
+    throw new NameNotFoundException(intent.toUri(0));
+}

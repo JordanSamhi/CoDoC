@@ -1,0 +1,18 @@
+public void cancel(){
+    if (Looper.myLooper() == null) {
+        throw new AndroidRuntimeException("Animators may only be run on Looper threads");
+    }
+    if (mAnimationEndRequested) {
+        return;
+    }
+    if ((mStarted || mRunning) && mListeners != null) {
+        if (!mRunning) {
+            notifyStartListeners();
+        }
+        ArrayList<AnimatorListener> tmpListeners = (ArrayList<AnimatorListener>) mListeners.clone();
+        for (AnimatorListener listener : tmpListeners) {
+            listener.onAnimationCancel(this);
+        }
+    }
+    endAnimation();
+}

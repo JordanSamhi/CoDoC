@@ -1,0 +1,12 @@
+public PermissionInfo getPermissionInfo(String permName, int flags) throws NameNotFoundException{
+    try {
+        final String packageName = mContext.getOpPackageName();
+        final PermissionInfo pi = mPermissionManager.getPermissionInfo(permName, packageName, flags);
+        if (pi != null) {
+            return pi;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(permName);
+}

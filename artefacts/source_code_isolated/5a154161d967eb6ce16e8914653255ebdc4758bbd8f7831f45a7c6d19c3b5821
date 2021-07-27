@@ -1,0 +1,11 @@
+public boolean equals(Object obj){
+    if (obj != null && obj instanceof Method) {
+        Method other = (Method) obj;
+        if ((getDeclaringClass() == other.getDeclaringClass()) && (getName() == other.getName())) {
+            if (!getReturnType().equals(other.getReturnType()))
+                return false;
+            return equalParamTypes(getParameterTypes(), other.getParameterTypes());
+        }
+    }
+    return false;
+}

@@ -1,0 +1,8 @@
+public static synchronized void setDefault(TimeZone timeZone){
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(new PropertyPermission("user.timezone", "write"));
+    }
+    defaultTimeZone = timeZone != null ? (TimeZone) timeZone.clone() : null;
+    android.icu.util.TimeZone.setICUDefault(null);
+}

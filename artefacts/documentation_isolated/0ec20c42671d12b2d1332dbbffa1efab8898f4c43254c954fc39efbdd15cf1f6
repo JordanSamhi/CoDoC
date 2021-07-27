@@ -1,0 +1,90 @@
+
+     * Returns the {@code java.lang.Class} object for a proxy class
+     * given a class loader and an array of interfaces.  The proxy class
+     * will be defined by the specified class loader and will implement
+     * all of the supplied interfaces.  If any of the given interfaces
+     * is non-public, the proxy class will be non-public. If a proxy class
+     * for the same permutation of interfaces has already been defined by the
+     * class loader, then the existing proxy class will be returned; otherwise,
+     * a proxy class for those interfaces will be generated dynamically
+     * and defined by the class loader.
+     *
+     * <p>There are several restrictions on the parameters that may be
+     * passed to {@code Proxy.getProxyClass}:
+     *
+     * <ul>
+     * <li>All of the {@code Class} objects in the
+     * {@code interfaces} array must represent interfaces, not
+     * classes or primitive types.
+     *
+     * <li>No two elements in the {@code interfaces} array may
+     * refer to identical {@code Class} objects.
+     *
+     * <li>All of the interface types must be visible by name through the
+     * specified class loader.  In other words, for class loader
+     * {@code cl} and every interface {@code i}, the following
+     * expression must be true:
+     * <pre>
+     *     Class.forName(i.getName(), false, cl) == i
+     * </pre>
+     *
+     * <li>All non-public interfaces must be in the same package;
+     * otherwise, it would not be possible for the proxy class to
+     * implement all of the interfaces, regardless of what package it is
+     * defined in.
+     *
+     * <li>For any set of member methods of the specified interfaces
+     * that have the same signature:
+     * <ul>
+     * <li>If the return type of any of the methods is a primitive
+     * type or void, then all of the methods must have that same
+     * return type.
+     * <li>Otherwise, one of the methods must have a return type that
+     * is assignable to all of the return types of the rest of the
+     * methods.
+     * </ul>
+     *
+     * <li>The resulting proxy class must not exceed any limits imposed
+     * on classes by the virtual machine.  For example, the VM may limit
+     * the number of interfaces that a class may implement to 65535; in
+     * that case, the size of the {@code interfaces} array must not
+     * exceed 65535.
+     * </ul>
+     *
+     * <p>If any of these restrictions are violated,
+     * {@code Proxy.getProxyClass} will throw an
+     * {@code IllegalArgumentException}.  If the {@code interfaces}
+     * array argument or any of its elements are {@code null}, a
+     * {@code NullPointerException} will be thrown.
+     *
+     * <p>Note that the order of the specified proxy interfaces is
+     * significant: two requests for a proxy class with the same combination
+     * of interfaces but in a different order will result in two distinct
+     * proxy classes.
+     *
+     * @param   loader the class loader to define the proxy class
+     * @param   interfaces the list of interfaces for the proxy class
+     *          to implement
+     * @return  a proxy class that is defined in the specified class loader
+     *          and that implements the specified interfaces
+     * @throws  IllegalArgumentException if any of the restrictions on the
+     *          parameters that may be passed to {@code getProxyClass}
+     *          are violated
+     * @throws  SecurityException if a security manager, <em>s</em>, is present
+     *          and any of the following conditions is met:
+     *          <ul>
+     *             <li> the given {@code loader} is {@code null} and
+     *             the caller's class loader is not {@code null} and the
+     *             invocation of {@link SecurityManager#checkPermission
+     *             s.checkPermission} with
+     *             {@code RuntimePermission("getClassLoader")} permission
+     *             denies access.</li>
+     *             <li> for each proxy interface, {@code intf},
+     *             the caller's class loader is not the same as or an
+     *             ancestor of the class loader for {@code intf} and
+     *             invocation of {@link SecurityManager#checkPackageAccess
+     *             s.checkPackageAccess()} denies access to {@code intf}.</li>
+     *          </ul>
+     * @throws  NullPointerException if the {@code interfaces} array
+     *          argument or any of its elements are {@code null}
+     

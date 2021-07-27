@@ -1,0 +1,29 @@
+public static int offsetByCodePoints(CharSequence seq, int index, int codePointOffset){
+    int length = seq.length();
+    if (index < 0 || index > length) {
+        throw new IndexOutOfBoundsException();
+    }
+    int x = index;
+    if (codePointOffset >= 0) {
+        int i;
+        for (i = 0; x < length && i < codePointOffset; i++) {
+            if (isHighSurrogate(seq.charAt(x++)) && x < length && isLowSurrogate(seq.charAt(x))) {
+                x++;
+            }
+        }
+        if (i < codePointOffset) {
+            throw new IndexOutOfBoundsException();
+        }
+    } else {
+        int i;
+        for (i = codePointOffset; x > 0 && i < 0; i++) {
+            if (isLowSurrogate(seq.charAt(--x)) && x > 0 && isHighSurrogate(seq.charAt(x - 1))) {
+                x--;
+            }
+        }
+        if (i < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+    return x;
+}

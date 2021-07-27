@@ -1,0 +1,22 @@
+public boolean animateChange(ViewHolder oldHolder, ViewHolder newHolder, int fromX, int fromY, int toX, int toY){
+    if (oldHolder == newHolder) {
+        return animateMove(oldHolder, fromX, fromY, toX, toY);
+    }
+    final float prevTranslationX = oldHolder.itemView.getTranslationX();
+    final float prevTranslationY = oldHolder.itemView.getTranslationY();
+    final float prevAlpha = oldHolder.itemView.getAlpha();
+    resetAnimation(oldHolder);
+    int deltaX = (int) (toX - fromX - prevTranslationX);
+    int deltaY = (int) (toY - fromY - prevTranslationY);
+    oldHolder.itemView.setTranslationX(prevTranslationX);
+    oldHolder.itemView.setTranslationY(prevTranslationY);
+    oldHolder.itemView.setAlpha(prevAlpha);
+    if (newHolder != null) {
+        resetAnimation(newHolder);
+        newHolder.itemView.setTranslationX(-deltaX);
+        newHolder.itemView.setTranslationY(-deltaY);
+        newHolder.itemView.setAlpha(0);
+    }
+    mPendingChanges.add(new ChangeInfo(oldHolder, newHolder, fromX, fromY, toX, toY));
+    return true;
+}

@@ -1,0 +1,14 @@
+public String toString(){
+    if (mParentSession != null && mIsStartedFromActiveSession) {
+        return mParentSession.toString();
+    } else {
+        StringBuilder methodName = new StringBuilder();
+        methodName.append(getFullMethodPath(false));
+        if (mOwnerInfo != null && !mOwnerInfo.isEmpty()) {
+            methodName.append("(");
+            methodName.append(mOwnerInfo);
+            methodName.append(")");
+        }
+        return methodName.toString() + "@" + getFullSessionId();
+    }
+}

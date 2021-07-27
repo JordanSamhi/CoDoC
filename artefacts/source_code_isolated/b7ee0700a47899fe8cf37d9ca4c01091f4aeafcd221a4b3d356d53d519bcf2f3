@@ -1,0 +1,21 @@
+public boolean getPadding(Rect padding){
+    final Rect r = mDrawableContainerState.getConstantPadding();
+    boolean result;
+    if (r != null) {
+        padding.set(r);
+        result = (r.left | r.top | r.bottom | r.right) != 0;
+    } else {
+        if (mCurrDrawable != null) {
+            result = mCurrDrawable.getPadding(padding);
+        } else {
+            result = super.getPadding(padding);
+        }
+    }
+    if (needsMirroring()) {
+        final int left = padding.left;
+        final int right = padding.right;
+        padding.left = right;
+        padding.right = left;
+    }
+    return result;
+}

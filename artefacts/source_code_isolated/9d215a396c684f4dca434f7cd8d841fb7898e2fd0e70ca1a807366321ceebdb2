@@ -1,0 +1,6 @@
+public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose) throws IOException, UnknownHostException{
+    SSLSocket sslSocket = (SSLSocket) this.socketfactory.createSocket(socket, host, port, autoClose);
+    sslSocket.startHandshake();
+    hostnameVerifier.verify(host, sslSocket);
+    return sslSocket;
+}

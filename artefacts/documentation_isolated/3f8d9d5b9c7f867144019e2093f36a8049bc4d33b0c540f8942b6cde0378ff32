@@ -1,0 +1,71 @@
+
+         * Produces a method handle for a virtual method.
+         * The type of the method handle will be that of the method,
+         * with the receiver type (usually {@code refc}) prepended.
+         * The method and all its argument types must be accessible to the lookup object.
+         * <p>
+         * When called, the handle will treat the first argument as a receiver
+         * and dispatch on the receiver's type to determine which method
+         * implementation to enter.
+         * (The dispatching action is identical with that performed by an
+         * {@code invokevirtual} or {@code invokeinterface} instruction.)
+         * <p>
+         * The first argument will be of type {@code refc} if the lookup
+         * class has full privileges to access the member.  Otherwise
+         * the member must be {@code protected} and the first argument
+         * will be restricted in type to the lookup class.
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the method's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p>
+         * Because of the general <a href="MethodHandles.Lookup.html#equiv">equivalence</a> between {@code invokevirtual}
+         * instructions and method handles produced by {@code findVirtual},
+         * if the class is {@code MethodHandle} and the name string is
+         * {@code invokeExact} or {@code invoke}, the resulting
+         * method handle is equivalent to one produced by
+         * {@link java.lang.invoke.MethodHandles#exactInvoker MethodHandles.exactInvoker} or
+         * {@link java.lang.invoke.MethodHandles#invoker MethodHandles.invoker}
+         * with the same {@code type} argument.
+         *
+         * <b>Example:</b>
+         * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle MH_concat = publicLookup().findVirtual(String.class,
+  "concat", methodType(String.class, String.class));
+MethodHandle MH_hashCode = publicLookup().findVirtual(Object.class,
+  "hashCode", methodType(int.class));
+MethodHandle MH_hashCode_String = publicLookup().findVirtual(String.class,
+  "hashCode", methodType(int.class));
+assertEquals("xy", (String) MH_concat.invokeExact("x", "y"));
+assertEquals("xy".hashCode(), (int) MH_hashCode.invokeExact((Object)"xy"));
+assertEquals("xy".hashCode(), (int) MH_hashCode_String.invokeExact("xy"));
+// interface method:
+MethodHandle MH_subSequence = publicLookup().findVirtual(CharSequence.class,
+  "subSequence", methodType(CharSequence.class, int.class, int.class));
+assertEquals("def", MH_subSequence.invoke("abcdefghi", 3, 6).toString());
+// constructor "internal method" must be accessed differently:
+MethodType MT_newString = methodType(void.class); //()V for new String()
+try { assertEquals("impossible", lookup()
+        .findVirtual(String.class, "<init>", MT_newString));
+ } catch (NoSuchMethodException ex) { } // OK
+MethodHandle MH_newString = publicLookup()
+  .findConstructor(String.class, MT_newString);
+assertEquals("", (String) MH_newString.invokeExact());
+         * }</pre></blockquote>
+         *
+         * @param refc the class or interface from which the method is accessed
+         * @param name the name of the method
+         * @param type the type of the method, with the receiver argument omitted
+         * @return the desired method handle
+         * @throws NoSuchMethodException if the method does not exist
+         * @throws IllegalAccessException if access checking fails,
+         *                                or if the method is {@code static}
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @exception SecurityException if a security manager is present and it
+         *                              <a href="MethodHandles.Lookup.html#secmgr">refuses access</a>
+         * @throws NullPointerException if any argument is null
+         

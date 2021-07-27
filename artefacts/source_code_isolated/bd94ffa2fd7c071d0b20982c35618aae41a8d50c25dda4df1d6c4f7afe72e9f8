@@ -1,0 +1,16 @@
+public void onActivityCreated(@Nullable Bundle savedInstanceState){
+    super.onActivityCreated(savedInstanceState);
+    if (mHavePrefs) {
+        bindPreferences();
+    }
+    mInitDone = true;
+    if (savedInstanceState != null) {
+        Bundle container = savedInstanceState.getBundle(PREFERENCES_TAG);
+        if (container != null) {
+            final PreferenceScreen preferenceScreen = getPreferenceScreen();
+            if (preferenceScreen != null) {
+                preferenceScreen.restoreHierarchyState(container);
+            }
+        }
+    }
+}

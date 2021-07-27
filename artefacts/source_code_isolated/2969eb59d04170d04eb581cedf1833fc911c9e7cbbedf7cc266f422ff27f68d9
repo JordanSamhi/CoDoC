@@ -1,0 +1,13 @@
+public final void doFinal(byte[] output, int outOffset) throws ShortBufferException, IllegalStateException{
+    chooseFirstProvider();
+    if (initialized == false) {
+        throw new IllegalStateException("MAC not initialized");
+    }
+    int macLen = getMacLength();
+    if (output == null || output.length - outOffset < macLen) {
+        throw new ShortBufferException("Cannot store MAC in output buffer");
+    }
+    byte[] mac = doFinal();
+    System.arraycopy(mac, 0, output, outOffset, macLen);
+    return;
+}

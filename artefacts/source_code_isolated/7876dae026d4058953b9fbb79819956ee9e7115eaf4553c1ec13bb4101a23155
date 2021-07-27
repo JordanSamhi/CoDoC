@@ -1,0 +1,11 @@
+public void invalidate(){
+    if (mActionMode != this) {
+        return;
+    }
+    mMenu.stopDispatchingItemsChanged();
+    try {
+        mCallback.onPrepareActionMode(this, mMenu);
+    } finally {
+        mMenu.startDispatchingItemsChanged();
+    }
+}

@@ -1,0 +1,100 @@
+public boolean onInterceptTouchEvent(MotionEvent ev){
+    final int action = ev.getAction() & MotionEvent.ACTION_MASK;
+    if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+        if (DEBUG)
+            Log.v(TAG, "Intercept done!");
+        mIsBeingDragged = false;
+        mIsUnableToDrag = false;
+        mActivePointerId = INVALID_POINTER;
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+        return false;
+    }
+    if (action != MotionEvent.ACTION_DOWN) {
+        if (mIsBeingDragged) {
+            if (DEBUG)
+                Log.v(TAG, "Being dragged, intercept returning true!");
+            return true;
+        }
+        if (mIsUnableToDrag) {
+            if (DEBUG)
+                Log.v(TAG, "Unable to drag, intercept returning false!");
+            return false;
+        }
+    }
+    switch(action) {
+        case MotionEvent.ACTION_MOVE:
+            {
+                final int activePointerId = mActivePointerId;
+                if (activePointerId == INVALID_POINTER) {
+                    break;
+                }
+                final int pointerIndex = ev.findPointerIndex(activePointerId);
+                final float x = ev.getX(pointerIndex);
+                final float dx = x - mLastMotionX;
+                final float xDiff = Math.abs(dx);
+                final float y = ev.getY(pointerIndex);
+                final float yDiff = Math.abs(y - mInitialMotionY);
+                if (DEBUG)
+                    Log.v(TAG, "Moved x to " + x + "," + y + " diff=" + xDiff + "," + yDiff);
+                if (dx != 0 && !isGutterDrag(mLastMotionX, dx) && canScroll(this, false, (int) dx, (int) x, (int) y)) {
+                    mLastMotionX = x;
+                    mLastMotionY = y;
+                    mIsUnableToDrag = true;
+                    return false;
+                }
+                if (xDiff > mTouchSlop && xDiff * 0.5f > yDiff) {
+                    if (DEBUG)
+                        Log.v(TAG, "Starting drag!");
+                    mIsBeingDragged = true;
+                    requestParentDisallowInterceptTouchEvent(true);
+                    setScrollState(SCROLL_STATE_DRAGGING);
+                    mLastMotionX = dx > 0 ? mInitialMotionX + mTouchSlop : mInitialMotionX - mTouchSlop;
+                    mLastMotionY = y;
+                    setScrollingCacheEnabled(true);
+                } else if (yDiff > mTouchSlop) {
+                    if (DEBUG)
+                        Log.v(TAG, "Starting unable to drag!");
+                    mIsUnableToDrag = true;
+                }
+                if (mIsBeingDragged) {
+                    if (performDrag(x)) {
+                        postInvalidateOnAnimation();
+                    }
+                }
+                break;
+            }
+        case MotionEvent.ACTION_DOWN:
+            {
+                mLastMotionX = mInitialMotionX = ev.getX();
+                mLastMotionY = mInitialMotionY = ev.getY();
+                mActivePointerId = ev.getPointerId(0);
+                mIsUnableToDrag = false;
+                mScroller.computeScrollOffset();
+                if (mScrollState == SCROLL_STATE_SETTLING && Math.abs(mScroller.getFinalX() - mScroller.getCurrX()) > mCloseEnough) {
+                    mScroller.abortAnimation();
+                    mPopulatePending = false;
+                    populate();
+                    mIsBeingDragged = true;
+                    requestParentDisallowInterceptTouchEvent(true);
+                    setScrollState(SCROLL_STATE_DRAGGING);
+                } else {
+                    completeScroll(false);
+                    mIsBeingDragged = false;
+                }
+                if (DEBUG)
+                    Log.v(TAG, "Down at " + mLastMotionX + "," + mLastMotionY + " mIsBeingDragged=" + mIsBeingDragged + "mIsUnableToDrag=" + mIsUnableToDrag);
+                break;
+            }
+        case MotionEvent.ACTION_POINTER_UP:
+            onSecondaryPointerUp(ev);
+            break;
+    }
+    if (mVelocityTracker == null) {
+        mVelocityTracker = VelocityTracker.obtain();
+    }
+    mVelocityTracker.addMovement(ev);
+    return mIsBeingDragged;
+}

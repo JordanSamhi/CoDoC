@@ -1,0 +1,16 @@
+public static MethodHandle insertArguments(MethodHandle target, int pos, Object... values){
+    int insCount = values.length;
+    Class<?>[] ptypes = insertArgumentsChecks(target, insCount, pos);
+    if (insCount == 0) {
+        return target;
+    }
+    for (int i = 0; i < insCount; i++) {
+        final Class<?> ptype = ptypes[pos + i];
+        if (!ptype.isPrimitive()) {
+            ptypes[pos + i].cast(values[i]);
+        } else {
+            values[i] = Wrapper.forPrimitiveType(ptype).convert(values[i], ptype);
+        }
+    }
+    return new Transformers.InsertArguments(target, pos, values);
+}

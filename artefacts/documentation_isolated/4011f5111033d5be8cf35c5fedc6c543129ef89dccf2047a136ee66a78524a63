@@ -1,0 +1,38 @@
+
+     * Returns the canonical pathname string of this abstract pathname.
+     *
+     * <p> A canonical pathname is both absolute and unique.  The precise
+     * definition of canonical form is system-dependent.  This method first
+     * converts this pathname to absolute form if necessary, as if by invoking the
+     * {@link #getAbsolutePath} method, and then maps it to its unique form in a
+     * system-dependent way.  This typically involves removing redundant names
+     * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
+     * symbolic links (on UNIX platforms), and converting drive letters to a
+     * standard case (on Microsoft Windows platforms).
+     *
+     * <p> Every pathname that denotes an existing file or directory has a
+     * unique canonical form.  Every pathname that denotes a nonexistent file
+     * or directory also has a unique canonical form.  The canonical form of
+     * the pathname of a nonexistent file or directory may be different from
+     * the canonical form of the same pathname after the file or directory is
+     * created.  Similarly, the canonical form of the pathname of an existing
+     * file or directory may be different from the canonical form of the same
+     * pathname after the file or directory is deleted.
+     *
+     * @return  The canonical pathname string denoting the same file or
+     *          directory as this abstract pathname
+     *
+     * @throws  IOException
+     *          If an I/O error occurs, which is possible because the
+     *          construction of the canonical pathname may require
+     *          filesystem queries
+     *
+     * @throws  SecurityException
+     *          If a required system property value cannot be accessed, or
+     *          if a security manager exists and its <code>{@link
+     *          java.lang.SecurityManager#checkRead}</code> method denies
+     *          read access to the file
+     *
+     * @since   JDK1.1
+     * @see     Path#toRealPath
+     

@@ -1,0 +1,9 @@
+public DateTimeFormatter withResolverFields(Set<TemporalField> resolverFields){
+    if (Objects.equals(this.resolverFields, resolverFields)) {
+        return this;
+    }
+    if (resolverFields != null) {
+        resolverFields = Collections.unmodifiableSet(new HashSet<>(resolverFields));
+    }
+    return new DateTimeFormatter(printerParser, locale, decimalStyle, resolverStyle, resolverFields, chrono, zone);
+}

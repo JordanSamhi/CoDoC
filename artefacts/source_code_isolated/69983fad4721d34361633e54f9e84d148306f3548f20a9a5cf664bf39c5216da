@@ -1,9 +1,0 @@
-public void disableEphemeralNetwork(String network, String packageName){
-    mContext.enforceCallingOrSelfPermission(android.Manifest.permission.CHANGE_WIFI_STATE, "WifiService");
-    if (!isPrivileged(Binder.getCallingPid(), Binder.getCallingUid())) {
-        mLog.info("disableEphemeralNetwork not allowed for uid=%").c(Binder.getCallingUid()).flush();
-        return;
-    }
-    mLog.info("disableEphemeralNetwork uid=%").c(Binder.getCallingUid()).flush();
-    mWifiThreadRunner.post(() -> mWifiConfigManager.userTemporarilyDisabledNetwork(network, Binder.getCallingUid()));
-}

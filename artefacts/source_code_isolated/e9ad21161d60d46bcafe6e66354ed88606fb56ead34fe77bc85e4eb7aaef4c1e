@@ -1,0 +1,52 @@
+public ListIterator<E> listIterator(int index){
+    checkForComodification();
+    rangeCheckForAdd(index);
+    return new ListIterator<E>() {
+
+        private final ListIterator<E> i = root.listIterator(offset + index);
+
+        public boolean hasNext() {
+            return nextIndex() < size;
+        }
+
+        public E next() {
+            if (hasNext())
+                return i.next();
+            else
+                throw new NoSuchElementException();
+        }
+
+        public boolean hasPrevious() {
+            return previousIndex() >= 0;
+        }
+
+        public E previous() {
+            if (hasPrevious())
+                return i.previous();
+            else
+                throw new NoSuchElementException();
+        }
+
+        public int nextIndex() {
+            return i.nextIndex() - offset;
+        }
+
+        public int previousIndex() {
+            return i.previousIndex() - offset;
+        }
+
+        public void remove() {
+            i.remove();
+            updateSizeAndModCount(-1);
+        }
+
+        public void set(E e) {
+            i.set(e);
+        }
+
+        public void add(E e) {
+            i.add(e);
+            updateSizeAndModCount(1);
+        }
+    };
+}

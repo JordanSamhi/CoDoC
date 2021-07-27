@@ -1,0 +1,44 @@
+
+     * Adds a signed amount to the specified calendar field without changing larger fields.
+     * A negative roll amount means to subtract from field without changing
+     * larger fields. If the specified amount is 0, this method performs nothing.
+     *
+     * <p>This method calls {@link #complete()} before adding the
+     * amount so that all the calendar fields are normalized. If there
+     * is any calendar field having an out-of-range value in non-lenient mode, then an
+     * <code>IllegalArgumentException</code> is thrown.
+     *
+     * <p>
+     * <em>Example</em>: Consider a <code>GregorianCalendar</code>
+     * originally set to August 31, 1999. Calling <code>roll(Calendar.MONTH,
+     * 8)</code> sets the calendar to April 30, <strong>1999</strong>. Using a
+     * <code>GregorianCalendar</code>, the <code>DAY_OF_MONTH</code> field cannot
+     * be 31 in the month April. <code>DAY_OF_MONTH</code> is set to the closest possible
+     * value, 30. The <code>YEAR</code> field maintains the value of 1999 because it
+     * is a larger field than <code>MONTH</code>.
+     * <p>
+     * <em>Example</em>: Consider a <code>GregorianCalendar</code>
+     * originally set to Sunday June 6, 1999. Calling
+     * <code>roll(Calendar.WEEK_OF_MONTH, -1)</code> sets the calendar to
+     * Tuesday June 1, 1999, whereas calling
+     * <code>add(Calendar.WEEK_OF_MONTH, -1)</code> sets the calendar to
+     * Sunday May 30, 1999. This is because the roll rule imposes an
+     * additional constraint: The <code>MONTH</code> must not change when the
+     * <code>WEEK_OF_MONTH</code> is rolled. Taken together with add rule 1,
+     * the resultant date must be between Tuesday June 1 and Saturday June
+     * 5. According to add rule 2, the <code>DAY_OF_WEEK</code>, an invariant
+     * when changing the <code>WEEK_OF_MONTH</code>, is set to Tuesday, the
+     * closest possible value to Sunday (where Sunday is the first day of the
+     * week).</p>
+     *
+     * @param field the calendar field.
+     * @param amount the signed amount to add to <code>field</code>.
+     * @exception IllegalArgumentException if <code>field</code> is
+     * <code>ZONE_OFFSET</code>, <code>DST_OFFSET</code>, or unknown,
+     * or if any calendar fields have out-of-range values in
+     * non-lenient mode.
+     * @see #roll(int,boolean)
+     * @see #add(int,int)
+     * @see #set(int,int)
+     * @since 1.2
+     

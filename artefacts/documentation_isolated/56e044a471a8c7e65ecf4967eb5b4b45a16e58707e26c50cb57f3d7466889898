@@ -1,0 +1,83 @@
+
+     * Executes the specified command and arguments in a separate process with
+     * the specified environment and working directory.
+     *
+     * <p>Given an array of strings <code>cmdarray</code>, representing the
+     * tokens of a command line, and an array of strings <code>envp</code>,
+     * representing "environment" variable settings, this method creates
+     * a new process in which to execute the specified command.
+     *
+     * <p>This method checks that <code>cmdarray</code> is a valid operating
+     * system command.  Which commands are valid is system-dependent,
+     * but at the very least the command must be a non-empty list of
+     * non-null strings.
+     *
+     * <p>If <tt>envp</tt> is <tt>null</tt>, the subprocess inherits the
+     * environment settings of the current process.
+     *
+     * <p>A minimal set of system dependent environment variables may
+     * be required to start a process on some operating systems.
+     * As a result, the subprocess may inherit additional environment variable
+     * settings beyond those in the specified environment.
+     *
+     * <p>{@link ProcessBuilder#start()} is now the preferred way to
+     * start a process with a modified environment.
+     *
+     * <p>The working directory of the new subprocess is specified by <tt>dir</tt>.
+     * If <tt>dir</tt> is <tt>null</tt>, the subprocess inherits the
+     * current working directory of the current process.
+     *
+     * <p>If a security manager exists, its
+     * {@link SecurityManager#checkExec checkExec}
+     * method is invoked with the first component of the array
+     * <code>cmdarray</code> as its argument. This may result in a
+     * {@link SecurityException} being thrown.
+     *
+     * <p>Starting an operating system process is highly system-dependent.
+     * Among the many things that can go wrong are:
+     * <ul>
+     * <li>The operating system program file was not found.
+     * <li>Access to the program file was denied.
+     * <li>The working directory does not exist.
+     * </ul>
+     *
+     * <p>In such cases an exception will be thrown.  The exact nature
+     * of the exception is system-dependent, but it will always be a
+     * subclass of {@link IOException}.
+     *
+     *
+     * @param   cmdarray  array containing the command to call and
+     *                    its arguments.
+     *
+     * @param   envp      array of strings, each element of which
+     *                    has environment variable settings in the format
+     *                    <i>name</i>=<i>value</i>, or
+     *                    <tt>null</tt> if the subprocess should inherit
+     *                    the environment of the current process.
+     *
+     * @param   dir       the working directory of the subprocess, or
+     *                    <tt>null</tt> if the subprocess should inherit
+     *                    the working directory of the current process.
+     *
+     * @return  A new {@link Process} object for managing the subprocess
+     *
+     * @throws  SecurityException
+     *          If a security manager exists and its
+     *          {@link SecurityManager#checkExec checkExec}
+     *          method doesn't allow creation of the subprocess
+     *
+     * @throws  IOException
+     *          If an I/O error occurs
+     *
+     * @throws  NullPointerException
+     *          If <code>cmdarray</code> is <code>null</code>,
+     *          or one of the elements of <code>cmdarray</code> is <code>null</code>,
+     *          or one of the elements of <code>envp</code> is <code>null</code>
+     *
+     * @throws  IndexOutOfBoundsException
+     *          If <code>cmdarray</code> is an empty array
+     *          (has length <code>0</code>)
+     *
+     * @see     ProcessBuilder
+     * @since 1.3
+     

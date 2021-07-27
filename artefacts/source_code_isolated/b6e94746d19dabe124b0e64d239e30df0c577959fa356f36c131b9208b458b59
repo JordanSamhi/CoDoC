@@ -1,0 +1,14 @@
+public static long round(double a){
+    long longBits = Double.doubleToRawLongBits(a);
+    long biasedExp = (longBits & DoubleConsts.EXP_BIT_MASK) >> (DoubleConsts.SIGNIFICAND_WIDTH - 1);
+    long shift = (DoubleConsts.SIGNIFICAND_WIDTH - 2 + DoubleConsts.EXP_BIAS) - biasedExp;
+    if ((shift & -64) == 0) {
+        long r = ((longBits & DoubleConsts.SIGNIF_BIT_MASK) | (DoubleConsts.SIGNIF_BIT_MASK + 1));
+        if (longBits < 0) {
+            r = -r;
+        }
+        return ((r >> shift) + 1) >> 1;
+    } else {
+        return (long) a;
+    }
+}

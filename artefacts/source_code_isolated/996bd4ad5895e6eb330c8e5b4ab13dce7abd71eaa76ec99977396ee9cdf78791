@@ -1,0 +1,76 @@
+public void applyPattern(String newPattern){
+    StringBuffer[] segments = new StringBuffer[2];
+    for (int i = 0; i < segments.length; ++i) {
+        segments[i] = new StringBuffer();
+    }
+    double[] newChoiceLimits = new double[30];
+    String[] newChoiceFormats = new String[30];
+    int count = 0;
+    int part = 0;
+    double startValue = 0;
+    double oldStartValue = Double.NaN;
+    boolean inQuote = false;
+    for (int i = 0; i < newPattern.length(); ++i) {
+        char ch = newPattern.charAt(i);
+        if (ch == '\'') {
+            if ((i + 1) < newPattern.length() && newPattern.charAt(i + 1) == ch) {
+                segments[part].append(ch);
+                ++i;
+            } else {
+                inQuote = !inQuote;
+            }
+        } else if (inQuote) {
+            segments[part].append(ch);
+        } else if (ch == '<' || ch == '#' || ch == '\u2264') {
+            if (segments[0].length() == 0) {
+                throw new IllegalArgumentException();
+            }
+            try {
+                String tempBuffer = segments[0].toString();
+                if (tempBuffer.equals("\u221E")) {
+                    startValue = Double.POSITIVE_INFINITY;
+                } else if (tempBuffer.equals("-\u221E")) {
+                    startValue = Double.NEGATIVE_INFINITY;
+                } else {
+                    startValue = Double.parseDouble(segments[0].toString());
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+            if (ch == '<' && startValue != Double.POSITIVE_INFINITY && startValue != Double.NEGATIVE_INFINITY) {
+                startValue = nextDouble(startValue);
+            }
+            if (startValue <= oldStartValue) {
+                throw new IllegalArgumentException();
+            }
+            segments[0].setLength(0);
+            part = 1;
+        } else if (ch == '|') {
+            if (count == newChoiceLimits.length) {
+                newChoiceLimits = doubleArraySize(newChoiceLimits);
+                newChoiceFormats = doubleArraySize(newChoiceFormats);
+            }
+            newChoiceLimits[count] = startValue;
+            newChoiceFormats[count] = segments[1].toString();
+            ++count;
+            oldStartValue = startValue;
+            segments[1].setLength(0);
+            part = 0;
+        } else {
+            segments[part].append(ch);
+        }
+    }
+    if (part == 1) {
+        if (count == newChoiceLimits.length) {
+            newChoiceLimits = doubleArraySize(newChoiceLimits);
+            newChoiceFormats = doubleArraySize(newChoiceFormats);
+        }
+        newChoiceLimits[count] = startValue;
+        newChoiceFormats[count] = segments[1].toString();
+        ++count;
+    }
+    choiceLimits = new double[count];
+    System.arraycopy(newChoiceLimits, 0, choiceLimits, 0, count);
+    choiceFormats = new String[count];
+    System.arraycopy(newChoiceFormats, 0, choiceFormats, 0, count);
+}

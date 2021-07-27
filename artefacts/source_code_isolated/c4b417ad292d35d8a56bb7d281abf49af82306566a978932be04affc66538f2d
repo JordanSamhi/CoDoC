@@ -1,0 +1,11 @@
+public void handlePictureInPictureRequested(IBinder token){
+    final ActivityClientRecord r = mActivities.get(token);
+    if (r == null) {
+        Log.w(TAG, "Activity to request PIP to no longer exists");
+        return;
+    }
+    final boolean receivedByApp = r.activity.onPictureInPictureRequested();
+    if (!receivedByApp) {
+        schedulePauseWithUserLeaveHintAndReturnToCurrentState(r);
+    }
+}

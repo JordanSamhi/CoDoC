@@ -1,0 +1,10 @@
+public boolean equals(Object x){
+    if (this == x) {
+        return true;
+    }
+    if (x instanceof BigDecimal) {
+        BigDecimal x1 = (BigDecimal) x;
+        return x1.scale == scale && x1.bitLength == bitLength && (bitLength < 64 ? (x1.smallValue == smallValue) : x1.intVal.equals(intVal));
+    }
+    return false;
+}

@@ -1,0 +1,8 @@
+public final int doFinal(byte[] output, int outputOffset) throws IllegalBlockSizeException, ShortBufferException, BadPaddingException{
+    checkCipherState();
+    if ((output == null) || (outputOffset < 0)) {
+        throw new IllegalArgumentException("Bad arguments");
+    }
+    updateProviderIfNeeded();
+    return spi.engineDoFinal(null, 0, 0, output, outputOffset);
+}

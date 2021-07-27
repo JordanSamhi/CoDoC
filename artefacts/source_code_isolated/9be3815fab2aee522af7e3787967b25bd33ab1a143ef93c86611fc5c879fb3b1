@@ -1,0 +1,31 @@
+public boolean equals(@Nullable Object obj){
+    if (this == obj) {
+        return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    EuiccRulesAuthTable that = (EuiccRulesAuthTable) obj;
+    if (mCarrierIds.length != that.mCarrierIds.length) {
+        return false;
+    }
+    for (int i = 0; i < mCarrierIds.length; i++) {
+        CarrierIdentifier[] carrierIds = mCarrierIds[i];
+        CarrierIdentifier[] thatCarrierIds = that.mCarrierIds[i];
+        if (carrierIds != null && thatCarrierIds != null) {
+            if (carrierIds.length != thatCarrierIds.length) {
+                return false;
+            }
+            for (int j = 0; j < carrierIds.length; j++) {
+                if (!carrierIds[j].equals(thatCarrierIds[j])) {
+                    return false;
+                }
+            }
+            continue;
+        } else if (carrierIds == null && thatCarrierIds == null) {
+            continue;
+        }
+        return false;
+    }
+    return Arrays.equals(mPolicyRules, that.mPolicyRules) && Arrays.equals(mPolicyRuleFlags, that.mPolicyRuleFlags);
+}

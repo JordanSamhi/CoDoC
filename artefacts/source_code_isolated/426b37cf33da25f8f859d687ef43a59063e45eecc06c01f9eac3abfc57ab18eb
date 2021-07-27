@@ -1,0 +1,15 @@
+public final void drawText(@NonNull CharSequence text, int start, int end, float x, float y, @NonNull Paint paint){
+    if ((start | end | (end - start) | (text.length() - end)) < 0) {
+        throw new IndexOutOfBoundsException();
+    }
+    if (text instanceof String || text instanceof SpannedString || text instanceof SpannableString) {
+        nDrawText(mNativeCanvasWrapper, text.toString(), start, end, x, y, paint.mBidiFlags, paint.getNativeInstance());
+    } else if (text instanceof GraphicsOperations) {
+        ((GraphicsOperations) text).drawText(this, start, end, x, y, paint);
+    } else {
+        char[] buf = TemporaryBuffer.obtain(end - start);
+        TextUtils.getChars(text, start, end, buf, 0);
+        nDrawText(mNativeCanvasWrapper, buf, 0, end - start, x, y, paint.mBidiFlags, paint.getNativeInstance());
+        TemporaryBuffer.recycle(buf);
+    }
+}

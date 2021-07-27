@@ -1,0 +1,17 @@
+public final boolean isStateful(){
+    if (mCheckedStateful) {
+        return mIsStateful;
+    }
+    final ChildDrawable[] array = mChildren;
+    boolean isStateful = false;
+    for (int i = 0; i < N_CHILDREN; i++) {
+        final Drawable dr = array[i].mDrawable;
+        if (dr != null && dr.isStateful()) {
+            isStateful = true;
+            break;
+        }
+    }
+    mIsStateful = isStateful;
+    mCheckedStateful = true;
+    return isStateful;
+}

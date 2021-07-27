@@ -1,0 +1,39 @@
+
+     * Parses the text using this formatter, without resolving the result, intended
+     * for advanced use cases.
+     * <p>
+     * Parsing is implemented as a two-phase operation.
+     * First, the text is parsed using the layout defined by the formatter, producing
+     * a {@code Map} of field to value, a {@code ZoneId} and a {@code Chronology}.
+     * Second, the parsed data is <em>resolved</em>, by validating, combining and
+     * simplifying the various fields into more useful ones.
+     * This method performs the parsing stage but not the resolving stage.
+     * <p>
+     * The result of this method is {@code TemporalAccessor} which represents the
+     * data as seen in the input. Values are not validated, thus parsing a date string
+     * of '2012-00-65' would result in a temporal with three fields - year of '2012',
+     * month of '0' and day-of-month of '65'.
+     * <p>
+     * The text will be parsed from the specified start {@code ParsePosition}.
+     * The entire length of the text does not have to be parsed, the {@code ParsePosition}
+     * will be updated with the index at the end of parsing.
+     * <p>
+     * Errors are returned using the error index field of the {@code ParsePosition}
+     * instead of {@code DateTimeParseException}.
+     * The returned error index will be set to an index indicative of the error.
+     * Callers must check for errors before using the result.
+     * <p>
+     * If the formatter parses the same field more than once with different values,
+     * the result will be an error.
+     * <p>
+     * This method is intended for advanced use cases that need access to the
+     * internal state during parsing. Typical application code should use
+     * {@link #parse(CharSequence, TemporalQuery)} or the parse method on the target type.
+     *
+     * @param text  the text to parse, not null
+     * @param position  the position to parse from, updated with length parsed
+     *  and the index of any error, not null
+     * @return the parsed text, null if the parse results in an error
+     * @throws DateTimeException if some problem occurs during parsing
+     * @throws IndexOutOfBoundsException if the position is invalid
+     

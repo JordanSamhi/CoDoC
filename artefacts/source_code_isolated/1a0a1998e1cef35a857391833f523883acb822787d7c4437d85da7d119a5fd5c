@@ -1,0 +1,6 @@
+public long getGpsSignalQualityTime(int strengthBin, long elapsedRealtimeUs, int which){
+    if (strengthBin < 0 || strengthBin >= GnssMetrics.NUM_GPS_SIGNAL_QUALITY_LEVELS) {
+        return 0;
+    }
+    return mGpsSignalQualityTimer[strengthBin].getTotalTimeLocked(elapsedRealtimeUs, which);
+}

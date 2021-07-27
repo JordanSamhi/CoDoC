@@ -1,0 +1,119 @@
+public boolean onTouchEvent(MotionEvent ev){
+    final int action = ev.getActionMasked();
+    mVelocityTracker.addMovement(ev);
+    boolean handled = false;
+    switch(action) {
+        case MotionEvent.ACTION_DOWN:
+            {
+                final float x = ev.getX();
+                final float y = ev.getY();
+                mInitialTouchX = x;
+                mInitialTouchY = mLastTouchY = y;
+                mActivePointerId = ev.getPointerId(0);
+                final boolean hitView = findChildUnder(mInitialTouchX, mInitialTouchY) != null;
+                handled = isDismissable() || mCollapsibleHeight > 0;
+                mIsDragging = hitView && handled;
+                abortAnimation();
+            }
+            break;
+        case MotionEvent.ACTION_MOVE:
+            {
+                int index = ev.findPointerIndex(mActivePointerId);
+                if (index < 0) {
+                    Log.e(TAG, "Bad pointer id " + mActivePointerId + ", resetting");
+                    index = 0;
+                    mActivePointerId = ev.getPointerId(0);
+                    mInitialTouchX = ev.getX();
+                    mInitialTouchY = mLastTouchY = ev.getY();
+                }
+                final float x = ev.getX(index);
+                final float y = ev.getY(index);
+                if (!mIsDragging) {
+                    final float dy = y - mInitialTouchY;
+                    if (Math.abs(dy) > mTouchSlop && findChildUnder(x, y) != null) {
+                        handled = mIsDragging = true;
+                        mLastTouchY = Math.max(mLastTouchY - mTouchSlop, Math.min(mLastTouchY + dy, mLastTouchY + mTouchSlop));
+                    }
+                }
+                if (mIsDragging) {
+                    final float dy = y - mLastTouchY;
+                    if (dy > 0 && isNestedListChildScrolled()) {
+                        mNestedListChild.smoothScrollBy((int) -dy, 0);
+                    } else if (dy > 0 && isNestedRecyclerChildScrolled()) {
+                        mNestedRecyclerChild.scrollBy(0, (int) -dy);
+                    } else {
+                        performDrag(dy);
+                    }
+                }
+                mLastTouchY = y;
+            }
+            break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                final int pointerIndex = ev.getActionIndex();
+                final int pointerId = ev.getPointerId(pointerIndex);
+                mActivePointerId = pointerId;
+                mInitialTouchX = ev.getX(pointerIndex);
+                mInitialTouchY = mLastTouchY = ev.getY(pointerIndex);
+            }
+            break;
+        case MotionEvent.ACTION_POINTER_UP:
+            {
+                onSecondaryPointerUp(ev);
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            {
+                final boolean wasDragging = mIsDragging;
+                mIsDragging = false;
+                if (!wasDragging && findChildUnder(mInitialTouchX, mInitialTouchY) == null && findChildUnder(ev.getX(), ev.getY()) == null) {
+                    if (isDismissable()) {
+                        dispatchOnDismissed();
+                        resetTouch();
+                        return true;
+                    }
+                }
+                if (mOpenOnClick && Math.abs(ev.getX() - mInitialTouchX) < mTouchSlop && Math.abs(ev.getY() - mInitialTouchY) < mTouchSlop) {
+                    smoothScrollTo(0, 0);
+                    return true;
+                }
+                mVelocityTracker.computeCurrentVelocity(1000);
+                final float yvel = mVelocityTracker.getYVelocity(mActivePointerId);
+                if (Math.abs(yvel) > mMinFlingVelocity) {
+                    if (getShowAtTop()) {
+                        if (isDismissable() && yvel < 0) {
+                            abortAnimation();
+                            dismiss();
+                        } else {
+                            smoothScrollTo(yvel < 0 ? 0 : mCollapsibleHeight, yvel);
+                        }
+                    } else {
+                        if (isDismissable() && yvel > 0 && mCollapseOffset > mCollapsibleHeight) {
+                            smoothScrollTo(mCollapsibleHeight + mUncollapsibleHeight, yvel);
+                            mDismissOnScrollerFinished = true;
+                        } else {
+                            if (isNestedListChildScrolled()) {
+                                mNestedListChild.smoothScrollToPosition(0);
+                            } else if (isNestedRecyclerChildScrolled()) {
+                                mNestedRecyclerChild.smoothScrollToPosition(0);
+                            }
+                            smoothScrollTo(yvel < 0 ? 0 : mCollapsibleHeight, yvel);
+                        }
+                    }
+                } else {
+                    smoothScrollTo(mCollapseOffset < mCollapsibleHeight / 2 ? 0 : mCollapsibleHeight, 0);
+                }
+                resetTouch();
+            }
+            break;
+        case MotionEvent.ACTION_CANCEL:
+            {
+                if (mIsDragging) {
+                    smoothScrollTo(mCollapseOffset < mCollapsibleHeight / 2 ? 0 : mCollapsibleHeight, 0);
+                }
+                resetTouch();
+                return true;
+            }
+    }
+    return handled;
+}

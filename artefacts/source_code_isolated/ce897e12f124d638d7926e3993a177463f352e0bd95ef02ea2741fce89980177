@@ -1,0 +1,8 @@
+public void setSyntheticAppDetailsActivityEnabled(String packageName, boolean enabled){
+    try {
+        ComponentName componentName = new ComponentName(packageName, APP_DETAILS_ACTIVITY_CLASS_NAME);
+        mPM.setComponentEnabledSetting(componentName, enabled ? COMPONENT_ENABLED_STATE_DEFAULT : COMPONENT_ENABLED_STATE_DISABLED, DONT_KILL_APP, getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

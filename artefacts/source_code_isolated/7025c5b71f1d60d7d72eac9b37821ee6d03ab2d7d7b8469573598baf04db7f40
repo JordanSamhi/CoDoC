@@ -1,9 +1,0 @@
-public void handleConnectionAttemptEnded(int failureCode, @NonNull String bssid, @NonNull String ssid){
-    if (failureCode == WifiMetrics.ConnectionEvent.FAILURE_NONE) {
-        String ssidUnquoted = (mWifiInfo.getWifiSsid() == null) ? null : mWifiInfo.getWifiSsid().toString();
-        mOpenNetworkNotifier.handleWifiConnected(ssidUnquoted);
-    } else {
-        mOpenNetworkNotifier.handleConnectionFailure();
-        retryConnectionOnLatestCandidates(bssid, ssid);
-    }
-}

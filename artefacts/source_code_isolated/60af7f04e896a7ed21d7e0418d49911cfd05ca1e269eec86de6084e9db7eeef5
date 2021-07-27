@@ -1,0 +1,20 @@
+public String getCanonicalName(){
+    if (isArray()) {
+        String canonicalName = getComponentType().getCanonicalName();
+        if (canonicalName != null)
+            return canonicalName + "[]";
+        else
+            return null;
+    }
+    if (isLocalOrAnonymousClass())
+        return null;
+    Class<?> enclosingClass = getEnclosingClass();
+    if (enclosingClass == null) {
+        return getName();
+    } else {
+        String enclosingName = enclosingClass.getCanonicalName();
+        if (enclosingName == null)
+            return null;
+        return enclosingName + "." + getSimpleName();
+    }
+}

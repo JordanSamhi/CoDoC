@@ -1,0 +1,22 @@
+public void applyTheme(@NonNull Theme t){
+    super.applyTheme(t);
+    final RippleState state = mState;
+    if (state == null) {
+        return;
+    }
+    if (state.mTouchThemeAttrs != null) {
+        final TypedArray a = t.resolveAttributes(state.mTouchThemeAttrs, R.styleable.RippleDrawable);
+        try {
+            updateStateFromTypedArray(a);
+            verifyRequiredAttributes(a);
+        } catch (XmlPullParserException e) {
+            rethrowAsRuntimeException(e);
+        } finally {
+            a.recycle();
+        }
+    }
+    if (state.mColor != null && state.mColor.canApplyTheme()) {
+        state.mColor = state.mColor.obtainForTheme(t);
+    }
+    updateLocalState();
+}

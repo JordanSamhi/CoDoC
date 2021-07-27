@@ -1,0 +1,14 @@
+public static Object getAttribute(Path path, String attribute, LinkOption... options) throws IOException{
+    if (attribute.indexOf('*') >= 0 || attribute.indexOf(',') >= 0)
+        throw new IllegalArgumentException(attribute);
+    Map<String, Object> map = readAttributes(path, attribute, options);
+    assert map.size() == 1;
+    String name;
+    int pos = attribute.indexOf(':');
+    if (pos == -1) {
+        name = attribute;
+    } else {
+        name = (pos == attribute.length()) ? "" : attribute.substring(pos + 1);
+    }
+    return map.get(name);
+}

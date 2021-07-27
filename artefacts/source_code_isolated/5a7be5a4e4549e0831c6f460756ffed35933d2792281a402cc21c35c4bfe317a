@@ -1,0 +1,8 @@
+public void onSurfacePrepared(CameraCaptureSession session, Surface surface){
+    final long ident = Binder.clearCallingIdentity();
+    try {
+        mExecutor.execute(() -> mCallback.onSurfacePrepared(session, surface));
+    } finally {
+        Binder.restoreCallingIdentity(ident);
+    }
+}

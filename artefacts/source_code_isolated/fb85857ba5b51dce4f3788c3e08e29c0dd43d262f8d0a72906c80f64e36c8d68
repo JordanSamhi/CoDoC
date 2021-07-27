@@ -1,0 +1,26 @@
+public static String[] getDNSSubjectAlts(X509Certificate cert){
+    LinkedList<String> subjectAltList = new LinkedList<String>();
+    Collection<List<?>> c = null;
+    try {
+        c = cert.getSubjectAlternativeNames();
+    } catch (CertificateParsingException cpe) {
+        Logger.getLogger(AbstractVerifier.class.getName()).log(Level.FINE, "Error parsing certificate.", cpe);
+    }
+    if (c != null) {
+        for (List<?> aC : c) {
+            List<?> list = aC;
+            int type = ((Integer) list.get(0)).intValue();
+            if (type == 2) {
+                String s = (String) list.get(1);
+                subjectAltList.add(s);
+            }
+        }
+    }
+    if (!subjectAltList.isEmpty()) {
+        String[] subjectAlts = new String[subjectAltList.size()];
+        subjectAltList.toArray(subjectAlts);
+        return subjectAlts;
+    } else {
+        return null;
+    }
+}

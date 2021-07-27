@@ -1,0 +1,61 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (DEBUG_CURSOR) {
+        logCursor("onTouchEvent", "%d: %s (%f,%f)", event.getSequenceNumber(), MotionEvent.actionToString(event.getActionMasked()), event.getX(), event.getY());
+    }
+    if (!isFromPrimePointer(event, false)) {
+        return true;
+    }
+    final int action = event.getActionMasked();
+    if (mEditor != null) {
+        mEditor.onTouchEvent(event);
+        if (mEditor.mInsertionPointCursorController != null && mEditor.mInsertionPointCursorController.isCursorBeingModified()) {
+            return true;
+        }
+        if (mEditor.mSelectionModifierCursorController != null && mEditor.mSelectionModifierCursorController.isDragAcceleratorActive()) {
+            return true;
+        }
+    }
+    final boolean superResult = super.onTouchEvent(event);
+    if (DEBUG_CURSOR) {
+        logCursor("onTouchEvent", "superResult=%s", superResult);
+    }
+    if (mEditor != null && mEditor.mDiscardNextActionUp && action == MotionEvent.ACTION_UP) {
+        mEditor.mDiscardNextActionUp = false;
+        if (DEBUG_CURSOR) {
+            logCursor("onTouchEvent", "release after long press detected");
+        }
+        if (mEditor.mIsInsertionActionModeStartPending) {
+            mEditor.startInsertionActionMode();
+            mEditor.mIsInsertionActionModeStartPending = false;
+        }
+        return superResult;
+    }
+    final boolean touchIsFinished = (action == MotionEvent.ACTION_UP) && (mEditor == null || !mEditor.mIgnoreActionUpEvent) && isFocused();
+    if ((mMovement != null || onCheckIsTextEditor()) && isEnabled() && mText instanceof Spannable && mLayout != null) {
+        boolean handled = false;
+        if (mMovement != null) {
+            handled |= mMovement.onTouchEvent(this, mSpannable, event);
+        }
+        final boolean textIsSelectable = isTextSelectable();
+        if (touchIsFinished && mLinksClickable && mAutoLinkMask != 0 && textIsSelectable) {
+            ClickableSpan[] links = mSpannable.getSpans(getSelectionStart(), getSelectionEnd(), ClickableSpan.class);
+            if (links.length > 0) {
+                links[0].onClick(this);
+                handled = true;
+            }
+        }
+        if (touchIsFinished && (isTextEditable() || textIsSelectable)) {
+            final InputMethodManager imm = getInputMethodManager();
+            viewClicked(imm);
+            if (isTextEditable() && mEditor.mShowSoftInputOnFocus && imm != null) {
+                imm.showSoftInput(this, 0);
+            }
+            mEditor.onTouchUpEvent(event);
+            handled = true;
+        }
+        if (handled) {
+            return true;
+        }
+    }
+    return superResult;
+}

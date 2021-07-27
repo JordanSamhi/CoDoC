@@ -1,0 +1,17 @@
+public String toString(){
+    StringJoiner j = new StringJoiner(", ", "DefaultNetworkEvent(", ")");
+    j.add("netId=" + netId);
+    for (int t : BitUtils.unpackBits(transports)) {
+        j.add(NetworkCapabilities.transportNameOf(t));
+    }
+    j.add("ip=" + ipSupport());
+    if (initialScore > 0) {
+        j.add("initial_score=" + initialScore);
+    }
+    if (finalScore > 0) {
+        j.add("final_score=" + finalScore);
+    }
+    j.add(String.format("duration=%.0fs", durationMs / 1000.0));
+    j.add(String.format("validation=%04.1f%%", (validatedMs * 100.0) / durationMs));
+    return j.toString();
+}

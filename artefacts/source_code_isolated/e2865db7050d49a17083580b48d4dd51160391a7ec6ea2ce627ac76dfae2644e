@@ -1,0 +1,11 @@
+public Object clone(){
+    HashMap<K, V> result;
+    try {
+        result = (HashMap<K, V>) super.clone();
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e);
+    }
+    result.reinitialize();
+    result.putMapEntries(this, false);
+    return result;
+}

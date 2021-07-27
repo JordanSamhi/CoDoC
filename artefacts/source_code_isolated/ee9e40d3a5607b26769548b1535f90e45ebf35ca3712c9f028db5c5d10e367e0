@@ -1,0 +1,12 @@
+public void resume(){
+    if (Looper.myLooper() == null) {
+        throw new AndroidRuntimeException("Animators may only be run on Looper threads");
+    }
+    boolean previouslyPaused = mPaused;
+    super.resume();
+    if (previouslyPaused && !mPaused) {
+        if (mPauseTime >= 0) {
+            addAnimationCallback(0);
+        }
+    }
+}

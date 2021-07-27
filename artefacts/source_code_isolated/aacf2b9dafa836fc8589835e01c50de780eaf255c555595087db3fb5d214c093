@@ -1,0 +1,11 @@
+public long readLong() throws IOException{
+    if (!blkmode) {
+        pos = 0;
+        in.readFully(buf, 0, 8);
+    } else if (end - pos < 8) {
+        return din.readLong();
+    }
+    long v = Bits.getLong(buf, pos);
+    pos += 8;
+    return v;
+}

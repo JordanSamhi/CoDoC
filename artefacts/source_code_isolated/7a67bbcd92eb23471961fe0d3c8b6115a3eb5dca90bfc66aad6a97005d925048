@@ -1,0 +1,7 @@
+public int read(byte[] b) throws IOException{
+    final int result = super.read(b);
+    if (result == -1 && mPfd.canDetectErrors()) {
+        mPfd.checkError();
+    }
+    return result;
+}

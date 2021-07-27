@@ -1,0 +1,9 @@
+public void setSubjectPublicKey(byte[] key) throws IOException{
+    if (key == null) {
+        subjectPublicKey = null;
+        subjectPublicKeyBytes = null;
+    } else {
+        subjectPublicKeyBytes = key.clone();
+        subjectPublicKey = X509Key.parse(new DerValue(subjectPublicKeyBytes));
+    }
+}

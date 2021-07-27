@@ -1,0 +1,31 @@
+
+     * Fully parses the text producing an object of one of the specified types.
+     * <p>
+     * This parse method is convenient for use when the parser can handle optional elements.
+     * For example, a pattern of 'uuuu-MM-dd HH.mm[ VV]' can be fully parsed to a {@code ZonedDateTime},
+     * or partially parsed to a {@code LocalDateTime}.
+     * The queries must be specified in order, starting from the best matching full-parse option
+     * and ending with the worst matching minimal parse option.
+     * The query is typically a method reference to a {@code from(TemporalAccessor)} method.
+     * <p>
+     * The result is associated with the first type that successfully parses.
+     * Normally, applications will use {@code instanceof} to check the result.
+     * For example:
+     * <pre>
+     *  TemporalAccessor dt = parser.parseBest(str, ZonedDateTime::from, LocalDateTime::from);
+     *  if (dt instanceof ZonedDateTime) {
+     *   ...
+     *  } else {
+     *   ...
+     *  }
+     * </pre>
+     * If the parse completes without reading the entire length of the text,
+     * or a problem occurs during parsing or merging, then an exception is thrown.
+     *
+     * @param text  the text to parse, not null
+     * @param queries  the queries defining the types to attempt to parse to,
+     *  must implement {@code TemporalAccessor}, not null
+     * @return the parsed date-time, not null
+     * @throws IllegalArgumentException if less than 2 types are specified
+     * @throws DateTimeParseException if unable to parse the requested result
+     

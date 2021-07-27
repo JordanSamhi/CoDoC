@@ -1,0 +1,27 @@
+public void setSplitToolbar(boolean split){
+    if (mSplitActionBar != split) {
+        if (mActionMenuPresenter != null) {
+            final LayoutParams layoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            if (!split) {
+                mMenuView = (ActionMenuView) mActionMenuPresenter.getMenuView(this);
+                mMenuView.setBackground(null);
+                final ViewGroup oldParent = (ViewGroup) mMenuView.getParent();
+                if (oldParent != null)
+                    oldParent.removeView(mMenuView);
+                addView(mMenuView, layoutParams);
+            } else {
+                mActionMenuPresenter.setWidthLimit(getContext().getResources().getDisplayMetrics().widthPixels, true);
+                mActionMenuPresenter.setItemLimit(Integer.MAX_VALUE);
+                layoutParams.width = LayoutParams.MATCH_PARENT;
+                layoutParams.height = mContentHeight;
+                mMenuView = (ActionMenuView) mActionMenuPresenter.getMenuView(this);
+                mMenuView.setBackground(mSplitBackground);
+                final ViewGroup oldParent = (ViewGroup) mMenuView.getParent();
+                if (oldParent != null)
+                    oldParent.removeView(mMenuView);
+                mSplitView.addView(mMenuView, layoutParams);
+            }
+        }
+        super.setSplitToolbar(split);
+    }
+}

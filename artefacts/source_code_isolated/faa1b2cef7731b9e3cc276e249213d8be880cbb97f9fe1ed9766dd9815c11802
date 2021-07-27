@@ -1,0 +1,21 @@
+public void addChildrenForAccessibility(ArrayList<View> outChildren){
+    if (getAccessibilityNodeProvider() != null) {
+        return;
+    }
+    ChildListForAccessibility children = ChildListForAccessibility.obtain(this, true);
+    try {
+        final int childrenCount = children.getChildCount();
+        for (int i = 0; i < childrenCount; i++) {
+            View child = children.getChildAt(i);
+            if ((child.mViewFlags & VISIBILITY_MASK) == VISIBLE) {
+                if (child.includeForAccessibility()) {
+                    outChildren.add(child);
+                } else {
+                    child.addChildrenForAccessibility(outChildren);
+                }
+            }
+        }
+    } finally {
+        children.recycle();
+    }
+}

@@ -1,0 +1,9 @@
+public void close() throws IOException{
+    synchronized (closeLock) {
+        if (isClosed())
+            return;
+        if (created)
+            impl.close();
+        closed = true;
+    }
+}

@@ -1,0 +1,16 @@
+public boolean onHoverEvent(MotionEvent ev){
+    final int action = ev.getActionMasked();
+    if (action == MotionEvent.ACTION_HOVER_ENTER) {
+        mEatingHover = false;
+    }
+    if (!mEatingHover) {
+        final boolean handled = super.onHoverEvent(ev);
+        if (action == MotionEvent.ACTION_HOVER_ENTER && !handled) {
+            mEatingHover = true;
+        }
+    }
+    if (action == MotionEvent.ACTION_HOVER_EXIT || action == MotionEvent.ACTION_CANCEL) {
+        mEatingHover = false;
+    }
+    return true;
+}

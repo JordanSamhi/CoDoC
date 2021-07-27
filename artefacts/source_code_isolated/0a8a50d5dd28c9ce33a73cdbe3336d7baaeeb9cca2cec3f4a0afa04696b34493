@@ -1,0 +1,26 @@
+public Spliterator<T> trySplit(){
+    Iterator<? extends T> i;
+    long s;
+    if ((i = it) == null) {
+        i = it = collection.iterator();
+        s = est = (long) collection.size();
+    } else
+        s = est;
+    if (s > 1 && i.hasNext()) {
+        int n = batch + BATCH_UNIT;
+        if (n > s)
+            n = (int) s;
+        if (n > MAX_BATCH)
+            n = MAX_BATCH;
+        Object[] a = new Object[n];
+        int j = 0;
+        do {
+            a[j] = i.next();
+        } while (++j < n && i.hasNext());
+        batch = j;
+        if (est != Long.MAX_VALUE)
+            est -= j;
+        return new ArraySpliterator<>(a, 0, j, characteristics);
+    }
+    return null;
+}

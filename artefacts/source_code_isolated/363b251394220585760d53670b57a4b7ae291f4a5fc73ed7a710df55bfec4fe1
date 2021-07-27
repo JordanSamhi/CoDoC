@@ -1,0 +1,13 @@
+public boolean equals(Object ob){
+    if (this == ob)
+        return true;
+    if (!(ob instanceof ByteBuffer))
+        return false;
+    ByteBuffer that = (ByteBuffer) ob;
+    if (this.remaining() != that.remaining())
+        return false;
+    int p = this.position();
+    for (int i = this.limit() - 1, j = that.limit() - 1; i >= p; i--, j--) if (!equals(this.get(i), that.get(j)))
+        return false;
+    return true;
+}

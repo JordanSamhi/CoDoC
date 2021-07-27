@@ -1,0 +1,10 @@
+public boolean find(int start){
+    int limit = getTextLength();
+    if ((start < 0) || (start > limit))
+        throw new IndexOutOfBoundsException("Illegal start index");
+    reset();
+    synchronized (this) {
+        matchFound = nativeMatcher.find(start, groups);
+    }
+    return matchFound;
+}

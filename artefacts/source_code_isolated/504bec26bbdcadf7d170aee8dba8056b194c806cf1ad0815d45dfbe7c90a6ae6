@@ -1,0 +1,11 @@
+public void setStatusBarColor(int color){
+    mStatusBarColor = color;
+    mForcedStatusBarColor = true;
+    if (mDecor != null) {
+        mDecor.updateColorViews(null, false);
+    }
+    final WindowControllerCallback callback = getWindowControllerCallback();
+    if (callback != null) {
+        getWindowControllerCallback().updateStatusBarColor(color);
+    }
+}

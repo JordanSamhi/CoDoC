@@ -1,0 +1,7 @@
+public String[] setPackagesSuspended(String[] packageNames, boolean suspended, PersistableBundle appExtras, PersistableBundle launcherExtras, SuspendDialogInfo dialogInfo){
+    try {
+        return mPM.setPackagesSuspendedAsUser(packageNames, suspended, appExtras, launcherExtras, dialogInfo, mContext.getOpPackageName(), getUserId());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

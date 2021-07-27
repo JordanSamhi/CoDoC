@@ -1,0 +1,11 @@
+public PermissionGroupInfo getPermissionGroupInfo(String groupName, int flags) throws NameNotFoundException{
+    try {
+        final PermissionGroupInfo pgi = mPermissionManager.getPermissionGroupInfo(groupName, flags);
+        if (pgi != null) {
+            return pgi;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(groupName);
+}

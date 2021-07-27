@@ -1,0 +1,35 @@
+
+     * Produces a special <em>invoker method handle</em> which can be used to
+     * invoke any method handle of the given type, as if by {@link MethodHandle#invokeExact invokeExact}.
+     * The resulting invoker will have a type which is
+     * exactly equal to the desired type, except that it will accept
+     * an additional leading argument of type {@code MethodHandle}.
+     * <p>
+     * This method is equivalent to the following code (though it may be more efficient):
+     * {@code publicLookup().findVirtual(MethodHandle.class, "invokeExact", type)}
+     *
+     * <p style="font-size:smaller;">
+     * <em>Discussion:</em>
+     * Invoker method handles can be useful when working with variable method handles
+     * of unknown types.
+     * For example, to emulate an {@code invokeExact} call to a variable method
+     * handle {@code M}, extract its type {@code T},
+     * look up the invoker method {@code X} for {@code T},
+     * and call the invoker method, as {@code X.invoke(T, A...)}.
+     * (It would not work to call {@code X.invokeExact}, since the type {@code T}
+     * is unknown.)
+     * If spreading, collecting, or other argument transformations are required,
+     * they can be applied once to the invoker {@code X} and reused on many {@code M}
+     * method handle values, as long as they are compatible with the type of {@code X}.
+     * <p style="font-size:smaller;">
+     * <em>(Note:  The invoker method is not available via the Core Reflection API.
+     * An attempt to call {@linkplain java.lang.reflect.Method#invoke java.lang.reflect.Method.invoke}
+     * on the declared {@code invokeExact} or {@code invoke} method will raise an
+     * {@link java.lang.UnsupportedOperationException UnsupportedOperationException}.)</em>
+     * <p>
+     * This method throws no reflective or security exceptions.
+     * @param type the desired target type
+     * @return a method handle suitable for invoking any method handle of the given type
+     * @throws IllegalArgumentException if the resulting method handle's type would have
+     *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     

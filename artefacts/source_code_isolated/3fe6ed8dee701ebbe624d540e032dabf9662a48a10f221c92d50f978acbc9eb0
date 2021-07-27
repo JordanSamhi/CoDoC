@@ -1,0 +1,12 @@
+public static ZoneOffsetTransition of(LocalDateTime transition, ZoneOffset offsetBefore, ZoneOffset offsetAfter){
+    Objects.requireNonNull(transition, "transition");
+    Objects.requireNonNull(offsetBefore, "offsetBefore");
+    Objects.requireNonNull(offsetAfter, "offsetAfter");
+    if (offsetBefore.equals(offsetAfter)) {
+        throw new IllegalArgumentException("Offsets must not be equal");
+    }
+    if (transition.getNano() != 0) {
+        throw new IllegalArgumentException("Nano-of-second must be zero");
+    }
+    return new ZoneOffsetTransition(transition, offsetBefore, offsetAfter);
+}

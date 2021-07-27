@@ -1,0 +1,39 @@
+public boolean needsReload(String baseName, Locale locale, String format, ClassLoader loader, ResourceBundle bundle, long loadTime){
+    if (bundle == null) {
+        throw new NullPointerException();
+    }
+    if (format.equals("java.class") || format.equals("java.properties")) {
+        format = format.substring(5);
+    }
+    boolean result = false;
+    try {
+        String resourceName = toResourceName0(toBundleName(baseName, locale), format);
+        if (resourceName == null) {
+            return result;
+        }
+        URL url = loader.getResource(resourceName);
+        if (url != null) {
+            long lastModified = 0;
+            URLConnection connection = url.openConnection();
+            if (connection != null) {
+                connection.setUseCaches(false);
+                if (connection instanceof JarURLConnection) {
+                    JarEntry ent = ((JarURLConnection) connection).getJarEntry();
+                    if (ent != null) {
+                        lastModified = ent.getTime();
+                        if (lastModified == -1) {
+                            lastModified = 0;
+                        }
+                    }
+                } else {
+                    lastModified = connection.getLastModified();
+                }
+            }
+            result = lastModified >= loadTime;
+        }
+    } catch (NullPointerException npe) {
+        throw npe;
+    } catch (Exception e) {
+    }
+    return result;
+}

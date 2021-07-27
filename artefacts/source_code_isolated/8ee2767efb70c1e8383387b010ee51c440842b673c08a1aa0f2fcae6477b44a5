@@ -1,0 +1,33 @@
+public char[] readPassword(String fmt, Object... args){
+    char[] passwd = null;
+    synchronized (writeLock) {
+        synchronized (readLock) {
+            try {
+                echoOff = echo(false);
+            } catch (IOException x) {
+                throw new IOError(x);
+            }
+            IOError ioe = null;
+            try {
+                if (fmt.length() != 0)
+                    pw.format(fmt, args);
+                passwd = readline(true);
+            } catch (IOException x) {
+                ioe = new IOError(x);
+            } finally {
+                try {
+                    echoOff = echo(true);
+                } catch (IOException x) {
+                    if (ioe == null)
+                        ioe = new IOError(x);
+                    else
+                        ioe.addSuppressed(x);
+                }
+                if (ioe != null)
+                    throw ioe;
+            }
+            pw.println();
+        }
+    }
+    return passwd;
+}

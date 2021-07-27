@@ -1,0 +1,24 @@
+public static double scalb(double d, int scaleFactor){
+    final int MAX_SCALE = DoubleConsts.MAX_EXPONENT + -DoubleConsts.MIN_EXPONENT + DoubleConsts.SIGNIFICAND_WIDTH + 1;
+    int exp_adjust = 0;
+    int scale_increment = 0;
+    double exp_delta = Double.NaN;
+    if (scaleFactor < 0) {
+        scaleFactor = Math.max(scaleFactor, -MAX_SCALE);
+        scale_increment = -512;
+        exp_delta = twoToTheDoubleScaleDown;
+    } else {
+        scaleFactor = Math.min(scaleFactor, MAX_SCALE);
+        scale_increment = 512;
+        exp_delta = twoToTheDoubleScaleUp;
+    }
+    int t = (scaleFactor >> 9 - 1) >>> 32 - 9;
+    exp_adjust = ((scaleFactor + t) & (512 - 1)) - t;
+    d *= powerOfTwoD(exp_adjust);
+    scaleFactor -= exp_adjust;
+    while (scaleFactor != 0) {
+        d *= exp_delta;
+        scaleFactor -= scale_increment;
+    }
+    return d;
+}

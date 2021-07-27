@@ -1,0 +1,24 @@
+public static ZonedDateTime ofLocal(LocalDateTime localDateTime, ZoneId zone, ZoneOffset preferredOffset){
+    Objects.requireNonNull(localDateTime, "localDateTime");
+    Objects.requireNonNull(zone, "zone");
+    if (zone instanceof ZoneOffset) {
+        return new ZonedDateTime(localDateTime, (ZoneOffset) zone, zone);
+    }
+    ZoneRules rules = zone.getRules();
+    List<ZoneOffset> validOffsets = rules.getValidOffsets(localDateTime);
+    ZoneOffset offset;
+    if (validOffsets.size() == 1) {
+        offset = validOffsets.get(0);
+    } else if (validOffsets.size() == 0) {
+        ZoneOffsetTransition trans = rules.getTransition(localDateTime);
+        localDateTime = localDateTime.plusSeconds(trans.getDuration().getSeconds());
+        offset = trans.getOffsetAfter();
+    } else {
+        if (preferredOffset != null && validOffsets.contains(preferredOffset)) {
+            offset = preferredOffset;
+        } else {
+            offset = Objects.requireNonNull(validOffsets.get(0), "offset");
+        }
+    }
+    return new ZonedDateTime(localDateTime, offset, zone);
+}

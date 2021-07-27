@@ -1,0 +1,9 @@
+ boolean tryAdvance(Consumer<? super Double> action){
+    if (action instanceof DoubleConsumer) {
+        return tryAdvance((DoubleConsumer) action);
+    } else {
+        if (Tripwire.ENABLED)
+            Tripwire.trip(getClass(), "{0} calling Spliterator.OfDouble.tryAdvance((DoubleConsumer) action::accept)");
+        return tryAdvance((DoubleConsumer) action::accept);
+    }
+}

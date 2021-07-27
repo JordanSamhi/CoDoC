@@ -1,0 +1,76 @@
+
+     * Adapts a target method handle by pre-processing
+     * some of its arguments, and then calling the target with
+     * the result of the pre-processing, inserted into the original
+     * sequence of arguments.
+     * <p>
+     * The pre-processing is performed by {@code combiner}, a second method handle.
+     * Of the arguments passed to the adapter, the first {@code N} arguments
+     * are copied to the combiner, which is then called.
+     * (Here, {@code N} is defined as the parameter count of the combiner.)
+     * After this, control passes to the target, with any result
+     * from the combiner inserted before the original {@code N} incoming
+     * arguments.
+     * <p>
+     * If the combiner returns a value, the first parameter type of the target
+     * must be identical with the return type of the combiner, and the next
+     * {@code N} parameter types of the target must exactly match the parameters
+     * of the combiner.
+     * <p>
+     * If the combiner has a void return, no result will be inserted,
+     * and the first {@code N} parameter types of the target
+     * must exactly match the parameters of the combiner.
+     * <p>
+     * The resulting adapter is the same type as the target, except that the
+     * first parameter type is dropped,
+     * if it corresponds to the result of the combiner.
+     * <p>
+     * (Note that {@link #dropArguments(MethodHandle,int,List) dropArguments} can be used to remove any arguments
+     * that either the combiner or the target does not wish to receive.
+     * If some of the incoming arguments are destined only for the combiner,
+     * consider using {@link MethodHandle#asCollector asCollector} instead, since those
+     * arguments will not need to be live on the stack on entry to the
+     * target.)
+     * <p><b>Example:</b>
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle trace = publicLookup().findVirtual(java.io.PrintStream.class,
+  "println", methodType(void.class, String.class))
+    .bindTo(System.out);
+MethodHandle cat = lookup().findVirtual(String.class,
+  "concat", methodType(String.class, String.class));
+assertEquals("boojum", (String) cat.invokeExact("boo", "jum"));
+MethodHandle catTrace = foldArguments(cat, trace);
+// also prints "boo":
+assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
+     * }</pre></blockquote>
+     * <p> Here is pseudocode for the resulting adapter:
+     * <blockquote><pre>{@code
+     * // there are N arguments in A...
+     * T target(V, A[N]..., B...);
+     * V combiner(A...);
+     * T adapter(A... a, B... b) {
+     *   V v = combiner(a...);
+     *   return target(v, a..., b...);
+     * }
+     * // and if the combiner has a void return:
+     * T target2(A[N]..., B...);
+     * void combiner2(A...);
+     * T adapter2(A... a, B... b) {
+     *   combiner2(a...);
+     *   return target2(a..., b...);
+     * }
+     * }</pre></blockquote>
+     * @param target the method handle to invoke after arguments are combined
+     * @param combiner method handle to call initially on the incoming arguments
+     * @return method handle which incorporates the specified argument folding logic
+     * @throws NullPointerException if either argument is null
+     * @throws IllegalArgumentException if {@code combiner}'s return type
+     *          is non-void and not the same as the first argument type of
+     *          the target, or if the initial {@code N} argument types
+     *          of the target
+     *          (skipping one matching the {@code combiner}'s return type)
+     *          are not identical with the argument types of {@code combiner}
+     

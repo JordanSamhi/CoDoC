@@ -1,0 +1,11 @@
+public void setColorFilter(@Nullable ColorFilter colorFilter){
+    if (mState.mNativePtr == 0) {
+        throw new IllegalStateException("called setColorFilter on empty AnimatedImageDrawable");
+    }
+    if (colorFilter != mColorFilter) {
+        mColorFilter = colorFilter;
+        long nativeFilter = colorFilter == null ? 0 : colorFilter.getNativeInstance();
+        nSetColorFilter(mState.mNativePtr, nativeFilter);
+        invalidateSelf();
+    }
+}

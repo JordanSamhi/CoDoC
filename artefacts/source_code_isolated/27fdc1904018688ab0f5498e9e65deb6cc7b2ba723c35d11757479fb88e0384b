@@ -1,0 +1,23 @@
+public static synchronized Level parse(String name) throws IllegalArgumentException{
+    name.length();
+    KnownLevel level;
+    level = KnownLevel.findByName(name);
+    if (level != null) {
+        return level.levelObject;
+    }
+    try {
+        int x = Integer.parseInt(name);
+        level = KnownLevel.findByValue(x);
+        if (level == null) {
+            Level levelObject = new Level(name, x);
+            level = KnownLevel.findByValue(x);
+        }
+        return level.levelObject;
+    } catch (NumberFormatException ex) {
+    }
+    level = KnownLevel.findByLocalizedLevelName(name);
+    if (level != null) {
+        return level.levelObject;
+    }
+    throw new IllegalArgumentException("Bad level \"" + name + "\"");
+}

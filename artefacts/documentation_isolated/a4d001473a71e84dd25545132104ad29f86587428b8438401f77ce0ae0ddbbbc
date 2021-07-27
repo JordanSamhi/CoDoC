@@ -1,0 +1,28 @@
+
+    * Closes this URLClassLoader, so that it can no longer be used to load
+    * new classes or resources that are defined by this loader.
+    * Classes and resources defined by any of this loader's parents in the
+    * delegation hierarchy are still accessible. Also, any classes or resources
+    * that are already loaded, are still accessible.
+    * <p>
+    * In the case of jar: and file: URLs, it also closes any files
+    * that were opened by it. If another thread is loading a
+    * class when the {@code close} method is invoked, then the result of
+    * that load is undefined.
+    * <p>
+    * The method makes a best effort attempt to close all opened files,
+    * by catching {@link IOException}s internally. Unchecked exceptions
+    * and errors are not caught. Calling close on an already closed
+    * loader has no effect.
+    * <p>
+    * @exception IOException if closing any file opened by this class loader
+    * resulted in an IOException. Any such exceptions are caught internally.
+    * If only one is caught, then it is re-thrown. If more than one exception
+    * is caught, then the second and following exceptions are added
+    * as suppressed exceptions of the first one caught, which is then re-thrown.
+    *
+    * @exception SecurityException if a security manager is set, and it denies
+    *   {@link RuntimePermission}{@code ("closeClassLoader")}
+    *
+    * @since 1.7
+    

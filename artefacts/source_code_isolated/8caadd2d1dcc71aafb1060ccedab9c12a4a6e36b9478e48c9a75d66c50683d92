@@ -1,0 +1,13 @@
+public MethodHandle unreflectSpecial(Method m, Class<?> specialCaller) throws IllegalAccessException{
+    if (m == null) {
+        throw new NullPointerException("m == null");
+    }
+    if (specialCaller == null) {
+        throw new NullPointerException("specialCaller == null");
+    }
+    if (!m.isAccessible()) {
+        checkSpecialCaller(specialCaller, null);
+    }
+    final MethodType methodType = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
+    return findSpecial(m, methodType, m.getDeclaringClass(), specialCaller);
+}

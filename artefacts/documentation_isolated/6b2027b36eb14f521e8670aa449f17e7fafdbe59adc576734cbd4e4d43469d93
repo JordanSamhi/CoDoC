@@ -1,0 +1,25 @@
+
+     * Callback that allows the value of a file-based resources or asset to be specified or
+     * overridden.
+     *
+     * <p>The system will take ownership of the file descriptor returned from this method, so
+     * {@link ParcelFileDescriptor#dup() dup} the file descriptor before returning if the system
+     * should not own it.
+     *
+     * <p>There are two situations in which this method will be called:
+     * <ul>
+     * <li>AssetManager is queried for an InputStream of an asset using APIs like
+     * {@link AssetManager#open} and {@link AssetManager#openXmlResourceParser}.
+     * <li>AssetManager is resolving the value of a file-based resource provided by the
+     * {@link ResourcesProvider} this instance is associated with.
+     * </ul>
+     *
+     * <p>If the value retrieved from this callback is null, AssetManager will attempt to find the
+     * file-based resource or asset within the APK provided by the ResourcesProvider this instance
+     * is associated with.
+     *
+     * @param path the asset path being loaded
+     * @param accessMode the {@link AssetManager} access mode
+     *
+     * @see AssetManager#open
+     

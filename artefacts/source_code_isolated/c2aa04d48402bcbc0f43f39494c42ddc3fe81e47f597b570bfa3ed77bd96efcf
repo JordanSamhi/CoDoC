@@ -1,0 +1,13 @@
+public String substring(int beginIndex, int endIndex){
+    if (beginIndex < 0) {
+        throw new StringIndexOutOfBoundsException(this, beginIndex);
+    }
+    if (endIndex > length()) {
+        throw new StringIndexOutOfBoundsException(this, endIndex);
+    }
+    int subLen = endIndex - beginIndex;
+    if (subLen < 0) {
+        throw new StringIndexOutOfBoundsException(subLen);
+    }
+    return ((beginIndex == 0) && (endIndex == length())) ? this : fastSubstring(beginIndex, subLen);
+}

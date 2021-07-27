@@ -1,0 +1,11 @@
+public List<PermissionGroupInfo> getAllPermissionGroups(int flags){
+    try {
+        final ParceledListSlice<PermissionGroupInfo> parceledList = mPermissionManager.getAllPermissionGroups(flags);
+        if (parceledList == null) {
+            return Collections.emptyList();
+        }
+        return parceledList.getList();
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

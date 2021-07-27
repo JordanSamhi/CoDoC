@@ -1,0 +1,13 @@
+public int hashCode(){
+    if (hashCode != 0) {
+        return hashCode;
+    }
+    if (bitLength < 64) {
+        hashCode = (int) (smallValue & 0xffffffff);
+        hashCode = 33 * hashCode + (int) ((smallValue >> 32) & 0xffffffff);
+        hashCode = 17 * hashCode + scale;
+        return hashCode;
+    }
+    hashCode = 17 * intVal.hashCode() + scale;
+    return hashCode;
+}

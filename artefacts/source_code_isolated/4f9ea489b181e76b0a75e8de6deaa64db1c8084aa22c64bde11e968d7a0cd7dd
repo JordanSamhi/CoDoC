@@ -1,0 +1,13 @@
+public synchronized InputStream getInputStream(ZipEntry ze) throws IOException{
+    maybeInstantiateVerifier();
+    if (jv == null) {
+        return super.getInputStream(ze);
+    }
+    if (!jvInitialized) {
+        initializeVerifier();
+        jvInitialized = true;
+        if (jv == null)
+            return super.getInputStream(ze);
+    }
+    return new JarVerifier.VerifierStream(getManifestFromReference(), ze instanceof JarFileEntry ? (JarEntry) ze : getJarEntry(ze.getName()), super.getInputStream(ze), jv);
+}

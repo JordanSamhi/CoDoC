@@ -1,0 +1,22 @@
+public void calculateRemaining(BatterySipper app, BatteryStats stats, long rawRealtimeUs, long rawUptimeUs, int statsType){
+    double totalMah = 0;
+    long totalTimeMs = 0;
+    LongSparseArray<? extends BatteryStats.Timer> timers = stats.getKernelMemoryStats();
+    for (int i = 0; i < timers.size() && i < powerAverages.length; i++) {
+        double mAatRail = powerAverages[(int) timers.keyAt(i)];
+        long timeMs = timers.valueAt(i).getTotalTimeLocked(rawRealtimeUs, statsType);
+        double mAm = (mAatRail * timeMs) / (1000 * 60);
+        if (DEBUG) {
+            Log.d(TAG, "Calculating mAh for bucket " + timers.keyAt(i) + " while unplugged");
+            Log.d(TAG, "Converted power profile number from " + powerAverages[(int) timers.keyAt(i)] + " into " + mAatRail);
+            Log.d(TAG, "Calculated mAm " + mAm);
+        }
+        totalMah += mAm / 60;
+        totalTimeMs += timeMs;
+    }
+    app.usagePowerMah = totalMah;
+    app.usageTimeMs = totalTimeMs;
+    if (DEBUG) {
+        Log.d(TAG, String.format("Calculated total mAh for memory %f while unplugged %d ", totalMah, totalTimeMs));
+    }
+}

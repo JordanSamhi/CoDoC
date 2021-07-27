@@ -1,0 +1,17 @@
+public final void writeObject(Object obj) throws IOException{
+    if (enableOverride) {
+        writeObjectOverride(obj);
+        return;
+    }
+    try {
+        writeObject0(obj, false);
+    } catch (IOException ex) {
+        if (depth == 0) {
+            try {
+                writeFatalException(ex);
+            } catch (IOException ex2) {
+            }
+        }
+        throw ex;
+    }
+}

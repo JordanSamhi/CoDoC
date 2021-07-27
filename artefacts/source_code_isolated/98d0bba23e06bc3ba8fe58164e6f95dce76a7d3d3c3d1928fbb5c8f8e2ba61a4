@@ -1,0 +1,18 @@
+public void computeScroll(){
+    if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
+        final int oldX = getScrollX();
+        final int oldY = getScrollY();
+        final int x = mScroller.getCurrX();
+        final int y = mScroller.getCurrY();
+        if (oldX != x || oldY != y) {
+            scrollTo(x, y);
+            if (!pageScrolled(x)) {
+                mScroller.abortAnimation();
+                scrollTo(0, y);
+            }
+        }
+        postInvalidateOnAnimation();
+        return;
+    }
+    completeScroll(true);
+}

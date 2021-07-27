@@ -1,0 +1,12 @@
+public int getActiveCount(){
+    final ReentrantLock mainLock = this.mainLock;
+    mainLock.lock();
+    try {
+        int n = 0;
+        for (Worker w : workers) if (w.isLocked())
+            ++n;
+        return n;
+    } finally {
+        mainLock.unlock();
+    }
+}

@@ -1,0 +1,11 @@
+public Object clone() throws CloneNotSupportedException{
+    chooseFirstProvider();
+    if (sigSpi instanceof Cloneable) {
+        SignatureSpi sigSpiClone = (SignatureSpi) sigSpi.clone();
+        Signature that = new Delegate(sigSpiClone, ((Signature) this).algorithm);
+        that.provider = ((Signature) this).provider;
+        return that;
+    } else {
+        throw new CloneNotSupportedException();
+    }
+}

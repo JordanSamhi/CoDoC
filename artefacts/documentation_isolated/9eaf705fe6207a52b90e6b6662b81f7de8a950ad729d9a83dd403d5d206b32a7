@@ -1,0 +1,24 @@
+
+     * Acquires a permit from this semaphore, only if one is available at the
+     * time of invocation.
+     *
+     * <p>Acquires a permit, if one is available and returns immediately,
+     * with the value {@code true},
+     * reducing the number of available permits by one.
+     *
+     * <p>If no permit is available then this method will return
+     * immediately with the value {@code false}.
+     *
+     * <p>Even when this semaphore has been set to use a
+     * fair ordering policy, a call to {@code tryAcquire()} <em>will</em>
+     * immediately acquire a permit if one is available, whether or not
+     * other threads are currently waiting.
+     * This &quot;barging&quot; behavior can be useful in certain
+     * circumstances, even though it breaks fairness. If you want to honor
+     * the fairness setting, then use
+     * {@link #tryAcquire(long, TimeUnit) tryAcquire(0, TimeUnit.SECONDS) }
+     * which is almost equivalent (it also detects interruption).
+     *
+     * @return {@code true} if a permit was acquired and {@code false}
+     *         otherwise
+     

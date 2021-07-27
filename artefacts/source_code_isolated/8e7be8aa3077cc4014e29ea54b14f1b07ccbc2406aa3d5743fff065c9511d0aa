@@ -1,0 +1,15 @@
+public String getDisplayCountry(Locale locale){
+    String countryCode = baseLocale.getRegion();
+    if (countryCode.isEmpty()) {
+        return "";
+    }
+    final String normalizedRegion = normalizeAndValidateRegion(countryCode, false);
+    if (normalizedRegion.isEmpty()) {
+        return countryCode;
+    }
+    String result = LocaleNative.getDisplayCountry(this, locale);
+    if (result == null) {
+        result = LocaleNative.getDisplayCountry(this, Locale.getDefault());
+    }
+    return result;
+}

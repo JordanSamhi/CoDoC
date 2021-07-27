@@ -1,0 +1,47 @@
+public String engineGetCertificateAlias(Certificate cert){
+    if (cert == null) {
+        return null;
+    }
+    if (!"X.509".equalsIgnoreCase(cert.getType())) {
+        return null;
+    }
+    byte[] targetCertBytes;
+    try {
+        targetCertBytes = cert.getEncoded();
+    } catch (CertificateEncodingException e) {
+        return null;
+    }
+    if (targetCertBytes == null) {
+        return null;
+    }
+    final Set<String> nonCaEntries = new HashSet<String>();
+    final String[] certAliases = mKeyStore.list(Credentials.USER_CERTIFICATE, mUid);
+    if (certAliases != null) {
+        for (String alias : certAliases) {
+            final byte[] certBytes = mKeyStore.get(Credentials.USER_CERTIFICATE + alias, mUid);
+            if (certBytes == null) {
+                continue;
+            }
+            nonCaEntries.add(alias);
+            if (Arrays.equals(certBytes, targetCertBytes)) {
+                return alias;
+            }
+        }
+    }
+    final String[] caAliases = mKeyStore.list(Credentials.CA_CERTIFICATE, mUid);
+    if (certAliases != null) {
+        for (String alias : caAliases) {
+            if (nonCaEntries.contains(alias)) {
+                continue;
+            }
+            final byte[] certBytes = mKeyStore.get(Credentials.CA_CERTIFICATE + alias, mUid);
+            if (certBytes == null) {
+                continue;
+            }
+            if (Arrays.equals(certBytes, targetCertBytes)) {
+                return alias;
+            }
+        }
+    }
+    return null;
+}

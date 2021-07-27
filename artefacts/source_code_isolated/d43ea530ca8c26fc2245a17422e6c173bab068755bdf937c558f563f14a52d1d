@@ -1,0 +1,16 @@
+public void onRequestQueueEmpty(){
+    final StateCallbackKK sessionCallback;
+    if (DEBUG) {
+        Log.v(TAG, "Request queue becomes empty");
+    }
+    synchronized (mInterfaceLock) {
+        if (mOfflineSessionImpl != null) {
+            mOfflineSessionImpl.getCallbacks().onRequestQueueEmpty();
+            return;
+        }
+        sessionCallback = mSessionStateCallback;
+    }
+    if (sessionCallback == null)
+        return;
+    sessionCallback.onRequestQueueEmpty();
+}

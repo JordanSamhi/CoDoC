@@ -1,0 +1,18 @@
+public XmlResourceParser getXml(String packageName, @XmlRes int resid, ApplicationInfo appInfo){
+    if (appInfo == null) {
+        try {
+            appInfo = getApplicationInfo(packageName, sDefaultFlags);
+        } catch (NameNotFoundException e) {
+            return null;
+        }
+    }
+    try {
+        Resources r = getResourcesForApplication(appInfo);
+        return r.getXml(resid);
+    } catch (RuntimeException e) {
+        Log.w("PackageManager", "Failure retrieving xml 0x" + Integer.toHexString(resid) + " in package " + packageName, e);
+    } catch (NameNotFoundException e) {
+        Log.w("PackageManager", "Failure retrieving resources for " + appInfo.packageName);
+    }
+    return null;
+}

@@ -1,0 +1,11 @@
+public Animator onAppear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues){
+    if (DBG) {
+        View startView = (startValues != null) ? startValues.view : null;
+        Log.d(LOG_TAG, "Fade.onAppear: startView, startVis, endView, endVis = " + startView + ", " + view);
+    }
+    float startAlpha = getStartAlpha(startValues, 0);
+    if (startAlpha == 1) {
+        startAlpha = 0;
+    }
+    return createAnimation(view, startAlpha, 1);
+}

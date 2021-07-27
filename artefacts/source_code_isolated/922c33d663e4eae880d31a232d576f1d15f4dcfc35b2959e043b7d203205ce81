@@ -1,0 +1,10 @@
+public LocalDateTime with(TemporalAdjuster adjuster){
+    if (adjuster instanceof LocalDate) {
+        return with((LocalDate) adjuster, time);
+    } else if (adjuster instanceof LocalTime) {
+        return with(date, (LocalTime) adjuster);
+    } else if (adjuster instanceof LocalDateTime) {
+        return (LocalDateTime) adjuster;
+    }
+    return (LocalDateTime) adjuster.adjustInto(this);
+}

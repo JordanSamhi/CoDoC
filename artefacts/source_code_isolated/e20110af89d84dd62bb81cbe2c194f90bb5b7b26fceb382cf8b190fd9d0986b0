@@ -1,0 +1,4 @@
+public static Comparator<T> comparingLong(ToLongFunction<? super T> keyExtractor){
+    Objects.requireNonNull(keyExtractor);
+    return (Comparator<T> & Serializable) (c1, c2) -> Long.compare(keyExtractor.applyAsLong(c1), keyExtractor.applyAsLong(c2));
+}

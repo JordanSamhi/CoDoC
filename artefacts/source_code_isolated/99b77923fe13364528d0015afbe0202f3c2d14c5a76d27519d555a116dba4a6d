@@ -1,0 +1,48 @@
+public void draw(Canvas canvas){
+    boolean done = true;
+    switch(mTransitionState) {
+        case TRANSITION_STARTING:
+            mStartTimeMillis = SystemClock.uptimeMillis();
+            done = false;
+            mTransitionState = TRANSITION_RUNNING;
+            break;
+        case TRANSITION_RUNNING:
+            if (mStartTimeMillis >= 0) {
+                float normalized = (float) (SystemClock.uptimeMillis() - mStartTimeMillis) / mDuration;
+                done = normalized >= 1.0f;
+                normalized = Math.min(normalized, 1.0f);
+                mAlpha = (int) (mFrom + (mTo - mFrom) * normalized);
+            }
+            break;
+    }
+    final int alpha = mAlpha;
+    final boolean crossFade = mCrossFade;
+    final ChildDrawable[] array = mLayerState.mChildren;
+    if (done) {
+        if (!crossFade || alpha == 0) {
+            array[0].mDrawable.draw(canvas);
+        }
+        if (alpha == 0xFF) {
+            array[1].mDrawable.draw(canvas);
+        }
+        return;
+    }
+    Drawable d;
+    d = array[0].mDrawable;
+    if (crossFade) {
+        d.setAlpha(255 - alpha);
+    }
+    d.draw(canvas);
+    if (crossFade) {
+        d.setAlpha(0xFF);
+    }
+    if (alpha > 0) {
+        d = array[1].mDrawable;
+        d.setAlpha(alpha);
+        d.draw(canvas);
+        d.setAlpha(0xFF);
+    }
+    if (!done) {
+        invalidateSelf();
+    }
+}

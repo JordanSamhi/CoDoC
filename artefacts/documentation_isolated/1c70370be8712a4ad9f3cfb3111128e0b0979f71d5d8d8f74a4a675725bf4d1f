@@ -1,0 +1,46 @@
+
+     * Returns a field to access the week of a week-based-year based on this {@code WeekFields}.
+     * <p>
+     * This represents the concept of the count of weeks within the year where weeks
+     * start on a fixed day-of-week, such as Monday and each week belongs to exactly one year.
+     * This field is typically used with {@link WeekFields#dayOfWeek()} and
+     * {@link WeekFields#weekBasedYear()}.
+     * <p>
+     * Week one(1) is the week starting on the {@link WeekFields#getFirstDayOfWeek}
+     * where there are at least {@link WeekFields#getMinimalDaysInFirstWeek()} days in the year.
+     * If the first week starts after the start of the year then the period before
+     * is in the last week of the previous year.
+     * <p>
+     * For example:<br>
+     * - if the 1st day of the year is a Monday, week one starts on the 1st<br>
+     * - if the 2nd day of the year is a Monday, week one starts on the 2nd and
+     *   the 1st is in the last week of the previous year<br>
+     * - if the 4th day of the year is a Monday, week one starts on the 4th and
+     *   the 1st to 3rd is in the last week of the previous year<br>
+     * - if the 5th day of the year is a Monday, week two starts on the 5th and
+     *   the 1st to 4th is in week one<br>
+     * <p>
+     * This field can be used with any calendar system.
+     * <p>
+     * In the resolving phase of parsing, a date can be created from a week-based-year,
+     * week-of-year and day-of-week.
+     * <p>
+     * In {@linkplain ResolverStyle#STRICT strict mode}, all three fields are
+     * validated against their range of valid values. The week-of-year field
+     * is validated to ensure that the resulting week-based-year is the
+     * week-based-year requested.
+     * <p>
+     * In {@linkplain ResolverStyle#SMART smart mode}, all three fields are
+     * validated against their range of valid values. The week-of-week-based-year field
+     * is validated from 1 to 53, meaning that the resulting date can be in the
+     * following week-based-year to that specified.
+     * <p>
+     * In {@linkplain ResolverStyle#LENIENT lenient mode}, the year and day-of-week
+     * are validated against the range of valid values. The resulting date is calculated
+     * equivalent to the following three stage approach.
+     * First, create a date on the first day of the first week in the requested week-based-year.
+     * Then take the week-of-week-based-year, subtract one, and add the amount in weeks to the date.
+     * Finally, adjust to the correct day-of-week within the localized week.
+     *
+     * @return a field providing access to the week-of-week-based-year, not null
+     

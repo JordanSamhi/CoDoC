@@ -1,0 +1,55 @@
+
+     * Initializes this cipher with a key, a set of algorithm
+     * parameters, and a source of randomness.
+     *
+     * <p>The cipher is initialized for one of the following four operations:
+     * encryption, decryption, key wrapping or  key unwrapping, depending
+     * on the value of <code>opmode</code>.
+     *
+     * <p>If this cipher requires any algorithm parameters and
+     * <code>params</code> is null, the underlying cipher implementation is
+     * supposed to generate the required parameters itself (using
+     * provider-specific default or random values) if it is being
+     * initialized for encryption or key wrapping, and raise an
+     * <code>InvalidAlgorithmParameterException</code> if it is being
+     * initialized for decryption or key unwrapping.
+     * The generated parameters can be retrieved using
+     * {@link #getParameters() getParameters} or
+     * {@link #getIV() getIV} (if the parameter is an IV).
+     *
+     * <p>If this cipher requires algorithm parameters that cannot be
+     * derived from the input parameters, and there are no reasonable
+     * provider-specific default values, initialization will
+     * necessarily fail.
+     *
+     * <p>If this cipher (including its underlying feedback or padding scheme)
+     * requires any random bytes (e.g., for parameter generation), it will get
+     * them from <code>random</code>.
+     *
+     * <p>Note that when a Cipher object is initialized, it loses all
+     * previously-acquired state. In other words, initializing a Cipher is
+     * equivalent to creating a new instance of that Cipher and initializing
+     * it.
+     *
+     * @param opmode the operation mode of this cipher (this is one of the
+     * following: <code>ENCRYPT_MODE</code>,
+     * <code>DECRYPT_MODE</code>, <code>WRAP_MODE</code>
+     * or <code>UNWRAP_MODE</code>)
+     * @param key the encryption key
+     * @param params the algorithm parameters
+     * @param random the source of randomness
+     *
+     * @exception InvalidKeyException if the given key is inappropriate for
+     * initializing this cipher, or its keysize exceeds the maximum allowable
+     * keysize (as determined from the configured jurisdiction policy files).
+     * @exception InvalidAlgorithmParameterException if the given algorithm
+     * parameters are inappropriate for this cipher,
+     * or this cipher requires
+     * algorithm parameters and <code>params</code> is null, or the given
+     * algorithm parameters imply a cryptographic strength that would exceed
+     * the legal limits (as determined from the configured jurisdiction
+     * policy files).
+     * @throws UnsupportedOperationException if (@code opmode} is
+     * {@code WRAP_MODE} or {@code UNWRAP_MODE} but the mode is not implemented
+     * by the underlying {@code CipherSpi}.
+     

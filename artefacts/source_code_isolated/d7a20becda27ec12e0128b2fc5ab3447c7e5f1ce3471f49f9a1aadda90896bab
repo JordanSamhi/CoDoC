@@ -1,2 +1,7 @@
 public void onEscrowTokenAdded(byte[] token, long handle, UserHandle user){
+    Message msg = mHandler.obtainMessage(MSG_ESCROW_TOKEN_ADDED);
+    msg.getData().putByteArray(EXTRA_TOKEN, token);
+    msg.getData().putLong(EXTRA_TOKEN_HANDLE, handle);
+    msg.getData().putParcelable(EXTRA_USER_HANDLE, user);
+    msg.sendToTarget();
 }

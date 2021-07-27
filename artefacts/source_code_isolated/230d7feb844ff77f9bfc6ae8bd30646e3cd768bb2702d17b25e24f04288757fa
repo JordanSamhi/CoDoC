@@ -1,0 +1,22 @@
+public final void init(int opmode, Certificate certificate, SecureRandom random) throws InvalidKeyException{
+    initialized = false;
+    checkOpmode(opmode);
+    if (certificate instanceof java.security.cert.X509Certificate) {
+        X509Certificate cert = (X509Certificate) certificate;
+        Set<String> critSet = cert.getCriticalExtensionOIDs();
+        if (critSet != null && !critSet.isEmpty() && critSet.contains(KEY_USAGE_EXTENSION_OID)) {
+            boolean[] keyUsageInfo = cert.getKeyUsage();
+            if ((keyUsageInfo != null) && (((opmode == Cipher.ENCRYPT_MODE) && (keyUsageInfo.length > 3) && (keyUsageInfo[3] == false)) || ((opmode == Cipher.WRAP_MODE) && (keyUsageInfo.length > 2) && (keyUsageInfo[2] == false)))) {
+                throw new InvalidKeyException("Wrong key usage");
+            }
+        }
+    }
+    PublicKey publicKey = (certificate == null ? null : certificate.getPublicKey());
+    try {
+        chooseProvider(InitType.KEY, opmode, (Key) publicKey, null, null, random);
+    } catch (InvalidAlgorithmParameterException e) {
+        throw new InvalidKeyException(e);
+    }
+    initialized = true;
+    this.opmode = opmode;
+}

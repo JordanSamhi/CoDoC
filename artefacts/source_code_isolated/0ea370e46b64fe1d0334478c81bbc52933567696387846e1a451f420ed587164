@@ -1,0 +1,7 @@
+public HijrahDate withVariant(HijrahChronology chronology){
+    if (chrono == chronology) {
+        return this;
+    }
+    int monthDays = chronology.getDayOfYear(prolepticYear, monthOfYear);
+    return HijrahDate.of(chronology, prolepticYear, monthOfYear, (dayOfMonth > monthDays) ? monthDays : dayOfMonth);
+}

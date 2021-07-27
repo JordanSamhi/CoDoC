@@ -1,0 +1,36 @@
+public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append("AccessibilityWindowInfo[");
+    builder.append("title=").append(mTitle);
+    builder.append(", displayId=").append(mDisplayId);
+    builder.append(", id=").append(mId);
+    builder.append(", type=").append(typeToString(mType));
+    builder.append(", layer=").append(mLayer);
+    builder.append(", region=").append(mRegionInScreen);
+    builder.append(", bounds=").append(mRegionInScreen.getBounds());
+    builder.append(", focused=").append(isFocused());
+    builder.append(", active=").append(isActive());
+    builder.append(", pictureInPicture=").append(isInPictureInPictureMode());
+    if (DEBUG) {
+        builder.append(", parent=").append(mParentId);
+        builder.append(", children=[");
+        if (mChildIds != null) {
+            final int childCount = mChildIds.size();
+            for (int i = 0; i < childCount; i++) {
+                builder.append(mChildIds.get(i));
+                if (i < childCount - 1) {
+                    builder.append(',');
+                }
+            }
+        } else {
+            builder.append("null");
+        }
+        builder.append(']');
+    } else {
+        builder.append(", hasParent=").append(mParentId != UNDEFINED_WINDOW_ID);
+        builder.append(", isAnchored=").append(mAnchorId != AccessibilityNodeInfo.UNDEFINED_NODE_ID);
+        builder.append(", hasChildren=").append(mChildIds != null && mChildIds.size() > 0);
+    }
+    builder.append(']');
+    return builder.toString();
+}

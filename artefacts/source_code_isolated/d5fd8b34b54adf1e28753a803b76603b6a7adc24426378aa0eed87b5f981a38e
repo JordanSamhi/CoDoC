@@ -1,6 +1,0 @@
-public void unwrapTertiaryKey_badSecondaryKey_throws() throws Exception{
-    RecoverableKeyStoreSecondaryKey badSecondaryKey = new RecoverableKeyStoreSecondaryKey(TEST_SECONDARY_KEY_ALIAS, new SecretKeySpec(new byte[] { 0, 1 }, KEY_GENERATOR_ALGORITHM));
-    WrappedKeyProto.WrappedKey wrappedTertiaryKey = KeyWrapUtils.wrap(createSecondaryKey().getSecretKey(), createTertiaryKey());
-    when(mSecondaryKeyManager.get(TEST_SECONDARY_KEY_ALIAS)).thenReturn(Optional.of(badSecondaryKey));
-    assertThrows(InvalidKeyException.class, () -> RestoreKeyFetcher.unwrapTertiaryKey(() -> mSecondaryKeyManager, TEST_SECONDARY_KEY_ALIAS, wrappedTertiaryKey));
-}

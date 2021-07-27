@@ -1,0 +1,25 @@
+public long until(Temporal endExclusive, TemporalUnit unit){
+    LocalDate end = LocalDate.from(endExclusive);
+    if (unit instanceof ChronoUnit) {
+        switch((ChronoUnit) unit) {
+            case DAYS:
+                return daysUntil(end);
+            case WEEKS:
+                return daysUntil(end) / 7;
+            case MONTHS:
+                return monthsUntil(end);
+            case YEARS:
+                return monthsUntil(end) / 12;
+            case DECADES:
+                return monthsUntil(end) / 120;
+            case CENTURIES:
+                return monthsUntil(end) / 1200;
+            case MILLENNIA:
+                return monthsUntil(end) / 12000;
+            case ERAS:
+                return end.getLong(ERA) - getLong(ERA);
+        }
+        throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit);
+    }
+    return unit.between(this, end);
+}

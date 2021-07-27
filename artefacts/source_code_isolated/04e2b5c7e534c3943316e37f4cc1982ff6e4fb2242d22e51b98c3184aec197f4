@@ -1,0 +1,16 @@
+public String getName(){
+    if (declaringClass.isProxy()) {
+        if ((getModifiers() & Modifier.STATIC) == 0) {
+            throw new AssertionError("Invalid modifiers for proxy field: " + getModifiers());
+        }
+        switch(artFieldIndex) {
+            case 0:
+                return "interfaces";
+            case 1:
+                return "throws";
+            default:
+                throw new AssertionError("Invalid index for proxy: " + artFieldIndex);
+        }
+    }
+    return getNameInternal();
+}

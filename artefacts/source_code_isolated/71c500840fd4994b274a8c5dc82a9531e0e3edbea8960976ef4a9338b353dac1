@@ -1,0 +1,9 @@
+public void performRestartActivity(IBinder token, boolean start){
+    ActivityClientRecord r = mActivities.get(token);
+    if (r.stopped) {
+        r.activity.performRestart(start, "performRestartActivity");
+        if (start) {
+            r.setState(ON_START);
+        }
+    }
+}

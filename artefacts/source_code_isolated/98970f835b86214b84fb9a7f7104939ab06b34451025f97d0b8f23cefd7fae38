@@ -1,0 +1,6 @@
+public static Collector<T, ?, DoubleSummaryStatistics> summarizingDouble(ToDoubleFunction<? super T> mapper){
+    return new CollectorImpl<T, DoubleSummaryStatistics, DoubleSummaryStatistics>(DoubleSummaryStatistics::new, (r, t) -> r.accept(mapper.applyAsDouble(t)), (l, r) -> {
+        l.combine(r);
+        return l;
+    }, CH_ID);
+}

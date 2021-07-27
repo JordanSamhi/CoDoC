@@ -1,0 +1,26 @@
+public String findInLine(Pattern pattern){
+    ensureOpen();
+    if (pattern == null)
+        throw new NullPointerException();
+    clearCaches();
+    int endPosition = 0;
+    saveState();
+    while (true) {
+        String token = findPatternInBuffer(separatorPattern(), 0);
+        if (token != null) {
+            endPosition = matcher.start();
+            break;
+        }
+        if (needInput) {
+            readInput();
+        } else {
+            endPosition = buf.limit();
+            break;
+        }
+    }
+    revertState();
+    int horizonForLine = endPosition - position;
+    if (horizonForLine == 0)
+        return null;
+    return findWithinHorizon(pattern, horizonForLine);
+}

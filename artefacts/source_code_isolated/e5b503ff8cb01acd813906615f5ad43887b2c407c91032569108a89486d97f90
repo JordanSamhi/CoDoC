@@ -1,0 +1,23 @@
+public final Object readObject() throws IOException, ClassNotFoundException{
+    if (enableOverride) {
+        return readObjectOverride();
+    }
+    int outerHandle = passHandle;
+    try {
+        Object obj = readObject0(false);
+        handles.markDependency(outerHandle, passHandle);
+        ClassNotFoundException ex = handles.lookupException(passHandle);
+        if (ex != null) {
+            throw ex;
+        }
+        if (depth == 0) {
+            vlist.doCallbacks();
+        }
+        return obj;
+    } finally {
+        passHandle = outerHandle;
+        if (closed && depth == 0) {
+            clear();
+        }
+    }
+}

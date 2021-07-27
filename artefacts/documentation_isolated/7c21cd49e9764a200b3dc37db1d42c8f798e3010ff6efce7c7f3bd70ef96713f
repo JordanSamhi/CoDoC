@@ -1,0 +1,35 @@
+
+     * Enable/disable the {@link SocketOptions#SO_REUSEADDR SO_REUSEADDR}
+     * socket option.
+     * <p>
+     * When a TCP connection is closed the connection may remain
+     * in a timeout state for a period of time after the connection
+     * is closed (typically known as the {@code TIME_WAIT} state
+     * or {@code 2MSL} wait state).
+     * For applications using a well known socket address or port
+     * it may not be possible to bind a socket to the required
+     * {@code SocketAddress} if there is a connection in the
+     * timeout state involving the socket address or port.
+     * <p>
+     * Enabling {@link SocketOptions#SO_REUSEADDR SO_REUSEADDR}
+     * prior to binding the socket using {@link #bind(SocketAddress)} allows
+     * the socket to be bound even though a previous connection is in a timeout
+     * state.
+     * <p>
+     * When a {@code Socket} is created the initial setting
+     * of {@link SocketOptions#SO_REUSEADDR SO_REUSEADDR} is disabled.
+     * <p>
+     * The behaviour when {@link SocketOptions#SO_REUSEADDR SO_REUSEADDR} is
+     * enabled or disabled after a socket is bound (See {@link #isBound()})
+     * is not defined.
+     *
+     * @param on  whether to enable or disable the socket option
+     * @exception SocketException if an error occurs enabling or
+     *            disabling the {@link SocketOptions#SO_REUSEADDR SO_REUSEADDR}
+     *            socket option, or the socket is closed.
+     * @since 1.4
+     * @see #getReuseAddress()
+     * @see #bind(SocketAddress)
+     * @see #isClosed()
+     * @see #isBound()
+     

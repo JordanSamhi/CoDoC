@@ -1,0 +1,12 @@
+public Object getSystemService(@ServiceName @NonNull String name){
+    if (getBaseContext() == null) {
+        throw new IllegalStateException("System services not available to Activities before onCreate()");
+    }
+    if (WINDOW_SERVICE.equals(name)) {
+        if (mWindowManager == null) {
+            mWindowManager = (WindowManager) getBaseContext().getSystemService(name);
+        }
+        return mWindowManager;
+    }
+    return super.getSystemService(name);
+}

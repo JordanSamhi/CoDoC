@@ -1,0 +1,35 @@
+public static int deepHashCode(Object[] a){
+    if (a == null)
+        return 0;
+    int result = 1;
+    for (Object element : a) {
+        int elementHash = 0;
+        if (element != null) {
+            Class<?> cl = element.getClass().getComponentType();
+            if (cl == null)
+                elementHash = element.hashCode();
+            else if (element instanceof Object[])
+                elementHash = deepHashCode((Object[]) element);
+            else if (cl == byte.class)
+                elementHash = hashCode((byte[]) element);
+            else if (cl == short.class)
+                elementHash = hashCode((short[]) element);
+            else if (cl == int.class)
+                elementHash = hashCode((int[]) element);
+            else if (cl == long.class)
+                elementHash = hashCode((long[]) element);
+            else if (cl == char.class)
+                elementHash = hashCode((char[]) element);
+            else if (cl == float.class)
+                elementHash = hashCode((float[]) element);
+            else if (cl == double.class)
+                elementHash = hashCode((double[]) element);
+            else if (cl == boolean.class)
+                elementHash = hashCode((boolean[]) element);
+            else
+                elementHash = element.hashCode();
+        }
+        result = 31 * result + elementHash;
+    }
+    return result;
+}

@@ -1,0 +1,18 @@
+public long skip(long n) throws IOException{
+    ensureOpen();
+    if (n <= 0) {
+        return 0;
+    }
+    long pskip = buf.length - pos;
+    if (pskip > 0) {
+        if (n < pskip) {
+            pskip = n;
+        }
+        pos += pskip;
+        n -= pskip;
+    }
+    if (n > 0) {
+        pskip += super.skip(n);
+    }
+    return pskip;
+}

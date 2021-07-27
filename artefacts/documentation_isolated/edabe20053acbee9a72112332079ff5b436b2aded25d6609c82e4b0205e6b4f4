@@ -1,0 +1,25 @@
+
+     * This method is used to enable streaming of a HTTP request body
+     * without internal buffering, when the content length is <b>not</b>
+     * known in advance. In this mode, chunked transfer encoding
+     * is used to send the request body. Note, not all HTTP servers
+     * support this mode.
+     * <p>
+     * When output streaming is enabled, authentication
+     * and redirection cannot be handled automatically.
+     * A HttpRetryException will be thrown when reading
+     * the response if authentication or redirection are required.
+     * This exception can be queried for the details of the error.
+     * <p>
+     * This method must be called before the URLConnection is connected.
+     *
+     * @param   chunklen The number of bytes to write in each chunk.
+     *          If chunklen is less than or equal to zero, a default
+     *          value will be used.
+     *
+     * @throws  IllegalStateException if URLConnection is already connected
+     *          or if a different streaming mode is already enabled.
+     *
+     * @see     #setFixedLengthStreamingMode(int)
+     * @since 1.5
+     

@@ -1,0 +1,9 @@
+public void setFocusable(@Focusable int focusable){
+    final T adapter = getAdapter();
+    final boolean empty = adapter == null || adapter.getCount() == 0;
+    mDesiredFocusableState = focusable;
+    if ((focusable & (FOCUSABLE_AUTO | FOCUSABLE)) == 0) {
+        mDesiredFocusableInTouchModeState = false;
+    }
+    super.setFocusable((!empty || isInFilterMode()) ? focusable : NOT_FOCUSABLE);
+}

@@ -1,0 +1,10 @@
+public static DecimalStyle of(Locale locale){
+    Objects.requireNonNull(locale, "locale");
+    DecimalStyle info = CACHE.get(locale);
+    if (info == null) {
+        info = create(locale);
+        CACHE.putIfAbsent(locale, info);
+        info = CACHE.get(locale);
+    }
+    return info;
+}

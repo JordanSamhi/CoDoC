@@ -1,0 +1,26 @@
+public boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len){
+    int to = toffset;
+    int po = ooffset;
+    if ((ooffset < 0) || (toffset < 0) || (toffset > (long) length() - len) || (ooffset > (long) other.length() - len)) {
+        return false;
+    }
+    while (len-- > 0) {
+        char c1 = charAt(to++);
+        char c2 = other.charAt(po++);
+        if (c1 == c2) {
+            continue;
+        }
+        if (ignoreCase) {
+            char u1 = Character.toUpperCase(c1);
+            char u2 = Character.toUpperCase(c2);
+            if (u1 == u2) {
+                continue;
+            }
+            if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                continue;
+            }
+        }
+        return false;
+    }
+    return true;
+}

@@ -1,0 +1,19 @@
+public static Subject getSubject(final AccessControlContext acc){
+    java.lang.SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(AuthPermissionHolder.GET_SUBJECT_PERMISSION);
+    }
+    if (acc == null) {
+        throw new NullPointerException(ResourcesMgr.getString("invalid.null.AccessControlContext.provided"));
+    }
+    return AccessController.doPrivileged(new java.security.PrivilegedAction<Subject>() {
+
+        public Subject run() {
+            DomainCombiner dc = acc.getDomainCombiner();
+            if (!(dc instanceof SubjectDomainCombiner))
+                return null;
+            SubjectDomainCombiner sdc = (SubjectDomainCombiner) dc;
+            return sdc.getSubject();
+        }
+    });
+}

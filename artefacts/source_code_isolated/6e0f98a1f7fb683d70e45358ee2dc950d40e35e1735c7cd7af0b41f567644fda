@@ -1,0 +1,11 @@
+public void setInterface(InetAddress inf) throws SocketException{
+    if (isClosed()) {
+        throw new SocketException("Socket is closed");
+    }
+    checkAddress(inf, "setInterface");
+    synchronized (infLock) {
+        getImpl().setOption(SocketOptions.IP_MULTICAST_IF, inf);
+        infAddress = inf;
+        interfaceSet = true;
+    }
+}

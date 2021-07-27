@@ -1,0 +1,12 @@
+public void write(byte[] buffer, int offset, int count) throws IOException{
+    if (mRemaining >= 0) {
+        if (mRemaining == 0)
+            return;
+        if (count > mRemaining)
+            count = (int) mRemaining;
+        super.write(buffer, offset, count);
+        mRemaining -= count;
+        return;
+    }
+    super.write(buffer, offset, count);
+}

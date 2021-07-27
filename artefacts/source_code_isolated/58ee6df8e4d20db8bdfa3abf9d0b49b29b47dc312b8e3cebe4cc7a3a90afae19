@@ -1,0 +1,31 @@
+public boolean testBit(int n){
+    if (n < 0) {
+        throw new ArithmeticException("n < 0: " + n);
+    }
+    int sign = signum();
+    if (sign > 0 && nativeIsValid && !javaIsValid) {
+        return getBigInt().isBitSet(n);
+    } else {
+        prepareJavaRepresentation();
+        if (n == 0) {
+            return ((digits[0] & 1) != 0);
+        }
+        int intCount = n >> 5;
+        if (intCount >= numberLength) {
+            return (sign < 0);
+        }
+        int digit = digits[intCount];
+        n = (1 << (n & 31));
+        if (sign < 0) {
+            int firstNonZeroDigit = getFirstNonzeroDigit();
+            if (intCount < firstNonZeroDigit) {
+                return false;
+            } else if (firstNonZeroDigit == intCount) {
+                digit = -digit;
+            } else {
+                digit = ~digit;
+            }
+        }
+        return ((digit & n) != 0);
+    }
+}

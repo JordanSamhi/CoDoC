@@ -1,0 +1,44 @@
+public final CoderResult decode(ByteBuffer in, CharBuffer out, boolean endOfInput){
+    int newState = endOfInput ? ST_END : ST_CODING;
+    if ((state != ST_RESET) && (state != ST_CODING) && !(endOfInput && (state == ST_END)))
+        throwIllegalStateException(state, newState);
+    state = newState;
+    for (; ; ) {
+        CoderResult cr;
+        try {
+            cr = decodeLoop(in, out);
+        } catch (BufferUnderflowException x) {
+            throw new CoderMalfunctionError(x);
+        } catch (BufferOverflowException x) {
+            throw new CoderMalfunctionError(x);
+        }
+        if (cr.isOverflow())
+            return cr;
+        if (cr.isUnderflow()) {
+            if (endOfInput && in.hasRemaining()) {
+                cr = CoderResult.malformedForLength(in.remaining());
+            } else {
+                return cr;
+            }
+        }
+        CodingErrorAction action = null;
+        if (cr.isMalformed())
+            action = malformedInputAction;
+        else if (cr.isUnmappable())
+            action = unmappableCharacterAction;
+        else
+            assert false : cr.toString();
+        if (action == CodingErrorAction.REPORT)
+            return cr;
+        if (action == CodingErrorAction.REPLACE) {
+            if (out.remaining() < replacement.length())
+                return CoderResult.OVERFLOW;
+            out.put(replacement);
+        }
+        if ((action == CodingErrorAction.IGNORE) || (action == CodingErrorAction.REPLACE)) {
+            in.position(in.position() + cr.length());
+            continue;
+        }
+        assert false;
+    }
+}

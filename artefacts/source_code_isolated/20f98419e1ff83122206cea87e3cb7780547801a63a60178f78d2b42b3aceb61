@@ -1,0 +1,13 @@
+public long getStealCount(){
+    AuxState sc = auxState;
+    long count = (sc == null) ? 0L : sc.stealCount;
+    WorkQueue[] ws;
+    WorkQueue w;
+    if ((ws = workQueues) != null) {
+        for (int i = 1; i < ws.length; i += 2) {
+            if ((w = ws[i]) != null)
+                count += w.nsteals;
+        }
+    }
+    return count;
+}

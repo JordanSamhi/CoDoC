@@ -1,0 +1,66 @@
+public boolean onMove(int oldPosition, int newPosition){
+    if (oldPosition == newPosition)
+        return true;
+    int cache_entry = newPosition % ROWCACHESIZE;
+    if (mRowNumCache[cache_entry] == newPosition) {
+        int which = mCursorCache[cache_entry];
+        mCursor = mCursors[which];
+        if (mCursor == null) {
+            Log.w(TAG, "onMove: cache results in a null cursor.");
+            return false;
+        }
+        mCursor.moveToPosition(mCurRowNumCache[cache_entry][which]);
+        mLastCacheHit = cache_entry;
+        return true;
+    }
+    mCursor = null;
+    int length = mCursors.length;
+    if (mLastCacheHit >= 0) {
+        for (int i = 0; i < length; i++) {
+            if (mCursors[i] == null)
+                continue;
+            mCursors[i].moveToPosition(mCurRowNumCache[mLastCacheHit][i]);
+        }
+    }
+    if (newPosition < oldPosition || oldPosition == -1) {
+        for (int i = 0; i < length; i++) {
+            if (mCursors[i] == null)
+                continue;
+            mCursors[i].moveToFirst();
+        }
+        oldPosition = 0;
+    }
+    if (oldPosition < 0) {
+        oldPosition = 0;
+    }
+    int smallestIdx = -1;
+    for (int i = oldPosition; i <= newPosition; i++) {
+        String smallest = "";
+        smallestIdx = -1;
+        for (int j = 0; j < length; j++) {
+            if (mCursors[j] == null || mCursors[j].isAfterLast()) {
+                continue;
+            }
+            String current = mCursors[j].getString(mSortColumns[j]);
+            if (smallestIdx < 0 || current.compareToIgnoreCase(smallest) < 0) {
+                smallest = current;
+                smallestIdx = j;
+            }
+        }
+        if (i == newPosition)
+            break;
+        if (mCursors[smallestIdx] != null) {
+            mCursors[smallestIdx].moveToNext();
+        }
+    }
+    mCursor = mCursors[smallestIdx];
+    mRowNumCache[cache_entry] = newPosition;
+    mCursorCache[cache_entry] = smallestIdx;
+    for (int i = 0; i < length; i++) {
+        if (mCursors[i] != null) {
+            mCurRowNumCache[cache_entry][i] = mCursors[i].getPosition();
+        }
+    }
+    mLastCacheHit = -1;
+    return true;
+}

@@ -1,0 +1,63 @@
+
+     * Request endlessly repeating capture of images by this capture session.
+     *
+     * <p>With this method, the camera device will continually capture images
+     * using the settings in the provided {@link CaptureRequest}, at the maximum
+     * rate possible.</p>
+     *
+     * <p>Repeating requests are a simple way for an application to maintain a
+     * preview or other continuous stream of frames, without having to
+     * continually submit identical requests through {@link #capture}.</p>
+     *
+     * <p>Repeat requests have lower priority than those submitted
+     * through {@link #capture} or {@link #captureBurst}, so if
+     * {@link #capture} is called when a repeating request is active, the
+     * capture request will be processed before any further repeating
+     * requests are processed.<p>
+     *
+     * <p>To stop the repeating capture, call {@link #stopRepeating}. Calling
+     * {@link #abortCaptures} will also clear the request.</p>
+     *
+     * <p>Calling this method will replace any earlier repeating request or
+     * burst set up by this method or {@link #setRepeatingBurst}, although any
+     * in-progress burst will be completed before the new repeat request will be
+     * used.</p>
+     *
+     * <p>This method does not support reprocess capture requests because each reprocess
+     * {@link CaptureRequest} must be created from the {@link TotalCaptureResult} that matches
+     * the input image to be reprocessed. This is either the {@link TotalCaptureResult} of capture
+     * that is sent for reprocessing, or one of the {@link TotalCaptureResult TotalCaptureResults}
+     * of a set of captures, when data from the whole set is combined by the application into a
+     * single reprocess input image. The request must be capturing images from the camera. If a
+     * reprocess capture request is submitted, this method will throw IllegalArgumentException.</p>
+     *
+     * @param request the request to repeat indefinitely
+     * @param listener The callback object to notify every time the
+     * request finishes processing. If null, no metadata will be
+     * produced for this stream of requests, although image data will
+     * still be produced.
+     * @param handler the handler on which the listener should be invoked, or
+     * {@code null} to use the current thread's {@link android.os.Looper
+     * looper}.
+     *
+     * @return int A unique capture sequence ID used by
+     *             {@link CaptureCallback#onCaptureSequenceCompleted}.
+     *
+     * @throws CameraAccessException if the camera device is no longer connected or has
+     *                               encountered a fatal error
+     * @throws IllegalStateException if this session is no longer active, either because the session
+     *                               was explicitly closed, a new session has been created
+     *                               or the camera device has been closed.
+     * @throws IllegalArgumentException If the request references no Surfaces or references Surfaces
+     *                                  that are not currently configured as outputs; or the request
+     *                                  is a reprocess capture request; or the capture targets a
+     *                                  Surface in the middle of being {@link #prepare prepared}; or
+     *                                  the handler is null, the listener is not null, and the
+     *                                  calling thread has no looper; or no requests were passed in.
+     *
+     * @see #capture
+     * @see #captureBurst
+     * @see #setRepeatingBurst
+     * @see #stopRepeating
+     * @see #abortCaptures
+     

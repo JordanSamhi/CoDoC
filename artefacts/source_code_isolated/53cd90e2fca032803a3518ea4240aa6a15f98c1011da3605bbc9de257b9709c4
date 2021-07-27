@@ -1,0 +1,12 @@
+public final Object getObject(String key){
+    Object obj = handleGetObject(key);
+    if (obj == null) {
+        if (parent != null) {
+            obj = parent.getObject(key);
+        }
+        if (obj == null) {
+            throw new MissingResourceException("Can't find resource for bundle " + this.getClass().getName() + ", key " + key, this.getClass().getName(), key);
+        }
+    }
+    return obj;
+}

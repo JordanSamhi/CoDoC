@@ -1,0 +1,8 @@
+public static synchronized void setDefault(Authenticator a){
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        NetPermission setDefaultPermission = new NetPermission("setDefaultAuthenticator");
+        sm.checkPermission(setDefaultPermission);
+    }
+    theAuthenticator = a;
+}

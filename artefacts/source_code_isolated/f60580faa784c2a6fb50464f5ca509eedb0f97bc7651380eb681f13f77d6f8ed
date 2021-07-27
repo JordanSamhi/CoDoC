@@ -1,0 +1,18 @@
+public byte nextByte(int radix){
+    if ((typeCache != null) && (typeCache instanceof Byte) && this.radix == radix) {
+        byte val = ((Byte) typeCache).byteValue();
+        useTypeCache();
+        return val;
+    }
+    setRadix(radix);
+    clearCaches();
+    try {
+        String s = next(integerPattern());
+        if (matcher.group(SIMPLE_GROUP_INDEX) == null)
+            s = processIntegerToken(s);
+        return Byte.parseByte(s, radix);
+    } catch (NumberFormatException nfe) {
+        position = matcher.start();
+        throw new InputMismatchException(nfe.getMessage());
+    }
+}

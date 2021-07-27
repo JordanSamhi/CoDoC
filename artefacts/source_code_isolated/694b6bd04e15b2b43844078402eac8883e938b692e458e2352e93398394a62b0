@@ -1,8 +1,0 @@
-public List<WifiNetworkSuggestion> getNetworkSuggestions(String callingPackageName){
-    mAppOps.checkPackage(Binder.getCallingUid(), callingPackageName);
-    enforceAccessPermission();
-    if (mVerboseLoggingEnabled) {
-        mLog.info("getNetworkSuggestionList uid=%").c(Binder.getCallingUid()).flush();
-    }
-    return mWifiThreadRunner.call(() -> mWifiNetworkSuggestionsManager.get(callingPackageName), Collections.emptyList());
-}

@@ -1,10 +1,5 @@
 public void cancel(){
-    if (Compatibility.isChangeEnabled(CHANGE_TEXT_TOASTS_IN_THE_SYSTEM) && mNextView == null) {
-        try {
-            getService().cancelToast(mContext.getOpPackageName(), mToken);
-        } catch (RemoteException e) {
-        }
-    } else {
-        mTN.cancel();
-    }
+    if (localLOGV)
+        Log.v(TAG, "CANCEL: " + this);
+    mHandler.obtainMessage(CANCEL).sendToTarget();
 }

@@ -1,0 +1,13 @@
+public final void tryComplete(){
+    CountedCompleter<?> a = this, s = a;
+    for (int c; ; ) {
+        if ((c = a.pending) == 0) {
+            a.onCompletion(s);
+            if ((a = (s = a).completer) == null) {
+                s.quietlyComplete();
+                return;
+            }
+        } else if (U.compareAndSwapInt(a, PENDING, c, c - 1))
+            return;
+    }
+}

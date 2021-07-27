@@ -1,0 +1,28 @@
+public boolean getPadding(Rect padding){
+    final LayerState layerState = mLayerState;
+    if (layerState.mPaddingMode == PADDING_MODE_NEST) {
+        computeNestedPadding(padding);
+    } else {
+        computeStackedPadding(padding);
+    }
+    final int paddingT = layerState.mPaddingTop;
+    final int paddingB = layerState.mPaddingBottom;
+    final boolean isLayoutRtl = getLayoutDirection() == LayoutDirection.RTL;
+    final int paddingRtlL = isLayoutRtl ? layerState.mPaddingEnd : layerState.mPaddingStart;
+    final int paddingRtlR = isLayoutRtl ? layerState.mPaddingStart : layerState.mPaddingEnd;
+    final int paddingL = paddingRtlL >= 0 ? paddingRtlL : layerState.mPaddingLeft;
+    final int paddingR = paddingRtlR >= 0 ? paddingRtlR : layerState.mPaddingRight;
+    if (paddingL >= 0) {
+        padding.left = paddingL;
+    }
+    if (paddingT >= 0) {
+        padding.top = paddingT;
+    }
+    if (paddingR >= 0) {
+        padding.right = paddingR;
+    }
+    if (paddingB >= 0) {
+        padding.bottom = paddingB;
+    }
+    return padding.left != 0 || padding.top != 0 || padding.right != 0 || padding.bottom != 0;
+}

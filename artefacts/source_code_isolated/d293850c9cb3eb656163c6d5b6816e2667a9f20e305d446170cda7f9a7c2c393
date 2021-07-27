@@ -1,0 +1,24 @@
+public String toString(){
+    updateDuration();
+    StringJoiner j = new StringJoiner(", ", "WakeupStats(", ")");
+    j.add(iface);
+    j.add("" + durationSec + "s");
+    j.add("total: " + totalWakeups);
+    j.add("root: " + rootWakeups);
+    j.add("system: " + systemWakeups);
+    j.add("apps: " + applicationWakeups);
+    j.add("non-apps: " + nonApplicationWakeups);
+    j.add("no uid: " + noUidWakeups);
+    j.add(String.format("l2 unicast/multicast/broadcast: %d/%d/%d", l2UnicastCount, l2MulticastCount, l2BroadcastCount));
+    for (int i = 0; i < ethertypes.size(); i++) {
+        int eth = ethertypes.keyAt(i);
+        int count = ethertypes.valueAt(i);
+        j.add(String.format("ethertype 0x%x: %d", eth, count));
+    }
+    for (int i = 0; i < ipNextHeaders.size(); i++) {
+        int proto = ipNextHeaders.keyAt(i);
+        int count = ipNextHeaders.valueAt(i);
+        j.add(String.format("ipNxtHdr %d: %d", proto, count));
+    }
+    return j.toString();
+}

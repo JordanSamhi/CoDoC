@@ -1,0 +1,56 @@
+
+     * Parses text from a string to produce a <code>Number</code>.
+     * <p>
+     * The method attempts to parse text starting at the index given by
+     * <code>pos</code>.
+     * If parsing succeeds, then the index of <code>pos</code> is updated
+     * to the index after the last character used (parsing does not necessarily
+     * use all characters up to the end of the string), and the parsed
+     * number is returned. The updated <code>pos</code> can be used to
+     * indicate the starting point for the next call to this method.
+     * If an error occurs, then the index of <code>pos</code> is not
+     * changed, the error index of <code>pos</code> is set to the index of
+     * the character where the error occurred, and null is returned.
+     * <p>
+     * The subclass returned depends on the value of {@link #isParseBigDecimal}
+     * as well as on the string being parsed.
+     * <ul>
+     *   <li>If <code>isParseBigDecimal()</code> is false (the default),
+     *       most integer values are returned as <code>Long</code>
+     *       objects, no matter how they are written: <code>"17"</code> and
+     *       <code>"17.000"</code> both parse to <code>Long(17)</code>.
+     *       Values that cannot fit into a <code>Long</code> are returned as
+     *       <code>Double</code>s. This includes values with a fractional part,
+     *       infinite values, <code>NaN</code>, and the value -0.0.
+     *       <code>DecimalFormat</code> does <em>not</em> decide whether to
+     *       return a <code>Double</code> or a <code>Long</code> based on the
+     *       presence of a decimal separator in the source string. Doing so
+     *       would prevent integers that overflow the mantissa of a double,
+     *       such as <code>"-9,223,372,036,854,775,808.00"</code>, from being
+     *       parsed accurately.
+     *       <p>
+     *       Callers may use the <code>Number</code> methods
+     *       <code>doubleValue</code>, <code>longValue</code>, etc., to obtain
+     *       the type they want.
+     *   <li>If <code>isParseBigDecimal()</code> is true, values are returned
+     *       as <code>BigDecimal</code> objects. The values are the ones
+     *       constructed by {@link java.math.BigDecimal#BigDecimal(String)}
+     *       for corresponding strings in locale-independent format. The
+     *       special cases negative and positive infinity and NaN are returned
+     *       as <code>Double</code> instances holding the values of the
+     *       corresponding <code>Double</code> constants.
+     * </ul>
+     * <p>
+     * <code>DecimalFormat</code> parses all Unicode characters that represent
+     * decimal digits, as defined by <code>Character.digit()</code>. In
+     * addition, <code>DecimalFormat</code> also recognizes as digits the ten
+     * consecutive characters starting with the localized zero digit defined in
+     * the <code>DecimalFormatSymbols</code> object.
+     *
+     * @param text the string to be parsed
+     * @param pos  A <code>ParsePosition</code> object with index and error
+     *             index information as described above.
+     * @return     the parsed value, or <code>null</code> if the parse fails
+     * @exception  NullPointerException if <code>text</code> or
+     *             <code>pos</code> is null.
+     

@@ -1,0 +1,24 @@
+public String toString(){
+    StringBuilder builder = new StringBuilder();
+    builder.append(numSubSamples + " subsamples, key [");
+    String hexdigits = "0123456789abcdef";
+    for (int i = 0; i < key.length; i++) {
+        builder.append(hexdigits.charAt((key[i] & 0xf0) >> 4));
+        builder.append(hexdigits.charAt(key[i] & 0x0f));
+    }
+    builder.append("], iv [");
+    for (int i = 0; i < iv.length; i++) {
+        builder.append(hexdigits.charAt((iv[i] & 0xf0) >> 4));
+        builder.append(hexdigits.charAt(iv[i] & 0x0f));
+    }
+    builder.append("], clear ");
+    builder.append(Arrays.toString(numBytesOfClearData));
+    builder.append(", encrypted ");
+    builder.append(Arrays.toString(numBytesOfEncryptedData));
+    builder.append(", pattern (encrypt: ");
+    builder.append(pattern.mEncryptBlocks);
+    builder.append(", skip: ");
+    builder.append(pattern.mSkipBlocks);
+    builder.append(")");
+    return builder.toString();
+}

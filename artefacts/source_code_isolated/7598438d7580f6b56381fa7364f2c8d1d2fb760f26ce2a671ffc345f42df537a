@@ -1,0 +1,48 @@
+public String toString(){
+    StringBuilder s = new StringBuilder();
+    s.append("Location[");
+    s.append(mProvider);
+    s.append(String.format(" %.6f,%.6f", mLatitude, mLongitude));
+    if (hasAccuracy())
+        s.append(String.format(" hAcc=%.0f", mHorizontalAccuracyMeters));
+    else
+        s.append(" hAcc=???");
+    if (mTime == 0) {
+        s.append(" t=?!?");
+    }
+    if (mElapsedRealtimeNanos == 0) {
+        s.append(" et=?!?");
+    } else {
+        s.append(" et=");
+        TimeUtils.formatDuration(mElapsedRealtimeNanos / 1000000L, s);
+    }
+    if (hasElapsedRealtimeUncertaintyNanos()) {
+        s.append(" etAcc=");
+        TimeUtils.formatDuration((long) (mElapsedRealtimeUncertaintyNanos / 1000000), s);
+    }
+    if (hasAltitude())
+        s.append(" alt=").append(mAltitude);
+    if (hasSpeed())
+        s.append(" vel=").append(mSpeed);
+    if (hasBearing())
+        s.append(" bear=").append(mBearing);
+    if (hasVerticalAccuracy())
+        s.append(String.format(" vAcc=%.0f", mVerticalAccuracyMeters));
+    else
+        s.append(" vAcc=???");
+    if (hasSpeedAccuracy())
+        s.append(String.format(" sAcc=%.0f", mSpeedAccuracyMetersPerSecond));
+    else
+        s.append(" sAcc=???");
+    if (hasBearingAccuracy())
+        s.append(String.format(" bAcc=%.0f", mBearingAccuracyDegrees));
+    else
+        s.append(" bAcc=???");
+    if (isFromMockProvider())
+        s.append(" mock");
+    if (mExtras != null) {
+        s.append(" {").append(mExtras).append('}');
+    }
+    s.append(']');
+    return s.toString();
+}

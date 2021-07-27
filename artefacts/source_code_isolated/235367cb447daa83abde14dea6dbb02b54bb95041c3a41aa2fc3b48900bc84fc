@@ -1,8 +1,0 @@
-public void testRequestBackup_whenNotProvisioned() throws Exception{
-    mShadowContext.grantPermissions(android.Manifest.permission.BACKUP);
-    UserBackupManagerService backupManagerService = createUserBackupManagerServiceAndRunTasks();
-    backupManagerService.setSetupComplete(false);
-    int result = backupManagerService.requestBackup(new String[] { PACKAGE_1 }, mObserver, 0);
-    assertThat(result).isEqualTo(BackupManager.ERROR_BACKUP_NOT_ALLOWED);
-    verify(mObserver).backupFinished(BackupManager.ERROR_BACKUP_NOT_ALLOWED);
-}

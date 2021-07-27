@@ -1,0 +1,22 @@
+public void getDeferredJobsCheckinLineLocked(StringBuilder sb, int which){
+    sb.setLength(0);
+    final int deferredEventCount = mJobsDeferredEventCount.getCountLocked(which);
+    if (deferredEventCount == 0) {
+        return;
+    }
+    final int deferredCount = mJobsDeferredCount.getCountLocked(which);
+    final long totalLatency = mJobsFreshnessTimeMs.getCountLocked(which);
+    sb.append(deferredEventCount);
+    sb.append(',');
+    sb.append(deferredCount);
+    sb.append(',');
+    sb.append(totalLatency);
+    for (int i = 0; i < JOB_FRESHNESS_BUCKETS.length; i++) {
+        if (mJobsFreshnessBuckets[i] == null) {
+            sb.append(",0");
+        } else {
+            sb.append(",");
+            sb.append(mJobsFreshnessBuckets[i].getCountLocked(which));
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public void sendAccessibilityEvent(int eventType){
+    if (!AccessibilityManager.getInstance(mContext).isEnabled()) {
+        return;
+    }
+    if ((mFeatureId == Window.FEATURE_OPTIONS_PANEL || mFeatureId == Window.FEATURE_CONTEXT_MENU || mFeatureId == Window.FEATURE_PROGRESS || mFeatureId == Window.FEATURE_INDETERMINATE_PROGRESS) && getChildCount() == 1) {
+        getChildAt(0).sendAccessibilityEvent(eventType);
+    } else {
+        super.sendAccessibilityEvent(eventType);
+    }
+}

@@ -1,0 +1,8 @@
+public void handleNewIntent(IBinder token, List<ReferrerIntent> intents){
+    final ActivityClientRecord r = mActivities.get(token);
+    if (r == null) {
+        return;
+    }
+    checkAndBlockForNetworkAccess();
+    deliverNewIntents(r, intents);
+}

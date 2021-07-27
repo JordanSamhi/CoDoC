@@ -1,0 +1,10 @@
+public static synchronized void setDatagramSocketImplFactory(DatagramSocketImplFactory fac) throws IOException{
+    if (factory != null) {
+        throw new SocketException("factory already defined");
+    }
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkSetFactory();
+    }
+    factory = fac;
+}

@@ -1,0 +1,39 @@
+
+     * Tests if two paths locate the same file.
+     *
+     * <p> If both {@code Path} objects are {@link Path#equals(Object) equal}
+     * then this method returns {@code true} without checking if the file exists.
+     * If the two {@code Path} objects are associated with different providers
+     * then this method returns {@code false}. Otherwise, this method checks if
+     * both {@code Path} objects locate the same file, and depending on the
+     * implementation, may require to open or access both files.
+     *
+     * <p> If the file system and files remain static, then this method implements
+     * an equivalence relation for non-null {@code Paths}.
+     * <ul>
+     * <li>It is <i>reflexive</i>: for {@code Path} {@code f},
+     *     {@code isSameFile(f,f)} should return {@code true}.
+     * <li>It is <i>symmetric</i>: for two {@code Paths} {@code f} and {@code g},
+     *     {@code isSameFile(f,g)} will equal {@code isSameFile(g,f)}.
+     * <li>It is <i>transitive</i>: for three {@code Paths}
+     *     {@code f}, {@code g}, and {@code h}, if {@code isSameFile(f,g)} returns
+     *     {@code true} and {@code isSameFile(g,h)} returns {@code true}, then
+     *     {@code isSameFile(f,h)} will return return {@code true}.
+     * </ul>
+     *
+     * @param   path
+     *          one path to the file
+     * @param   path2
+     *          the other path
+     *
+     * @return  {@code true} if, and only if, the two paths locate the same file
+     *
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, the {@link SecurityManager#checkRead(String) checkRead}
+     *          method is invoked to check read access to both files.
+     *
+     * @see java.nio.file.attribute.BasicFileAttributes#fileKey
+     

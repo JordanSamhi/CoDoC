@@ -1,0 +1,19 @@
+public void setPolicy(Set<String> certPolicySet) throws IOException{
+    if (certPolicySet == null) {
+        policySet = null;
+        policy = null;
+    } else {
+        Set<String> tempSet = Collections.unmodifiableSet(new HashSet<String>(certPolicySet));
+        Iterator<String> i = tempSet.iterator();
+        Vector<CertificatePolicyId> polIdVector = new Vector<CertificatePolicyId>();
+        while (i.hasNext()) {
+            Object o = i.next();
+            if (!(o instanceof String)) {
+                throw new IOException("non String in certPolicySet");
+            }
+            polIdVector.add(new CertificatePolicyId(new ObjectIdentifier((String) o)));
+        }
+        policySet = tempSet;
+        policy = new CertificatePolicySet(polIdVector);
+    }
+}

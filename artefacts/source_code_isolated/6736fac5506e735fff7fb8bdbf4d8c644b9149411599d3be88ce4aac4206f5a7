@@ -1,0 +1,8 @@
+public final int getAndUpdate(IntUnaryOperator updateFunction){
+    int prev, next;
+    do {
+        prev = get();
+        next = updateFunction.applyAsInt(prev);
+    } while (!compareAndSet(prev, next));
+    return prev;
+}

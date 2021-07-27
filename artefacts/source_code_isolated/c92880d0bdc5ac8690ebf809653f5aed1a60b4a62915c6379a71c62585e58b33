@@ -1,0 +1,13 @@
+public void deleteDocument(String docId) throws FileNotFoundException{
+    final File file = getFileForDocId(docId);
+    final File visibleFile = getFileForDocId(docId, true);
+    final boolean isDirectory = file.isDirectory();
+    if (isDirectory) {
+        FileUtils.deleteContents(file);
+    }
+    if (file.exists() && !file.delete()) {
+        throw new IllegalStateException("Failed to delete " + file);
+    }
+    onDocIdChanged(docId);
+    removeFromMediaStore(visibleFile);
+}

@@ -1,0 +1,8 @@
+public boolean onLayoutDirectionChanged(int layoutDirection){
+    if (!mState.mAutoMirrored || mState.mNativePtr == 0) {
+        return false;
+    }
+    final boolean mirror = layoutDirection == View.LAYOUT_DIRECTION_RTL;
+    nSetMirrored(mState.mNativePtr, mirror);
+    return true;
+}

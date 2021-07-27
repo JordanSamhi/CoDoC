@@ -1,0 +1,19 @@
+public void onCreate(){
+    mTheme = Resources.selectSystemTheme(mTheme, getApplicationInfo().targetSdkVersion, android.R.style.Theme_InputMethod, android.R.style.Theme_Holo_InputMethod, android.R.style.Theme_DeviceDefault_InputMethod, android.R.style.Theme_DeviceDefault_InputMethod);
+    super.setTheme(mTheme);
+    super.onCreate();
+    mImm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+    mSettingsObserver = SettingsObserver.createAndRegister(this);
+    mIsAutomotive = isAutomotive();
+    mAutomotiveHideNavBarForKeyboard = getApplicationContext().getResources().getBoolean(com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard);
+    mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mWindow = new SoftInputWindow(this, "InputMethod", mTheme, null, null, mDispatcherState, WindowManager.LayoutParams.TYPE_INPUT_METHOD, Gravity.BOTTOM, false);
+    mWindow.getWindow().getAttributes().setFitInsetsTypes(statusBars() | navigationBars());
+    mWindow.getWindow().getAttributes().setFitInsetsSides(Side.all() & ~Side.BOTTOM);
+    mWindow.getWindow().getAttributes().setFitInsetsIgnoringVisibility(true);
+    mWindow.getWindow().getDecorView().setOnApplyWindowInsetsListener((v, insets) -> v.onApplyWindowInsets(new WindowInsets.Builder(insets).setInsets(navigationBars(), mIsAutomotive && mAutomotiveHideNavBarForKeyboard ? android.graphics.Insets.NONE : insets.getInsetsIgnoringVisibility(navigationBars())).build()));
+    mWindow.getWindow().setFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS, FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+    initViews();
+    mWindow.getWindow().setLayout(MATCH_PARENT, WRAP_CONTENT);
+    mInlineSuggestionSessionController = new InlineSuggestionSessionController(this::onCreateInlineSuggestionsRequest, this::getHostInputToken, this::onInlineSuggestionsResponse);
+}

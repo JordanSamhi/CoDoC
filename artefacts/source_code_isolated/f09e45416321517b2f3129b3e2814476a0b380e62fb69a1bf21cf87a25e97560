@@ -1,0 +1,28 @@
+public ByteBuffer put(ByteBuffer src){
+    if (src == this)
+        throw new IllegalArgumentException();
+    if (isReadOnly())
+        throw new ReadOnlyBufferException();
+    int n = src.remaining();
+    if (n > remaining())
+        throw new BufferOverflowException();
+    if (this.hb != null && src.hb != null) {
+        System.arraycopy(src.hb, src.position() + src.offset, hb, position() + offset, n);
+    } else {
+        final Object srcObject = src.isDirect() ? src : src.hb;
+        int srcOffset = src.position();
+        if (!src.isDirect()) {
+            srcOffset += src.offset;
+        }
+        final ByteBuffer dst = this;
+        final Object dstObject = dst.isDirect() ? dst : dst.hb;
+        int dstOffset = dst.position();
+        if (!dst.isDirect()) {
+            dstOffset += dst.offset;
+        }
+        Memory.memmove(dstObject, dstOffset, srcObject, srcOffset, n);
+    }
+    src.position(src.limit());
+    this.position(this.position() + n);
+    return this;
+}

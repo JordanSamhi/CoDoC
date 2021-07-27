@@ -1,0 +1,10 @@
+public ZonedDateTime plus(long amountToAdd, TemporalUnit unit){
+    if (unit instanceof ChronoUnit) {
+        if (unit.isDateBased()) {
+            return resolveLocal(dateTime.plus(amountToAdd, unit));
+        } else {
+            return resolveInstant(dateTime.plus(amountToAdd, unit));
+        }
+    }
+    return unit.addTo(this, amountToAdd);
+}

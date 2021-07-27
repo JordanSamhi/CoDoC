@@ -1,3 +1,7 @@
-public boolean setSaturationLevel(@IntRange(from = 0, to = 100) int saturationLevel){
-    return mManager.setSaturationLevel(saturationLevel);
+ boolean setSaturationLevel(int saturationLevel){
+    try {
+        return mCdm.setSaturationLevel(saturationLevel);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
 }

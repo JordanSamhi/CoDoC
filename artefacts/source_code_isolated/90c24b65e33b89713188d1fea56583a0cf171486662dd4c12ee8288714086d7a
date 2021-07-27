@@ -1,0 +1,8 @@
+public static LocalDate now(Clock clock){
+    Objects.requireNonNull(clock, "clock");
+    final Instant now = clock.instant();
+    ZoneOffset offset = clock.getZone().getRules().getOffset(now);
+    long epochSec = now.getEpochSecond() + offset.getTotalSeconds();
+    long epochDay = Math.floorDiv(epochSec, SECONDS_PER_DAY);
+    return LocalDate.ofEpochDay(epochDay);
+}

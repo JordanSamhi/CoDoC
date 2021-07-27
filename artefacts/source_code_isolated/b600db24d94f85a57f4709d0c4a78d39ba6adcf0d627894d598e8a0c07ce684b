@@ -1,0 +1,10 @@
+public void setSSLSocketFactory(SSLSocketFactory sf){
+    if (sf == null) {
+        throw new IllegalArgumentException("no SSLSocketFactory specified");
+    }
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkSetFactory();
+    }
+    sslSocketFactory = sf;
+}

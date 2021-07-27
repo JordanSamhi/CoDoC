@@ -1,0 +1,39 @@
+
+     * Adds a name to the subjectAlternativeNames criterion. The
+     * {@code X509Certificate} must contain all or at least one
+     * of the specified subjectAlternativeNames, depending on the value of
+     * the matchAllNames flag (see {@link #setMatchAllSubjectAltNames
+     * setMatchAllSubjectAltNames}).
+     * <p>
+     * This method allows the caller to add a name to the set of subject
+     * alternative names.
+     * The specified name is added to any previous value for the
+     * subjectAlternativeNames criterion. If the specified name is a
+     * duplicate, it may be ignored.
+     * <p>
+     * The name is provided as a byte array. This byte array should contain
+     * the DER encoded name, as it would appear in the GeneralName structure
+     * defined in RFC 3280 and X.509. The encoded byte array should only contain
+     * the encoded value of the name, and should not include the tag associated
+     * with the name in the GeneralName structure. The ASN.1 definition of this
+     * structure appears below.
+     * <pre>{@code
+     *  GeneralName ::= CHOICE {
+     *       otherName                       [0]     OtherName,
+     *       rfc822Name                      [1]     IA5String,
+     *       dNSName                         [2]     IA5String,
+     *       x400Address                     [3]     ORAddress,
+     *       directoryName                   [4]     Name,
+     *       ediPartyName                    [5]     EDIPartyName,
+     *       uniformResourceIdentifier       [6]     IA5String,
+     *       iPAddress                       [7]     OCTET STRING,
+     *       registeredID                    [8]     OBJECT IDENTIFIER}
+     * }</pre>
+     * <p>
+     * Note that the byte array supplied here is cloned to protect against
+     * subsequent modifications.
+     *
+     * @param type the name type (0-8, as listed above)
+     * @param name a byte array containing the name in ASN.1 DER encoded form
+     * @throws IOException if a parsing error occurs
+     

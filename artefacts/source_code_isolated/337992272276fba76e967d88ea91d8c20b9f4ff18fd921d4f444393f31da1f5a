@@ -1,0 +1,10 @@
+public boolean setReadOnly(){
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkWrite(path);
+    }
+    if (isInvalid()) {
+        return false;
+    }
+    return fs.setReadOnly(this);
+}

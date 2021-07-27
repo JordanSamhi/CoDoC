@@ -1,0 +1,47 @@
+
+         * Generates a new customized Language Priority List using the given
+         * {@code priorityList} and {@code map}. If the given {@code map} is
+         * empty, this method returns a copy of the given {@code priorityList}.
+         *
+         * <p>In the map, a key represents a language range whereas a value is
+         * a list of equivalents of it. {@code '*'} cannot be used in the map.
+         * Each equivalent language range has the same weight value as its
+         * original language range.
+         *
+         * <pre>
+         *  An example of map:
+         *    <b>Key</b>                            <b>Value</b>
+         *      "zh" (Chinese)                 "zh",
+         *                                     "zh-Hans"(Simplified Chinese)
+         *      "zh-HK" (Chinese, Hong Kong)   "zh-HK"
+         *      "zh-TW" (Chinese, Taiwan)      "zh-TW"
+         * </pre>
+         *
+         * The customization is performed after modification using the IANA
+         * Language Subtag Registry.
+         *
+         * <p>For example, if a user's Language Priority List consists of five
+         * language ranges ({@code "zh"}, {@code "zh-CN"}, {@code "en"},
+         * {@code "zh-TW"}, and {@code "zh-HK"}), the newly generated Language
+         * Priority List which is customized using the above map example will
+         * consists of {@code "zh"}, {@code "zh-Hans"}, {@code "zh-CN"},
+         * {@code "zh-Hans-CN"}, {@code "en"}, {@code "zh-TW"}, and
+         * {@code "zh-HK"}.
+         *
+         * <p>{@code "zh-HK"} and {@code "zh-TW"} aren't converted to
+         * {@code "zh-Hans-HK"} nor {@code "zh-Hans-TW"} even if they are
+         * included in the Language Priority List. In this example, mapping
+         * is used to clearly distinguish Simplified Chinese and Traditional
+         * Chinese.
+         *
+         * <p>If the {@code "zh"}-to-{@code "zh"} mapping isn't included in the
+         * map, a simple replacement will be performed and the customized list
+         * won't include {@code "zh"} and {@code "zh-CN"}.
+         *
+         * @param priorityList user's Language Priority List
+         * @param map a map containing information to customize language ranges
+         * @return a new Language Priority List with customization. The list is
+         *     modifiable.
+         * @throws NullPointerException if {@code priorityList} is {@code null}
+         * @see #parse(String, Map)
+         

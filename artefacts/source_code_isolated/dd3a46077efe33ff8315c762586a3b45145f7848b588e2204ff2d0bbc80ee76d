@@ -1,0 +1,9 @@
+public boolean getPadding(Rect padding){
+    final boolean pad = super.getPadding(padding);
+    getInsets(mTmpInsetRect);
+    padding.left += mTmpInsetRect.left;
+    padding.right += mTmpInsetRect.right;
+    padding.top += mTmpInsetRect.top;
+    padding.bottom += mTmpInsetRect.bottom;
+    return pad || (mTmpInsetRect.left | mTmpInsetRect.right | mTmpInsetRect.top | mTmpInsetRect.bottom) != 0;
+}

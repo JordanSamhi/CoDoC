@@ -1,0 +1,16 @@
+public Object clone(){
+    try {
+        X509CertSelector copy = (X509CertSelector) super.clone();
+        if (subjectAlternativeNames != null) {
+            copy.subjectAlternativeNames = cloneSet(subjectAlternativeNames);
+            copy.subjectAlternativeGeneralNames = cloneSet(subjectAlternativeGeneralNames);
+        }
+        if (pathToGeneralNames != null) {
+            copy.pathToNames = cloneSet(pathToNames);
+            copy.pathToGeneralNames = cloneSet(pathToGeneralNames);
+        }
+        return copy;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e.toString(), e);
+    }
+}

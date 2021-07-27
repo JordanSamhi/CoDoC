@@ -1,0 +1,17 @@
+public Temporal subtractFrom(Temporal temporal){
+    validateChrono(temporal);
+    if (months == 0) {
+        if (years != 0) {
+            temporal = temporal.minus(years, YEARS);
+        }
+    } else {
+        long totalMonths = toTotalMonths();
+        if (totalMonths != 0) {
+            temporal = temporal.minus(totalMonths, MONTHS);
+        }
+    }
+    if (days != 0) {
+        temporal = temporal.minus(days, DAYS);
+    }
+    return temporal;
+}

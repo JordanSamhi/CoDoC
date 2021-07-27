@@ -1,0 +1,15 @@
+public void autofill(AutofillValue value){
+    if (!isEnabled())
+        return;
+    if (!value.isList()) {
+        Log.w(LOG_TAG, value + " could not be autofilled into " + this);
+        return;
+    }
+    final int index = value.getListValue();
+    final View child = getChildAt(index);
+    if (child == null) {
+        Log.w(VIEW_LOG_TAG, "RadioGroup.autoFill(): no child with index " + index);
+        return;
+    }
+    check(child.getId());
+}

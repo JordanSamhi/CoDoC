@@ -1,8 +1,0 @@
-public void testAdbBackup_onUnknownUser_doesNotPropagateCall() throws Exception{
-    BackupManagerService backupManagerService = createSystemRegisteredService();
-    registerUser(backupManagerService, mUserOneId, mUserOneService);
-    ParcelFileDescriptor parcelFileDescriptor = getFileDescriptorForAdbTest();
-    setCallerAndGrantInteractUserPermission(mUserTwoId, false);
-    backupManagerService.adbBackup(mUserTwoId, parcelFileDescriptor, true, true, true, true, true, true, true, true, ADB_TEST_PACKAGES);
-    verify(mUserOneService, never()).adbBackup(parcelFileDescriptor, true, true, true, true, true, true, true, true, ADB_TEST_PACKAGES);
-}

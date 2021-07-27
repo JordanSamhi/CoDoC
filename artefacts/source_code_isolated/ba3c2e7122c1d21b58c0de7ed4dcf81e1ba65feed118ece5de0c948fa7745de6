@@ -1,0 +1,13 @@
+public boolean addAll(Collection<? extends E> c){
+    if (m.size() == 0 && c.size() > 0 && c instanceof SortedSet && m instanceof TreeMap) {
+        SortedSet<? extends E> set = (SortedSet<? extends E>) c;
+        TreeMap<E, Object> map = (TreeMap<E, Object>) m;
+        Comparator<?> cc = set.comparator();
+        Comparator<? super E> mc = map.comparator();
+        if (cc == mc || (cc != null && cc.equals(mc))) {
+            map.addAllForTreeSet(set, PRESENT);
+            return true;
+        }
+    }
+    return super.addAll(c);
+}

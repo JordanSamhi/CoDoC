@@ -1,0 +1,10 @@
+public void onInitializeAccessibilityEvent(AccessibilityEvent event){
+    super.onInitializeAccessibilityEvent(event);
+    event.setClassName(ViewPager.class.getName());
+    event.setScrollable(canScroll());
+    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED && mAdapter != null) {
+        event.setItemCount(mAdapter.getCount());
+        event.setFromIndex(mCurItem);
+        event.setToIndex(mCurItem);
+    }
+}

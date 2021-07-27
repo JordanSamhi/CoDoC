@@ -1,0 +1,25 @@
+
+     * Implement this to initialize your content provider on startup.
+     * This method is called for all registered content providers on the
+     * application main thread at application launch time.  It must not perform
+     * lengthy operations, or application startup will be delayed.
+     *
+     * <p>You should defer nontrivial initialization (such as opening,
+     * upgrading, and scanning databases) until the content provider is used
+     * (via {@link #query}, {@link #insert}, etc).  Deferred initialization
+     * keeps application startup fast, avoids unnecessary work if the provider
+     * turns out not to be needed, and stops database errors (such as a full
+     * disk) from halting application launch.
+     *
+     * <p>If you use SQLite, {@link android.database.sqlite.SQLiteOpenHelper}
+     * is a helpful utility class that makes it easy to manage databases,
+     * and will automatically defer opening until first use.  If you do use
+     * SQLiteOpenHelper, make sure to avoid calling
+     * {@link android.database.sqlite.SQLiteOpenHelper#getReadableDatabase} or
+     * {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase}
+     * from this method.  (Instead, override
+     * {@link android.database.sqlite.SQLiteOpenHelper#onOpen} to initialize the
+     * database when it is first opened.)
+     *
+     * @return true if the provider was successfully loaded, false otherwise
+     

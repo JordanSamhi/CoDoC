@@ -1,0 +1,8 @@
+public Locale build(){
+    BaseLocale baseloc = localeBuilder.getBaseLocale();
+    LocaleExtensions extensions = localeBuilder.getLocaleExtensions();
+    if (extensions == null && baseloc.getVariant().length() > 0) {
+        extensions = getCompatibilityExtensions(baseloc.getLanguage(), baseloc.getScript(), baseloc.getRegion(), baseloc.getVariant());
+    }
+    return Locale.getInstance(baseloc, extensions);
+}

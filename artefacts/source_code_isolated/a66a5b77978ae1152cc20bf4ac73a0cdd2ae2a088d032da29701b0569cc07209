@@ -1,0 +1,13 @@
+public LocalTime plusMinutes(long minutesToAdd){
+    if (minutesToAdd == 0) {
+        return this;
+    }
+    int mofd = hour * MINUTES_PER_HOUR + minute;
+    int newMofd = ((int) (minutesToAdd % MINUTES_PER_DAY) + mofd + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+    if (mofd == newMofd) {
+        return this;
+    }
+    int newHour = newMofd / MINUTES_PER_HOUR;
+    int newMinute = newMofd % MINUTES_PER_HOUR;
+    return create(newHour, newMinute, second, nano);
+}

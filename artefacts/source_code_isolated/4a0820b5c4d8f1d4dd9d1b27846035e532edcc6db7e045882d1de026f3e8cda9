@@ -1,0 +1,17 @@
+public String readLine(String fmt, Object... args){
+    String line = null;
+    synchronized (writeLock) {
+        synchronized (readLock) {
+            if (fmt.length() != 0)
+                pw.format(fmt, args);
+            try {
+                char[] ca = readline(false);
+                if (ca != null)
+                    line = new String(ca);
+            } catch (IOException x) {
+                throw new IOError(x);
+            }
+        }
+    }
+    return line;
+}

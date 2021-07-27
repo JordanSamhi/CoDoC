@@ -1,0 +1,41 @@
+public void handleStartActivity(IBinder token, PendingTransactionActions pendingActions){
+    final ActivityClientRecord r = mActivities.get(token);
+    final Activity activity = r.activity;
+    if (r.activity == null) {
+        return;
+    }
+    if (!r.stopped) {
+        throw new IllegalStateException("Can't start activity that is not stopped.");
+    }
+    if (r.activity.mFinished) {
+        return;
+    }
+    unscheduleGcIdler();
+    activity.performStart("handleStartActivity");
+    r.setState(ON_START);
+    if (pendingActions == null) {
+        return;
+    }
+    if (pendingActions.shouldRestoreInstanceState()) {
+        if (r.isPersistable()) {
+            if (r.state != null || r.persistentState != null) {
+                mInstrumentation.callActivityOnRestoreInstanceState(activity, r.state, r.persistentState);
+            }
+        } else if (r.state != null) {
+            mInstrumentation.callActivityOnRestoreInstanceState(activity, r.state);
+        }
+    }
+    if (pendingActions.shouldCallOnPostCreate()) {
+        activity.mCalled = false;
+        if (r.isPersistable()) {
+            mInstrumentation.callActivityOnPostCreate(activity, r.state, r.persistentState);
+        } else {
+            mInstrumentation.callActivityOnPostCreate(activity, r.state);
+        }
+        if (!activity.mCalled) {
+            throw new SuperNotCalledException("Activity " + r.intent.getComponent().toShortString() + " did not call through to super.onPostCreate()");
+        }
+    }
+    updateVisibility(r, true);
+    mSomeActivitiesChanged = true;
+}

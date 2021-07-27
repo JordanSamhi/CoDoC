@@ -1,0 +1,9 @@
+public void inflate(@NonNull Resources r, @NonNull XmlPullParser parser, @NonNull AttributeSet attrs, @Nullable Theme theme) throws XmlPullParserException, IOException{
+    super.inflate(r, parser, attrs, theme);
+    mGradientState.setDensity(Drawable.resolveDensity(r, 0));
+    final TypedArray a = obtainAttributes(r, theme, attrs, R.styleable.GradientDrawable);
+    updateStateFromTypedArray(a);
+    a.recycle();
+    inflateChildElements(r, parser, attrs, theme);
+    updateLocalState(r);
+}

@@ -1,0 +1,14 @@
+public void hide(long duration){
+    if (duration == ActionMode.DEFAULT_HIDE_DURATION) {
+        duration = ViewConfiguration.getDefaultActionModeHideDuration();
+    }
+    duration = Math.min(MAX_HIDE_DURATION, duration);
+    mOriginatingView.removeCallbacks(mHideOff);
+    if (duration <= 0) {
+        mHideOff.run();
+    } else {
+        mFloatingToolbarVisibilityHelper.setHideRequested(true);
+        mFloatingToolbarVisibilityHelper.updateToolbarVisibility();
+        mOriginatingView.postDelayed(mHideOff, duration);
+    }
+}

@@ -1,0 +1,10 @@
+public static int codePointBefore(CharSequence seq, int index){
+    char c2 = seq.charAt(--index);
+    if (isLowSurrogate(c2) && index > 0) {
+        char c1 = seq.charAt(--index);
+        if (isHighSurrogate(c1)) {
+            return toCodePoint(c1, c2);
+        }
+    }
+    return c2;
+}

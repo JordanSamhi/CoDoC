@@ -1,0 +1,81 @@
+public boolean match(CRL crl){
+    if (!(crl instanceof X509CRL)) {
+        return false;
+    }
+    X509CRL xcrl = (X509CRL) crl;
+    if (issuerNames != null) {
+        X500Principal issuer = xcrl.getIssuerX500Principal();
+        Iterator<X500Principal> i = issuerX500Principals.iterator();
+        boolean found = false;
+        while (!found && i.hasNext()) {
+            if (i.next().equals(issuer)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            if (debug != null) {
+                debug.println("X509CRLSelector.match: issuer DNs " + "don't match");
+            }
+            return false;
+        }
+    }
+    if ((minCRL != null) || (maxCRL != null)) {
+        byte[] crlNumExtVal = xcrl.getExtensionValue("2.5.29.20");
+        if (crlNumExtVal == null) {
+            if (debug != null) {
+                debug.println("X509CRLSelector.match: no CRLNumber");
+            }
+        }
+        BigInteger crlNum;
+        try {
+            DerInputStream in = new DerInputStream(crlNumExtVal);
+            byte[] encoded = in.getOctetString();
+            CRLNumberExtension crlNumExt = new CRLNumberExtension(Boolean.FALSE, encoded);
+            crlNum = crlNumExt.get(CRLNumberExtension.NUMBER);
+        } catch (IOException ex) {
+            if (debug != null) {
+                debug.println("X509CRLSelector.match: exception in " + "decoding CRL number");
+            }
+            return false;
+        }
+        if (minCRL != null) {
+            if (crlNum.compareTo(minCRL) < 0) {
+                if (debug != null) {
+                    debug.println("X509CRLSelector.match: CRLNumber too small");
+                }
+                return false;
+            }
+        }
+        if (maxCRL != null) {
+            if (crlNum.compareTo(maxCRL) > 0) {
+                if (debug != null) {
+                    debug.println("X509CRLSelector.match: CRLNumber too large");
+                }
+                return false;
+            }
+        }
+    }
+    if (dateAndTime != null) {
+        Date crlThisUpdate = xcrl.getThisUpdate();
+        Date nextUpdate = xcrl.getNextUpdate();
+        if (nextUpdate == null) {
+            if (debug != null) {
+                debug.println("X509CRLSelector.match: nextUpdate null");
+            }
+            return false;
+        }
+        Date nowPlusSkew = dateAndTime;
+        Date nowMinusSkew = dateAndTime;
+        if (skew > 0) {
+            nowPlusSkew = new Date(dateAndTime.getTime() + skew);
+            nowMinusSkew = new Date(dateAndTime.getTime() - skew);
+        }
+        if (nowMinusSkew.after(nextUpdate) || nowPlusSkew.before(crlThisUpdate)) {
+            if (debug != null) {
+                debug.println("X509CRLSelector.match: update out-of-range");
+            }
+            return false;
+        }
+    }
+    return true;
+}

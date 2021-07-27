@@ -1,0 +1,7 @@
+public LongStream longs(long streamSize, long randomNumberOrigin, long randomNumberBound){
+    if (streamSize < 0L)
+        throw new IllegalArgumentException(BadSize);
+    if (randomNumberOrigin >= randomNumberBound)
+        throw new IllegalArgumentException(BadRange);
+    return StreamSupport.longStream(new RandomLongsSpliterator(this, 0L, streamSize, randomNumberOrigin, randomNumberBound), false);
+}

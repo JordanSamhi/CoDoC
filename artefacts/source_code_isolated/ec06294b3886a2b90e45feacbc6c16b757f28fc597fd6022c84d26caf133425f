@@ -1,0 +1,12 @@
+public AttributedCharacterIterator formatToCharacterIterator(Object arguments){
+    StringBuffer result = new StringBuffer();
+    ArrayList<AttributedCharacterIterator> iterators = new ArrayList<>();
+    if (arguments == null) {
+        throw new NullPointerException("formatToCharacterIterator must be passed non-null object");
+    }
+    subformat((Object[]) arguments, result, null, iterators);
+    if (iterators.size() == 0) {
+        return createAttributedCharacterIterator("");
+    }
+    return createAttributedCharacterIterator(iterators.toArray(new AttributedCharacterIterator[iterators.size()]));
+}

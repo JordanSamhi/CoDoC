@@ -1,0 +1,8 @@
+public int getIntrinsicWidth(){
+    final int childWidth = getDrawable().getIntrinsicWidth();
+    final float fraction = mState.mInsetLeft.mFraction + mState.mInsetRight.mFraction;
+    if (childWidth < 0 || fraction >= 1) {
+        return -1;
+    }
+    return (int) (childWidth / (1 - fraction)) + mState.mInsetLeft.mDimension + mState.mInsetRight.mDimension;
+}

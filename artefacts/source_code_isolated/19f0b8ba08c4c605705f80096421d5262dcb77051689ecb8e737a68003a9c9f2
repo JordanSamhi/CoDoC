@@ -1,2 +1,6 @@
-public void onImsCallDisconnectCauseChanged(@NonNull ImsReasonInfo imsReasonInfo){
+public void onImsCallDisconnectCauseChanged(ImsReasonInfo disconnectCause){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onImsCallDisconnectCauseChanged(disconnectCause)));
 }

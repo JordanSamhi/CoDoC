@@ -1,2 +1,7 @@
-public void onNotificationExpansionChanged(@NonNull String key, boolean isUserAction, boolean isExpanded){
+public void onNotificationExpansionChanged(String key, boolean isUserAction, boolean isExpanded){
+    SomeArgs args = SomeArgs.obtain();
+    args.arg1 = key;
+    args.argi1 = isUserAction ? 1 : 0;
+    args.argi2 = isExpanded ? 1 : 0;
+    mHandler.obtainMessage(MyHandler.MSG_ON_NOTIFICATION_EXPANSION_CHANGED, args).sendToTarget();
 }

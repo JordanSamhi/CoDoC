@@ -1,0 +1,13 @@
+public boolean hasNextInt(int radix){
+    setRadix(radix);
+    boolean result = hasNext(integerPattern());
+    if (result) {
+        try {
+            String s = (matcher.group(SIMPLE_GROUP_INDEX) == null) ? processIntegerToken(hasNextResult) : hasNextResult;
+            typeCache = Integer.parseInt(s, radix);
+        } catch (NumberFormatException nfe) {
+            result = false;
+        }
+    }
+    return result;
+}

@@ -1,0 +1,7 @@
+public static ReadableByteChannel newChannel(final InputStream in){
+    checkNotNull(in, "in");
+    if (in instanceof FileInputStream && FileInputStream.class.equals(in.getClass())) {
+        return ((FileInputStream) in).getChannel();
+    }
+    return new ReadableByteChannelImpl(in);
+}

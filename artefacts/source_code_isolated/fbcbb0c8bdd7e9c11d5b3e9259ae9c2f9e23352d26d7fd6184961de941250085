@@ -1,0 +1,12 @@
+public boolean matches(AppInstallMetadata appInstallMetadata){
+    switch(getConnector()) {
+        case NOT:
+            return !getFormulas().get(0).matches(appInstallMetadata);
+        case AND:
+            return getFormulas().stream().allMatch(formula -> formula.matches(appInstallMetadata));
+        case OR:
+            return getFormulas().stream().anyMatch(formula -> formula.matches(appInstallMetadata));
+        default:
+            throw new IllegalArgumentException("Unknown connector " + getConnector());
+    }
+}

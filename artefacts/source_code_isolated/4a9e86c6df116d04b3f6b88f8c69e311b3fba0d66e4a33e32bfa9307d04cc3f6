@@ -1,2 +1,6 @@
-public void onPreciseDataConnectionStateChanged(@NonNull PreciseDataConnectionState dataConnectionState){
+public void onPreciseDataConnectionStateChanged(PreciseDataConnectionState dataConnectionState){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onPreciseDataConnectionStateChanged(dataConnectionState)));
 }

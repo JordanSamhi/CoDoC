@@ -1,0 +1,11 @@
+public ZoneOffset getStandardOffset(Instant instant){
+    if (savingsInstantTransitions.length == 0) {
+        return standardOffsets[0];
+    }
+    long epochSec = instant.getEpochSecond();
+    int index = Arrays.binarySearch(standardTransitions, epochSec);
+    if (index < 0) {
+        index = -index - 2;
+    }
+    return standardOffsets[index + 1];
+}

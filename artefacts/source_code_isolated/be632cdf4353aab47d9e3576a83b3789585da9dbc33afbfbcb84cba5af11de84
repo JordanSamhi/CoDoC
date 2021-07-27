@@ -1,0 +1,8 @@
+public void write(int c) throws IOException{
+    synchronized (lock) {
+        ensureOpen();
+        if (nextChar >= nChars)
+            flushBuffer();
+        cb[nextChar++] = (char) c;
+    }
+}

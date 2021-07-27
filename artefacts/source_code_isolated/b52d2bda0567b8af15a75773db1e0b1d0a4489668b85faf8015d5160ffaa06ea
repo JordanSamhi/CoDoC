@@ -1,0 +1,8 @@
+public void onInputStateChanged(String inputId, int state){
+    synchronized (mLock) {
+        mStateMap.put(inputId, state);
+        for (TvInputCallbackRecord record : mCallbackRecords) {
+            record.postInputStateChanged(inputId, state);
+        }
+    }
+}

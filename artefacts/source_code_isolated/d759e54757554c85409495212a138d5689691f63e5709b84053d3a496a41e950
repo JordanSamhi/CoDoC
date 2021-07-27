@@ -1,0 +1,27 @@
+public synchronized void bind(SocketAddress addr) throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    if (isBound())
+        throw new SocketException("already bound");
+    if (addr == null)
+        addr = new InetSocketAddress(0);
+    if (!(addr instanceof InetSocketAddress))
+        throw new IllegalArgumentException("Unsupported address type!");
+    InetSocketAddress epoint = (InetSocketAddress) addr;
+    if (epoint.isUnresolved())
+        throw new SocketException("Unresolved address");
+    InetAddress iaddr = epoint.getAddress();
+    int port = epoint.getPort();
+    checkAddress(iaddr, "bind");
+    SecurityManager sec = System.getSecurityManager();
+    if (sec != null) {
+        sec.checkListen(port);
+    }
+    try {
+        getImpl().bind(port, iaddr);
+    } catch (SocketException e) {
+        getImpl().close();
+        throw e;
+    }
+    bound = true;
+}

@@ -1,0 +1,41 @@
+public BigDecimal divide(BigDecimal divisor, MathContext mc){
+    long trailingZeros = mc.getPrecision() + 2L + divisor.approxPrecision() - approxPrecision();
+    long diffScale = (long) scale - divisor.scale;
+    long newScale = diffScale;
+    int compRem;
+    int i = 1;
+    int lastPow = TEN_POW.length - 1;
+    BigInteger integerQuot;
+    BigInteger[] quotAndRem = { getUnscaledValue() };
+    if ((mc.getPrecision() == 0) || (this.isZero()) || (divisor.isZero())) {
+        return this.divide(divisor);
+    }
+    if (trailingZeros > 0) {
+        quotAndRem[0] = getUnscaledValue().multiply(Multiplication.powerOf10(trailingZeros));
+        newScale += trailingZeros;
+    }
+    quotAndRem = quotAndRem[0].divideAndRemainder(divisor.getUnscaledValue());
+    integerQuot = quotAndRem[0];
+    if (quotAndRem[1].signum() != 0) {
+        compRem = quotAndRem[1].shiftLeftOneBit().compareTo(divisor.getUnscaledValue());
+        integerQuot = integerQuot.multiply(BigInteger.TEN).add(BigInteger.valueOf(quotAndRem[0].signum() * (5 + compRem)));
+        newScale++;
+    } else {
+        while (!integerQuot.testBit(0)) {
+            quotAndRem = integerQuot.divideAndRemainder(TEN_POW[i]);
+            if ((quotAndRem[1].signum() == 0) && (newScale - i >= diffScale)) {
+                newScale -= i;
+                if (i < lastPow) {
+                    i++;
+                }
+                integerQuot = quotAndRem[0];
+            } else {
+                if (i == 1) {
+                    break;
+                }
+                i = 1;
+            }
+        }
+    }
+    return new BigDecimal(integerQuot, safeLongToInt(newScale), mc);
+}

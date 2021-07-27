@@ -1,0 +1,38 @@
+public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex){
+    final float x = event.getX(pointerIndex);
+    final float y = event.getY(pointerIndex);
+    if (isOnScrollbarThumb(x, y) || isDraggingScrollBar()) {
+        return PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_ARROW);
+    }
+    final int childrenCount = mChildrenCount;
+    if (childrenCount != 0) {
+        final ArrayList<View> preorderedList = buildOrderedChildList();
+        final boolean customOrder = preorderedList == null && isChildrenDrawingOrderEnabled();
+        final View[] children = mChildren;
+        for (int i = childrenCount - 1; i >= 0; i--) {
+            final int childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);
+            final View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);
+            View childWithAccessibilityFocus = event.isTargetAccessibilityFocus() ? findChildWithAccessibilityFocus() : null;
+            if (!child.canReceivePointerEvents() || !isTransformedTouchPointInView(x, y, child, null)) {
+                if (childWithAccessibilityFocus != null) {
+                    if (childWithAccessibilityFocus != child) {
+                        continue;
+                    }
+                    childWithAccessibilityFocus = null;
+                    i = childrenCount - 1;
+                }
+                event.setTargetAccessibilityFocus(false);
+                continue;
+            }
+            final PointerIcon pointerIcon = dispatchResolvePointerIcon(event, pointerIndex, child);
+            if (pointerIcon != null) {
+                if (preorderedList != null)
+                    preorderedList.clear();
+                return pointerIcon;
+            }
+        }
+        if (preorderedList != null)
+            preorderedList.clear();
+    }
+    return super.onResolvePointerIcon(event, pointerIndex);
+}

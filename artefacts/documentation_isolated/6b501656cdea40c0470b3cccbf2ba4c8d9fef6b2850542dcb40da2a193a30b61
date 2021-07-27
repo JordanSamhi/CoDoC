@@ -1,0 +1,26 @@
+
+     * Sorts the specified array into ascending numerical order.
+     *
+     * <p>The {@code <} relation does not provide a total order on all float
+     * values: {@code -0.0f == 0.0f} is {@code true} and a {@code Float.NaN}
+     * value compares neither less than, greater than, nor equal to any value,
+     * even itself. This method uses the total order imposed by the method
+     * {@link Float#compareTo}: {@code -0.0f} is treated as less than value
+     * {@code 0.0f} and {@code Float.NaN} is considered greater than any
+     * other value and all {@code Float.NaN} values are considered equal.
+     *
+     * @implNote The sorting algorithm is a parallel sort-merge that breaks the
+     * array into sub-arrays that are themselves sorted and then merged. When
+     * the sub-array length reaches a minimum granularity, the sub-array is
+     * sorted using the appropriate {@link Arrays#sort(float[]) Arrays.sort}
+     * method. If the length of the specified array is less than the minimum
+     * granularity, then it is sorted using the appropriate {@link
+     * Arrays#sort(float[]) Arrays.sort} method. The algorithm requires a
+     * working space no greater than the size of the original array. The
+     * {@link ForkJoinPool#commonPool() ForkJoin common pool} is used to
+     * execute any parallel tasks.
+     *
+     * @param a the array to be sorted
+     *
+     * @since 1.8
+     

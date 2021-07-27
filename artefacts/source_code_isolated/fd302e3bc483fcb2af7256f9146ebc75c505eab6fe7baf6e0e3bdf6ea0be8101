@@ -1,0 +1,12 @@
+public Object[] toArray(){
+    fullyLock();
+    try {
+        int size = count.get();
+        Object[] a = new Object[size];
+        int k = 0;
+        for (Node<E> p = head.next; p != null; p = p.next) a[k++] = p.item;
+        return a;
+    } finally {
+        fullyUnlock();
+    }
+}

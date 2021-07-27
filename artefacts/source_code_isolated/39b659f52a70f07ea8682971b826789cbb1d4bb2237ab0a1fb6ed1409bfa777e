@@ -1,0 +1,20 @@
+public static MethodType genericMethodType(int objectArgCount, boolean finalArray){
+    MethodType mt;
+    checkSlotCount(objectArgCount);
+    int ivarargs = (!finalArray ? 0 : 1);
+    int ootIndex = objectArgCount * 2 + ivarargs;
+    if (ootIndex < objectOnlyTypes.length) {
+        mt = objectOnlyTypes[ootIndex];
+        if (mt != null)
+            return mt;
+    }
+    Class<?>[] ptypes = new Class<?>[objectArgCount + ivarargs];
+    Arrays.fill(ptypes, Object.class);
+    if (ivarargs != 0)
+        ptypes[objectArgCount] = Object[].class;
+    mt = makeImpl(Object.class, ptypes, true);
+    if (ootIndex < objectOnlyTypes.length) {
+        objectOnlyTypes[ootIndex] = mt;
+    }
+    return mt;
+}

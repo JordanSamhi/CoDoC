@@ -1,0 +1,40 @@
+public Enumeration<URL> findResources(final String name) throws IOException{
+    final Enumeration<URL> e = ucp.findResources(name, true);
+    return new Enumeration<URL>() {
+
+        private URL url = null;
+
+        private boolean next() {
+            if (url != null) {
+                return true;
+            }
+            do {
+                URL u = AccessController.doPrivileged(new PrivilegedAction<URL>() {
+
+                    public URL run() {
+                        if (!e.hasMoreElements())
+                            return null;
+                        return e.nextElement();
+                    }
+                }, acc);
+                if (u == null)
+                    break;
+                url = ucp.checkURL(u);
+            } while (url == null);
+            return url != null;
+        }
+
+        public URL nextElement() {
+            if (!next()) {
+                throw new NoSuchElementException();
+            }
+            URL u = url;
+            url = null;
+            return u;
+        }
+
+        public boolean hasMoreElements() {
+            return next();
+        }
+    };
+}

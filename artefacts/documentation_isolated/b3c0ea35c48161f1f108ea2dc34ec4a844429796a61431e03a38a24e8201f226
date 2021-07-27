@@ -1,0 +1,38 @@
+
+     * Updates the file owner.
+     *
+     * <p> The {@code path} parameter is associated with a file system that
+     * supports {@link FileOwnerAttributeView}. This file attribute view provides
+     * access to a file attribute that is the owner of the file.
+     *
+     * <p> <b>Usage Example:</b>
+     * Suppose we want to make "joe" the owner of a file:
+     * <pre>
+     *     Path path = ...
+     *     UserPrincipalLookupService lookupService =
+     *         provider(path).getUserPrincipalLookupService();
+     *     UserPrincipal joe = lookupService.lookupPrincipalByName("joe");
+     *     Files.setOwner(path, joe);
+     * </pre>
+     *
+     * @param   path
+     *          The path to the file
+     * @param   owner
+     *          The new file owner
+     *
+     * @return  The path
+     *
+     * @throws  UnsupportedOperationException
+     *          if the associated file system does not support the {@code
+     *          FileOwnerAttributeView}
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager is
+     *          installed, it denies {@link RuntimePermission}<tt>("accessUserInformation")</tt>
+     *          or its {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method denies write access to the file.
+     *
+     * @see FileSystem#getUserPrincipalLookupService
+     * @see java.nio.file.attribute.UserPrincipalLookupService
+     

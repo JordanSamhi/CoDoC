@@ -1,0 +1,10 @@
+public Object clone(){
+    try {
+        @SuppressWarnings("unchecked")
+        CopyOnWriteArrayList<E> clone = (CopyOnWriteArrayList<E>) super.clone();
+        clone.resetLock();
+        return clone;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError();
+    }
+}

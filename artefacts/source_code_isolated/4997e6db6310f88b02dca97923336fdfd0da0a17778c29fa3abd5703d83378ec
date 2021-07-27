@@ -1,3 +1,8 @@
-public Set<Set<String>> getConcurrentCameraIds() throws CameraAccessException{
-    return CameraManagerGlobal.get().getConcurrentCameraIds();
+public Set<Set<String>> getConcurrentCameraIds(){
+    Set<Set<String>> concurrentStreamingCameraIds = null;
+    synchronized (mLock) {
+        connectCameraServiceLocked();
+        concurrentStreamingCameraIds = extractConcurrentCameraIdListLocked();
+    }
+    return concurrentStreamingCameraIds;
 }

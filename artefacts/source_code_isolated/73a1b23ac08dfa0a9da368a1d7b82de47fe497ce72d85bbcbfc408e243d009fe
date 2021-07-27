@@ -1,0 +1,27 @@
+public void applyTheme(@NonNull Theme t){
+    super.applyTheme(t);
+    final LayerState state = mLayerState;
+    final int density = Drawable.resolveDensity(t.getResources(), 0);
+    state.setDensity(density);
+    if (state.mThemeAttrs != null) {
+        final TypedArray a = t.resolveAttributes(state.mThemeAttrs, R.styleable.LayerDrawable);
+        updateStateFromTypedArray(a);
+        a.recycle();
+    }
+    final ChildDrawable[] array = state.mChildren;
+    final int N = state.mNumChildren;
+    for (int i = 0; i < N; i++) {
+        final ChildDrawable layer = array[i];
+        layer.setDensity(density);
+        if (layer.mThemeAttrs != null) {
+            final TypedArray a = t.resolveAttributes(layer.mThemeAttrs, R.styleable.LayerDrawableItem);
+            updateLayerFromTypedArray(layer, a);
+            a.recycle();
+        }
+        final Drawable d = layer.mDrawable;
+        if (d != null && d.canApplyTheme()) {
+            d.applyTheme(t);
+            state.mChildrenChangingConfigurations |= d.getChangingConfigurations();
+        }
+    }
+}

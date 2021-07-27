@@ -1,0 +1,16 @@
+public void close() throws IOException{
+    try {
+        if (mInputStream != null) {
+            mInputStream.close();
+        }
+    } finally {
+        mInputStream = null;
+        try {
+            if (mCodec != null) {
+                mCodec.release();
+            }
+        } finally {
+            mCodec = null;
+        }
+    }
+}

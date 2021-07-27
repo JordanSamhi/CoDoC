@@ -1,0 +1,15 @@
+public static Uri getContactLookupUri(ContentResolver resolver, Uri dataUri){
+    final Cursor cursor = resolver.query(dataUri, new String[] { RawContacts.CONTACT_ID, Contacts.LOOKUP_KEY }, null, null, null);
+    Uri lookupUri = null;
+    try {
+        if (cursor != null && cursor.moveToFirst()) {
+            final long contactId = cursor.getLong(0);
+            final String lookupKey = cursor.getString(1);
+            return Contacts.getLookupUri(contactId, lookupKey);
+        }
+    } finally {
+        if (cursor != null)
+            cursor.close();
+    }
+    return lookupUri;
+}

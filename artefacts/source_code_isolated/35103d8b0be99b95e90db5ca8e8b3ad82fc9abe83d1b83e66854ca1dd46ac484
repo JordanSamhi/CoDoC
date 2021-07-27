@@ -1,0 +1,11 @@
+public void close(){
+    if (mIsImageValid) {
+        if (mBuffer != null) {
+            java.nio.NioUtils.freeDirectBuffer(mBuffer);
+        }
+        if (mBufferContext != 0) {
+            native_closeMediaImage(mBufferContext);
+        }
+        mIsImageValid = false;
+    }
+}

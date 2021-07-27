@@ -1,0 +1,24 @@
+public final void show(){
+    switch(mWindowState) {
+        case SoftInputWindowState.TOKEN_PENDING:
+            throw new IllegalStateException("Window token is not set yet.");
+        case SoftInputWindowState.TOKEN_SET:
+        case SoftInputWindowState.SHOWN_AT_LEAST_ONCE:
+            try {
+                super.show();
+                updateWindowState(SoftInputWindowState.SHOWN_AT_LEAST_ONCE);
+            } catch (WindowManager.BadTokenException e) {
+                Log.i(TAG, "Probably the IME window token is already invalidated." + " show() does nothing.");
+                updateWindowState(SoftInputWindowState.REJECTED_AT_LEAST_ONCE);
+            }
+            return;
+        case SoftInputWindowState.REJECTED_AT_LEAST_ONCE:
+            Log.i(TAG, "Not trying to call show() because it was already rejected once.");
+            return;
+        case SoftInputWindowState.DESTROYED:
+            Log.i(TAG, "Ignoring show() because the window is already destroyed.");
+            return;
+        default:
+            throw new IllegalStateException("Unexpected state=" + mWindowState);
+    }
+}

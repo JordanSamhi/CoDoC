@@ -1,0 +1,20 @@
+public boolean animateMove(final ViewHolder holder, int fromX, int fromY, int toX, int toY){
+    final View view = holder.itemView;
+    fromX += holder.itemView.getTranslationX();
+    fromY += holder.itemView.getTranslationY();
+    resetAnimation(holder);
+    int deltaX = toX - fromX;
+    int deltaY = toY - fromY;
+    if (deltaX == 0 && deltaY == 0) {
+        dispatchMoveFinished(holder);
+        return false;
+    }
+    if (deltaX != 0) {
+        view.setTranslationX(-deltaX);
+    }
+    if (deltaY != 0) {
+        view.setTranslationY(-deltaY);
+    }
+    mPendingMoves.add(new MoveInfo(holder, fromX, fromY, toX, toY));
+    return true;
+}

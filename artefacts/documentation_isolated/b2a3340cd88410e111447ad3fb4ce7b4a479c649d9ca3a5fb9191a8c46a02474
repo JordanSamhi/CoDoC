@@ -1,0 +1,47 @@
+
+     * Attempts to parse this URI's authority component, if defined, into
+     * user-information, host, and port components.
+     *
+     * <p> If this URI's authority component has already been recognized as
+     * being server-based then it will already have been parsed into
+     * user-information, host, and port components.  In this case, or if this
+     * URI has no authority component, this method simply returns this URI.
+     *
+     * <p> Otherwise this method attempts once more to parse the authority
+     * component into user-information, host, and port components, and throws
+     * an exception describing why the authority component could not be parsed
+     * in that way.
+     *
+     * <p> This method is provided because the generic URI syntax specified in
+     * <a href="http://www.ietf.org/rfc/rfc2396.txt">RFC&nbsp;2396</a>
+     * cannot always distinguish a malformed server-based authority from a
+     * legitimate registry-based authority.  It must therefore treat some
+     * instances of the former as instances of the latter.  The authority
+     * component in the URI string {@code "//foo:bar"}, for example, is not a
+     * legal server-based authority but it is legal as a registry-based
+     * authority.
+     *
+     * <p> In many common situations, for example when working URIs that are
+     * known to be either URNs or URLs, the hierarchical URIs being used will
+     * always be server-based.  They therefore must either be parsed as such or
+     * treated as an error.  In these cases a statement such as
+     *
+     * <blockquote>
+     * {@code URI }<i>u</i>{@code  = new URI(str).parseServerAuthority();}
+     * </blockquote>
+     *
+     * <p> can be used to ensure that <i>u</i> always refers to a URI that, if
+     * it has an authority component, has a server-based authority with proper
+     * user-information, host, and port components.  Invoking this method also
+     * ensures that if the authority could not be parsed in that way then an
+     * appropriate diagnostic message can be issued based upon the exception
+     * that is thrown. </p>
+     *
+     * @return  A URI whose authority field has been parsed
+     *          as a server-based authority
+     *
+     * @throws  URISyntaxException
+     *          If the authority component of this URI is defined
+     *          but cannot be parsed as a server-based authority
+     *          according to RFC&nbsp;2396
+     

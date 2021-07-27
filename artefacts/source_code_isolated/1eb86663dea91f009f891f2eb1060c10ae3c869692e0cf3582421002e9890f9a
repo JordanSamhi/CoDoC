@@ -1,0 +1,32 @@
+public void run(){
+    final byte[] temp = new byte[8192];
+    try {
+        while (IoBridge.read(mServer, temp, 0, MSG_LENGTH) == MSG_LENGTH) {
+            final int cmd = Memory.peekInt(temp, 0, ByteOrder.BIG_ENDIAN);
+            if (cmd == CMD_WRITE) {
+                int len = Memory.peekInt(temp, 4, ByteOrder.BIG_ENDIAN);
+                while (len > 0) {
+                    int n = IoBridge.read(mServer, temp, 0, Math.min(temp.length, len));
+                    if (n == -1) {
+                        throw new IOException("Unexpected EOF; still expected " + len + " bytes");
+                    }
+                    IoBridge.write(mTarget, temp, 0, n);
+                    len -= n;
+                }
+            } else if (cmd == CMD_FSYNC) {
+                Os.fsync(mTarget);
+                IoBridge.write(mServer, temp, 0, MSG_LENGTH);
+            } else if (cmd == CMD_CLOSE) {
+                Os.fsync(mTarget);
+                Os.close(mTarget);
+                mClosed = true;
+                IoBridge.write(mServer, temp, 0, MSG_LENGTH);
+                break;
+            }
+        }
+    } catch (ErrnoException | IOException e) {
+        Log.wtf(TAG, "Failed during bridge", e);
+    } finally {
+        forceClose();
+    }
+}

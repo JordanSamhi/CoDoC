@@ -1,0 +1,32 @@
+
+     * Allows a package listening to the
+     * {@link Intent#ACTION_PACKAGE_NEEDS_VERIFICATION package verification
+     * broadcast} to extend the default timeout for a response and declare what
+     * action to perform after the timeout occurs. The response must include
+     * the {@code verificationCodeAtTimeout} which is one of
+     * {@link PackageManager#VERIFICATION_ALLOW} or
+     * {@link PackageManager#VERIFICATION_REJECT}.
+     *
+     * This method may only be called once per package id. Additional calls
+     * will have no effect.
+     *
+     * @param id pending package identifier as passed via the
+     *            {@link PackageManager#EXTRA_VERIFICATION_ID} Intent extra.
+     * @param verificationCodeAtTimeout either
+     *            {@link PackageManager#VERIFICATION_ALLOW} or
+     *            {@link PackageManager#VERIFICATION_REJECT}. If
+     *            {@code verificationCodeAtTimeout} is neither
+     *            {@link PackageManager#VERIFICATION_ALLOW} or
+     *            {@link PackageManager#VERIFICATION_REJECT}, then
+     *            {@code verificationCodeAtTimeout} will default to
+     *            {@link PackageManager#VERIFICATION_REJECT}.
+     * @param millisecondsToDelay the amount of time requested for the timeout.
+     *            Must be positive and less than
+     *            {@link PackageManager#MAXIMUM_VERIFICATION_TIMEOUT}. If
+     *            {@code millisecondsToDelay} is out of bounds,
+     *            {@code millisecondsToDelay} will be set to the closest in
+     *            bounds value; namely, 0 or
+     *            {@link PackageManager#MAXIMUM_VERIFICATION_TIMEOUT}.
+     * @throws SecurityException if the caller does not have the
+     *            PACKAGE_VERIFICATION_AGENT permission.
+     

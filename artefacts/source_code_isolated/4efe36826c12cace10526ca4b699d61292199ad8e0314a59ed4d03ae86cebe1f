@@ -1,0 +1,25 @@
+public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin){
+    if (dst == null) {
+        throw new NullPointerException("dst == null");
+    }
+    if (srcBegin < 0) {
+        throw new StringIndexOutOfBoundsException(this, srcBegin);
+    }
+    if (srcEnd > length()) {
+        throw new StringIndexOutOfBoundsException(this, srcEnd);
+    }
+    int n = srcEnd - srcBegin;
+    if (srcEnd < srcBegin) {
+        throw new StringIndexOutOfBoundsException(this, srcBegin, n);
+    }
+    if (dstBegin < 0) {
+        throw new ArrayIndexOutOfBoundsException("dstBegin < 0. dstBegin=" + dstBegin);
+    }
+    if (dstBegin > dst.length) {
+        throw new ArrayIndexOutOfBoundsException("dstBegin > dst.length. dstBegin=" + dstBegin + ", dst.length=" + dst.length);
+    }
+    if (n > dst.length - dstBegin) {
+        throw new ArrayIndexOutOfBoundsException("n > dst.length - dstBegin. n=" + n + ", dst.length=" + dst.length + "dstBegin=" + dstBegin);
+    }
+    getCharsNoCheck(srcBegin, srcEnd, dst, dstBegin);
+}

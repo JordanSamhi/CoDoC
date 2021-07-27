@@ -1,9 +1,0 @@
-public void stopNetworkScan(int scanId, int callingUid){
-    synchronized (mScheduler) {
-        if ((mScheduler.mLiveRequestInfo != null && scanId == mScheduler.mLiveRequestInfo.mScanId && callingUid == mScheduler.mLiveRequestInfo.mUid) || (mScheduler.mPendingRequestInfo != null && scanId == mScheduler.mPendingRequestInfo.mScanId && callingUid == mScheduler.mPendingRequestInfo.mUid)) {
-            mHandler.obtainMessage(CMD_STOP_NETWORK_SCAN, scanId, 0).sendToTarget();
-        } else {
-            throw new IllegalArgumentException("Scan with id: " + scanId + " does not exist!");
-        }
-    }
-}

@@ -1,0 +1,9 @@
+public void setMinimumFractionDigits(int newValue){
+    minimumFractionDigits = Math.min(Math.max(0, newValue), MAXIMUM_FRACTION_DIGITS);
+    super.setMinimumFractionDigits((minimumFractionDigits > DOUBLE_FRACTION_DIGITS) ? DOUBLE_FRACTION_DIGITS : minimumFractionDigits);
+    if (minimumFractionDigits > maximumFractionDigits) {
+        maximumFractionDigits = minimumFractionDigits;
+        super.setMaximumFractionDigits((maximumFractionDigits > DOUBLE_FRACTION_DIGITS) ? DOUBLE_FRACTION_DIGITS : maximumFractionDigits);
+    }
+    icuDecimalFormat.setMinimumFractionDigits(getMinimumFractionDigits());
+}

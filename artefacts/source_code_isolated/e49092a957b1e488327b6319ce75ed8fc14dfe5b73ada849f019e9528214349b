@@ -1,0 +1,10 @@
+public static final Cipher getInstance(String transformation, String provider) throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException{
+    if ((provider == null) || (provider.length() == 0)) {
+        throw new IllegalArgumentException("Missing provider");
+    }
+    Provider p = Security.getProvider(provider);
+    if (p == null) {
+        throw new NoSuchProviderException("No such provider: " + provider);
+    }
+    return getInstance(transformation, p);
+}

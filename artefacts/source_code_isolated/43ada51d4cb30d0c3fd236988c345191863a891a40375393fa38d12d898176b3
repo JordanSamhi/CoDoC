@@ -1,0 +1,20 @@
+public boolean equals(Object obj){
+    if (obj == null || (!(obj instanceof CodeSigner))) {
+        return false;
+    }
+    CodeSigner that = (CodeSigner) obj;
+    if (this == that) {
+        return true;
+    }
+    Timestamp thatTimestamp = that.getTimestamp();
+    if (timestamp == null) {
+        if (thatTimestamp != null) {
+            return false;
+        }
+    } else {
+        if (thatTimestamp == null || (!timestamp.equals(thatTimestamp))) {
+            return false;
+        }
+    }
+    return signerCertPath.equals(that.getSignerCertPath());
+}

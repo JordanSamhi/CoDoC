@@ -1,0 +1,29 @@
+public void draw(Canvas canvas){
+    super.draw(canvas);
+    if (shouldDisplayEdgeEffects()) {
+        final int scrollX = mScrollX;
+        if (!mEdgeGlowLeft.isFinished()) {
+            final int restoreCount = canvas.save();
+            final int height = getHeight() - mPaddingTop - mPaddingBottom;
+            canvas.rotate(270);
+            canvas.translate(-height + mPaddingTop, Math.min(0, scrollX));
+            mEdgeGlowLeft.setSize(height, getWidth());
+            if (mEdgeGlowLeft.draw(canvas)) {
+                postInvalidateOnAnimation();
+            }
+            canvas.restoreToCount(restoreCount);
+        }
+        if (!mEdgeGlowRight.isFinished()) {
+            final int restoreCount = canvas.save();
+            final int width = getWidth();
+            final int height = getHeight() - mPaddingTop - mPaddingBottom;
+            canvas.rotate(90);
+            canvas.translate(-mPaddingTop, -(Math.max(getScrollRange(), scrollX) + width));
+            mEdgeGlowRight.setSize(height, width);
+            if (mEdgeGlowRight.draw(canvas)) {
+                postInvalidateOnAnimation();
+            }
+            canvas.restoreToCount(restoreCount);
+        }
+    }
+}

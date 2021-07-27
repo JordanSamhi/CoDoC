@@ -1,0 +1,11 @@
+public int digest(byte[] buf, int offset, int len) throws DigestException{
+    if (buf == null) {
+        throw new IllegalArgumentException("No output buffer given");
+    }
+    if (buf.length - offset < len) {
+        throw new IllegalArgumentException("Output buffer too small for specified offset and length");
+    }
+    int numBytes = engineDigest(buf, offset, len);
+    state = INITIAL;
+    return numBytes;
+}

@@ -1,0 +1,45 @@
+
+     * Creates a symbolic link to a target <i>(optional operation)</i>.
+     *
+     * <p> The {@code target} parameter is the target of the link. It may be an
+     * {@link Path#isAbsolute absolute} or relative path and may not exist. When
+     * the target is a relative path then file system operations on the resulting
+     * link are relative to the path of the link.
+     *
+     * <p> The {@code attrs} parameter is optional {@link FileAttribute
+     * attributes} to set atomically when creating the link. Each attribute is
+     * identified by its {@link FileAttribute#name name}. If more than one attribute
+     * of the same name is included in the array then all but the last occurrence
+     * is ignored.
+     *
+     * <p> Where symbolic links are supported, but the underlying {@link FileStore}
+     * does not support symbolic links, then this may fail with an {@link
+     * IOException}. Additionally, some operating systems may require that the
+     * Java virtual machine be started with implementation specific privileges to
+     * create symbolic links, in which case this method may throw {@code IOException}.
+     *
+     * @param   link
+     *          the path of the symbolic link to create
+     * @param   target
+     *          the target of the symbolic link
+     * @param   attrs
+     *          the array of attributes to set atomically when creating the
+     *          symbolic link
+     *
+     * @return  the path to the symbolic link
+     *
+     * @throws  UnsupportedOperationException
+     *          if the implementation does not support symbolic links or the
+     *          array contains an attribute that cannot be set atomically when
+     *          creating the symbolic link
+     * @throws  FileAlreadyExistsException
+     *          if a file with the name already exists <i>(optional specific
+     *          exception)</i>
+     * @throws  IOException
+     *          if an I/O error occurs
+     * @throws  SecurityException
+     *          In the case of the default provider, and a security manager
+     *          is installed, it denies {@link LinkPermission}<tt>("symbolic")</tt>
+     *          or its {@link SecurityManager#checkWrite(String) checkWrite}
+     *          method denies write access to the path of the symbolic link.
+     

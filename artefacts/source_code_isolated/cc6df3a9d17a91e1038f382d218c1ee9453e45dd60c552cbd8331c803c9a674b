@@ -1,0 +1,11 @@
+public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit){
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    if (period <= 0L)
+        throw new IllegalArgumentException();
+    ScheduledFutureTask<Void> sft = new ScheduledFutureTask<Void>(command, null, triggerTime(initialDelay, unit), unit.toNanos(period), sequencer.getAndIncrement());
+    RunnableScheduledFuture<Void> t = decorateTask(command, sft);
+    sft.outerTask = t;
+    delayedExecute(t);
+    return t;
+}

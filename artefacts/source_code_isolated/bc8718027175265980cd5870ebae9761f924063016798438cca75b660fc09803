@@ -1,0 +1,12 @@
+public Object clone(){
+    if (!sizeIsSticky)
+        trimToSize();
+    try {
+        BitSet result = (BitSet) super.clone();
+        result.words = words.clone();
+        result.checkInvariants();
+        return result;
+    } catch (CloneNotSupportedException e) {
+        throw new InternalError(e);
+    }
+}

@@ -1,0 +1,20 @@
+public int read(byte[] buffer, int byteOffset, int byteCount) throws IOException{
+    synchronized (this.fd) {
+        final long length = endOffset - offset;
+        if (byteCount > length) {
+            byteCount = (int) length;
+        }
+        try {
+            Os.lseek(fd, offset, OsConstants.SEEK_SET);
+        } catch (ErrnoException e) {
+            throw new IOException(e);
+        }
+        int count = IoBridge.read(fd, buffer, byteOffset, byteCount);
+        if (count > 0) {
+            offset += count;
+            return count;
+        } else {
+            return -1;
+        }
+    }
+}

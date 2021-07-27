@@ -1,0 +1,12 @@
+public AutofillValue getAutofillValue(){
+    if (!isEnabled())
+        return null;
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+        final View child = getChildAt(i);
+        if (child.getId() == mCheckedId) {
+            return AutofillValue.forList(i);
+        }
+    }
+    return null;
+}

@@ -1,0 +1,45 @@
+
+     * Reads characters into a portion of an array.
+     *
+     * <p> This method implements the general contract of the corresponding
+     * <code>{@link Reader#read(char[], int, int) read}</code> method of the
+     * <code>{@link Reader}</code> class.  As an additional convenience, it
+     * attempts to read as many characters as possible by repeatedly invoking
+     * the <code>read</code> method of the underlying stream.  This iterated
+     * <code>read</code> continues until one of the following conditions becomes
+     * true: <ul>
+     *
+     *   <li> The specified number of characters have been read,
+     *
+     *   <li> The <code>read</code> method of the underlying stream returns
+     *   <code>-1</code>, indicating end-of-file, or
+     *
+     *   <li> The <code>ready</code> method of the underlying stream
+     *   returns <code>false</code>, indicating that further input requests
+     *   would block.
+     *
+     * </ul> If the first <code>read</code> on the underlying stream returns
+     * <code>-1</code> to indicate end-of-file then this method returns
+     * <code>-1</code>.  Otherwise this method returns the number of characters
+     * actually read.
+     *
+     * <p> Subclasses of this class are encouraged, but not required, to
+     * attempt to read as many characters as possible in the same fashion.
+     *
+     * <p> Ordinarily this method takes characters from this stream's character
+     * buffer, filling it from the underlying stream as necessary.  If,
+     * however, the buffer is empty, the mark is not valid, and the requested
+     * length is at least as large as the buffer, then this method will read
+     * characters directly from the underlying stream into the given array.
+     * Thus redundant <code>BufferedReader</code>s will not copy data
+     * unnecessarily.
+     *
+     * @param      cbuf  Destination buffer
+     * @param      off   Offset at which to start storing characters
+     * @param      len   Maximum number of characters to read
+     *
+     * @return     The number of characters read, or -1 if the end of the
+     *             stream has been reached
+     *
+     * @exception  IOException  If an I/O error occurs
+     

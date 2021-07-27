@@ -1,2 +1,6 @@
 public void onDataConnectionRealTimeInfoChanged(DataConnectionRealTimeInfo dcRtInfo){
+    PhoneStateListener psl = mPhoneStateListenerWeakRef.get();
+    if (psl == null)
+        return;
+    Binder.withCleanCallingIdentity(() -> mExecutor.execute(() -> psl.onDataConnectionRealTimeInfoChanged(dcRtInfo)));
 }

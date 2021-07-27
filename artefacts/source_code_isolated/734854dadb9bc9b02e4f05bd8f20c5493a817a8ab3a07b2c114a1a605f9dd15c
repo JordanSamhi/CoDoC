@@ -1,0 +1,20 @@
+public int read(char[] cbuf, int off, int len) throws IOException{
+    synchronized (lock) {
+        ensureOpen();
+        if ((off < 0) || (off > cbuf.length) || (len < 0) || ((off + len) > cbuf.length) || ((off + len) < 0)) {
+            throw new IndexOutOfBoundsException();
+        } else if (len == 0) {
+            return 0;
+        }
+        int n = read1(cbuf, off, len);
+        if (n <= 0)
+            return n;
+        while ((n < len) && in.ready()) {
+            int n1 = read1(cbuf, off + n, len - n);
+            if (n1 <= 0)
+                break;
+            n += n1;
+        }
+        return n;
+    }
+}

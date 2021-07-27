@@ -1,0 +1,27 @@
+
+     * Binds a value {@code x} to the first argument of a method handle, without invoking it.
+     * The new method handle adapts, as its <i>target</i>,
+     * the current method handle by binding it to the given argument.
+     * The type of the bound handle will be
+     * the same as the type of the target, except that a single leading
+     * reference parameter will be omitted.
+     * <p>
+     * When called, the bound handle inserts the given value {@code x}
+     * as a new leading argument to the target.  The other arguments are
+     * also passed unchanged.
+     * What the target eventually returns is returned unchanged by the bound handle.
+     * <p>
+     * The reference {@code x} must be convertible to the first parameter
+     * type of the target.
+     * <p>
+     * (<em>Note:</em>  Because method handles are immutable, the target method handle
+     * retains its original type and behavior.)
+     * @param x  the value to bind to the first argument of the target
+     * @return a new method handle which prepends the given value to the incoming
+     *         argument list, before calling the original method handle
+     * @throws IllegalArgumentException if the target does not have a
+     *         leading parameter type that is a reference type
+     * @throws ClassCastException if {@code x} cannot be converted
+     *         to the leading parameter type of the target
+     * @see MethodHandles#insertArguments
+     

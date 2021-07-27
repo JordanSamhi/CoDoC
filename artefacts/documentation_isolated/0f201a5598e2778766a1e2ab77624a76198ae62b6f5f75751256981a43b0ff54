@@ -1,0 +1,35 @@
+
+     * Returns a concurrent {@code Collector} implementing a cascaded "group by"
+     * operation on input elements of type {@code T}, grouping elements
+     * according to a classification function, and then performing a reduction
+     * operation on the values associated with a given key using the specified
+     * downstream {@code Collector}.
+     *
+     * <p>This is a {@link Collector.Characteristics#CONCURRENT concurrent} and
+     * {@link Collector.Characteristics#UNORDERED unordered} Collector.
+     *
+     * <p>The classification function maps elements to some key type {@code K}.
+     * The downstream collector operates on elements of type {@code T} and
+     * produces a result of type {@code D}. The resulting collector produces a
+     * {@code Map<K, D>}.
+     *
+     * <p>For example, to compute the set of last names of people in each city,
+     * where the city names are sorted:
+     * <pre>{@code
+     *     ConcurrentMap<City, Set<String>> namesByCity
+     *         = people.stream().collect(groupingByConcurrent(Person::getCity,
+     *                                                        mapping(Person::getLastName, toSet())));
+     * }</pre>
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the type of the keys
+     * @param <A> the intermediate accumulation type of the downstream collector
+     * @param <D> the result type of the downstream reduction
+     * @param classifier a classifier function mapping input elements to keys
+     * @param downstream a {@code Collector} implementing the downstream reduction
+     * @return a concurrent, unordered {@code Collector} implementing the cascaded group-by operation
+     *
+     * @see #groupingBy(Function, Collector)
+     * @see #groupingByConcurrent(Function)
+     * @see #groupingByConcurrent(Function, Supplier, Collector)
+     

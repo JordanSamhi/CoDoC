@@ -1,0 +1,8 @@
+public ZonedDateTime minus(TemporalAmount amountToSubtract){
+    if (amountToSubtract instanceof Period) {
+        Period periodToSubtract = (Period) amountToSubtract;
+        return resolveLocal(dateTime.minus(periodToSubtract));
+    }
+    Objects.requireNonNull(amountToSubtract, "amountToSubtract");
+    return (ZonedDateTime) amountToSubtract.subtractFrom(this);
+}

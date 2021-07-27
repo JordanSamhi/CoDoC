@@ -1,0 +1,34 @@
+public String toString(){
+    final StringBuilder sb = new StringBuilder("Icon(typ=").append(typeToString(mType));
+    switch(mType) {
+        case TYPE_BITMAP:
+        case TYPE_ADAPTIVE_BITMAP:
+            sb.append(" size=").append(getBitmap().getWidth()).append("x").append(getBitmap().getHeight());
+            break;
+        case TYPE_RESOURCE:
+            sb.append(" pkg=").append(getResPackage()).append(" id=").append(String.format("0x%08x", getResId()));
+            break;
+        case TYPE_DATA:
+            sb.append(" len=").append(getDataLength());
+            if (getDataOffset() != 0) {
+                sb.append(" off=").append(getDataOffset());
+            }
+            break;
+        case TYPE_URI:
+        case TYPE_URI_ADAPTIVE_BITMAP:
+            sb.append(" uri=").append(getUriString());
+            break;
+    }
+    if (mTintList != null) {
+        sb.append(" tint=");
+        String sep = "";
+        for (int c : mTintList.getColors()) {
+            sb.append(String.format("%s0x%08x", sep, c));
+            sep = "|";
+        }
+    }
+    if (mBlendMode != DEFAULT_BLEND_MODE)
+        sb.append(" mode=").append(mBlendMode);
+    sb.append(")");
+    return sb.toString();
+}

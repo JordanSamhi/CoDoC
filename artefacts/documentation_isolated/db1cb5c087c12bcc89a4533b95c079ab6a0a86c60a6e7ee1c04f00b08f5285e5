@@ -1,0 +1,52 @@
+
+     * Sets the default <code>HostnameVerifier</code> inherited by a
+     * new instance of this class.
+     * <p>
+     * Developers are <em>strongly</em> discouraged from changing the default
+     * {@code HostnameVerifier} as {@link #getDefaultHostnameVerifier()} is used by several
+     * classes for hostname verification on Android.
+     * <table>
+     *     <tr>
+     *         <th>User</th>
+     *         <th>Effect</th>
+     *     </tr>
+     *     <tr>
+     *         <td>Android's default {@link TrustManager}, as used with Android's default
+     *         {@link SSLContext}, {@link SSLSocketFactory} and {@link SSLSocket} implementations.
+     *         </td>
+     *         <td>The {@code HostnameVerifier} is used to verify the peer's
+     *         certificate hostname after connecting if {@code
+     *         SSLParameters.setEndpointIdentificationAlgorithm("HTTPS")} has been called.
+     *         Instances use the <em>current</em> default {@code HostnameVerifier} at verification
+     *         time.</td>
+     *     </tr>
+     *     <tr>
+     *         <td>{@link android.net.SSLCertificateSocketFactory}</td>
+     *         <td>The current default {@code HostnameVerifier} is used from various {@code
+     *         createSocket} methods. See {@link android.net.SSLCertificateSocketFactory} for
+     *         details; for example {@link
+     *         android.net.SSLCertificateSocketFactory#createSocket(String, int)}.
+     *         </td>
+     *     </tr>
+     *     <tr>
+     *         <td>Android's default {@link HttpsURLConnection} implementation.</td>
+     *         <td>The {@code HostnameVerifier} is used after a successful TLS handshake to verify
+     *         the URI host against the TLS session server. Instances use the default {@code
+     *         HostnameVerifier} set <em>when they were created</em> unless overridden with {@link
+     *         #setHostnameVerifier(HostnameVerifier)}.
+     *         Android's <code>HttpsURLConnection</code> relies on the {@code HostnameVerifier}
+     *         for the <em>entire</em> hostname verification step.</td>
+     *     </tr>
+     * </table>
+     * <p>
+     * If this method is not called, the default <code>HostnameVerifier</code> will check the
+     * hostname according to RFC 2818.
+     *
+     * @param v the default host name verifier
+     * @throws IllegalArgumentException if the <code>HostnameVerifier</code>
+     *          parameter is null.
+     * @throws SecurityException if a security manager exists and its
+     *         <code>checkPermission</code> method does not allow
+     *         <code>SSLPermission("setHostnameVerifier")</code>
+     * @see #getDefaultHostnameVerifier()
+     

@@ -1,0 +1,11 @@
+public void apply(int inputTexId, int width, int height, int outputTexId){
+    beginGLEffect();
+    Frame inputFrame = frameFromTexture(inputTexId, width, height);
+    Frame outputFrame = frameFromTexture(outputTexId, width, height);
+    Frame resultFrame = mFunction.executeWithArgList(mInputName, inputFrame);
+    outputFrame.setDataFromFrame(resultFrame);
+    inputFrame.release();
+    outputFrame.release();
+    resultFrame.release();
+    endGLEffect();
+}

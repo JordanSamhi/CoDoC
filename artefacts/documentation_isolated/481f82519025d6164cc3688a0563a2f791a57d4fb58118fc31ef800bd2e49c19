@@ -1,0 +1,34 @@
+
+     * Sorts the specified list according to the order induced by the
+     * specified comparator.  All elements in the list must be <i>mutually
+     * comparable</i> using the specified comparator (that is,
+     * {@code c.compare(e1, e2)} must not throw a {@code ClassCastException}
+     * for any elements {@code e1} and {@code e2} in the list).
+     *
+     * <p>This sort is guaranteed to be <i>stable</i>:  equal elements will
+     * not be reordered as a result of the sort.
+     *
+     * <p>The specified list must be modifiable, but need not be resizable.
+     *
+     * @implNote
+     * This implementation defers to the {@link List#sort(Comparator)}
+     * method using the specified list and comparator.
+     * Do not call this method from {@code List.sort()} since that can lead
+     * to infinite recursion. Apps targeting APIs {@code <= 25} observe
+     * backwards compatibility behavior where this method was implemented
+     * on top of {@link List#toArray()}, {@link ListIterator#next()} and
+     * {@link ListIterator#set(Object)}.
+     *
+     * @param  <T> the class of the objects in the list
+     * @param  list the list to be sorted.
+     * @param  c the comparator to determine the order of the list.  A
+     *        {@code null} value indicates that the elements' <i>natural
+     *        ordering</i> should be used.
+     * @throws ClassCastException if the list contains elements that are not
+     *         <i>mutually comparable</i> using the specified comparator.
+     * @throws UnsupportedOperationException if the specified list's
+     *         list-iterator does not support the {@code set} operation.
+     * @throws IllegalArgumentException (optional) if the comparator is
+     *         found to violate the {@link Comparator} contract
+     * @see List#sort(Comparator)
+     

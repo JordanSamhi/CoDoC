@@ -1,8 +1,7 @@
-public boolean equals(Object obj){
-    if (this == obj)
-        return true;
-    if (!(obj instanceof RouteInfo))
+public boolean equals(Object o){
+    if (!(o instanceof RouteKey)) {
         return false;
-    RouteInfo target = (RouteInfo) obj;
-    return Objects.equals(mDestination, target.getDestination()) && Objects.equals(mGateway, target.getGateway()) && Objects.equals(mInterface, target.getInterface()) && mType == target.getType() && mMtu == target.getMtu();
+    }
+    RouteKey p = (RouteKey) o;
+    return Objects.equals(p.mDestination, mDestination) && Objects.equals(p.mGateway, mGateway) && Objects.equals(p.mInterface, mInterface);
 }

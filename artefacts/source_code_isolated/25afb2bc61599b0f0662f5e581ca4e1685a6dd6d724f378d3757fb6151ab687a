@@ -1,0 +1,10 @@
+public void update(byte[] input, int offset, int len){
+    if (input == null) {
+        throw new IllegalArgumentException("No input buffer given");
+    }
+    if (input.length - offset < len) {
+        throw new IllegalArgumentException("Input buffer too short");
+    }
+    engineUpdate(input, offset, len);
+    state = IN_PROGRESS;
+}

@@ -1,0 +1,22 @@
+public static synchronized TimeZone getTimeZone(String id){
+    if (id == null) {
+        throw new NullPointerException("id == null");
+    }
+    if (id.length() == 3) {
+        if (id.equals("GMT")) {
+            return (TimeZone) GMT.clone();
+        }
+        if (id.equals("UTC")) {
+            return (TimeZone) UTC.clone();
+        }
+    }
+    TimeZone zone = null;
+    try {
+        zone = ZoneInfoDb.getInstance().makeTimeZone(id);
+    } catch (IOException ignored) {
+    }
+    if (zone == null && id.length() > 3 && id.startsWith("GMT")) {
+        zone = getCustomTimeZone(id);
+    }
+    return (zone != null) ? zone : (TimeZone) GMT.clone();
+}

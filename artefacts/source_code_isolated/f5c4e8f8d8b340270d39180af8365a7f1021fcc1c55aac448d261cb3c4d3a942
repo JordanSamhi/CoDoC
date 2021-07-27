@@ -1,0 +1,16 @@
+public ByteBuffer encode(ByteBuffer buffer){
+    int len = outLength(buffer.remaining());
+    byte[] dst = new byte[len];
+    int ret = 0;
+    if (buffer.hasArray()) {
+        ret = encode0(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.arrayOffset() + buffer.limit(), dst);
+        buffer.position(buffer.limit());
+    } else {
+        byte[] src = new byte[buffer.remaining()];
+        buffer.get(src);
+        ret = encode0(src, 0, src.length, dst);
+    }
+    if (ret != dst.length)
+        dst = Arrays.copyOf(dst, ret);
+    return ByteBuffer.wrap(dst);
+}

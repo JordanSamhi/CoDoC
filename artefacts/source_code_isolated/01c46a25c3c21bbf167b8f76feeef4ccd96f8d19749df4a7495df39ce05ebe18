@@ -1,0 +1,8 @@
+public static OffsetDateTime ofInstant(Instant instant, ZoneId zone){
+    Objects.requireNonNull(instant, "instant");
+    Objects.requireNonNull(zone, "zone");
+    ZoneRules rules = zone.getRules();
+    ZoneOffset offset = rules.getOffset(instant);
+    LocalDateTime ldt = LocalDateTime.ofEpochSecond(instant.getEpochSecond(), instant.getNano(), offset);
+    return new OffsetDateTime(ldt, offset);
+}

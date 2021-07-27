@@ -1,0 +1,21 @@
+public boolean equals(Object o){
+    if (this == o) {
+        return true;
+    }
+    if (!(o instanceof TvTrackInfo)) {
+        return false;
+    }
+    TvTrackInfo obj = (TvTrackInfo) o;
+    if (!TextUtils.equals(mId, obj.mId) || mType != obj.mType || !TextUtils.equals(mLanguage, obj.mLanguage) || !TextUtils.equals(mDescription, obj.mDescription) || !TextUtils.equals(mEncoding, obj.mEncoding) || mEncrypted != obj.mEncrypted) {
+        return false;
+    }
+    switch(mType) {
+        case TYPE_AUDIO:
+            return mAudioChannelCount == obj.mAudioChannelCount && mAudioSampleRate == obj.mAudioSampleRate && mAudioDescription == obj.mAudioDescription && mHardOfHearing == obj.mHardOfHearing && mSpokenSubtitle == obj.mSpokenSubtitle;
+        case TYPE_VIDEO:
+            return mVideoWidth == obj.mVideoWidth && mVideoHeight == obj.mVideoHeight && mVideoFrameRate == obj.mVideoFrameRate && mVideoPixelAspectRatio == obj.mVideoPixelAspectRatio && mVideoActiveFormatDescription == obj.mVideoActiveFormatDescription;
+        case TYPE_SUBTITLE:
+            return mHardOfHearing == obj.mHardOfHearing;
+    }
+    return true;
+}

@@ -1,0 +1,11 @@
+public short readShort() throws IOException{
+    if (!blkmode) {
+        pos = 0;
+        in.readFully(buf, 0, 2);
+    } else if (end - pos < 2) {
+        return din.readShort();
+    }
+    short v = Bits.getShort(buf, pos);
+    pos += 2;
+    return v;
+}

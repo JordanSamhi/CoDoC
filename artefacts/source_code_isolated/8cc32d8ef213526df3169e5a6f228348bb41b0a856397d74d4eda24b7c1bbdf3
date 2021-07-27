@@ -1,0 +1,8 @@
+public synchronized void setSendBufferSize(int size) throws SocketException{
+    if (!(size > 0)) {
+        throw new IllegalArgumentException("negative send size");
+    }
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    getImpl().setOption(SocketOptions.SO_SNDBUF, new Integer(size));
+}

@@ -1,0 +1,13 @@
+public void entering(String sourceClass, String sourceMethod, Object[] params){
+    String msg = "ENTRY";
+    if (params == null) {
+        logp(Level.FINER, sourceClass, sourceMethod, msg);
+        return;
+    }
+    if (!isLoggable(Level.FINER))
+        return;
+    for (int i = 0; i < params.length; i++) {
+        msg = msg + " {" + i + "}";
+    }
+    logp(Level.FINER, sourceClass, sourceMethod, msg, params);
+}

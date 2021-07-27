@@ -1,0 +1,15 @@
+public void abortCaptures() throws CameraAccessException{
+    synchronized (mDeviceImpl.mInterfaceLock) {
+        checkNotClosed();
+        if (DEBUG) {
+            Log.v(TAG, mIdString + "abortCaptures");
+        }
+        if (mAborting) {
+            Log.w(TAG, mIdString + "abortCaptures - Session is already aborting; doing nothing");
+            return;
+        }
+        mAborting = true;
+        mAbortDrainer.taskStarted();
+        mDeviceImpl.flush();
+    }
+}

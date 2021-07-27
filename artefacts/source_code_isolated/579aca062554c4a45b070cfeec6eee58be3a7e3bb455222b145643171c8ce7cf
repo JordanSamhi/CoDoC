@@ -1,0 +1,7 @@
+public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit){
+    if (command == null || unit == null)
+        throw new NullPointerException();
+    RunnableScheduledFuture<Void> t = decorateTask(command, new ScheduledFutureTask<Void>(command, null, triggerTime(delay, unit), sequencer.getAndIncrement()));
+    delayedExecute(t);
+    return t;
+}

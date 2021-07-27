@@ -1,0 +1,38 @@
+
+     * Returns a reference to an existing {@code FileSystem}.
+     *
+     * <p> This method iterates over the {@link FileSystemProvider#installedProviders()
+     * installed} providers to locate the provider that is identified by the URI
+     * {@link URI#getScheme scheme} of the given URI. URI schemes are compared
+     * without regard to case. The exact form of the URI is highly provider
+     * dependent. If found, the provider's {@link FileSystemProvider#getFileSystem
+     * getFileSystem} method is invoked to obtain a reference to the {@code
+     * FileSystem}.
+     *
+     * <p> Once a file system created by this provider is {@link FileSystem#close
+     * closed} it is provider-dependent if this method returns a reference to
+     * the closed file system or throws {@link FileSystemNotFoundException}.
+     * If the provider allows a new file system to be created with the same URI
+     * as a file system it previously created then this method throws the
+     * exception if invoked after the file system is closed (and before a new
+     * instance is created by the {@link #newFileSystem newFileSystem} method).
+     *
+     * <p> If a security manager is installed then a provider implementation
+     * may require to check a permission before returning a reference to an
+     * existing file system. In the case of the {@link FileSystems#getDefault
+     * default} file system, no permission check is required.
+     *
+     * @param   uri  the URI to locate the file system
+     *
+     * @return  the reference to the file system
+     *
+     * @throws  IllegalArgumentException
+     *          if the pre-conditions for the {@code uri} parameter are not met
+     * @throws  FileSystemNotFoundException
+     *          if the file system, identified by the URI, does not exist
+     * @throws  ProviderNotFoundException
+     *          if a provider supporting the URI scheme is not installed
+     * @throws  SecurityException
+     *          if a security manager is installed and it denies an unspecified
+     *          permission
+     

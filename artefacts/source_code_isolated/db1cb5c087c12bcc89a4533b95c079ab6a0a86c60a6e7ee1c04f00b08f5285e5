@@ -1,0 +1,10 @@
+public static void setDefaultHostnameVerifier(HostnameVerifier v){
+    if (v == null) {
+        throw new IllegalArgumentException("no default HostnameVerifier specified");
+    }
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null) {
+        sm.checkPermission(new SSLPermission("setHostnameVerifier"));
+    }
+    NoPreloadHolder.defaultHostnameVerifier = v;
+}

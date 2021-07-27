@@ -1,0 +1,19 @@
+public void finish() throws IOException{
+    if (!def.finished()) {
+        def.finish();
+        while (!def.finished()) {
+            int len = def.deflate(buf, 0, buf.length);
+            if (def.finished() && len <= buf.length - TRAILER_SIZE) {
+                writeTrailer(buf, len);
+                len = len + TRAILER_SIZE;
+                out.write(buf, 0, len);
+                return;
+            }
+            if (len > 0)
+                out.write(buf, 0, len);
+        }
+        byte[] trailer = new byte[TRAILER_SIZE];
+        writeTrailer(trailer, 0);
+        out.write(trailer);
+    }
+}

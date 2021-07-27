@@ -1,0 +1,10 @@
+public final int getOutputSize(int inputLen){
+    if (!initialized && !(this instanceof NullCipher)) {
+        throw new IllegalStateException("Cipher not initialized");
+    }
+    if (inputLen < 0) {
+        throw new IllegalArgumentException("Input size must be equal " + "to or greater than zero");
+    }
+    updateProviderIfNeeded();
+    return spi.engineGetOutputSize(inputLen);
+}

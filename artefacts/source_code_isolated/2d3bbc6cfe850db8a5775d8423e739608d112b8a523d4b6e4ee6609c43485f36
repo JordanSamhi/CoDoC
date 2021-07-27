@@ -1,0 +1,9 @@
+public MethodHandle bind(Object receiver, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException{
+    MethodHandle handle = findVirtual(receiver.getClass(), name, type);
+    MethodHandle adapter = handle.bindTo(receiver);
+    MethodType adapterType = adapter.type();
+    if (handle.isVarargsCollector()) {
+        adapter = adapter.asVarargsCollector(adapterType.parameterType(adapterType.parameterCount() - 1));
+    }
+    return adapter;
+}

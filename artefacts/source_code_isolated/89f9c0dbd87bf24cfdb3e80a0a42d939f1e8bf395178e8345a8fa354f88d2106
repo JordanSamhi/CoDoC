@@ -1,0 +1,11 @@
+public char readChar() throws IOException{
+    if (!blkmode) {
+        pos = 0;
+        in.readFully(buf, 0, 2);
+    } else if (end - pos < 2) {
+        return din.readChar();
+    }
+    char v = Bits.getChar(buf, pos);
+    pos += 2;
+    return v;
+}

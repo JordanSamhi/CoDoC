@@ -1,0 +1,5 @@
+public void forEachEntry(long parallelismThreshold, Consumer<? super Map.Entry<K, V>> action){
+    if (action == null)
+        throw new NullPointerException();
+    new ForEachEntryTask<K, V>(null, batchFor(parallelismThreshold), 0, 0, table, action).invoke();
+}

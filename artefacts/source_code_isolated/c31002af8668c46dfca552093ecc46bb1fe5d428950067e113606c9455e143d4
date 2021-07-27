@@ -1,0 +1,16 @@
+public synchronized Service getService(String type, String algorithm){
+    checkInitialized();
+    ServiceKey key = previousKey;
+    if (key.matches(type, algorithm) == false) {
+        key = new ServiceKey(type, algorithm, false);
+        previousKey = key;
+    }
+    if (serviceMap != null) {
+        Service service = serviceMap.get(key);
+        if (service != null) {
+            return service;
+        }
+    }
+    ensureLegacyParsed();
+    return (legacyMap != null) ? legacyMap.get(key) : null;
+}

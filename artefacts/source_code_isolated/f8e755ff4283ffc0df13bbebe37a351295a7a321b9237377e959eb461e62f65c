@@ -1,0 +1,51 @@
+public boolean onTouchEvent(MotionEvent event){
+    if (!mIsUserSeekable || !isEnabled()) {
+        return false;
+    }
+    switch(event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            if (mThumb != null) {
+                final int availableWidth = getWidth() - mPaddingLeft - mPaddingRight;
+                mTouchThumbOffset = (getProgress() - getMin()) / (float) (getMax() - getMin()) - (event.getX() - mPaddingLeft) / availableWidth;
+                if (Math.abs(mTouchThumbOffset * availableWidth) > getThumbOffset()) {
+                    mTouchThumbOffset = 0;
+                }
+            }
+            if (isInScrollingContainer()) {
+                mTouchDownX = event.getX();
+            } else {
+                startDrag(event);
+            }
+            break;
+        case MotionEvent.ACTION_MOVE:
+            if (mIsDragging) {
+                trackTouchEvent(event);
+            } else {
+                final float x = event.getX();
+                if (Math.abs(x - mTouchDownX) > mScaledTouchSlop) {
+                    startDrag(event);
+                }
+            }
+            break;
+        case MotionEvent.ACTION_UP:
+            if (mIsDragging) {
+                trackTouchEvent(event);
+                onStopTrackingTouch();
+                setPressed(false);
+            } else {
+                onStartTrackingTouch();
+                trackTouchEvent(event);
+                onStopTrackingTouch();
+            }
+            invalidate();
+            break;
+        case MotionEvent.ACTION_CANCEL:
+            if (mIsDragging) {
+                onStopTrackingTouch();
+                setPressed(false);
+            }
+            invalidate();
+            break;
+    }
+    return true;
+}

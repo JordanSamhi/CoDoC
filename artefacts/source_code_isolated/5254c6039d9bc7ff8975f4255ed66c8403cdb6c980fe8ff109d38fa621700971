@@ -1,0 +1,20 @@
+public void write(OutputStream out) throws IOException{
+    DataOutputStream dos = new DataOutputStream(out);
+    attr.writeMain(dos);
+    Iterator<Map.Entry<String, Attributes>> it = entries.entrySet().iterator();
+    while (it.hasNext()) {
+        Map.Entry<String, Attributes> e = it.next();
+        StringBuffer buffer = new StringBuffer("Name: ");
+        String value = e.getKey();
+        if (value != null) {
+            byte[] vb = value.getBytes("UTF8");
+            value = new String(vb, 0, 0, vb.length);
+        }
+        buffer.append(value);
+        buffer.append("\r\n");
+        make72Safe(buffer);
+        dos.writeBytes(buffer.toString());
+        e.getValue().write(dos);
+    }
+    dos.flush();
+}

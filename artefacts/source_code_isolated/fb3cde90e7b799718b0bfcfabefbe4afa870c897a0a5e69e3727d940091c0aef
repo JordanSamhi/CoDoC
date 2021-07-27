@@ -1,0 +1,29 @@
+public static int lastIndexOfSubList(List<?> source, List<?> target){
+    int sourceSize = source.size();
+    int targetSize = target.size();
+    int maxCandidate = sourceSize - targetSize;
+    if (sourceSize < INDEXOFSUBLIST_THRESHOLD || source instanceof RandomAccess) {
+        nextCand: for (int candidate = maxCandidate; candidate >= 0; candidate--) {
+            for (int i = 0, j = candidate; i < targetSize; i++, j++) if (!eq(target.get(i), source.get(j)))
+                continue nextCand;
+            return candidate;
+        }
+    } else {
+        if (maxCandidate < 0)
+            return -1;
+        ListIterator<?> si = source.listIterator(maxCandidate);
+        nextCand: for (int candidate = maxCandidate; candidate >= 0; candidate--) {
+            ListIterator<?> ti = target.listIterator();
+            for (int i = 0; i < targetSize; i++) {
+                if (!eq(ti.next(), si.next())) {
+                    if (candidate != 0) {
+                        for (int j = 0; j <= i + 1; j++) si.previous();
+                    }
+                    continue nextCand;
+                }
+            }
+            return candidate;
+        }
+    }
+    return -1;
+}

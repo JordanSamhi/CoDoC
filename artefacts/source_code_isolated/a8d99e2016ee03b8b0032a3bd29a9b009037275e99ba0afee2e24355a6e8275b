@@ -1,0 +1,20 @@
+public byte[] getBytes(Charset charset){
+    if (charset == null) {
+        throw new NullPointerException("charset == null");
+    }
+    final int len = length();
+    final String name = charset.name();
+    if ("UTF-8".equals(name)) {
+        return CharsetUtils.toUtf8Bytes(this, 0, len);
+    } else if ("ISO-8859-1".equals(name)) {
+        return CharsetUtils.toIsoLatin1Bytes(this, 0, len);
+    } else if ("US-ASCII".equals(name)) {
+        return CharsetUtils.toAsciiBytes(this, 0, len);
+    } else if ("UTF-16BE".equals(name)) {
+        return CharsetUtils.toBigEndianUtf16Bytes(this, 0, len);
+    }
+    ByteBuffer buffer = charset.encode(this);
+    byte[] bytes = new byte[buffer.limit()];
+    buffer.get(bytes);
+    return bytes;
+}

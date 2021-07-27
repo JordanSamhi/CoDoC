@@ -1,0 +1,10 @@
+ void replaceAll(BiFunction<? super K, ? super V, ? extends V> function){
+    Objects.requireNonNull(function);
+    forEach((k, v) -> {
+        while (!replace(k, v, function.apply(k, v))) {
+            if ((v = get(k)) == null) {
+                break;
+            }
+        }
+    });
+}

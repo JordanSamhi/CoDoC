@@ -1,0 +1,14 @@
+ final void applyTheme(Theme theme){
+    if (theme != null) {
+        createAllFutures();
+        final int N = mNumChildren;
+        final Drawable[] drawables = mDrawables;
+        for (int i = 0; i < N; i++) {
+            if (drawables[i] != null && drawables[i].canApplyTheme()) {
+                drawables[i].applyTheme(theme);
+                mChildrenChangingConfigurations |= drawables[i].getChangingConfigurations();
+            }
+        }
+        updateDensity(theme.getResources());
+    }
+}

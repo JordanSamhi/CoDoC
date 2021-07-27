@@ -1,0 +1,7 @@
+public void notifyDependencyChange(boolean disableDependents){
+    super.notifyDependencyChange(disableDependents);
+    final int preferenceCount = getPreferenceCount();
+    for (int i = 0; i < preferenceCount; i++) {
+        getPreference(i).onParentChanged(this, disableDependents);
+    }
+}

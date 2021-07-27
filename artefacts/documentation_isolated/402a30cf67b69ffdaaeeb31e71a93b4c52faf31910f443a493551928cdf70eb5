@@ -1,0 +1,32 @@
+
+     * Makes a method handle which adapts a target method handle,
+     * by guarding it with a test, a boolean-valued method handle.
+     * If the guard fails, a fallback handle is called instead.
+     * All three method handles must have the same corresponding
+     * argument and return types, except that the return type
+     * of the test must be boolean, and the test is allowed
+     * to have fewer arguments than the other two method handles.
+     * <p> Here is pseudocode for the resulting adapter:
+     * <blockquote><pre>{@code
+     * boolean test(A...);
+     * T target(A...,B...);
+     * T fallback(A...,B...);
+     * T adapter(A... a,B... b) {
+     *   if (test(a...))
+     *     return target(a..., b...);
+     *   else
+     *     return fallback(a..., b...);
+     * }
+     * }</pre></blockquote>
+     * Note that the test arguments ({@code a...} in the pseudocode) cannot
+     * be modified by execution of the test, and so are passed unchanged
+     * from the caller to the target or fallback as appropriate.
+     * @param test method handle used for test, must return boolean
+     * @param target method handle to call if test passes
+     * @param fallback method handle to call if test fails
+     * @return method handle which incorporates the specified if/then/else logic
+     * @throws NullPointerException if any argument is null
+     * @throws IllegalArgumentException if {@code test} does not return boolean,
+     *          or if all three method types do not match (with the return
+     *          type of {@code test} changed to match that of the target).
+     

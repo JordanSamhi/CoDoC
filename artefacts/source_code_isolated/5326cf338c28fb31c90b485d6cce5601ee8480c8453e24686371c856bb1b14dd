@@ -1,0 +1,15 @@
+public void onCreate(){
+    if (DBG)
+        Log.d(TAG, "onCreate()");
+    super.onCreate();
+    SynthThread synthThread = new SynthThread();
+    synthThread.start();
+    mSynthHandler = new SynthHandler(synthThread.getLooper());
+    mAudioPlaybackHandler = new AudioPlaybackHandler();
+    mAudioPlaybackHandler.start();
+    mEngineHelper = new TtsEngines(this);
+    mCallbacks = new CallbackMap();
+    mPackageName = getApplicationInfo().packageName;
+    String[] defaultLocale = getSettingsLocale();
+    onLoadLanguage(defaultLocale[0], defaultLocale[1], defaultLocale[2]);
+}

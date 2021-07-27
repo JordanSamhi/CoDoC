@@ -1,0 +1,19 @@
+public static ZonedDateTime from(TemporalAccessor temporal){
+    if (temporal instanceof ZonedDateTime) {
+        return (ZonedDateTime) temporal;
+    }
+    try {
+        ZoneId zone = ZoneId.from(temporal);
+        if (temporal.isSupported(INSTANT_SECONDS)) {
+            long epochSecond = temporal.getLong(INSTANT_SECONDS);
+            int nanoOfSecond = temporal.get(NANO_OF_SECOND);
+            return create(epochSecond, nanoOfSecond, zone);
+        } else {
+            LocalDate date = LocalDate.from(temporal);
+            LocalTime time = LocalTime.from(temporal);
+            return of(date, time, zone);
+        }
+    } catch (DateTimeException ex) {
+        throw new DateTimeException("Unable to obtain ZonedDateTime from TemporalAccessor: " + temporal + " of type " + temporal.getClass().getName(), ex);
+    }
+}

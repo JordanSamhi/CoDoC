@@ -1,0 +1,12 @@
+public synchronized Set<Map.Entry<Object, Object>> entrySet(){
+    checkInitialized();
+    if (entrySet == null) {
+        if (entrySetCallCount++ == 0)
+            entrySet = Collections.unmodifiableMap(this).entrySet();
+        else
+            return super.entrySet();
+    }
+    if (entrySetCallCount != 2)
+        throw new RuntimeException("Internal error.");
+    return entrySet;
+}

@@ -1,0 +1,11 @@
+public void write(int c){
+    if (bufferIndex < buffer.length) {
+        buffer[bufferIndex] = (char) c;
+        bufferIndex++;
+        if ((char) c == '\n') {
+            lastNewline = bufferIndex;
+        }
+    } else {
+        write(new char[] { (char) c }, 0, 1);
+    }
+}

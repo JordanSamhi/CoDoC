@@ -1,0 +1,13 @@
+public void or(BitSet set){
+    if (this == set)
+        return;
+    int wordsInCommon = Math.min(wordsInUse, set.wordsInUse);
+    if (wordsInUse < set.wordsInUse) {
+        ensureCapacity(set.wordsInUse);
+        wordsInUse = set.wordsInUse;
+    }
+    for (int i = 0; i < wordsInCommon; i++) words[i] |= set.words[i];
+    if (wordsInCommon < set.wordsInUse)
+        System.arraycopy(set.words, wordsInCommon, words, wordsInCommon, wordsInUse - wordsInCommon);
+    checkInvariants();
+}

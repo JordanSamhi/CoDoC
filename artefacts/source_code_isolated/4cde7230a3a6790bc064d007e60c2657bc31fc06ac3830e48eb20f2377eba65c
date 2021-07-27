@@ -1,0 +1,8 @@
+public final CountedCompleter<?> firstComplete(){
+    for (int c; ; ) {
+        if ((c = pending) == 0)
+            return this;
+        else if (U.compareAndSwapInt(this, PENDING, c, c - 1))
+            return null;
+    }
+}

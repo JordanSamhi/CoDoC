@@ -1,0 +1,32 @@
+public static SecureRandom getInstanceStrong() throws NoSuchAlgorithmException{
+    String property = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+        @Override
+        public String run() {
+            return Security.getProperty("securerandom.strongAlgorithms");
+        }
+    });
+    if ((property == null) || (property.length() == 0)) {
+        throw new NoSuchAlgorithmException("Null/empty securerandom.strongAlgorithms Security Property");
+    }
+    String remainder = property;
+    while (remainder != null) {
+        Matcher m;
+        if ((m = StrongPatternHolder.pattern.matcher(remainder)).matches()) {
+            String alg = m.group(1);
+            String prov = m.group(3);
+            try {
+                if (prov == null) {
+                    return SecureRandom.getInstance(alg);
+                } else {
+                    return SecureRandom.getInstance(alg, prov);
+                }
+            } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+            }
+            remainder = m.group(5);
+        } else {
+            remainder = null;
+        }
+    }
+    throw new NoSuchAlgorithmException("No strong SecureRandom impls available: " + property);
+}

@@ -1,0 +1,19 @@
+public void run(){
+    final FileDescriptor fd = getInternalFD();
+    try {
+        int i = 0;
+        while (i < data.length) {
+            if (sink) {
+                i += Os.read(fd, data, i, data.length - i);
+            } else {
+                i += Os.write(fd, data, i, data.length - i);
+            }
+        }
+    } catch (IOException | ErrnoException e) {
+    } finally {
+        if (sink) {
+            SystemClock.sleep(TimeUnit.SECONDS.toMillis(1));
+        }
+        IoUtils.closeQuietly(fd);
+    }
+}

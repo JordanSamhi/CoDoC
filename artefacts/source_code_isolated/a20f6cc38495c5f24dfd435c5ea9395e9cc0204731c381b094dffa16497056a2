@@ -1,0 +1,14 @@
+public LocalTime plusSeconds(long secondstoAdd){
+    if (secondstoAdd == 0) {
+        return this;
+    }
+    int sofd = hour * SECONDS_PER_HOUR + minute * SECONDS_PER_MINUTE + second;
+    int newSofd = ((int) (secondstoAdd % SECONDS_PER_DAY) + sofd + SECONDS_PER_DAY) % SECONDS_PER_DAY;
+    if (sofd == newSofd) {
+        return this;
+    }
+    int newHour = newSofd / SECONDS_PER_HOUR;
+    int newMinute = (newSofd / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
+    int newSecond = newSofd % SECONDS_PER_MINUTE;
+    return create(newHour, newMinute, newSecond, nano);
+}

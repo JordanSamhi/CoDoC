@@ -1,0 +1,14 @@
+public final int update(ByteBuffer input, ByteBuffer output) throws ShortBufferException{
+    checkCipherState();
+    if ((input == null) || (output == null)) {
+        throw new IllegalArgumentException("Buffers must not be null");
+    }
+    if (input == output) {
+        throw new IllegalArgumentException("Input and output buffers must " + "not be the same object, consider using buffer.duplicate()");
+    }
+    if (output.isReadOnly()) {
+        throw new ReadOnlyBufferException();
+    }
+    updateProviderIfNeeded();
+    return spi.engineUpdate(input, output);
+}

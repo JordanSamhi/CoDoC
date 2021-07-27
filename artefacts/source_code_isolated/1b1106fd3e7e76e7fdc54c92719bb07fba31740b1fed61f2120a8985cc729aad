@@ -1,0 +1,10 @@
+public void revokeRuntimePermission(String packageName, String permName, UserHandle user, String reason){
+    if (DEBUG_TRACE_PERMISSION_UPDATES && shouldTraceGrant(packageName, permName, user.getIdentifier())) {
+        Log.i(TAG, "App " + mContext.getPackageName() + " is revoking " + packageName + " " + permName + " for user " + user.getIdentifier() + " with reason " + reason, new RuntimeException());
+    }
+    try {
+        mPermissionManager.revokeRuntimePermission(packageName, permName, user.getIdentifier(), reason);
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

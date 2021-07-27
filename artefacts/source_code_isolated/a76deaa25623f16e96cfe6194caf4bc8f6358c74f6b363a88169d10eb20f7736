@@ -1,0 +1,8 @@
+public static MonthDay of(Month month, int dayOfMonth){
+    Objects.requireNonNull(month, "month");
+    DAY_OF_MONTH.checkValidValue(dayOfMonth);
+    if (dayOfMonth > month.maxLength()) {
+        throw new DateTimeException("Illegal value for DayOfMonth field, value " + dayOfMonth + " is not valid for month " + month.name());
+    }
+    return new MonthDay(month.getValue(), dayOfMonth);
+}

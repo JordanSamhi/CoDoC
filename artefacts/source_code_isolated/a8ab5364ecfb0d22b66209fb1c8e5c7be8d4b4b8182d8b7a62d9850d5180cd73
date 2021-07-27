@@ -1,0 +1,16 @@
+public boolean gatherTransparentRegion(Region region){
+    if (mWindowZOrder != ZORDER_ON_TOP) {
+        if (region != null) {
+            int width = getWidth();
+            int height = getHeight();
+            if (width > 0 && height > 0) {
+                int[] location = new int[2];
+                getLocationInWindow(location);
+                int left = location[0];
+                int top = location[1];
+                region.op(left, top, left + width, top + height, Region.Op.UNION);
+            }
+        }
+    }
+    return super.gatherTransparentRegion(region);
+}

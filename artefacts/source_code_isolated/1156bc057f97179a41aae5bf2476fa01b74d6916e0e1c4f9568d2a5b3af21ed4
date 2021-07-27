@@ -1,0 +1,15 @@
+public final Key unwrap(byte[] wrappedKey, String wrappedKeyAlgorithm, int wrappedKeyType) throws InvalidKeyException, NoSuchAlgorithmException{
+    if (!(this instanceof NullCipher)) {
+        if (!initialized) {
+            throw new IllegalStateException("Cipher not initialized");
+        }
+        if (opmode != Cipher.UNWRAP_MODE) {
+            throw new IllegalStateException("Cipher not initialized " + "for unwrapping keys");
+        }
+    }
+    if ((wrappedKeyType != SECRET_KEY) && (wrappedKeyType != PRIVATE_KEY) && (wrappedKeyType != PUBLIC_KEY)) {
+        throw new InvalidParameterException("Invalid key type");
+    }
+    updateProviderIfNeeded();
+    return spi.engineUnwrap(wrappedKey, wrappedKeyAlgorithm, wrappedKeyType);
+}

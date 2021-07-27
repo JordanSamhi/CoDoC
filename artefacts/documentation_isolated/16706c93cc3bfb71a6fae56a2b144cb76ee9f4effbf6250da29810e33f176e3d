@@ -1,0 +1,35 @@
+
+     * {@inheritDoc}
+     *
+     * @implSpec
+     * This implementation returns a list that subclasses
+     * {@code AbstractList}.  The subclass stores, in private fields, the
+     * size of the subList (which can change over its lifetime), and the
+     * expected {@code modCount} value of the backing list.  There are two
+     * variants of the subclass, one of which implements {@code RandomAccess}.
+     * If this list implements {@code RandomAccess} the returned list will
+     * be an instance of the subclass that implements {@code RandomAccess}.
+     *
+     * <p>The subclass's {@code set(int, E)}, {@code get(int)},
+     * {@code add(int, E)}, {@code remove(int)}, {@code addAll(int,
+     * Collection)} and {@code removeRange(int, int)} methods all
+     * delegate to the corresponding methods on the backing abstract list,
+     * after bounds-checking the index and adjusting for the offset.  The
+     * {@code addAll(Collection c)} method merely returns {@code addAll(size,
+     * c)}.
+     *
+     * <p>The {@code listIterator(int)} method returns a "wrapper object"
+     * over a list iterator on the backing list, which is created with the
+     * corresponding method on the backing list.  The {@code iterator} method
+     * merely returns {@code listIterator()}, and the {@code size} method
+     * merely returns the subclass's {@code size} field.
+     *
+     * <p>All methods first check to see if the actual {@code modCount} of
+     * the backing list is equal to its expected value, and throw a
+     * {@code ConcurrentModificationException} if it is not.
+     *
+     * @throws IndexOutOfBoundsException if an endpoint index value is out of range
+     *         {@code (fromIndex < 0 || toIndex > size)}
+     * @throws IllegalArgumentException if the endpoint indices are out of order
+     *         {@code (fromIndex > toIndex)}
+     

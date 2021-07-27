@@ -1,0 +1,18 @@
+public static boolean isSpaceChar(int codePoint){
+    if (codePoint == 0x20 || codePoint == 0xa0) {
+        return true;
+    }
+    if (codePoint < 0x1000) {
+        return false;
+    }
+    if (codePoint == 0x1680 || codePoint == 0x180e) {
+        return true;
+    }
+    if (codePoint < 0x2000) {
+        return false;
+    }
+    if (codePoint <= 0xffff) {
+        return codePoint <= 0x200a || codePoint == 0x2028 || codePoint == 0x2029 || codePoint == 0x202f || codePoint == 0x205f || codePoint == 0x3000;
+    }
+    return isSpaceCharImpl(codePoint);
+}

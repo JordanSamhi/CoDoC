@@ -1,0 +1,46 @@
+public void draw(Canvas canvas){
+    super.draw(canvas);
+    if (shouldDisplayEdgeEffects()) {
+        final int scrollY = mScrollY;
+        final boolean clipToPadding = getClipToPadding();
+        final int width;
+        final int height;
+        final int translateX;
+        final int translateY;
+        if (clipToPadding) {
+            width = getWidth() - mPaddingLeft - mPaddingRight;
+            height = getHeight() - mPaddingTop - mPaddingBottom;
+            translateX = mPaddingLeft;
+            translateY = mPaddingTop;
+        } else {
+            width = getWidth();
+            height = getHeight();
+            translateX = 0;
+            translateY = 0;
+        }
+        mEdgeGlowTop.setSize(width, height);
+        mEdgeGlowBottom.setSize(width, height);
+        if (!mEdgeGlowTop.isFinished()) {
+            final int restoreCount = canvas.save();
+            canvas.clipRect(translateX, translateY, translateX + width, translateY + mEdgeGlowTop.getMaxHeight());
+            final int edgeY = Math.min(0, scrollY + mFirstPositionDistanceGuess) + translateY;
+            canvas.translate(translateX, edgeY);
+            if (mEdgeGlowTop.draw(canvas)) {
+                invalidateTopGlow();
+            }
+            canvas.restoreToCount(restoreCount);
+        }
+        if (!mEdgeGlowBottom.isFinished()) {
+            final int restoreCount = canvas.save();
+            canvas.clipRect(translateX, translateY + height - mEdgeGlowBottom.getMaxHeight(), translateX + width, translateY + height);
+            final int edgeX = -width + translateX;
+            final int edgeY = Math.max(getHeight(), scrollY + mLastPositionDistanceGuess) - (clipToPadding ? mPaddingBottom : 0);
+            canvas.translate(edgeX, edgeY);
+            canvas.rotate(180, width, 0);
+            if (mEdgeGlowBottom.draw(canvas)) {
+                invalidateBottomGlow();
+            }
+            canvas.restoreToCount(restoreCount);
+        }
+    }
+}

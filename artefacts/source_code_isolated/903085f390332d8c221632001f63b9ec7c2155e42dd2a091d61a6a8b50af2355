@@ -1,0 +1,20 @@
+public String getTypeName(){
+    if (isArray()) {
+        try {
+            Class<?> cl = this;
+            int dimensions = 0;
+            while (cl.isArray()) {
+                dimensions++;
+                cl = cl.getComponentType();
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(cl.getName());
+            for (int i = 0; i < dimensions; i++) {
+                sb.append("[]");
+            }
+            return sb.toString();
+        } catch (Throwable e) {
+        }
+    }
+    return getName();
+}

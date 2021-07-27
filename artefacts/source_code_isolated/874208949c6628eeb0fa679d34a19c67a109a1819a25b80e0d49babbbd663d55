@@ -1,0 +1,14 @@
+public static File createTempFile(String prefix, String suffix, File directory) throws IOException{
+    if (prefix.length() < 3)
+        throw new IllegalArgumentException("Prefix string too short");
+    if (suffix == null)
+        suffix = ".tmp";
+    File tmpdir = (directory != null) ? directory : new File(System.getProperty("java.io.tmpdir", "."));
+    File f;
+    do {
+        f = TempDirectory.generateFile(prefix, suffix, tmpdir);
+    } while ((fs.getBooleanAttributes(f) & FileSystem.BA_EXISTS) != 0);
+    if (!fs.createFileExclusively(f.getPath()))
+        throw new IOException("Unable to create temporary file");
+    return f;
+}

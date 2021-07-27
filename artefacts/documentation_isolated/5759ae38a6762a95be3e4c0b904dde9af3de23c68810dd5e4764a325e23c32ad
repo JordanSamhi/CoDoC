@@ -1,0 +1,28 @@
+
+     * Appends a localized date-time pattern to the formatter.
+     * <p>
+     * This appends a localized section to the builder, suitable for outputting
+     * a date, time or date-time combination. The format of the localized
+     * section is lazily looked up based on four items:
+     * <ul>
+     * <li>the {@code dateStyle} specified to this method
+     * <li>the {@code timeStyle} specified to this method
+     * <li>the {@code Locale} of the {@code DateTimeFormatter}
+     * <li>the {@code Chronology}, selecting the best available
+     * </ul>
+     * During formatting, the chronology is obtained from the temporal object
+     * being formatted, which may have been overridden by
+     * {@link DateTimeFormatter#withChronology(Chronology)}.
+     * <p>
+     * During parsing, if a chronology has already been parsed, then it is used.
+     * Otherwise the default from {@code DateTimeFormatter.withChronology(Chronology)}
+     * is used, with {@code IsoChronology} as the fallback.
+     * <p>
+     * Note that this method provides similar functionality to methods on
+     * {@code DateFormat} such as {@link java.text.DateFormat#getDateTimeInstance(int, int)}.
+     *
+     * @param dateStyle  the date style to use, null means no date required
+     * @param timeStyle  the time style to use, null means no time required
+     * @return this, for chaining, not null
+     * @throws IllegalArgumentException if both the date and time styles are null
+     

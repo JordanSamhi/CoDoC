@@ -1,0 +1,48 @@
+public String toEngineeringString(){
+    String intString = getUnscaledValue().toString();
+    if (scale == 0) {
+        return intString;
+    }
+    int begin = (getUnscaledValue().signum() < 0) ? 2 : 1;
+    int end = intString.length();
+    long exponent = -(long) scale + end - begin;
+    StringBuilder result = new StringBuilder(intString);
+    if ((scale > 0) && (exponent >= -6)) {
+        if (exponent >= 0) {
+            result.insert(end - scale, '.');
+        } else {
+            result.insert(begin - 1, "0.");
+            result.insert(begin + 1, CH_ZEROS, 0, -(int) exponent - 1);
+        }
+    } else {
+        int delta = end - begin;
+        int rem = (int) (exponent % 3);
+        if (rem != 0) {
+            if (getUnscaledValue().signum() == 0) {
+                rem = (rem < 0) ? -rem : 3 - rem;
+                exponent += rem;
+            } else {
+                rem = (rem < 0) ? rem + 3 : rem;
+                exponent -= rem;
+                begin += rem;
+            }
+            if (delta < 3) {
+                for (int i = rem - delta; i > 0; i--) {
+                    result.insert(end++, '0');
+                }
+            }
+        }
+        if (end - begin >= 1) {
+            result.insert(begin, '.');
+            end++;
+        }
+        if (exponent != 0) {
+            result.insert(end, 'E');
+            if (exponent > 0) {
+                result.insert(++end, '+');
+            }
+            result.insert(++end, Long.toString(exponent));
+        }
+    }
+    return result.toString();
+}

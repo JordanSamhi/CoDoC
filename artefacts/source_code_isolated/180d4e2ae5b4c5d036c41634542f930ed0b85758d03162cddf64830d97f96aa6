@@ -1,0 +1,10 @@
+public void setInitialPolicies(Set<String> initialPolicies){
+    if (initialPolicies != null) {
+        for (Iterator<String> i = initialPolicies.iterator(); i.hasNext(); ) {
+            if (!(i.next() instanceof String))
+                throw new ClassCastException("all elements of set must be " + "of type java.lang.String");
+        }
+        this.unmodInitialPolicies = Collections.unmodifiableSet(new HashSet<String>(initialPolicies));
+    } else
+        this.unmodInitialPolicies = Collections.<String>emptySet();
+}

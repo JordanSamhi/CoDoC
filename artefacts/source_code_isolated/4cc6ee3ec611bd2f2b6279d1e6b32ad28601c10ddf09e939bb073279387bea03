@@ -1,0 +1,11 @@
+public static char[] toChars(int codePoint){
+    if (isBmpCodePoint(codePoint)) {
+        return new char[] { (char) codePoint };
+    } else if (isValidCodePoint(codePoint)) {
+        char[] result = new char[2];
+        toSurrogates(codePoint, result, 0);
+        return result;
+    } else {
+        throw new IllegalArgumentException();
+    }
+}

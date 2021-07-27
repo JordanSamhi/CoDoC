@@ -1,0 +1,20 @@
+public static IntStream iterate(final int seed, final IntUnaryOperator f){
+    Objects.requireNonNull(f);
+    final PrimitiveIterator.OfInt iterator = new PrimitiveIterator.OfInt() {
+
+        int t = seed;
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public int nextInt() {
+            int v = t;
+            t = f.applyAsInt(t);
+            return v;
+        }
+    };
+    return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
+}

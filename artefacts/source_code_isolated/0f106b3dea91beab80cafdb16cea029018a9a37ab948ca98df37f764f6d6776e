@@ -1,0 +1,10 @@
+public static byte getDirectionality(int codePoint){
+    if (getType(codePoint) == Character.UNASSIGNED) {
+        return Character.DIRECTIONALITY_UNDEFINED;
+    }
+    byte directionality = getDirectionalityImpl(codePoint);
+    if (directionality >= 0 && directionality < DIRECTIONALITY.length) {
+        return DIRECTIONALITY[directionality];
+    }
+    return Character.DIRECTIONALITY_UNDEFINED;
+}

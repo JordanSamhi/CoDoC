@@ -1,0 +1,17 @@
+public static double ulp(double d){
+    int exp = getExponent(d);
+    switch(exp) {
+        case DoubleConsts.MAX_EXPONENT + 1:
+            return Math.abs(d);
+        case DoubleConsts.MIN_EXPONENT - 1:
+            return Double.MIN_VALUE;
+        default:
+            assert exp <= DoubleConsts.MAX_EXPONENT && exp >= DoubleConsts.MIN_EXPONENT;
+            exp = exp - (DoubleConsts.SIGNIFICAND_WIDTH - 1);
+            if (exp >= DoubleConsts.MIN_EXPONENT) {
+                return powerOfTwoD(exp);
+            } else {
+                return Double.longBitsToDouble(1L << (exp - (DoubleConsts.MIN_EXPONENT - (DoubleConsts.SIGNIFICAND_WIDTH - 1))));
+            }
+    }
+}

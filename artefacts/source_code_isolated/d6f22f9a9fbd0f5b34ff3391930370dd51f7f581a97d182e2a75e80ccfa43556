@@ -1,0 +1,12 @@
+public boolean dispatchTouchEvent(MotionEvent event){
+    if (isEnabled()) {
+        final boolean cancelDispatch = (mIsGesturing || (mCurrentGesture != null && mCurrentGesture.getStrokesCount() > 0 && mPreviousWasGesturing)) && mInterceptEvents;
+        processEvent(event);
+        if (cancelDispatch) {
+            event.setAction(MotionEvent.ACTION_CANCEL);
+        }
+        super.dispatchTouchEvent(event);
+        return true;
+    }
+    return super.dispatchTouchEvent(event);
+}

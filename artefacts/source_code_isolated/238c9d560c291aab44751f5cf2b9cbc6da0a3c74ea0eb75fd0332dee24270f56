@@ -1,0 +1,26 @@
+public final IBinder onBind(Intent intent){
+    return new IInstantAppResolver.Stub() {
+
+        @Override
+        public void getInstantAppResolveInfoList(InstantAppRequestInfo request, int sequence, IRemoteCallback callback) {
+            if (DEBUG_INSTANT) {
+                Slog.v(TAG, "[" + request.getToken() + "] Phase1 called; posting");
+            }
+            final SomeArgs args = SomeArgs.obtain();
+            args.arg1 = request;
+            args.arg2 = callback;
+            mHandler.obtainMessage(ServiceHandler.MSG_GET_INSTANT_APP_RESOLVE_INFO, sequence, 0, args).sendToTarget();
+        }
+
+        @Override
+        public void getInstantAppIntentFilterList(InstantAppRequestInfo request, IRemoteCallback callback) {
+            if (DEBUG_INSTANT) {
+                Slog.v(TAG, "[" + request.getToken() + "] Phase2 called; posting");
+            }
+            final SomeArgs args = SomeArgs.obtain();
+            args.arg1 = request;
+            args.arg2 = callback;
+            mHandler.obtainMessage(ServiceHandler.MSG_GET_INSTANT_APP_INTENT_FILTER, args).sendToTarget();
+        }
+    };
+}

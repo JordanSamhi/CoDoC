@@ -1,0 +1,15 @@
+public int getOpacity(){
+    if (mShapeState.mShape == null) {
+        final Paint p = mShapeState.mPaint;
+        if (p.getXfermode() == null) {
+            final int alpha = p.getAlpha();
+            if (alpha == 0) {
+                return PixelFormat.TRANSPARENT;
+            }
+            if (alpha == 255) {
+                return PixelFormat.OPAQUE;
+            }
+        }
+    }
+    return PixelFormat.TRANSLUCENT;
+}

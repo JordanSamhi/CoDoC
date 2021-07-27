@@ -1,0 +1,37 @@
+public static Provider[] getProviders(Map<String, String> filter){
+    Provider[] allProviders = Security.getProviders();
+    Set<String> keySet = filter.keySet();
+    LinkedHashSet<Provider> candidates = new LinkedHashSet<>(5);
+    if ((keySet == null) || (allProviders == null)) {
+        return allProviders;
+    }
+    boolean firstSearch = true;
+    for (Iterator<String> ite = keySet.iterator(); ite.hasNext(); ) {
+        String key = ite.next();
+        String value = filter.get(key);
+        LinkedHashSet<Provider> newCandidates = getAllQualifyingCandidates(key, value, allProviders);
+        if (firstSearch) {
+            candidates = newCandidates;
+            firstSearch = false;
+        }
+        if ((newCandidates != null) && !newCandidates.isEmpty()) {
+            for (Iterator<Provider> cansIte = candidates.iterator(); cansIte.hasNext(); ) {
+                Provider prov = cansIte.next();
+                if (!newCandidates.contains(prov)) {
+                    cansIte.remove();
+                }
+            }
+        } else {
+            candidates = null;
+            break;
+        }
+    }
+    if ((candidates == null) || (candidates.isEmpty()))
+        return null;
+    Object[] candidatesArray = candidates.toArray();
+    Provider[] result = new Provider[candidatesArray.length];
+    for (int i = 0; i < result.length; i++) {
+        result[i] = (Provider) candidatesArray[i];
+    }
+    return result;
+}

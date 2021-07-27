@@ -1,0 +1,10 @@
+public Principal getPeerPrincipal() throws SSLPeerUnverifiedException{
+    Principal principal;
+    try {
+        principal = session.getPeerPrincipal();
+    } catch (AbstractMethodError e) {
+        Certificate[] certs = getPeerCertificates();
+        principal = ((X509Certificate) certs[0]).getSubjectX500Principal();
+    }
+    return principal;
+}

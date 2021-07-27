@@ -1,0 +1,68 @@
+
+     * Compares this URI to another object, which must be a URI.
+     *
+     * <p> When comparing corresponding components of two URIs, if one
+     * component is undefined but the other is defined then the first is
+     * considered to be less than the second.  Unless otherwise noted, string
+     * components are ordered according to their natural, case-sensitive
+     * ordering as defined by the {@link java.lang.String#compareTo(Object)
+     * String.compareTo} method.  String components that are subject to
+     * encoding are compared by comparing their raw forms rather than their
+     * encoded forms.
+     *
+     * <p> The ordering of URIs is defined as follows: </p>
+     *
+     * <ul>
+     *
+     *   <li><p> Two URIs with different schemes are ordered according the
+     *   ordering of their schemes, without regard to case. </p></li>
+     *
+     *   <li><p> A hierarchical URI is considered to be less than an opaque URI
+     *   with an identical scheme. </p></li>
+     *
+     *   <li><p> Two opaque URIs with identical schemes are ordered according
+     *   to the ordering of their scheme-specific parts. </p></li>
+     *
+     *   <li><p> Two opaque URIs with identical schemes and scheme-specific
+     *   parts are ordered according to the ordering of their
+     *   fragments. </p></li>
+     *
+     *   <li><p> Two hierarchical URIs with identical schemes are ordered
+     *   according to the ordering of their authority components: </p>
+     *
+     *   <ul>
+     *
+     *     <li><p> If both authority components are server-based then the URIs
+     *     are ordered according to their user-information components; if these
+     *     components are identical then the URIs are ordered according to the
+     *     ordering of their hosts, without regard to case; if the hosts are
+     *     identical then the URIs are ordered according to the ordering of
+     *     their ports. </p></li>
+     *
+     *     <li><p> If one or both authority components are registry-based then
+     *     the URIs are ordered according to the ordering of their authority
+     *     components. </p></li>
+     *
+     *   </ul></li>
+     *
+     *   <li><p> Finally, two hierarchical URIs with identical schemes and
+     *   authority components are ordered according to the ordering of their
+     *   paths; if their paths are identical then they are ordered according to
+     *   the ordering of their queries; if the queries are identical then they
+     *   are ordered according to the order of their fragments. </p></li>
+     *
+     * </ul>
+     *
+     * <p> This method satisfies the general contract of the {@link
+     * java.lang.Comparable#compareTo(Object) Comparable.compareTo}
+     * method. </p>
+     *
+     * @param   that
+     *          The object to which this URI is to be compared
+     *
+     * @return  A negative integer, zero, or a positive integer as this URI is
+     *          less than, equal to, or greater than the given URI
+     *
+     * @throws  ClassCastException
+     *          If the given object is not a URI
+     

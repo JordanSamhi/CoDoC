@@ -1,0 +1,36 @@
+
+     * Sets a default proposed value for the
+     * {@link SocketOptions#SO_RCVBUF SO_RCVBUF} option for sockets
+     * accepted from this {@code ServerSocket}. The value actually set
+     * in the accepted socket must be determined by calling
+     * {@link Socket#getReceiveBufferSize()} after the socket
+     * is returned by {@link #accept()}.
+     * <p>
+     * The value of {@link SocketOptions#SO_RCVBUF SO_RCVBUF} is used both to
+     * set the size of the internal socket receive buffer, and to set the size
+     * of the TCP receive window that is advertized to the remote peer.
+     * <p>
+     * It is possible to change the value subsequently, by calling
+     * {@link Socket#setReceiveBufferSize(int)}. However, if the application
+     * wishes to allow a receive window larger than 64K bytes, as defined by RFC1323
+     * then the proposed value must be set in the ServerSocket <B>before</B>
+     * it is bound to a local address. This implies, that the ServerSocket must be
+     * created with the no-argument constructor, then setReceiveBufferSize() must
+     * be called and lastly the ServerSocket is bound to an address by calling bind().
+     * <p>
+     * Failure to do this will not cause an error, and the buffer size may be set to the
+     * requested value but the TCP receive window in sockets accepted from
+     * this ServerSocket will be no larger than 64K bytes.
+     *
+     * @exception SocketException if there is an error
+     * in the underlying protocol, such as a TCP error.
+     *
+     * @param size the size to which to set the receive buffer
+     * size. This value must be greater than 0.
+     *
+     * @exception IllegalArgumentException if the
+     * value is 0 or is negative.
+     *
+     * @since 1.4
+     * @see #getReceiveBufferSize
+     

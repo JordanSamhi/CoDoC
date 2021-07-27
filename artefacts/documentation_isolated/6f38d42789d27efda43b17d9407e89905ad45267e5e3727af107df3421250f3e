@@ -1,0 +1,58 @@
+
+     * Submit a list of requests to be captured in sequence as a burst. The
+     * burst will be captured in the minimum amount of time possible, and will
+     * not be interleaved with requests submitted by other capture or repeat
+     * calls.
+     *
+     * <p>Regular and reprocess requests can be mixed together in a single burst. Regular requests
+     * will be captured in order and reprocess requests will be processed in order, respectively.
+     * However, the processing order between a regular request and a reprocess request is not
+     * specified. Each capture produces one {@link CaptureResult} and image buffers for one or more
+     * target {@link android.view.Surface surfaces}. The target surfaces (set with
+     * {@link CaptureRequest.Builder#addTarget}) must be a subset of the surfaces provided when
+     * this capture session was created.</p>
+     *
+     * <p>The main difference between this method and simply calling
+     * {@link #capture} repeatedly is that this method guarantees that no
+     * other requests will be interspersed with the burst.</p>
+     *
+     * <p>All capture sessions can be used for capturing images from the camera but only capture
+     * sessions created by
+     * {@link CameraDevice#createReprocessableCaptureSession createReprocessableCaptureSession}
+     * can submit reprocess capture requests. Submitting a reprocess request to a regular
+     * capture session will result in an {@link IllegalArgumentException}.</p>
+     *
+     * @param requests the list of settings for this burst capture
+     * @param listener The callback object to notify each time one of the
+     * requests in the burst has been processed. If null, no metadata will be
+     * produced for any requests in this burst, although image data will still
+     * be produced.
+     * @param handler the handler on which the listener should be invoked, or
+     * {@code null} to use the current thread's {@link android.os.Looper
+     * looper}.
+     *
+     * @return int A unique capture sequence ID used by
+     *             {@link CaptureCallback#onCaptureSequenceCompleted}.
+     *
+     * @throws CameraAccessException if the camera device is no longer connected or has
+     *                               encountered a fatal error
+     * @throws IllegalStateException if this session is no longer active, either because the session
+     *                               was explicitly closed, a new session has been created
+     *                               or the camera device has been closed.
+     * @throws IllegalArgumentException If the requests target no Surfaces, or the requests target
+     *                                  Surfaces not currently configured as outputs; or one of the
+     *                                  requests targets a set of Surfaces that cannot be submitted
+     *                                  simultaneously in a reprocessable capture session; or a
+     *                                  reprocess capture request is submitted in a
+     *                                  non-reprocessable capture session; or one of the reprocess
+     *                                  capture requests was created with a
+     *                                  {@link TotalCaptureResult} from a different session; or one
+     *                                  of the captures targets a Surface in the middle of being
+     *                                  {@link #prepare prepared}; or if the handler is null, the
+     *                                  listener is not null, and the calling thread has no looper.
+     *
+     * @see #capture
+     * @see #setRepeatingRequest
+     * @see #setRepeatingBurst
+     * @see #abortCaptures
+     

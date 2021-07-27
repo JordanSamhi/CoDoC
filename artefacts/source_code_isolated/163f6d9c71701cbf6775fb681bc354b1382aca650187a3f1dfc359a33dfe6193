@@ -1,0 +1,28 @@
+public Mesh create(){
+    mRS.validate();
+    long[] vtx = new long[mVertexTypeCount];
+    long[] idx = new long[mIndexTypes.size()];
+    int[] prim = new int[mIndexTypes.size()];
+    Allocation[] indexBuffers = new Allocation[mIndexTypes.size()];
+    Primitive[] primitives = new Primitive[mIndexTypes.size()];
+    Allocation[] vertexBuffers = new Allocation[mVertexTypeCount];
+    for (int ct = 0; ct < mVertexTypeCount; ct++) {
+        Entry entry = mVertexTypes[ct];
+        vertexBuffers[ct] = entry.a;
+        vtx[ct] = entry.a.getID(mRS);
+    }
+    for (int ct = 0; ct < mIndexTypes.size(); ct++) {
+        Entry entry = (Entry) mIndexTypes.elementAt(ct);
+        long allocID = (entry.a == null) ? 0 : entry.a.getID(mRS);
+        indexBuffers[ct] = entry.a;
+        primitives[ct] = entry.prim;
+        idx[ct] = allocID;
+        prim[ct] = entry.prim.mID;
+    }
+    long id = mRS.nMeshCreate(vtx, idx, prim);
+    Mesh newMesh = new Mesh(id, mRS);
+    newMesh.mVertexBuffers = vertexBuffers;
+    newMesh.mIndexBuffers = indexBuffers;
+    newMesh.mPrimitives = primitives;
+    return newMesh;
+}

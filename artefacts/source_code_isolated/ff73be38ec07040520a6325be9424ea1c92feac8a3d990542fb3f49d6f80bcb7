@@ -1,0 +1,10 @@
+public void onFinished() throws RemoteException{
+    final long identity = Binder.clearCallingIdentity();
+    try {
+        mExecutor.execute(() -> {
+            mCallback.onFinished();
+        });
+    } finally {
+        Binder.restoreCallingIdentity(identity);
+    }
+}

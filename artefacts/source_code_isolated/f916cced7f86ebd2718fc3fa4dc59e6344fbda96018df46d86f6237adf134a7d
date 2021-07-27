@@ -1,0 +1,33 @@
+public ZoneOffsetTransition previousTransition(Instant instant){
+    if (savingsInstantTransitions.length == 0) {
+        return null;
+    }
+    long epochSec = instant.getEpochSecond();
+    if (instant.getNano() > 0 && epochSec < Long.MAX_VALUE) {
+        epochSec += 1;
+    }
+    long lastHistoric = savingsInstantTransitions[savingsInstantTransitions.length - 1];
+    if (lastRules.length > 0 && epochSec > lastHistoric) {
+        ZoneOffset lastHistoricOffset = wallOffsets[wallOffsets.length - 1];
+        int year = findYear(epochSec, lastHistoricOffset);
+        ZoneOffsetTransition[] transArray = findTransitionArray(year);
+        for (int i = transArray.length - 1; i >= 0; i--) {
+            if (epochSec > transArray[i].toEpochSecond()) {
+                return transArray[i];
+            }
+        }
+        int lastHistoricYear = findYear(lastHistoric, lastHistoricOffset);
+        if (--year > lastHistoricYear) {
+            transArray = findTransitionArray(year);
+            return transArray[transArray.length - 1];
+        }
+    }
+    int index = Arrays.binarySearch(savingsInstantTransitions, epochSec);
+    if (index < 0) {
+        index = -index - 1;
+    }
+    if (index <= 0) {
+        return null;
+    }
+    return new ZoneOffsetTransition(savingsInstantTransitions[index - 1], wallOffsets[index - 1], wallOffsets[index]);
+}

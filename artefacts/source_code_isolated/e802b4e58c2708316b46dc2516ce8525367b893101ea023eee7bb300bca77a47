@@ -1,0 +1,6 @@
+public static void parallelPrefix(int[] array, int fromIndex, int toIndex, IntBinaryOperator op){
+    Objects.requireNonNull(op);
+    rangeCheck(array.length, fromIndex, toIndex);
+    if (fromIndex < toIndex)
+        new ArrayPrefixHelpers.IntCumulateTask(null, op, array, fromIndex, toIndex).invoke();
+}

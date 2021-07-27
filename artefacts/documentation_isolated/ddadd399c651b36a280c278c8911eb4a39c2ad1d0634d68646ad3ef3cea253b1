@@ -1,0 +1,46 @@
+
+     * This method creates an animation that will be run for this transition
+     * given the information in the startValues and endValues structures captured
+     * earlier for the start and end scenes. Subclasses of Transition should override
+     * this method. The method should only be called by the transition system; it is
+     * not intended to be called from external classes.
+     *
+     * <p>This method is called by the transition's parent (all the way up to the
+     * topmost Transition in the hierarchy) with the sceneRoot and start/end
+     * values that the transition may need to set up initial target values
+     * and construct an appropriate animation. For example, if an overall
+     * Transition is a {@link TransitionSet} consisting of several
+     * child transitions in sequence, then some of the child transitions may
+     * want to set initial values on target views prior to the overall
+     * Transition commencing, to put them in an appropriate state for the
+     * delay between that start and the child Transition start time. For
+     * example, a transition that fades an item in may wish to set the starting
+     * alpha value to 0, to avoid it blinking in prior to the transition
+     * actually starting the animation. This is necessary because the scene
+     * change that triggers the Transition will automatically set the end-scene
+     * on all target views, so a Transition that wants to animate from a
+     * different value should set that value prior to returning from this method.</p>
+     *
+     * <p>Additionally, a Transition can perform logic to determine whether
+     * the transition needs to run on the given target and start/end values.
+     * For example, a transition that resizes objects on the screen may wish
+     * to avoid running for views which are not present in either the start
+     * or end scenes.</p>
+     *
+     * <p>If there is an animator created and returned from this method, the
+     * transition mechanism will apply any applicable duration, startDelay,
+     * and interpolator to that animation and start it. A return value of
+     * <code>null</code> indicates that no animation should run. The default
+     * implementation returns null.</p>
+     *
+     * <p>The method is called for every applicable target object, which is
+     * stored in the {@link TransitionValues#view} field.</p>
+     *
+     *
+     * @param sceneRoot The root of the transition hierarchy.
+     * @param startValues The values for a specific target in the start scene.
+     * @param endValues The values for the target in the end scene.
+     * @return A Animator to be started at the appropriate time in the
+     * overall transition for this scene change. A null value means no animation
+     * should be run.
+     

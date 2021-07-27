@@ -1,0 +1,11 @@
+public final int hashCode(){
+    int h = 0;
+    Node<K, V>[] t;
+    if ((t = map.table) != null) {
+        Traverser<K, V> it = new Traverser<K, V>(t, t.length, 0, t.length);
+        for (Node<K, V> p; (p = it.advance()) != null; ) {
+            h += p.hashCode();
+        }
+    }
+    return h;
+}

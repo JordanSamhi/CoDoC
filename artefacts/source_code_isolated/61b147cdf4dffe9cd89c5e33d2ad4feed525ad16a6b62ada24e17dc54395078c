@@ -1,0 +1,12 @@
+public CharBuffer put(String src, int start, int end){
+    checkBounds(start, end - start, src.length());
+    if (start == end) {
+        return this;
+    }
+    if (isReadOnly())
+        throw new ReadOnlyBufferException();
+    if (end - start > remaining())
+        throw new BufferOverflowException();
+    for (int i = start; i < end; i++) this.put(src.charAt(i));
+    return this;
+}

@@ -1,0 +1,31 @@
+public Process start() throws IOException{
+    String[] cmdarray = command.toArray(new String[command.size()]);
+    cmdarray = cmdarray.clone();
+    for (String arg : cmdarray) if (arg == null)
+        throw new NullPointerException();
+    String prog = cmdarray[0];
+    SecurityManager security = System.getSecurityManager();
+    if (security != null)
+        security.checkExec(prog);
+    String dir = directory == null ? null : directory.toString();
+    for (int i = 1; i < cmdarray.length; i++) {
+        if (cmdarray[i].indexOf('\u0000') >= 0) {
+            throw new IOException("invalid null character in command");
+        }
+    }
+    try {
+        return ProcessImpl.start(cmdarray, environment, dir, redirects, redirectErrorStream);
+    } catch (IOException | IllegalArgumentException e) {
+        String exceptionInfo = ": " + e.getMessage();
+        Throwable cause = e;
+        if ((e instanceof IOException) && security != null) {
+            try {
+                security.checkRead(prog);
+            } catch (SecurityException se) {
+                exceptionInfo = "";
+                cause = se;
+            }
+        }
+        throw new IOException("Cannot run program \"" + prog + "\"" + (dir == null ? "" : " (in directory \"" + dir + "\")") + exceptionInfo, cause);
+    }
+}

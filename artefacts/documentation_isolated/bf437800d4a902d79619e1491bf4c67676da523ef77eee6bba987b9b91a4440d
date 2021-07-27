@@ -1,0 +1,68 @@
+
+     * <p>Request endlessly repeating capture of a sequence of images by this
+     * capture session.</p>
+     *
+     * <p>With this method, the camera device will continually capture images,
+     * cycling through the settings in the provided list of
+     * {@link CaptureRequest CaptureRequests}, at the maximum rate possible.</p>
+     *
+     * <p>If a request is submitted through {@link #capture} or
+     * {@link #captureBurst}, the current repetition of the request list will be
+     * completed before the higher-priority request is handled. This guarantees
+     * that the application always receives a complete repeat burst captured in
+     * minimal time, instead of bursts interleaved with higher-priority
+     * captures, or incomplete captures.</p>
+     *
+     * <p>Repeating burst requests are a simple way for an application to
+     * maintain a preview or other continuous stream of frames where each
+     * request is different in a predicatable way, without having to continually
+     * submit requests through {@link #captureBurst}.</p>
+     *
+     * <p>To stop the repeating capture, call {@link #stopRepeating}. Any
+     * ongoing burst will still be completed, however. Calling
+     * {@link #abortCaptures} will also clear the request.</p>
+     *
+     * <p>Calling this method will replace a previously-set repeating request or
+     * burst set up by this method or {@link #setRepeatingRequest}, although any
+     * in-progress burst will be completed before the new repeat burst will be
+     * used.</p>
+     *
+     * <p>This method does not support reprocess capture requests because each reprocess
+     * {@link CaptureRequest} must be created from the {@link TotalCaptureResult} that matches
+     * the input image to be reprocessed. This is either the {@link TotalCaptureResult} of capture
+     * that is sent for reprocessing, or one of the {@link TotalCaptureResult TotalCaptureResults}
+     * of a set of captures, when data from the whole set is combined by the application into a
+     * single reprocess input image. The request must be capturing images from the camera. If a
+     * reprocess capture request is submitted, this method will throw IllegalArgumentException.</p>
+     *
+     * @param requests the list of requests to cycle through indefinitely
+     * @param listener The callback object to notify each time one of the
+     * requests in the repeating bursts has finished processing. If null, no
+     * metadata will be produced for this stream of requests, although image
+     * data will still be produced.
+     * @param handler the handler on which the listener should be invoked, or
+     * {@code null} to use the current thread's {@link android.os.Looper
+     * looper}.
+     *
+     * @return int A unique capture sequence ID used by
+     *             {@link CaptureCallback#onCaptureSequenceCompleted}.
+     *
+     * @throws CameraAccessException if the camera device is no longer connected or has
+     *                               encountered a fatal error
+     * @throws IllegalStateException if this session is no longer active, either because the session
+     *                               was explicitly closed, a new session has been created
+     *                               or the camera device has been closed.
+     * @throws IllegalArgumentException If the requests reference no Surfaces or reference Surfaces
+     *                                  not currently configured as outputs; or one of the requests
+     *                                  is a reprocess capture request; or one of the captures
+     *                                  targets a Surface in the middle of being
+     *                                  {@link #prepare prepared}; or the handler is null, the
+     *                                  listener is not null, and the calling thread has no looper;
+     *                                  or no requests were passed in.
+     *
+     * @see #capture
+     * @see #captureBurst
+     * @see #setRepeatingRequest
+     * @see #stopRepeating
+     * @see #abortCaptures
+     

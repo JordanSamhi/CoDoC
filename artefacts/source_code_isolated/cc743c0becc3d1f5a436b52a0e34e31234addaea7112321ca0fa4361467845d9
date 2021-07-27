@@ -1,3 +1,7 @@
-public CharSequence getInitialTextBeforeCursor(int length, int flags){
-    return mInitialSurroundingText.getInitialTextBeforeCursor(length, flags);
+private CharSequence getInitialTextBeforeCursor(int n, int flags){
+    if (mSurroundingText == null) {
+        return null;
+    }
+    final int length = Math.min(n, mSelectionHead);
+    return ((flags & InputConnection.GET_TEXT_WITH_STYLES) != 0) ? mSurroundingText.subSequence(mSelectionHead - length, mSelectionHead) : TextUtils.substring(mSurroundingText, mSelectionHead - length, mSelectionHead);
 }

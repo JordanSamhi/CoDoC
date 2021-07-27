@@ -1,0 +1,40 @@
+public void readConfiguration() throws IOException, SecurityException{
+    checkPermission();
+    String cname = System.getProperty("java.util.logging.config.class");
+    if (cname != null) {
+        try {
+            getClassInstance(cname).newInstance();
+            return;
+        } catch (Exception ex) {
+            System.err.println("Logging configuration class \"" + cname + "\" failed");
+            System.err.println("" + ex);
+        }
+    }
+    String fname = System.getProperty("java.util.logging.config.file");
+    if (fname == null) {
+        fname = System.getProperty("java.home");
+        if (fname == null) {
+            throw new Error("Can't find java.home ??");
+        }
+        File f = new File(fname, "lib");
+        f = new File(f, "logging.properties");
+        fname = f.getCanonicalPath();
+    }
+    InputStream in;
+    try {
+        in = new FileInputStream(fname);
+    } catch (Exception e) {
+        in = LogManager.class.getResourceAsStream("logging.properties");
+        if (in == null) {
+            throw e;
+        }
+    }
+    BufferedInputStream bin = new BufferedInputStream(in);
+    try {
+        readConfiguration(bin);
+    } finally {
+        if (in != null) {
+            in.close();
+        }
+    }
+}

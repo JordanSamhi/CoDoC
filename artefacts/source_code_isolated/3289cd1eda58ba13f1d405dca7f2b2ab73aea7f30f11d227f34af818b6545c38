@@ -1,0 +1,17 @@
+public boolean onMove(int oldPosition, int newPosition){
+    throwIfCursorIsClosed();
+    try {
+        if (mWindow == null || newPosition < mWindow.getStartPosition() || newPosition >= mWindow.getStartPosition() + mWindow.getNumRows()) {
+            setWindow(mBulkCursor.getWindow(newPosition));
+        } else if (mWantsAllOnMoveCalls) {
+            mBulkCursor.onMove(newPosition);
+        }
+    } catch (RemoteException ex) {
+        Log.e(TAG, "Unable to get window because the remote process is dead");
+        return false;
+    }
+    if (mWindow == null) {
+        return false;
+    }
+    return true;
+}

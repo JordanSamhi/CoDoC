@@ -1,0 +1,55 @@
+public Stream<String> splitAsStream(final CharSequence input){
+    class MatcherIterator implements Iterator<String> {
+
+        private final Matcher matcher;
+
+        private int current;
+
+        private String nextElement;
+
+        private int emptyElementCount;
+
+        MatcherIterator() {
+            this.matcher = matcher(input);
+        }
+
+        public String next() {
+            if (!hasNext())
+                throw new NoSuchElementException();
+            if (emptyElementCount == 0) {
+                String n = nextElement;
+                nextElement = null;
+                return n;
+            } else {
+                emptyElementCount--;
+                return "";
+            }
+        }
+
+        public boolean hasNext() {
+            if (nextElement != null || emptyElementCount > 0)
+                return true;
+            if (current == input.length())
+                return false;
+            while (matcher.find()) {
+                nextElement = input.subSequence(current, matcher.start()).toString();
+                current = matcher.end();
+                if (!nextElement.isEmpty()) {
+                    return true;
+                } else if (current > 0) {
+                    emptyElementCount++;
+                }
+            }
+            nextElement = input.subSequence(current, input.length()).toString();
+            current = input.length();
+            if (!nextElement.isEmpty()) {
+                return true;
+            } else {
+                emptyElementCount = 0;
+                nextElement = null;
+                return false;
+            }
+        }
+    }
+    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new MatcherIterator(), Spliterator.ORDERED | Spliterator.NONNULL), false);
+}

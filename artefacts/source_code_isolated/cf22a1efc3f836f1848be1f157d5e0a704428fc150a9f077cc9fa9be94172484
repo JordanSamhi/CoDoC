@@ -1,0 +1,7 @@
+public static MethodHandle foldArguments(MethodHandle target, MethodHandle combiner){
+    int foldPos = 0;
+    MethodType targetType = target.type();
+    MethodType combinerType = combiner.type();
+    Class<?> rtype = foldArgumentChecks(foldPos, targetType, combinerType);
+    return new Transformers.FoldArguments(target, combiner);
+}

@@ -1,0 +1,10 @@
+public SubtitleTrack createTrack(MediaFormat format){
+    String mimeType = format.getString(MediaFormat.KEY_MIME);
+    if (MediaFormat.MIMETYPE_TEXT_CEA_608.equals(mimeType)) {
+        if (mCCWidget == null) {
+            mCCWidget = new Cea608CCWidget(mContext);
+        }
+        return new Cea608CaptionTrack(mCCWidget, format);
+    }
+    throw new RuntimeException("No matching format: " + format.toString());
+}

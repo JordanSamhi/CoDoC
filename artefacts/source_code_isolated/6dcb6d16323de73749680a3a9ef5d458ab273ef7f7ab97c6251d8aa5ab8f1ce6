@@ -1,0 +1,11 @@
+public final byte[] update(byte[] input){
+    checkCipherState();
+    if (input == null) {
+        throw new IllegalArgumentException("Null input buffer");
+    }
+    updateProviderIfNeeded();
+    if (input.length == 0) {
+        return null;
+    }
+    return spi.engineUpdate(input, 0, input.length);
+}

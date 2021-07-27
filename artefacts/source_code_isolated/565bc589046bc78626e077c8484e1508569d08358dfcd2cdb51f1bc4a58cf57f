@@ -1,0 +1,20 @@
+public ValueRange range(ChronoField field){
+    switch(field) {
+        case PROLEPTIC_MONTH:
+            {
+                ValueRange range = PROLEPTIC_MONTH.range();
+                return ValueRange.of(range.getMinimum() - YEARS_DIFFERENCE * 12L, range.getMaximum() - YEARS_DIFFERENCE * 12L);
+            }
+        case YEAR_OF_ERA:
+            {
+                ValueRange range = YEAR.range();
+                return ValueRange.of(1, range.getMaximum() - YEARS_DIFFERENCE, -range.getMinimum() + 1 + YEARS_DIFFERENCE);
+            }
+        case YEAR:
+            {
+                ValueRange range = YEAR.range();
+                return ValueRange.of(range.getMinimum() - YEARS_DIFFERENCE, range.getMaximum() - YEARS_DIFFERENCE);
+            }
+    }
+    return field.range();
+}

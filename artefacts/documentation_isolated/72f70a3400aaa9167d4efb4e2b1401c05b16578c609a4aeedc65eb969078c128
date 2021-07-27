@@ -1,0 +1,42 @@
+
+     * Returns a string representation of this <code>Locale</code>
+     * object, consisting of language, country, variant, script,
+     * and extensions as below:
+     * <blockquote>
+     * language + "_" + country + "_" + (variant + "_#" | "#") + script + "-" + extensions
+     * </blockquote>
+     *
+     * Language is always lower case, country is always upper case, script is always title
+     * case, and extensions are always lower case.  Extensions and private use subtags
+     * will be in canonical order as explained in {@link #toLanguageTag}.
+     *
+     * <p>When the locale has neither script nor extensions, the result is the same as in
+     * Java 6 and prior.
+     *
+     * <p>If both the language and country fields are missing, this function will return
+     * the empty string, even if the variant, script, or extensions field is present (you
+     * can't have a locale with just a variant, the variant must accompany a well-formed
+     * language or country code).
+     *
+     * <p>If script or extensions are present and variant is missing, no underscore is
+     * added before the "#".
+     *
+     * <p>This behavior is designed to support debugging and to be compatible with
+     * previous uses of <code>toString</code> that expected language, country, and variant
+     * fields only.  To represent a Locale as a String for interchange purposes, use
+     * {@link #toLanguageTag}.
+     *
+     * <p>Examples: <ul>
+     * <li><tt>en</tt></li>
+     * <li><tt>de_DE</tt></li>
+     * <li><tt>_GB</tt></li>
+     * <li><tt>en_US_WIN</tt></li>
+     * <li><tt>de__POSIX</tt></li>
+     * <li><tt>zh_CN_#Hans</tt></li>
+     * <li><tt>zh_TW_#Hant-x-java</tt></li>
+     * <li><tt>th_TH_TH_#u-nu-thai</tt></li></ul>
+     *
+     * @return A string representation of the Locale, for debugging.
+     * @see #getDisplayName
+     * @see #toLanguageTag
+     

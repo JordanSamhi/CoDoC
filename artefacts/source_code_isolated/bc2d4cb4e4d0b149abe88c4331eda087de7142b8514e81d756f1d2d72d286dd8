@@ -1,9 +1,0 @@
-public TransportClient getTransportClientOrThrow(String transportName, String caller) throws TransportNotRegisteredException{
-    synchronized (mTransportLock) {
-        ComponentName component = getRegisteredTransportComponentLocked(transportName);
-        if (component == null) {
-            throw new TransportNotRegisteredException(transportName);
-        }
-        return mTransportClientManager.getTransportClient(component, caller);
-    }
-}

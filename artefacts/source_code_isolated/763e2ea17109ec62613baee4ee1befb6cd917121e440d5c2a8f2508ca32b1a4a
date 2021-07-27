@@ -1,0 +1,16 @@
+public boolean equals(Object obj){
+    if (this == obj)
+        return true;
+    if (obj == null)
+        return false;
+    if (getClass() != obj.getClass())
+        return false;
+    final AutofillValue other = (AutofillValue) obj;
+    if (mType != other.mType)
+        return false;
+    if (isText()) {
+        return mValue.toString().equals(other.mValue.toString());
+    } else {
+        return Objects.equals(mValue, other.mValue);
+    }
+}

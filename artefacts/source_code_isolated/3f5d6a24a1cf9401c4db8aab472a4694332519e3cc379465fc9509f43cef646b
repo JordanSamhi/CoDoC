@@ -1,0 +1,13 @@
+public synchronized void setEncoding(String encoding) throws SecurityException, java.io.UnsupportedEncodingException{
+    checkPermission();
+    if (encoding != null) {
+        try {
+            if (!java.nio.charset.Charset.isSupported(encoding)) {
+                throw new UnsupportedEncodingException(encoding);
+            }
+        } catch (java.nio.charset.IllegalCharsetNameException e) {
+            throw new UnsupportedEncodingException(encoding);
+        }
+    }
+    this.encoding = encoding;
+}

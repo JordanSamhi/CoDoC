@@ -1,0 +1,35 @@
+public boolean retainAll(Collection<?> c){
+    if (c == null)
+        throw new NullPointerException();
+    boolean removed = false;
+    synchronized (l.lock) {
+        int n = size;
+        if (n > 0) {
+            int lo = offset;
+            int hi = offset + n;
+            Object[] elements = expectedArray;
+            if (l.getArray() != elements)
+                throw new ConcurrentModificationException();
+            int len = elements.length;
+            if (lo < 0 || hi > len)
+                throw new IndexOutOfBoundsException();
+            int newSize = 0;
+            Object[] temp = new Object[n];
+            for (int i = lo; i < hi; ++i) {
+                Object element = elements[i];
+                if (c.contains(element))
+                    temp[newSize++] = element;
+            }
+            if (newSize != n) {
+                Object[] newElements = new Object[len - n + newSize];
+                System.arraycopy(elements, 0, newElements, 0, lo);
+                System.arraycopy(temp, 0, newElements, lo, newSize);
+                System.arraycopy(elements, hi, newElements, lo + newSize, len - hi);
+                size = newSize;
+                removed = true;
+                l.setArray(expectedArray = newElements);
+            }
+        }
+    }
+    return removed;
+}

@@ -1,0 +1,12 @@
+public boolean dispatchCapturedPointerEvent(MotionEvent event){
+    if ((mPrivateFlags & (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) == (PFLAG_FOCUSED | PFLAG_HAS_BOUNDS)) {
+        if (super.dispatchCapturedPointerEvent(event)) {
+            return true;
+        }
+    } else if (mFocused != null && (mFocused.mPrivateFlags & PFLAG_HAS_BOUNDS) == PFLAG_HAS_BOUNDS) {
+        if (mFocused.dispatchCapturedPointerEvent(event)) {
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,0 +1,70 @@
+public static Builder newInstance(final String type, final Provider provider, final ProtectionParameter protection){
+    if ((type == null) || (protection == null)) {
+        throw new NullPointerException();
+    }
+    final AccessControlContext context = AccessController.getContext();
+    return new Builder() {
+
+        private volatile boolean getCalled;
+
+        private IOException oldException;
+
+        private final PrivilegedExceptionAction<KeyStore> action = new PrivilegedExceptionAction<KeyStore>() {
+
+            public KeyStore run() throws Exception {
+                KeyStore ks;
+                if (provider == null) {
+                    ks = KeyStore.getInstance(type);
+                } else {
+                    ks = KeyStore.getInstance(type, provider);
+                }
+                LoadStoreParameter param = new SimpleLoadStoreParameter(protection);
+                if (protection instanceof CallbackHandlerProtection == false) {
+                    ks.load(param);
+                } else {
+                    int tries = 0;
+                    while (true) {
+                        tries++;
+                        try {
+                            ks.load(param);
+                            break;
+                        } catch (IOException e) {
+                            if (e.getCause() instanceof UnrecoverableKeyException) {
+                                if (tries < MAX_CALLBACK_TRIES) {
+                                    continue;
+                                } else {
+                                    oldException = e;
+                                }
+                            }
+                            throw e;
+                        }
+                    }
+                }
+                getCalled = true;
+                return ks;
+            }
+        };
+
+        public synchronized KeyStore getKeyStore() throws KeyStoreException {
+            if (oldException != null) {
+                throw new KeyStoreException("Previous KeyStore instantiation failed", oldException);
+            }
+            try {
+                return AccessController.doPrivileged(action, context);
+            } catch (PrivilegedActionException e) {
+                Throwable cause = e.getCause();
+                throw new KeyStoreException("KeyStore instantiation failed", cause);
+            }
+        }
+
+        public ProtectionParameter getProtectionParameter(String alias) {
+            if (alias == null) {
+                throw new NullPointerException();
+            }
+            if (getCalled == false) {
+                throw new IllegalStateException("getKeyStore() must be called first");
+            }
+            return protection;
+        }
+    };
+}

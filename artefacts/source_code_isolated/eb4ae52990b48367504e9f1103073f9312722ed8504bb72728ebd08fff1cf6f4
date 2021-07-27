@@ -1,0 +1,7 @@
+public long getFilePointer() throws IOException{
+    try {
+        return Libcore.os.lseek(fd, 0L, SEEK_CUR);
+    } catch (ErrnoException errnoException) {
+        throw errnoException.rethrowAsIOException();
+    }
+}

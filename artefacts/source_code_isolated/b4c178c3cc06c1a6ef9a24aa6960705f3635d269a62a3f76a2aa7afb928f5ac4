@@ -1,0 +1,10 @@
+public MethodHandle findStatic(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException{
+    Method method = refc.getDeclaredMethod(name, type.ptypes());
+    final int modifiers = method.getModifiers();
+    if (!Modifier.isStatic(modifiers)) {
+        throw new IllegalAccessException("Method" + method + " is not static");
+    }
+    checkReturnType(method, type);
+    checkAccess(refc, method.getDeclaringClass(), modifiers, method.getName());
+    return createMethodHandle(method, MethodHandle.INVOKE_STATIC, type);
+}

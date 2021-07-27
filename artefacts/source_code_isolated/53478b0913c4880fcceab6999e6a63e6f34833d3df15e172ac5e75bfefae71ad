@@ -1,0 +1,80 @@
+public void applyPattern(String pattern){
+    StringBuilder[] segments = new StringBuilder[4];
+    segments[SEG_RAW] = new StringBuilder();
+    int part = SEG_RAW;
+    int formatNumber = 0;
+    boolean inQuote = false;
+    int braceStack = 0;
+    maxOffset = -1;
+    for (int i = 0; i < pattern.length(); ++i) {
+        char ch = pattern.charAt(i);
+        if (part == SEG_RAW) {
+            if (ch == '\'') {
+                if (i + 1 < pattern.length() && pattern.charAt(i + 1) == '\'') {
+                    segments[part].append(ch);
+                    ++i;
+                } else {
+                    inQuote = !inQuote;
+                }
+            } else if (ch == '{' && !inQuote) {
+                part = SEG_INDEX;
+                if (segments[SEG_INDEX] == null) {
+                    segments[SEG_INDEX] = new StringBuilder();
+                }
+            } else {
+                segments[part].append(ch);
+            }
+        } else {
+            if (inQuote) {
+                segments[part].append(ch);
+                if (ch == '\'') {
+                    inQuote = false;
+                }
+            } else {
+                switch(ch) {
+                    case ',':
+                        if (part < SEG_MODIFIER) {
+                            if (segments[++part] == null) {
+                                segments[part] = new StringBuilder();
+                            }
+                        } else {
+                            segments[part].append(ch);
+                        }
+                        break;
+                    case '{':
+                        ++braceStack;
+                        segments[part].append(ch);
+                        break;
+                    case '}':
+                        if (braceStack == 0) {
+                            part = SEG_RAW;
+                            makeFormat(i, formatNumber, segments);
+                            formatNumber++;
+                            segments[SEG_INDEX] = null;
+                            segments[SEG_TYPE] = null;
+                            segments[SEG_MODIFIER] = null;
+                        } else {
+                            --braceStack;
+                            segments[part].append(ch);
+                        }
+                        break;
+                    case ' ':
+                        if (part != SEG_TYPE || segments[SEG_TYPE].length() > 0) {
+                            segments[part].append(ch);
+                        }
+                        break;
+                    case '\'':
+                        inQuote = true;
+                    default:
+                        segments[part].append(ch);
+                        break;
+                }
+            }
+        }
+    }
+    if (braceStack == 0 && part != 0) {
+        maxOffset = -1;
+        throw new IllegalArgumentException("Unmatched braces in the pattern.");
+    }
+    this.pattern = segments[0].toString();
+}

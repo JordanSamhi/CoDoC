@@ -1,0 +1,11 @@
+ int get(TemporalField field){
+    ValueRange range = range(field);
+    if (range.isIntValue() == false) {
+        throw new UnsupportedTemporalTypeException("Invalid field " + field + " for get() method, use getLong() instead");
+    }
+    long value = getLong(field);
+    if (range.isValidValue(value) == false) {
+        throw new DateTimeException("Invalid value for " + field + " (valid values " + range + "): " + value);
+    }
+    return (int) value;
+}

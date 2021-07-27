@@ -1,0 +1,26 @@
+
+     * Returns a synchronized (thread-safe) set backed by the specified
+     * set.  In order to guarantee serial access, it is critical that
+     * <strong>all</strong> access to the backing set is accomplished
+     * through the returned set.<p>
+     *
+     * It is imperative that the user manually synchronize on the returned
+     * set when iterating over it:
+     * <pre>
+     *  Set s = Collections.synchronizedSet(new HashSet());
+     *      ...
+     *  synchronized (s) {
+     *      Iterator i = s.iterator(); // Must be in the synchronized block
+     *      while (i.hasNext())
+     *          foo(i.next());
+     *  }
+     * </pre>
+     * Failure to follow this advice may result in non-deterministic behavior.
+     *
+     * <p>The returned set will be serializable if the specified set is
+     * serializable.
+     *
+     * @param  <T> the class of the objects in the set
+     * @param  s the set to be "wrapped" in a synchronized set.
+     * @return a synchronized view of the specified set.
+     

@@ -1,0 +1,9 @@
+public final SSLEngine createSSLEngine(String peerHost, int peerPort){
+    try {
+        return contextSpi.engineCreateSSLEngine(peerHost, peerPort);
+    } catch (AbstractMethodError e) {
+        UnsupportedOperationException unsup = new UnsupportedOperationException("Provider: " + getProvider() + " does not support this operation");
+        unsup.initCause(e);
+        throw unsup;
+    }
+}

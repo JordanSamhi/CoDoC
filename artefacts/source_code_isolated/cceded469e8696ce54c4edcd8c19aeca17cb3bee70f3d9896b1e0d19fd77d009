@@ -1,0 +1,12 @@
+public synchronized int getSoTimeout() throws SocketException{
+    if (isClosed())
+        throw new SocketException("Socket is closed");
+    if (getImpl() == null)
+        return 0;
+    Object o = getImpl().getOption(SocketOptions.SO_TIMEOUT);
+    if (o instanceof Integer) {
+        return ((Integer) o).intValue();
+    } else {
+        return 0;
+    }
+}

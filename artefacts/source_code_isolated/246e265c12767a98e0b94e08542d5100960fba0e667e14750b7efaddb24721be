@@ -1,0 +1,38 @@
+public String toString(){
+    if (toStringImage != null) {
+        return toStringImage;
+    }
+    if (bitLength < 32) {
+        toStringImage = Conversion.toDecimalScaledString(smallValue, scale);
+        return toStringImage;
+    }
+    String intString = getUnscaledValue().toString();
+    if (scale == 0) {
+        return intString;
+    }
+    int begin = (getUnscaledValue().signum() < 0) ? 2 : 1;
+    int end = intString.length();
+    long exponent = -(long) scale + end - begin;
+    StringBuilder result = new StringBuilder();
+    result.append(intString);
+    if ((scale > 0) && (exponent >= -6)) {
+        if (exponent >= 0) {
+            result.insert(end - scale, '.');
+        } else {
+            result.insert(begin - 1, "0.");
+            result.insert(begin + 1, CH_ZEROS, 0, -(int) exponent - 1);
+        }
+    } else {
+        if (end - begin >= 1) {
+            result.insert(begin, '.');
+            end++;
+        }
+        result.insert(end, 'E');
+        if (exponent > 0) {
+            result.insert(++end, '+');
+        }
+        result.insert(++end, Long.toString(exponent));
+    }
+    toStringImage = result.toString();
+    return toStringImage;
+}

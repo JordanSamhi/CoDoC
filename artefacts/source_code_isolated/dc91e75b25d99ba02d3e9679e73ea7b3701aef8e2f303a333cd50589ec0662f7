@@ -1,0 +1,10 @@
+public void write(String str, int off, int len){
+    synchronized (lock) {
+        int newcount = count + len;
+        if (newcount > buf.length) {
+            buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+        }
+        str.getChars(off, off + len, buf, count);
+        count = newcount;
+    }
+}

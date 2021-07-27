@@ -1,0 +1,9 @@
+public Dialog onCreateDialog(Bundle savedInstanceState){
+    final RecoverableSecurityException e = getArguments().getParcelable(TAG);
+    return new AlertDialog.Builder(getActivity()).setMessage(e.mUserMessage).setPositiveButton(e.mUserAction.getTitle(), (dialog, which) -> {
+        try {
+            e.mUserAction.getActionIntent().send();
+        } catch (PendingIntent.CanceledException ignored) {
+        }
+    }).setNegativeButton(android.R.string.cancel, null).create();
+}

@@ -1,0 +1,19 @@
+public final void interrupt(){
+    int ngroupsSnapshot;
+    ThreadGroup[] groupsSnapshot;
+    synchronized (this) {
+        checkAccess();
+        for (int i = 0; i < nthreads; i++) {
+            threads[i].interrupt();
+        }
+        ngroupsSnapshot = ngroups;
+        if (groups != null) {
+            groupsSnapshot = Arrays.copyOf(groups, ngroupsSnapshot);
+        } else {
+            groupsSnapshot = null;
+        }
+    }
+    for (int i = 0; i < ngroupsSnapshot; i++) {
+        groupsSnapshot[i].interrupt();
+    }
+}

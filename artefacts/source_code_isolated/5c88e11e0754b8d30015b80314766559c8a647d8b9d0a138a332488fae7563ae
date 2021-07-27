@@ -1,0 +1,22 @@
+public void setEnabled(boolean enabled){
+    if (enabled == isEnabled()) {
+        return;
+    }
+    if (!enabled) {
+        InputMethodManager imm = getInputMethodManager();
+        if (imm != null && imm.isActive(this)) {
+            imm.hideSoftInputFromWindow(getWindowToken(), 0);
+        }
+    }
+    super.setEnabled(enabled);
+    if (enabled) {
+        InputMethodManager imm = getInputMethodManager();
+        if (imm != null)
+            imm.restartInput(this);
+    }
+    if (mEditor != null) {
+        mEditor.invalidateTextDisplayList();
+        mEditor.prepareCursorControllers();
+        mEditor.makeBlink();
+    }
+}

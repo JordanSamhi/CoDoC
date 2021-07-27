@@ -1,0 +1,34 @@
+
+     * Appends the text of a date-time field to the formatter using the specified
+     * map to supply the text.
+     * <p>
+     * The standard text outputting methods use the localized text in the JDK.
+     * This method allows that text to be specified directly.
+     * The supplied map is not validated by the builder to ensure that formatting or
+     * parsing is possible, thus an invalid map may throw an error during later use.
+     * <p>
+     * Supplying the map of text provides considerable flexibility in formatting and parsing.
+     * For example, a legacy application might require or supply the months of the
+     * year as "JNY", "FBY", "MCH" etc. These do not match the standard set of text
+     * for localized month names. Using this method, a map can be created which
+     * defines the connection between each value and the text:
+     * <pre>
+     * Map&lt;Long, String&gt; map = new HashMap&lt;&gt;();
+     * map.put(1L, "JNY");
+     * map.put(2L, "FBY");
+     * map.put(3L, "MCH");
+     * ...
+     * builder.appendText(MONTH_OF_YEAR, map);
+     * </pre>
+     * <p>
+     * Other uses might be to output the value with a suffix, such as "1st", "2nd", "3rd",
+     * or as Roman numerals "I", "II", "III", "IV".
+     * <p>
+     * During formatting, the value is obtained and checked that it is in the valid range.
+     * If text is not available for the value then it is output as a number.
+     * During parsing, the parser will match against the map of text and numeric values.
+     *
+     * @param field  the field to append, not null
+     * @param textLookup  the map from the value to the text
+     * @return this, for chaining, not null
+     

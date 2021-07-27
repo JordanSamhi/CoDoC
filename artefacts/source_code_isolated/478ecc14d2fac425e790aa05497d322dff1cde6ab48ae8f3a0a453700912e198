@@ -1,0 +1,17 @@
+public void finish(){
+    if (mActionMode != this) {
+        return;
+    }
+    if (!checkShowingFlags(mHiddenByApp, mHiddenBySystem, false)) {
+        mDeferredDestroyActionMode = this;
+        mDeferredModeDestroyCallback = mCallback;
+    } else {
+        mCallback.onDestroyActionMode(this);
+    }
+    mCallback = null;
+    animateToMode(false);
+    mContextView.closeMode();
+    mDecorToolbar.getViewGroup().sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+    mOverlayLayout.setHideOnContentScrollEnabled(mHideOnContentScroll);
+    mActionMode = null;
+}

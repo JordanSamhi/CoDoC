@@ -1,0 +1,39 @@
+public long getStartDelay(ViewGroup sceneRoot, Transition transition, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null && endValues == null) {
+        return 0;
+    }
+    int directionMultiplier = 1;
+    Rect epicenter = transition.getEpicenter();
+    TransitionValues positionValues;
+    if (endValues == null || getViewVisibility(startValues) == View.VISIBLE) {
+        positionValues = startValues;
+        directionMultiplier = -1;
+    } else {
+        positionValues = endValues;
+    }
+    int viewCenterX = getViewX(positionValues);
+    int viewCenterY = getViewY(positionValues);
+    int[] loc = new int[2];
+    sceneRoot.getLocationOnScreen(loc);
+    int left = loc[0] + Math.round(sceneRoot.getTranslationX());
+    int top = loc[1] + Math.round(sceneRoot.getTranslationY());
+    int right = left + sceneRoot.getWidth();
+    int bottom = top + sceneRoot.getHeight();
+    int epicenterX;
+    int epicenterY;
+    if (epicenter != null) {
+        epicenterX = epicenter.centerX();
+        epicenterY = epicenter.centerY();
+    } else {
+        epicenterX = (left + right) / 2;
+        epicenterY = (top + bottom) / 2;
+    }
+    float distance = distance(sceneRoot, viewCenterX, viewCenterY, epicenterX, epicenterY, left, top, right, bottom);
+    float maxDistance = getMaxDistance(sceneRoot);
+    float distanceFraction = distance / maxDistance;
+    long duration = transition.getDuration();
+    if (duration < 0) {
+        duration = 300;
+    }
+    return Math.round(duration * directionMultiplier / mPropagationSpeed * distanceFraction);
+}

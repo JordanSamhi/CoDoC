@@ -1,0 +1,10 @@
+public void onInitializeAccessibilityEventInternal(AccessibilityEvent event){
+    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        event.setSource(this);
+        event.setClassName(getClass().getName());
+        event.setPackageName(getContext().getPackageName());
+        event.setContentDescription(mTitle);
+    } else {
+        super.onInitializeAccessibilityEventInternal(event);
+    }
+}

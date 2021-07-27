@@ -1,0 +1,11 @@
+public static NetworkInterface getByIndex(int index) throws SocketException{
+    if (index < 0)
+        throw new IllegalArgumentException("Interface index can't be negative");
+    NetworkInterface[] nis = getAll();
+    for (NetworkInterface ni : nis) {
+        if (ni.getIndex() == index) {
+            return ni;
+        }
+    }
+    return null;
+}

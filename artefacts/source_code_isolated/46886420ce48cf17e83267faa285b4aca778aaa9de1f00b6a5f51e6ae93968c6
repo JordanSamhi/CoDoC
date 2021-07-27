@@ -1,0 +1,33 @@
+public void addView(View child){
+    int borderTop = getPaddingTop();
+    int borderBottom = getPaddingBottom();
+    int borderLeft = getPaddingLeft();
+    int borderRight = getPaddingRight();
+    android.view.ViewGroup.LayoutParams params = child.getLayoutParams();
+    LayoutParams layoutParams = params instanceof PreferenceFrameLayout.LayoutParams ? (PreferenceFrameLayout.LayoutParams) child.getLayoutParams() : null;
+    if (layoutParams != null && layoutParams.removeBorders) {
+        if (mPaddingApplied) {
+            borderTop -= mBorderTop;
+            borderBottom -= mBorderBottom;
+            borderLeft -= mBorderLeft;
+            borderRight -= mBorderRight;
+            mPaddingApplied = false;
+        }
+    } else {
+        if (!mPaddingApplied) {
+            borderTop += mBorderTop;
+            borderBottom += mBorderBottom;
+            borderLeft += mBorderLeft;
+            borderRight += mBorderRight;
+            mPaddingApplied = true;
+        }
+    }
+    int previousTop = getPaddingTop();
+    int previousBottom = getPaddingBottom();
+    int previousLeft = getPaddingLeft();
+    int previousRight = getPaddingRight();
+    if (previousTop != borderTop || previousBottom != borderBottom || previousLeft != borderLeft || previousRight != borderRight) {
+        setPadding(borderLeft, borderTop, borderRight, borderBottom);
+    }
+    super.addView(child);
+}

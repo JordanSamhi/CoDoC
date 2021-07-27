@@ -1,0 +1,28 @@
+public final boolean await(long time, TimeUnit unit) throws InterruptedException{
+    long nanosTimeout = unit.toNanos(time);
+    if (Thread.interrupted())
+        throw new InterruptedException();
+    final long deadline = System.nanoTime() + nanosTimeout;
+    Node node = addConditionWaiter();
+    int savedState = fullyRelease(node);
+    boolean timedout = false;
+    int interruptMode = 0;
+    while (!isOnSyncQueue(node)) {
+        if (nanosTimeout <= 0L) {
+            timedout = transferAfterCancelledWait(node);
+            break;
+        }
+        if (nanosTimeout > SPIN_FOR_TIMEOUT_THRESHOLD)
+            LockSupport.parkNanos(this, nanosTimeout);
+        if ((interruptMode = checkInterruptWhileWaiting(node)) != 0)
+            break;
+        nanosTimeout = deadline - System.nanoTime();
+    }
+    if (acquireQueued(node, savedState) && interruptMode != THROW_IE)
+        interruptMode = REINTERRUPT;
+    if (node.nextWaiter != null)
+        unlinkCancelledWaiters();
+    if (interruptMode != 0)
+        reportInterruptAfterWait(interruptMode);
+    return !timedout;
+}

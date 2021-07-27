@@ -1,9 +1,0 @@
-public void allowAutojoinPasspoint(String fqdn, boolean enableAutojoin){
-    enforceNetworkSettingsPermission();
-    if (fqdn == null) {
-        throw new IllegalArgumentException("FQDN cannot be null");
-    }
-    int callingUid = Binder.getCallingUid();
-    mLog.info("allowAutojoinPasspoint=% uid=%").c(enableAutojoin).c(callingUid).flush();
-    mWifiThreadRunner.post(() -> mPasspointManager.enableAutojoin(null, fqdn, enableAutojoin));
-}

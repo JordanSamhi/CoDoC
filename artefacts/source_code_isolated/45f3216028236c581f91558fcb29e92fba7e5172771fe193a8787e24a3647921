@@ -1,0 +1,13 @@
+public static Collector<T, ?, Map<Boolean, D>> partitioningBy(Predicate<? super T> predicate, Collector<? super T, A, D> downstream){
+    BiConsumer<A, ? super T> downstreamAccumulator = downstream.accumulator();
+    BiConsumer<Partition<A>, T> accumulator = (result, t) -> downstreamAccumulator.accept(predicate.test(t) ? result.forTrue : result.forFalse, t);
+    BinaryOperator<A> op = downstream.combiner();
+    BinaryOperator<Partition<A>> merger = (left, right) -> new Partition<>(op.apply(left.forTrue, right.forTrue), op.apply(left.forFalse, right.forFalse));
+    Supplier<Partition<A>> supplier = () -> new Partition<>(downstream.supplier().get(), downstream.supplier().get());
+    if (downstream.characteristics().contains(Collector.Characteristics.IDENTITY_FINISH)) {
+        return new CollectorImpl<>(supplier, accumulator, merger, CH_ID);
+    } else {
+        Function<Partition<A>, Map<Boolean, D>> finisher = par -> new Partition<>(downstream.finisher().apply(par.forTrue), downstream.finisher().apply(par.forFalse));
+        return new CollectorImpl<>(supplier, accumulator, merger, finisher, CH_NOID);
+    }
+}

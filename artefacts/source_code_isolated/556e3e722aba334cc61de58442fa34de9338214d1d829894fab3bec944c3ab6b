@@ -1,0 +1,8 @@
+public OffsetTime withOffsetSameInstant(ZoneOffset offset){
+    if (offset.equals(this.offset)) {
+        return this;
+    }
+    int difference = offset.getTotalSeconds() - this.offset.getTotalSeconds();
+    LocalTime adjusted = time.plusSeconds(difference);
+    return new OffsetTime(adjusted, offset);
+}

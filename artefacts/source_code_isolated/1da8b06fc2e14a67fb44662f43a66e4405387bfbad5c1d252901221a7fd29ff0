@@ -1,0 +1,9 @@
+public void sendUrgentData(int data) throws IOException{
+    if (isClosed()) {
+        throw new SocketException("Socket is closed");
+    }
+    if (!getImpl().supportsUrgentData()) {
+        throw new SocketException("Urgent data not supported");
+    }
+    getImpl().sendUrgentData(data);
+}

@@ -1,0 +1,53 @@
+public String toString(){
+    final StringBuilder sb = new StringBuilder("[");
+    if (0 != mTransportTypes) {
+        sb.append(" Transports: ");
+        appendStringRepresentationOfBitMaskToStringBuilder(sb, mTransportTypes, NetworkCapabilities::transportNameOf, "|");
+    }
+    if (0 != mNetworkCapabilities) {
+        sb.append(" Capabilities: ");
+        appendStringRepresentationOfBitMaskToStringBuilder(sb, mNetworkCapabilities, NetworkCapabilities::capabilityNameOf, "&");
+    }
+    if (0 != mUnwantedNetworkCapabilities) {
+        sb.append(" Unwanted: ");
+        appendStringRepresentationOfBitMaskToStringBuilder(sb, mUnwantedNetworkCapabilities, NetworkCapabilities::capabilityNameOf, "&");
+    }
+    if (mLinkUpBandwidthKbps > 0) {
+        sb.append(" LinkUpBandwidth>=").append(mLinkUpBandwidthKbps).append("Kbps");
+    }
+    if (mLinkDownBandwidthKbps > 0) {
+        sb.append(" LinkDnBandwidth>=").append(mLinkDownBandwidthKbps).append("Kbps");
+    }
+    if (mNetworkSpecifier != null) {
+        sb.append(" Specifier: <").append(mNetworkSpecifier).append(">");
+    }
+    if (mTransportInfo != null) {
+        sb.append(" TransportInfo: <").append(mTransportInfo).append(">");
+    }
+    if (hasSignalStrength()) {
+        sb.append(" SignalStrength: ").append(mSignalStrength);
+    }
+    if (null != mUids) {
+        if ((1 == mUids.size()) && (mUids.valueAt(0).count() == 1)) {
+            sb.append(" Uid: ").append(mUids.valueAt(0).start);
+        } else {
+            sb.append(" Uids: <").append(mUids).append(">");
+        }
+    }
+    if (mOwnerUid != Process.INVALID_UID) {
+        sb.append(" OwnerUid: ").append(mOwnerUid);
+    }
+    if (mAdministratorUids.length == 0) {
+        sb.append(" AdministratorUids: ").append(Arrays.toString(mAdministratorUids));
+    }
+    if (null != mSSID) {
+        sb.append(" SSID: ").append(mSSID);
+    }
+    if (mPrivateDnsBroken) {
+        sb.append(" Private DNS is broken");
+    }
+    sb.append(" RequestorUid: ").append(mRequestorUid);
+    sb.append(" RequestorPackageName: ").append(mRequestorPackageName);
+    sb.append("]");
+    return sb.toString();
+}

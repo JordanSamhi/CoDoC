@@ -1,0 +1,13 @@
+public static MethodHandle identity(Class<?> type){
+    if (type == null) {
+        throw new NullPointerException("type == null");
+    }
+    if (type.isPrimitive()) {
+        try {
+            return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class, "identity", MethodType.methodType(type, type));
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
+    }
+    return new Transformers.ReferenceIdentity(type);
+}

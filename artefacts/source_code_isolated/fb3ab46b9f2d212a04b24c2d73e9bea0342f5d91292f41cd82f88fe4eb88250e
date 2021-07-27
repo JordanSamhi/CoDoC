@@ -1,0 +1,60 @@
+public Object[] parse(String source, ParsePosition pos){
+    if (source == null) {
+        Object[] empty = {};
+        return empty;
+    }
+    int maximumArgumentNumber = -1;
+    for (int i = 0; i <= maxOffset; i++) {
+        if (argumentNumbers[i] > maximumArgumentNumber) {
+            maximumArgumentNumber = argumentNumbers[i];
+        }
+    }
+    Object[] resultArray = new Object[maximumArgumentNumber + 1];
+    int patternOffset = 0;
+    int sourceOffset = pos.index;
+    ParsePosition tempStatus = new ParsePosition(0);
+    for (int i = 0; i <= maxOffset; ++i) {
+        int len = offsets[i] - patternOffset;
+        if (len == 0 || pattern.regionMatches(patternOffset, source, sourceOffset, len)) {
+            sourceOffset += len;
+            patternOffset += len;
+        } else {
+            pos.errorIndex = sourceOffset;
+            return null;
+        }
+        if (formats[i] == null) {
+            int tempLength = (i != maxOffset) ? offsets[i + 1] : pattern.length();
+            int next;
+            if (patternOffset >= tempLength) {
+                next = source.length();
+            } else {
+                next = source.indexOf(pattern.substring(patternOffset, tempLength), sourceOffset);
+            }
+            if (next < 0) {
+                pos.errorIndex = sourceOffset;
+                return null;
+            } else {
+                String strValue = source.substring(sourceOffset, next);
+                if (!strValue.equals("{" + argumentNumbers[i] + "}"))
+                    resultArray[argumentNumbers[i]] = source.substring(sourceOffset, next);
+                sourceOffset = next;
+            }
+        } else {
+            tempStatus.index = sourceOffset;
+            resultArray[argumentNumbers[i]] = formats[i].parseObject(source, tempStatus);
+            if (tempStatus.index == sourceOffset) {
+                pos.errorIndex = sourceOffset;
+                return null;
+            }
+            sourceOffset = tempStatus.index;
+        }
+    }
+    int len = pattern.length() - patternOffset;
+    if (len == 0 || pattern.regionMatches(patternOffset, source, sourceOffset, len)) {
+        pos.index = sourceOffset + len;
+    } else {
+        pos.errorIndex = sourceOffset;
+        return null;
+    }
+    return resultArray;
+}

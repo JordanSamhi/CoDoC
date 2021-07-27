@@ -1,0 +1,9 @@
+public final byte[] doFinal() throws IllegalStateException{
+    chooseFirstProvider();
+    if (initialized == false) {
+        throw new IllegalStateException("MAC not initialized");
+    }
+    byte[] mac = spi.engineDoFinal();
+    spi.engineReset();
+    return mac;
+}

@@ -1,0 +1,40 @@
+
+     * Sets the {@link SocketOptions#SO_RCVBUF SO_RCVBUF} option to the
+     * specified value for this {@code Socket}. The
+     * {@link SocketOptions#SO_RCVBUF SO_RCVBUF} option is
+     * used by the platform's networking code as a hint for the size to set
+     * the underlying network I/O buffers.
+     *
+     * <p>Increasing the receive buffer size can increase the performance of
+     * network I/O for high-volume connection, while decreasing it can
+     * help reduce the backlog of incoming data.
+     *
+     * <p>Because {@link SocketOptions#SO_RCVBUF SO_RCVBUF} is a hint,
+     * applications that want to verify what size the buffers were set to
+     * should call {@link #getReceiveBufferSize()}.
+     *
+     * <p>The value of {@link SocketOptions#SO_RCVBUF SO_RCVBUF} is also used
+     * to set the TCP receive window that is advertized to the remote peer.
+     * Generally, the window size can be modified at any time when a socket is
+     * connected. However, if a receive window larger than 64K is required then
+     * this must be requested <B>before</B> the socket is connected to the
+     * remote peer. There are two cases to be aware of:
+     * <ol>
+     * <li>For sockets accepted from a ServerSocket, this must be done by calling
+     * {@link ServerSocket#setReceiveBufferSize(int)} before the ServerSocket
+     * is bound to a local address.<p></li>
+     * <li>For client sockets, setReceiveBufferSize() must be called before
+     * connecting the socket to its remote peer.</li></ol>
+     * @param size the size to which to set the receive buffer
+     * size. This value must be greater than 0.
+     *
+     * @exception IllegalArgumentException if the value is 0 or is
+     * negative.
+     *
+     * @exception SocketException if there is an error
+     * in the underlying protocol, such as a TCP error.
+     *
+     * @see #getReceiveBufferSize()
+     * @see ServerSocket#setReceiveBufferSize(int)
+     * @since 1.2
+     

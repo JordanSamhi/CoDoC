@@ -1,0 +1,18 @@
+public void joinGroup(InetAddress mcastaddr) throws IOException{
+    if (isClosed()) {
+        throw new SocketException("Socket is closed");
+    }
+    checkAddress(mcastaddr, "joinGroup");
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkMulticast(mcastaddr);
+    }
+    if (!mcastaddr.isMulticastAddress()) {
+        throw new SocketException("Not a multicast address");
+    }
+    NetworkInterface defaultInterface = NetworkInterface.getDefault();
+    if (!interfaceSet && defaultInterface != null) {
+        setNetworkInterface(defaultInterface);
+    }
+    getImpl().join(mcastaddr);
+}

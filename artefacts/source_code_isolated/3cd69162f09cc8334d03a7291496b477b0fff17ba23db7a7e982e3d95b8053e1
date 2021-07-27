@@ -1,0 +1,12 @@
+public static Builder newInstance(String type, Provider provider, File file, ProtectionParameter protection){
+    if ((type == null) || (file == null) || (protection == null)) {
+        throw new NullPointerException();
+    }
+    if ((protection instanceof PasswordProtection == false) && (protection instanceof CallbackHandlerProtection == false)) {
+        throw new IllegalArgumentException("Protection must be PasswordProtection or " + "CallbackHandlerProtection");
+    }
+    if (file.isFile() == false) {
+        throw new IllegalArgumentException("File does not exist or it does not refer " + "to a normal file: " + file);
+    }
+    return new FileBuilder(type, provider, file, protection, AccessController.getContext());
+}

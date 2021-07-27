@@ -1,0 +1,13 @@
+public String getISO3Country() throws MissingResourceException{
+    final String region = baseLocale.getRegion();
+    if (region.length() == 3) {
+        return baseLocale.getRegion();
+    } else if (region.isEmpty()) {
+        return "";
+    }
+    String country3 = ICU.getISO3Country("en-" + region);
+    if (!region.isEmpty() && country3.isEmpty()) {
+        throw new MissingResourceException("Couldn't find 3-letter country code for " + baseLocale.getRegion(), "FormatData_" + toString(), "ShortCountry");
+    }
+    return country3;
+}

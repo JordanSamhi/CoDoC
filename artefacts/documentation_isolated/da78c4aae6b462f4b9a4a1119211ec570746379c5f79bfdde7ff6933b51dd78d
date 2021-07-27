@@ -1,0 +1,35 @@
+
+     * Appends an instant using ISO-8601 to the formatter with control over
+     * the number of fractional digits.
+     * <p>
+     * Instants have a fixed output format, although this method provides some
+     * control over the fractional digits. They are converted to a date-time
+     * with a zone-offset of UTC and printed using the standard ISO-8601 format.
+     * The localized decimal style is not used.
+     * <p>
+     * The {@code fractionalDigits} parameter allows the output of the fractional
+     * second to be controlled. Specifying zero will cause no fractional digits
+     * to be output. From 1 to 9 will output an increasing number of digits, using
+     * zero right-padding if necessary. The special value -1 is used to output as
+     * many digits as necessary to avoid any trailing zeroes.
+     * <p>
+     * When parsing in strict mode, the number of parsed digits must match the
+     * fractional digits. When parsing in lenient mode, any number of fractional
+     * digits from zero to nine are accepted.
+     * <p>
+     * The instant is obtained using {@link ChronoField#INSTANT_SECONDS INSTANT_SECONDS}
+     * and optionally (@code NANO_OF_SECOND). The value of {@code INSTANT_SECONDS}
+     * may be outside the maximum range of {@code LocalDateTime}.
+     * <p>
+     * The {@linkplain ResolverStyle resolver style} has no effect on instant parsing.
+     * The end-of-day time of '24:00' is handled as midnight at the start of the following day.
+     * The leap-second time of '23:59:60' is handled to some degree, see
+     * {@link DateTimeFormatter#parsedLeapSecond()} for full details.
+     * <p>
+     * An alternative to this method is to format/parse the instant as a single
+     * epoch-seconds value. That is achieved using {@code appendValue(INSTANT_SECONDS)}.
+     *
+     * @param fractionalDigits  the number of fractional second digits to format with,
+     *  from 0 to 9, or -1 to use as many digits as necessary
+     * @return this, for chaining, not null
+     

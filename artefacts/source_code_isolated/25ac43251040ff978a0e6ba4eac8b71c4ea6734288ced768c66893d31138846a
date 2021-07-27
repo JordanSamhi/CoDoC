@@ -1,0 +1,8 @@
+ long getLong(TemporalField field){
+    if (field == ERA) {
+        return getValue();
+    } else if (field instanceof ChronoField) {
+        throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
+    }
+    return field.getFrom(this);
+}

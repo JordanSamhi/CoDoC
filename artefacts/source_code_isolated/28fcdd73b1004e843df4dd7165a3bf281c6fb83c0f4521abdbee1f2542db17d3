@@ -1,0 +1,12 @@
+public boolean engineEntryInstanceOf(String alias, Class<? extends KeyStore.Entry> entryClass){
+    if (entryClass == KeyStore.TrustedCertificateEntry.class) {
+        return engineIsCertificateEntry(alias);
+    }
+    if (entryClass == KeyStore.PrivateKeyEntry.class) {
+        return engineIsKeyEntry(alias) && engineGetCertificate(alias) != null;
+    }
+    if (entryClass == KeyStore.SecretKeyEntry.class) {
+        return engineIsKeyEntry(alias) && engineGetCertificate(alias) == null;
+    }
+    return false;
+}

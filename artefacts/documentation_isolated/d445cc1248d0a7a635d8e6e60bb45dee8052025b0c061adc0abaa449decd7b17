@@ -1,0 +1,45 @@
+
+         * Produces a method handle which creates an object and initializes it, using
+         * the constructor of the specified type.
+         * The parameter types of the method handle will be those of the constructor,
+         * while the return type will be a reference to the constructor's class.
+         * The constructor and all its argument types must be accessible to the lookup object.
+         * <p>
+         * The requested type must have a return type of {@code void}.
+         * (This is consistent with the JVM's treatment of constructor type descriptors.)
+         * <p>
+         * The returned method handle will have
+         * {@linkplain MethodHandle#asVarargsCollector variable arity} if and only if
+         * the constructor's variable arity modifier bit ({@code 0x0080}) is set.
+         * <p>
+         * If the returned method handle is invoked, the constructor's class will
+         * be initialized, if it has not already been initialized.
+         * <p><b>Example:</b>
+         * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+MethodHandle MH_newArrayList = publicLookup().findConstructor(
+  ArrayList.class, methodType(void.class, Collection.class));
+Collection orig = Arrays.asList("x", "y");
+Collection copy = (ArrayList) MH_newArrayList.invokeExact(orig);
+assert(orig != copy);
+assertEquals(orig, copy);
+// a variable-arity constructor:
+MethodHandle MH_newProcessBuilder = publicLookup().findConstructor(
+  ProcessBuilder.class, methodType(void.class, String[].class));
+ProcessBuilder pb = (ProcessBuilder)
+  MH_newProcessBuilder.invoke("x", "y", "z");
+assertEquals("[x, y, z]", pb.command().toString());
+         * }</pre></blockquote>
+         * @param refc the class or interface from which the method is accessed
+         * @param type the type of the method, with the receiver argument omitted, and a void return type
+         * @return the desired method handle
+         * @throws NoSuchMethodException if the constructor does not exist
+         * @throws IllegalAccessException if access checking fails
+         *                                or if the method's variable arity modifier bit
+         *                                is set and {@code asVarargsCollector} fails
+         * @exception SecurityException if a security manager is present and it
+         *                              <a href="MethodHandles.Lookup.html#secmgr">refuses access</a>
+         * @throws NullPointerException if any argument is null
+         

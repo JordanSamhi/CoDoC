@@ -1,0 +1,16 @@
+public Object getSystemService(String name){
+    if (Context.WINDOW_SERVICE.equals(name)) {
+        return mPhoneWindow.getWindowManager();
+    }
+    final Context context = mContext.get();
+    if (Context.CONTENT_CAPTURE_MANAGER_SERVICE.equals(name)) {
+        if (context != null && mContentCaptureManager == null) {
+            mContentCaptureManager = (ContentCaptureManager) context.getSystemService(name);
+        }
+        return mContentCaptureManager;
+    }
+    if (Context.DISPLAY_SERVICE.equals(name)) {
+        return super.getSystemService(name);
+    }
+    return (context != null) ? context.getSystemService(name) : super.getSystemService(name);
+}

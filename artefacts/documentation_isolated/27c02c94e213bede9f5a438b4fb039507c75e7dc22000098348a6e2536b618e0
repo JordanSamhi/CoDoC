@@ -1,0 +1,33 @@
+
+     * Returns a copy of this date-time with the specified amount subtracted.
+     * <p>
+     * This returns a {@code ZonedDateTime}, based on this one, with the amount
+     * in terms of the unit subtracted. If it is not possible to subtract the amount,
+     * because the unit is not supported or for some other reason, an exception is thrown.
+     * <p>
+     * The calculation for date and time units differ.
+     * <p>
+     * Date units operate on the local time-line.
+     * The period is first subtracted from the local date-time, then converted back
+     * to a zoned date-time using the zone ID.
+     * The conversion uses {@link #ofLocal(LocalDateTime, ZoneId, ZoneOffset)}
+     * with the offset before the subtraction.
+     * <p>
+     * Time units operate on the instant time-line.
+     * The period is first subtracted from the local date-time, then converted back to
+     * a zoned date-time using the zone ID.
+     * The conversion uses {@link #ofInstant(LocalDateTime, ZoneOffset, ZoneId)}
+     * with the offset before the subtraction.
+     * <p>
+     * This method is equivalent to {@link #plus(long, TemporalUnit)} with the amount negated.
+     * See that method for a full description of how addition, and thus subtraction, works.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param amountToSubtract  the amount of the unit to subtract from the result, may be negative
+     * @param unit  the unit of the amount to subtract, not null
+     * @return a {@code ZonedDateTime} based on this date-time with the specified amount subtracted, not null
+     * @throws DateTimeException if the subtraction cannot be made
+     * @throws UnsupportedTemporalTypeException if the unit is not supported
+     * @throws ArithmeticException if numeric overflow occurs
+     

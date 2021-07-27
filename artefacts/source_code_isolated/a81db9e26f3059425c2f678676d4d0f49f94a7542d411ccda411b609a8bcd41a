@@ -1,0 +1,12 @@
+public boolean setLastModified(long time){
+    if (time < 0)
+        throw new IllegalArgumentException("Negative time");
+    SecurityManager security = System.getSecurityManager();
+    if (security != null) {
+        security.checkWrite(path);
+    }
+    if (isInvalid()) {
+        return false;
+    }
+    return fs.setLastModifiedTime(this, time);
+}

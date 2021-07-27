@@ -1,0 +1,14 @@
+public void handlePauseActivity(IBinder token, boolean finished, boolean userLeaving, int configChanges, PendingTransactionActions pendingActions, String reason){
+    ActivityClientRecord r = mActivities.get(token);
+    if (r != null) {
+        if (userLeaving) {
+            performUserLeavingActivity(r);
+        }
+        r.activity.mConfigChangeFlags |= configChanges;
+        performPauseActivity(r, finished, reason, pendingActions);
+        if (r.isPreHoneycomb()) {
+            QueuedWork.waitToFinish();
+        }
+        mSomeActivitiesChanged = true;
+    }
+}

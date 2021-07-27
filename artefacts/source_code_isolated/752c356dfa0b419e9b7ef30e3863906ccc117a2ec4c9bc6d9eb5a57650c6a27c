@@ -1,0 +1,26 @@
+public boolean supportsParameter(Object parameter){
+    EngineDescription cap = knownEngines.get(type);
+    if (cap == null) {
+        return true;
+    }
+    if (cap.supportsParameter == false) {
+        throw new InvalidParameterException("supportsParameter() not " + "used with " + type + " engines");
+    }
+    if ((parameter != null) && (parameter instanceof Key == false)) {
+        throw new InvalidParameterException("Parameter must be instanceof Key for engine " + type);
+    }
+    if (hasKeyAttributes() == false) {
+        return true;
+    }
+    if (parameter == null) {
+        return false;
+    }
+    Key key = (Key) parameter;
+    if (supportsKeyFormat(key)) {
+        return true;
+    }
+    if (supportsKeyClass(key)) {
+        return true;
+    }
+    return false;
+}

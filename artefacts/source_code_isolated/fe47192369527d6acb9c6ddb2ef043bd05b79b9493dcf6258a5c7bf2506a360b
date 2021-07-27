@@ -1,0 +1,120 @@
+public ListIterator<E> listIterator(final int index){
+    if (ArrayList.this.modCount != this.modCount)
+        throw new ConcurrentModificationException();
+    if (index < 0 || index > this.size)
+        throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+    final int offset = this.offset;
+    return new ListIterator<E>() {
+
+        int cursor = index;
+
+        int lastRet = -1;
+
+        int expectedModCount = ArrayList.this.modCount;
+
+        public boolean hasNext() {
+            return cursor != SubList.this.size;
+        }
+
+        @SuppressWarnings("unchecked")
+        public E next() {
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+            int i = cursor;
+            if (i >= SubList.this.size)
+                throw new NoSuchElementException();
+            Object[] elementData = ArrayList.this.elementData;
+            if (offset + i >= elementData.length)
+                throw new ConcurrentModificationException();
+            cursor = i + 1;
+            return (E) elementData[offset + (lastRet = i)];
+        }
+
+        public boolean hasPrevious() {
+            return cursor != 0;
+        }
+
+        @SuppressWarnings("unchecked")
+        public E previous() {
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+            int i = cursor - 1;
+            if (i < 0)
+                throw new NoSuchElementException();
+            Object[] elementData = ArrayList.this.elementData;
+            if (offset + i >= elementData.length)
+                throw new ConcurrentModificationException();
+            cursor = i;
+            return (E) elementData[offset + (lastRet = i)];
+        }
+
+        @SuppressWarnings("unchecked")
+        public void forEachRemaining(Consumer<? super E> consumer) {
+            Objects.requireNonNull(consumer);
+            final int size = SubList.this.size;
+            int i = cursor;
+            if (i >= size) {
+                return;
+            }
+            final Object[] elementData = ArrayList.this.elementData;
+            if (offset + i >= elementData.length) {
+                throw new ConcurrentModificationException();
+            }
+            while (i != size && modCount == expectedModCount) {
+                consumer.accept((E) elementData[offset + (i++)]);
+            }
+            lastRet = cursor = i;
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+        }
+
+        public int nextIndex() {
+            return cursor;
+        }
+
+        public int previousIndex() {
+            return cursor - 1;
+        }
+
+        public void remove() {
+            if (lastRet < 0)
+                throw new IllegalStateException();
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+            try {
+                SubList.this.remove(lastRet);
+                cursor = lastRet;
+                lastRet = -1;
+                expectedModCount = ArrayList.this.modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+
+        public void set(E e) {
+            if (lastRet < 0)
+                throw new IllegalStateException();
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+            try {
+                ArrayList.this.set(offset + lastRet, e);
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+
+        public void add(E e) {
+            if (expectedModCount != ArrayList.this.modCount)
+                throw new ConcurrentModificationException();
+            try {
+                int i = cursor;
+                SubList.this.add(i, e);
+                cursor = i + 1;
+                lastRet = -1;
+                expectedModCount = ArrayList.this.modCount;
+            } catch (IndexOutOfBoundsException ex) {
+                throw new ConcurrentModificationException();
+            }
+        }
+    };
+}

@@ -1,0 +1,12 @@
+public Object[] toArray(){
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        Object[] a = new Object[count];
+        int k = 0;
+        for (Node<E> p = first; p != null; p = p.next) a[k++] = p.item;
+        return a;
+    } finally {
+        lock.unlock();
+    }
+}

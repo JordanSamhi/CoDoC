@@ -1,0 +1,9 @@
+public static final CertificateFactory getInstance(String type, String provider) throws CertificateException, NoSuchProviderException{
+    try {
+        Providers.checkBouncyCastleDeprecation(provider, "CertificateFactory", type);
+        Instance instance = GetInstance.getInstance("CertificateFactory", CertificateFactorySpi.class, type, provider);
+        return new CertificateFactory((CertificateFactorySpi) instance.impl, instance.provider, type);
+    } catch (NoSuchAlgorithmException e) {
+        throw new CertificateException(type + " not found", e);
+    }
+}

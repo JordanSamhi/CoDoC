@@ -1,0 +1,28 @@
+public boolean isAssignableFrom(Class<?> cls){
+    if (this == cls) {
+        return true;
+    } else if (this == Object.class) {
+        return !cls.isPrimitive();
+    } else if (isArray()) {
+        return cls.isArray() && componentType.isAssignableFrom(cls.componentType);
+    } else if (isInterface()) {
+        Object[] iftable = cls.ifTable;
+        if (iftable != null) {
+            for (int i = 0; i < iftable.length; i += 2) {
+                if (iftable[i] == this) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    } else {
+        if (!cls.isInterface()) {
+            for (cls = cls.superClass; cls != null; cls = cls.superClass) {
+                if (cls == this) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}

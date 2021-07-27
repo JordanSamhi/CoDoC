@@ -1,0 +1,98 @@
+
+     * Encodes as many characters as possible from the given input buffer,
+     * writing the results to the given output buffer.
+     *
+     * <p> The buffers are read from, and written to, starting at their current
+     * positions.  At most {@link Buffer#remaining in.remaining()} characters
+     * will be read and at most {@link Buffer#remaining out.remaining()}
+     * bytes will be written.  The buffers' positions will be advanced to
+     * reflect the characters read and the bytes written, but their marks and
+     * limits will not be modified.
+     *
+     * <p> In addition to reading characters from the input buffer and writing
+     * bytes to the output buffer, this method returns a {@link CoderResult}
+     * object to describe its reason for termination:
+     *
+     * <ul>
+     *
+     *   <li><p> {@link CoderResult#UNDERFLOW} indicates that as much of the
+     *   input buffer as possible has been encoded.  If there is no further
+     *   input then the invoker can proceed to the next step of the
+     *   <a href="#steps">encoding operation</a>.  Otherwise this method
+     *   should be invoked again with further input.  </p></li>
+     *
+     *   <li><p> {@link CoderResult#OVERFLOW} indicates that there is
+     *   insufficient space in the output buffer to encode any more characters.
+     *   This method should be invoked again with an output buffer that has
+     *   more {@linkplain Buffer#remaining remaining} bytes. This is
+     *   typically done by draining any encoded bytes from the output
+     *   buffer.  </p></li>
+     *
+     *   <li><p> A {@linkplain CoderResult#malformedForLength
+     *   malformed-input} result indicates that a malformed-input
+     *   error has been detected.  The malformed characters begin at the input
+     *   buffer's (possibly incremented) position; the number of malformed
+     *   characters may be determined by invoking the result object's {@link
+     *   CoderResult#length() length} method.  This case applies only if the
+     *   {@linkplain #onMalformedInput malformed action} of this encoder
+     *   is {@link CodingErrorAction#REPORT}; otherwise the malformed input
+     *   will be ignored or replaced, as requested.  </p></li>
+     *
+     *   <li><p> An {@linkplain CoderResult#unmappableForLength
+     *   unmappable-character} result indicates that an
+     *   unmappable-character error has been detected.  The characters that
+     *   encode the unmappable character begin at the input buffer's (possibly
+     *   incremented) position; the number of such characters may be determined
+     *   by invoking the result object's {@link CoderResult#length() length}
+     *   method.  This case applies only if the {@linkplain #onUnmappableCharacter
+     *   unmappable action} of this encoder is {@link
+     *   CodingErrorAction#REPORT}; otherwise the unmappable character will be
+     *   ignored or replaced, as requested.  </p></li>
+     *
+     * </ul>
+     *
+     * In any case, if this method is to be reinvoked in the same encoding
+     * operation then care should be taken to preserve any characters remaining
+     * in the input buffer so that they are available to the next invocation.
+     *
+     * <p> The <tt>endOfInput</tt> parameter advises this method as to whether
+     * the invoker can provide further input beyond that contained in the given
+     * input buffer.  If there is a possibility of providing additional input
+     * then the invoker should pass <tt>false</tt> for this parameter; if there
+     * is no possibility of providing further input then the invoker should
+     * pass <tt>true</tt>.  It is not erroneous, and in fact it is quite
+     * common, to pass <tt>false</tt> in one invocation and later discover that
+     * no further input was actually available.  It is critical, however, that
+     * the final invocation of this method in a sequence of invocations always
+     * pass <tt>true</tt> so that any remaining unencoded input will be treated
+     * as being malformed.
+     *
+     * <p> This method works by invoking the {@link #encodeLoop encodeLoop}
+     * method, interpreting its results, handling error conditions, and
+     * reinvoking it as necessary.  </p>
+     *
+     *
+     * @param  in
+     *         The input character buffer
+     *
+     * @param  out
+     *         The output byte buffer
+     *
+     * @param  endOfInput
+     *         <tt>true</tt> if, and only if, the invoker can provide no
+     *         additional input characters beyond those in the given buffer
+     *
+     * @return  A coder-result object describing the reason for termination
+     *
+     * @throws  IllegalStateException
+     *          If an encoding operation is already in progress and the previous
+     *          step was an invocation neither of the {@link #reset reset}
+     *          method, nor of this method with a value of <tt>false</tt> for
+     *          the <tt>endOfInput</tt> parameter, nor of this method with a
+     *          value of <tt>true</tt> for the <tt>endOfInput</tt> parameter
+     *          but a return value indicating an incomplete encoding operation
+     *
+     * @throws  CoderMalfunctionError
+     *          If an invocation of the encodeLoop method threw
+     *          an unexpected exception
+     

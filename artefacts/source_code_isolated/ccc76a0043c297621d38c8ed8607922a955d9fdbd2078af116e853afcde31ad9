@@ -1,0 +1,12 @@
+public static boolean exists(Path path, LinkOption... options){
+    try {
+        if (followLinks(options)) {
+            provider(path).checkAccess(path);
+        } else {
+            readAttributes(path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+        }
+        return true;
+    } catch (IOException x) {
+        return false;
+    }
+}

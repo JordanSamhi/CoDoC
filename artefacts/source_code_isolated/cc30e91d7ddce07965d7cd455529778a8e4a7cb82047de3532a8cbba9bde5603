@@ -1,0 +1,11 @@
+public Object clone() throws CloneNotSupportedException{
+    if (digestSpi instanceof Cloneable) {
+        MessageDigestSpi digestSpiClone = (MessageDigestSpi) digestSpi.clone();
+        MessageDigest that = new Delegate(digestSpiClone, ((MessageDigest) this).algorithm);
+        that.provider = ((MessageDigest) this).provider;
+        that.state = ((MessageDigest) this).state;
+        return that;
+    } else {
+        throw new CloneNotSupportedException();
+    }
+}

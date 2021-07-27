@@ -1,0 +1,11 @@
+public SSLParameters getSSLParameters(){
+    SSLParameters params = new SSLParameters();
+    params.setCipherSuites(getEnabledCipherSuites());
+    params.setProtocols(getEnabledProtocols());
+    if (getNeedClientAuth()) {
+        params.setNeedClientAuth(true);
+    } else if (getWantClientAuth()) {
+        params.setWantClientAuth(true);
+    }
+    return params;
+}

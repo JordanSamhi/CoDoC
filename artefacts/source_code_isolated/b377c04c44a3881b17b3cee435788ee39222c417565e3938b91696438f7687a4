@@ -1,0 +1,63 @@
+public boolean onKeyUp(int keyCode, KeyEvent event){
+    if (!isEnabled()) {
+        return super.onKeyUp(keyCode, event);
+    }
+    if (!KeyEvent.isModifierKey(keyCode)) {
+        mPreventDefaultMovement = false;
+    }
+    switch(keyCode) {
+        case KeyEvent.KEYCODE_DPAD_CENTER:
+            if (event.hasNoModifiers()) {
+                if (!hasOnClickListeners()) {
+                    if (mMovement != null && mText instanceof Editable && mLayout != null && onCheckIsTextEditor()) {
+                        InputMethodManager imm = getInputMethodManager();
+                        viewClicked(imm);
+                        if (imm != null && getShowSoftInputOnFocus()) {
+                            imm.showSoftInput(this, 0);
+                        }
+                    }
+                }
+            }
+            return super.onKeyUp(keyCode, event);
+        case KeyEvent.KEYCODE_ENTER:
+        case KeyEvent.KEYCODE_NUMPAD_ENTER:
+            if (event.hasNoModifiers()) {
+                if (mEditor != null && mEditor.mInputContentType != null && mEditor.mInputContentType.onEditorActionListener != null && mEditor.mInputContentType.enterDown) {
+                    mEditor.mInputContentType.enterDown = false;
+                    if (mEditor.mInputContentType.onEditorActionListener.onEditorAction(this, EditorInfo.IME_NULL, event)) {
+                        return true;
+                    }
+                }
+                if ((event.getFlags() & KeyEvent.FLAG_EDITOR_ACTION) != 0 || shouldAdvanceFocusOnEnter()) {
+                    if (!hasOnClickListeners()) {
+                        View v = focusSearch(FOCUS_DOWN);
+                        if (v != null) {
+                            if (!v.requestFocus(FOCUS_DOWN)) {
+                                throw new IllegalStateException("focus search returned a view " + "that wasn't able to take focus!");
+                            }
+                            super.onKeyUp(keyCode, event);
+                            return true;
+                        } else if ((event.getFlags() & KeyEvent.FLAG_EDITOR_ACTION) != 0) {
+                            InputMethodManager imm = getInputMethodManager();
+                            if (imm != null && imm.isActive(this)) {
+                                imm.hideSoftInputFromWindow(getWindowToken(), 0);
+                            }
+                        }
+                    }
+                }
+                return super.onKeyUp(keyCode, event);
+            }
+            break;
+    }
+    if (mEditor != null && mEditor.mKeyListener != null) {
+        if (mEditor.mKeyListener.onKeyUp(this, (Editable) mText, keyCode, event)) {
+            return true;
+        }
+    }
+    if (mMovement != null && mLayout != null) {
+        if (mMovement.onKeyUp(this, mSpannable, keyCode, event)) {
+            return true;
+        }
+    }
+    return super.onKeyUp(keyCode, event);
+}

@@ -1,0 +1,6 @@
+public int available() throws IOException{
+    ensureOpen();
+    int n = buf.length - pos;
+    int avail = super.available();
+    return n > (Integer.MAX_VALUE - avail) ? Integer.MAX_VALUE : n + avail;
+}

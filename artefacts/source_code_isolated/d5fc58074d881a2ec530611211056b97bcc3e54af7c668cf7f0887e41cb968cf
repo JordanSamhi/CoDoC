@@ -1,0 +1,44 @@
+public void updateMenuView(boolean cleared){
+    final ViewGroup menuViewParent = (ViewGroup) ((View) mMenuView).getParent();
+    if (menuViewParent != null && ACTIONBAR_ANIMATIONS_ENABLED) {
+        setupItemAnimations();
+    }
+    super.updateMenuView(cleared);
+    ((View) mMenuView).requestLayout();
+    if (mMenu != null) {
+        final ArrayList<MenuItemImpl> actionItems = mMenu.getActionItems();
+        final int count = actionItems.size();
+        for (int i = 0; i < count; i++) {
+            final ActionProvider provider = actionItems.get(i).getActionProvider();
+            if (provider != null) {
+                provider.setSubUiVisibilityListener(this);
+            }
+        }
+    }
+    final ArrayList<MenuItemImpl> nonActionItems = mMenu != null ? mMenu.getNonActionItems() : null;
+    boolean hasOverflow = false;
+    if (mReserveOverflow && nonActionItems != null) {
+        final int count = nonActionItems.size();
+        if (count == 1) {
+            hasOverflow = !nonActionItems.get(0).isActionViewExpanded();
+        } else {
+            hasOverflow = count > 0;
+        }
+    }
+    if (hasOverflow) {
+        if (mOverflowButton == null) {
+            mOverflowButton = new OverflowMenuButton(mSystemContext);
+        }
+        ViewGroup parent = (ViewGroup) mOverflowButton.getParent();
+        if (parent != mMenuView) {
+            if (parent != null) {
+                parent.removeView(mOverflowButton);
+            }
+            ActionMenuView menuView = (ActionMenuView) mMenuView;
+            menuView.addView(mOverflowButton, menuView.generateOverflowButtonLayoutParams());
+        }
+    } else if (mOverflowButton != null && mOverflowButton.getParent() == mMenuView) {
+        ((ViewGroup) mMenuView).removeView(mOverflowButton);
+    }
+    ((ActionMenuView) mMenuView).setOverflowReserved(mReserveOverflow);
+}

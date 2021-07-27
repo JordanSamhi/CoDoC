@@ -1,0 +1,45 @@
+public int read(byte[] b, int off, int len) throws IOException{
+    ensureOpen();
+    if (off < 0 || len < 0 || off > b.length - len) {
+        throw new IndexOutOfBoundsException();
+    } else if (len == 0) {
+        return 0;
+    }
+    if (entry == null) {
+        return -1;
+    }
+    switch(entry.method) {
+        case DEFLATED:
+            len = super.read(b, off, len);
+            if (len == -1) {
+                readEnd(entry);
+                entryEOF = true;
+                entry = null;
+            } else {
+                crc.update(b, off, len);
+                remaining -= len;
+            }
+            return len;
+        case STORED:
+            if (remaining <= 0) {
+                entryEOF = true;
+                entry = null;
+                return -1;
+            }
+            if (len > remaining) {
+                len = (int) remaining;
+            }
+            len = in.read(b, off, len);
+            if (len == -1) {
+                throw new ZipException("unexpected EOF");
+            }
+            crc.update(b, off, len);
+            remaining -= len;
+            if (remaining == 0 && entry.crc != crc.getValue()) {
+                throw new ZipException("invalid entry CRC (expected 0x" + Long.toHexString(entry.crc) + " but got 0x" + Long.toHexString(crc.getValue()) + ")");
+            }
+            return len;
+        default:
+            throw new ZipException("invalid compression method");
+    }
+}

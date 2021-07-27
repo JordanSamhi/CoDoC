@@ -1,0 +1,11 @@
+public Bounds dispatchWindowInsetsAnimationStart(@NonNull WindowInsetsAnimation animation, @NonNull Bounds bounds){
+    bounds = super.dispatchWindowInsetsAnimationStart(animation, bounds);
+    if (mInsetsAnimationDispatchMode == DISPATCH_MODE_STOP) {
+        return bounds;
+    }
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+        getChildAt(i).dispatchWindowInsetsAnimationStart(animation, bounds);
+    }
+    return bounds;
+}

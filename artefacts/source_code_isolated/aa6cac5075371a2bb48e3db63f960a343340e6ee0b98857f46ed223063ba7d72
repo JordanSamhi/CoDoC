@@ -1,0 +1,7 @@
+public void setMaximumPoolSize(int maximumPoolSize){
+    if (maximumPoolSize <= 0 || maximumPoolSize < corePoolSize)
+        throw new IllegalArgumentException();
+    this.maximumPoolSize = maximumPoolSize;
+    if (workerCountOf(ctl.get()) > maximumPoolSize)
+        interruptIdleWorkers();
+}

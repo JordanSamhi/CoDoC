@@ -1,0 +1,14 @@
+public final void drawBitmapMesh(@NonNull Bitmap bitmap, int meshWidth, int meshHeight, @NonNull float[] verts, int vertOffset, @Nullable int[] colors, int colorOffset, @Nullable Paint paint){
+    if ((meshWidth | meshHeight | vertOffset | colorOffset) < 0) {
+        throw new ArrayIndexOutOfBoundsException();
+    }
+    if (meshWidth == 0 || meshHeight == 0) {
+        return;
+    }
+    int count = (meshWidth + 1) * (meshHeight + 1);
+    checkRange(verts.length, vertOffset, count * 2);
+    if (colors != null) {
+        checkRange(colors.length, colorOffset, count);
+    }
+    nDrawBitmapMesh(mNativeCanvasWrapper, bitmap.getNativeInstance(), meshWidth, meshHeight, verts, vertOffset, colors, colorOffset, paint != null ? paint.getNativeInstance() : 0);
+}

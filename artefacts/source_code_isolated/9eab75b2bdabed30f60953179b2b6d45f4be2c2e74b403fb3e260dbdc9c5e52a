@@ -1,0 +1,8 @@
+public static void parkNanos(Object blocker, long nanos){
+    if (nanos > 0) {
+        Thread t = Thread.currentThread();
+        setBlocker(t, blocker);
+        U.park(false, nanos);
+        setBlocker(t, null);
+    }
+}

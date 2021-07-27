@@ -1,0 +1,26 @@
+public String toString(){
+    final StringBuilder builder = new StringBuilder("NetworkTemplate: ");
+    builder.append("matchRule=").append(getMatchRuleName(mMatchRule));
+    if (mSubscriberId != null) {
+        builder.append(", subscriberId=").append(NetworkIdentity.scrubSubscriberId(mSubscriberId));
+    }
+    if (mMatchSubscriberIds != null) {
+        builder.append(", matchSubscriberIds=").append(Arrays.toString(NetworkIdentity.scrubSubscriberId(mMatchSubscriberIds)));
+    }
+    if (mNetworkId != null) {
+        builder.append(", networkId=").append(mNetworkId);
+    }
+    if (mMetered != METERED_ALL) {
+        builder.append(", metered=").append(NetworkStats.meteredToString(mMetered));
+    }
+    if (mRoaming != ROAMING_ALL) {
+        builder.append(", roaming=").append(NetworkStats.roamingToString(mRoaming));
+    }
+    if (mDefaultNetwork != DEFAULT_NETWORK_ALL) {
+        builder.append(", defaultNetwork=").append(NetworkStats.defaultNetworkToString(mDefaultNetwork));
+    }
+    if (mSubType != NETWORK_TYPE_ALL) {
+        builder.append(", subType=").append(mSubType);
+    }
+    return builder.toString();
+}

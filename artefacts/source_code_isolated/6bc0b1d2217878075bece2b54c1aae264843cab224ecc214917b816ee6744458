@@ -1,0 +1,14 @@
+public final void initVerify(Certificate certificate) throws InvalidKeyException{
+    if (certificate instanceof java.security.cert.X509Certificate) {
+        X509Certificate cert = (X509Certificate) certificate;
+        Set<String> critSet = cert.getCriticalExtensionOIDs();
+        if (critSet != null && !critSet.isEmpty() && critSet.contains("2.5.29.15")) {
+            boolean[] keyUsageInfo = cert.getKeyUsage();
+            if ((keyUsageInfo != null) && (keyUsageInfo[0] == false))
+                throw new InvalidKeyException("Wrong key usage");
+        }
+    }
+    PublicKey publicKey = certificate.getPublicKey();
+    engineInitVerify(publicKey);
+    state = VERIFY;
+}

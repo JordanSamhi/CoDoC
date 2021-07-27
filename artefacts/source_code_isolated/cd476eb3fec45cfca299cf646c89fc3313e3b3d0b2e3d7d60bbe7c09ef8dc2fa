@@ -1,0 +1,12 @@
+public int[] getPackageGids(String packageName, int flags) throws NameNotFoundException{
+    final int userId = getUserId();
+    try {
+        int[] gids = mPM.getPackageGids(packageName, updateFlagsForPackage(flags, userId), userId);
+        if (gids != null) {
+            return gids;
+        }
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+    throw new NameNotFoundException(packageName);
+}

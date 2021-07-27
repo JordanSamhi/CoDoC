@@ -1,0 +1,22 @@
+public String toString(){
+    checkInvariants();
+    int numBits = (wordsInUse > 128) ? cardinality() : wordsInUse * BITS_PER_WORD;
+    StringBuilder b = new StringBuilder(6 * numBits + 2);
+    b.append('{');
+    int i = nextSetBit(0);
+    if (i != -1) {
+        b.append(i);
+        while (true) {
+            if (++i < 0)
+                break;
+            if ((i = nextSetBit(i)) < 0)
+                break;
+            int endOfRun = nextClearBit(i);
+            do {
+                b.append(", ").append(i);
+            } while (++i != endOfRun);
+        }
+    }
+    b.append('}');
+    return b.toString();
+}

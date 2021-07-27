@@ -1,0 +1,18 @@
+public int nextInt(int radix){
+    if ((typeCache != null) && (typeCache instanceof Integer) && this.radix == radix) {
+        int val = ((Integer) typeCache).intValue();
+        useTypeCache();
+        return val;
+    }
+    setRadix(radix);
+    clearCaches();
+    try {
+        String s = next(integerPattern());
+        if (matcher.group(SIMPLE_GROUP_INDEX) == null)
+            s = processIntegerToken(s);
+        return Integer.parseInt(s, radix);
+    } catch (NumberFormatException nfe) {
+        position = matcher.start();
+        throw new InputMismatchException(nfe.getMessage());
+    }
+}

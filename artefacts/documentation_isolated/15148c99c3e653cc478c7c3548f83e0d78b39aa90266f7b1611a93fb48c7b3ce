@@ -1,0 +1,39 @@
+
+     * Adjusts the specified temporal object to have this day-of-week.
+     * <p>
+     * This returns a temporal object of the same observable type as the input
+     * with the day-of-week changed to be the same as this.
+     * <p>
+     * The adjustment is equivalent to using {@link Temporal#with(TemporalField, long)}
+     * passing {@link ChronoField#DAY_OF_WEEK} as the field.
+     * Note that this adjusts forwards or backwards within a Monday to Sunday week.
+     * See {@link java.time.temporal.WeekFields#dayOfWeek()} for localized week start days.
+     * See {@code TemporalAdjuster} for other adjusters with more control,
+     * such as {@code next(MONDAY)}.
+     * <p>
+     * In most cases, it is clearer to reverse the calling pattern by using
+     * {@link Temporal#with(TemporalAdjuster)}:
+     * <pre>
+     *   // these two lines are equivalent, but the second approach is recommended
+     *   temporal = thisDayOfWeek.adjustInto(temporal);
+     *   temporal = temporal.with(thisDayOfWeek);
+     * </pre>
+     * <p>
+     * For example, given a date that is a Wednesday, the following are output:
+     * <pre>
+     *   dateOnWed.with(MONDAY);     // two days earlier
+     *   dateOnWed.with(TUESDAY);    // one day earlier
+     *   dateOnWed.with(WEDNESDAY);  // same date
+     *   dateOnWed.with(THURSDAY);   // one day later
+     *   dateOnWed.with(FRIDAY);     // two days later
+     *   dateOnWed.with(SATURDAY);   // three days later
+     *   dateOnWed.with(SUNDAY);     // four days later
+     * </pre>
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param temporal  the target object to be adjusted, not null
+     * @return the adjusted object, not null
+     * @throws DateTimeException if unable to make the adjustment
+     * @throws ArithmeticException if numeric overflow occurs
+     

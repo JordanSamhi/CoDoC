@@ -1,0 +1,44 @@
+
+     * Returns an adjusted copy of this date-time.
+     * <p>
+     * This returns an {@code OffsetDateTime}, based on this one, with the date-time adjusted.
+     * The adjustment takes place using the specified adjuster strategy object.
+     * Read the documentation of the adjuster to understand what adjustment will be made.
+     * <p>
+     * A simple adjuster might simply set the one of the fields, such as the year field.
+     * A more complex adjuster might set the date to the last day of the month.
+     * A selection of common adjustments is provided in
+     * {@link java.time.temporal.TemporalAdjusters TemporalAdjusters}.
+     * These include finding the "last day of the month" and "next Wednesday".
+     * Key date-time classes also implement the {@code TemporalAdjuster} interface,
+     * such as {@link Month} and {@link java.time.MonthDay MonthDay}.
+     * The adjuster is responsible for handling special cases, such as the varying
+     * lengths of month and leap years.
+     * <p>
+     * For example this code returns a date on the last day of July:
+     * <pre>
+     *  import static java.time.Month.*;
+     *  import static java.time.temporal.TemporalAdjusters.*;
+     *
+     *  result = offsetDateTime.with(JULY).with(lastDayOfMonth());
+     * </pre>
+     * <p>
+     * The classes {@link LocalDate}, {@link LocalTime} and {@link ZoneOffset} implement
+     * {@code TemporalAdjuster}, thus this method can be used to change the date, time or offset:
+     * <pre>
+     *  result = offsetDateTime.with(date);
+     *  result = offsetDateTime.with(time);
+     *  result = offsetDateTime.with(offset);
+     * </pre>
+     * <p>
+     * The result of this method is obtained by invoking the
+     * {@link TemporalAdjuster#adjustInto(Temporal)} method on the
+     * specified adjuster passing {@code this} as the argument.
+     * <p>
+     * This instance is immutable and unaffected by this method call.
+     *
+     * @param adjuster the adjuster to use, not null
+     * @return an {@code OffsetDateTime} based on {@code this} with the adjustment made, not null
+     * @throws DateTimeException if the adjustment cannot be made
+     * @throws ArithmeticException if numeric overflow occurs
+     

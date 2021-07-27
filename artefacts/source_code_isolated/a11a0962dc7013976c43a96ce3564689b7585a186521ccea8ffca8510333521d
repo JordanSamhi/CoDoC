@@ -1,0 +1,26 @@
+public void draw(Canvas canvas){
+    copyBounds(mTmpBounds);
+    if (mTmpBounds.width() <= 0 || mTmpBounds.height() <= 0) {
+        return;
+    }
+    final ColorFilter colorFilter = (mColorFilter == null ? mBlendModeColorFilter : mColorFilter);
+    final long colorFilterNativeInstance = colorFilter == null ? 0 : colorFilter.getNativeInstance();
+    boolean canReuseCache = mVectorState.canReuseCache();
+    int pixelCount = nDraw(mVectorState.getNativeRenderer(), canvas.getNativeCanvasWrapper(), colorFilterNativeInstance, mTmpBounds, needMirroring(), canReuseCache);
+    if (pixelCount == 0) {
+        return;
+    }
+    int deltaInBytes;
+    if (canvas.isHardwareAccelerated()) {
+        deltaInBytes = (pixelCount - mVectorState.mLastHWCachePixelCount) * 4;
+        mVectorState.mLastHWCachePixelCount = pixelCount;
+    } else {
+        deltaInBytes = (pixelCount - mVectorState.mLastSWCachePixelCount) * 4;
+        mVectorState.mLastSWCachePixelCount = pixelCount;
+    }
+    if (deltaInBytes > 0) {
+        VMRuntime.getRuntime().registerNativeAllocation(deltaInBytes);
+    } else if (deltaInBytes < 0) {
+        VMRuntime.getRuntime().registerNativeFree(-deltaInBytes);
+    }
+}

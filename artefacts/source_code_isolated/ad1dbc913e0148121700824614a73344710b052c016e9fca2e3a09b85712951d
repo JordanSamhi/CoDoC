@@ -1,0 +1,5 @@
+public int reduceToInt(long parallelismThreshold, ToIntBiFunction<? super K, ? super V> transformer, int basis, IntBinaryOperator reducer){
+    if (transformer == null || reducer == null)
+        throw new NullPointerException();
+    return new MapReduceMappingsToIntTask<K, V>(null, batchFor(parallelismThreshold), 0, 0, table, null, transformer, basis, reducer).invoke();
+}

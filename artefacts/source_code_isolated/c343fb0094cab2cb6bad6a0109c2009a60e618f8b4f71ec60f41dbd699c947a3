@@ -1,0 +1,13 @@
+public long skip(long count) throws IOException{
+    if (mRemaining >= 0) {
+        if (mRemaining == 0)
+            return -1;
+        if (count > mRemaining)
+            count = mRemaining;
+        long res = super.skip(count);
+        if (res >= 0)
+            mRemaining -= res;
+        return res;
+    }
+    return super.skip(count);
+}

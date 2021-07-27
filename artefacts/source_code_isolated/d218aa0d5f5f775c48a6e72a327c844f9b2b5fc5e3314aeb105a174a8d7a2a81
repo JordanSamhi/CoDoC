@@ -1,0 +1,14 @@
+public static Long getLong(String nm, Long val){
+    String v = null;
+    try {
+        v = System.getProperty(nm);
+    } catch (IllegalArgumentException | NullPointerException e) {
+    }
+    if (v != null) {
+        try {
+            return Long.decode(v);
+        } catch (NumberFormatException e) {
+        }
+    }
+    return val;
+}

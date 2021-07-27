@@ -1,0 +1,31 @@
+
+     * Parses the string.
+     *
+     * <p>Caveats: The parse may fail in a number of circumstances.
+     * For example:
+     * <ul>
+     * <li>If one of the arguments does not occur in the pattern.
+     * <li>If the format of an argument loses information, such as
+     *     with a choice format where a large number formats to "many".
+     * <li>Does not yet handle recursion (where
+     *     the substituted strings contain {n} references.)
+     * <li>Will not always find a match (or the correct match)
+     *     if some part of the parse is ambiguous.
+     *     For example, if the pattern "{1},{2}" is used with the
+     *     string arguments {"a,b", "c"}, it will format as "a,b,c".
+     *     When the result is parsed, it will return {"a", "b,c"}.
+     * <li>If a single argument is parsed more than once in the string,
+     *     then the later parse wins.
+     * </ul>
+     * When the parse fails, use ParsePosition.getErrorIndex() to find out
+     * where in the string the parsing failed.  The returned error
+     * index is the starting offset of the sub-patterns that the string
+     * is comparing with.  For example, if the parsing string "AAA {0} BBB"
+     * is comparing against the pattern "AAD {0} BBB", the error index is
+     * 0. When an error occurs, the call to this method will return null.
+     * If the source is null, return an empty array.
+     *
+     * @param source the string to parse
+     * @param pos    the parse position
+     * @return an array of parsed objects
+     

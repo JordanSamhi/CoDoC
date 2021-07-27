@@ -1,0 +1,32 @@
+public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    sb.append(ImsConferenceState.class.getSimpleName());
+    sb.append(" ");
+    if (mParticipants.size() > 0) {
+        Set<Entry<String, Bundle>> entries = mParticipants.entrySet();
+        if (entries != null) {
+            Iterator<Entry<String, Bundle>> iterator = entries.iterator();
+            sb.append("<");
+            while (iterator.hasNext()) {
+                Entry<String, Bundle> entry = iterator.next();
+                sb.append(Rlog.pii(TAG, entry.getKey()));
+                sb.append(": ");
+                Bundle participantData = entry.getValue();
+                for (String key : participantData.keySet()) {
+                    sb.append(key);
+                    sb.append("=");
+                    if (ENDPOINT.equals(key) || USER.equals(key)) {
+                        sb.append(Rlog.pii(TAG, participantData.get(key)));
+                    } else {
+                        sb.append(participantData.get(key));
+                    }
+                    sb.append(", ");
+                }
+            }
+            sb.append(">");
+        }
+    }
+    sb.append("]");
+    return sb.toString();
+}

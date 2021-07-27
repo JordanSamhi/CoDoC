@@ -1,0 +1,14 @@
+public boolean containsKey(Object key){
+    Object k = maskNull(key);
+    Object[] tab = table;
+    int len = tab.length;
+    int i = hash(k, len);
+    while (true) {
+        Object item = tab[i];
+        if (item == k)
+            return true;
+        if (item == null)
+            return false;
+        i = nextKeyIndex(i, len);
+    }
+}

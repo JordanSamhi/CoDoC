@@ -1,0 +1,10 @@
+public Drawable getUserBadgeForDensity(UserHandle user, int density){
+    Drawable badgeColor = getProfileIconForDensity(user, com.android.internal.R.drawable.ic_corp_badge_color, density);
+    if (badgeColor == null) {
+        return null;
+    }
+    Drawable badgeForeground = getDrawableForDensity(getUserManager().getUserBadgeResId(user.getIdentifier()), density);
+    badgeForeground.setTint(getUserBadgeColor(user, false));
+    Drawable badge = new LayerDrawable(new Drawable[] { badgeColor, badgeForeground });
+    return badge;
+}

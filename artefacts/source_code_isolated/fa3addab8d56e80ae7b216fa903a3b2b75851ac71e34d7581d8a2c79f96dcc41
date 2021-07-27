@@ -1,0 +1,31 @@
+public String sanitize(String value){
+    if (value == null) {
+        return null;
+    }
+    int length = value.length();
+    if ((mFlags & SCRIPT_URL_OK) == 0) {
+        if (length >= MIN_SCRIPT_PREFIX_LENGTH) {
+            String asLower = value.toLowerCase(Locale.ROOT);
+            if (asLower.startsWith(JAVASCRIPT_PREFIX) || asLower.startsWith(VBSCRIPT_PREFIX)) {
+                return "";
+            }
+        }
+    }
+    if ((mFlags & ALL_WHITESPACE_OK) == 0) {
+        value = trimWhitespace(value);
+        length = value.length();
+    }
+    StringBuilder stringBuilder = new StringBuilder(length);
+    for (int i = 0; i < length; i++) {
+        char c = value.charAt(i);
+        if (!characterIsLegal(c)) {
+            if ((mFlags & SPACE_OK) != 0) {
+                c = ' ';
+            } else {
+                c = '_';
+            }
+        }
+        stringBuilder.append(c);
+    }
+    return stringBuilder.toString();
+}

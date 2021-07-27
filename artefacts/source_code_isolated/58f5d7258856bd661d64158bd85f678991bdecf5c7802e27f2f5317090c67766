@@ -1,0 +1,24 @@
+public Number parse(String text, ParsePosition status){
+    int start = status.index;
+    int furthest = start;
+    double bestNumber = Double.NaN;
+    double tempNumber = 0.0;
+    for (int i = 0; i < choiceFormats.length; ++i) {
+        String tempString = choiceFormats[i];
+        if (text.regionMatches(start, tempString, 0, tempString.length())) {
+            status.index = start + tempString.length();
+            tempNumber = choiceLimits[i];
+            if (status.index > furthest) {
+                furthest = status.index;
+                bestNumber = tempNumber;
+                if (furthest == text.length())
+                    break;
+            }
+        }
+    }
+    status.index = furthest;
+    if (status.index == start) {
+        status.errorIndex = furthest;
+    }
+    return new Double(bestNumber);
+}

@@ -1,0 +1,12 @@
+public void write(char[] buf, int off, int len){
+    try {
+        synchronized (lock) {
+            ensureOpen();
+            out.write(buf, off, len);
+        }
+    } catch (InterruptedIOException x) {
+        Thread.currentThread().interrupt();
+    } catch (IOException x) {
+        trouble = true;
+    }
+}

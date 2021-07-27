@@ -1,0 +1,19 @@
+public static MethodHandle guardWithTest(MethodHandle test, MethodHandle target, MethodHandle fallback){
+    MethodType gtype = test.type();
+    MethodType ttype = target.type();
+    MethodType ftype = fallback.type();
+    if (!ttype.equals(ftype))
+        throw misMatchedTypes("target and fallback types", ttype, ftype);
+    if (gtype.returnType() != boolean.class)
+        throw newIllegalArgumentException("guard type is not a predicate " + gtype);
+    List<Class<?>> targs = ttype.parameterList();
+    List<Class<?>> gargs = gtype.parameterList();
+    if (!targs.equals(gargs)) {
+        int gpc = gargs.size(), tpc = targs.size();
+        if (gpc >= tpc || !targs.subList(0, gpc).equals(gargs))
+            throw misMatchedTypes("target and test types", ttype, gtype);
+        test = dropArguments(test, gpc, targs.subList(gpc, tpc));
+        gtype = test.type();
+    }
+    return new Transformers.GuardWithTest(test, target, fallback);
+}

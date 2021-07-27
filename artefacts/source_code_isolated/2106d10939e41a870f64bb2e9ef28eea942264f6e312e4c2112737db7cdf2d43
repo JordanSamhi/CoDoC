@@ -1,3 +1,35 @@
-public boolean isConcurrentSessionConfigurationSupported(@NonNull Map<String, SessionConfiguration> cameraIdAndSessionConfig) throws CameraAccessException{
-    return CameraManagerGlobal.get().isConcurrentSessionConfigurationSupported(cameraIdAndSessionConfig);
+public boolean isConcurrentSessionConfigurationSupported(@NonNull Map<String, SessionConfiguration> cameraIdsAndSessionConfigurations) throws CameraAccessException{
+    if (cameraIdsAndSessionConfigurations == null) {
+        throw new IllegalArgumentException("cameraIdsAndSessionConfigurations was null");
+    }
+    int size = cameraIdsAndSessionConfigurations.size();
+    if (size == 0) {
+        throw new IllegalArgumentException("camera id and session combination is empty");
+    }
+    synchronized (mLock) {
+        boolean subsetFound = false;
+        for (Set<String> combination : mConcurrentCameraIdCombinations) {
+            if (combination.containsAll(cameraIdsAndSessionConfigurations.keySet())) {
+                subsetFound = true;
+            }
+        }
+        if (!subsetFound) {
+            Log.v(TAG, "isConcurrentSessionConfigurationSupported called with a subset of" + "camera ids not returned by getConcurrentCameraIds");
+            return false;
+        }
+        CameraIdAndSessionConfiguration[] cameraIdsAndConfigs = new CameraIdAndSessionConfiguration[size];
+        int i = 0;
+        for (Map.Entry<String, SessionConfiguration> pair : cameraIdsAndSessionConfigurations.entrySet()) {
+            cameraIdsAndConfigs[i] = new CameraIdAndSessionConfiguration(pair.getKey(), pair.getValue());
+            i++;
+        }
+        try {
+            return mCameraService.isConcurrentSessionConfigurationSupported(cameraIdsAndConfigs);
+        } catch (ServiceSpecificException e) {
+            throwAsPublicException(e);
+        } catch (RemoteException e) {
+            throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service is currently unavailable", e);
+        }
+    }
+    return false;
 }

@@ -1,0 +1,14 @@
+public Certificate engineGetCertificate(String alias){
+    if (alias == null) {
+        throw new NullPointerException("alias == null");
+    }
+    byte[] encodedCert = mKeyStore.get(Credentials.USER_CERTIFICATE + alias, mUid);
+    if (encodedCert != null) {
+        return getCertificateForPrivateKeyEntry(alias, encodedCert);
+    }
+    encodedCert = mKeyStore.get(Credentials.CA_CERTIFICATE + alias, mUid);
+    if (encodedCert != null) {
+        return getCertificateForTrustedCertificateEntry(encodedCert);
+    }
+    return null;
+}

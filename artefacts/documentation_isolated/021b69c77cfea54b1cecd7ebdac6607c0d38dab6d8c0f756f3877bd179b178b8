@@ -1,0 +1,27 @@
+
+     * Sets the maximum priority of the group. Threads in the thread
+     * group that already have a higher priority are not affected.
+     * <p>
+     * First, the <code>checkAccess</code> method of this thread group is
+     * called with no arguments; this may result in a security exception.
+     * <p>
+     * If the <code>pri</code> argument is less than
+     * {@link Thread#MIN_PRIORITY} or greater than
+     * {@link Thread#MAX_PRIORITY}, it is clamped to those values.
+     * <p>
+     * Otherwise, the priority of this ThreadGroup object is set to the
+     * smaller of the specified <code>pri</code> and the maximum permitted
+     * priority of the parent of this thread group. (If this thread group
+     * is the system thread group, which has no parent, then its maximum
+     * priority is simply set to <code>pri</code>.) Then this method is
+     * called recursively, with <code>pri</code> as its argument, for
+     * every thread group that belongs to this thread group.
+     *
+     * @param      pri   the new priority of the thread group.
+     * @exception  SecurityException  if the current thread cannot modify
+     *               this thread group.
+     * @see        #getMaxPriority
+     * @see        java.lang.SecurityException
+     * @see        java.lang.ThreadGroup#checkAccess()
+     * @since      JDK1.0
+     

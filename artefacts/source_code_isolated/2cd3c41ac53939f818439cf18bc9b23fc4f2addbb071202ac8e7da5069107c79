@@ -1,0 +1,9 @@
+public static Logger getAnonymousLogger(String resourceBundleName){
+    LogManager manager = LogManager.getLogManager();
+    manager.drainLoggerRefQueueBounded();
+    Logger result = new Logger(null, resourceBundleName, Reflection.getCallerClass(), manager, false);
+    result.anonymous = true;
+    Logger root = manager.getLogger("");
+    result.doSetParent(root);
+    return result;
+}

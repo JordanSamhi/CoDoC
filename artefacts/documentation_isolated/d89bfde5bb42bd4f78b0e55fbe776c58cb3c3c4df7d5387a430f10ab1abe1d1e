@@ -1,0 +1,37 @@
+
+     * Returns a {@code Collector} implementing a "group by" operation on
+     * input elements of type {@code T}, grouping elements according to a
+     * classification function, and returning the results in a {@code Map}.
+     *
+     * <p>The classification function maps elements to some key type {@code K}.
+     * The collector produces a {@code Map<K, List<T>>} whose keys are the
+     * values resulting from applying the classification function to the input
+     * elements, and whose corresponding values are {@code List}s containing the
+     * input elements which map to the associated key under the classification
+     * function.
+     *
+     * <p>There are no guarantees on the type, mutability, serializability, or
+     * thread-safety of the {@code Map} or {@code List} objects returned.
+     * @implSpec
+     * This produces a result similar to:
+     * <pre>{@code
+     *     groupingBy(classifier, toList());
+     * }</pre>
+     *
+     * @implNote
+     * The returned {@code Collector} is not concurrent.  For parallel stream
+     * pipelines, the {@code combiner} function operates by merging the keys
+     * from one map into another, which can be an expensive operation.  If
+     * preservation of the order in which elements appear in the resulting {@code Map}
+     * collector is not required, using {@link #groupingByConcurrent(Function)}
+     * may offer better parallel performance.
+     *
+     * @param <T> the type of the input elements
+     * @param <K> the type of the keys
+     * @param classifier the classifier function mapping input elements to keys
+     * @return a {@code Collector} implementing the group-by operation
+     *
+     * @see #groupingBy(Function, Collector)
+     * @see #groupingBy(Function, Supplier, Collector)
+     * @see #groupingByConcurrent(Function)
+     

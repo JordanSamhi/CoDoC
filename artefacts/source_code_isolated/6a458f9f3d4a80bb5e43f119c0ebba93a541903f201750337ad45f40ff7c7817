@@ -1,0 +1,14 @@
+public void scrollBy(int x, int y){
+    if (mLayout == null) {
+        Log.e(TAG, "Cannot scroll without a LayoutManager set. " + "Call setLayoutManager with a non-null argument.");
+        return;
+    }
+    if (mLayoutFrozen) {
+        return;
+    }
+    final boolean canScrollHorizontal = mLayout.canScrollHorizontally();
+    final boolean canScrollVertical = mLayout.canScrollVertically();
+    if (canScrollHorizontal || canScrollVertical) {
+        scrollByInternal(canScrollHorizontal ? x : 0, canScrollVertical ? y : 0, null);
+    }
+}

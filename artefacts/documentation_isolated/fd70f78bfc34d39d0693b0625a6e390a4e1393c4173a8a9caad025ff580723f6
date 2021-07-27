@@ -1,0 +1,38 @@
+
+     * Acquires the given number of permits from this semaphore,
+     * blocking until all are available,
+     * or the thread is {@linkplain Thread#interrupt interrupted}.
+     *
+     * <p>Acquires the given number of permits, if they are available,
+     * and returns immediately, reducing the number of available permits
+     * by the given amount. This method has the same effect as the
+     * loop {@code for (int i = 0; i < permits; ++i) acquire();} except
+     * that it atomically acquires the permits all at once:
+     *
+     * <p>If insufficient permits are available then the current thread becomes
+     * disabled for thread scheduling purposes and lies dormant until
+     * one of two things happens:
+     * <ul>
+     * <li>Some other thread invokes one of the {@link #release() release}
+     * methods for this semaphore and the current thread is next to be assigned
+     * permits and the number of available permits satisfies this request; or
+     * <li>Some other thread {@linkplain Thread#interrupt interrupts}
+     * the current thread.
+     * </ul>
+     *
+     * <p>If the current thread:
+     * <ul>
+     * <li>has its interrupted status set on entry to this method; or
+     * <li>is {@linkplain Thread#interrupt interrupted} while waiting
+     * for a permit,
+     * </ul>
+     * then {@link InterruptedException} is thrown and the current thread's
+     * interrupted status is cleared.
+     * Any permits that were to be assigned to this thread are instead
+     * assigned to other threads trying to acquire permits, as if
+     * permits had been made available by a call to {@link #release()}.
+     *
+     * @param permits the number of permits to acquire
+     * @throws InterruptedException if the current thread is interrupted
+     * @throws IllegalArgumentException if {@code permits} is negative
+     

@@ -1,0 +1,98 @@
+
+     * Produces an adapter method handle which adapts the type of the
+     * current method handle to a new type.
+     * The resulting method handle is guaranteed to report a type
+     * which is equal to the desired new type.
+     * <p>
+     * If the original type and new type are equal, returns {@code this}.
+     * <p>
+     * The new method handle, when invoked, will perform the following
+     * steps:
+     * <ul>
+     * <li>Convert the incoming argument list to match the original
+     *     method handle's argument list.
+     * <li>Invoke the original method handle on the converted argument list.
+     * <li>Convert any result returned by the original method handle
+     *     to the return type of new method handle.
+     * </ul>
+     * <p>
+     * This method provides the crucial behavioral difference between
+     * {@link #invokeExact invokeExact} and plain, inexact {@link #invoke invoke}.
+     * The two methods
+     * perform the same steps when the caller's type descriptor exactly m atches
+     * the callee's, but when the types differ, plain {@link #invoke invoke}
+     * also calls {@code asType} (or some internal equivalent) in order
+     * to match up the caller's and callee's types.
+     * <p>
+     * If the current method is a variable arity method handle
+     * argument list conversion may involve the conversion and collection
+     * of several arguments into an array, as
+     * {@linkplain #asVarargsCollector described elsewhere}.
+     * In every other case, all conversions are applied <em>pairwise</em>,
+     * which means that each argument or return value is converted to
+     * exactly one argument or return value (or no return value).
+     * The applied conversions are defined by consulting the
+     * the corresponding component types of the old and new
+     * method handle types.
+     * <p>
+     * Let <em>T0</em> and <em>T1</em> be corresponding new and old parameter types,
+     * or old and new return types.  Specifically, for some valid index {@code i}, let
+     * <em>T0</em>{@code =newType.parameterType(i)} and <em>T1</em>{@code =this.type().parameterType(i)}.
+     * Or else, going the other way for return values, let
+     * <em>T0</em>{@code =this.type().returnType()} and <em>T1</em>{@code =newType.returnType()}.
+     * If the types are the same, the new method handle makes no change
+     * to the corresponding argument or return value (if any).
+     * Otherwise, one of the following conversions is applied
+     * if possible:
+     * <ul>
+     * <li>If <em>T0</em> and <em>T1</em> are references, then a cast to <em>T1</em> is applied.
+     *     (The types do not need to be related in any particular way.
+     *     This is because a dynamic value of null can convert to any reference type.)
+     * <li>If <em>T0</em> and <em>T1</em> are primitives, then a Java method invocation
+     *     conversion (JLS 5.3) is applied, if one exists.
+     *     (Specifically, <em>T0</em> must convert to <em>T1</em> by a widening primitive conversion.)
+     * <li>If <em>T0</em> is a primitive and <em>T1</em> a reference,
+     *     a Java casting conversion (JLS 5.5) is applied if one exists.
+     *     (Specifically, the value is boxed from <em>T0</em> to its wrapper class,
+     *     which is then widened as needed to <em>T1</em>.)
+     * <li>If <em>T0</em> is a reference and <em>T1</em> a primitive, an unboxing
+     *     conversion will be applied at runtime, possibly followed
+     *     by a Java method invocation conversion (JLS 5.3)
+     *     on the primitive value.  (These are the primitive widening conversions.)
+     *     <em>T0</em> must be a wrapper class or a supertype of one.
+     *     (In the case where <em>T0</em> is Object, these are the conversions
+     *     allowed by {@link java.lang.reflect.Method#invoke java.lang.reflect.Method.invoke}.)
+     *     The unboxing conversion must have a possibility of success, which means that
+     *     if <em>T0</em> is not itself a wrapper class, there must exist at least one
+     *     wrapper class <em>TW</em> which is a subtype of <em>T0</em> and whose unboxed
+     *     primitive value can be widened to <em>T1</em>.
+     * <li>If the return type <em>T1</em> is marked as void, any returned value is discarded
+     * <li>If the return type <em>T0</em> is void and <em>T1</em> a reference, a null value is introduced.
+     * <li>If the return type <em>T0</em> is void and <em>T1</em> a primitive,
+     *     a zero value is introduced.
+     * </ul>
+     * (<em>Note:</em> Both <em>T0</em> and <em>T1</em> may be regarded as static types,
+     * because neither corresponds specifically to the <em>dynamic type</em> of any
+     * actual argument or return value.)
+     * <p>
+     * The method handle conversion cannot be made if any one of the required
+     * pairwise conversions cannot be made.
+     * <p>
+     * At runtime, the conversions applied to reference arguments
+     * or return values may require additional runtime checks which can fail.
+     * An unboxing operation may fail because the original reference is null,
+     * causing a {@link java.lang.NullPointerException NullPointerException}.
+     * An unboxing operation or a reference cast may also fail on a reference
+     * to an object of the wrong type,
+     * causing a {@link java.lang.ClassCastException ClassCastException}.
+     * Although an unboxing operation may accept several kinds of wrappers,
+     * if none are available, a {@code ClassCastException} will be thrown.
+     *
+     * @param newType the expected type of the new method handle
+     * @return a method handle which delegates to {@code this} after performing
+     *           any necessary argument conversions, and arranges for any
+     *           necessary return value conversions
+     * @throws NullPointerException if {@code newType} is a null reference
+     * @throws WrongMethodTypeException if the conversion cannot be made
+     * @see MethodHandles#explicitCastArguments
+     

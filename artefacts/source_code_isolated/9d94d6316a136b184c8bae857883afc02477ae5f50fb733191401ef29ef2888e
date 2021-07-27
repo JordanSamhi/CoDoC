@@ -1,0 +1,13 @@
+public void interrupt(){
+    if (this != Thread.currentThread())
+        checkAccess();
+    synchronized (blockerLock) {
+        Interruptible b = blocker;
+        if (b != null) {
+            interrupt0();
+            b.interrupt(this);
+            return;
+        }
+    }
+    interrupt0();
+}

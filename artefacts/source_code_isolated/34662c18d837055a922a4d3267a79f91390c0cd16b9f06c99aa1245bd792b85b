@@ -1,0 +1,16 @@
+public int read(byte[] buf, int off, int len) throws IOException{
+    ensureOpen();
+    if (eos) {
+        return -1;
+    }
+    int n = super.read(buf, off, len);
+    if (n == -1) {
+        if (readTrailer())
+            eos = true;
+        else
+            return this.read(buf, off, len);
+    } else {
+        crc.update(buf, off, n);
+    }
+    return n;
+}

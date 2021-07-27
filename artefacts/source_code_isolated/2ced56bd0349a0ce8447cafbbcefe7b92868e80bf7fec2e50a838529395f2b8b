@@ -1,0 +1,22 @@
+public void handleMessage(Message msg){
+    WorkerArgs args = (WorkerArgs) msg.obj;
+    if (localLOGV) {
+        Log.d(TAG, "AsyncQueryHandler.handleMessage: msg.what=" + msg.what + ", msg.arg1=" + msg.arg1);
+    }
+    int token = msg.what;
+    int event = msg.arg1;
+    switch(event) {
+        case EVENT_ARG_QUERY:
+            onQueryComplete(token, args.cookie, (Cursor) args.result);
+            break;
+        case EVENT_ARG_INSERT:
+            onInsertComplete(token, args.cookie, (Uri) args.result);
+            break;
+        case EVENT_ARG_UPDATE:
+            onUpdateComplete(token, args.cookie, (Integer) args.result);
+            break;
+        case EVENT_ARG_DELETE:
+            onDeleteComplete(token, args.cookie, (Integer) args.result);
+            break;
+    }
+}

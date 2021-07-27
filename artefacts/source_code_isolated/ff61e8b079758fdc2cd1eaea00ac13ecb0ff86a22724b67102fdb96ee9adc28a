@@ -1,0 +1,8 @@
+public static String probeContentType(Path path) throws IOException{
+    for (FileTypeDetector detector : FileTypeDetectors.installeDetectors) {
+        String result = detector.probeContentType(path);
+        if (result != null)
+            return result;
+    }
+    return FileTypeDetectors.defaultFileTypeDetector.probeContentType(path);
+}

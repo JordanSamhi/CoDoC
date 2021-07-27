@@ -1,0 +1,24 @@
+public boolean contentEquals(CharSequence cs){
+    if (cs instanceof AbstractStringBuilder) {
+        if (cs instanceof StringBuffer) {
+            synchronized (cs) {
+                return nonSyncContentEquals((AbstractStringBuilder) cs);
+            }
+        } else {
+            return nonSyncContentEquals((AbstractStringBuilder) cs);
+        }
+    }
+    if (cs instanceof String) {
+        return equals(cs);
+    }
+    int n = length();
+    if (n != cs.length()) {
+        return false;
+    }
+    for (int i = 0; i < n; i++) {
+        if (charAt(i) != cs.charAt(i)) {
+            return false;
+        }
+    }
+    return true;
+}

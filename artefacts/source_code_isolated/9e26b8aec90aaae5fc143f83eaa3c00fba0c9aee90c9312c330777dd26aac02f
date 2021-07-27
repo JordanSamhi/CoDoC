@@ -1,0 +1,24 @@
+public final PublicKey generatePublic(KeySpec keySpec) throws InvalidKeySpecException{
+    if (serviceIterator == null) {
+        return spi.engineGeneratePublic(keySpec);
+    }
+    Exception failure = null;
+    KeyFactorySpi mySpi = spi;
+    do {
+        try {
+            return mySpi.engineGeneratePublic(keySpec);
+        } catch (Exception e) {
+            if (failure == null) {
+                failure = e;
+            }
+            mySpi = nextSpi(mySpi);
+        }
+    } while (mySpi != null);
+    if (failure instanceof RuntimeException) {
+        throw (RuntimeException) failure;
+    }
+    if (failure instanceof InvalidKeySpecException) {
+        throw (InvalidKeySpecException) failure;
+    }
+    throw new InvalidKeySpecException("Could not generate public key", failure);
+}

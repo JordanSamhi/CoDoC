@@ -1,0 +1,35 @@
+public String toPlainString(){
+    String intStr = getUnscaledValue().toString();
+    if ((scale == 0) || ((isZero()) && (scale < 0))) {
+        return intStr;
+    }
+    int begin = (signum() < 0) ? 1 : 0;
+    int delta = scale;
+    StringBuilder result = new StringBuilder(intStr.length() + 1 + Math.abs(scale));
+    if (begin == 1) {
+        result.append('-');
+    }
+    if (scale > 0) {
+        delta -= (intStr.length() - begin);
+        if (delta >= 0) {
+            result.append("0.");
+            for (; delta > CH_ZEROS.length; delta -= CH_ZEROS.length) {
+                result.append(CH_ZEROS);
+            }
+            result.append(CH_ZEROS, 0, delta);
+            result.append(intStr.substring(begin));
+        } else {
+            delta = begin - delta;
+            result.append(intStr.substring(begin, delta));
+            result.append('.');
+            result.append(intStr.substring(delta));
+        }
+    } else {
+        result.append(intStr.substring(begin));
+        for (; delta < -CH_ZEROS.length; delta += CH_ZEROS.length) {
+            result.append(CH_ZEROS);
+        }
+        result.append(CH_ZEROS, 0, -delta);
+    }
+    return result.toString();
+}

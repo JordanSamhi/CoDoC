@@ -1,0 +1,39 @@
+
+     * Given the name of a host, returns an array of its IP addresses,
+     * based on the configured name service on the system.
+     *
+     * <p> The host name can either be a machine name, such as
+     * "{@code java.sun.com}", or a textual representation of its IP
+     * address. If a literal IP address is supplied, only the
+     * validity of the address format is checked.
+     *
+     * <p> For {@code host} specified in <i>literal IPv6 address</i>,
+     * either the form defined in RFC 2732 or the literal IPv6 address
+     * format defined in RFC 2373 is accepted. A literal IPv6 address may
+     * also be qualified by appending a scoped zone identifier or scope_id.
+     * The syntax and usage of scope_ids is described
+     * <a href="Inet6Address.html#scoped">here</a>.
+     * <p> If the host is {@code null} then an {@code InetAddress}
+     * representing an address of the loopback interface is returned.
+     * See <a href="http://www.ietf.org/rfc/rfc3330.txt">RFC&nbsp;3330</a>
+     * section&nbsp;2 and <a href="http://www.ietf.org/rfc/rfc2373.txt">RFC&nbsp;2373</a>
+     * section&nbsp;2.5.3. </p>
+     *
+     * <p> If there is a security manager and {@code host} is not
+     * null and {@code host.length() } is not equal to zero, the
+     * security manager's
+     * {@code checkConnect} method is called
+     * with the hostname and {@code -1}
+     * as its arguments to see if the operation is allowed.
+     *
+     * @param      host   the name of the host, or {@code null}.
+     * @return     an array of all the IP addresses for a given host name.
+     *
+     * @exception  UnknownHostException  if no IP address for the
+     *               {@code host} could be found, or if a scope_id was specified
+     *               for a global IPv6 address.
+     * @exception  SecurityException  if a security manager exists and its
+     *               {@code checkConnect} method doesn't allow the operation.
+     *
+     * @see SecurityManager#checkConnect
+     

@@ -1,0 +1,21 @@
+public Animator onDisappear(ViewGroup sceneRoot, View view, TransitionValues startValues, TransitionValues endValues){
+    if (startValues == null) {
+        return null;
+    }
+    final Rect startBounds = (Rect) endValues.values.get(PROPNAME_BOUNDS);
+    final Rect endBounds = getEpicenterOrCenter(startBounds);
+    final float endX = endBounds.centerX() - startBounds.centerX();
+    final float endY = endBounds.centerY() - startBounds.centerY();
+    final float endZ = 0 - (float) startValues.values.get(PROPNAME_Z);
+    final float startX = (float) endValues.values.get(PROPNAME_TRANSLATE_X);
+    final float startY = (float) endValues.values.get(PROPNAME_TRANSLATE_Y);
+    final float startZ = (float) endValues.values.get(PROPNAME_TRANSLATE_Z);
+    final Rect startClip = getBestRect(startValues);
+    final Rect endClip = getEpicenterOrCenter(startClip);
+    view.setClipBounds(startClip);
+    final State startStateX = new State(startClip.left, startClip.right, startX);
+    final State endStateX = new State(endClip.left, endClip.right, endX);
+    final State startStateY = new State(startClip.top, startClip.bottom, startY);
+    final State endStateY = new State(endClip.top, endClip.bottom, endY);
+    return createRectAnimator(view, startStateX, startStateY, startZ, endStateX, endStateY, endZ, endValues, mInterpolatorX, mInterpolatorY, mInterpolatorZ);
+}

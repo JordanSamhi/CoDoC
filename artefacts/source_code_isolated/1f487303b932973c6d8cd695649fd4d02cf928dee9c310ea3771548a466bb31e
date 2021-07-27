@@ -1,0 +1,19 @@
+public void close(){
+    synchronized (mInterfaceLock) {
+        if (mClosing.getAndSet(true)) {
+            return;
+        }
+        if (mOfflineSwitchService != null) {
+            mOfflineSwitchService.shutdownNow();
+            mOfflineSwitchService = null;
+        }
+        if (mRemoteDevice != null) {
+            mRemoteDevice.disconnect();
+            mRemoteDevice.unlinkToDeath(this, 0);
+        }
+        if (mRemoteDevice != null || mInError) {
+            mDeviceExecutor.execute(mCallOnClosed);
+        }
+        mRemoteDevice = null;
+    }
+}

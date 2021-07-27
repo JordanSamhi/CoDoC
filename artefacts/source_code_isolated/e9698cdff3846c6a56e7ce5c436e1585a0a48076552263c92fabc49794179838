@@ -1,0 +1,29 @@
+public void inflate(@NonNull Resources r, @NonNull XmlPullParser parser, @NonNull AttributeSet attrs, @Nullable Theme theme) throws XmlPullParserException, IOException{
+    try {
+        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "VectorDrawable#inflate");
+        if (mVectorState.mRootGroup != null || mVectorState.mNativeTree != null) {
+            if (mVectorState.mRootGroup != null) {
+                VMRuntime.getRuntime().registerNativeFree(mVectorState.mRootGroup.getNativeSize());
+                mVectorState.mRootGroup.setTree(null);
+            }
+            mVectorState.mRootGroup = new VGroup();
+            if (mVectorState.mNativeTree != null) {
+                VMRuntime.getRuntime().registerNativeFree(mVectorState.NATIVE_ALLOCATION_SIZE);
+                mVectorState.mNativeTree.release();
+            }
+            mVectorState.createNativeTree(mVectorState.mRootGroup);
+        }
+        final VectorDrawableState state = mVectorState;
+        state.setDensity(Drawable.resolveDensity(r, 0));
+        final TypedArray a = obtainAttributes(r, theme, attrs, R.styleable.VectorDrawable);
+        updateStateFromTypedArray(a);
+        a.recycle();
+        mDpiScaledDirty = true;
+        state.mCacheDirty = true;
+        inflateChildElements(r, parser, attrs, theme);
+        state.onTreeConstructionFinished();
+        updateLocalState(r);
+    } finally {
+        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+    }
+}

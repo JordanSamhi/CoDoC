@@ -1,0 +1,6 @@
+public static int floatToIntBits(float value){
+    int result = floatToRawIntBits(value);
+    if (((result & FloatConsts.EXP_BIT_MASK) == FloatConsts.EXP_BIT_MASK) && (result & FloatConsts.SIGNIF_BIT_MASK) != 0)
+        result = 0x7fc00000;
+    return result;
+}

@@ -1,0 +1,9 @@
+public void onChange(boolean selfChange, Uri uri){
+    if (uri.equals(Settings.Global.getUriFor(Settings.Global.BATTERY_CHARGING_STATE_UPDATE_DELAY))) {
+        synchronized (BatteryStatsImpl.this) {
+            updateBatteryChargedDelayMsLocked();
+        }
+        return;
+    }
+    updateConstants();
+}

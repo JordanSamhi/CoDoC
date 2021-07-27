@@ -1,0 +1,8 @@
+public final byte[] doFinal(byte[] input) throws IllegalBlockSizeException, BadPaddingException{
+    checkCipherState();
+    if (input == null) {
+        throw new IllegalArgumentException("Null input buffer");
+    }
+    updateProviderIfNeeded();
+    return spi.engineDoFinal(input, 0, input.length);
+}

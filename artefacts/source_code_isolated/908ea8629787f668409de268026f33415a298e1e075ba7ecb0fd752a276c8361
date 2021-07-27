@@ -1,0 +1,9 @@
+public int getHighDischargeAmountSinceCharge(){
+    synchronized (this) {
+        int val = mHighDischargeAmountSinceCharge;
+        if (mOnBattery && mDischargeCurrentLevel < mDischargeUnplugLevel) {
+            val += mDischargeUnplugLevel - mDischargeCurrentLevel;
+        }
+        return val;
+    }
+}

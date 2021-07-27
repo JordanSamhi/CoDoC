@@ -1,0 +1,20 @@
+public static DoubleStream iterate(final double seed, final DoubleUnaryOperator f){
+    Objects.requireNonNull(f);
+    final PrimitiveIterator.OfDouble iterator = new PrimitiveIterator.OfDouble() {
+
+        double t = seed;
+
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+
+        @Override
+        public double nextDouble() {
+            double v = t;
+            t = f.applyAsDouble(t);
+            return v;
+        }
+    };
+    return StreamSupport.doubleStream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.NONNULL), false);
+}

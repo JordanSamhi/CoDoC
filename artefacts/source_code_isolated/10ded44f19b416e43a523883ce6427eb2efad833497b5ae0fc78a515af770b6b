@@ -1,4 +1,10 @@
 public long toMillis(boolean ignoreDst){
-    calculator.copyFieldsFromTime(this);
-    return calculator.toMillis(ignoreDst);
+    if (ignoreDst) {
+        wallTime.setIsDst(-1);
+    }
+    int r = wallTime.mktime(zoneInfo);
+    if (r == -1) {
+        return -1;
+    }
+    return r * 1000L;
 }

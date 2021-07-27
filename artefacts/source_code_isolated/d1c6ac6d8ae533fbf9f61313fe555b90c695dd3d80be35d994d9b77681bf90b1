@@ -1,0 +1,14 @@
+public boolean equals(Object o){
+    if (o == this)
+        return true;
+    if (!(o instanceof List))
+        return false;
+    List<?> list = (List<?>) o;
+    Iterator<?> it = list.iterator();
+    Object[] elements = getArray();
+    for (int i = 0, len = elements.length; i < len; i++) if (!it.hasNext() || !Objects.equals(elements[i], it.next()))
+        return false;
+    if (it.hasNext())
+        return false;
+    return true;
+}

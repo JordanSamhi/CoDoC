@@ -1,0 +1,11 @@
+public void end(){
+    synchronized (zsRef) {
+        guard.close();
+        long addr = zsRef.address();
+        zsRef.clear();
+        if (addr != 0) {
+            end(addr);
+            buf = null;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+public boolean beginBatchEdit(){
+    synchronized (this) {
+        if (mBatchEditNesting >= 0) {
+            mTextView.beginBatchEdit();
+            mBatchEditNesting++;
+            return true;
+        }
+    }
+    return false;
+}

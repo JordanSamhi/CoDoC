@@ -1,0 +1,17 @@
+public int precision(){
+    if (precision != 0) {
+        return precision;
+    }
+    if (bitLength == 0) {
+        precision = 1;
+    } else if (bitLength < 64) {
+        precision = decimalDigitsInLong(smallValue);
+    } else {
+        int decimalDigits = 1 + (int) ((bitLength - 1) * LOG10_2);
+        if (getUnscaledValue().divide(Multiplication.powerOf10(decimalDigits)).signum() != 0) {
+            decimalDigits++;
+        }
+        precision = decimalDigits;
+    }
+    return precision;
+}

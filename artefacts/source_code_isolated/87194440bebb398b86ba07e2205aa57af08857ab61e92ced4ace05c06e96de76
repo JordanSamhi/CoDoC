@@ -1,0 +1,9 @@
+public boolean commitText(CharSequence text, int newCursorPosition){
+    if (mTextView == null) {
+        return super.commitText(text, newCursorPosition);
+    }
+    mTextView.resetErrorChangedFlag();
+    boolean success = super.commitText(text, newCursorPosition);
+    mTextView.hideErrorIfUnchanged();
+    return success;
+}

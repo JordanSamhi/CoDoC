@@ -1,0 +1,17 @@
+public BigInteger toBigIntegerExact(){
+    if ((scale == 0) || (isZero())) {
+        return getUnscaledValue();
+    } else if (scale < 0) {
+        return getUnscaledValue().multiply(Multiplication.powerOf10(-(long) scale));
+    } else {
+        BigInteger[] integerAndFraction;
+        if ((scale > approxPrecision()) || (scale > getUnscaledValue().getLowestSetBit())) {
+            throw new ArithmeticException("Rounding necessary");
+        }
+        integerAndFraction = getUnscaledValue().divideAndRemainder(Multiplication.powerOf10(scale));
+        if (integerAndFraction[1].signum() != 0) {
+            throw new ArithmeticException("Rounding necessary");
+        }
+        return integerAndFraction[0];
+    }
+}

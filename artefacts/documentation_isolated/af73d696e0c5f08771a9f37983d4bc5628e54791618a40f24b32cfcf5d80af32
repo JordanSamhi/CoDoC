@@ -1,0 +1,178 @@
+
+         * Returns a <code>List</code> of <code>Locale</code>s as candidate
+         * locales for <code>baseName</code> and <code>locale</code>. This
+         * method is called by the <code>ResourceBundle.getBundle</code>
+         * factory method each time the factory method tries finding a
+         * resource bundle for a target <code>Locale</code>.
+         *
+         * <p>The sequence of the candidate locales also corresponds to the
+         * runtime resource lookup path (also known as the <I>parent
+         * chain</I>), if the corresponding resource bundles for the
+         * candidate locales exist and their parents are not defined by
+         * loaded resource bundles themselves.  The last element of the list
+         * must be a {@linkplain Locale#ROOT root locale} if it is desired to
+         * have the base bundle as the terminal of the parent chain.
+         *
+         * <p>If the given locale is equal to <code>Locale.ROOT</code> (the
+         * root locale), a <code>List</code> containing only the root
+         * <code>Locale</code> must be returned. In this case, the
+         * <code>ResourceBundle.getBundle</code> factory method loads only
+         * the base bundle as the resulting resource bundle.
+         *
+         * <p>It is not a requirement to return an immutable (unmodifiable)
+         * <code>List</code>. However, the returned <code>List</code> must not
+         * be mutated after it has been returned by
+         * <code>getCandidateLocales</code>.
+         *
+         * <p>The default implementation returns a <code>List</code> containing
+         * <code>Locale</code>s using the rules described below.  In the
+         * description below, <em>L</em>, <em>S</em>, <em>C</em> and <em>V</em>
+         * respectively represent non-empty language, script, country, and
+         * variant.  For example, [<em>L</em>, <em>C</em>] represents a
+         * <code>Locale</code> that has non-empty values only for language and
+         * country.  The form <em>L</em>("xx") represents the (non-empty)
+         * language value is "xx".  For all cases, <code>Locale</code>s whose
+         * final component values are empty strings are omitted.
+         *
+         * <ol><li>For an input <code>Locale</code> with an empty script value,
+         * append candidate <code>Locale</code>s by omitting the final component
+         * one by one as below:
+         *
+         * <ul>
+         * <li> [<em>L</em>, <em>C</em>, <em>V</em>] </li>
+         * <li> [<em>L</em>, <em>C</em>] </li>
+         * <li> [<em>L</em>] </li>
+         * <li> <code>Locale.ROOT</code> </li>
+         * </ul></li>
+         *
+         * <li>For an input <code>Locale</code> with a non-empty script value,
+         * append candidate <code>Locale</code>s by omitting the final component
+         * up to language, then append candidates generated from the
+         * <code>Locale</code> with country and variant restored:
+         *
+         * <ul>
+         * <li> [<em>L</em>, <em>S</em>, <em>C</em>, <em>V</em>]</li>
+         * <li> [<em>L</em>, <em>S</em>, <em>C</em>]</li>
+         * <li> [<em>L</em>, <em>S</em>]</li>
+         * <li> [<em>L</em>, <em>C</em>, <em>V</em>]</li>
+         * <li> [<em>L</em>, <em>C</em>]</li>
+         * <li> [<em>L</em>]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul></li>
+         *
+         * <li>For an input <code>Locale</code> with a variant value consisting
+         * of multiple subtags separated by underscore, generate candidate
+         * <code>Locale</code>s by omitting the variant subtags one by one, then
+         * insert them after every occurrence of <code> Locale</code>s with the
+         * full variant value in the original list.  For example, if the
+         * the variant consists of two subtags <em>V1</em> and <em>V2</em>:
+         *
+         * <ul>
+         * <li> [<em>L</em>, <em>S</em>, <em>C</em>, <em>V1</em>, <em>V2</em>]</li>
+         * <li> [<em>L</em>, <em>S</em>, <em>C</em>, <em>V1</em>]</li>
+         * <li> [<em>L</em>, <em>S</em>, <em>C</em>]</li>
+         * <li> [<em>L</em>, <em>S</em>]</li>
+         * <li> [<em>L</em>, <em>C</em>, <em>V1</em>, <em>V2</em>]</li>
+         * <li> [<em>L</em>, <em>C</em>, <em>V1</em>]</li>
+         * <li> [<em>L</em>, <em>C</em>]</li>
+         * <li> [<em>L</em>]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul></li>
+         *
+         * <li>Special cases for Chinese.  When an input <code>Locale</code> has the
+         * language "zh" (Chinese) and an empty script value, either "Hans" (Simplified) or
+         * "Hant" (Traditional) might be supplied, depending on the country.
+         * When the country is "CN" (China) or "SG" (Singapore), "Hans" is supplied.
+         * When the country is "HK" (Hong Kong SAR China), "MO" (Macau SAR China),
+         * or "TW" (Taiwan), "Hant" is supplied.  For all other countries or when the country
+         * is empty, no script is supplied.  For example, for <code>Locale("zh", "CN")
+         * </code>, the candidate list will be:
+         * <ul>
+         * <li> [<em>L</em>("zh"), <em>S</em>("Hans"), <em>C</em>("CN")]</li>
+         * <li> [<em>L</em>("zh"), <em>S</em>("Hans")]</li>
+         * <li> [<em>L</em>("zh"), <em>C</em>("CN")]</li>
+         * <li> [<em>L</em>("zh")]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul>
+         *
+         * For <code>Locale("zh", "TW")</code>, the candidate list will be:
+         * <ul>
+         * <li> [<em>L</em>("zh"), <em>S</em>("Hant"), <em>C</em>("TW")]</li>
+         * <li> [<em>L</em>("zh"), <em>S</em>("Hant")]</li>
+         * <li> [<em>L</em>("zh"), <em>C</em>("TW")]</li>
+         * <li> [<em>L</em>("zh")]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul></li>
+         *
+         * <li>Special cases for Norwegian.  Both <code>Locale("no", "NO",
+         * "NY")</code> and <code>Locale("nn", "NO")</code> represent Norwegian
+         * Nynorsk.  When a locale's language is "nn", the standard candidate
+         * list is generated up to [<em>L</em>("nn")], and then the following
+         * candidates are added:
+         *
+         * <ul><li> [<em>L</em>("no"), <em>C</em>("NO"), <em>V</em>("NY")]</li>
+         * <li> [<em>L</em>("no"), <em>C</em>("NO")]</li>
+         * <li> [<em>L</em>("no")]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul>
+         *
+         * If the locale is exactly <code>Locale("no", "NO", "NY")</code>, it is first
+         * converted to <code>Locale("nn", "NO")</code> and then the above procedure is
+         * followed.
+         *
+         * <p>Also, Java treats the language "no" as a synonym of Norwegian
+         * Bokm&#xE5;l "nb".  Except for the single case <code>Locale("no",
+         * "NO", "NY")</code> (handled above), when an input <code>Locale</code>
+         * has language "no" or "nb", candidate <code>Locale</code>s with
+         * language code "no" and "nb" are interleaved, first using the
+         * requested language, then using its synonym. For example,
+         * <code>Locale("nb", "NO", "POSIX")</code> generates the following
+         * candidate list:
+         *
+         * <ul>
+         * <li> [<em>L</em>("nb"), <em>C</em>("NO"), <em>V</em>("POSIX")]</li>
+         * <li> [<em>L</em>("no"), <em>C</em>("NO"), <em>V</em>("POSIX")]</li>
+         * <li> [<em>L</em>("nb"), <em>C</em>("NO")]</li>
+         * <li> [<em>L</em>("no"), <em>C</em>("NO")]</li>
+         * <li> [<em>L</em>("nb")]</li>
+         * <li> [<em>L</em>("no")]</li>
+         * <li> <code>Locale.ROOT</code></li>
+         * </ul>
+         *
+         * <code>Locale("no", "NO", "POSIX")</code> would generate the same list
+         * except that locales with "no" would appear before the corresponding
+         * locales with "nb".</li>
+         * </ol>
+         *
+         * <p>The default implementation uses an {@link ArrayList} that
+         * overriding implementations may modify before returning it to the
+         * caller. However, a subclass must not modify it after it has
+         * been returned by <code>getCandidateLocales</code>.
+         *
+         * <p>For example, if the given <code>baseName</code> is "Messages"
+         * and the given <code>locale</code> is
+         * <code>Locale("ja",&nbsp;"",&nbsp;"XX")</code>, then a
+         * <code>List</code> of <code>Locale</code>s:
+         * <pre>
+         *     Locale("ja", "", "XX")
+         *     Locale("ja")
+         *     Locale.ROOT
+         * </pre>
+         * is returned. And if the resource bundles for the "ja" and
+         * "" <code>Locale</code>s are found, then the runtime resource
+         * lookup path (parent chain) is:
+         * <pre>{@code
+         *     Messages_ja -> Messages
+         * }</pre>
+         *
+         * @param baseName
+         *        the base name of the resource bundle, a fully
+         *        qualified class name
+         * @param locale
+         *        the locale for which a resource bundle is desired
+         * @return a <code>List</code> of candidate
+         *        <code>Locale</code>s for the given <code>locale</code>
+         * @exception NullPointerException
+         *        if <code>baseName</code> or <code>locale</code> is
+         *        <code>null</code>
+         

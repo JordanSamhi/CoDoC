@@ -1,0 +1,12 @@
+public long getLong(TemporalField field){
+    if (field instanceof ChronoField) {
+        if (field == NANO_OF_DAY) {
+            return toNanoOfDay();
+        }
+        if (field == MICRO_OF_DAY) {
+            return toNanoOfDay() / 1000;
+        }
+        return get0(field);
+    }
+    return field.getFrom(this);
+}

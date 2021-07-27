@@ -1,0 +1,7 @@
+public static DoubleStream concat(DoubleStream a, DoubleStream b){
+    Objects.requireNonNull(a);
+    Objects.requireNonNull(b);
+    Spliterator.OfDouble split = new Streams.ConcatSpliterator.OfDouble(a.spliterator(), b.spliterator());
+    DoubleStream stream = StreamSupport.doubleStream(split, a.isParallel() || b.isParallel());
+    return stream.onClose(Streams.composedClose(a, b));
+}

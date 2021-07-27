@@ -1,0 +1,34 @@
+
+     * Returns the number of bytes available to this virtual machine on the
+     * partition <a href="#partName">named</a> by this abstract pathname.  When
+     * possible, this method checks for write permissions and other operating
+     * system restrictions and will therefore usually provide a more accurate
+     * estimate of how much new data can actually be written than {@link
+     * #getFreeSpace}.
+     *
+     * <p> The returned number of available bytes is a hint, but not a
+     * guarantee, that it is possible to use most or any of these bytes.  The
+     * number of unallocated bytes is most likely to be accurate immediately
+     * after this call.  It is likely to be made inaccurate by any external
+     * I/O operations including those made on the system outside of this
+     * virtual machine.  This method makes no guarantee that write operations
+     * to this file system will succeed.
+     *
+     * <p> On Android (and other Unix-based systems), this method returns the number of free bytes
+     * available to non-root users, regardless of whether you're actually running as root,
+     * and regardless of any quota or other restrictions that might apply to the user.
+     * (The {@code getFreeSpace} method returns the number of bytes potentially available to root.)
+     *
+     * @return  The number of available bytes on the partition or <tt>0L</tt>
+     *          if the abstract pathname does not name a partition.  On
+     *          systems where this information is not available, this method
+     *          will be equivalent to a call to {@link #getFreeSpace}.
+     *
+     * @throws  SecurityException
+     *          If a security manager has been installed and it denies
+     *          {@link RuntimePermission}<tt>("getFileSystemAttributes")</tt>
+     *          or its {@link SecurityManager#checkRead(String)} method denies
+     *          read access to the file named by this abstract pathname
+     *
+     * @since  1.6
+     

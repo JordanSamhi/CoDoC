@@ -1,0 +1,8 @@
+public static void parallelSort(int[] a, int fromIndex, int toIndex){
+    rangeCheck(a.length, fromIndex, toIndex);
+    int n = toIndex - fromIndex, p, g;
+    if (n <= MIN_ARRAY_SORT_GRAN || (p = ForkJoinPool.getCommonPoolParallelism()) == 1)
+        DualPivotQuicksort.sort(a, fromIndex, toIndex - 1, null, 0, 0);
+    else
+        new ArraysParallelSortHelpers.FJInt.Sorter(null, a, new int[n], fromIndex, n, 0, ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ? MIN_ARRAY_SORT_GRAN : g).invoke();
+}

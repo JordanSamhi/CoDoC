@@ -1,0 +1,11 @@
+public void updatePermissionFlags(String permName, String packageName, int flagMask, int flagValues, UserHandle user){
+    if (DEBUG_TRACE_PERMISSION_UPDATES && shouldTraceGrant(packageName, permName, user.getIdentifier())) {
+        Log.i(TAG, "App " + mContext.getPackageName() + " is updating flags for " + packageName + " " + permName + " for user " + user.getIdentifier() + ": " + DebugUtils.flagsToString(PackageManager.class, "FLAG_PERMISSION_", flagMask) + " := " + DebugUtils.flagsToString(PackageManager.class, "FLAG_PERMISSION_", flagValues), new RuntimeException());
+    }
+    try {
+        final boolean checkAdjustPolicyFlagPermission = mContext.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.Q;
+        mPermissionManager.updatePermissionFlags(permName, packageName, flagMask, flagValues, checkAdjustPolicyFlagPermission, user.getIdentifier());
+    } catch (RemoteException e) {
+        throw e.rethrowFromSystemServer();
+    }
+}

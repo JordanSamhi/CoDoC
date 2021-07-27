@@ -1,0 +1,30 @@
+
+     * Continues a multi-part update of the Additional Authentication
+     * Data (AAD), using a subset of the provided buffer.
+     * <p>
+     * Calls to this method provide AAD to the cipher when operating in
+     * modes such as AEAD (GCM/CCM).  If this cipher is operating in
+     * either GCM or CCM mode, all AAD must be supplied before beginning
+     * operations on the ciphertext (via the {@code update} and {@code
+     * doFinal} methods).
+     *
+     * @param src the buffer containing the AAD
+     * @param offset the offset in {@code src} where the AAD input starts
+     * @param len the number of AAD bytes
+     *
+     * @throws IllegalArgumentException if the {@code src}
+     * byte array is null, or the {@code offset} or {@code length}
+     * is less than 0, or the sum of the {@code offset} and
+     * {@code len} is greater than the length of the
+     * {@code src} byte array
+     * @throws IllegalStateException if this cipher is in a wrong state
+     * (e.g., has not been initialized), does not accept AAD, or if
+     * operating in either GCM or CCM mode and one of the {@code update}
+     * methods has already been called for the active
+     * encryption/decryption operation
+     * @throws UnsupportedOperationException if the corresponding method
+     * in the {@code CipherSpi} has not been overridden by an
+     * implementation
+     *
+     * @since 1.7
+     

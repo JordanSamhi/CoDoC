@@ -1,0 +1,86 @@
+public void handleResumeActivity(IBinder token, boolean finalStateRequest, boolean isForward, String reason){
+    unscheduleGcIdler();
+    mSomeActivitiesChanged = true;
+    final ActivityClientRecord r = performResumeActivity(token, finalStateRequest, reason);
+    if (r == null) {
+        return;
+    }
+    if (mActivitiesToBeDestroyed.containsKey(token)) {
+        return;
+    }
+    final Activity a = r.activity;
+    if (localLOGV) {
+        Slog.v(TAG, "Resume " + r + " started activity: " + a.mStartedActivity + ", hideForNow: " + r.hideForNow + ", finished: " + a.mFinished);
+    }
+    final int forwardBit = isForward ? WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION : 0;
+    boolean willBeVisible = !a.mStartedActivity;
+    if (!willBeVisible) {
+        try {
+            willBeVisible = ActivityTaskManager.getService().willActivityBeVisible(a.getActivityToken());
+        } catch (RemoteException e) {
+            throw e.rethrowFromSystemServer();
+        }
+    }
+    if (r.window == null && !a.mFinished && willBeVisible) {
+        r.window = r.activity.getWindow();
+        View decor = r.window.getDecorView();
+        decor.setVisibility(View.INVISIBLE);
+        ViewManager wm = a.getWindowManager();
+        WindowManager.LayoutParams l = r.window.getAttributes();
+        a.mDecor = decor;
+        l.type = WindowManager.LayoutParams.TYPE_BASE_APPLICATION;
+        l.softInputMode |= forwardBit;
+        if (r.mPreserveWindow) {
+            a.mWindowAdded = true;
+            r.mPreserveWindow = false;
+            ViewRootImpl impl = decor.getViewRootImpl();
+            if (impl != null) {
+                impl.notifyChildRebuilt();
+            }
+        }
+        if (a.mVisibleFromClient) {
+            if (!a.mWindowAdded) {
+                a.mWindowAdded = true;
+                wm.addView(decor, l);
+            } else {
+                a.onWindowAttributesChanged(l);
+            }
+        }
+    } else if (!willBeVisible) {
+        if (localLOGV)
+            Slog.v(TAG, "Launch " + r + " mStartedActivity set");
+        r.hideForNow = true;
+    }
+    cleanUpPendingRemoveWindows(r, false);
+    if (!r.activity.mFinished && willBeVisible && r.activity.mDecor != null && !r.hideForNow) {
+        if (r.newConfig != null) {
+            performConfigurationChangedForActivity(r, r.newConfig);
+            if (DEBUG_CONFIGURATION) {
+                Slog.v(TAG, "Resuming activity " + r.activityInfo.name + " with newConfig " + r.activity.mCurrentConfig);
+            }
+            r.newConfig = null;
+        }
+        if (localLOGV)
+            Slog.v(TAG, "Resuming " + r + " with isForward=" + isForward);
+        ViewRootImpl impl = r.window.getDecorView().getViewRootImpl();
+        WindowManager.LayoutParams l = impl != null ? impl.mWindowAttributes : r.window.getAttributes();
+        if ((l.softInputMode & WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION) != forwardBit) {
+            l.softInputMode = (l.softInputMode & (~WindowManager.LayoutParams.SOFT_INPUT_IS_FORWARD_NAVIGATION)) | forwardBit;
+            if (r.activity.mVisibleFromClient) {
+                ViewManager wm = a.getWindowManager();
+                View decor = r.window.getDecorView();
+                wm.updateViewLayout(decor, l);
+            }
+        }
+        r.activity.mVisibleFromServer = true;
+        mNumVisibleActivities++;
+        if (r.activity.mVisibleFromClient) {
+            r.activity.makeVisible();
+        }
+    }
+    r.nextIdle = mNewActivities;
+    mNewActivities = r;
+    if (localLOGV)
+        Slog.v(TAG, "Scheduling idle handler for " + r);
+    Looper.myQueue().addIdleHandler(new Idler());
+}

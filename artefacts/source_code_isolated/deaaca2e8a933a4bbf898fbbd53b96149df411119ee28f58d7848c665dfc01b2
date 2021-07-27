@@ -1,0 +1,17 @@
+public void addShutdownHook(Thread hook){
+    if (hook == null) {
+        throw new NullPointerException("hook == null");
+    }
+    if (shuttingDown) {
+        throw new IllegalStateException("VM already shutting down");
+    }
+    if (hook.started) {
+        throw new IllegalArgumentException("Hook has already been started");
+    }
+    synchronized (shutdownHooks) {
+        if (shutdownHooks.contains(hook)) {
+            throw new IllegalArgumentException("Hook already registered.");
+        }
+        shutdownHooks.add(hook);
+    }
+}

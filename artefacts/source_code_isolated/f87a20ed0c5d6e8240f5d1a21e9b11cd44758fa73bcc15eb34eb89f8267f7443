@@ -1,0 +1,10 @@
+public static String deepToString(Object[] a){
+    if (a == null)
+        return "null";
+    int bufLen = 20 * a.length;
+    if (a.length != 0 && bufLen <= 0)
+        bufLen = Integer.MAX_VALUE;
+    StringBuilder buf = new StringBuilder(bufLen);
+    deepToString(a, buf, new HashSet<Object[]>());
+    return buf.toString();
+}
