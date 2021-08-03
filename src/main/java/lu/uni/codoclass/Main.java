@@ -1,4 +1,4 @@
-package lu.uni.cobaclass;
+package lu.uni.codoclass;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import lu.uni.cobaclass.utils.CommandLineOptions;
-import lu.uni.cobaclass.utils.Constants;
-import lu.uni.cobaclass.utils.Utils;
+import lu.uni.codoclass.utils.CommandLineOptions;
+import lu.uni.codoclass.utils.Constants;
+import lu.uni.codoclass.utils.Utils;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -23,7 +23,7 @@ import soot.util.Chain;
 
 /*-
  * #%L
- * CoBaClaSS
+ * CoDoClaSS
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi

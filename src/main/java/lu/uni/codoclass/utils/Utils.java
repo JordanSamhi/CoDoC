@@ -1,4 +1,4 @@
-package lu.uni.cobaclass.utils;
+package lu.uni.codoclass.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import com.github.javaparser.ast.body.Parameter;
 
 /*-
  * #%L
- * CoBaClaSS
+ * CoDoClaSS
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi
