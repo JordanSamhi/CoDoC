@@ -1,4 +1,4 @@
-package lu.uni.codoclass;
+package lu.uni.codoc;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import lu.uni.codoclass.utils.CommandLineOptions;
-import lu.uni.codoclass.utils.Constants;
-import lu.uni.codoclass.utils.Utils;
+import lu.uni.codoc.utils.CommandLineOptions;
+import lu.uni.codoc.utils.Constants;
+import lu.uni.codoc.utils.Utils;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -23,7 +23,7 @@ import soot.util.Chain;
 
 /*-
  * #%L
- * CoDoClaSS
+ * CoDoC
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi

@@ -1,4 +1,4 @@
-package lu.uni.codoclass.utils;
+package lu.uni.codoc.utils;
 
 /*-
  * #%L
@@ -37,7 +37,7 @@ import org.javatuples.Triplet;
 
 /*-
  * #%L
- * CoDoClaSS
+ * CoDoC
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi

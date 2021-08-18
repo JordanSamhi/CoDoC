@@ -1,4 +1,4 @@
-package lu.uni.codoclass.utils;
+package lu.uni.codoc.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,12 @@ import java.util.List;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import soot.SootMethod;
+import soot.Type;
 
 /*-
  * #%L
- * CoDoClaSS
+ * CoDoC
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi
@@ -31,8 +33,6 @@ import com.github.javaparser.ast.body.Parameter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import soot.SootMethod;
-import soot.Type;
 
 public class Utils {
 

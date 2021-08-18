@@ -1,8 +1,8 @@
-package lu.uni.codoclass.utils;
+package lu.uni.codoc.utils;
 
 /*-
  * #%L
- * CoDoClaSS
+ * CoDoC
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi
@@ -30,7 +30,7 @@ public class Constants {
 	/**
 	 * Misc names
 	 */
-	public static final String TOOL_NAME = "CoDoClaSS";
+	public static final String TOOL_NAME = "CoDoC";
 	public static final String PUBLIC = "public";
-	public static final String DEFAULT_OUTPUT = "./codoclass_output/";
+	public static final String DEFAULT_OUTPUT = "./codoc_output/";
 }

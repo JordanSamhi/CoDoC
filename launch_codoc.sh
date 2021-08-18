@@ -13,7 +13,7 @@ do
 done
 
 echo "#===========================#"
-echo "|     CoDoClaSS launcher    |"
+echo "|     CoDoC launcher    |"
 echo "#===========================#"
 
 
@@ -38,9 +38,9 @@ else
     FULL_OUTPUT_PATH=$(pwd)/$OUTPUT_PATH
 fi
 
-if [ ! -f target/CoDoClaSS-0.0.1-SNAPSHOT.jar ]
+if [ ! -f target/CoDoC-0.0.1-SNAPSHOT.jar ]
 then
-    end_program "Build CoDoClaSS first ! (./build_codoclass.sh)"
+    end_program "Build CoDoC first ! (./build_codoc.sh)"
 fi
 
 OUTPUT_PATH_DOCUMENTATION=$FULL_OUTPUT_PATH/documentation/
@@ -48,8 +48,8 @@ OUTPUT_PATH_SOURCE=$FULL_OUTPUT_PATH/source_code/
 
 print_info "Extracting methods source code and documentation..."
 cp -r $SOURCE_CODE_PATH src/main/resources/
-java -jar target/CoDoClaSS-0.0.1-SNAPSHOT-jar-with-dependencies.jar -s $SOURCE_CODE_PATH -o $FULL_OUTPUT_PATH -c -d -a $ANDROID_JAR_PATH
-check_return $? "Something went wrong while executing CoDoClaSS." "Source code and documentation extracted successfully in $FULL_OUTPUT_PATH."
+java -jar target/CoDoC-0.0.1-SNAPSHOT-jar-with-dependencies.jar -s $SOURCE_CODE_PATH -o $FULL_OUTPUT_PATH -c -d -a $ANDROID_JAR_PATH
+check_return $? "Something went wrong while executing CoDoC." "Source code and documentation extracted successfully in $FULL_OUTPUT_PATH."
 rm -rf src/main/resources/$(basename $SOURCE_CODE_PATH)
 
 print_info "Generating vectors from documentation"

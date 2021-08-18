@@ -1,4 +1,4 @@
-package lu.uni.codoclass;
+package lu.uni.codoc;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,15 +20,15 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 import com.github.javaparser.utils.CodeGenerationUtils;
 import com.github.javaparser.utils.SourceRoot;
 
-import lu.uni.codoclass.utils.CommandLineOptions;
-import lu.uni.codoclass.utils.Constants;
-import lu.uni.codoclass.utils.Utils;
+import lu.uni.codoc.utils.CommandLineOptions;
+import lu.uni.codoc.utils.Constants;
+import lu.uni.codoc.utils.Utils;
 import soot.SootClass;
 import soot.SootMethod;
 
 /*-
  * #%L
- * CoDoClaSS
+ * CoDoC
  * 
  * %%
  * Copyright (C) 2021 Jordan Samhi
