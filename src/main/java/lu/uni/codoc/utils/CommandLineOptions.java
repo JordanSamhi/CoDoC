@@ -73,6 +73,7 @@ public class CommandLineOptions {
 	private static final Triplet<String, String, String> OUTPUT = new Triplet<String, String, String>("output", "o", "Destination folder for files");
 	private static final Triplet<String, String, String> SOURCE_CODE = new Triplet<String, String, String>("code", "c", "Extract source code");
 	private static final Triplet<String, String, String> DOCUMENTATION = new Triplet<String, String, String>("documentation", "d", "Extract documentation");
+	private static final Triplet<String, String, String> CLASS_DOCUMENTATION = new Triplet<String, String, String>("class_documentation", "f", "Extract class documentation");
 	private static final Triplet<String, String, String> HELP = new Triplet<String, String, String>("help", "h", "Print this message");
 
 	private Options options, firstOptions;
@@ -163,6 +164,14 @@ public class CommandLineOptions {
 				.argName(DOCUMENTATION.getValue0())
 				.required(false)
 				.build();
+		
+		final Option class_documentation = Option.builder(CLASS_DOCUMENTATION.getValue1())
+				.longOpt(CLASS_DOCUMENTATION.getValue0())
+				.desc(CLASS_DOCUMENTATION.getValue2())
+				.hasArg(false)
+				.argName(CLASS_DOCUMENTATION.getValue0())
+				.required(false)
+				.build();
 
 		final Option help = Option.builder(HELP.getValue1())
 				.longOpt(HELP.getValue0())
@@ -178,6 +187,7 @@ public class CommandLineOptions {
 		this.options.addOption(documentation);
 		this.options.addOption(source_code);
 		this.options.addOption(android_jar);
+		this.options.addOption(class_documentation);
 
 		for(Option o : this.firstOptions.getOptions()) {
 			this.options.addOption(o);
@@ -206,5 +216,9 @@ public class CommandLineOptions {
 	
 	public boolean hasSourceCode() {
 		return this.cmdLine.hasOption(SOURCE_CODE.getValue1());
+	}
+	
+	public boolean hasClassDocumentation() {
+		return this.cmdLine.hasOption(CLASS_DOCUMENTATION.getValue1());
 	}
 }
