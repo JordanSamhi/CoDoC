@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lu.uni.codoc.utils.CommandLineOptions;
 import lu.uni.codoc.utils.Constants;
 import lu.uni.codoc.utils.Utils;
@@ -47,13 +50,18 @@ import soot.util.Chain;
  */
 
 public class Main {
+	
+	private static Logger logger = LoggerFactory.getLogger(Main.class);
+	
 	public static void main(String[] args) throws Throwable {
 		System.out.println(String.format("%s v1.0 started on %s\n", Constants.TOOL_NAME, new Date()));
 		CommandLineOptions.v().parseArgs(args);
 		String source_folder = CommandLineOptions.v().getSource();
 		String android_jar = CommandLineOptions.v().getAndroidJar();
 
+		logger.debug("Initializing Soot");
 		initializeSoot(android_jar);
+		logger.debug("Soot initialized");
 		PackManager.v().getPack("wjtp").add(
 				new Transform("wjtp.myTransform", new SceneTransformer() {
 					protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
@@ -68,16 +76,18 @@ public class Main {
 									sce.parseClass(javaFilePath);
 									for(SootMethod sm: sc.getMethods()) {
 										if(sm.isPublic() && !sm.isConstructor()) {
+											logger.debug(String.format("Processing method %s", sm));
 											sce.extractMethodArtefacts(sm);
 										}
 									}
 								}
 							}
 						}
+						logger.debug(String.format("Dumping results..."));
 						sce.dump();
+						logger.debug(String.format("Results dumped"));
 					}
 				}));
-
 		PackManager.v().runPacks();
 	}
 

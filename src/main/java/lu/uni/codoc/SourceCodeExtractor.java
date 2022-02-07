@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -58,10 +61,12 @@ public class SourceCodeExtractor {
 	private CompilationUnit cu;
 	private Map<SootMethod, String> methodToSourceCode;
 	private Map<SootMethod, String> methodToDocumentation;
+	private Map<SootMethod, String> methodToClassDocumentation;
 	private Map<SootMethod, String> abstractMethodToDocumentation;
 	private CombinedTypeSolver combinedTypeSolver;
 	private Map<SootMethod, String> sha256ToSootMethodName;
 	private List<SootMethod> methodsWithNoDocumentation;
+	private Logger logger = LoggerFactory.getLogger(SourceCodeExtractor.class);
 
 	public SourceCodeExtractor(String pathToSourceRootFolder) {
 		this.pathToSourceRootFolder = pathToSourceRootFolder;
@@ -74,6 +79,7 @@ public class SourceCodeExtractor {
 		this.methodsWithNoDocumentation = new ArrayList<SootMethod>();
 		combinedTypeSolver.add(new JavaParserTypeSolver(new File(CommandLineOptions.v().getSource())));
 		this.sha256ToSootMethodName = new HashMap<SootMethod, String>();
+		this.methodToClassDocumentation = new HashMap<SootMethod, String>();
 	}
 
 	public void parseClass(String className) {
@@ -84,6 +90,7 @@ public class SourceCodeExtractor {
 		if(this.cu == null) {
 			throw new ExceptionInInitializerError("Compilation Unit not initialized, please run parseClass before.");
 		}
+
 		cu.accept(new VoidVisitorAdapter<Void>() {
 			public void visit(MethodDeclaration md, Void arg) {
 				if(Utils.sootMethodEqualsNormalMethod(sm, md)) {
@@ -106,6 +113,17 @@ public class SourceCodeExtractor {
 							abstractMethodToDocumentation.put(sm, md.getComment().get().getContent());
 						}
 					}
+					cu.accept(new VoidVisitorAdapter<Object>() {
+						public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+							String classVisited = n.getFullyQualifiedName().get();
+							String methodClass = sm.getDeclaringClass().getName();
+							if(classVisited.equals(methodClass) && n.getComment().isPresent()) {
+								methodToClassDocumentation.put(sm, n.getComment().get().getContent());
+							}else {
+								methodToClassDocumentation.put(sm, Constants.EMPTY_DOC);
+							}
+						}
+					}, null);
 				}
 			}
 		}, null);
@@ -130,6 +148,22 @@ public class SourceCodeExtractor {
 		if(CommandLineOptions.v().hasDocumentation()) {
 			for (Map.Entry<SootMethod, String> entry : this.methodToDocumentation.entrySet()) {
 				writeInFile(destination, "documentation", this.sha256ToSootMethodName.get(entry.getKey()), entry.getValue());
+			}
+		}
+		if(CommandLineOptions.v().hasClassDocumentation()) {
+			for (Map.Entry<SootMethod, String> entry : this.methodToClassDocumentation.entrySet()) {
+				if(this.methodToDocumentation.containsKey(entry.getKey())){
+					writeInFile(destination, "class_documentation", this.sha256ToSootMethodName.get(entry.getKey()), entry.getValue());
+				}
+			}
+		}
+		if(CommandLineOptions.v().hasClassDocumentation()) {
+			for (Map.Entry<SootMethod, String> entry : this.methodToClassDocumentation.entrySet()) {
+				if(this.methodToDocumentation.containsKey(entry.getKey())){
+					writeInFile(destination, "concatenated_class_method_documentation", 
+							this.sha256ToSootMethodName.get(entry.getKey()), String.format("%s%s", 
+									entry.getValue(), this.methodToDocumentation.get(entry.getKey())));
+				}
 			}
 		}
 		if(CommandLineOptions.v().hasSourceCode()) {
@@ -191,10 +225,10 @@ public class SourceCodeExtractor {
 				fw.close();
 				System.out.println("Done.");
 			} else {
-				System.err.println(String.format("File %s already exists.", filename));
+				logger.error(String.format("File %s already exists.", filename));
 			}
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -210,10 +244,10 @@ public class SourceCodeExtractor {
 				}
 				fw.close();
 			} else {
-				System.err.println(String.format("File %s already exists.", f.getName()));
+				logger.error(String.format("File %s already exists.", f.getName()));
 			}
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 }

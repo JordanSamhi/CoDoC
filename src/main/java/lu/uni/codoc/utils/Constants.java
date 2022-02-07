@@ -33,4 +33,5 @@ public class Constants {
 	public static final String TOOL_NAME = "CoDoC";
 	public static final String PUBLIC = "public";
 	public static final String DEFAULT_OUTPUT = "./codoc_output/";
+	public static final String EMPTY_DOC = " ";
 }
