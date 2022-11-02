@@ -250,4 +250,8 @@ public class SourceCodeExtractor {
 			logger.error(e.getMessage());
 		}
 	}
+
+	public Map<SootMethod, String> getMethodToDocumentation() {
+		return this.methodToDocumentation;
+	}
 }
