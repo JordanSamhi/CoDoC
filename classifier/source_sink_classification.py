@@ -573,16 +573,15 @@ def get_data_4_venn_diagram(models_and_data, my_type, features, label_mapping):
                 v_reader.write(line)
 
 if __name__ == '__main__':
-    input_filename = '../../data/matrix_with_new_dataset_confirmed.lst'
-    output_filename = '../../data/labeled_vectors.csv'
-    data_bundle_filename = '../../data/data_bundle.pkl'
+    input_filename = '' # Replace with the path to your vectors file.
+    cached_filename = './data_bundle.pkl'
     vector = ['code_vector', 'doc_vector']
 
-    if not os.path.exists(data_bundle_filename):
-        data, categories_mapping, doc_features, code_features = load_data(input_filename)
-        pickle.dump([data, categories_mapping, doc_features, code_features], open(data_bundle_filename, 'wb'))
+    if not os.path.exists(cached_filename):
+        data, categories_mapping, doc_features, code_features = load_data(input_filename) 
+        pickle.dump([data, categories_mapping, doc_features, code_features], open(cached_filename, 'wb'))
     else:
-        data, categories_mapping, doc_features, code_features = pickle.load(open(data_bundle_filename, 'rb'))
+        data, categories_mapping, doc_features, code_features = pickle.load(open(cached_filename, 'rb'))
 
     # ONE-CLASS CLASSIFICATION
     exp1_one_class_sink(data, categories_mapping, doc_features, code_features, vector)
